@@ -35,7 +35,7 @@ export async function generateScienceQuestionAction(input: {
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash-latest',
+      model: 'googleai/gemini-2.5-flash',
       prompt: prompt,
       output: { schema: OutputSchema },
     });

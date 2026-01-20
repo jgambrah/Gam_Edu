@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -39,7 +38,7 @@ export async function generateSeniorEnglish(context: z.infer<typeof AIContextSch
     Difficulty Level: ${context.gradeLevel}
     Instructions: ${context.instructions || 'Standard academic level'}
     Return a title, genre, and 3 comprehension questions.`;
-    const { output } = await ai.generate({ model: 'googleai/gemini-1.5-pro-latest', prompt, output: { schema: EnglishSchema } });
+    const { output } = await ai.generate({ model: 'googleai/gemini-2.5-pro', prompt, output: { schema: EnglishSchema } });
     return { success: true, data: output };
   } catch (error) {
     return { success: false, error: "Failed to generate English module." };
@@ -63,7 +62,7 @@ export async function generateSeniorMath(context: z.infer<typeof AIContextSchema
     Important: The math complexity MUST match ${context.gradeLevel} standards.
     Instructions: ${context.instructions || 'None'}.
     Provide a subTopic name and a LaTeX formula.`;
-    const { output } = await ai.generate({ model: 'googleai/gemini-1.5-pro-latest', prompt, output: { schema: MathSchema } });
+    const { output } = await ai.generate({ model: 'googleai/gemini-2.5-pro', prompt, output: { schema: MathSchema } });
     return { success: true, data: { ...output, gradeLevel: context.gradeLevel } };
   } catch (error) {
     return { success: false, error: "Failed to generate Math module." };
@@ -88,7 +87,7 @@ export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>
     const prompt = `Design a science lab for ${context.gradeLevel} students.
     Topic: "${context.topic}"
     Ensure logic matches ${context.gradeLevel} cognitive development.`;
-    const { output } = await ai.generate({ model: 'googleai/gemini-1.5-pro-latest', prompt, output: { schema: LabSchema } });
+    const { output } = await ai.generate({ model: 'googleai/gemini-2.5-pro', prompt, output: { schema: LabSchema } });
     return { success: true, data: { ...output, gradeLevel: context.gradeLevel } };
   } catch (error) {
     return { success: false, error: "Failed to generate Science module." };
@@ -127,7 +126,7 @@ export async function getPythonTutorHelp(context: {
     4. Provide a small code snippet if necessary, but leave the main task for them to solve.
     5. Maintain a professional, encouraging tone.`;
 
-    const { output } = await ai.generate({ model: 'googleai/gemini-1.5-pro-latest', prompt, output: { schema: TutorSchema } });
+    const { output } = await ai.generate({ model: 'googleai/gemini-2.5-pro', prompt, output: { schema: TutorSchema } });
     return { success: true, data: output };
   } catch (error) {
     return { success: false, error: "Tutor is currently busy. Try again!" };
