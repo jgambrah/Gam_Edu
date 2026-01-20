@@ -10,7 +10,7 @@ import {
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
   Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target, PenTool, ChevronRight, RefreshCw
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
@@ -378,31 +378,20 @@ function PythonAcademy() {
 
   // --- LOAD & FLATTEN MISSIONS ---
   useEffect(() => {
-    if (!firestore) return;
-    const q = query(collection(firestore, 'logic_lab_curriculum'), orderBy('id'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        const dbMissions: any[] = [];
-        snapshot.forEach((doc) => dbMissions.push(doc.data()));
-        
-        const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
-            phase.mainTopics.flatMap(mainTopic => 
-                mainTopic.lessons.map(lesson => ({
-                    ...lesson,
-                    phase: phase.title,
-                    mainTopicTitle: mainTopic.title
-                }))
-            )
-        );
-        
-        // Combine static and DB missions, ensuring unique IDs
-        const combined = [...flattenedSyllabus, ...dbMissions];
-        const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
-
-        setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
-        setIsDataLoading(false); // Data is ready
-    });
-    return () => unsubscribe();
-  }, [firestore]);
+    // Always load static curriculum immediately
+    const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
+        phase.mainTopics.flatMap(mainTopic => 
+            mainTopic.lessons.map(lesson => ({
+                ...lesson,
+                phase: phase.title,
+                mainTopicTitle: mainTopic.title
+            }))
+        )
+    );
+    
+    setAllMissions(flattenedSyllabus);
+    setIsDataLoading(false); // ✅ Set this immediately!
+}, []);
 
 
   const activeLesson = useMemo(() => {
