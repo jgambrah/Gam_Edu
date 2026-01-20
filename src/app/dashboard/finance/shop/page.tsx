@@ -207,7 +207,7 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
     const [isProcessing, setIsProcessing] = useState(false);
 
     // Calculate Total
-    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const totalAmount = cart.reduce((sum, item) => sum + (Number(item.price || 0) * item.quantity), 0);
 
     const addToCart = (item: ShopItem) => {
         if (item.stock <= 0) {
@@ -276,8 +276,8 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
                     itemId: item.id,
                     itemName: item.name,
                     quantity: item.quantity,
-                    priceAtSale: item.price,
-                    total: item.price * item.quantity,
+                    priceAtSale: Number(item.price || 0),
+                    total: Number(item.price || 0) * item.quantity,
                     soldBy: user.uid,
                     date: serverTimestamp(),
                     schoolId: schoolId,
@@ -331,7 +331,7 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
                                 <div>
                                     <h4 className="font-semibold text-sm line-clamp-2 text-slate-700">{item.name}</h4>
                                     <div className="flex justify-between items-end mt-1">
-                                        <span className="font-bold text-emerald-700 text-lg">GH₵{item.price.toFixed(2)}</span>
+                                        <span className="font-bold text-emerald-700 text-lg">GH₵{Number(item.price || 0).toFixed(2)}</span>
                                         <span className={`text-xs px-2 py-0.5 rounded font-medium ${item.stock < item.minStock ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'}`}>
                                             {item.stock} left
                                         </span>
@@ -358,10 +358,10 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
                             <div key={item.id} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200">
                                 <div>
                                     <p className="font-medium text-sm text-slate-800">{item.name}</p>
-                                    <p className="text-xs text-slate-500">{item.quantity} x GH₵{item.price}</p>
+                                    <p className="text-xs text-slate-500">{item.quantity} x GH₵{Number(item.price || 0).toFixed(2)}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <p className="font-bold text-slate-700">GH₵{(item.quantity * item.price).toFixed(2)}</p>
+                                    <p className="font-bold text-slate-700">GH₵{(item.quantity * Number(item.price || 0)).toFixed(2)}</p>
                                     <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.id)} className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50"><Trash2 className="h-4 w-4"/></Button>
                                 </div>
                             </div>
@@ -460,7 +460,7 @@ export default function SchoolShopPage() {
                                                 <TableCell className="font-medium">{item.name}</TableCell>
                                                 <TableCell><Badge variant="outline">{item.category}</Badge></TableCell>
                                                 <TableCell className="text-xs text-muted-foreground">{item.description || '-'}</TableCell>
-                                                <TableCell className="text-right">GH₵{item.price?.toFixed(2) || '0.00'}</TableCell>
+                                                <TableCell className="text-right">GH₵{Number(item.price || 0).toFixed(2)}</TableCell>
                                                 <TableCell className="text-right">
                                                     <span className={`font-bold ${item.stock <= item.minStock ? "text-red-600" : "text-green-600"}`}>
                                                         {item.stock}
