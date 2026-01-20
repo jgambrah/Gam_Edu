@@ -257,7 +257,6 @@ export default function SuperAdminPage() {
                             <TableCell>
                                 <div className="flex items-center gap-1 font-mono text-xs bg-slate-100 p-1 rounded w-fit">
                                     <Zap className="h-3 w-3 text-orange-500"/>
-                                    {/* @ts-ignore */}
                                     {s.aiCredits || 0}
                                 </div>
                             </TableCell>
@@ -304,23 +303,25 @@ export default function SuperAdminPage() {
       <Dialog open={!!creditSchool} onOpenChange={(open) => !open && setCreditSchool(null)}>
         <DialogContent>
             <DialogHeader>
-                <DialogTitle className="flex items-center gap-2"><Zap className="text-purple-500"/> Manage AI Credits</DialogTitle>
-                <DialogDescription>Set the credit balance for <strong>{creditSchool?.name}</strong>.</DialogDescription>
+                <DialogTitle>Manage AI Credits</DialogTitle>
+                <DialogDescription>Set or refill the AI credit balance for <strong>{creditSchool?.name}</strong>.</DialogDescription>
             </DialogHeader>
-            <div className="space-y-2 py-4">
-                <Label>Credit Amount</Label>
-                <Input 
-                    type="number" 
-                    value={creditAmount}
-                    onChange={(e) => setCreditAmount(Number(e.target.value))}
-                    placeholder="1000"
-                />
+            <div className="py-4 space-y-4">
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setCreditAmount(prev => prev + 500)}>+500</Button>
+                    <Button variant="outline" onClick={() => setCreditAmount(prev => prev + 1000)}>+1k</Button>
+                    <Button variant="outline" onClick={() => setCreditAmount(5000)}>Reset to 5k</Button>
+                </div>
+                 <div>
+                    <Label>Credit Amount</Label>
+                    <Input type="number" value={creditAmount} onChange={e => setCreditAmount(Number(e.target.value))} />
+                </div>
             </div>
             <DialogFooter>
-                 <Button variant="outline" onClick={() => setCreditSchool(null)}>Cancel</Button>
-                 <Button onClick={handleUpdateCredits} disabled={updatingCredits} className="bg-purple-600 hover:bg-purple-700">
-                    {updatingCredits ? <Loader2 className="h-4 w-4 animate-spin"/> : "Set Credits"}
-                 </Button>
+                <Button variant="outline" onClick={() => setCreditSchool(null)}>Cancel</Button>
+                <Button onClick={handleUpdateCredits} disabled={updatingCredits} className="bg-purple-600 hover:bg-purple-700">
+                    {updatingCredits ? <Loader2 className="animate-spin mr-2"/> : "Save Balance"}
+                </Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>
