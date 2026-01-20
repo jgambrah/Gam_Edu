@@ -12,6 +12,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check, Zap } from 'lucide-react'; 
+import { Label } from '@/components/ui/label';
 
 type School = { id: string; name: string; plan: string; createdAt: any; aiCredits?: number };
 type Lead = { id: string; schoolName: string; contactName: string; email: string; phone: string; status: string; };
