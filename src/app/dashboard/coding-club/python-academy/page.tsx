@@ -8,9 +8,9 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot, addDoc, increment } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
-  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target, PenTool, ChevronRight
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target, PenTool, ChevronRight, RefreshCw
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
@@ -311,6 +311,7 @@ function PythonAcademy() {
   const [code, setCode] = useState('');
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
+  const [pyodideError, setPyodideError] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [isPassed, setIsPassed] = useState(false);
   const pyodide = useRef<any>(null);
@@ -342,7 +343,14 @@ function PythonAcademy() {
     } catch (error) {
       console.error('Failed to load Pyodide:', error);
       setIsLoadingPy(false);
+      setPyodideError("Failed to initialize the Python environment after loading.");
     }
+  };
+  
+  const handleScriptError = () => {
+    console.error("Pyodide script failed to load from CDN.");
+    setPyodideError("Could not load the Python environment. Please check your network connection and try refreshing the page. If the problem persists, the CDN might be down.");
+    setIsLoadingPy(false); // Stop the main loader
   };
 
   // --- LOAD & FLATTEN MISSIONS ---
@@ -502,11 +510,35 @@ function PythonAcademy() {
   };
 
 
+  if (pyodideError) {
+    return (
+        <div className="flex h-screen w-screen items-center justify-center p-8">
+            <Card className="max-w-lg border-red-500 border-2">
+                <CardHeader>
+                    <CardTitle className="text-red-600">Environment Error</CardTitle>
+                    <CardDescription>
+                       The Python interpreter required for this module failed to load.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-slate-700">{pyodideError}</p>
+                    <Button onClick={() => window.location.reload()} className="mt-4 w-full">
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Reload Page
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    );
+  }
+
   if (isDataLoading || isLoadingPy || !activeLesson) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
-              <p className="ml-4">Loading Curriculum...</p>
+              <p className="ml-4">
+                {isLoadingPy ? "Loading Python Environment..." : "Loading Curriculum..."}
+              </p>
           </div>
       );
   }
@@ -517,6 +549,7 @@ function PythonAcademy() {
           src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js" 
           strategy="lazyOnload"
           onLoad={handleScriptLoad}
+          onError={handleScriptError}
         />
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
