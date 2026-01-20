@@ -333,17 +333,40 @@ function PythonAcademy() {
   };
 
   const handleScriptLoad = async () => {
-    if (pyodide.current) return;
+    if (pyodide.current) {
+      setIsLoadingPy(false);
+      return;
+    }
+    
     try {
-      // @ts-ignore - loadPyodide is available on window after script loads
-      pyodide.current = await window.loadPyodide();
-      await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
+      // @ts-ignore
+      if (!window.loadPyodide) {
+        console.error('loadPyodide not found');
+        setIsLoadingPy(false);
+        setAllMissions(PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
+          phase.mainTopics.flatMap(mainTopic => 
+            mainTopic.lessons.map(lesson => ({
+              ...lesson,
+              phase: phase.title,
+              mainTopicTitle: mainTopic.title
+            }))
+          )
+        ));
+        setIsDataLoading(false);
+        return;
+      }
+      
+      // @ts-ignore
+      pyodide.current = await window.loadPyodide({
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/"
+      });
+      
+      await pyodide.current.loadPackage(['numpy']);
       setIsLoadingPy(false);
-      console.log('Pyodide loaded successfully.');
-    } catch (error) {
-      console.error('Failed to load Pyodide:', error);
+    } catch (error: any) {
+      console.error('Pyodide error:', error);
       setIsLoadingPy(false);
-      setPyodideError("Failed to initialize the Python environment after loading.");
+      // Continue anyway - allow users to write code even if Python doesn't load
     }
   };
   
@@ -845,3 +868,5 @@ function Page() {
 }
 
 export default Page;
+
+    
