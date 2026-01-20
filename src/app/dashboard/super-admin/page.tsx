@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -12,9 +11,9 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check } from 'lucide-react'; 
+import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check, Zap } from 'lucide-react'; 
 
-type School = { id: string; name: string; plan: string; createdAt: any; };
+type School = { id: string; name: string; plan: string; createdAt: any; aiCredits?: number };
 type Lead = { id: string; schoolName: string; contactName: string; email: string; phone: string; status: string; };
 
 export default function SuperAdminPage() {
@@ -22,18 +21,23 @@ export default function SuperAdminPage() {
   const { toast } = useToast();
   
   const [schools, setSchools] = useState<School[]>([]);
-  const [leads, setLeads] = useState<Lead[]>([]); // New State
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   
   const [isDeleting, setIsDeleting] = useState(false);
   const [schoolToDelete, setSchoolToDelete] = useState<School | null>(null);
 
+  // New state for managing credits
+  const [creditSchool, setCreditSchool] = useState<School | null>(null);
+  const [creditAmount, setCreditAmount] = useState(1000);
+  const [updatingCredits, setUpdatingCredits] = useState(false);
+
   // Form State
   const [schoolName, setSchoolName] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
   const [adminName, setAdminName] = useState('');
-  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null); // Track if a lead was selected
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null); 
 
   const loadData = useCallback(async () => {
     if (!firestore) return;
@@ -56,6 +60,14 @@ export default function SuperAdminPage() {
   }, [firestore]);
 
   useEffect(() => { loadData(); }, [loadData]);
+  
+  // Set credit amount when opening dialog
+  useEffect(() => {
+    if (creditSchool) {
+      setCreditAmount(creditSchool.aiCredits || 1000);
+    }
+  }, [creditSchool]);
+
 
   // --- POPULATE FUNCTION ---
   const populateFromLead = (lead: Lead) => {
@@ -136,6 +148,24 @@ export default function SuperAdminPage() {
     }
   };
 
+  // New function to update credits
+  const handleUpdateCredits = async () => {
+    if (!creditSchool || !firestore) return;
+    setUpdatingCredits(true);
+    try {
+        await updateDoc(doc(firestore, 'schools', creditSchool.id), {
+            aiCredits: creditAmount
+        });
+        toast({ title: "Credits Updated", description: `${creditSchool.name} now has ${creditAmount} credits.` });
+        setCreditSchool(null);
+        loadData(); 
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: "Error", description: e.message });
+    } finally {
+        setUpdatingCredits(false);
+    }
+  };
+
   return (
     <div className="p-8 space-y-8">
       <h1 className="text-3xl font-bold flex items-center gap-2 text-slate-800">
@@ -213,9 +243,8 @@ export default function SuperAdminPage() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>School Name</TableHead>
-                        <TableHead>ID</TableHead>
                         <TableHead>Plan</TableHead>
-                        <TableHead>Status</TableHead>
+                        <TableHead>AI Credits</TableHead> 
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -223,10 +252,17 @@ export default function SuperAdminPage() {
                     {schools.map(s => (
                         <TableRow key={s.id}>
                             <TableCell className="font-bold">{s.name}</TableCell>
-                            <TableCell className="font-mono text-xs text-slate-500">{s.id}</TableCell>
                             <TableCell><span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{s.plan}</span></TableCell>
-                            <TableCell><span className="text-green-600 font-bold text-sm">Active</span></TableCell>
+                            <TableCell className="font-mono text-sm">{s.aiCredits?.toLocaleString() || 0}</TableCell>
                             <TableCell className="text-right">
+                                <Button 
+                                    variant="outline"
+                                    size="sm"
+                                    className="mr-2"
+                                    onClick={() => setCreditSchool(s)}
+                                >
+                                    <Zap className="h-4 w-4 mr-2"/> Edit Credits
+                                </Button>
                                 <Button 
                                     variant="ghost" 
                                     size="sm" 
@@ -250,7 +286,7 @@ export default function SuperAdminPage() {
             <DialogHeader>
                 <DialogTitle className="text-red-600">Delete School?</DialogTitle>
                 <DialogDescription>
-                    This will remove <strong>{schoolToDelete?.name}</strong> from the system.
+                    This will remove <strong>{schoolToDelete?.name}</strong> from the system. This action cannot be undone.
                 </DialogDescription>
             </DialogHeader>
             <DialogFooter>
@@ -258,6 +294,31 @@ export default function SuperAdminPage() {
                 <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
                     {isDeleting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Delete"}
                 </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* MANAGE CREDITS DIALOG */}
+      <Dialog open={!!creditSchool} onOpenChange={(open) => !open && setCreditSchool(null)}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle className="flex items-center gap-2"><Zap className="text-purple-500"/> Manage AI Credits</DialogTitle>
+                <DialogDescription>Set the credit balance for <strong>{creditSchool?.name}</strong>.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2 py-4">
+                <Label>Credit Amount</Label>
+                <Input 
+                    type="number" 
+                    value={creditAmount}
+                    onChange={(e) => setCreditAmount(Number(e.target.value))}
+                    placeholder="1000"
+                />
+            </div>
+            <DialogFooter>
+                 <Button variant="outline" onClick={() => setCreditSchool(null)}>Cancel</Button>
+                 <Button onClick={handleUpdateCredits} disabled={updatingCredits} className="bg-purple-600 hover:bg-purple-700">
+                    {updatingCredits ? <Loader2 className="h-4 w-4 animate-spin"/> : "Set Credits"}
+                 </Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>
