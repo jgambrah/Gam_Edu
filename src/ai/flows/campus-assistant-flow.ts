@@ -90,7 +90,7 @@ const campusAssistantFlow = ai.defineFlow(
     `;
 
     const response = await ai.generate({
-        model: 'googleai/gemini-pro',
+        model: 'googleai/gemini-1.5-pro-latest',
         prompt: prompt,
         config: {
             temperature: 0.7

@@ -61,8 +61,7 @@ const generatePracticeProblemsFlow = ai.defineFlow(
     outputSchema: GeneratePracticeProblemsOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input, { model: 'googleai/gemini-pro' });
+    const { output } = await prompt(input, { model: 'googleai/gemini-1.5-pro-latest' });
     return output!;
   }
 );
-
