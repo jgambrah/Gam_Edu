@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -48,7 +47,7 @@ export function AiChat() {
         if (!result.success) {
             setMessages(prev => [...prev, { 
                 role: 'model', 
-                content: "🚫 You are out of AI Credits. Please ask your administrator to upgrade the school's plan." 
+                content: "🚫 " + (result.error || "You are out of AI Credits. Please ask your administrator to upgrade the school's plan.") 
             }]);
             setIsLoading(false);
             return;
