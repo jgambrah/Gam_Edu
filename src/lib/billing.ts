@@ -31,7 +31,8 @@ interface BillingResult {
 export async function billStudentForAttendance(
   firestore: Firestore,
   student: Student,
-  attendanceDate: Date
+  attendanceDate: Date,
+  schoolId: string
 ): Promise<BillingResult> {
   
   try {
@@ -43,6 +44,10 @@ export async function billStudentForAttendance(
         message: 'Invalid student data',
         amountBilled: 0
       };
+    }
+
+    if (!schoolId) {
+        return { success: false, message: 'School ID is required for billing.', amountBilled: 0 };
     }
 
     // Determine which services to bill for
@@ -116,7 +121,8 @@ export async function billStudentForAttendance(
       status: 'Unpaid',
       dueDate: Timestamp.fromDate(new Date(attendanceDate.getTime() + 7 * 24 * 60 * 60 * 1000)), // Due in 7 days
       createdAt: serverTimestamp(),
-      billedBy: 'Attendance System'
+      billedBy: 'Attendance System',
+      schoolId: schoolId,
     });
 
     console.log(`✅ Successfully billed ${student.studentId} - ${totalAmount} GHS for ${services.join(' & ')}`);
@@ -145,6 +151,7 @@ export async function billMultipleStudents(
   firestore: Firestore,
   students: Student[],
   attendanceDate: Date,
+  schoolId: string,
   onProgress?: (current: number, total: number, studentName: string) => void
 ): Promise<{
   successful: number;
@@ -165,7 +172,7 @@ export async function billMultipleStudents(
       onProgress(i + 1, students.length, `${student.firstName} ${student.lastName}`);
     }
 
-    const result = await billStudentForAttendance(firestore, student, attendanceDate);
+    const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId);
     
     if (result.success) {
       if (result.amountBilled > 0) {

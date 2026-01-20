@@ -26,6 +26,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { StudentDisplay } from '@/components/student-display';
 import { billMultipleStudents } from '@/lib/billing';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // Schema matches your data structure
 const attendanceRecordSchema = z.object({
@@ -50,6 +51,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
     const [isLoading, setIsLoading] = useState(false);
     const [students, setStudents] = useState<Student[]>([]);
     const [studentsLoaded, setStudentsLoaded] = useState(false);
@@ -62,10 +64,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
     // Fetch Classes
     const classesQuery = useMemoFirebase(() => {
-        if (!user || !firestore) return null;
-        if (role === 'Teacher') return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-        return collection(firestore, 'classes');
-    }, [firestore, user, role]);
+        if (!user || !firestore || !schoolId) return null;
+        let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+        if (role === 'Teacher') {
+          q = query(q, where('teacherId', '==', user.uid));
+        }
+        return q;
+    }, [firestore, user, role, schoolId]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
     const form = useForm<AttendanceFormData>({
@@ -137,7 +142,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     
     // --- SUBMIT & BILLING ---
     async function onSubmit(data: AttendanceFormData) {
-        if (!firestore) return;
+        if (!firestore || !schoolId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Cannot proceed without school context.' });
+            return;
+        }
         setIsLoading(true);
         setBillingProgress(null);
         
@@ -150,7 +158,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             
             batch.set(recordRef, {
                 ...dataToSave,
-                date: startOfDay(selectedDate)
+                date: startOfDay(selectedDate),
+                schoolId: schoolId,
             }, { merge: true });
         });
 
@@ -168,6 +177,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 firestore,
                 studentsToBill,
                 selectedDate,
+                schoolId,
                 (current, total, name) => {
                     setBillingProgress(`Billing ${current}/${total}: ${name}`);
                 }
