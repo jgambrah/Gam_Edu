@@ -3,8 +3,8 @@
 
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, Timestamp } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, useAuth } from '@/firebase';
+import { collection, query, where, Timestamp, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,7 +13,6 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Ba
 import { FileText, Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Users, Loader2, AlertCircle } from 'lucide-react';
 import { Class, AttendanceRecord, Student } from '@/lib/types';
 import Link from 'next/link';
-import { useUser } from '@/firebase/provider';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -53,7 +52,7 @@ function StudentCell({ student, studentId }: { student?: Student; studentId: str
 export default function AttendanceReportsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
-    const { user } = useUser();
+    const { user } = useAuth();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -87,7 +86,8 @@ export default function AttendanceReportsPage() {
             collection(firestore, 'attendance'),
             where('schoolId', '==', schoolId),
             where('date', '>=', Timestamp.fromDate(start)),
-            where('date', '<=', Timestamp.fromDate(end))
+            where('date', '<=', Timestamp.fromDate(end)),
+            orderBy('date', 'desc')
         );
     }, [firestore, user, dateRange, schoolId]);
     const { data: attendanceRecords, isLoading: isLoadingAttendance } = useCollection<AttendanceRecord>(attendanceQuery);
@@ -106,7 +106,7 @@ export default function AttendanceReportsPage() {
     const filteredData = useMemo(() => {
         if (!attendanceRecords || !students || !classes) return [];
     
-        const studentMap = new Map(students.map(s => [s.id, s]));
+        const studentMap = new Map(students.map(s => [s.uid, s]));
         const classMap = new Map(classes.map(c => [c.id, c.name]));
     
         let data = attendanceRecords.map(record => {
@@ -349,3 +349,5 @@ export default function AttendanceReportsPage() {
         </div>
     );
 }
+
+    
