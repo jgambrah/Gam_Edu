@@ -3,11 +3,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 import { useUser } from '@/firebase'; 
-import { chatWithAiTutor } from '@/ai/flows/ai-tutor-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { checkAndSpendCredits } from '@/app/actions/credits';
+import { chatAIAction } from '@/app/actions/chat-ai';
 
 // Types
 type MessageRole = 'user' | 'model';
@@ -20,6 +19,7 @@ interface ChatMessage {
 export const AITutor: React.FC = () => {
   const { user } = useUser();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   
   // State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -59,6 +59,11 @@ export const AITutor: React.FC = () => {
         return;
     }
 
+    if (!schoolId) {
+        toast({ title: "Error", description: "Cannot identify your school. Please refresh.", variant: 'destructive' });
+        return;
+    }
+
     const userText = inputText;
     setInputText('');
     setIsLoading(true);
@@ -69,22 +74,10 @@ export const AITutor: React.FC = () => {
       timestamp: Date.now()
     };
     
-    const currentHistory = [...messages, userMsg];
-    setMessages(currentHistory);
+    setMessages(prev => [...prev, userMsg]);
 
     try {
-      const historyForApi = currentHistory.slice(-50).map(m => ({ 
-          role: m.role, 
-          content: m.content
-      }));
-
-      const lastMessage = historyForApi.pop(); 
-      
-      const response = await chatWithAiTutor({
-        history: historyForApi,
-        message: lastMessage?.content || userText,
-        userId: user.uid,
-      });
+      const response = await chatAIAction(schoolId, userText);
 
       console.log("AI Response Debug:", response);
 
