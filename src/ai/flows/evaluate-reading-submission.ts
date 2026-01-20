@@ -62,6 +62,7 @@ export async function evaluateReadingSubmissionAction(input: EvaluationInput) {
     `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-2.5-flash',
       prompt: prompt,
       output: { schema: FeedbackSchema },
     });

@@ -35,6 +35,7 @@ export async function generateElaLessonAction(input: { topic: string, grade: str
     `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-2.5-flash',
       prompt: prompt,
       output: { schema: ElaLessonSchema },
     });

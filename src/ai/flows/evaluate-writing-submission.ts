@@ -47,6 +47,7 @@ export async function evaluateWritingAction(input: WritingInput) {
     `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-2.5-flash',
       prompt: prompt,
       output: { schema: WritingFeedbackSchema },
     });
