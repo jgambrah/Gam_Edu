@@ -7,13 +7,13 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
-  Save, Loader2, CornerDownRight, Trash2, Receipt, BarChart, TrendingUp
+  Save, Loader2, CornerDownRight, Trash2, Receipt, BarChart, TrendingUp, BookOpen, Printer
 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,6 +31,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+
 
 // --- HELPER: Report Logic ---
 type AccountBalance = {
@@ -362,6 +367,7 @@ function BalanceSheet({ data, netIncome }: { data: AccountBalance[], netIncome: 
         </Card>
     );
 }
+
 
 // --- MAIN PAGE ---
 export default function FinancialReportsPage() {
