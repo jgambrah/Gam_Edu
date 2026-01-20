@@ -393,6 +393,42 @@ function PythonAcademy() {
     setIsDataLoading(false); // ✅ Set this immediately!
 }, []);
 
+  // --- OPTIONALLY LOAD & MERGE DB MISSIONS ---
+  useEffect(() => {
+    if (!firestore) {
+      console.log("Firestore not available, skipping dynamic mission load.");
+      return;
+    }
+    
+    const q = query(collection(firestore, 'logic_lab_curriculum'), orderBy('id'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const dbMissions: any[] = [];
+        snapshot.forEach((doc) => {
+            dbMissions.push(doc.data() as Mission);
+        });
+        
+        if (dbMissions.length > 0) {
+          setAllMissions(prevMissions => {
+              // Create a map of existing mission IDs to prevent duplicates
+              const existingIds = new Set(prevMissions.map(m => m.id));
+              const newUniqueMissions = dbMissions.filter(m => !existingIds.has(m.id));
+              
+              if (newUniqueMissions.length > 0) {
+                  console.log(`Merging ${newUniqueMissions.length} new missions from DB.`);
+                  // Return a new sorted array
+                  return [...prevMissions, ...newUniqueMissions].sort((a: any, b: any) => a.id - b.id);
+              }
+              // If no new unique missions, return the previous state to avoid re-render
+              return prevMissions;
+          });
+        }
+    }, (error) => {
+      console.error('Optional Firestore load failed, continuing with static data:', error);
+      // Don't block the app or show an error to the user for this optional feature
+    });
+    
+    return () => unsubscribe();
+  }, [firestore]);
 
   const activeLesson = useMemo(() => {
     if (allMissions.length === 0) return null;
