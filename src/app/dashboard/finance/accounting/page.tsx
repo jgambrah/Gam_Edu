@@ -1,19 +1,19 @@
 
 'use client';
 
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
-  Save, Loader2, CornerDownRight, Trash2, Receipt, BarChart, TrendingUp, BookOpen
+  Save, Loader2, CornerDownRight, Trash2, Receipt, BarChart, TrendingUp, BookOpen, PlusCircle, BookMarked
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,12 +25,16 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType } from '@/lib/types';
+import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType, accountSchema, MOCK_CHART_OF_ACCOUNTS, ACCOUNT_TYPES } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+
 
 // --- HELPER: Report Logic ---
 type AccountBalance = {
@@ -363,22 +367,211 @@ function BalanceSheet({ data, netIncome }: { data: AccountBalance[], netIncome: 
     );
 }
 
+
+// --- New Account Form ---
+function AccountForm({ setOpen, onAccountAdded, accounts, schoolId }: { setOpen: (open: boolean) => void; onAccountAdded: () => void, accounts: Account[], schoolId: string }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const controlAccounts = accounts.filter(acc => acc.isControlAccount);
+
+    const form = useForm<z.infer<typeof accountSchema>>({
+        resolver: zodResolver(accountSchema),
+        defaultValues: {
+            parentAccountId: 'None',
+        },
+    });
+
+    async function onSubmit(values: z.infer<typeof accountSchema>) {
+        if (!firestore) return;
+        setIsSubmitting(true);
+        try {
+            const newDocRef = doc(collection(firestore, 'accounts'));
+            await setDoc(newDocRef, {
+                ...values,
+                id: newDocRef.id,
+                schoolId: schoolId,
+                balance: 0,
+                isControlAccount: values.parentAccountId === 'None',
+                parentAccountId: values.parentAccountId === 'None' ? null : values.parentAccountId,
+                code: 'TEMP', // Will be updated
+            });
+
+            toast({ title: 'Success', description: 'New account has been added.' });
+            onAccountAdded();
+            form.reset();
+            setOpen(false);
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Error' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="name" render={({ field }) => (
+                    <FormItem><FormLabel>Account Name</FormLabel><FormControl><Input placeholder="e.g., Office Supplies" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="type" render={({ field }) => (
+                    <FormItem><FormLabel>Account Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a type" /></SelectTrigger></FormControl><SelectContent>{ACCOUNT_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="parentAccountId" render={({ field }) => (
+                    <FormItem><FormLabel>Parent Account</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="None">None (Create new Control Account)</SelectItem>{controlAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="description" render={({ field }) => (
+                    <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the purpose of this account" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create Account</Button>
+            </form>
+        </Form>
+    );
+}
+
+// --- COMPONENT: Chart of Accounts Table ---
+function ChartOfAccounts({ accounts, schoolId, onAccountsChanged }: { accounts: Account[], schoolId: string, onAccountsChanged: () => void }) {
+    const [isFormOpen, setFormOpen] = useState(false);
+
+    const sortedAccounts = useMemo(() => {
+        if (!accounts) return [];
+        const controlAccounts = accounts.filter(a => a.isControlAccount).sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+        const subAccounts = accounts.filter(a => !a.isControlAccount);
+
+        const result: Account[] = [];
+        controlAccounts.forEach(control => {
+            result.push(control);
+            const children = subAccounts.filter(sub => sub.parentId === control.id).sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+            result.push(...children);
+        });
+        return result;
+    }, [accounts]);
+    
+    return (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                    <CardTitle className="flex items-center gap-2"><BookMarked /> Chart of Accounts</CardTitle>
+                    <CardDescription>The foundational structure of the school's financial ledger.</CardDescription>
+                </div>
+                <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
+                    <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> New Account</Button></DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader><DialogTitle>Create New Ledger Account</DialogTitle></DialogHeader>
+                        <AccountForm setOpen={setFormOpen} onAccountAdded={onAccountsChanged} accounts={accounts} schoolId={schoolId} />
+                    </DialogContent>
+                </Dialog>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader><TableRow><TableHead>Code</TableHead><TableHead>Account Name</TableHead><TableHead>Type</TableHead><TableHead>Parent</TableHead><TableHead>Description</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {sortedAccounts.map(acc => (
+                            <TableRow key={acc.id} className={cn(acc.isControlAccount && 'bg-muted/50 font-bold')}>
+                                <TableCell>{acc.code}</TableCell><TableCell>{acc.name}</TableCell><TableCell>{acc.type}</TableCell>
+                                <TableCell>{acc.parentAccountId || '-'}</TableCell><TableCell>{acc.description}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+    );
+}
+
+// --- COMPONENT: Journal Entry Form ---
+function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Account[], schoolId: string, onEntryAdded: () => void }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const postableAccounts = accounts.filter(acc => !acc.isControlAccount);
+
+    const form = useForm<z.infer<typeof journalEntrySchema>>({
+        resolver: zodResolver(journalEntrySchema),
+    });
+
+    async function onSubmit(values: z.infer<typeof journalEntrySchema>) {
+        if (!firestore || !user) return;
+        setIsSubmitting(true);
+        try {
+            const entryData = {
+                date: serverTimestamp(),
+                description: values.description,
+                lines: [
+                    { accountId: values.debitAccountId, amount: values.amount, type: 'debit' },
+                    { accountId: values.creditAccountId, amount: values.amount, type: 'credit' },
+                ],
+                totalAmount: values.amount,
+                createdBy: user.uid,
+                createdAt: serverTimestamp(),
+                schoolId: schoolId,
+            };
+            await addDoc(collection(firestore, 'journal_entries'), entryData);
+            toast({ title: 'Success', description: 'Journal entry has been recorded.' });
+            onEntryAdded();
+            form.reset();
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to record entry.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Card>
+            <CardHeader><CardTitle>Manual Journal Entry</CardTitle></CardHeader>
+            <CardContent>
+                 <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField control={form.control} name="description" render={({ field }) => (
+                            <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="e.g., Office supplies purchase" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="amount" render={({ field }) => (
+                            <FormItem><FormLabel>Amount</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name="debitAccountId" render={({ field }) => (
+                                <FormItem><FormLabel>Debit Account</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Choose account to debit" /></SelectTrigger></FormControl><SelectContent>{postableAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                            )} />
+                            <FormField control={form.control} name="creditAccountId" render={({ field }) => (
+                                <FormItem><FormLabel>Credit Account</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Choose account to credit" /></SelectTrigger></FormControl><SelectContent>{postableAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                            )} />
+                        </div>
+                        <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Record Entry</Button>
+                    </form>
+                </Form>
+            </CardContent>
+        </Card>
+    );
+}
+
+// Placeholder for PaymentVoucherForm
+function PaymentVoucherForm({ accounts, schoolId }: { accounts: Account[], schoolId: string }) {
+    return <Card><CardHeader><CardTitle>Payment Vouchers</CardTitle><CardDescription>This feature is under construction.</CardDescription></CardHeader></Card>
+}
+
+
 // --- MAIN PAGE ---
 export default function AccountingPage() {
     const { role } = useRole();
     const firestore = useFirestore();
-    const { schoolId } = useCurrentSchool();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: accounts, isLoading: accLoading } = useCollection<Account>(accountsQuery);
+    const { data: accounts, isLoading: accLoading, forceRefetch: forceRefetchAccounts } = useCollection<Account>(accountsQuery);
 
-    const journalQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
-    const { data: journals } = useCollection<JournalEntry>(journalQuery);
+    const journalsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+    const { data: journals, isLoading: jLoading, forceRefetch: forceRefetchJournals } = useCollection<JournalEntry>(journalsQuery);
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
     if (!canAccess) return <div className="p-8 text-center text-red-500">Access Denied</div>;
 
-    const isLoading = accLoading || !schoolId;
+    const isLoading = isLoadingSchool || accLoading || jLoading;
 
     return (
         <div className="space-y-6 p-6">
@@ -389,18 +582,14 @@ export default function AccountingPage() {
             <Tabs defaultValue="overview">
                 <TabsList className="w-full justify-start"><TabsTrigger value="overview">Chart of Accounts</TabsTrigger><TabsTrigger value="journal">Journal Entry</TabsTrigger><TabsTrigger value="pv">Payment Voucher</TabsTrigger></TabsList>
                 <TabsContent value="overview" className="mt-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="lg:col-span-2">{isLoading ? <Loader2 className="mx-auto animate-spin"/> : <ChartOfAccounts accounts={accounts || []} schoolId={schoolId!} />}</div>
-                        <div className="space-y-4">
-                            <Card className="bg-blue-50 border-blue-100"><CardHeader><CardTitle className="text-sm">Total Assets</CardTitle></CardHeader><CardContent className="text-2xl font-bold text-blue-700">GH₵{accounts?.filter(a => a.type === 'Asset').reduce((sum, a) => sum + a.balance, 0).toFixed(2)}</CardContent></Card>
-                            <Card className="bg-green-50 border-green-100"><CardHeader><CardTitle className="text-sm">Total Revenue</CardTitle></CardHeader><CardContent className="text-2xl font-bold text-green-700">GH₵{accounts?.filter(a => a.type === 'Revenue').reduce((sum, a) => sum + a.balance, 0).toFixed(2)}</CardContent></Card>
-                            <Card className="bg-red-50 border-red-100"><CardHeader><CardTitle className="text-sm">Total Expenses</CardTitle></CardHeader><CardContent className="text-2xl font-bold text-red-700">GH₵{accounts?.filter(a => a.type === 'Expense').reduce((sum, a) => sum + a.balance, 0).toFixed(2)}</CardContent></Card>
-                        </div>
+                    <div className="grid grid-cols-1 gap-6">
+                        {isLoading ? <Loader2 className="mx-auto animate-spin"/> : <ChartOfAccounts accounts={accounts || []} schoolId={schoolId!} onAccountsChanged={forceRefetchAccounts} />}
                     </div>
                 </TabsContent>
-                <TabsContent value="journal" className="mt-4"><JournalEntryForm accounts={accounts || []} schoolId={schoolId!} /></TabsContent>
+                <TabsContent value="journal" className="mt-4"><JournalEntryForm accounts={accounts || []} schoolId={schoolId!} onEntryAdded={forceRefetchJournals} /></TabsContent>
                 <TabsContent value="pv" className="mt-4"><PaymentVoucherForm accounts={accounts || []} schoolId={schoolId!} /></TabsContent>
             </Tabs>
         </div>
     );
 }
+
