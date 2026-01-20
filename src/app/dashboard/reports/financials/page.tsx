@@ -9,7 +9,7 @@ import {
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
   Save, Loader2, CornerDownRight, Trash2, Receipt, BarChart, TrendingUp, BookOpen, Printer
 } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { format, startOfMonth, endOfMonth, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
@@ -25,7 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType } from '@/lib/types';
+import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType, accountSchema, MOCK_CHART_OF_ACCOUNTS, ACCOUNT_TYPES } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -479,5 +479,3 @@ export default function FinancialReportsPage() {
         </div>
     );
 }
-
-    
