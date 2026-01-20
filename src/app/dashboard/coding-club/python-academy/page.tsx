@@ -251,6 +251,43 @@ interface Mission {
   validation?: string;
 }
 
+// --- SECTION: CONTRIBUTION HEATMAP ---
+function ContributionHeatmap({ progressData }: { progressData: any[] }) {
+    // Generates 28 days (4 weeks) of activity
+    const days = Array.from({ length: 28 }); 
+    
+    return (
+        <div className="space-y-3 bg-slate-900/50 p-5 rounded-[24px] border border-slate-800 shadow-inner">
+            <div className="flex items-center justify-between">
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Coding Consistency</p>
+                <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-sm bg-slate-800" />
+                    <div className="w-2 h-2 rounded-sm bg-emerald-500" />
+                </div>
+            </div>
+            {/* GitHub style grid */}
+            <div className="grid grid-flow-col grid-rows-7 gap-1 w-fit">
+                {days.map((_, i) => {
+                    // Logic to highlight squares based on progress (simulated here)
+                    const isActive = i > 15 && i < 22 || i === 27; 
+                    return (
+                        <div 
+                            key={i} 
+                            className={`w-3 h-3 rounded-sm transition-colors ${
+                                isActive 
+                                ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' 
+                                : 'bg-slate-800'
+                            }`} 
+                        />
+                    );
+                })}
+            </div>
+            <p className="text-[9px] text-slate-500 font-bold italic">Keep the streak alive to master Python! 🔥</p>
+        </div>
+    );
+}
+
+
 // --- REFERENCE GUIDE DATA ---
 const REFERENCE_DATA = [
   { title: "Variables", desc: "Containers for storing data values.", example: "score = 10" },
@@ -284,6 +321,7 @@ function PythonAcademy() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(true);
+  const [userProgress, setUserProgress] = useState<any[]>([]);
   
   const speak = (text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -407,7 +445,14 @@ function PythonAcademy() {
 
     // --- SECTION: RUN & VALIDATE ENGINE ---
     const runAndValidate = async () => {
-        if (!pyodide.current || !activeLesson) return;
+        if (!pyodide.current || !activeLesson) {
+             toast({
+                variant: 'destructive',
+                title: 'Python Not Ready',
+                description: 'The code interpreter is still loading. Please wait a moment.'
+            });
+            return;
+        };
         setIsRunning(true);
         setOutput([]);
         setIsPassed(false);
@@ -540,7 +585,7 @@ function PythonAcademy() {
     );
   }
 
-  if (isDataLoading || isLoadingPy || !activeLesson) {
+  if (isDataLoading || !activeLesson) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -567,29 +612,7 @@ function PythonAcademy() {
             <h2 className="text-xl font-black text-white">Python Pro Academy</h2>
           </div>
           
-          <div className="space-y-3 bg-slate-900/50 p-5 rounded-[24px] border border-slate-800 shadow-inner">
-            <div className="flex items-center justify-between">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Coding Consistency</p>
-                <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-sm bg-slate-800" />
-                    <div className="w-2 h-2 rounded-sm bg-emerald-500" />
-                </div>
-            </div>
-            {/* GitHub style grid */}
-            <div className="grid grid-flow-col grid-rows-7 gap-1 w-fit">
-                {Array.from({ length: 28 }).map((_, i) => (
-                    <div 
-                        key={i} 
-                        className={`w-3 h-3 rounded-sm transition-colors ${
-                            i > 15 && i < 22 || i === 27
-                            ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' 
-                            : 'bg-slate-800'
-                        }`} 
-                    />
-                ))}
-            </div>
-            <p className="text-[9px] text-slate-500 font-bold italic">Keep the streak alive to master Python! 🔥</p>
-        </div>
+          <ContributionHeatmap progressData={userProgress} />
           
           <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
             <div className="p-2 space-y-2">
@@ -638,22 +661,29 @@ function PythonAcademy() {
             </div>
 
             <div className="flex-1 relative border-b border-slate-800 bg-[#1e1e1e]">
-                <Editor
-                    height="100%"
-                    defaultLanguage="python"
-                    theme="vs-dark"
-                    value={code}
-                    onChange={(v) => setCode(v || "")}
-                    options={{
-                        fontSize: 16,
-                        minimap: { enabled: false },
-                        padding: { top: 20 },
-                        automaticLayout: true,
-                        scrollBeyondLastLine: false,
-                        lineNumbers: 'on',
-                        fontFamily: 'JetBrains Mono, monospace'
-                    }}
-                />
+                {isLoadingPy ? (
+                    <div className="h-full flex flex-col items-center justify-center text-slate-400">
+                        <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                        <p>Initializing Python Engine...</p>
+                    </div>
+                ) : (
+                    <Editor
+                        height="100%"
+                        defaultLanguage="python"
+                        theme="vs-dark"
+                        value={code}
+                        onChange={(v) => setCode(v || "")}
+                        options={{
+                            fontSize: 16,
+                            minimap: { enabled: false },
+                            padding: { top: 20 },
+                            automaticLayout: true,
+                            scrollBeyondLastLine: false,
+                            lineNumbers: 'on',
+                            fontFamily: 'JetBrains Mono, monospace'
+                        }}
+                    />
+                )}
 
                 {/* THE CELEBRATION OVERLAY */}
                 {isPassed && (
