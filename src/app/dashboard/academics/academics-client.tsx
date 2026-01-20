@@ -40,6 +40,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError, useCollection } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
@@ -575,4 +576,3 @@ export default function AcademicsPageContent() {
     </div>
   );
 }
-
