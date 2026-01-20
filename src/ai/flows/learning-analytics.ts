@@ -57,6 +57,7 @@ export async function generateLearningInsights(input: { classData: any[], school
     `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-2.5-pro',
       prompt: prompt,
       output: { schema: AnalysisOutputSchema },
     });
