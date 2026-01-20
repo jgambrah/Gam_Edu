@@ -20,7 +20,8 @@ interface ChatMessage {
 export const AITutor: React.FC = () => {
   const { user } = useUser();
   const { toast } = useToast();
-  // Initial State: Just the greeting.
+  
+  // State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -84,6 +85,8 @@ export const AITutor: React.FC = () => {
         message: lastMessage?.content || userText,
         userId: user.uid,
       });
+
+      console.log("AI Response Debug:", response);
 
       if (!response.success) {
         throw new Error(response.text || "AI tutor failed to respond.");
