@@ -58,7 +58,7 @@ function ScienceExplorerTab() {
     const { toast } = useToast();
     const [topic, setTopic] = useState('');
     const [isLearning, setIsLearning] = useState(false);
-    const [currentLesson, setCurrentLesson] = useState<GeneratedLesson | null>(null);
+    const [currentLesson, setCurrentLesson] = useState<ScienceLesson | null>(null);
     const [showAnswer, setShowAnswer] = useState(false);
     const { schoolId } = useCurrentSchool();
 
@@ -251,7 +251,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
 
     async function onSubmit(values: z.infer<typeof scienceProblemSchema>) {
         if (!schoolId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Cannot determine school ID.'});
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not determine school ID.' });
             return;
         }
         setIsSubmitting(true);
@@ -598,5 +598,3 @@ export default function ScienceClubPage() {
     </div>
   );
 }
-
-    

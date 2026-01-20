@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,7 +15,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, writeBatch, doc } from 'firebase/firestore';
+import { collection, writeBatch, doc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Wand2 } from 'lucide-react';
 import { generatePracticeProblems, GeneratePracticeProblemsOutput } from '@/ai/flows/generate-practice-problems-flow';
@@ -44,7 +43,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   const [numQuestions, setNumQuestions] = useState(5);
   const [classId, setClassId] = useState('');
 
-  const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+  const { data: classes } = useCollection<Class>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
   async function onGenerate() {
     if (!topic) {
@@ -97,8 +96,8 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
         toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.'});
         return;
     }
-    if (!currentUser) {
-        toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out. Please refresh the page.' });
+    if (!currentUser || !schoolId) {
+        toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out or missing school data. Please refresh the page.' });
         return;
     }
     setIsSaving(true);
@@ -120,6 +119,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
             topic,
             difficulty,
             classId: classId,
+            schoolId: schoolId, // SAAS FIX
         };
         if (subject === 'ELA Grammar') {
             data.type = 'MCQ';
