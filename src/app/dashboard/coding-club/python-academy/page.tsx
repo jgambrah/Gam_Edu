@@ -294,47 +294,45 @@ function PythonAcademy() {
   };
 
   const handleScriptLoad = async () => {
+    // Prevent re-initialization if already loaded
     if (pyodide.current) {
       setIsLoadingPy(false);
       return;
     }
     
     try {
-      // @ts-ignore
+      // @ts-ignore - Check if the script actually loaded the function
       if (!window.loadPyodide) {
-        console.error('loadPyodide not found');
+        console.error('loadPyodide function not found on window object.');
         setIsLoadingPy(false);
-        setAllMissions(PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
-          phase.mainTopics.flatMap(mainTopic => 
-            mainTopic.lessons.map(lesson => ({
-              ...lesson,
-              phase: phase.title,
-              mainTopicTitle: mainTopic.title
-            }))
-          )
-        ));
-        setIsDataLoading(false);
+        // Optional: Implement a fallback to show a non-interactive version of the page
         return;
       }
       
-      // @ts-ignore
+      // @ts-ignore - Initialize Pyodide
       pyodide.current = await window.loadPyodide({
         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/"
       });
       
+      // You can pre-load common packages here
       await pyodide.current.loadPackage(['numpy']);
-      setIsLoadingPy(false);
+      
     } catch (error: any) {
-      console.error('Pyodide error:', error);
-      setIsLoadingPy(false);
-      // Continue anyway - allow users to write code even if Python doesn't load
+      console.error('Pyodide initialization or package loading failed:', error);
+      // Still allow the app to function, but code execution will fail.
+    } finally {
+      setIsLoadingPy(false); // CRITICAL: Always turn off loading
     }
   };
   
   const handleScriptError = () => {
-    console.error("Pyodide script failed to load from CDN.");
-    setPyodideError("Could not load the Python environment. Please check your network connection and try refreshing the page. If the problem persists, the CDN might be down.");
-    setIsLoadingPy(false); // Stop the main loader
+      console.error("Fatal Error: The Pyodide script failed to load from the CDN.");
+      toast({
+        variant: 'destructive',
+        title: 'Python Engine Failed',
+        description: 'The interactive code interpreter could not be loaded. Please check your internet connection and refresh.'
+      });
+      setIsLoadingPy(false); // Ensure the loading spinner stops
   };
 
   // --- LOAD & FLATTEN MISSIONS ---
@@ -353,6 +351,7 @@ function PythonAcademy() {
     setAllMissions(flattenedSyllabus);
     setIsDataLoading(false); // ✅ Set this immediately!
 }, []);
+
 
   // --- OPTIONALLY LOAD & MERGE DB MISSIONS ---
   useEffect(() => {
