@@ -245,7 +245,7 @@ export default function SuperAdminPage() {
                     <TableRow>
                         <TableHead>School Name</TableHead>
                         <TableHead>Plan</TableHead>
-                        <TableHead>AI Credits</TableHead> 
+                        <TableHead>Credits</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -254,15 +254,16 @@ export default function SuperAdminPage() {
                         <TableRow key={s.id}>
                             <TableCell className="font-bold">{s.name}</TableCell>
                             <TableCell><span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{s.plan}</span></TableCell>
-                            <TableCell className="font-mono text-sm">{s.aiCredits?.toLocaleString() || 0}</TableCell>
+                            <TableCell>
+                                <div className="flex items-center gap-1 font-mono text-xs bg-slate-100 p-1 rounded w-fit">
+                                    <Zap className="h-3 w-3 text-orange-500"/>
+                                    {/* @ts-ignore */}
+                                    {s.aiCredits || 0}
+                                </div>
+                            </TableCell>
                             <TableCell className="text-right">
-                                <Button 
-                                    variant="outline"
-                                    size="sm"
-                                    className="mr-2"
-                                    onClick={() => setCreditSchool(s)}
-                                >
-                                    <Zap className="h-4 w-4 mr-2"/> Edit Credits
+                                <Button variant="ghost" size="sm" onClick={() => { setCreditSchool(s); setCreditAmount(s.aiCredits || 0); }}>
+                                    <Zap className="h-4 w-4 text-orange-500"/>
                                 </Button>
                                 <Button 
                                     variant="ghost" 
