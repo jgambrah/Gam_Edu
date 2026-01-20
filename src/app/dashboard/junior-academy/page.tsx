@@ -599,10 +599,10 @@ function ABCKingdom() {
         }
     }, [selectedLetter, activeTab]);
 
-    const startTracing = (e: any) => {
+    const startDrawing = (e: any) => {
         const ctx = traceCanvasRef.current?.getContext('2d');
         if (!ctx) return;
-        const rect = traceCanvasRef.current!.getBoundingClientRect();
+        const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
@@ -707,7 +707,7 @@ function ABCKingdom() {
                                             onMouseMove={draw}
                                             onMouseUp={stopDrawing}
                                             onMouseLeave={stopDrawing}
-                                            onTouchStart={startTracing}
+                                            onTouchStart={startDrawing}
                                             onTouchMove={draw}
                                             onTouchEnd={stopDrawing}
                                         />
@@ -1880,10 +1880,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                         onMouseMove={draw}
                         onMouseUp={stopDrawing}
                         onMouseLeave={stopDrawing}
-                        onTouchStart={startDrawing}
-                        onTouchMove={draw}
-                        onTouchEnd={stopDrawing}
-                        className="bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 w-full h-[500px] cursor-crosshair touch-none"
+                        className="bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 w-full h-[500px] cursor-crosshair"
                     />
                     <p className="text-center text-xs text-slate-400 font-bold uppercase tracking-widest">
                         Practice makes perfect!
