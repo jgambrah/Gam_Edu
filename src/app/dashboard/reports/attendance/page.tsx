@@ -30,7 +30,7 @@ const COLORS = {
 export default function AttendanceReportsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
-    const { user } = useAuth(); // Use consistent auth hook
+    const { user } = useAuth();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -50,15 +50,14 @@ export default function AttendanceReportsPage() {
 
     // 2. Fetch Attendance (School-Aware)
     const attendanceQuery = useMemoFirebase(() => {
-        if (!user || !firestore || !schoolId) return null;
+        if (!firestore || !schoolId) return null;
         
-        // TEMPORARY: Fetch ALL attendance for the school
-        // We will filter by date in Javascript (memory) to debug
+        // Fetch ALL attendance for this school first (Client-side date filtering is safer for now)
         return query(
             collection(firestore, 'attendance'),
             where('schoolId', '==', schoolId)
         );
-    }, [firestore, user, schoolId]);
+    }, [firestore, schoolId]);
     const { data: rawAttendance, isLoading: isLoadingAttendance } = useCollection(attendanceQuery);
     
     // 3. Fetch Students (For Names)
@@ -71,37 +70,39 @@ export default function AttendanceReportsPage() {
     // --- DATA PROCESSING ---
     const filteredData = useMemo(() => {
         if (!rawAttendance || !students || !classes) return [];
-        
+        if (!dateRange?.from) return [];
+
         const studentMap = new Map(students.map(s => [s.id, s]));
         const classMap = new Map(classes.map(c => [c.id, c.name]));
 
-        let data = rawAttendance.map(record => ({
+        const fromStr = format(dateRange.from, 'yyyy-MM-dd');
+        const toStr = dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : fromStr;
+
+        return rawAttendance
+            .filter(record => {
+                // 1. Date Filter
+                if (!record.date) return false;
+                
+                const recordDateObj = record.date.toDate ? record.date.toDate() : new Date(record.date);
+                const recordDateStr = format(recordDateObj, 'yyyy-MM-dd');
+
+                // Compare strings (YYYY-MM-DD) instead of milliseconds
+                if (recordDateStr < fromStr || recordDateStr > toStr) return false;
+
+                // 2. Class Filter
+                if (selectedClassId !== 'all' && record.classId !== selectedClassId) return false;
+
+                // 3. Status Filter
+                if (selectedStatus !== 'all' && record.status !== selectedStatus) return false;
+
+                return true;
+            })
+            .map(record => ({
                 ...record,
                 student: studentMap.get(record.studentId),
                 className: classMap.get(record.classId) || 'Unknown Class'
-            }));
-
-        // MANUAL DATE FILTER
-        if (dateRange?.from) {
-             const start = startOfDay(dateRange.from).getTime();
-             const end = dateRange.to ? endOfDay(dateRange.to).getTime() : endOfDay(dateRange.from).getTime();
-             
-             data = data.filter(record => {
-                 if (!record.date) return false;
-                 const recordDate = record.date.toDate ? record.date.toDate().getTime() : new Date(record.date).getTime();
-                 return recordDate >= start && recordDate <= end;
-             });
-        }
-        
-        // CLASS & STATUS FILTER
-        if (selectedClassId !== 'all') {
-            data = data.filter(record => record.classId === selectedClassId);
-        }
-        if (selectedStatus !== 'all') {
-            data = data.filter(record => record.status === selectedStatus);
-        }
-
-        return data.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
+            }))
+            .sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
 
     }, [rawAttendance, students, classes, dateRange, selectedClassId, selectedStatus]);
 
