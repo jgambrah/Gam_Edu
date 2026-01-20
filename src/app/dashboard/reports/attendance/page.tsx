@@ -58,7 +58,7 @@ export default function AttendanceReportsPage() {
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: startOfDay(new Date(new Date().setDate(new Date().getDate() - 30))),
         to: endOfDay(new Date()),
-      });
+    });
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
@@ -187,7 +187,7 @@ export default function AttendanceReportsPage() {
     }
     
     return (
-        <div className="space-y-6" id="report-content">
+        <div className="space-y-6 print:absolute print:left-0 print:top-0 print:w-full print:bg-white print:z-50" id="report-content">
             <div className="flex items-center justify-between print:hidden">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-2"><BarChartIcon /> Attendance Reports</h1>
@@ -201,7 +201,7 @@ export default function AttendanceReportsPage() {
                 </div>
             </div>
 
-            <Card>
+            <Card className="print:hidden">
                 <CardHeader>
                     <CardTitle>Filters</CardTitle>
                     <CardDescription>Select a date range, class, and status to generate a report.</CardDescription>
@@ -244,7 +244,7 @@ export default function AttendanceReportsPage() {
 
             {/* Warning for missing students */}
             {!isLoading && missingStudentsCount > 0 && (
-                <Card className="border-orange-300 bg-orange-50">
+                <Card className="border-orange-300 bg-orange-50 print:hidden">
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-2 text-orange-800">
                             <AlertCircle className="h-5 w-5" />
@@ -334,26 +334,6 @@ export default function AttendanceReportsPage() {
                     </div>
                 </>
             ))}
-
-            <style jsx global>{\`
-                @media print {
-                    body * {
-                        visibility: hidden;
-                    }
-                    .print\\:hidden {
-                        display: none;
-                    }
-                    #report-content, #report-content * {
-                        visibility: visible;
-                    }
-                    #report-content {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
-                    }
-                }
-            \`}</style>
         </div>
     );
 }
