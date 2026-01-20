@@ -578,9 +578,8 @@ function ABCKingdom() {
     const handleLetterClick = (letter: string) => {
         setSelectedLetter(letter);
         if (activeTab === 'explorer') {
-            const data = dict[letter];
             speak(letter); // Say Letter Name
-            setTimeout(() => speak(`${data.phonic}, as in, ${data.word}`), 800);
+            setTimeout(() => speak(`${dict[letter].phonic}, as in, ${dict[letter].word}`), 800);
         }
     };
 
@@ -601,8 +600,8 @@ function ABCKingdom() {
 
     const startDrawing = (e: any) => {
         const ctx = traceCanvasRef.current?.getContext('2d');
-        if (!ctx) return;
-        const rect = canvasRef.current!.getBoundingClientRect();
+        if (!ctx || !traceCanvasRef.current) return;
+        const rect = traceCanvasRef.current.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
@@ -620,7 +619,7 @@ function ABCKingdom() {
     };
 
     const stopDrawing = () => { setIsTracing(false); };
-
+    
     const resetTracingCanvas = () => {
         const canvas = traceCanvasRef.current;
         const ctx = canvas?.getContext('2d');
@@ -1667,7 +1666,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const startDrawing = (e: any) => {
         const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
-        const rect = canvasRef.current!.getBoundingClientRect();
+        const rect = traceCanvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         if(tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
@@ -2096,4 +2095,3 @@ export default function JuniorAcademyPage() {
     </div>
   );
 }
-
