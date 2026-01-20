@@ -8,6 +8,7 @@ import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, update
 import { 
   MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, Loader2 
 } from 'lucide-react';
+import { format } from 'date-fns';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
