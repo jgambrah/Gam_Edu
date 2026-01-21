@@ -1288,6 +1288,6 @@ export interface AiInsight {
   classTrends: string; // General observation
   teachingStrategy: string; // Advice for the teacher
 }
-
+    
 
     
