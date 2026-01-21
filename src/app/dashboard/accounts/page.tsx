@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -584,6 +585,8 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                     timestamp: serverTimestamp(),
                     description: `Payment for: ${record.description} (${record.type})`,
                     schoolId: schoolId,
+                    type: 'Payment', // New field
+                    status: 'Completed', // New field
                 });
                 
                 batch.update(doc(firestore, 'tills', activeTill.id), {

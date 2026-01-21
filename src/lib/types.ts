@@ -1,4 +1,5 @@
 
+
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -977,6 +978,8 @@ export interface LearningMaterial {
 
 // --- CASH TILL MANAGEMENT ---
 export type TillStatus = 'Open' | 'PendingApproval' | 'Closed';
+export type TillTransactionType = 'Payment' | 'Adjustment';
+export type TillTransactionStatus = 'Completed' | 'Pending Adjustment' | 'Rejected';
 
 export type Till = {
     id: string;
@@ -998,13 +1001,17 @@ export type Till = {
 export type TillTransaction = {
     id: string;
     tillId: string;
-    financialRecordId: string; // For POS, this could be the item ID
-    studentId?: string; // For fees
-    studentName?: string; // For fees
+    financialRecordId?: string; 
+    studentId?: string; 
+    studentName?: string; 
     amount: number;
     timestamp: any;
-    description: string; // For POS, "Sale of: Book"
+    description: string; 
+    type: TillTransactionType;
+    status: TillTransactionStatus;
+    schoolId?: string;
 };
+
 
 // --- BANK TRANSACTION APPROVAL ---
 export const bankTransactionSchema = z.object({
