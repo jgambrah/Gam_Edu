@@ -10,7 +10,7 @@ import {
   PlusCircle, FilePen, BookOpen, Calendar,
   ClipboardCheck, Bell, FileText,
   CreditCard, DollarSign, Receipt, Package, Award,
-  Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight
+  Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -20,7 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
-// --- COMPONENTS ---
+// --- Reusable Components ---
 
 function StatCard({ title, value, icon: Icon, link, isLoading, badge, trend }: any) {
   return (
@@ -87,8 +87,74 @@ function ActivityItem({ title, description, time, icon: Icon, iconColor = "text-
   );
 }
 
-// --- MAIN COMPONENT ---
 
+// --- NEW TEACHER DASHBOARD COMPONENT ---
+function TeacherDashboard() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
+
+  // 1. Fetch teacher's classes
+  const teacherClassesQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null, [firestore, user, schoolId]);
+  const { data: teacherClasses, isLoading: loadingClasses } = useCollection(teacherClassesQuery);
+
+  // 2. Fetch students in those classes
+  const teacherClassIds = useMemo(() => teacherClasses?.map((c: any) => c.id) || [], [teacherClasses]);
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && teacherClassIds.length > 0) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', 'in', teacherClassIds)) : null, [firestore, teacherClassIds.join(','), schoolId]);
+  const { data: students, isLoading: loadingStudents } = useCollection(studentsQuery);
+
+  // 3. Fetch upcoming assignments
+  const assignmentsQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId), orderBy('dueDate', 'asc'), limit(5)) : null, [firestore, user, schoolId]);
+  const { data: assignments, isLoading: loadingAssignments } = useCollection(assignmentsQuery);
+
+  const isLoading = loadingClasses || loadingStudents || loadingAssignments;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="My Students" value={students?.length ?? 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} />
+        <StatCard title="My Classes" value={teacherClasses?.length ?? 0} icon={School} link="/dashboard/academics" isLoading={isLoading} />
+        <StatCard title="Assignments Due" value={assignments?.filter(a => new Date((a as any).dueDate.toDate()) > new Date()).length ?? 0} icon={ClipboardCheck} link="/dashboard/assignments" isLoading={isLoading} />
+        <StatCard title="Announcements" value={"View"} icon={Megaphone} link="/dashboard/announcements" isLoading={false} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-1">
+          <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <QuickActionCard title="New Assignment" icon={FilePen} link="/dashboard/assignments" />
+            <QuickActionCard title="Take Attendance" icon={CalendarCheck} link="/dashboard/attendance" />
+            <QuickActionCard title="Enter Grades" icon={BookOpen} link="/dashboard/academics/gradebook" />
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader><CardTitle>Upcoming Deadlines</CardTitle></CardHeader>
+          <CardContent>
+            {loadingAssignments ? <p>Loading...</p> : assignments && assignments.length > 0 ? (
+              <ul className="space-y-3">
+                {assignments.map((a:any) => (
+                  <li key={a.id} className="flex justify-between items-center p-2 bg-slate-50 rounded-md">
+                    <div>
+                      <p className="font-semibold text-sm">{a.title}</p>
+                      <p className="text-xs text-muted-foreground">{(teacherClasses as any)?.find((c: any) => c.id === a.classId)?.name || 'Unknown Class'}</p>
+                    </div>
+                    <Badge variant={new Date(a.dueDate.toDate()) < new Date() ? "destructive" : "secondary"}>
+                      Due {formatDistanceToNow(a.dueDate.toDate(), { addSuffix: true })}
+                    </Badge>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="text-center text-sm text-muted-foreground py-4">No upcoming deadlines.</p>}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+
+// --- MAIN COMPONENT ---
 export default function DashboardClient() {
   const { user, isUserLoading } = useUser();
   const { role, profile, loading: isRoleLoading } = useRole();
@@ -152,23 +218,23 @@ export default function DashboardClient() {
 
   const recentActivity = useMemo(() => {
     const activities = [];
-    if (students) activities.push(...students.map(s => ({ type: 'Student', title: 'New Student', description: `${s.firstName} ${s.lastName}`, time: s.createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
-    if (announcements) activities.push(...announcements.map(a => ({ type: 'News', title: 'Announcement', description: a.title, time: a.publishedAt, icon: Bell, iconColor: 'text-purple-600' })));
+    if (students) activities.push(...students.map(s => ({ type: 'Student', title: 'New Student', description: `${(s as any).firstName} ${(s as any).lastName}`, time: (s as any).createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
+    if (announcements) activities.push(...announcements.map(a => ({ type: 'News', title: 'Announcement', description: (a as any).title, time: (a as any).publishedAt, icon: Bell, iconColor: 'text-purple-600' })));
     if (financialRecords) activities.push(...financialRecords.map(p => ({ type: 'Payment', title: 'Payment', description: `GH₵${p.amountPaid}`, time: p.createdAt, icon: CheckCircle2, iconColor: 'text-emerald-600' })));
     
     return activities.sort((a,b) => (b.time?.seconds || 0) - (a.time?.seconds || 0)).slice(0, 5);
   }, [students, announcements, financialRecords]);
 
   const stats = useMemo(() => {
-    const pendingLeave = leaveRequests?.filter(l => l.status === 'Pending').length || 0;
+    const pendingLeave = leaveRequests?.filter(l => (l as any).status === 'Pending').length || 0;
     const todayAssignments = assignments?.filter(a => {
-      const dueDate = a.dueDate?.toDate?.();
+      const dueDate = (a as any).dueDate?.toDate?.();
       const today = new Date();
       return dueDate && dueDate.toDateString() === today.toDateString();
     }).length || 0;
-    const totalBooks = libraryItems?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
-    const availableBooks = libraryItems?.reduce((sum, item) => item.status === 'Available' ? sum + (item.quantity || 0) : sum, 0) || 0;
-    const overdueBooks = libraryItems?.filter(l => l.status === 'Borrowed' && l.dueDate?.toDate?.() < new Date()).length || 0;
+    const totalBooks = libraryItems?.reduce((sum, item) => sum + ((item as any).quantity || 0), 0) || 0;
+    const availableBooks = libraryItems?.reduce((sum, item) => (item as any).status === 'Available' ? sum + ((item as any).quantity || 0) : sum, 0) || 0;
+    const overdueBooks = libraryItems?.filter(l => (l as any).status === 'Borrowed' && (l as any).dueDate?.toDate?.() < new Date()).length || 0;
     
     return {
       pendingLeave,
@@ -182,15 +248,15 @@ export default function DashboardClient() {
   const enrollmentData = useMemo(() => {
     if (!classes || !students) return [];
     return classes.map(c => ({
-      name: c.name,
-      students: students.filter(s => s.classId === c.id).length
+      name: (c as any).name,
+      students: students.filter(s => (s as any).classId === (c as any).id).length
     })).sort((a, b) => b.students - a.students);
   }, [classes, students]);
 
   const staffByRole = useMemo(() => {
     if (!staff) return [];
     const roles = staff.reduce((acc, s) => {
-      acc[s.role] = (acc[s.role] || 0) + 1;
+      acc[(s as any).role] = (acc[(s as any).role] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     return Object.entries(roles).map(([name, value]) => ({ name, value }));
@@ -261,6 +327,10 @@ export default function DashboardClient() {
 
   // --- 4. RENDER BY ROLE ---
 
+  if (isTeacher) {
+    return <TeacherDashboard />;
+  }
+
   if (isAdminOrDirector) {
       return (
         <div className="space-y-6">
@@ -310,7 +380,7 @@ export default function DashboardClient() {
       );
   }
 
-  // --- DEFAULT RENDER (Students/Parents/Teachers - Simplified for brevity) ---
+  // --- DEFAULT RENDER (Students/Parents/etc.) ---
   return (
     <div className="space-y-6">
         <h1 className="text-3xl font-bold">Welcome, {profile?.firstName || 'User'}!</h1>
