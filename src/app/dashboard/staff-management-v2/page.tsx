@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc, deleteField } from 'firebase/firestore';
 import { UserRole, STAFF_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
@@ -19,6 +19,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { UserCog, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { StudentSearchInput } from '@/components/student-search';
+import { searchStudent } from '@/lib/student-utils';
 
 // --- TYPE DEFINITIONS ---
 type StaffMember = {
@@ -28,7 +31,15 @@ type StaffMember = {
   lastName: string;
   email: string;
   role: UserRole;
-  schoolId?: string;
+  schoolId?: string; // New Field
+};
+
+type Student = {
+    id: string;
+    uid: string;
+    firstName: string;
+    lastName: string;
+    schoolId?: string; // Also expect schoolId here
 };
 
 // --- MAIN PAGE COMPONENT ---
@@ -56,13 +67,17 @@ export default function StaffManagementPage() {
     
     setIsLoadingData(true);
     try {
-      const q = query(collection(firestore, 'staff'), where('schoolId', '==', adminSchoolId));
+      const q = query(
+        collection(firestore, 'staff'), 
+        where('schoolId', '==', adminSchoolId),
+        where('role', 'in', STAFF_ROLES)
+      );
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as StaffMember[];
       setStaff(data);
     } catch (err: any) {
       console.error("Error loading staff data:", err);
-      toast({ variant: 'destructive', title: "Error", description: "Failed to load staff data." });
+      toast({ variant: 'destructive', title: "Error", description: err.message });
     } finally {
       setIsLoadingData(false);
     }
