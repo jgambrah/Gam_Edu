@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { useAuth, useFirestore, useUser } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -103,7 +104,7 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
     console.log('📋 Form values:', values);
     console.log('👤 User:', user);
     console.log('🏫 School ID:', schoolId);
-  
+
     if (!user || !schoolId) {
       console.log('❌ Missing user or schoolId');
       return;
@@ -274,10 +275,23 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
             />
           </div>
         </ScrollArea>
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Lesson Plan
-        </Button>
+        <div className="flex gap-2">
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save Lesson Plan
+            </Button>
+            <Button 
+              type="button" 
+              variant="secondary"
+              onClick={() => {
+                console.log('Test button clicked');
+                console.log('Form values:', form.getValues());
+                console.log('Form errors:', form.formState.errors);
+              }}
+            >
+              Test Debug
+            </Button>
+        </div>
       </form>
     </Form>
   );
