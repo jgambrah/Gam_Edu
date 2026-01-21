@@ -113,8 +113,13 @@ service cloud.firestore {
     match /quizzes/{quizId} { allow read, list: if isSignedIn(); allow create: if isStaff() && request.resource.data.teacherId == request.auth.uid; allow update, delete: if isTeacher() && get(/databases/$(database)/documents/quizzes/$(quizId)).data.teacherId == request.auth.uid; match /attempts/{attemptId} { allow read, list: if isTeacher() || isAdmin() || request.auth.uid == resource.data.studentId; allow create: if isStudent(); } }
     match /quizAttempts/{attemptId} { allow create: if isSignedIn(); allow read, list: if isSignedIn(); allow update, delete: if isTeacher() || isAdmin(); }
     match /assessments/{assessmentId} { allow read, list: if isSignedIn(); allow create, update: if isTeacher() || isStaff() || isAdmin(); allow delete: if isAdmin(); }
-    // ✅ FIX: More secure rule for lesson plans
-    match /lesson-plans/{planId} { allow read, list: if isTeacher() || isAdmin(); allow create: if isTeacher() && request.resource.data.teacherId == request.auth.uid; allow update, delete: if isTeacher() && resource.data.teacherId == request.auth.uid; }
+    
+    match /lesson-plans/{planId} { 
+      allow read, list: if isTeacher() || isAdmin();
+      allow create: if (isTeacher() && request.resource.data.teacherId == request.auth.uid) || isAdmin();
+      allow update, delete: if (isTeacher() && resource.data.teacherId == request.auth.uid) || isAdmin();
+    }
+
     match /learning_materials/{materialId} { allow read, list: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /behavioral_records/{recordId} { allow read, write, list: if isSignedIn(); }
 
