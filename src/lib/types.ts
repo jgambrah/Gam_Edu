@@ -25,6 +25,10 @@ export const ALL_ROLES: UserRole[] = [
   'Transport Staff',
 ];
 
+export const STAFF_ROLES: UserRole[] = ALL_ROLES.filter(
+  (role) => role !== 'Student' && role !== 'Parent'
+);
+
 export type NavItem = {
   path: string;
   title: string;

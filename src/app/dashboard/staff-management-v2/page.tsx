@@ -4,9 +4,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from 'firebase/firestore';
-import { UserRole, ALL_ROLES } from '@/lib/types';
+import { UserRole, STAFF_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
-import { useCurrentSchool } from '@/hooks/use-current-school';
+import { useCurrentSchool } from '@/hooks/use-current-school'; 
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -105,15 +105,8 @@ export default function StaffManagementPage() {
       
       if ('error' in result) throw new Error(result.error);
 
-      await setDoc(doc(firestore, 'staff', result.uid), {
-        uid: result.uid,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        role: newStaffRole,
-        schoolId: adminSchoolId,
-        createdAt: serverTimestamp()
-      });
+      // The createNewUser action already creates the document in the correct collection ('staff' or 'parents').
+      // This explicit setDoc is redundant and was causing the bug. It is now removed.
 
       toast({ title: "Success", description: `Staff member ${values.firstName} added.` });
       setIsAddOpen(false);
@@ -177,22 +170,22 @@ export default function StaffManagementPage() {
     <div className="space-y-6 p-6">
       <Card className="border-t-4 border-t-purple-500 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <UserCog className="h-6 w-6 text-purple-500"/> Staff Management
-            </CardTitle>
-            <CardDescription>
-                {adminSchoolId ? `Total Staff: ${staff.length}` : "Loading School Data..."}
-            </CardDescription>
-          </div>
-          <div className="flex gap-2">
-             <Button variant="outline" onClick={loadData} disabled={overallLoading || !adminSchoolId}>
-                <RefreshCw className={`h-4 w-4 mr-2 ${overallLoading ? 'animate-spin' : ''}`}/> Refresh
-            </Button>
-            <Button onClick={() => setIsAddOpen(true)} className="bg-purple-600 hover:bg-purple-700" disabled={!adminSchoolId}>
-              <UserPlus className="h-4 w-4 mr-2"/> Add Staff
-            </Button>
-          </div>
+            <div>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                    <UserCog className="h-6 w-6 text-purple-500"/> Staff Management
+                </CardTitle>
+                <CardDescription>
+                    {adminSchoolId ? `Total Staff: ${staff.length}` : "Loading School Data..."}
+                </CardDescription>
+            </div>
+            <div className="flex gap-2">
+                 <Button variant="outline" onClick={loadData} disabled={overallLoading || !adminSchoolId}>
+                    <RefreshCw className={`h-4 w-4 mr-2 ${overallLoading ? 'animate-spin' : ''}`}/> Refresh
+                </Button>
+                <Button onClick={() => setIsAddOpen(true)} className="bg-purple-600 hover:bg-purple-700" disabled={!adminSchoolId}>
+                    <UserPlus className="h-4 w-4 mr-2"/> Add Staff
+                </Button>
+            </div>
         </CardHeader>
         
         <CardContent className="space-y-4">
@@ -210,7 +203,7 @@ export default function StaffManagementPage() {
             <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
           ) : filteredStaff.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                {adminSchoolId ? "No staff found." : "Loading..."}
+                {adminSchoolId ? "No staff found for this school." : "Loading..."}
             </div>
           ) : (
             <div className="rounded-md border">
@@ -258,7 +251,7 @@ export default function StaffManagementPage() {
                     <Label>Role</Label>
                     <Select value={newStaffRole} onValueChange={(value) => setNewStaffRole(value as UserRole)}>
                         <SelectTrigger><SelectValue placeholder="Assign a role" /></SelectTrigger>
-                        <SelectContent>{ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+                        <SelectContent>{STAFF_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
                 <DialogFooter>
@@ -283,7 +276,7 @@ export default function StaffManagementPage() {
                         <Label>Role</Label>
                         <Select name="role" defaultValue={editingStaff.role}>
                             <SelectTrigger><SelectValue/></SelectTrigger>
-                            <SelectContent>{ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+                            <SelectContent>{STAFF_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                     <DialogFooter>
