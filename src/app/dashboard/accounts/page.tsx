@@ -42,6 +42,7 @@ import { GenerateReceipt } from './generate-receipt';
 import { DatePickerWithRange } from '@/components/ui/date-picker-with-range';
 import { DateRange } from 'react-day-picker';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 
 // --- Types ---
@@ -211,7 +212,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
         if(!firestore || !schoolId) return;
         const fetchRate = async () => {
             const docId = chargeType === 'Canteen' ? 'canteen' : 'transport';
-            const settingsRef = doc(firestore, `schoolSettings/${schoolId}/rates`, docId);
+            const settingsRef = doc(firestore, 'schoolSettings', schoolId, 'rates', docId);
             const snap = await getDoc(settingsRef);
             if(snap.exists()) {
                 setRate(Number(snap.data().dailyRate) || 0);
