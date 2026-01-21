@@ -105,10 +105,10 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
     try {
       await addDoc(collection(firestore, 'lesson-plans'), {
         ...values,
-        date: Timestamp.fromDate(values.date),
+        date: values.date, // Using the Date object directly
         teacherId: user.uid,
         schoolId: schoolId,
-        createdAt: serverTimestamp(),
+        createdAt: new Date(), // Using client-side timestamp
       });
 
       toast({
