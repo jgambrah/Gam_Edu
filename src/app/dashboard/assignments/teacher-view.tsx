@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { Assignment, Quiz } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
@@ -77,12 +77,10 @@ export default function TeacherAssignmentsView() {
   const [isQuizFormOpen, setQuizFormOpen] = useState(false);
 
   const assignmentsQuery = useMemoFirebase(
-    () => (user && schoolId) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
+    () => (user && schoolId) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null,
     [user, firestore, schoolId]
   );
   const { data: assignments, isLoading } = useCollection<Assignment>(assignmentsQuery);
-
-  const sortedAssignments = assignments?.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
 
   return (
     <div className="space-y-6">
@@ -125,9 +123,9 @@ export default function TeacherAssignmentsView() {
                   <Skeleton className="h-24 w-full" />
                   <Skeleton className="h-24 w-full" />
                 </div>
-              ) : sortedAssignments && sortedAssignments.length > 0 ? (
+              ) : assignments && assignments.length > 0 ? (
                 <div className="space-y-4">
-                  {sortedAssignments.map((assignment) => (
+                  {assignments.map((assignment) => (
                     <AssignmentSubmissionsList key={assignment.id} assignment={assignment} />
                   ))}
                 </div>
