@@ -27,7 +27,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { useAuth, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { lessonPlanSchema } from '@/lib/types';
 import { CalendarIcon, Loader2, Wand2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -105,6 +105,7 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
     try {
       await addDoc(collection(firestore, 'lesson-plans'), {
         ...values,
+        date: Timestamp.fromDate(values.date), // Convert JS Date to Firestore Timestamp
         teacherId: user.uid,
         schoolId: schoolId,
         createdAt: serverTimestamp(),

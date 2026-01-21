@@ -44,7 +44,7 @@ export default function LessonPlanningPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
-  const [isFormOpen, setFormOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
@@ -105,7 +105,7 @@ export default function LessonPlanningPage() {
             </CardTitle>
             <CardDescription>Create and manage daily lesson plans for your classes.</CardDescription>
           </div>
-          <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
+          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
               <Button disabled={isLoading || !schoolId}>
                 {(isLoading) ? (
@@ -121,7 +121,7 @@ export default function LessonPlanningPage() {
                 <DialogTitle>Create New Lesson Plan</DialogTitle>
                 <DialogDescription>Fill out the form below to create a new lesson plan.</DialogDescription>
               </DialogHeader>
-              <LessonPlanForm setOpen={setFormOpen} classes={classes || []} />
+              <LessonPlanForm setOpen={setIsFormOpen} classes={classes || []} />
             </DialogContent>
           </Dialog>
         </CardHeader>
