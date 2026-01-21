@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, Timestamp } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, Timestamp, arrayUnion } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, DollarSign, HandCoins, Receipt, AlertCircle, Eye, Wallet, CheckSquare, Coffee, Printer } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, DollarSign, HandCoins, Receipt, AlertCircle, Eye, Wallet, CheckSquare, Coffee, Printer, Wrench } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -47,6 +47,119 @@ import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatem
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
 });
+
+const correctionSchema = z.object({
+  amount: z.coerce.number().min(0.01, "Correction amount must be positive."),
+  reason: z.string().min(1, "A reason is required for the correction."),
+  isCashCorrection: z.boolean().default(false),
+});
+
+// --- SUB-COMPONENT: Correction Dialog ---
+function CorrectPaymentDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { schoolId } = useCurrentSchool();
+
+    const form = useForm<z.infer<typeof correctionSchema>>({
+        resolver: zodResolver(correctionSchema),
+        defaultValues: { amount: 0, reason: '', isCashCorrection: false }
+    });
+
+    async function onSubmit(values: z.infer<typeof correctionSchema>) {
+        if (!firestore || !user || !schoolId) return;
+
+        if (values.amount > record.amountPaid) {
+            form.setError('amount', { message: `Cannot reverse more than the GHS ${record.amountPaid.toFixed(2)} paid.`});
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const batch = writeBatch(firestore);
+            const recordRef = doc(firestore, 'financialRecords', record.id);
+            
+            const newAmountPaid = (record.amountPaid || 0) - values.amount;
+            const newBalance = record.billedAmount - newAmountPaid - (record.waiverAmount || 0);
+            const newStatus = newBalance <= 0 ? 'Paid' : (isPast(record.dueDate.toDate()) ? 'Overdue' : 'Unpaid');
+            
+            const correctionEntry = {
+                amount: -values.amount,
+                reason: values.reason,
+                date: serverTimestamp(),
+                correctedBy: user.displayName || user.email,
+            };
+
+            batch.update(recordRef, {
+                amountPaid: increment(-values.amount),
+                status: newStatus,
+                corrections: arrayUnion(correctionEntry),
+            });
+
+            // If it's a cash reversal, adjust the till
+            if (values.isCashCorrection) {
+                const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'), where('schoolId', '==', schoolId));
+                const tillSnapshot = await getDocs(tillQuery);
+                if (tillSnapshot.empty) {
+                    throw new Error("You do not have an open till. Cash corrections cannot be processed.");
+                }
+                const activeTill = tillSnapshot.docs[0];
+                const transactionRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
+                
+                batch.set(transactionRef, {
+                    tillId: activeTill.id,
+                    financialRecordId: record.id,
+                    studentId: record.studentId,
+                    studentName: record.studentName,
+                    amount: -values.amount, // Negative amount for reversal
+                    timestamp: serverTimestamp(),
+                    description: `Correction: ${values.reason}`,
+                    schoolId: schoolId,
+                });
+            }
+
+            await batch.commit();
+
+            toast({ title: 'Payment Corrected', description: `GHS ${values.amount.toFixed(2)} has been reversed.` });
+            onUpdate();
+            setOpen(false);
+        } catch (e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Error', description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Correct/Reverse a Payment</DialogTitle>
+                    <DialogDescription>This will reduce the amount paid on this bill.</DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <div className="p-4 border rounded-lg bg-red-50 text-red-800">
+                            <p>Current Amount Paid: <strong>GH₵{record.amountPaid.toFixed(2)}</strong></p>
+                        </div>
+                        <FormField control={form.control} name="amount" render={({ field }) => (
+                            <FormItem><FormLabel>Amount to Reverse (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <FormField control={form.control} name="reason" render={({ field }) => (
+                            <FormItem><FormLabel>Reason for Correction</FormLabel><FormControl><Textarea {...field} placeholder="e.g., Wrong amount entered initially."/></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <FormField control={form.control} name="isCashCorrection" render={({ field }) => (
+                            <FormItem className="flex items-center gap-2 border p-3 rounded-md bg-slate-50"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="!mt-0">This was a cash payment (adjust till)</FormLabel></FormItem>
+                        )}/>
+                        <Button type="submit" variant="destructive" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Reversal</Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 
 // --- SUB-COMPONENT: Transaction Detail Modal ---
 function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
@@ -719,7 +832,7 @@ export default function AccountsPage() {
     
     const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver', record: FinancialRecord | null }>({ type: 'payment', record: null });
+    const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'correction', record: FinancialRecord | null }>({ type: 'payment', record: null });
     const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
     const [transactionDetail, setTransactionDetail] = useState<FinancialRecord | null>(null);
     const [studentDateRange, setStudentDateRange] = useState<Record<string, DateRange | undefined>>({});
@@ -825,7 +938,7 @@ export default function AccountsPage() {
       );
     }
   
-    const handleOpenDialog = (type: 'payment' | 'waiver', record: FinancialRecord) => setDialogState({ type, record });
+    const handleOpenDialog = (type: 'payment' | 'waiver' | 'correction', record: FinancialRecord) => setDialogState({ type, record });
     const handleCloseDialog = () => setDialogState({ type: 'payment', record: null });
     const handleOpenEditDialog = (record: FinancialRecord) => setEditingRecord(record);
     const handleCloseEditDialog = () => setEditingRecord(null);
@@ -920,6 +1033,7 @@ export default function AccountsPage() {
                                                                   <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
                                                                   <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
                                                                   <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver</DropdownMenuItem>
+                                                                  <DropdownMenuItem onClick={() => handleOpenDialog('correction', rec)} className="text-red-600 focus:bg-red-50 focus:text-red-700"><Wrench className="mr-2 h-4 w-4"/> Correct/Reverse Payment</DropdownMenuItem>
                                                               </DropdownMenuContent>
                                                           </DropdownMenu>
                                                       </div>
@@ -961,6 +1075,14 @@ export default function AccountsPage() {
               onUpdate={forceRefetch} 
           />
         )}
+         {dialogState.record && dialogState.type === 'correction' && (
+          <CorrectPaymentDialog
+              record={dialogState.record}
+              open={true}
+              setOpen={handleCloseDialog}
+              onUpdate={forceRefetch}
+          />
+        )}
         {editingRecord && (
           <EditRecordDialog 
               record={editingRecord} 
@@ -979,5 +1101,6 @@ export default function AccountsPage() {
       </div>
     );
   }
+    
 
     
