@@ -468,7 +468,7 @@ export type PerformanceReview = z.infer<typeof performanceReviewSchema> & {
 // Financial Schemas
 export const financialRecordSchema = z.object({
   studentId: z.string().min(1, "A student must be selected."),
-  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other']),
+  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal']),
   description: z.string().min(1, "Description is required."),
   billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
   dueDate: z.date({ required_error: "Due date is required." }),
@@ -500,13 +500,13 @@ export type FinancialRecord = {
     studentId: string;
     studentName: string;
     classId: string;
-    type: 'Tuition Fee' | 'Library Fine' | 'Lab Fee' | 'Sports Fee' | 'Canteen Fee' | 'Transport Fee' | 'Other';
+    type: 'Tuition Fee' | 'Library Fine' | 'Lab Fee' | 'Sports Fee' | 'Canteen Fee' | 'Transport Fee' | 'Other' | 'Correction / Reversal';
     description: string;
     billedAmount: number;
     amountPaid: number;
     waiverAmount?: number;
     waiverReason?: string;
-    status: 'Paid' | 'Unpaid' | 'Overdue';
+    status: 'Paid' | 'Unpaid' | 'Overdue' | 'Pending Reversal' | 'Rejected Reversal';
     dueDate: any;
     createdAt: any;
     academicYear?: string;
@@ -1295,5 +1295,4 @@ export interface AiInsight {
   teachingStrategy: string; // Advice for the teacher
 }
     
-
     
