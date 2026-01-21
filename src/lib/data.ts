@@ -328,7 +328,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/financials',
     title: 'Financials',
     icon: Banknote,
-    roles: ['Director', 'Administrator', 'Accountant', 'Teacher', 'Librarian', 'Cook'],
+    roles: ['Director', 'Administrator', 'Accountant', 'Librarian', 'Cook'],
      subItems: [
       {
         path: '/dashboard/accounts',
