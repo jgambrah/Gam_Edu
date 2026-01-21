@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
@@ -71,7 +70,19 @@ export async function createNewUser(
     }
     
     // 2. Firestore Profile Creation
-    const collectionName = role === 'Student' ? 'students' : 'staff';
+    let collectionName: string;
+    switch (role) {
+        case 'Student':
+            collectionName = 'students';
+            break;
+        case 'Parent':
+            collectionName = 'parents';
+            break;
+        default:
+            collectionName = 'staff';
+            break;
+    }
+    
     const profileData: any = {
         uid: userRecord.uid,
         email,
