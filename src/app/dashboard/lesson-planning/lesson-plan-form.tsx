@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { useAuth, useFirestore } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -46,7 +46,7 @@ type LessonPlanFormProps = {
 
 export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,20 +100,12 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
   };
 
   async function onSubmit(values: z.infer<typeof lessonPlanSchema>) {
-    console.log('🟢 Form submitted!');
-    console.log('📋 Form values:', values);
-    console.log('👤 User:', user);
-    console.log('🏫 School ID:', schoolId);
-
     if (!user || !schoolId) {
-      console.log('❌ Missing user or schoolId');
       return;
     }
     
     setIsSubmitting(true);
     try {
-      console.log('💾 Attempting to save...');
-      
       await addDoc(collection(firestore, 'lesson-plans'), {
         ...values,
         teacherId: user.uid,
@@ -121,8 +113,6 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
         createdAt: new Date(),
         date: values.date,
       });
-
-      console.log('✅ Save successful!');
       
       toast({
         title: 'Lesson Plan Saved',
@@ -131,7 +121,7 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
       form.reset();
       setOpen(false);
     } catch (error) {
-      console.error('❌ Error creating lesson plan:', error);
+      console.error('Error creating lesson plan:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -275,23 +265,10 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
             />
           </div>
         </ScrollArea>
-        <div className="flex gap-2">
-            <Button type="submit" disabled={isSubmitting} className="w-full">
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Lesson Plan
-            </Button>
-            <Button 
-              type="button" 
-              variant="secondary"
-              onClick={() => {
-                console.log('Test button clicked');
-                console.log('Form values:', form.getValues());
-                console.log('Form errors:', form.formState.errors);
-              }}
-            >
-              Test Debug
-            </Button>
-        </div>
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Save Lesson Plan
+        </Button>
       </form>
     </Form>
   );
