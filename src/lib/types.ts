@@ -224,13 +224,15 @@ export type Resource = z.infer<typeof resourceSchema> & {
 
 // Lesson Planning Schemas
 export const lessonPlanSchema = z.object({
-    classId: z.string().min(1, 'Class is required.'),
-    date: z.date({ required_error: 'A date for the lesson is required.'}),
-    topic: z.string().min(1, 'Topic is required.'),
-    objectives: z.string().min(1, 'Learning objectives are required.'),
-    activities: z.string().min(1, 'Activities are required.'),
-    materials: z.string().min(1, 'Materials and resources are required.'),
-    notes: z.string().optional(),
+  classId: z.string().min(1, "Please select a class"),
+  date: z.date({
+    required_error: "Please select a date",
+  }),
+  topic: z.string().min(1, "Topic is required"),
+  objectives: z.string().min(1, "Objectives are required"),
+  activities: z.string().min(1, "Activities are required"),
+  materials: z.string().min(1, "Materials are required"),
+  notes: z.string().optional(),
 });
 
 export type LessonPlan = z.infer<typeof lessonPlanSchema> & {
