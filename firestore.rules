@@ -116,15 +116,8 @@ service cloud.firestore {
     
     match /lesson-plans/{planId} {
       allow read, list: if isSignedIn();
-      
-      // An Admin can do anything to any lesson plan
-      allow write: if isAdmin();
-      
-      // A Teacher can create a plan for themselves
-      allow create: if isTeacher() && request.resource.data.teacherId == request.auth.uid;
-      
-      // A Teacher can update or delete their own plans
-      allow update, delete: if isTeacher() && resource.data.teacherId == request.auth.uid;
+      allow create: if (isStaff() && request.resource.data.teacherId == request.auth.uid) || isAdmin();
+      allow update, delete: if isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid);
     }
 
     match /learning_materials/{materialId} { allow read, list: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
