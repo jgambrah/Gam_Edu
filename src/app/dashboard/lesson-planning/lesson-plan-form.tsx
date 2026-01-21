@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useUser } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -100,17 +99,30 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
   };
 
   async function onSubmit(values: z.infer<typeof lessonPlanSchema>) {
-    if (!user || !schoolId) return;
+    console.log('🟢 Form submitted!');
+    console.log('📋 Form values:', values);
+    console.log('👤 User:', user);
+    console.log('🏫 School ID:', schoolId);
+  
+    if (!user || !schoolId) {
+      console.log('❌ Missing user or schoolId');
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
+      console.log('💾 Attempting to save...');
+      
       await addDoc(collection(firestore, 'lesson-plans'), {
         ...values,
-        date: values.date, // Using the Date object directly
         teacherId: user.uid,
         schoolId: schoolId,
-        createdAt: new Date(), // Using client-side timestamp
+        createdAt: new Date(),
+        date: values.date,
       });
 
+      console.log('✅ Save successful!');
+      
       toast({
         title: 'Lesson Plan Saved',
         description: `Your plan for "${values.topic}" has been saved.`,
@@ -118,7 +130,7 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
       form.reset();
       setOpen(false);
     } catch (error) {
-      console.error('Error creating lesson plan:', error);
+      console.error('❌ Error creating lesson plan:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
