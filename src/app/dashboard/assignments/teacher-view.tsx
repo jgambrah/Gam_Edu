@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import { Assignment, Quiz } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
@@ -77,10 +77,15 @@ export default function TeacherAssignmentsView() {
   const [isQuizFormOpen, setQuizFormOpen] = useState(false);
 
   const assignmentsQuery = useMemoFirebase(
-    () => (user && schoolId) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null,
+    () => (user && schoolId) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
     [user, firestore, schoolId]
   );
   const { data: assignments, isLoading } = useCollection<Assignment>(assignmentsQuery);
+
+  const sortedAssignments = useMemo(() => {
+    if (!assignments) return [];
+    return [...assignments].sort((a, b) => (b.createdAt?.toDate()?.getTime() || 0) - (a.createdAt?.toDate()?.getTime() || 0));
+  }, [assignments]);
 
   return (
     <div className="space-y-6">
@@ -123,9 +128,9 @@ export default function TeacherAssignmentsView() {
                   <Skeleton className="h-24 w-full" />
                   <Skeleton className="h-24 w-full" />
                 </div>
-              ) : assignments && assignments.length > 0 ? (
+              ) : sortedAssignments && sortedAssignments.length > 0 ? (
                 <div className="space-y-4">
-                  {assignments.map((assignment) => (
+                  {sortedAssignments.map((assignment) => (
                     <AssignmentSubmissionsList key={assignment.id} assignment={assignment} />
                   ))}
                 </div>
