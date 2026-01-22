@@ -32,6 +32,7 @@ export async function generateJuniorStory(topic: string, wordCount: number = 100
     `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash-latest',
       prompt: prompt,
       output: {
         schema: StorySchema
@@ -67,6 +68,7 @@ export async function generateJuniorScience(topic: string) {
     `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash-latest',
       prompt: prompt,
       output: {
         schema: ScienceFactSchema
@@ -107,6 +109,7 @@ export async function generatePhonicsChallenge(level: 'easy' | 'medium' | 'hard'
     `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash-latest',
       prompt: prompt,
       output: {
         schema: PhonicsChallengeSchema
@@ -148,6 +151,7 @@ export async function generateWordDetails(word: string) {
     `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash-latest',
       prompt: prompt,
       output: {
         schema: WordDetailsSchema,

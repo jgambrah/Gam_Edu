@@ -495,18 +495,18 @@ function ABCKingdom() {
         }
     }, [selectedLetter, activeTab]);
 
-    const startTracing = (e: any) => {
+    const startDrawing = (e: any) => {
         const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
         const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
-        setIsTracing(true);
+        setIsDrawing(true);
     };
 
     const draw = (e: any) => {
-        if (!isTracing) return;
+        if (!isDrawing) return;
         const canvas = canvasRef.current; if (!canvas) return;
         const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
@@ -515,10 +515,8 @@ function ABCKingdom() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopTracing = () => {
-        setIsTracing(false);
-    };
-
+    const stopDrawing = () => { setIsDrawing(false); };
+    
     const resetTracingCanvas = () => {
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
@@ -601,13 +599,13 @@ function ABCKingdom() {
                                         <canvas 
                                             ref={canvasRef} width={400} height={400} 
                                             className="touch-none cursor-crosshair"
-                                            onMouseDown={startTracing}
+                                            onMouseDown={startDrawing}
                                             onMouseMove={draw}
-                                            onMouseUp={stopTracing}
-                                            onMouseLeave={stopTracing}
-                                            onTouchStart={startTracing}
+                                            onMouseUp={stopDrawing}
+                                            onMouseLeave={stopDrawing}
+                                            onTouchStart={startDrawing}
                                             onTouchMove={draw}
-                                            onTouchEnd={stopTracing}
+                                            onTouchEnd={stopDrawing}
                                         />
                                         <Button 
                                             variant="ghost" size="sm" 
