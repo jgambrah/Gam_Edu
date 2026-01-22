@@ -285,7 +285,6 @@ function PhonicsForest() {
         const allSounds = soundGroups.flatMap(g => g.sounds);
         const targetSound = allSounds[Math.floor(Math.random() * allSounds.length)];
         
-        // Ensure options don't include the target, then add it back to shuffle
         let shuffledOptions = allSounds.filter(s => s !== targetSound).sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffledOptions.push(targetSound);
         
@@ -994,11 +993,10 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 }
 
 // --- 6. SCIENCE WORLD (FIXED: Journal & Matter Lab) ---
-function ScienceWorld({ canEdit }: { canEdit: boolean }) {
+function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
-    const { schoolId } = useCurrentSchool();
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
@@ -1047,7 +1045,29 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     }, [dbMaterials, selectedMaterial]);
 
-    // --- 4. MATTER LAB LOGIC ---
+    // --- 4. SORTER LOGIC ---
+    const currentItem = dbSorterItems ? dbSorterItems[currentIndex] : null;
+
+    const handleDrop = async (type: 'living' | 'non-living') => {
+        if (!currentItem) return;
+        if (currentItem.type === type) {
+            toast({ title: 'Correct!', description: `A ${currentItem.name} is a ${type} thing.` });
+            confetti({ particleCount: 50, spread: 70, origin: { y: 0.8 } });
+            setCurrentIndex(prev => (prev + 1) % (dbSorterItems?.length || 1));
+        } else {
+            toast({ variant: 'destructive', title: 'Oops!', description: `A ${currentItem.name} is not a ${type} thing.` });
+        }
+    };
+    
+    const handleSaveSorterItem = async () => {
+        if (!newItem.name || !newItem.emoji || !firestore || !schoolId) return;
+        await addDoc(collection(firestore, 'junior_sorter_items'), { ...newItem, createdAt: serverTimestamp(), schoolId });
+        setNewItem({ name: '', emoji: '', type: 'living' });
+        if(refetchSorter) refetchSorter();
+        toast({ title: 'Item Added!' });
+    };
+
+    // --- 5. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
         if (!newMat.name || !firestore || !schoolId) return;
         const statesArray = [
@@ -1059,7 +1079,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         await addDoc(collection(firestore, 'junior_science_materials'), {
             name: newMat.name,
             states: statesArray,
-            schoolId: schoolId, // CRITICAL FIX
+            schoolId: schoolId,
             createdAt: serverTimestamp()
         });
 
@@ -1071,20 +1091,23 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     const getCurrentState = () => {
         if (!selectedMaterial) return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
-        // Logic: Find state matching temperature
         const state = [...selectedMaterial.states].sort((a:any,b:any) => b.temp - a.temp).find((s:any) => temp >= s.temp);
         return state || selectedMaterial.states[0];
     };
 
-    // --- 5. DISCOVERY LAB LOGIC ---
+    // --- 6. DISCOVERY LAB LOGIC ---
     const handleGenerate = async () => { 
         setLoading(true); 
         try {
             const res = await generateJuniorScience(topic); 
-            if(res.success) setFact(res.data);
-            else toast({ variant: "destructive", title: "AI Error", description: "AI failed." });
-        } catch(e) {
+            if(res.success) {
+                setFact(res.data);
+            } else {
+                toast({ variant: "destructive", title: "AI Error", description: res.error || "Could not generate fact." });
+            }
+        } catch (e: any) {
             console.error(e);
+            toast({ variant: "destructive", title: "Error", description: e.message || "An unknown error occurred." });
         } finally {
             setLoading(false); 
         }
@@ -1094,9 +1117,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         if(!user || !fact || !firestore || !schoolId) return; 
         
         try {
-            // Save to Firestore
             await addDoc(collection(firestore,'junior_science'), {
-                title: fact.title,      // Explicitly save fields to ensure structure
+                title: fact.title,      
                 fact: fact.fact,
                 emojiIcon: fact.emojiIcon,
                 observation: fact.observation || "",
@@ -1109,12 +1131,10 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             setFact(null); 
             setTopic('');
             
-            // Force refresh (just in case)
             if (refetchScience) refetchScience(); 
             
             toast({title: "Discovery Saved!", description: "Check your Journal tab."});
             
-            // Auto-switch to Journal tab so user sees it worked
             setActiveTab('library');
 
         } catch (e: any) {
@@ -1123,8 +1143,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     };
     
-    // ... (Keep existing sorter handlers) ...
-    // Note: Ensure handleSaveSorterItem ALSO adds schoolId: schoolId
     const handleDeleteDiscovery = async (id: string) => {
         if (!firestore) return;
         if(confirm("Delete this discovery?")){
@@ -1143,6 +1161,78 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
 
+            {/* DISCOVERY LAB TAB */}
+            {activeTab === 'lab' && (
+                <div className="grid lg:grid-cols-2 gap-8 items-start animate-in fade-in">
+                    <div className="space-y-6">
+                        <Card className="bg-white">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-blue-800"><Wand2 /> AI Discovery Lab</CardTitle>
+                                <CardDescription>Enter a topic and let the AI create a mini-science lesson for you!</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex gap-2">
+                                    <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Volcanoes, Rainbows..." />
+                                    <Button onClick={handleGenerate} disabled={loading || !topic} className="bg-blue-600 hover:bg-blue-700">
+                                        {loading ? <Loader2 className="animate-spin" /> : "Discover"}
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                         {canEdit && <p className="text-xs text-center text-slate-400">Admin Only: You can save generated facts to the Journal for all students.</p>}
+                    </div>
+                    {fact && (
+                        <Card className="border-4 border-blue-200 bg-blue-50 animate-in zoom-in-95">
+                            <CardHeader className="text-center">
+                                <div className="text-7xl mb-2">{fact.emojiIcon}</div>
+                                <CardTitle className="text-3xl text-blue-900">{fact.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-center space-y-4">
+                                <p className="text-lg font-medium text-slate-700 leading-relaxed">"{fact.fact}"</p>
+                                {fact.observation && <p className="text-sm italic text-blue-600">{fact.observation}</p>}
+                                {fact.experiment && <div className="bg-white p-3 rounded-lg border text-sm"><strong className="text-blue-800">Try this:</strong> {fact.experiment}</div>}
+                            </CardContent>
+                            <CardFooter>
+                                <Button onClick={handleSave} className="w-full bg-green-600 hover:bg-green-700">
+                                    <Save className="mr-2 h-4 w-4"/> Save to Journal
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    )}
+                </div>
+            )}
+            
+            {/* SORTER TAB */}
+            {activeTab === 'sorter' && (
+                <div className="space-y-6 animate-in fade-in">
+                    <div className="text-center">
+                        <h2 className="text-3xl font-bold text-slate-700 mb-2">Living or Non-Living?</h2>
+                        {currentItem && (
+                            <div className="inline-block p-8 bg-white rounded-full shadow-lg border-4 border-slate-100 my-4">
+                                <span className="text-7xl">{currentItem.emoji}</span>
+                                <p className="font-bold text-lg mt-2">{currentItem.name}</p>
+                            </div>
+                        )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-6">
+                        <div onDragOver={(e) => e.preventDefault()} onDrop={() => handleDrop('living')} className="p-8 bg-green-50 border-4 border-dashed border-green-200 rounded-3xl text-center">
+                            <h3 className="text-2xl font-bold text-green-800">Living Things</h3>
+                        </div>
+                        <div onDragOver={(e) => e.preventDefault()} onDrop={() => handleDrop('non-living')} className="p-8 bg-stone-50 border-4 border-dashed border-stone-200 rounded-3xl text-center">
+                            <h3 className="text-2xl font-bold text-stone-800">Non-Living Things</h3>
+                        </div>
+                    </div>
+                     {canEdit && (
+                        <div className="flex items-end gap-2 p-4 border rounded-md bg-white">
+                            <div className="flex-1"><Label>Name</Label><Input value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})}/></div>
+                            <div className="w-20"><Label>Emoji</Label><Input value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})}/></div>
+                            <div><Label>Type</Label><Select value={newItem.type} onValueChange={(v:any) => setNewItem({...newItem, type: v})}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent><SelectItem value="living">Living</SelectItem><SelectItem value="non-living">Non-Living</SelectItem></SelectContent></Select></div>
+                            <Button onClick={handleSaveSorterItem}>Add</Button>
+                        </div>
+                    )}
+                </div>
+            )}
+            
             {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
@@ -1171,7 +1261,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </div>
                     </div>
 
-                    {/* Material Creator Form */}
                     {showAddMatForm && canEdit && (
                         <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px]">
                             <h4 className="text-xl font-black text-cyan-800 mb-4">Create New Material</h4>
@@ -1190,7 +1279,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </Card>
                     )}
 
-                    {/* Simulator Display */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
                         <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
                             {getCurrentState().emoji}
@@ -1216,8 +1304,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
-            {/* JOURNAL TAB (FIXED RENDERING) */}
-             {activeTab === 'library' && (
+            {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
                         <div 
@@ -1228,11 +1315,11 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             <div className="text-5xl mb-4">{s.emojiIcon}</div>
                             <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
                             <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">
-                                {s.createdAt?.toDate ? new Date(s.createdAt?.seconds * 1000).toLocaleDateString() : 'Discovery'}
+                                {(s.createdAt?.seconds) ? new Date(s.createdAt.seconds * 1000).toLocaleDateString() : 'Discovery'}
                             </p>
                             {canEdit && (
                                 <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
-                                    <Trash2 className="w-4 w-4"/>
+                                    <Trash2 className="w-4 h-4"/>
                                 </Button>
                             )}
                         </div>
