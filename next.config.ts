@@ -19,7 +19,8 @@ const nextConfig: NextConfig = {
         "firebase-admin",
         "@grpc/grpc-js",
         "@opentelemetry/exporter-trace-otlp-grpc",
-        "@opentelemetry/sdk-node"
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/otlp-grpc-exporter-base"
     ],
 
     // 2. Webpack Config (Standard Bundler)
