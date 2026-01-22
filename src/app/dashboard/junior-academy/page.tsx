@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, GraduationCap, Languages, Sigma, Layers, Repeat, BookUser, ListOrdered, ArrowLeftRight, Tags, MessageCircle as MessageCircleIcon, Pen, Hammer, SpellCheck, Underline
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom as AtomIcon, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, GraduationCap, Languages as LanguagesIcon, Sigma as SigmaIcon, Layers, Repeat, BookUser, ListOrdered, ArrowLeftRight, Tags, MessageCircle as MessageCircleIcon, Pen, Hammer, SpellCheck, Underline
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge, generateLessonImageAction as generateLessonImage, generateTTSAction, generateRhymingWords, generateBlendsExample, generateArtDetailsAction, generateNumeracyTask, generateDictionDetails, generateStorytellingScene, generateThemedVocab, generateMissingLetterChallenge, generateSentence } from '@/app/dashboard/early-years/actions';
@@ -749,10 +749,10 @@ export default function JuniorAcademyPage() {
         <Tabs defaultValue="literacy" className="w-full">
             <TabsList className="grid w-full grid-cols-5 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16 overflow-x-auto">
                 <TabsTrigger value="literacy" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
-                    <Languages className="w-6 h-6"/> Literacy
+                    <LanguagesIcon className="w-6 h-6"/> Literacy
                 </TabsTrigger>
                 <TabsTrigger value="math" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
-                    <Sigma className="w-6 h-6"/> Numeracy
+                    <SigmaIcon className="w-6 h-6"/> Numeracy
                 </TabsTrigger>
                 <TabsTrigger value="science" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-green-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
                     <AtomIcon className="w-6 h-6"/> Science
