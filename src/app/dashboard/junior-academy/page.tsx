@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -13,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -502,8 +501,13 @@ function ABCKingdom() {
         const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
-        setIsDrawing(true);
+        if(tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
+          ctx.beginPath(); 
+          ctx.moveTo(x, y); 
+          ctx.strokeStyle = color; 
+          ctx.lineWidth = brushSize; 
+          setIsDrawing(true);
+        }
     };
 
     const draw = (e: any) => {
@@ -513,7 +517,8 @@ function ABCKingdom() {
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.lineTo(x, y); ctx.stroke();
+        ctx.lineTo(x, y);
+        ctx.stroke();
     };
 
     const stopDrawing = () => { setIsDrawing(false); };
@@ -931,6 +936,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     
     const handleSave = async () => { 
         if (!user || !story || !firestore || !schoolId) return; 
+        
         await addDoc(collection(firestore, 'junior_stories'), { 
             ...story, 
             topic, 
@@ -939,6 +945,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             createdBy: user.uid,
             schoolId: schoolId,
         }); 
+        
         setStory(null); 
         forceRefetch(); 
         toast({ title: "Story Saved!" }); 
@@ -1144,11 +1151,10 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 }
 
 // --- 6. SCIENCE WORLD (FIXED JOURNAL SAVE) ---
-function ScienceWorld({ canEdit }: { canEdit: boolean }) {
+function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
-    const { schoolId } = useCurrentSchool(); // Ensure this is here
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
@@ -1514,7 +1520,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             <div className="text-5xl mb-4">{s.emojiIcon}</div>
                             <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
                             <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">
-                                {new Date(s.createdAt?.seconds * 1000).toLocaleDateString() || 'Discovery'}
+                                {s.createdAt?.toDate ? new Date(s.createdAt.seconds * 1000).toLocaleDateString() : 'Discovery'}
                             </p>
                             {canEdit && (
                                 <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
@@ -1969,6 +1975,7 @@ function hexToRgb(hex: string) {
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
   const { role } = useRole();
+  const { schoolId } = useCurrentSchool();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
 
@@ -1998,7 +2005,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
-                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
+                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio canEdit={canEdit} schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
             </div>
@@ -2007,4 +2014,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
