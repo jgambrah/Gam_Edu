@@ -1,10 +1,10 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -495,23 +495,18 @@ function ABCKingdom() {
         }
     }, [selectedLetter, activeTab]);
 
-    const startDrawing = (e: any) => {
+    const startTracing = (e: any) => {
         const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
         const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        if(tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
-          ctx.beginPath(); 
-          ctx.moveTo(x, y); 
-          ctx.strokeStyle = color; 
-          ctx.lineWidth = brushSize; 
-          setIsDrawing(true);
-        }
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
+        setIsTracing(true);
     };
 
     const draw = (e: any) => {
-        if (!isDrawing) return;
+        if (!isTracing) return;
         const canvas = canvasRef.current; if (!canvas) return;
         const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
@@ -520,8 +515,10 @@ function ABCKingdom() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopDrawing = () => { setIsDrawing(false); };
-    
+    const stopTracing = () => {
+        setIsTracing(false);
+    };
+
     const resetTracingCanvas = () => {
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
@@ -604,13 +601,13 @@ function ABCKingdom() {
                                         <canvas 
                                             ref={canvasRef} width={400} height={400} 
                                             className="touch-none cursor-crosshair"
-                                            onMouseDown={startDrawing}
+                                            onMouseDown={startTracing}
                                             onMouseMove={draw}
-                                            onMouseUp={stopDrawing}
-                                            onMouseLeave={stopDrawing}
-                                            onTouchStart={startDrawing}
+                                            onMouseUp={stopTracing}
+                                            onMouseLeave={stopTracing}
+                                            onTouchStart={startTracing}
                                             onTouchMove={draw}
-                                            onTouchEnd={stopDrawing}
+                                            onTouchEnd={stopTracing}
                                         />
                                         <Button 
                                             variant="ghost" size="sm" 
@@ -828,7 +825,7 @@ function MathPlayground({ schoolId }: { schoolId: string | null }) {
              {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
                     <div className="absolute bottom-1/2 left-1/2 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) * 30}deg)` }}></div>
-                    <div className="absolute bottom-1/2 left-1/2 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 origin-bottom" ></div>
+                    <div className="absolute bottom-1/2 left-1/2 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 origin-bottom"></div>
                     <div className="absolute top-2">12</div>
                     <div className="absolute bottom-2">6</div>
                     <div className="absolute left-2">9</div>
@@ -1246,7 +1243,6 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
             });
         }
     };
-
 
     // --- 5. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
