@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -599,11 +600,11 @@ function ABCKingdom() {
                                             className="touch-none cursor-crosshair"
                                             onMouseDown={startTracing}
                                             onMouseMove={draw}
-                                            onMouseUp={stopTracing}
-                                            onMouseLeave={stopTracing}
+                                            onMouseUp={stopDrawing}
+                                            onMouseLeave={stopDrawing}
                                             onTouchStart={startTracing}
                                             onTouchMove={draw}
-                                            onTouchEnd={stopTracing}
+                                            onTouchEnd={stopDrawing}
                                         />
                                         <Button 
                                             variant="ghost" size="sm" 
@@ -642,7 +643,7 @@ function ABCKingdom() {
                                                         speak("Try again");
                                                     }
                                                 }}
-                                                className="h-24 bg-white border-4 border-slate-100 rounded-3xl text-5xl font-black text-slate-700 hover:border-green-400 hover:bg-green-50 transition-all shadow-md"
+                                                className="h-24 bg-white border-4 border-slate-100 rounded-3xl text-5xl font-black text-slate-700 hover:border-green-400 hover:bg-green-50 transition-all"
                                             >
                                                 {char}
                                             </button>
@@ -1148,7 +1149,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
-    // --- 1. DATA FETCHING (Standard Firestore) ---
+    // --- 1. DATA FETCHING ---
     const sorterQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'asc')) : null, 
     [firestore]);
@@ -1172,7 +1173,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [fact, setFact] = useState<any>(null); 
     const [loading, setLoading] = useState(false);
 
-    // --- 3. NEW MATERIAL FORM STATE (Matter Lab) ---
+    // --- 3. NEW MATERIAL FORM STATE ---
     const [newMat, setNewMat] = useState({
         name: '',
         solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' },
@@ -1180,7 +1181,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
     });
 
-    // --- 4. SORTER LOGIC (Cycling Loop) ---
+    // --- 4. SORTER LOGIC ---
     const handleNextSorter = () => {
         if (!dbSorterItems || dbSorterItems.length === 0) return;
         setCurrentIndex((prev) => (prev + 1) % dbSorterItems.length);
@@ -1201,21 +1202,44 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     const handleSaveSorterItem = async () => {
         if (!newItem.name || !newItem.emoji || !firestore) return;
-        await addDoc(collection(firestore, 'junior_sorter_items'), {
-            ...newItem,
-            createdAt: serverTimestamp()
-        });
-        setNewItem({ name: '', emoji: '', type: 'living' });
-        refetchSorter();
-        toast({ title: "Item Added!" });
+        try {
+            await addDoc(collection(firestore, 'junior_sorter_items'), {
+                ...newItem,
+                createdAt: serverTimestamp()
+            });
+            setNewItem({ name: '', emoji: '', type: 'living' });
+            if (refetchSorter) refetchSorter();
+            toast({ title: "Item Added!" });
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to add item.", variant: "destructive" });
+        }
     };
 
+    // FIXED DELETE FUNCTION
     const handleDeleteSorterItem = async (id: string) => {
         if (!firestore) return;
-        if (window.confirm("Are you sure you want to delete this item?")) {
-            await deleteDoc(doc(firestore, 'junior_sorter_items', id));
-            toast({ title: "Item Removed" });
-            refetchSorter();
+        try {
+            if (window.confirm("Are you sure you want to delete this item?")) {
+                const itemDoc = doc(firestore, 'junior_sorter_items', id);
+                await deleteDoc(itemDoc);
+                
+                toast({ title: "Item Removed" });
+                
+                // Refresh data
+                if (refetchSorter) {
+                    forceRefetch();
+                }
+                
+                // Reset index if we deleted the only remaining item or are out of bounds
+                setCurrentIndex(0);
+            }
+        } catch (error) {
+            console.error("Delete Error:", error);
+            toast({ 
+                title: "Error", 
+                description: "Missing permissions or item not found.", 
+                variant: "destructive" 
+            });
         }
     };
 
@@ -1336,28 +1360,74 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     {canEdit && (
                          <Dialog>
                             <DialogTrigger asChild>
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700"><PlusCircle className="mr-2 h-4 w-4"/> Add or Manage Sorter Items</Button>
+                                <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-lg">
+                                    <PlusCircle className="mr-2 h-4 w-4"/> Add or Manage Sorter Items
+                                </Button>
                             </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader><DialogTitle>Manage Sorter Library</DialogTitle></DialogHeader>
-                                <div className="space-y-4">
-                                    <div className="flex flex-wrap gap-2 p-4 border rounded-lg bg-slate-50">
-                                        <Input placeholder="Name" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} className="flex-1"/>
-                                        <Input placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})} className="w-20"/>
-                                        <Select value={newItem.type} onValueChange={(v) => setNewItem({...newItem, type: v})}>
-                                            <SelectTrigger><SelectValue/></SelectTrigger>
-                                            <SelectContent><SelectItem value="living">Living</SelectItem><SelectItem value="non-living">Non-Living</SelectItem></SelectContent>
-                                        </Select>
-                                        <Button onClick={handleSaveSorterItem}>Save</Button>
+                            <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle>Manage Sorter Library</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 py-4">
+                                    <div className="grid grid-cols-4 gap-2 p-4 border rounded-2xl bg-slate-50">
+                                        <Input 
+                                            placeholder="Name" 
+                                            value={newItem.name} 
+                                            onChange={e => setNewItem({...newItem, name: e.target.value})} 
+                                            className="col-span-2"
+                                        />
+                                        <Input 
+                                            placeholder="Emoji" 
+                                            value={newItem.emoji} 
+                                            onChange={e => setNewItem({...newItem, emoji: e.target.value})} 
+                                            className="text-center"
+                                        />
+                                        <Button onClick={handleSaveSorterItem} size="icon" className="bg-green-600 hover:bg-green-700">
+                                            <Check className="h-4 w-4"/>
+                                        </Button>
+                                        <div className="col-span-4">
+                                            <Select value={newItem.type} onValueChange={(v) => setNewItem({...newItem, type: v})}>
+                                                <SelectTrigger><SelectValue placeholder="Select Type"/></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="living">Living 🌳</SelectItem>
+                                                    <SelectItem value="non-living">Non-Living 🧸</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
                                     </div>
-                                    <div className="max-h-64 overflow-y-auto space-y-2">
-                                        {dbSorterItems?.map((item) => (
-                                            <div key={item.id} className="flex justify-between items-center p-2 border rounded-md">
-                                                <span>{item.emoji} {item.name} <Badge variant="secondary">{item.type}</Badge></span>
-                                                <Button size="icon" variant="ghost" onClick={() => handleDeleteSorterItem(item.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
-                                            </div>
-                                        ))}
-                                    </div>
+                                    
+                                    <ScrollArea className="h-64 pr-4">
+                                        <div className="space-y-2">
+                                            {dbSorterItems?.map((item: any) => (
+                                                <div key={item.id} className="flex justify-between items-center p-3 border rounded-xl hover:bg-slate-50 transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-2xl">{item.emoji}</span>
+                                                        <div>
+                                                            <p className="font-bold text-sm leading-none">{item.name}</p>
+                                                            <Badge variant="outline" className="mt-1 text-[10px] uppercase">
+                                                                {item.type}
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+                                                    <Button 
+                                                        type="button" 
+                                                        size="icon" 
+                                                        variant="ghost" 
+                                                        className="text-red-400 hover:text-red-600 hover:bg-red-50" 
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleDeleteSorterItem(item.id);
+                                                        }}
+                                                    >
+                                                        <Trash2 className="h-4 w-4"/>
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                            {(!dbSorterItems || dbSorterItems.length === 0) && (
+                                                <p className="text-center text-slate-400 py-10">No items found.</p>
+                                            )}
+                                        </div>
+                                    </ScrollArea>
                                 </div>
                             </DialogContent>
                         </Dialog>
@@ -1369,7 +1439,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         ) : (
                             <div className="animate-in zoom-in space-y-8">
                                 <div className="flex justify-center gap-1">
-                                    {dbSorterItems.map((_, i) => (
+                                    {dbSorterItems.map((_: any, i: number) => (
                                         <div 
                                             key={i} 
                                             className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} 
@@ -1403,7 +1473,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     </div>
                 </div>
             )}
-
+            
             {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
@@ -1944,11 +2014,11 @@ function hexToRgb(hex: string) {
 }
 
 // --- MAIN PAGE ---
-export default function JuniorAcademyPage() {
+export default function JuniorCampusPage() {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
-  
+
   return (
     <div className="min-h-screen bg-[#F0F9FF] p-4 md:p-8 font-sans">
       <div className="max-w-6xl mx-auto mb-8 flex items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border-b-4 border-slate-200">
