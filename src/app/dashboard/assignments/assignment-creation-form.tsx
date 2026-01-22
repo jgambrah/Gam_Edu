@@ -27,7 +27,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { collection, query, serverTimestamp, where, addDoc } from 'firebase/firestore';
 import { assignmentSchema } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -42,27 +42,28 @@ type AssignmentCreationFormProps = {
 export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps) {
   const firestore = useFirestore();
   const { user } = useAuth();
-  const { role } = useRole(); // Get the user's role
+  const { role } = useRole();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { schoolId } = useCurrentSchool();
 
+  // 1. Fetch ALL classes for the school, regardless of role.
   const classesQuery = useMemoFirebase(
-    () => {
-      if (!firestore || !user || !schoolId) return null;
-      
-      let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-      
-      // If user is a Teacher, only show their classes. Admins/Directors see all.
-      if (role === 'Teacher') {
-        q = query(q, where('teacherId', '==', user.uid));
-      }
-      
-      return q;
-    },
-    [firestore, user, schoolId, role] // Add role to dependency array
+    () => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
   );
-  const { data: classes } = useCollection(classesQuery);
+  const { data: allSchoolClasses } = useCollection(classesQuery);
+
+  // 2. Filter the classes on the client-side based on the role.
+  const classes = useMemo(() => {
+    if (!allSchoolClasses) return [];
+    if (role === 'Teacher') {
+      return allSchoolClasses.filter(c => c.teacherId === user?.uid);
+    }
+    // Admins/Directors see all classes
+    return allSchoolClasses;
+  }, [allSchoolClasses, role, user?.uid]);
+
 
   const form = useForm<z.infer<typeof assignmentSchema>>({
     resolver: zodResolver(assignmentSchema),
@@ -222,3 +223,4 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
     </div>
   );
 }
+    
