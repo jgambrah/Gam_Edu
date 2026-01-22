@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -60,8 +61,16 @@ export function BehavioralRecordForm() {
   });
 
   async function onSubmit(values: z.infer<typeof behavioralRecordSchema>) {
+    if (!user || !schoolId) {
+        toast({
+            variant: "destructive",
+            title: "Cannot Save",
+            description: "User or School information is not available. Please try refreshing the page.",
+        });
+        return;
+    }
+    
     setIsSubmitting(true);
-    if (!user || !schoolId) return;
 
     try {
       await addDoc(collection(firestore, 'behavioral_records'), {
