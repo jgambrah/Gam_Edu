@@ -39,6 +39,7 @@ const nextConfig: NextConfig = {
             net: false,
             tls: false,
             child_process: false,
+            "dgram": false,
         };
         }
         return config;
