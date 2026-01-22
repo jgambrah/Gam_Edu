@@ -205,6 +205,12 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
     subItems: [
         {
+            path: '/dashboard/junior-academy',
+            title: 'Junior Campus',
+            icon: Rabbit,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
             path: '/dashboard/senior-academy',
             title: 'Senior Academy',
             icon: Rocket,
