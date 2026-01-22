@@ -33,6 +33,7 @@ import { assignmentSchema } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { useRole } from '@/context/role-context';
 
 type AssignmentCreationFormProps = {
   setOpen: (open: boolean) => void;
@@ -41,13 +42,25 @@ type AssignmentCreationFormProps = {
 export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps) {
   const firestore = useFirestore();
   const { user } = useAuth();
+  const { role } = useRole(); // Get the user's role
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { schoolId } = useCurrentSchool();
 
   const classesQuery = useMemoFirebase(
-    () => (user && schoolId) ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
-    [firestore, user, schoolId]
+    () => {
+      if (!firestore || !user || !schoolId) return null;
+      
+      let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+      
+      // If user is a Teacher, only show their classes. Admins/Directors see all.
+      if (role === 'Teacher') {
+        q = query(q, where('teacherId', '==', user.uid));
+      }
+      
+      return q;
+    },
+    [firestore, user, schoolId, role] // Add role to dependency array
   );
   const { data: classes } = useCollection(classesQuery);
 
@@ -107,7 +120,7 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
                     </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                    {classes?.map((c) => (
+                    {classes?.map((c: any) => (
                         <SelectItem key={c.id} value={c.id}>
                         {c.name}
                         </SelectItem>
