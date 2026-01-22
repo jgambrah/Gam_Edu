@@ -27,11 +27,12 @@ import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where } from 'firebase/firestore'; 
 import { behavioralRecordSchema, Student } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { useCurrentSchool } from '@/hooks/use-current-school'; 
 
 
 export function BehavioralRecordForm() {
@@ -39,8 +40,13 @@ export function BehavioralRecordForm() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { schoolId } = useCurrentSchool();
 
-  const studentsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
+  const studentsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId) return null;
+    return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
+  }, [firestore, schoolId]);
+  
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
   const form = useForm<z.infer<typeof behavioralRecordSchema>>({
@@ -55,13 +61,14 @@ export function BehavioralRecordForm() {
 
   async function onSubmit(values: z.infer<typeof behavioralRecordSchema>) {
     setIsSubmitting(true);
-    if (!user) return;
+    if (!user || !schoolId) return;
 
     try {
       await addDoc(collection(firestore, 'behavioral_records'), {
         ...values,
         recordedById: user.uid,
         createdAt: serverTimestamp(),
+        schoolId: schoolId,
       });
       toast({ title: 'Success', description: 'Behavioral record logged.' });
       form.reset();
