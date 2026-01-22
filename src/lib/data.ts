@@ -205,18 +205,6 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
     subItems: [
         {
-            path: 'https://nursery-bloom-825774943692.us-west1.run.app',
-            title: 'Early Years',
-            icon: Rabbit,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
-            path: '/dashboard/junior-academy',
-            title: 'Junior Campus',
-            icon: GraduationCap,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
             path: '/dashboard/senior-academy',
             title: 'Senior Academy',
             icon: Rocket,

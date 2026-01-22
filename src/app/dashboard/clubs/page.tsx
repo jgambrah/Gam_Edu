@@ -1,25 +1,12 @@
 
-
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Code, Bot, Puzzle, ExternalLink, Activity, Rabbit, GraduationCap, Rocket, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Gamepad2, Clapperboard } from 'lucide-react';
 import Link from 'next/link';
 
 const clubModules = [
-  {
-    path: 'https://nursery-bloom-825774943692.us-west1.run.app',
-    title: 'Early Years',
-    icon: Rabbit,
-    description: 'Explore foundational literacy and numeracy in a fun, interactive environment.',
-  },
-  {
-    path: '/dashboard/junior-academy',
-    title: 'Junior Campus',
-    icon: GraduationCap,
-    description: 'Engaging activities for phonics, math, science, and creative arts for young learners.',
-  },
   {
     path: '/dashboard/senior-academy',
     title: 'Senior Academy',
