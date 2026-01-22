@@ -32,7 +32,7 @@ import { lessonPlanSchema } from '@/lib/types';
 import { CalendarIcon, Loader2, Wand2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { generateLessonIdeas } from '@/ai/flows/generate-lesson-ideas-flow';
+import { generateLessonIdeasAction } from '@/app/actions/generate-lesson-ideas';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
@@ -86,14 +86,18 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
     setIsGenerating(true);
     toast({ title: 'AI is thinking...', description: 'Generating lesson ideas for your topic.' });
     try {
-        const result = await generateLessonIdeas({ topic: topicValue });
-        form.setValue('objectives', result.objectives, { shouldValidate: true });
-        form.setValue('activities', result.activities, { shouldValidate: true });
-        form.setValue('materials', result.materials, { shouldValidate: true });
-        toast({ title: 'Success!', description: 'AI has populated the lesson plan fields.' });
-    } catch (error) {
+        const result = await generateLessonIdeasAction(topicValue);
+        if (result.success && result.data) {
+          form.setValue('objectives', result.data.objectives, { shouldValidate: true });
+          form.setValue('activities', result.data.activities, { shouldValidate: true });
+          form.setValue('materials', result.data.materials, { shouldValidate: true });
+          toast({ title: 'Success!', description: 'AI has populated the lesson plan fields.' });
+        } else {
+            throw new Error(result.error || 'Unknown AI error');
+        }
+    } catch (error: any) {
         console.error("AI Error:", error);
-        toast({ variant: 'destructive', title: 'AI Error', description: 'Could not generate lesson ideas.' });
+        toast({ variant: 'destructive', title: 'AI Error', description: error.message || 'Could not generate lesson ideas.' });
     } finally {
         setIsGenerating(false);
     }

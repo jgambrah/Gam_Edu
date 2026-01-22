@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     // 1. Force heavy libraries to Server
     serverExternalPackages: [
         "genkit", 
+        "@genkit-ai/core",
         "@genkit-ai/firebase",
         "@genkit-ai/google-genai",
         "@genkit-ai/next",
