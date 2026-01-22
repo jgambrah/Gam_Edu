@@ -31,7 +31,7 @@ const assessmentSchema = z.object({
   topic: z.string().optional(),
 });
 
-export function AssessmentFeedbackForm({ classId, classes, academicYear, term }: { classId: string, classes: Class[], academicYear: string, term: string }) {
+export function AssessmentFeedbackForm({ classId, classes, academicYear, term, onSuccess }: { classId: string, classes: Class[], academicYear: string, term: string, onSuccess: () => void }) {
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
@@ -79,7 +79,6 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term }:
         const ref = doc(collection(firestore, 'assessments'));
         const score = parseFloat(scoreVal);
         
-        // Correctly include props for year and term
         batch.set(ref, {
           ...values,
           academicYear, // FROM PROPS
@@ -97,7 +96,8 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term }:
       await batch.commit();
       toast({ title: "Success", description: `Saved ${validScores.length} grades successfully.` });
       setScores({}); 
-      form.reset({ maxScore: 100 }); // Reset form but keep max score default
+      form.reset({ maxScore: 100 });
+      onSuccess(); // Trigger refetch in parent
     } catch (e: any) {
       console.error(e);
       toast({ variant: 'destructive', title: "Error", description: e.message });

@@ -152,65 +152,62 @@ function StudentGradesDetail({
         return stats;
     }, [allAssessments]);
 
-    // 2. STUDENT SPECIFIC DATA (Display Logic)
+    // 2. STUDENT SPECIFIC DATA (Display Logic) - FIXED TO ITERATE OVER SUBJECTS
     const reportData = useMemo(() => {
-        const studentAssessments = allAssessments.filter(a => a.studentId === student.uid);
-
-        const subjectMap = new Map<string, string>();
-        allSubjects.forEach(s => subjectMap.set(s.id, s.name));
-
-        const grouped: Record<string, { name: string, id: string, caObtained: number, caMax: number, examObtained: number, examMax: number }> = {};
+        if (!allSubjects || allSubjects.length === 0) return [];
         
-        studentAssessments.forEach((a: Assessment) => {
-            const subId = a.subjectId || 'unknown';
-            const subName = subjectMap.get(subId) || 'Unknown Subject';
+        return allSubjects.map(subject => {
+            const subId = subject.id;
+            const subName = subject.name;
 
-            if (!grouped[subId]) {
-                grouped[subId] = { name: subName, id: subId, caObtained: 0, caMax: 0, examObtained: 0, examMax: 0 };
-            }
-            
-            const type = (a.assessmentType || '').toLowerCase();
-            const isExam = type.includes('exam') || type.includes('term');
+            const studentAssessments = allAssessments.filter(a => a.studentId === student.uid && a.subjectId === subId);
 
-            if (isExam) {
-                grouped[subId].examObtained += (a.score || 0);
-                grouped[subId].examMax += (a.maxScore || 0);
-            } else {
-                grouped[subId].caObtained += (a.score || 0);
-                grouped[subId].caMax += (a.maxScore || 0);
-            }
-        });
+            let caObtained = 0, caMax = 0, examObtained = 0, examMax = 0;
 
-        return Object.values(grouped).map((data) => {
-            const caRaw = data.caMax > 0 ? (data.caObtained / data.caMax) : 0;
-            const caWeighted = caRaw * 50; 
-            const examRaw = data.examMax > 0 ? (data.examObtained / data.examMax) : 0;
-            const examWeighted = examRaw * 50;
+            studentAssessments.forEach(a => {
+                const type = (a.assessmentType || '').toLowerCase();
+                const isExam = type.includes('exam') || type.includes('term');
+                if (isExam) {
+                    examObtained += (a.score || 0);
+                    examMax += (a.maxScore || 0);
+                } else {
+                    caObtained += (a.score || 0);
+                    caMax += (a.maxScore || 0);
+                }
+            });
+
+            const caWeighted = caMax > 0 ? (caObtained / caMax) * 50 : 0;
+            const examWeighted = examMax > 0 ? (examObtained / examMax) * 50 : 0;
             const totalPercent = caWeighted + examWeighted;
 
-            const subStats = globalSubjectStats[data.id];
+            const subStats = globalSubjectStats[subId];
             let classAvg = subStats ? subStats.average : 0;
             let subRank = 0;
             let totalSubStudents = 0;
-            
-            if (subStats) {
+
+            if (subStats && subStats.studentScores) {
                 const allScores = Object.values(subStats.studentScores).sort((a,b) => b - a);
-                subRank = allScores.findIndex(s => Math.abs(s - totalPercent) < 0.001) + 1;
+                const studentScore = subStats.studentScores[student.uid];
+                if (studentScore !== undefined) {
+                    subRank = allScores.findIndex(s => Math.abs(s - studentScore) < 0.001) + 1;
+                }
                 totalSubStudents = allScores.length;
             }
 
             return { 
-                ...data, 
+                id: subId,
+                name: subName,
                 caWeighted, 
                 examWeighted, 
                 totalPercent, 
                 classAvg, 
-                rank: subRank,
+                rank: subRank > 0 ? subRank : 'N/A',
                 totalSubStudents,
                 ...getGrade(totalPercent) 
             };
         });
     }, [allAssessments, student.uid, allSubjects, globalSubjectStats]);
+
 
     const overallAverage = reportData.length > 0 
         ? reportData.reduce((sum, i) => sum + i.totalPercent, 0) / reportData.length 
@@ -242,7 +239,7 @@ function StudentGradesDetail({
                         <GenerateReportCard
                             student={student}
                             assessments={allAssessments}
-                            subjects={allSubjects}
+                            subjects={allSubjects || []}
                             year={year}
                             term={term}
                             rank={rank}
@@ -270,16 +267,16 @@ function StudentGradesDetail({
                         {reportData.map((row) => (
                             <TableRow key={row.id}>
                                 <TableCell className="font-medium">{row.name}</TableCell>
-                                <TableCell className="text-center">{row.caWeighted.toFixed(1)}</TableCell>
-                                <TableCell className="text-center">{row.examWeighted.toFixed(1)}</TableCell>
-                                <TableCell className="text-center font-bold">{row.totalPercent.toFixed(1)}%</TableCell>
-                                <TableCell className="text-center text-muted-foreground">{row.classAvg.toFixed(1)}%</TableCell>
-                                <TableCell className="text-center">{row.rank}/{row.totalSubStudents}</TableCell>
-                                <TableCell><Badge variant={row.grade === 'F' ? 'destructive' : 'outline'}>{row.grade}</Badge></TableCell>
-                                <TableCell className="text-muted-foreground text-sm">{row.remark}</TableCell>
+                                <TableCell className="text-center">{row.caWeighted > 0 ? row.caWeighted.toFixed(1) : '-'}</TableCell>
+                                <TableCell className="text-center">{row.examWeighted > 0 ? row.examWeighted.toFixed(1) : '-'}</TableCell>
+                                <TableCell className="text-center font-bold">{row.totalPercent > 0 ? `${row.totalPercent.toFixed(1)}%` : '-'}</TableCell>
+                                <TableCell className="text-center text-muted-foreground">{row.classAvg > 0 ? `${row.classAvg.toFixed(1)}%` : '-'}</TableCell>
+                                <TableCell className="text-center">{row.rank > 0 ? `${row.rank}/${row.totalSubStudents}` : '-'}</TableCell>
+                                <TableCell><Badge variant={row.grade === 'F' ? 'destructive' : row.grade === 'N/A' ? 'outline' : 'default'}>{row.grade}</Badge></TableCell>
+                                <TableCell className="text-muted-foreground text-sm">{row.totalPercent > 0 ? row.remark : ''}</TableCell>
                             </TableRow>
                         ))}
-                        {reportData.length === 0 && <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No grades recorded for this student, term, and year.</TableCell></TableRow>}
+                        {reportData.length === 0 && <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No subjects or grades found.</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </div>
@@ -331,7 +328,7 @@ export default function GradebookManager() {
         where('term', '==', selectedTerm)
     );
   }, [firestore, selectedClassId, selectedYear, selectedTerm, schoolId]);
-  const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
+  const { data: assessments, isLoading: isLoadingAssessments, forceRefetch } = useCollection<Assessment>(assessmentsQuery);
 
   // 4. Fetch ALL Subjects for the school (for name mapping)
   const subjectsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -435,6 +432,7 @@ export default function GradebookManager() {
                 classes={teacherClasses || []} 
                 academicYear={selectedYear}
                 term={selectedTerm}
+                onSuccess={forceRefetch}
               />
           </div>
       )}
@@ -525,3 +523,4 @@ export default function GradebookManager() {
     </div>
   );
 }
+

@@ -1,8 +1,10 @@
+
 'use client';
 
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { format } from 'date-fns';
-import { Assessment } from '@/lib/types';
+import { Assessment, Subject } from '@/lib/types';
+import { useMemo } from 'react';
 
 // --- STYLES ---
 const styles = StyleSheet.create({
@@ -36,34 +38,24 @@ function getGrade(percentage: number) {
     if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
     if (percentage >= 60) return { grade: 'C', remark: 'Good' };
     if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
-    return { grade: 'F', remark: 'Fail' };
+    if (percentage > 0) return { grade: 'F', remark: 'Fail' };
+    return { grade: 'N/A', remark: '' };
 }
 
 // --- DOCUMENT COMPONENT ---
 export const ReportDocument = ({ student, assessments, year, term, rank, totalStudents, subjects, schoolProfile }: any) => {
     
     // Data Processing
-    const subjectMap = subjects?.reduce((acc: any, s: any) => {
-        acc[s.id] = s.name || s.title;
-        return acc;
-    }, {}) || {};
-
-    const reportData = Object.values(assessments.reduce((acc: any, curr: Assessment) => {
-        if (curr.studentId !== student.uid) return acc;
-        
-        const subId = curr.subjectId || 'unknown';
-        const name = subjectMap[subId] || (curr as any).subjectName || 'Unknown Subject';
-
-        if (!acc[subId]) {
-            acc[subId] = { id: subId, name, total: 0, max: 0 };
-        }
-        acc[subId].total += curr.score || 0;
-        acc[subId].max += curr.maxScore || 0;
-        return acc;
-    }, {})).map((item: any) => {
-        const pct = item.max > 0 ? (item.total / item.max) * 100 : 0;
-        return { ...item, pct, ...getGrade(pct) };
-    });
+    const reportData = useMemo(() => {
+        if (!subjects || subjects.length === 0) return [];
+        return subjects.map((subject: Subject) => {
+            const studentAssessments = (assessments || []).filter((a: Assessment) => a.studentId === student.uid && a.subjectId === subject.id);
+            const total = studentAssessments.reduce((acc, curr) => acc + (curr.score || 0), 0);
+            const max = studentAssessments.reduce((acc, curr) => acc + (curr.maxScore || 100), 0);
+            const pct = max > 0 ? (total / max) * 100 : 0;
+            return { name: subject.name, pct, ...getGrade(pct) };
+        });
+    }, [subjects, assessments, student.uid]);
 
     const average = reportData.length > 0 
         ? reportData.reduce((sum: number, i: any) => sum + i.pct, 0) / reportData.length 
@@ -110,14 +102,14 @@ export const ReportDocument = ({ student, assessments, year, term, rank, totalSt
                     {reportData.map((row: any, i: number) => (
                         <View key={i} style={styles.tableRow}>
                             <View style={{...styles.tableCol, width: '40%'}}><Text style={styles.tableCell}>{row.name}</Text></View>
-                            <View style={{...styles.tableCol, width: '20%'}}><Text style={styles.tableCell}>{row.pct.toFixed(1)}%</Text></View>
+                            <View style={{...styles.tableCol, width: '20%'}}><Text style={styles.tableCell}>{row.pct > 0 ? `${row.pct.toFixed(1)}%` : 'N/A'}</Text></View>
                             <View style={{...styles.tableCol, width: '15%'}}><Text style={styles.tableCell}>{row.grade}</Text></View>
                             <View style={{...styles.tableCol, width: '25%'}}><Text style={styles.tableCell}>{row.remark}</Text></View>
                         </View>
                     ))}
                     {reportData.length === 0 && (
                         <View style={styles.tableRow}>
-                            <View style={{...styles.tableCol, width: '100%'}}><Text style={{...styles.tableCell, textAlign: 'center', padding: 10}}>No grades recorded.</Text></View>
+                            <View style={{...styles.tableCol, width: '100%'}}><Text style={{...styles.tableCell, textAlign: 'center', padding: 10}}>No subjects defined for this class.</Text></View>
                         </View>
                     )}
                 </View>

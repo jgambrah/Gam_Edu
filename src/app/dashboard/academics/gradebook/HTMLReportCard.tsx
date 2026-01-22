@@ -12,8 +12,10 @@ function getGrade(percentage: number) {
     if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
     if (percentage >= 60) return { grade: 'C', remark: 'Good' };
     if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
-    return { grade: 'F', remark: 'Fail' };
+    if (percentage > 0) return { grade: 'F', remark: 'Fail' };
+    return { grade: 'N/A', remark: '' };
 }
+
 
 // THIS IS THE COMPONENT THAT WILL BE CONVERTED TO PDF
 export const HTMLReportCard = ({ 
@@ -28,21 +30,7 @@ export const HTMLReportCard = ({
     customRemark 
 }: any) => {
     
-    // 1. Smart Map for Subjects
-    const subjectMap = useMemo(() => {
-        const map = new Map<string, string>();
-        if(subjects && subjects.length > 0) {
-            subjects.forEach((s: any) => {
-                const name = s.name || s.title || s.subjectName || "Unnamed Subject";
-                map.set(s.id, name);
-            });
-        }
-        return map;
-    }, [subjects]);
-
-    // 2. GLOBAL STATS (The Fix: Calculate Weighted Averages for the whole class)
     const globalSubjectStats = useMemo(() => {
-        // Step A: Group ALL assessments by Subject -> Student
         const grouping: Record<string, Record<string, { ca: number, caMax: number, exam: number, examMax: number }>> = {};
 
         assessments.forEach((a: Assessment) => {
@@ -64,7 +52,6 @@ export const HTMLReportCard = ({
              }
         });
 
-        // Step B: Calculate Weighted Totals for everyone to get Class Avg & Rank
         const stats: Record<string, { average: number, studentScores: Record<string, number> }> = {};
         
         Object.keys(grouping).forEach(subId => {
@@ -92,74 +79,62 @@ export const HTMLReportCard = ({
         return stats;
     }, [assessments]);
 
-    // 3. STUDENT SPECIFIC DATA (Display Logic)
+    // 2. STUDENT SPECIFIC DATA (Display Logic) - FIXED TO ITERATE OVER SUBJECTS
     const reportData = useMemo(() => {
-        const grouped: Record<string, { 
-            name: string, id: string, caObtained: number, caMax: number, 
-            examObtained: number, examMax: number 
-        }> = {};
+        if (!subjects || subjects.length === 0) return [];
         
-        assessments.forEach((a: Assessment) => {
-            if (a.studentId !== student.uid) return;
-            
-            const subId = a.subjectId || 'unknown';
-            let subName = (a as any).subjectName || subjectMap.get(subId);
-            if (!subName) subName = 'Unknown Subject';
+        return subjects.map((subject: any) => {
+            const subId = subject.id;
+            const subName = subject.name;
 
-            if (!grouped[subId]) {
-                grouped[subId] = { name: subName, id: subId, caObtained: 0, caMax: 0, examObtained: 0, examMax: 0 };
-            }
-            
-            if (grouped[subId].name === 'Unknown Subject' && subName !== 'Unknown Subject') {
-                grouped[subId].name = subName;
-            }
+            const studentAssessments = assessments.filter((a: Assessment) => a.studentId === student.uid && a.subjectId === subId);
 
-            const type = (a.assessmentType || '').toLowerCase();
-            const isExam = type.includes('exam') || type.includes('term');
+            let caObtained = 0, caMax = 0, examObtained = 0, examMax = 0;
 
-            if (isExam) {
-                grouped[subId].examObtained += (a.score || 0);
-                grouped[subId].examMax += (a.maxScore || 0);
-            } else {
-                grouped[subId].caObtained += (a.score || 0);
-                grouped[subId].caMax += (a.maxScore || 0);
-            }
-        });
+            studentAssessments.forEach((a: Assessment) => {
+                const type = (a.assessmentType || '').toLowerCase();
+                const isExam = type.includes('exam') || type.includes('term');
+                if (isExam) {
+                    examObtained += (a.score || 0);
+                    examMax += (a.maxScore || 0);
+                } else {
+                    caObtained += (a.score || 0);
+                    caMax += (a.maxScore || 0);
+                }
+            });
 
-        return Object.values(grouped).map((data) => {
-            // Student Math
-            const caRaw = data.caMax > 0 ? (data.caObtained / data.caMax) : 0;
-            const caWeighted = caRaw * 50; 
-            const examRaw = data.examMax > 0 ? (data.examObtained / data.examMax) : 0;
-            const examWeighted = examRaw * 50;
+            const caWeighted = caMax > 0 ? (caObtained / caMax) * 50 : 0;
+            const examWeighted = examMax > 0 ? (examObtained / examMax) * 50 : 0;
             const totalPercent = caWeighted + examWeighted;
 
-            // Class Stats
-            const subStats = globalSubjectStats[data.id];
+            const subStats = globalSubjectStats[subId];
             let classAvg = subStats ? subStats.average : 0;
             let subRank = 0;
             let totalSubStudents = 0;
-            
-            if (subStats) {
+
+            if (subStats && subStats.studentScores) {
                 const allScores = Object.values(subStats.studentScores).sort((a,b) => b - a);
-                // Find index (1-based)
-                // Use a small epsilon for float comparison safety
-                subRank = allScores.findIndex(s => Math.abs(s - totalPercent) < 0.001) + 1;
+                const studentScore = subStats.studentScores[student.uid];
+                if (studentScore !== undefined) {
+                    subRank = allScores.findIndex(s => Math.abs(s - studentScore) < 0.001) + 1;
+                }
                 totalSubStudents = allScores.length;
             }
 
             return { 
-                ...data, 
+                id: subId,
+                name: subName,
                 caWeighted, 
                 examWeighted, 
                 totalPercent, 
                 classAvg, 
-                rank: subRank,
+                rank: subRank > 0 ? subRank : 'N/A',
                 totalSubStudents,
                 ...getGrade(totalPercent) 
             };
         });
-    }, [assessments, student.uid, subjectMap, globalSubjectStats]);
+    }, [assessments, student.uid, subjects, globalSubjectStats]);
+
 
     const overallAverage = reportData.length > 0 
         ? reportData.reduce((sum, i) => sum + i.totalPercent, 0) / reportData.length 
@@ -234,11 +209,11 @@ export const HTMLReportCard = ({
                         {reportData.map((row: any, i: number) => (
                             <tr key={i} className="border-b border-black last:border-0">
                                 <td className="p-2 border-r border-black font-semibold">{row.name}</td>
-                                <td className="p-2 border-r border-black text-center">{row.caWeighted.toFixed(1)}</td>
-                                <td className="p-2 border-r border-black text-center">{row.examWeighted.toFixed(1)}</td>
-                                <td className="p-2 border-r border-black text-center font-bold">{row.totalPercent.toFixed(1)}%</td>
-                                <td className="p-2 border-r border-black text-center text-gray-500">{row.classAvg.toFixed(1)}%</td>
-                                <td className="p-2 border-r border-black text-center">{row.rank}/{row.totalSubStudents}</td>
+                                <td className="p-2 border-r border-black text-center">{row.caWeighted > 0 ? row.caWeighted.toFixed(1) : '-'}</td>
+                                <td className="p-2 border-r border-black text-center">{row.examWeighted > 0 ? row.examWeighted.toFixed(1) : '-'}</td>
+                                <td className="p-2 border-r border-black text-center font-bold">{row.totalPercent > 0 ? `${row.totalPercent.toFixed(1)}%` : '-'}</td>
+                                <td className="p-2 border-r border-black text-center text-gray-500">{row.classAvg > 0 ? `${row.classAvg.toFixed(1)}%` : '-'}</td>
+                                <td className="p-2 border-r border-black text-center">{row.rank !== 'N/A' && row.rank > 0 ? `${row.rank}/${row.totalSubStudents}` : '-'}</td>
                                 <td className="p-2 border-r border-black text-center font-bold">{row.grade}</td>
                                 <td className="p-2">{row.remark}</td>
                             </tr>
@@ -257,7 +232,7 @@ export const HTMLReportCard = ({
                 <div className="flex justify-between text-lg">
                     <div>
                         <span className="font-bold">Overall Average:</span>
-                        <span className="ml-2">{overallAverage.toFixed(2)}%</span>
+                        <span className="ml-2">{overallAverage > 0 ? `${overallAverage.toFixed(2)}%` : 'N/A'}</span>
                     </div>
                     <div>
                         <span className="font-bold">Class Position:</span>
@@ -265,7 +240,6 @@ export const HTMLReportCard = ({
                     </div>
                 </div>
                 
-                {/* FIX: Render Teacher's Remark */}
                 {customRemark?.teacherRemark && (
                     <div className="pt-3 border-t border-dashed border-black">
                         <span className="font-bold block mb-1 text-sm">Class Teacher's Remark:</span>
@@ -273,7 +247,6 @@ export const HTMLReportCard = ({
                     </div>
                 )}
                 
-                {/* FIX: Render Principal's Remark */}
                 {customRemark?.principalRemark && (
                      <div className="pt-3 border-t border-dashed border-black">
                         <span className="font-bold block mb-1 text-sm">Principal's Remark:</span>
