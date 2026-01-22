@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,7 +26,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; // ✅ Changed from useAuth to useUser
 import { collection, addDoc, serverTimestamp, query, where } from 'firebase/firestore'; 
 import { behavioralRecordSchema, Student } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,18 +36,30 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 export function BehavioralRecordForm() {
-  const { user } = useAuth();
+  const { user } = useUser(); // ✅ Changed from useAuth
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { schoolId } = useCurrentSchool();
+  const [open, setOpen] = useState(false); // ✅ Added state to control popover
 
+  // ✅ Query students filtered by schoolId
   const studentsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
   }, [firestore, schoolId]);
   
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+
+  // ✅ Filter and sort students for better UX
+  const sortedStudents = useMemo(() => {
+    if (!students) return [];
+    return [...students].sort((a, b) => {
+      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+  }, [students]);
 
   const form = useForm<z.infer<typeof behavioralRecordSchema>>({
     resolver: zodResolver(behavioralRecordSchema),
@@ -89,6 +100,12 @@ export function BehavioralRecordForm() {
     }
   }
 
+  // ✅ Helper function to get student display name
+  const getStudentName = (studentId: string) => {
+    const student = sortedStudents.find(s => s.uid === studentId);
+    return student ? `${student.firstName} ${student.lastName}` : 'Select student';
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -104,24 +121,29 @@ export function BehavioralRecordForm() {
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                         <FormLabel>Student</FormLabel>
-                        <Popover>
+                        <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                             <FormControl>
                                 <Button
                                 variant="outline"
                                 role="combobox"
+                                aria-expanded={open}
+                                disabled={isLoadingStudents}
                                 className={cn(
                                     "justify-between",
                                     !field.value && "text-muted-foreground"
                                 )}
                                 >
-                                {field.value
-                                    ? students?.find(
-                                        (student) => student.uid === field.value
-                                    )?.firstName + ' ' + students?.find(
-                                        (student) => student.uid === field.value
-                                    )?.lastName
-                                    : "Select student"}
+                                {isLoadingStudents ? (
+                                  <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Loading students...
+                                  </>
+                                ) : field.value ? (
+                                  getStudentName(field.value)
+                                ) : (
+                                  "Select student"
+                                )}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </FormControl>
@@ -130,17 +152,27 @@ export function BehavioralRecordForm() {
                             <Command>
                                 <CommandInput placeholder="Search student..." />
                                 <CommandList>
-                                <CommandEmpty>No student found.</CommandEmpty>
+                                <CommandEmpty>
+                                  {isLoadingStudents ? 'Loading...' : 'No student found.'}
+                                </CommandEmpty>
                                 <CommandGroup>
-                                    {students?.map((student) => (
+                                    {/* ✅ Use sortedStudents and verify schoolId match */}
+                                    {sortedStudents.map((student) => (
                                     <CommandItem
                                         value={`${student.firstName} ${student.lastName}`}
                                         key={student.uid}
                                         onSelect={() => {
-                                        form.setValue("studentId", student.uid)
+                                          form.setValue("studentId", student.uid);
+                                          setOpen(false); // ✅ Close popover after selection
                                         }}
                                     >
                                         {student.firstName} {student.lastName}
+                                        {/* ✅ Debug: Show school ID in dev mode */}
+                                        {process.env.NODE_ENV === 'development' && (
+                                          <span className="ml-2 text-xs text-muted-foreground">
+                                            ({student.schoolId?.slice(0, 8)})
+                                          </span>
+                                        )}
                                     </CommandItem>
                                     ))}
                                 </CommandGroup>
@@ -149,6 +181,12 @@ export function BehavioralRecordForm() {
                             </PopoverContent>
                         </Popover>
                         <FormMessage />
+                        {/* ✅ Debug info in development */}
+                        {process.env.NODE_ENV === 'development' && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Showing {sortedStudents.length} students for school: {schoolId?.slice(0, 8)}
+                          </p>
+                        )}
                         </FormItem>
                     )}
                 />
@@ -202,7 +240,7 @@ export function BehavioralRecordForm() {
                     <FormMessage />
                 </FormItem>
             )} />
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !user || !schoolId}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Log Incident
             </Button>
