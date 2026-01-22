@@ -17,7 +17,7 @@ import { Loader2, Save, Calculator } from 'lucide-react';
 import { Class, Student } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
 
-// --- SCHEMA ---
+// --- SCHEMA (NO LONGER NEEDS YEAR/TERM) ---
 const assessmentSchema = z.object({
   subjectId: z.string().min(1, "Subject is required"),
   assessmentType: z.enum([
@@ -29,11 +29,9 @@ const assessmentSchema = z.object({
   ]),
   maxScore: z.coerce.number().min(1, "Max score must be at least 1"),
   topic: z.string().optional(),
-  academicYear: z.string(),
-  term: z.string(),
 });
 
-export function AssessmentFeedbackForm({ classId, classes }: { classId: string, classes: Class[] }) {
+export function AssessmentFeedbackForm({ classId, classes, academicYear, term }: { classId: string, classes: Class[], academicYear: string, term: string }) {
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
@@ -52,18 +50,13 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
   const form = useForm<z.infer<typeof assessmentSchema>>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
-      academicYear: '2024-2025',
-      term: 'First Term',
       maxScore: 100 // Default max score
     }
   });
 
   const currentMax = form.watch('maxScore');
-  const currentType = form.watch('assessmentType');
 
-  // Handle Score Input with Validation
   const handleScoreChange = (studentId: string, value: string) => {
-    // Prevent entering numbers higher than max
     if (Number(value) > currentMax) return; 
     setScores(prev => ({ ...prev, [studentId]: value }));
   };
@@ -86,8 +79,11 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
         const ref = doc(collection(firestore, 'assessments'));
         const score = parseFloat(scoreVal);
         
+        // Correctly include props for year and term
         batch.set(ref, {
           ...values,
+          academicYear, // FROM PROPS
+          term,         // FROM PROPS
           studentId,
           score,
           subjectName, 
@@ -101,6 +97,7 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
       await batch.commit();
       toast({ title: "Success", description: `Saved ${validScores.length} grades successfully.` });
       setScores({}); 
+      form.reset({ maxScore: 100 }); // Reset form but keep max score default
     } catch (e: any) {
       console.error(e);
       toast({ variant: 'destructive', title: "Error", description: e.message });
@@ -113,14 +110,13 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
     <Card className="border-l-4 border-l-blue-600 shadow-md">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5 text-blue-600"/> Enter Class Grades
+            <Calculator className="h-5 w-5 text-blue-600"/> Enter Class Grades for {academicYear} - {term}
         </CardTitle>
       </CardHeader>
       <CardContent>
          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             
-            {/* CONFIGURATION ROW */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-lg border">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg border">
                 <div className="space-y-2">
                     <label className="text-sm font-bold text-slate-700">Subject</label>
                     <Select onValueChange={(val) => form.setValue('subjectId', val)}>
@@ -151,14 +147,8 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
                     <label className="text-sm font-bold text-slate-700">Max Possible Score</label>
                     <Input type="number" {...form.register('maxScore')} className="bg-white border-slate-300 font-bold" />
                 </div>
-
-                <div className="space-y-2">
-                     <label className="text-sm font-bold text-slate-700">Topic (Optional)</label>
-                     <Input {...form.register('topic')} placeholder="e.g. Algebra" className="bg-white border-slate-300"/>
-                </div>
             </div>
 
-            {/* STUDENTS LIST */}
             <div className="border rounded-md max-h-[500px] overflow-y-auto">
                 <Table>
                     <TableHeader>

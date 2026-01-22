@@ -430,7 +430,12 @@ export default function GradebookManager() {
 
       {activeForm === 'grade' && selectedClassId && (
           <div className="animate-in slide-in-from-top-4 fade-in duration-300">
-              <AssessmentFeedbackForm classId={selectedClassId} classes={teacherClasses || []} />
+              <AssessmentFeedbackForm 
+                classId={selectedClassId} 
+                classes={teacherClasses || []} 
+                academicYear={selectedYear}
+                term={selectedTerm}
+              />
           </div>
       )}
       
