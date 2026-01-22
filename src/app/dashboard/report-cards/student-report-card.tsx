@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -5,11 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { MOCK_SUBJECTS } from '@/lib/data';
 import { Assessment, ReportCardComment, ReportCard } from '@/lib/types';
 import { collection, query, where, doc } from 'firebase/firestore';
 import { useMemo } from 'react';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
@@ -34,6 +36,13 @@ function calculateStudentGradeForSubject(studentId: string, subjectId: string, a
 
 export function StudentReportCard({ student, term, year }: { student: Student, term: string, year: string }) {
     const firestore = useFirestore();
+
+    const { schoolId } = useCurrentSchool();
+    const schoolProfileRef = useMemoFirebase(
+      () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+      [firestore, schoolId]
+    );
+    const { data: schoolProfile } = useDoc(schoolProfileRef);
 
     // Fetch all assessments for the student
     const assessmentsQuery = useMemoFirebase(
@@ -85,7 +94,7 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
             <div className='flex items-center justify-center print:justify-start gap-4'>
                 <AppLogo className="h-12 w-12 text-primary" />
                 <div>
-                    <CardTitle className="text-3xl">SunnySide High School</CardTitle>
+                    <CardTitle className="text-3xl">{schoolProfile?.name || 'School Name Not Set'}</CardTitle>
                     <p className="text-muted-foreground">Student Report Card - {year}</p>
                 </div>
             </div>
@@ -152,4 +161,3 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
       </Card>
     );
   }
-  
