@@ -31,15 +31,12 @@ const nextConfig: NextConfig = {
             ...config.resolve.fallback,
             "http2": false,
             "dns": false,
-            "node:async_hooks": false,
-            async_hooks: false,
-            fs: false,
-            path: false,
-            os: false,
-            net: false,
-            tls: false,
-            child_process: false,
+            "async_hooks": false,
+            "fs": false,
+            "net": false,
+            "tls": false,
             "dgram": false,
+            "child_process": false,
         };
         }
         return config;
