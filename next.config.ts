@@ -29,6 +29,8 @@ const nextConfig: NextConfig = {
         if (!isServer) {
         config.resolve.fallback = {
             ...config.resolve.fallback,
+            "http2": false,
+            "dns": false,
             "node:async_hooks": false,
             async_hooks: false,
             fs: false,
