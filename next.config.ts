@@ -16,7 +16,10 @@ const nextConfig: NextConfig = {
         "@genkit-ai/firebase",
         "@genkit-ai/google-genai",
         "@genkit-ai/next",
-        "firebase-admin"
+        "firebase-admin",
+        "@grpc/grpc-js",
+        "@opentelemetry/exporter-trace-otlp-grpc",
+        "@opentelemetry/sdk-node"
     ],
 
     // 2. Webpack Config (Standard Bundler)
