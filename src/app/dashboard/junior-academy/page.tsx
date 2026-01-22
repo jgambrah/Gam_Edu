@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -23,13 +25,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import ArtsHub from '@/app/dashboard/early-years/components/ArtsHub';
-import ScienceExploration from '@/app/dashboard/early-years/components/ScienceExploration';
-import LiteracyZone from '@/app/dashboard/early-years/components/LiteracyZone';
-import NumeracyCorner from '@/app/dashboard/early-years/components/NumeracyCorner';
-import { generateLessonIdeasAction } from '@/app/actions/generate-lesson-ideas';
-import { generateLessonImageAction } from '@/app/dashboard/early-years/actions';
-import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -506,12 +501,17 @@ function ABCKingdom() {
         const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
-        setIsTracing(true);
+        if(tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
+          ctx.beginPath(); 
+          ctx.moveTo(x, y); 
+          ctx.strokeStyle = color; 
+          ctx.lineWidth = brushSize; 
+          setIsDrawing(true);
+        }
     };
 
     const draw = (e: any) => {
-        if (!isTracing) return;
+        if (!isDrawing) return;
         const canvas = canvasRef.current; if (!canvas) return;
         const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
@@ -520,10 +520,8 @@ function ABCKingdom() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopDrawing = () => {
-        setIsTracing(false);
-    };
-
+    const stopDrawing = () => { setIsDrawing(false); };
+    
     const resetTracingCanvas = () => {
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
@@ -829,8 +827,8 @@ function MathPlayground({ schoolId }: { schoolId: string | null }) {
             
              {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                    <div className="absolute bottom-1/2 left-1/2 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 origin-bottom"></div>
                     <div className="absolute bottom-1/2 left-1/2 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) * 30}deg)` }}></div>
+                    <div className="absolute bottom-1/2 left-1/2 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 origin-bottom" ></div>
                     <div className="absolute top-2">12</div>
                     <div className="absolute bottom-2">6</div>
                     <div className="absolute left-2">9</div>
@@ -960,6 +958,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
+        // Check against the current question in the questions array
         const currentQ = story.questions[currentQuestionIndex];
         const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
         
@@ -990,6 +989,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
         resetQuiz();
     };
 
+    // Calculate actual word count of generated story
     const actualWordCount = story?.content?.split(/\s+/).filter(Boolean).length || 0;
 
     return (
@@ -1041,6 +1041,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                         )}
                     </CardHeader>
                     <CardContent className="p-8 space-y-8">
+                        {/* THE STORY TEXT */}
                         <div className="prose prose-slate max-w-none">
                             <p className="text-xl md:text-2xl leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
                                 {story.content}
@@ -1054,6 +1055,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                             {canEdit && <Button onClick={handleSave} className="flex-1 h-14 text-lg bg-green-600 hover:bg-green-700 font-bold"><Save className="mr-2" /> Save to Library</Button>}
                         </div>
 
+                        {/* 3-QUESTION CHALLENGE AREA */}
                         <div className="bg-white p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
                             {!quizFinished ? (
                                 <div className="space-y-4">
@@ -1220,8 +1222,7 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
         }
     };
 
-    const handleDeleteSorterItem = async (id: string, e?: React.MouseEvent) => {
-        if(e) e.stopPropagation();
+    const handleDeleteSorterItem = async (id: string) => {
         if (!firestore) return;
         try {
             if (window.confirm("Are you sure you want to delete this item?")) {
@@ -1231,7 +1232,7 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                 toast({ title: "Item Removed" });
                 
                 if (refetchSorter) {
-                    await refetchSorter();
+                    refetchSorter();
                 }
                 
                 setCurrentIndex(0);
@@ -1419,7 +1420,10 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                                                         size="icon" 
                                                         variant="ghost" 
                                                         className="text-red-400 hover:text-red-600 hover:bg-red-50" 
-                                                        onClick={(e) => handleDeleteSorterItem(item.id, e)}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleDeleteSorterItem(item.id);
+                                                        }}
                                                     >
                                                         <Trash2 className="h-4 w-4"/>
                                                     </Button>
@@ -1435,6 +1439,7 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                         </Dialog>
                     )}
 
+                    {/* Rest of Sorter Game UI code... */}
                     <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
                         {!dbSorterItems || dbSorterItems.length === 0 ? (
                             <div className="py-10 text-slate-400 font-bold">Your library is empty. Please add items above!</div>
@@ -1913,15 +1918,11 @@ function hexToRgb(hex: string) {
 }
 
 // --- MAIN PAGE ---
-export default function JuniorAcademyPage() {
+export default function JuniorCampusPage() {
   const { role } = useRole();
-  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+  const { schoolId } = useCurrentSchool();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
-
-  if (isLoadingSchool) {
-    return <div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>
-  }
 
   return (
     <div className="min-h-screen bg-[#F0F9FF] p-4 md:p-8 font-sans">
