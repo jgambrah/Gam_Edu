@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -494,9 +493,9 @@ function ABCKingdom() {
     }, [selectedLetter, activeTab]);
 
     const startTracing = (e: any) => {
-        const ctx = traceCanvasRef.current?.getContext('2d');
+        const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
-        const rect = traceCanvasRef.current!.getBoundingClientRect();
+        const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
@@ -505,7 +504,7 @@ function ABCKingdom() {
 
     const draw = (e: any) => {
         if (!isTracing) return;
-        const canvas = traceCanvasRef.current; if (!canvas) return;
+        const canvas = canvasRef.current; if (!canvas) return;
         const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
@@ -513,9 +512,7 @@ function ABCKingdom() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopDrawing = () => {
-        setIsTracing(false);
-    };
+    const stopTracing = () => { setIsDrawing(false); };
 
     const resetTracingCanvas = () => {
         const canvas = traceCanvasRef.current;
@@ -821,7 +818,7 @@ function MathPlayground() {
             
              {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                    <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(question.a.split(':')[0] % 12) * 30}deg)` }}></div>
+                    <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) % 12 * 30}deg)` }}></div>
                     <div className="absolute top-2/4 left-2/4 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom"></div>
                     <div className="absolute top-2">12</div>
                     <div className="absolute bottom-2">6</div>
@@ -1203,17 +1200,21 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     const handleSaveSorterItem = async () => {
         if (!newItem.name || !newItem.emoji || !firestore) return;
-        await addDoc(collection(firestore, 'junior_sorter_items'), {
-            ...newItem,
-            createdAt: serverTimestamp()
-        });
-        setNewItem({ name: '', emoji: '', type: 'living' });
-        refetchSorter();
-        toast({ title: "Item Added!" });
+        try {
+            await addDoc(collection(firestore, 'junior_sorter_items'), {
+                ...newItem,
+                createdAt: serverTimestamp()
+            });
+            setNewItem({ name: '', emoji: '', type: 'living' });
+            if (refetchSorter) refetchSorter();
+            toast({ title: "Item Added!" });
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to add item.", variant: "destructive" });
+        }
     };
 
-    // FIXED DELETE FUNCTION
-    const handleDeleteSorterItem = async (id: string) => {
+    const handleDeleteSorterItem = async (id: string, e?: React.MouseEvent) => {
+        if(e) e.stopPropagation();
         if (!firestore) return;
         try {
             if (window.confirm("Are you sure you want to delete this item?")) {
@@ -1222,12 +1223,10 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 
                 toast({ title: "Item Removed" });
                 
-                // Refresh data
                 if (refetchSorter) {
-                    forceRefetch();
+                    refetchSorter();
                 }
                 
-                // Reset index if we deleted the only remaining item or are out of bounds
                 setCurrentIndex(0);
             }
         } catch (error) {
@@ -1430,7 +1429,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </Dialog>
                     )}
 
-                    {/* Rest of Sorter Game UI code... */}
                     <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
                         {!dbSorterItems || dbSorterItems.length === 0 ? (
                             <div className="py-10 text-slate-400 font-bold">Your library is empty. Please add items above!</div>
@@ -1535,10 +1533,8 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
     const draw = (e: any) => {
         if (!isDrawing) return;
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        const canvas = canvasRef.current; if (!canvas) return;
+        const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
@@ -1911,7 +1907,7 @@ function hexToRgb(hex: string) {
 }
 
 // --- MAIN PAGE ---
-export default function JuniorAcademyPage() {
+export default function JuniorCampusPage() {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
