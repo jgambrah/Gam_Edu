@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -103,11 +104,21 @@ function AssessmentsLog() {
 function BehavioralLog() {
     const firestore = useFirestore();
     const recordsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'behavioral_records'), orderBy('date', 'desc')) : null, [firestore]);
-    const { data: records, isLoading } = useCollection<BehavioralRecord>(recordsQuery);
+    const { data: records, isLoading: isLoadingRecords } = useCollection<BehavioralRecord>(recordsQuery);
+
+    const studentsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'students')) : null, [firestore]);
+    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+    
+    const studentMap = useMemo(() => {
+        if (!students) return new Map();
+        return new Map(students.map(s => [s.uid, `${s.firstName} ${s.lastName}`]));
+    }, [students]);
+
+    const isLoading = isLoadingRecords || isLoadingStudents;
 
     const toDate = (dateValue: any): Date | null => {
         if (!dateValue) return null;
-        if (dateValue.toDate) return dateValue.toDate(); // It's a Firestore Timestamp
+        if (dateValue.toDate) return dateValue.toDate();
         if (typeof dateValue === 'string' || typeof dateValue === 'number') {
             const d = new Date(dateValue);
             if (!isNaN(d.getTime())) return d;
@@ -141,10 +152,11 @@ function BehavioralLog() {
                         ))}
                         {records?.map((item) => {
                              const incidentDate = toDate(item.date);
+                             const studentName = item.studentName || studentMap.get(item.studentId) || item.studentId;
                              return (
                                 <TableRow key={item.id}>
                                     <TableCell>{incidentDate ? format(incidentDate, 'PPP') : 'Invalid Date'}</TableCell>
-                                    <TableCell>{item.studentId}</TableCell>
+                                    <TableCell>{studentName}</TableCell>
                                     <TableCell>{item.incidentType}</TableCell>
                                     <TableCell className="truncate max-w-sm">{item.description}</TableCell>
                                 </TableRow>

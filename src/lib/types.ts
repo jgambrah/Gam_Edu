@@ -146,6 +146,7 @@ export type Assessment = z.infer<typeof assessmentFeedbackSchema> & {
 
 export const behavioralRecordSchema = z.object({
     studentId: z.string().min(1, "Student is required."),
+    studentName: z.string().optional(),
     incidentType: z.enum(['Infraction', 'Positive Behavior', 'Counseling Note', 'Disciplinary Action', 'Teacher Note']),
     date: z.date(),
     description: z.string().min(1, "Description is required."),
