@@ -14,7 +14,7 @@ const StorySchema = z.object({
       question: z.string().describe("A simple comprehension question about the story."),
       answer: z.string().describe("The answer to the question.")
     })
-  ).length(3).describe("An array containing exactly 3 question-answer objects."),
+  ).min(3).max(3).describe("An array containing exactly 3 question-answer objects."),
   emojiIcon: z.string().describe("A single emoji representing the story (e.g., 🦖).")
 });
 
@@ -44,9 +44,13 @@ export async function generateJuniorStory(topic: string, wordCount: number = 100
     }
     
     return { success: true, data: output };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Story Generation Error:", error);
-    return { success: false, error: "The story robot is sleeping." };
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error",
+      details: error 
+    };
   }
 }
 
@@ -80,9 +84,13 @@ export async function generateJuniorScience(topic: string) {
     }
 
     return { success: true, data: output };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Science Generation Error:", error);
-    return { success: false, error: "Science lab is closed." };
+    return { 
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error",
+        details: error 
+    };
   }
 }
 
@@ -123,7 +131,11 @@ export async function generatePhonicsChallenge(level: 'easy' | 'medium' | 'hard'
     return { success: true, data: output };
   } catch (error: any) {
     console.error("Phonics Generation Error:", error);
-    return { success: false, error: "Phonics engine offline." };
+    return { 
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error",
+        details: error 
+    };
   }
 }
 
@@ -163,9 +175,13 @@ export async function generateWordDetails(word: string) {
     }
 
     return { success: true, data: output };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Word Details Generation Error:", error);
-    return { success: false, error: "Could not analyze word." };
+    return { 
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error",
+        details: error 
+    };
   }
 }
 
@@ -210,7 +226,11 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
 
     } catch (error: any) {
         console.error("TTS Generation Error:", error);
-        return { success: false, error: error.message || "Failed to generate speech." };
+        return { 
+            success: false, 
+            error: error instanceof Error ? error.message : "Unknown error",
+            details: error 
+        };
     }
 }
 
