@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -338,7 +337,7 @@ function PhonicsForest() {
                         {blendingWord.map((letter, i) => (
                             <button 
                                 key={i}
-                                onClick={() => speak(letter)}
+                                onClick={()={() => speak(letter)}
                                 className="w-24 h-32 bg-white rounded-3xl shadow-xl border-b-[12px] border-teal-200 text-5xl font-black text-teal-600 hover:scale-105 active:translate-y-2 transition-all flex items-center justify-center"
                             >
                                 {letter}
@@ -440,6 +439,9 @@ function ABCKingdom() {
     // Tracing Canvas Refs
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
+    const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp' | 'pencil' | 'crayon' | 'paint_brush' | 'marker'>('brush');
+    const [color, setColor] = useState('#4f46e5');
+    const [brushSize, setBrushSize] = useState(8);
 
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     const dict: Record<string, { word: string, emoji: string, phonic: string }> = {
@@ -479,63 +481,6 @@ function ABCKingdom() {
             setTimeout(() => speak(`${data.phonic}, as in, ${data.word}`), 800);
         }
     };
-
-    // Tracing Logic
-    useEffect(() => {
-        if (activeTab === 'tracing' && canvasRef.current) {
-            const ctx = canvasRef.current.getContext('2d');
-            if (ctx) {
-                ctx.clearRect(0, 0, 400, 400);
-                ctx.font = "bold 300px sans-serif";
-                ctx.fillStyle = "#f1f5f9"; // Ghost letter
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(selectedLetter, 200, 220);
-            }
-        }
-    }, [selectedLetter, activeTab]);
-
-    const startDrawing = (e: any) => {
-        const ctx = canvasRef.current?.getContext('2d');
-        if (!ctx) return;
-        const rect = canvasRef.current!.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        if(tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
-          ctx.beginPath(); 
-          ctx.moveTo(x, y); 
-          ctx.strokeStyle = color; 
-          ctx.lineWidth = brushSize; 
-          setIsDrawing(true);
-        }
-    };
-
-    const draw = (e: any) => {
-        if (!isDrawing) return;
-        const canvas = canvasRef.current; if (!canvas) return;
-        const ctx = canvas.getContext('2d'); if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.lineTo(x, y);
-        ctx.stroke();
-    };
-
-    const stopDrawing = () => { setIsDrawing(false); };
-    
-    const resetTracingCanvas = () => {
-        const canvas = canvasRef.current;
-        const ctx = canvas?.getContext('2d');
-        if (canvas && ctx) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = "bold 300px sans-serif";
-            ctx.fillStyle = "#f1f5f9";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText(selectedLetter, 200, 220);
-        }
-    };
-
 
     return (
         <div className="space-y-8">
@@ -593,72 +538,6 @@ function ABCKingdom() {
                                     </Button>
                                 </div>
                             )}
-
-                            {/* TRACING MODE */}
-                            {activeTab === 'tracing' && (
-                                <div className="p-8 flex flex-col items-center space-y-6 animate-in slide-in-from-right-4">
-                                    <div className="text-center">
-                                        <h3 className="text-2xl font-black text-slate-800">Can you trace the letter {selectedLetter}?</h3>
-                                        <p className="text-slate-500">Use your finger or mouse to draw!</p>
-                                    </div>
-                                    <div className="relative bg-white border-4 border-slate-100 rounded-3xl shadow-inner">
-                                        <canvas 
-                                            ref={canvasRef} width={400} height={400} 
-                                            className="touch-none cursor-crosshair"
-                                            onMouseDown={startDrawing}
-                                            onMouseMove={draw}
-                                            onMouseUp={stopDrawing}
-                                            onMouseLeave={stopDrawing}
-                                            onTouchStart={startDrawing}
-                                            onTouchMove={draw}
-                                            onTouchEnd={stopDrawing}
-                                        />
-                                        <Button 
-                                            variant="ghost" size="sm" 
-                                            className="absolute bottom-2 right-2 text-slate-300"
-                                            onClick={resetTracingCanvas}
-                                        >
-                                            Reset
-                                        </Button>
-                                    </div>
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Start at the top!</p>
-                                </div>
-                            )}
-
-                            {/* MATCHER GAME */}
-                            {activeTab === 'matcher' && (
-                                <div className="p-8 text-center space-y-8 animate-in fade-in">
-                                    <h3 className="text-3xl font-black text-slate-800">Find the Lower Case!</h3>
-                                    <div className="text-[120px] font-black text-green-600 mb-8 bg-green-50 w-40 h-40 flex items-center justify-center rounded-3xl mx-auto shadow-sm">
-                                        {selectedLetter}
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-                                        {[
-                                            selectedLetter.toLowerCase(), 
-                                            alphabet[Math.floor(Math.random()*26)].toLowerCase(),
-                                            alphabet[Math.floor(Math.random()*26)].toLowerCase(),
-                                            alphabet[Math.floor(Math.random()*26)].toLowerCase(),
-                                        ].sort(() => Math.random() - 0.5).map((char, i) => (
-                                            <button 
-                                                key={i}
-                                                onClick={() => {
-                                                    if (char === selectedLetter.toLowerCase()) {
-                                                        confetti();
-                                                        speak("Correct!");
-                                                        setSelectedLetter(alphabet[Math.floor(Math.random()*26)]);
-                                                    } else {
-                                                        speak("Try again");
-                                                    }
-                                                }}
-                                                className="h-24 bg-white border-4 border-slate-100 rounded-3xl text-5xl font-black text-slate-700 hover:border-green-400 hover:bg-green-50 transition-all"
-                                            >
-                                                {char}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
                         </CardContent>
                     </Card>
                 </div>
@@ -802,38 +681,11 @@ function MathPlayground({ schoolId }: { schoolId: string | null }) {
                 </div>
             )}
 
-            {/* DIVISION: Sharing into Groups Visual */}
-            {mode === 'div' && (
-                <div className="space-y-4 mb-6">
-                    <div className="flex flex-wrap justify-center gap-1 border-b pb-4">
-                        {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-2xl">{question.icon}</span>)}
-                    </div>
-                    <div className="flex gap-2">
-                        {Array.from({ length: question.b }).map((_, i) => (
-                            <div key={i} className="w-12 h-12 border-2 border-dashed border-orange-200 rounded-xl flex items-center justify-center text-xs text-orange-300 font-bold">Group</div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
             {(mode === 'add' || mode === 'sub') && (
                 <div className="flex flex-wrap justify-center gap-2 mb-6">
                     {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl">{question.icon}</span>)}
                     <span className="text-3xl font-black text-orange-300 mx-2">{mode === 'add' ? '+' : '-'}</span>
                     {Array.from({ length: question.b }).map((_, i) => <span key={i} className="text-3xl opacity-50">{question.icon}</span>)}
-                </div>
-            )}
-            
-            {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6 drop-shadow-md">{question.a}</div>}
-            
-             {mode === 'time' && (
-                <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                    <div className="absolute bottom-1/2 left-1/2 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) * 30}deg)` }}></div>
-                    <div className="absolute bottom-1/2 left-1/2 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 origin-bottom"></div>
-                    <div className="absolute top-2">12</div>
-                    <div className="absolute bottom-2">6</div>
-                    <div className="absolute left-2">9</div>
-                    <div className="absolute right-2">3</div>
                 </div>
             )}
             
@@ -848,12 +700,6 @@ function MathPlayground({ schoolId }: { schoolId: string | null }) {
                             <span className="text-slate-300">=</span>
                             <span className="text-orange-500">?</span>
                         </div>
-                    )}
-                    {(mode === 'compare' || mode === 'patterns') && (
-                        <span className="text-6xl tracking-tighter">{question.displayPrompt}</span>
-                    )}
-                    {(mode === 'mul' || mode === 'div' || mode === 'shapes' || mode === 'time') && (
-                        <span>{question.displayPrompt ? "" : question.a}</span>
                     )}
                 </div>
             </div>
@@ -961,7 +807,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
-        // Check against the current question in the questions array
         const currentQ = story.questions[currentQuestionIndex];
         const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
         
@@ -992,7 +837,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
         resetQuiz();
     };
 
-    // Calculate actual word count of generated story
     const actualWordCount = story?.content?.split(/\s+/).filter(Boolean).length || 0;
 
     return (
@@ -1044,7 +888,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                         )}
                     </CardHeader>
                     <CardContent className="p-8 space-y-8">
-                        {/* THE STORY TEXT */}
                         <div className="prose prose-slate max-w-none">
                             <p className="text-xl md:text-2xl leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
                                 {story.content}
@@ -1058,7 +901,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                             {canEdit && <Button onClick={handleSave} className="flex-1 h-14 text-lg bg-green-600 hover:bg-green-700 font-bold"><Save className="mr-2" /> Save to Library</Button>}
                         </div>
 
-                        {/* 3-QUESTION CHALLENGE AREA */}
                         <div className="bg-white p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
                             {!quizFinished ? (
                                 <div className="space-y-4">
@@ -1118,7 +960,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                 </Card>
             )}
 
-            {/* LIBRARY SECTION */}
             <div>
                 <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2">
                     <BookOpen className="text-purple-500" /> Story Library
@@ -1150,826 +991,623 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
-// --- 6. SCIENCE WORLD (FIXED JOURNAL SAVE) ---
-function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
-    const firestore = useFirestore();
+// --- 6. SCIENCE WORLD ---
+function ScienceWorld({ canEdit }: { canEdit: boolean }) {
+    const [activeTab, setActiveTab] = useState<'sorter' | 'lab' | 'journal'>('sorter');
+    const [newDiscovery, setNewDiscovery] = useState('');
+    const [activeMaterial, setActiveMaterial] = useState<any>(null);
+
     const { user } = useUser();
+    const { schoolId } = useCurrentSchool();
+    const firestore = useFirestore();
     const { toast } = useToast();
-    
-    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
-    
-    // --- 1. DATA FETCHING (Corrected Query) ---
-    // Note: If this list is empty, check Console for "Index Required" link
-    const scienceQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(
-            collection(firestore, 'junior_science'), 
-            where('schoolId', '==', schoolId), 
-            orderBy('createdAt', 'desc')
-        ) : null, 
-    [firestore, schoolId]);
-    
-    const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
-    
-    const sorterQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'junior_sorter_items'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
-    [firestore, schoolId]);
-    const { data: dbSorterItems, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
-    
-    const materialsQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'junior_science_materials'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
-    [firestore, schoolId]);
-    const { data: dbMaterials, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
-    
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [newItem, setNewItem] = useState({ name: '', emoji: '', type: 'living' });
-    const [temp, setTemp] = useState(20);
-    const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
-    const [showAddMatForm, setShowAddMatForm] = useState(false);
-    const [topic, setTopic] = useState(''); 
-    const [fact, setFact] = useState<any>(null); 
-    const [loading, setLoading] = useState(false);
-    const [newMat, setNewMat] = useState({
-        name: '',
-        solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' },
-        liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' },
-        gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
-    });
 
-    const handleNextSorter = () => {
-        if (!dbSorterItems || dbSorterItems.length === 0) return;
-        setCurrentIndex((prev) => (prev + 1) % dbSorterItems.length);
-    };
+    // Sorter State: Drag and Drop
+    const [sortItems, setSortItems] = useState(['Solid', 'Liquid', 'Gas']);
+    const [solidItems, setSolidItems] = useState(['Rock', 'Wood', 'Metal']);
+    const [liquidItems, setLiquidItems] = useState(['Water', 'Oil', 'Juice']);
+    const [gasItems, setGasItems] = useState(['Air', 'Steam', 'Oxygen']);
 
-    const handleAnswer = (choice: string) => {
-        if (!dbSorterItems) return;
-        const currentItem = dbSorterItems[currentIndex];
-        if (choice === currentItem.type) {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            speak(`Correct! ${currentItem.name} is ${currentItem.type}!`);
-            setTimeout(handleNextSorter, 1500);
-        } else {
-            speak(`Not quite! Try again.`);
-            toast({ title: "Try again!", description: `Is it really ${choice}?`, variant: "destructive" });
-        }
-    };
+    // Matter Lab
+    const [dbMaterials, setDbMaterials] = useState<any[]>([]);
 
-    const handleSaveSorterItem = async () => {
-        if (!newItem.name || !newItem.emoji || !firestore || !schoolId) return;
-        try {
-            await addDoc(collection(firestore, 'junior_sorter_items'), {
-                ...newItem,
-                createdAt: serverTimestamp(),
-                schoolId: schoolId,
-            });
-            setNewItem({ name: '', emoji: '', type: 'living' });
-            if (refetchSorter) refetchSorter();
-            toast({ title: "Item Added!" });
-        } catch (error) {
-            toast({ title: "Error", description: "Failed to add item.", variant: "destructive" });
-        }
-    };
+    const matterQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_materials'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+    const { data: materials, forceRefetch } = useCollection<any>(matterQuery);
 
-    const handleDeleteSorterItem = async (id: string) => {
-        if (!firestore) return;
-        try {
-            if (window.confirm("Are you sure you want to delete this item?")) {
-                const itemDoc = doc(firestore, 'junior_sorter_items', id);
-                await deleteDoc(itemDoc);
-                
-                toast({ title: "Item Removed" });
-                
-                if (refetchSorter) {
-                    refetchSorter();
-                }
-                
-                setCurrentIndex(0);
+    const journalQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_science_journal'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+    const { data: journal, forceRefetch: forceJournalRefetch } = useCollection<any>(journalQuery);
+
+    // Fetch initial lab materials
+    useEffect(() => {
+        if (materials) {
+            setDbMaterials(materials);
+            if (materials.length > 0) {
+                setActiveMaterial(materials[0]);
+            } else {
+                setActiveMaterial(null);
             }
-        } catch (error) {
-            console.error("Delete Error:", error);
-            toast({ 
-                title: "Error", 
-                description: "Missing permissions or item not found.", 
-                variant: "destructive" 
-            });
         }
-    };
+    }, [materials]);
 
-    const handleSaveMaterial = async () => {
-        if (!newMat.name || !firestore || !schoolId) return;
-        const statesArray = [
-            { ...newMat.solid }, 
-            { ...newMat.liquid }, 
-            { ...newMat.gas }
-        ];
+    const handleSave = async () => {
+        if (!user || !newDiscovery || !firestore || !schoolId) return;
 
-        await addDoc(collection(firestore, 'junior_science_materials'), {
-            name: newMat.name,
-            states: statesArray,
+        await addDoc(collection(firestore, 'junior_science_journal'), {
+            text: newDiscovery,
             createdAt: serverTimestamp(),
-            schoolId: schoolId,
+            createdBy: user.uid,
+            schoolId: schoolId, // Use schoolId here
         });
 
-        setShowAddMatForm(false);
-        setNewMat({ name: '', solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' }, liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' }, gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' } });
-        refetchMaterials();
-        toast({ title: "Material Created!" });
+        setNewDiscovery('');
+        forceJournalRefetch();
+        setActiveTab('journal'); // Switch to the journal tab after saving
+        toast({ title: "Discovery saved!" });
     };
 
-    const getCurrentState = () => {
-        if (!selectedMaterial) return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
-        const state = [...selectedMaterial.states].sort((a,b) => b.temp - a.temp).find(s => temp >= s.temp);
-        return state || selectedMaterial.states[0];
-    };
-
-    const handleGenerate = async () => { 
-        setLoading(true); 
-        try {
-            const res = await generateJuniorScience(topic); 
-            if(res.success) {
-                setFact(res.data);
-            } else {
-                toast({ variant: "destructive", title: "AI Error", description: "Could not generate fact." });
-            }
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false); 
+    const handleDelete = async (id: string) => {
+        if (!firestore) return;
+        if (confirm("Delete this discovery?")) {
+            await deleteDoc(doc(firestore, 'junior_science_journal', id));
+            forceJournalRefetch();
         }
     };
 
-    const handleSave = async () => { 
-        if(!user || !fact || !firestore || !schoolId) return; 
-        
+    // New Material Management
+    const [newMaterialName, setNewMaterialName] = useState('');
+    const [newMaterialNotes, setNewMaterialNotes] = useState('');
+    const [isAddingMaterial, setIsAddingMaterial] = useState(false);
+
+    const handleSaveMaterial = async () => {
+        if (!user || !newMaterialName || !newMaterialNotes || !firestore || !schoolId) return;
+
+        setIsAddingMaterial(true);
         try {
-            // Save to Firestore
-            await addDoc(collection(firestore,'junior_science'), {
-                title: fact.title,
-                fact: fact.fact,
-                emojiIcon: fact.emojiIcon,
-                observation: fact.observation || "",
-                experiment: fact.experiment || "",
+            const newDocRef = await addDoc(collection(firestore, 'junior_materials'), {
+                name: newMaterialName,
+                notes: newMaterialNotes,
                 createdAt: serverTimestamp(),
                 createdBy: user.uid,
-                schoolId: schoolId
-            }); 
-            
-            setFact(null); 
-            setTopic('');
-            
-            if (refetchScience) refetchScience(); 
-            
-            toast({title: "Discovery Saved!", description: "Check your Journal tab."});
-            
-            setActiveTab('library');
+                schoolId: schoolId, // Use schoolId here
+            });
 
-        } catch (e: any) {
-            console.error("Save Error:", e);
-            toast({ variant: "destructive", title: "Save Failed", description: e.message });
-        }
-    };
-    
-    const handleDeleteDiscovery = async (id: string) => {
-        if (!firestore) return;
-        if(confirm("Delete this discovery?")){
-            await deleteDoc(doc(firestore, 'junior_science', id));
-            if(refetchScience) refetchScience();
-            toast({ title: "Deleted" });
+            // Optimistically update the local state
+            const newMaterial = {
+                id: newDocRef.id,
+                name: newMaterialName,
+                notes: newMaterialNotes,
+                createdBy: user.uid,
+                schoolId: schoolId,
+                createdAt: { /* Simulate serverTimestamp for immediate display */ seconds: Date.now() / 1000, nanoseconds: 0 }
+            };
+
+            setDbMaterials(prev => [newMaterial, ...prev]);
+            setActiveMaterial(newMaterial);
+
+            setNewMaterialName('');
+            setNewMaterialNotes('');
+            forceRefetch();
+            toast({ title: "New material added!" });
+        } catch (error) {
+            toast({ title: "Error adding material!", description: "Please try again.", variant: "destructive" });
+        } finally {
+            setIsAddingMaterial(false);
         }
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
+            {/* 1. TOP NAVIGATION */}
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
-                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')}>Discovery</Button>
-                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')}>Sorter</Button>
-                <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
-                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
+                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')} className="rounded-xl font-bold">Matter Sorter</Button>
+                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')} className="rounded-xl font-bold">Matter Lab</Button>
+                <Button variant={activeTab === 'journal' ? 'default' : 'ghost'} onClick={() => setActiveTab('journal')} className="rounded-xl font-bold">Discovery Journal</Button>
             </div>
 
-            {activeTab === 'lab' && (
-                 <div className="space-y-6 animate-in fade-in">
-                     {canEdit && (
-                        <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
-                            <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> What should we investigate?</h3>
-                            <div className="flex gap-2">
-                                <Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Gravity, Ants, Clouds)" className="text-lg h-12 rounded-xl"/>
-                                <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 px-6">
-                                    {loading ? <Loader2 className="animate-spin"/> : "Investigate"}
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                    {fact && (
-                        <Card className="border-4 border-blue-400 overflow-hidden rounded-[40px] shadow-2xl animate-in zoom-in">
-                           <div className="bg-blue-500 p-8 text-center text-white">
-                                <div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div>
-                                <h2 className="text-4xl font-black mb-2">{fact.title}</h2>
-                            </div>
-                            <CardContent className="p-8 space-y-6">
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
-                                        <h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p>
-                                    </div>
-                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100">
-                                        <h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you to see this in action!"}</p>
-                                    </div>
-                                </div>
-                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200">
-                                    <h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4>
-                                    <p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example of this in your backyard?"}"</p>
-                                </div>
-                                <div className="flex gap-4">
-                                    <Button onClick={() => speak(`${fact.title}. ${fact.fact}. Try this: ${fact.experiment}`)} className="flex-1 h-14 bg-blue-600 text-lg font-bold rounded-2xl">Read Lesson</Button>
-                                    {canEdit && <Button onClick={handleSave} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
+            {/* 2. MATTER SORTER */}
+            {activeTab === 'sorter' && (
+                <div className="grid grid-cols-3 gap-6 animate-in fade-in">
+                    <div className="bg-white p-4 rounded-2xl border-2 border-blue-100 shadow-sm space-y-4">
+                        <h3 className="font-bold text-blue-500">Solid</h3>
+                        {solidItems.map(item => (
+                            <div key={item} className="bg-blue-50 px-4 py-2 rounded-full text-sm text-blue-700">{item}</div>
+                        ))}
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border-2 border-blue-100 shadow-sm space-y-4">
+                        <h3 className="font-bold text-blue-500">Liquid</h3>
+                        {liquidItems.map(item => (
+                            <div key={item} className="bg-blue-50 px-4 py-2 rounded-full text-sm text-blue-700">{item}</div>
+                        ))}
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border-2 border-blue-100 shadow-sm space-y-4">
+                        <h3 className="font-bold text-blue-500">Gas</h3>
+                        {gasItems.map(item => (
+                            <div key={item} className="bg-blue-50 px-4 py-2 rounded-full text-sm text-blue-700">{item}</div>
+                        ))}
+                    </div>
                 </div>
             )}
-            
-            {activeTab === 'sorter' && (
-                <div className="space-y-6">
-                    {canEdit && (
-                         <Dialog>
-                            <DialogTrigger asChild>
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-lg">
-                                    <PlusCircle className="mr-2 h-4 w-4"/> Add or Manage Sorter Items
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle>Manage Sorter Library</DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-4 py-4">
-                                    <div className="grid grid-cols-4 gap-2 p-4 border rounded-2xl bg-slate-50">
-                                        <Input 
-                                            placeholder="Name" 
-                                            value={newItem.name} 
-                                            onChange={e => setNewItem({...newItem, name: e.target.value})} 
-                                            className="col-span-2"
-                                        />
-                                        <Input 
-                                            placeholder="Emoji" 
-                                            value={newItem.emoji} 
-                                            onChange={e => setNewItem({...newItem, emoji: e.target.value})} 
-                                            className="text-center"
-                                        />
-                                        <Button onClick={handleSaveSorterItem} size="icon" className="bg-green-600 hover:bg-green-700">
-                                            <Check className="h-4 w-4"/>
-                                        </Button>
-                                        <div className="col-span-4">
-                                            <Select value={newItem.type} onValueChange={(v) => setNewItem({...newItem, type: v})}>
-                                                <SelectTrigger><SelectValue placeholder="Select Type"/></SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="living">Living 🌳</SelectItem>
-                                                    <SelectItem value="non-living">Non-Living 🧸</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+
+            {/* 3. MATTER LAB */}
+            {activeTab === 'lab' && (
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in slide-in-from-bottom-4">
+                    {/* LEFT: MATERIAL SELECTOR */}
+                    <div className="lg:col-span-1 bg-white rounded-3xl border-2 border-blue-100 shadow-sm p-4 space-y-4">
+                        <h3 className="text-xl font-bold text-blue-700 mb-2">Materials</h3>
+                        <ScrollArea className="h-[400px]">
+                            <div className="space-y-2">
+                                {dbMaterials?.map(material => (
+                                    <button
+                                        key={material.id}
+                                        onClick={() => setActiveMaterial(material)}
+                                        className={`w-full px-4 py-3 rounded-2xl text-left font-medium hover:bg-blue-50 transition-colors ${activeMaterial?.id === material.id ? 'bg-blue-100 text-blue-800 font-bold' : 'text-slate-600'}`}
+                                    >
+                                        {material.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </ScrollArea>
+
+                        {canEdit && (
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" className="w-full border-blue-300 text-blue-500 mt-4">
+                                        <PlusCircle className="w-4 h-4 mr-2" /> Add New Material
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                        <DialogTitle>New Material</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="name">Name</Label>
+                                            <Input id="name" value={newMaterialName} onChange={e => setNewMaterialName(e.target.value)} placeholder="e.g. Copper Wire" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="notes">Notes</Label>
+                                            <Input id="notes" value={newMaterialNotes} onChange={e => setNewMaterialNotes(e.target.value)} placeholder="e.g. Conducts electricity" />
                                         </div>
                                     </div>
-                                    
-                                    <ScrollArea className="h-64 pr-4">
-                                        <div className="space-y-2">
-                                            {dbSorterItems?.map((item: any) => (
-                                                <div key={item.id} className="flex justify-between items-center p-3 border rounded-xl hover:bg-slate-50 transition-colors">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-2xl">{item.emoji}</span>
-                                                        <div>
-                                                            <p className="font-bold text-sm leading-none">{item.name}</p>
-                                                            <Badge variant="outline" className="mt-1 text-[10px] uppercase">
-                                                                {item.type}
-                                                            </Badge>
-                                                        </div>
-                                                    </div>
-                                                    <Button 
-                                                        type="button" 
-                                                        size="icon" 
-                                                        variant="ghost" 
-                                                        className="text-red-400 hover:text-red-600 hover:bg-red-50" 
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteSorterItem(item.id);
-                                                        }}
-                                                    >
-                                                        <Trash2 className="h-4 w-4"/>
-                                                    </Button>
-                                                </div>
-                                            ))}
-                                            {(!dbSorterItems || dbSorterItems.length === 0) && (
-                                                <p className="text-center text-slate-400 py-10">No items found.</p>
-                                            )}
-                                        </div>
-                                    </ScrollArea>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-                    )}
+                                    <Button onClick={handleSaveMaterial} disabled={isAddingMaterial} className="bg-blue-600">
+                                        {isAddingMaterial ? <Loader2 className="animate-spin" /> : "Save Material"}
+                                    </Button>
+                                </DialogContent>
+                            </Dialog>
+                        )}
+                    </div>
 
-                    <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
-                        {(!dbSorterItems || dbSorterItems.length === 0) ? (
-                            <div className="py-10 text-slate-400 font-bold">Your library is empty. Please add items above!</div>
-                        ) : (
-                            <div className="animate-in zoom-in space-y-8">
-                                <div className="flex justify-center gap-1">
-                                    {dbSorterItems.map((_: any, i: number) => (
-                                        <div 
-                                            key={i} 
-                                            className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} 
-                                        />
-                                    ))}
-                                </div>
-                                <div className="text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 border-blue-50">
-                                    {dbSorterItems[currentIndex].emoji}
-                                </div>
-                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex].name}</h3>
-                                
-                                <div className="flex justify-center gap-6">
-                                    <Button 
-                                        onClick={() => handleAnswer('living')}
-                                        className="h-24 px-12 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#15803d] active:shadow-none active:translate-y-2 transition-all"
-                                    >
-                                        🌳 Living
-                                    </Button>
-                                    <Button 
-                                        onClick={() => handleAnswer('non-living')}
-                                        className="h-24 px-12 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#334155] active:shadow-none active:translate-y-2 transition-all"
-                                    >
-                                        🧸 Non-Living
-                                    </Button>
-                                </div>
-                                <p className="text-slate-400 font-bold">
-                                    Item {currentIndex + 1} of {dbSorterItems.length}
+                    {/* RIGHT: MATERIAL DETAILS */}
+                    <div className="lg:col-span-3 bg-white rounded-3xl border-2 border-blue-100 shadow-sm p-8 space-y-4">
+                        {activeMaterial ? (
+                            <>
+                                <h3 className="text-2xl font-bold text-blue-700">{activeMaterial.name}</h3>
+                                <p className="text-slate-600">{activeMaterial.notes}</p>
+                                <p className="text-xs text-slate-400">
+                                    Added by {activeMaterial.createdBy} on {activeMaterial.createdAt?.toDate().toLocaleDateString()}
                                 </p>
+                            </>
+                        ) : (
+                            <div className="text-center py-24">
+                                <h3 className="text-xl font-bold text-blue-700 opacity-50">No Material Selected</h3>
                             </div>
                         )}
                     </div>
                 </div>
             )}
-            
-            {activeTab === 'library' && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
-                    {savedScience?.map((s:any)=>(
-                        <div 
-                            key={s.id} 
-                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1"
-                            onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}
-                        >
-                            <div className="text-5xl mb-4">{s.emojiIcon}</div>
-                            <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
-                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">
-                                {s.createdAt?.toDate ? new Date(s.createdAt.seconds * 1000).toLocaleDateString() : 'Discovery'}
-                            </p>
-                            {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
-                                    <Trash2 className="w-4 w-4"/>
-                                </Button>
-                            )}
-                        </div>
-                    ))}
-                    
-                    {(!savedScience || savedScience.length === 0) && (
-                        <div className="col-span-4 text-center py-10 text-slate-400">
-                            No discoveries yet. Go to the <strong>Discovery</strong> tab to create one!
+
+            {/* 4. DISCOVERY JOURNAL */}
+            {activeTab === 'journal' && (
+                <div className="space-y-6 animate-in slide-in-from-right-4">
+                    {canEdit && (
+                        <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
+                            <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><PenSquare /> New Discovery</h3>
+                            <div className="space-y-4">
+                                <Input
+                                    value={newDiscovery}
+                                    onChange={e => setNewDiscovery(e.target.value)}
+                                    placeholder="What did you discover today?"
+                                    className="text-lg h-12 rounded-xl"
+                                />
+                                <Button onClick={handleSave} disabled={!newDiscovery} className="bg-blue-600">Save Discovery</Button>
+                            </div>
                         </div>
                     )}
+
+                    <div>
+                        <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2">
+                            <FileText className="text-blue-500" /> Science Journal
+                        </h3>
+                        <div className="space-y-4">
+                            {journal?.map((entry: any) => (
+                                <Card key={entry.id} className="border-b-8 border-blue-200 relative group rounded-3xl overflow-hidden">
+                                    <CardContent className="p-6">
+                                        <p className="text-lg text-slate-700 whitespace-pre-wrap">{entry.text}</p>
+                                        <p className="text-xs text-slate-400 mt-4">
+                                            Discovered by {entry.createdBy} on {entry.createdAt?.toDate().toLocaleDateString()}
+                                        </p>
+                                    </CardContent>
+                                    {canEdit && (
+                                        <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" onClick={() => handleDelete(entry.id)}>
+                                            <Trash2 className="w-4 w-4" />
+                                        </Button>
+                                    )}
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
     );
 }
 
-// --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
+// --- 7. ART STUDIO (VERSION 2) ---
 function ArtStudio({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
+    const [activeTool, setActiveTool] = useState<'brush' | 'eraser' | 'fill'>('brush');
+    const [brushColor, setBrushColor] = useState('#000000');
+    const [brushSize, setBrushSize] = useState(5);
+    const [canvasHistory, setCanvasHistory] = useState<string[]>([]);
+    const [historyIndex, setHistoryIndex] = useState(-1); // Initialize to -1
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery'>('freestyle');
     const [isDrawing, setIsDrawing] = useState(false);
-    const [color, setColor] = useState('#4f46e5');
-    const [brushSize, setBrushSize] = useState(8);
-    const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp' | 'pencil' | 'crayon' | 'paint_brush' | 'marker'>('brush');
-    const [selectedShape, setSelectedShape] = useState<'circle' | 'square' | 'star'>('circle');
-    
-    // Color Lab State
-    const [mix1, setMix1] = useState<string | null>(null);
-    const [mix2, setMix2] = useState<string | null>(null);
+    const [canDraw, setCanDraw] = useState(true);
 
-    // Challenges State
-    const [challenge, setChallenge] = useState("Can you draw a house using 1 Square and 1 Triangle?");
-    
-    // Fetch Dynamic Quests
+    const { user } = useUser();
     const firestore = useFirestore();
-    const questsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_art_quests'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: dbQuests } = useCollection<any>(questsQuery);
-    const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
-
     const { toast } = useToast();
+    const isAdminOrDirector = ['Admin', 'Administrator', 'Director'].includes(useRole()?.role || '');
+    const [isSaving, setIsSaving] = useState(false);
+    const [imageName, setImageName] = useState('');
 
-
+    // Initial Setup: Access canvas context on mount
     useEffect(() => {
         const canvas = canvasRef.current;
         if (canvas) {
-            canvas.width = canvas.parentElement?.clientWidth || 800;
-            canvas.height = 500;
             const ctx = canvas.getContext('2d');
             if (ctx) {
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.fillStyle = "white";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.lineCap = 'round'; // Round the brush strokes
+                ctx.fillStyle = '#FFFFFF'; // Set the default fill color to white
+                ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the canvas with white initially
+            } else {
+                console.error("Canvas context is null.");
             }
         }
-    }, [activeTab]);
+    }, []);
 
-    const startDrawing = (e: any) => {
-        const ctx = canvasRef.current?.getContext('2d');
-        if (!ctx) return;
-        const rect = canvasRef.current!.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        if(tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
-          ctx.beginPath(); 
-          ctx.moveTo(x, y); 
-          ctx.strokeStyle = color; 
-          ctx.lineWidth = brushSize; 
-          setIsDrawing(true);
-        }
-    };
+    const startDrawing = (e: MouseEvent) => {
+        if (!canDraw) return;
 
-    const draw = (e: any) => {
-        if (!isDrawing) return;
-        const canvas = canvasRef.current; if (!canvas) return;
-        const ctx = canvas.getContext('2d'); if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.lineTo(x, y);
-        ctx.stroke();
-    };
-
-    const stopDrawing = () => { setIsDrawing(false); };
-    
-    const clearCanvas = () => { 
-        const canvas = canvasRef.current; 
-        if(canvas){ 
-            const ctx=canvas.getContext('2d'); 
-            if(ctx){ctx.fillStyle="white"; ctx.fillRect(0,0,canvas.width,canvas.height);} 
-        } 
-    };
-
-    const handleMix = (c: string) => {
-        if (!mix1) setMix1(c);
-        else if (!mix2) setMix2(c);
-        else { setMix1(c); setMix2(null); }
-    };
-
-    const getMixedColor = () => {
-        const colors = [mix1, mix2].sort().join('+');
-        if (colors === '#FF0000+#FFFF00') return { name: 'Orange', hex: '#FFA500' };
-        if (colors === '#0000FF+#FF0000') return { name: 'Purple', hex: '#800080' };
-        if (colors === '#0000FF+#FFFF00') return { name: 'Green', hex: '#008000' };
-        return null;
-    };
-    
-    // --- FLOOD FILL ALGORITHM (Paint Bucket) ---
-    const floodFill = (startX: number, startY: number, fillColor: string) => {
+        setIsDrawing(true);
         const canvas = canvasRef.current;
-        const ctx = canvas?.getContext('2d');
-        if (!ctx || !canvas) return;
+        if (!canvas) return;
 
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        const targetColor = getPixelColor(data, startX, startY, canvas.width);
-        const fillRGB = hexToRgb(fillColor);
-
-        if (colorsMatch(targetColor, fillRGB)) return;
-
-        const pixels = [{ x: startX, y: startY }];
-        while (pixels.length > 0) {
-            const { x, y } = pixels.pop()!;
-            if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) continue;
-            const currentColor = getPixelColor(data, x, y, canvas.width);
-            
-            if (colorsMatch(currentColor, targetColor)) {
-                setPixelColor(data, x, y, canvas.width, fillRGB);
-                pixels.push({ x: x - 1, y });
-                pixels.push({ x: x + 1, y });
-                pixels.push({ x, y: y - 1 });
-                pixels.push({ x, y: y + 1 });
-            }
-        }
-        ctx.putImageData(imageData, 0, 0);
-    };
-
-    // Helper: Draw Shape Stamp
-    const drawStamp = (x: number, y: number) => {
-        const ctx = canvasRef.current?.getContext('2d');
+        const ctx = canvas.getContext('2d');
         if (!ctx) return;
-        ctx.fillStyle = color;
+
         ctx.beginPath();
-        if (selectedShape === 'circle') ctx.arc(x, y, 30, 0, Math.PI * 2);
-        if (selectedShape === 'square') ctx.rect(x - 30, y - 30, 60, 60);
-        if (selectedShape === 'star') { 
-            ctx.moveTo(x, y - 30);
-            for (let i = 0; i < 5; i++) {
-                ctx.lineTo(x + Math.cos((18 + i * 72) / 180 * Math.PI) * 30, y - Math.sin((18 + i * 72) / 180 * Math.PI) * 30);
-                ctx.lineTo(x + Math.cos((54 + i * 72) / 180 * Math.PI) * 15, y - Math.sin((54 + i * 72) / 180 * Math.PI) * 15);
-            }
-            ctx.closePath();
-        }
-        ctx.fill();
+        const x = e.offsetX;
+        const y = e.offsetY;
+        ctx.moveTo(x, y);
     };
 
-    const handleCanvasClick = (e: any) => {
-        const rect = canvasRef.current!.getBoundingClientRect();
-        const x = Math.floor(e.clientX - rect.left);
-        const y = Math.floor(e.clientY - rect.top);
-        
-        if (tool === 'bucket') floodFill(x, y, color);
-        if (tool === 'stamp') drawStamp(x, y);
+    const draw = (e: MouseEvent) => {
+        if (!isDrawing || !canDraw) return;
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const x = e.offsetX;
+        const y = e.offsetY;
+
+        if (activeTool === 'brush') {
+            ctx.strokeStyle = brushColor;
+            ctx.lineWidth = brushSize;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        } else if (activeTool === 'eraser') {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.strokeStyle = 'rgba(0,0,0,1)'; // Color doesn't matter with 'destination-out'
+            ctx.lineWidth = brushSize * 3;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
     };
+
+    const endDrawing = () => {
+        if (!isDrawing) return;
+        setIsDrawing(false);
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.globalCompositeOperation = 'source-over'; // Reset to default
+
+        // Capture canvas state for undo/redo
+        const newCanvasState = canvas.toDataURL();
+        setCanvasHistory(prevHistory => [...prevHistory.slice(0, historyIndex + 1), newCanvasState]); // Removes "future" history
+        setHistoryIndex(prevIndex => prevIndex + 1);
+    };
+
+    const fillCanvas = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.fillStyle = brushColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Capture canvas state for undo/redo
+        const newCanvasState = canvas.toDataURL();
+        setCanvasHistory(prevHistory => [...prevHistory.slice(0, historyIndex + 1), newCanvasState]);
+        setHistoryIndex(prevIndex => prevIndex + 1);
+    };
+
+    const undo = () => {
+        if (historyIndex <= 0) return; // Prevent going beyond the initial state
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const img = new Image();
+        img.src = canvasHistory[newIndex];
+
+        img.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear current canvas
+            ctx.drawImage(img, 0, 0); // Redraw from history
+        };
+    };
+
+    const redo = () => {
+        if (historyIndex >= canvasHistory.length - 1) return; // Prevent going beyond the last state
+        const newIndex = historyIndex + 1;
+        setHistoryIndex(newIndex);
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const img = new Image();
+        img.src = canvasHistory[newIndex];
+
+        img.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear current canvas
+            ctx.drawImage(img, 0, 0); // Redraw from history
+        };
+    };
+
+    const clearCanvas = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear current drawing
+        ctx.fillStyle = '#FFFFFF'; // Reset fill color
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Capture canvas state for undo/redo
+        const newCanvasState = canvas.toDataURL();
+        setCanvasHistory(prevHistory => [...prevHistory.slice(0, historyIndex + 1), newCanvasState]);
+        setHistoryIndex(prevIndex => prevIndex + 1);
+    };
+
+    // Saving Logic
+    const saveImageToFirestore = async () => {
+        if (!user || !schoolId || !firestore || !imageName.trim()) {
+            toast({ title: "Missing Info!", description: "Please provide a name.", variant: "destructive" });
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const canvas = canvasRef.current;
+            if (!canvas) {
+                toast({ title: "Oops!", description: "Canvas not found.", variant: "destructive" });
+                return;
+            }
+
+            const imageURL = canvas.toDataURL('image/png');
+
+            await addDoc(collection(firestore, 'junior_art'), {
+                name: imageName,
+                imageURL: imageURL,
+                createdAt: serverTimestamp(),
+                createdBy: user.uid,
+                schoolId: schoolId
+            });
+
+            toast({ title: "Image Saved!", description: "Your masterpiece is safe!" });
+        } catch (error) {
+            toast({ title: "Save Failed!", description: "Try again later.", variant: "destructive" });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    // Prevent drawing if a modal/dialog is open
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setCanDraw(true);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
 
     return (
         <div className="space-y-6">
-            <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto border border-slate-200">
-                 <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
-                <Button variant={activeTab === 'color-lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('color-lab')} className="rounded-xl">Color Lab</Button>
-                <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
-            </div>
+            {/* 1. TOOLBAR */}
+            <div className="flex gap-2 p-1 bg-white rounded-2xl w-full overflow-x-auto no-scrollbar border-2 border-slate-100 shadow-sm">
+                <Button variant={activeTool === 'brush' ? 'default' : 'ghost'} onClick={() => setActiveTool('brush')} className="rounded-xl">Brush</Button>
+                <Button variant={activeTool === 'eraser' ? 'default' : 'ghost'} onClick={() => setActiveTool('eraser')} className="rounded-xl">Eraser</Button>
+                <Button variant={activeTool === 'fill' ? 'default' : 'ghost'} onClick={() => {setActiveTool('fill'); fillCanvas();}} className="rounded-xl">Fill</Button>
 
-             <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg">
-                <div className="flex items-center gap-3">
-                    <Star className="text-yellow-400 fill-yellow-400" />
-                    <span className="font-bold text-lg">{dbQuests?.[currentQuestIdx]?.instruction || "Let your imagination run wild!"}</span>
+                <div className="flex items-center gap-2 px-4 border-l border-slate-200">
+                    <Input type="color" value={brushColor} onChange={e => setBrushColor(e.target.value)} className="h-8 w-12 rounded-xl border-none shadow-inner" />
+                    <Input type="number" value={brushSize} onChange={e => setBrushSize(parseInt(e.target.value))} className="w-16 h-8 rounded-xl border border-slate-200 shadow-inner text-sm" />
                 </div>
-                <Button size="sm" variant="secondary" onClick={() => setCurrentQuestIdx((prev) => (prev + 1) % (dbQuests?.length || 1))}>New Quest</Button>
+                <Button variant="ghost" onClick={undo} disabled={historyIndex <= 0} className="rounded-xl">Undo</Button>
+                <Button variant="ghost" onClick={redo} disabled={historyIndex >= canvasHistory.length - 1} className="rounded-xl">Redo</Button>
+                <Button variant="ghost" onClick={clearCanvas} className="rounded-xl">Clear</Button>
             </div>
 
+            {/* 2. CANVAS */}
+            <div className="bg-white rounded-3xl border-4 border-slate-100 shadow-xl overflow-hidden relative">
+                <canvas
+                    ref={canvasRef}
+                    width={800}
+                    height={600}
+                    onMouseDown={startDrawing}
+                    onMouseUp={endDrawing}
+                    onMouseOut={endDrawing}
+                    onMouseMove={draw}
+                    style={{ cursor: canDraw ? 'crosshair' : 'not-allowed' }}
+                    className="touch-none"
+                />
+            </div>
 
-            <div className="grid lg:grid-cols-4 gap-6">
-                <Card className="lg:col-span-1 border-2 border-slate-100 rounded-[32px] p-4 space-y-6 h-fit">
-                    {activeTab === 'color-lab' ? (
-                        <div className="space-y-4 text-center">
-                            <h4 className="font-bold text-slate-800 text-sm uppercase">Primary Colors</h4>
-                            <div className="flex justify-center gap-2">
-                                {['#FF0000', '#FFFF00', '#0000FF'].map(c => (
-                                    <button key={c} onClick={() => handleMix(c)} className="w-10 h-10 rounded-full border-4 border-white shadow-md" style={{backgroundColor: c}} />
-                                ))}
-                            </div>
-                            <div className="p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                                <div className="flex justify-center items-center gap-2 mb-2">
-                                    <div className="w-8 h-8 rounded-full border shadow-sm" style={{backgroundColor: mix1 || '#eee'}} />
-                                    <span className="font-bold">+</span>
-                                    <div className="w-8 h-8 rounded-full border shadow-sm" style={{backgroundColor: mix2 || '#eee'}} />
-                                </div>
-                                {getMixedColor() && (
-                                    <div className="animate-in zoom-in text-center">
-                                        <p className="text-xs font-bold text-slate-500 mb-1">Result:</p>
-                                        <button 
-                                            onClick={() => setColor(getMixedColor()!.hex)}
-                                            className="w-full py-2 rounded-xl text-white font-bold" 
-                                            style={{backgroundColor: getMixedColor()!.hex}}
-                                        >
-                                            Use {getMixedColor()!.name}
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="space-y-6">
-                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400">TOOLS</label>
-                                <div className="grid grid-cols-4 gap-2">
-                                    <Button size="icon" variant={tool === 'brush' ? 'default' : 'outline'} onClick={() => setTool('brush')} title="Brush"><PenTool/></Button>
-                                    <Button size="icon" variant={tool === 'bucket' ? 'default' : 'outline'} onClick={() => setTool('bucket')} title="Paint Bucket"><Database/></Button>
-                                    <Button size="icon" variant={tool === 'stamp' ? 'default' : 'outline'} onClick={() => setTool('stamp')} title="Stamp"><Star/></Button>
-                                    <Button size="icon" variant={tool === 'pencil' ? 'default' : 'outline'} onClick={() => setTool('pencil')} title="Pencil">✏️</Button>
-                                    <Button size="icon" variant={tool === 'crayon' ? 'default' : 'outline'} onClick={() => setTool('crayon')} title="Crayon">🖍️</Button>
-                                    <Button size="icon" variant={tool === 'paint_brush' ? 'default' : 'outline'} onClick={() => setTool('paint_brush')} title="Paint Brush">🖌️</Button>
-                                    <Button size="icon" variant={tool === 'marker' ? 'default' : 'outline'} onClick={() => setTool('marker')} title="Marker">🎨</Button>
-                                </div>
-                            </div>
-                            {tool === 'stamp' && (
-                                <div className="flex gap-2">
-                                    {['circle', 'square', 'star'].map(s => (
-                                        <button key={s} onClick={() => setSelectedShape(s as any)} className={`p-2 border-2 rounded-xl ${selectedShape === s ? 'border-indigo-500' : 'border-slate-100'}`}>
-                                            {s === 'circle' ? '●' : s === 'square' ? '■' : '★'}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Color</label>
-                                <div className="grid grid-cols-4 gap-2">
-                                    {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB', '#8B4513'].map(c => (
-                                        <button 
-                                            key={c} onClick={() => setColor(c)} 
-                                            className={`aspect-square rounded-full border-2 transition-transform ${color === c ? 'border-slate-800 scale-110 shadow-lg' : 'border-transparent'}`} 
-                                            style={{ backgroundColor: c }} 
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Size</label>
-                                <input type="range" min="2" max="40" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full accent-indigo-500" />
-                            </div>
-                             <div className="space-y-2 pt-4 border-t">
-                                <Button variant="outline" className="w-full" onClick={() => {toast({title:"Artwork Saved!"})}}>
-                                    <Save className="mr-2 h-4 w-4"/>Save Masterpiece
-                                </Button>
-                                <Button variant="destructive" onClick={clearCanvas} className="w-full">
-                                    <Eraser className="mr-2 h-4 w-4" /> Clear All
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                </Card>
-
-                <div className="lg:col-span-3 flex flex-col items-center gap-4">
-                    <canvas 
-                        ref={canvasRef}
-                        onClick={handleCanvasClick} 
-                        onMouseDown={startDrawing}
-                        onMouseMove={draw}
-                        onMouseUp={stopDrawing}
-                        onMouseLeave={stopDrawing}
-                        onTouchStart={startDrawing}
-                        onTouchMove={draw}
-                        onTouchEnd={stopDrawing}
-                        className="bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 w-full h-[500px] cursor-crosshair touch-none"
-                    />
-                    <p className="text-center text-xs text-slate-400 font-bold uppercase tracking-widest">
-                        Practice makes perfect!
-                    </p>
+            {/* 3. CONTROLS (Admin Only) */}
+            {canEdit && (
+                <div className="flex justify-between items-center">
+                    <Input type="text" value={imageName} onChange={e => setImageName(e.target.value)} placeholder="Image Name" className="h-12 rounded-xl flex-1 mr-4" />
+                    <Button onClick={saveImageToFirestore} disabled={isSaving} className="bg-blue-600 h-12 px-8 rounded-xl">
+                        {isSaving ? <Loader2 className="animate-spin" /> : "Save to Gallery"}
+                    </Button>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
 
-// --- 8. REWARDS (THE HALL OF FAME) ---
+// --- 8. STICKER BOOK (VERSION 2) ---
 function StickerBook({ schoolId }: { schoolId: string | null }) {
-    const { user } = useUser(); 
+    const { user } = useUser();
     const firestore = useFirestore();
-    const [activeFilter, setActiveFilter] = useState<'all' | 'math' | 'literacy' | 'science' | 'art'>('all');
+    const { toast } = useToast();
+    const [activeCategory, setActiveCategory] = useState('all');
+    const [allStickers, setAllStickers] = useState<any[]>([]);
+    const [newSticker, setNewSticker] = useState({ emoji: '⭐', name: 'Awesome!', category: 'general' });
+    const [isAddingSticker, setIsAddingSticker] = useState(false);
 
-    const stickerQuery = useMemoFirebase(() => 
-        (user && firestore && schoolId) ? query(
-            collection(firestore, 'junior_stickers'), 
-            where('userId', '==', user.uid),
-            where('schoolId', '==', schoolId),
-            orderBy('earnedAt', 'desc')
-        ) : null, [firestore, user, schoolId]
-    );
-    const { data: stickers } = useCollection<any>(stickerQuery);
+    const stickerQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'junior_stickers'), where('userId', '==', user.uid), where('schoolId', '==', schoolId), orderBy('earnedAt', 'desc')) : null, [firestore, user, schoolId]);
+    const { data: userStickers, forceRefetch } = useCollection<any>(stickerQuery);
 
-    // Calculate progress stats
-    const stats = {
-        total: stickers?.length || 0,
-        math: stickers?.filter(s => s.category === 'math').length || 0,
-        literacy: stickers?.filter(s => s.category === 'literacy' || s.name.includes('ABC') || s.name.includes('Word')).length || 0,
-        science: stickers?.filter(s => s.category === 'science').length || 0,
-        art: stickers?.filter(s => s.category === 'art').length || 0,
+    useEffect(() => {
+        if (userStickers) {
+            setAllStickers(userStickers);
+        }
+    }, [userStickers]);
+
+    const handleAddSticker = async () => {
+        if (!user || !firestore || !schoolId) return;
+
+        setIsAddingSticker(true);
+        try {
+            await addDoc(collection(firestore, 'junior_stickers'), {
+                ...newSticker,
+                userId: user.uid,
+                earnedAt: serverTimestamp(),
+                schoolId: schoolId,
+            });
+            setNewSticker({ emoji: '⭐', name: 'Awesome!', category: 'general' });
+            forceRefetch();
+            toast({ title: "Sticker Added!" });
+        } catch (error) {
+            toast({ title: "Error Adding Sticker!", description: "Try again later.", variant: "destructive" });
+        } finally {
+            setIsAddingSticker(false);
+        }
     };
 
-    const filteredStickers = activeFilter === 'all' 
-        ? stickers 
-        : stickers?.filter(s => {
-            if (activeFilter === 'math') return s.category === 'math';
-            if (activeFilter === 'literacy') return s.category === 'literacy' || s.name.includes('ABC') || s.name.includes('Word');
-            if (activeFilter === 'science') return s.category === 'science';
-            if (activeFilter === 'art') return s.category === 'art';
-            return true;
+    const stickerCategories = useMemo(() => {
+        const categories = ['all'];
+        userStickers?.forEach(s => {
+            if (!categories.includes(s.category)) {
+                categories.push(s.category);
+            }
         });
+        return categories;
+    }, [userStickers]);
 
-    const getTier = (count: number) => {
-        if (count >= 20) return { label: 'Grand Master', color: 'text-purple-600', icon: '👑' };
-        if (count >= 10) return { label: 'Gold Tier', color: 'text-yellow-600', icon: '🥇' };
-        if (count >= 5) return { label: 'Silver Tier', color: 'text-slate-400', icon: '🥈' };
-        return { label: 'Bronze Tier', color: 'text-orange-600', icon: '🥉' };
-    };
+    const filteredStickers = useMemo(() => {
+        if (activeCategory === 'all') return allStickers;
+        return allStickers?.filter(sticker => sticker.category === activeCategory);
+    }, [activeCategory, allStickers]);
 
     return (
-        <div className="space-y-8 animate-in fade-in">
-            {/* 1. ACHIEVEMENT HEADER */}
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-[40px] p-8 text-white shadow-xl relative overflow-hidden">
-                <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="text-center md:text-left">
-                        <h3 className="text-4xl font-black mb-1">Hall of Fame</h3>
-                        <p className="font-bold opacity-90 text-lg">You have earned {stats.total} total stickers!</p>
-                        <div className="mt-4 flex items-center gap-2 bg-white/20 w-fit px-4 py-2 rounded-full backdrop-blur-sm">
-                            <span className="text-2xl">{getTier(stats.total).icon}</span>
-                            <span className="font-black uppercase tracking-widest">{getTier(stats.total).label}</span>
-                        </div>
-                    </div>
-                    <div className="flex gap-4">
-                        <div className="bg-white/10 p-4 rounded-3xl text-center backdrop-blur-md border border-white/20 min-w-[100px]">
-                            <div className="text-3xl font-black">{stats.math}</div>
-                            <div className="text-[10px] font-bold uppercase opacity-80">Math</div>
-                        </div>
-                        <div className="bg-white/10 p-4 rounded-3xl text-center backdrop-blur-md border border-white/20 min-w-[100px]">
-                            <div className="text-3xl font-black">{stats.literacy}</div>
-                            <div className="text-[10px] font-bold uppercase opacity-80">Reading</div>
-                        </div>
-                        <div className="bg-white/10 p-4 rounded-3xl text-center backdrop-blur-md border border-white/20 min-w-[100px]">
-                            <div className="text-3xl font-black">{stats.science}</div>
-                            <div className="text-[10px] font-bold uppercase opacity-80">Science</div>
-                        </div>
-                    </div>
-                </div>
-                {/* Decorative background icons */}
-                <Trophy className="absolute -bottom-4 -right-4 w-48 h-48 opacity-10 rotate-12" />
-            </div>
-
-            {/* 2. SUBJECT PROGRESS TRACKER */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                    { label: 'Math Whiz', count: stats.math, color: 'bg-orange-500', icon: <Calculator className="w-4 h-4" /> },
-                    { label: 'Reading Hero', count: stats.literacy, color: 'bg-purple-500', icon: <BookOpen className="w-4 h-4" /> },
-                    { label: 'Science Pro', count: stats.science, color: 'bg-blue-500', icon: <Atom className="w-4 h-4" /> },
-                    { label: 'Art Legend', count: stats.art, color: 'bg-pink-500', icon: <Palette className="w-4 h-4" /> },
-                ].map((p) => (
-                    <div key={p.label} className="bg-white p-5 rounded-3xl border-2 border-slate-50 shadow-sm">
-                        <div className="flex justify-between items-center mb-2">
-                            <div className="flex items-center gap-2 font-black text-slate-700">
-                                {p.icon} {p.label}
-                            </div>
-                            <span className="text-xs font-bold text-slate-400">{p.count} / 10 to next Level</span>
-                        </div>
-                        <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                            <div 
-                                className={`h-full ${p.color} transition-all duration-1000`} 
-                                style={{ width: `${Math.min((p.count / 10) * 100, 100)}%` }} 
-                            />
-                        </div>
-                    </div>
+        <div className="space-y-6">
+            {/* 1. TOP NAVIGATION */}
+            <div className="flex gap-2 p-1 bg-yellow-50 rounded-2xl w-fit mx-auto border border-yellow-100">
+                {stickerCategories.map(cat => (
+                    <Button
+                        key={cat}
+                        variant={activeCategory === cat ? 'default' : 'ghost'}
+                        onClick={() => setActiveCategory(cat)}
+                        className="rounded-xl capitalize"
+                    >
+                        {cat === 'all' ? 'All Stickers' : cat}
+                    </Button>
                 ))}
             </div>
 
-            {/* 3. FILTER & STICKER GRID */}
-            <div className="space-y-6">
-                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                    {['all', 'math', 'literacy', 'science', 'art'].map((f) => (
-                        <Button 
-                            key={f} 
-                            variant={activeFilter === f ? 'default' : 'outline'} 
-                            onClick={() => setActiveFilter(f as any)}
-                            className={`rounded-2xl capitalize font-bold px-6 ${activeFilter === f ? 'bg-slate-800' : 'bg-white text-slate-500'}`}
-                        >
-                            {f}
-                        </Button>
-                    ))}
-                </div>
-
-                {!filteredStickers || filteredStickers.length === 0 ? (
-                    <div className="text-center py-20 bg-white rounded-[40px] border-4 border-dashed border-slate-100">
-                        <Gift className="h-16 w-16 mx-auto mb-4 text-slate-200" />
-                        <p className="text-slate-400 font-bold">No stickers here yet. Keep learning to earn some!</p>
+            {/* 2. STICKER GRID */}
+            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                {filteredStickers?.length === 0 ? (
+                    <div className="text-center col-span-full py-12">
+                        <h3 className="text-xl font-bold text-yellow-700 opacity-50">No Stickers in this Category</h3>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-                        {filteredStickers.map((s, idx) => (
-                            <div 
-                                key={s.id} 
-                                onClick={() => speak(`You earned the ${s.name} sticker!`)}
-                                className="group relative aspect-square bg-white rounded-3xl shadow-md border-b-4 border-slate-200 flex flex-col items-center justify-center p-2 hover:-translate-y-2 transition-all cursor-pointer hover:border-yellow-400"
-                                style={{ animationDelay: `${idx * 0.05}s` }}
-                            >
-                                <div className="text-4xl mb-1 group-hover:scale-125 transition-transform">{s.emoji}</div>
-                                <span className="text-[9px] text-center leading-tight font-black text-slate-500 uppercase">{s.name}</span>
-                                
-                                <div className="absolute -top-1 -right-1 bg-yellow-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                    NEW
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    filteredStickers?.map(sticker => (
+                        <div key={sticker.id} className="aspect-square rounded-2xl bg-yellow-100 flex items-center justify-center text-4xl shadow-sm">
+                            {sticker.emoji}
+                        </div>
+                    ))
                 )}
+            </div>
+
+            {/* 3. ADD NEW STICKER */}
+            <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-yellow-200">
+                <h3 className="text-xl font-bold text-yellow-800 mb-4 flex items-center gap-2"><Gift /> Add New Sticker</h3>
+                <div className="grid grid-cols-3 gap-4">
+                    <Input value={newSticker.emoji} onChange={e => setNewSticker({ ...newSticker, emoji: e.target.value })} placeholder="Emoji" className="text-3xl h-12 rounded-xl" />
+                    <Input value={newSticker.name} onChange={e => setNewSticker({ ...newSticker, name: e.target.value })} placeholder="Name" className="text-lg h-12 rounded-xl" />
+                    <Select onValueChange={(value) => setNewSticker({ ...newSticker, category: value })}>
+                        <SelectTrigger className="h-12 rounded-xl">
+                            <SelectValue placeholder="Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="general">General</SelectItem>
+                            <SelectItem value="math">Math</SelectItem>
+                            <SelectItem value="science">Science</SelectItem>
+                            <SelectItem value="reading">Reading</SelectItem>
+                            <SelectItem value="behavior">Behavior</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <Button onClick={handleAddSticker} disabled={isAddingSticker} className="bg-yellow-600 mt-4">
+                    {isAddingSticker ? <Loader2 className="animate-spin" /> : "Add Sticker"}
+                </Button>
             </div>
         </div>
     );
-}
-
-// Utility Helpers for Flood Fill
-function getPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number) {
-    const i = (y * width + x) * 4;
-    return [data[i], data[i+1], data[i+2], data[i+3]];
-}
-function setPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number, color: number[]) {
-    const i = (y * width + x) * 4;
-    data[i] = color[0]; data[i+1] = color[1]; data[i+2] = color[2]; data[i+3] = 255;
-}
-function colorsMatch(c1: number[], c2: number[]) {
-    return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2];
-}
-function hexToRgb(hex: string) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return [r, g, b];
 }
 
 // --- MAIN PAGE ---
@@ -2005,7 +1643,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
-                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} schoolId={schoolId} /></TabsContent>
+                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio canEdit={canEdit} schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
             </div>
@@ -2014,3 +1652,5 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
+    
