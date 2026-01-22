@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -11,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Sigma, Languages
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -30,6 +29,7 @@ import LiteracyZone from '@/app/dashboard/early-years/components/LiteracyZone';
 import NumeracyCorner from '@/app/dashboard/early-years/components/NumeracyCorner';
 import { generateLessonIdeasAction } from '@/app/actions/generate-lesson-ideas';
 import { generateLessonImageAction } from '@/app/dashboard/early-years/actions';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -42,7 +42,7 @@ const speak = (text: string, rate = 0.9) => {
 
 
 // --- 1. VOICE COACH (THE SPEAKING ACADEMY) ---
-function VoiceCoach({ canEdit }: { canEdit: boolean }) {
+function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [challenge, setChallenge] = useState<any>(null);
@@ -55,7 +55,9 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [viewMode, setViewMode] = useState<'practice' | 'library'>('practice');
 
-    const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const phonicsQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'junior_phonics'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
+    [firestore, schoolId]);
     const { data: wordLibrary, forceRefetch } = useCollection<any>(phonicsQuery);
 
     const pickRandomWord = useCallback(() => {
@@ -222,11 +224,11 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                                 className="text-lg h-12 rounded-xl"
                             />
                             <Button onClick={async () => {
-                                if (!firestore) return;
+                                if (!firestore || !schoolId) return;
                                 setIsGenerating(true);
                                 const res = await generateWordDetails(newWord);
                                 if (res.success) {
-                                    await addDoc(collection(firestore, 'junior_phonics'), { ...res.data, createdAt: serverTimestamp() });
+                                    await addDoc(collection(firestore, 'junior_phonics'), { ...res.data, createdAt: serverTimestamp(), schoolId });
                                     setNewWord("");
                                     forceRefetch();
                                     toast({ title: "Word Added!" });
@@ -498,7 +500,7 @@ function ABCKingdom() {
         }
     }, [selectedLetter, activeTab]);
 
-    const startTracing = (e: any) => {
+    const startDrawing = (e: any) => {
         const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
         const rect = canvasRef.current!.getBoundingClientRect();
@@ -518,7 +520,7 @@ function ABCKingdom() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopTracing = () => {
+    const stopDrawing = () => {
         setIsTracing(false);
     };
 
@@ -604,13 +606,13 @@ function ABCKingdom() {
                                         <canvas 
                                             ref={canvasRef} width={400} height={400} 
                                             className="touch-none cursor-crosshair"
-                                            onMouseDown={startTracing}
+                                            onMouseDown={startDrawing}
                                             onMouseMove={draw}
                                             onMouseUp={stopDrawing}
                                             onMouseLeave={stopDrawing}
-                                            onTouchStart={startTracing}
+                                            onTouchStart={startDrawing}
                                             onTouchMove={draw}
-                                            onTouchEnd={stopTracing}
+                                            onTouchEnd={stopDrawing}
                                         />
                                         <Button 
                                             variant="ghost" size="sm" 
@@ -667,7 +669,7 @@ function ABCKingdom() {
 }
 
 // --- 4. MATH PLAYGROUND (ULTIMATE VERSION) ---
-function MathPlayground() {
+function MathPlayground({ schoolId }: { schoolId: string | null }) {
   type MathMode = 'add' | 'sub' | 'mul' | 'div' | 'compare' | 'patterns' | 'shapes' | 'time';
   const [mode, setMode] = useState<MathMode>('add');
   const [question, setQuestion] = useState<any>({ a: 0, b: 0, icon: '🍎', ans: '', options: [], displayPrompt: "" });
@@ -754,14 +756,15 @@ function MathPlayground() {
       confetti({ particleCount: 100, spread: 70 });
       speak("Correct!");
 
-      if ((streak + 1) % 5 === 0 && user && firestore) {
+      if ((streak + 1) % 5 === 0 && user && firestore && schoolId) {
           const sticker = '🎓';
           await addDoc(collection(firestore, 'junior_stickers'), {
               userId: user.uid,
               emoji: sticker,
               name: `${mode.toUpperCase()} Master`,
               category: 'math',
-              earnedAt: serverTimestamp()
+              earnedAt: serverTimestamp(),
+              schoolId: schoolId,
           });
           toast({ title: "Achievement!", description: "You earned a Math Master sticker!" });
       }
@@ -826,9 +829,7 @@ function MathPlayground() {
             
              {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                    {/* Minute hand (Longer, points to 12) */}
                     <div className="absolute bottom-1/2 left-1/2 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 origin-bottom"></div>
-                    {/* Hour hand (Shorter, rotates) */}
                     <div className="absolute bottom-1/2 left-1/2 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) * 30}deg)` }}></div>
                     <div className="absolute top-2">12</div>
                     <div className="absolute bottom-2">6</div>
@@ -889,7 +890,7 @@ function MathPlayground() {
 }
 
 // --- 5. STORY SPARK ---
-function StorySpark({ canEdit }: { canEdit: boolean }) {
+function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
     const { user } = useUser(); 
     const { role } = useRole();
     const firestore = useFirestore(); 
@@ -912,7 +913,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     const [score, setScore] = useState(0);
     const [quizFinished, setQuizFinished] = useState(false);
     
-    const storiesQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
+    const storiesQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'junior_stories'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, user, schoolId]);
     const { data: savedStories, forceRefetch } = useCollection<any>(storiesQuery);
     
     const resetQuiz = () => {
@@ -926,7 +927,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     const handleGenerate = async () => { 
         setLoading(true); 
-        // Pass the target word count to the AI flow
         const res = await generateJuniorStory(topic, parseInt(targetWordCount)); 
         if (res.success) {
             setStory(res.data);
@@ -936,13 +936,14 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     };
     
     const handleSave = async () => { 
-        if (!user || !story || !firestore) return; 
+        if (!user || !story || !firestore || !schoolId) return; 
         await addDoc(collection(firestore, 'junior_stories'), { 
             ...story, 
             topic, 
             wordCount: story.content.split(' ').length,
             createdAt: serverTimestamp(), 
-            createdBy: user.uid 
+            createdBy: user.uid,
+            schoolId: schoolId,
         }); 
         setStory(null); 
         forceRefetch(); 
@@ -959,7 +960,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
-        // Check against the current question in the questions array
         const currentQ = story.questions[currentQuestionIndex];
         const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
         
@@ -990,7 +990,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         resetQuiz();
     };
 
-    // Calculate actual word count of generated story
     const actualWordCount = story?.content?.split(/\s+/).filter(Boolean).length || 0;
 
     return (
@@ -1007,7 +1006,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
-                            {/* Word Count Control for Admin/Director */}
                             {isAdminOrDirector && (
                                 <div className="flex items-center gap-2 bg-purple-50 px-3 rounded-xl border border-purple-100">
                                     <Type className="w-4 h-4 text-purple-500" />
@@ -1043,7 +1041,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                         )}
                     </CardHeader>
                     <CardContent className="p-8 space-y-8">
-                        {/* THE STORY TEXT */}
                         <div className="prose prose-slate max-w-none">
                             <p className="text-xl md:text-2xl leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
                                 {story.content}
@@ -1057,7 +1054,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             {canEdit && <Button onClick={handleSave} className="flex-1 h-14 text-lg bg-green-600 hover:bg-green-700 font-bold"><Save className="mr-2" /> Save to Library</Button>}
                         </div>
 
-                        {/* 3-QUESTION CHALLENGE AREA */}
                         <div className="bg-white p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
                             {!quizFinished ? (
                                 <div className="space-y-4">
@@ -1150,7 +1146,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 }
 
 // --- 6. SCIENCE WORLD (NON-SAAS DYNAMIC & CYCLING) ---
-function ScienceWorld({ canEdit }: { canEdit: boolean }) {
+function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
@@ -1159,16 +1155,16 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     // --- 1. DATA FETCHING ---
     const sorterQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'asc')) : null, 
-    [firestore]);
+        (firestore && schoolId) ? query(collection(firestore, 'junior_sorter_items'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
+    [firestore, schoolId]);
     const { data: dbSorterItems, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
     
     const materialsQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'junior_science_materials'), orderBy('createdAt', 'asc')) : null, 
-    [firestore]);
+        (firestore && schoolId) ? query(collection(firestore, 'junior_science_materials'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
+    [firestore, schoolId]);
     const { data: dbMaterials, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
 
-    const scienceQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const scienceQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_science'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
     const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
     
     // --- 2. GAME & ADMIN STATES ---
@@ -1209,11 +1205,12 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     };
 
     const handleSaveSorterItem = async () => {
-        if (!newItem.name || !newItem.emoji || !firestore) return;
+        if (!newItem.name || !newItem.emoji || !firestore || !schoolId) return;
         try {
             await addDoc(collection(firestore, 'junior_sorter_items'), {
                 ...newItem,
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                schoolId: schoolId,
             });
             setNewItem({ name: '', emoji: '', type: 'living' });
             if (refetchSorter) refetchSorter();
@@ -1223,7 +1220,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     };
 
-    // FIXED DELETE FUNCTION
     const handleDeleteSorterItem = async (id: string, e?: React.MouseEvent) => {
         if(e) e.stopPropagation();
         if (!firestore) return;
@@ -1234,12 +1230,10 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 
                 toast({ title: "Item Removed" });
                 
-                // Refresh data
                 if (refetchSorter) {
                     await refetchSorter();
                 }
                 
-                // Reset index if we deleted the only remaining item or are out of bounds
                 setCurrentIndex(0);
             }
         } catch (error) {
@@ -1252,9 +1246,10 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     };
 
+
     // --- 5. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
-        if (!newMat.name || !firestore) return;
+        if (!newMat.name || !firestore || !schoolId) return;
         const statesArray = [
             { ...newMat.solid }, 
             { ...newMat.liquid }, 
@@ -1264,7 +1259,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         await addDoc(collection(firestore, 'junior_science_materials'), {
             name: newMat.name,
             states: statesArray,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            schoolId: schoolId,
         });
 
         setShowAddMatForm(false);
@@ -1288,11 +1284,12 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     };
 
     const handleSave = async () => { 
-        if(!user || !fact || !firestore) return; 
+        if(!user || !fact || !firestore || !schoolId) return; 
         await addDoc(collection(firestore,'junior_science'), {
             ...fact,
             createdAt: serverTimestamp(),
-            createdBy: user.uid
+            createdBy: user.uid,
+            schoolId: schoolId,
         }); 
         setFact(null); 
         refetchScience(); 
@@ -1485,7 +1482,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 }
 
 // --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
-function ArtStudio({ canEdit }: { canEdit: boolean }) {
+function ArtStudio({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery'>('freestyle');
     const [isDrawing, setIsDrawing] = useState(false);
@@ -1503,7 +1500,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
     
     // Fetch Dynamic Quests
     const firestore = useFirestore();
-    const questsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_art_quests')) : null, [firestore]);
+    const questsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_art_quests'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: dbQuests } = useCollection<any>(questsQuery);
     const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
 
@@ -1754,17 +1751,18 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 }
 
 // --- 8. REWARDS (THE HALL OF FAME) ---
-function StickerBook() {
+function StickerBook({ schoolId }: { schoolId: string | null }) {
     const { user } = useUser(); 
     const firestore = useFirestore();
     const [activeFilter, setActiveFilter] = useState<'all' | 'math' | 'literacy' | 'science' | 'art'>('all');
 
     const stickerQuery = useMemoFirebase(() => 
-        (user && firestore) ? query(
+        (user && firestore && schoolId) ? query(
             collection(firestore, 'junior_stickers'), 
-            where('userId', '==', user.uid), 
+            where('userId', '==', user.uid),
+            where('schoolId', '==', schoolId),
             orderBy('earnedAt', 'desc')
-        ) : null, [firestore, user]
+        ) : null, [firestore, user, schoolId]
     );
     const { data: stickers } = useCollection<any>(stickerQuery);
 
@@ -1883,7 +1881,6 @@ function StickerBook() {
                                 <div className="text-4xl mb-1 group-hover:scale-125 transition-transform">{s.emoji}</div>
                                 <span className="text-[9px] text-center leading-tight font-black text-slate-500 uppercase">{s.name}</span>
                                 
-                                {/* Date earned - small badge */}
                                 <div className="absolute -top-1 -right-1 bg-yellow-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                                     NEW
                                 </div>
@@ -1918,8 +1915,13 @@ function hexToRgb(hex: string) {
 // --- MAIN PAGE ---
 export default function JuniorAcademyPage() {
   const { role } = useRole();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
+
+  if (isLoadingSchool) {
+    return <div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>
+  }
 
   return (
     <div className="min-h-screen bg-[#F0F9FF] p-4 md:p-8 font-sans">
@@ -1942,14 +1944,14 @@ export default function JuniorAcademyPage() {
             
             {/* CONTENT AREAS */}
             <div className="min-h-[500px]">
-                <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
+                <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="phonics" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div></TabsContent>
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
-                <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
-                <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
-                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
-                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio canEdit={canEdit} /></div></TabsContent>
-                <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
+                <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground schoolId={schoolId} /></div></TabsContent>
+                <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
+                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} schoolId={schoolId} /></TabsContent>
+                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio canEdit={canEdit} schoolId={schoolId} /></div></TabsContent>
+                <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
             </div>
         </Tabs>
       </div>
