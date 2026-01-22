@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -997,7 +998,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
-    const { schoolId } = useCurrentSchool(); // Ensure this is here
+    const { schoolId } = useCurrentSchool();
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
@@ -1017,13 +1018,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     // Science Journal
     const scienceQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(
-            collection(firestore, 'junior_science'), 
-            where('schoolId', '==', schoolId), 
-            orderBy('createdAt', 'desc')
-        ) : null, 
+        (firestore && schoolId) ? query(collection(firestore, 'junior_science'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
     [firestore, schoolId]);
-    
     const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
     
     // --- 2. GAME STATES ---
@@ -1086,7 +1082,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         try {
             const res = await generateJuniorScience(topic); 
             if(res.success) setFact(res.data);
-            else toast({ variant: "destructive", title: "Error", description: "AI failed." });
+            else toast({ variant: "destructive", title: "AI Error", description: "AI failed." });
         } catch(e) {
             console.error(e);
         } finally {
@@ -1127,6 +1123,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     };
     
+    // ... (Keep existing sorter handlers) ...
+    // Note: Ensure handleSaveSorterItem ALSO adds schoolId: schoolId
     const handleDeleteDiscovery = async (id: string) => {
         if (!firestore) return;
         if(confirm("Delete this discovery?")){
@@ -1142,14 +1140,14 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')}>Discovery</Button>
                 <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')}>Sorter</Button>
                 <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
-                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={()={() => setActiveTab('library')}>Journal</Button>
+                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
 
             {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
                     <div className="text-center space-y-4">
-                        <p className="text-xs font-black text-cyan-400 uppercase tracking-widest">Science Laboratory</p>
+                        <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
                         
                         <div className="flex flex-wrap gap-2 justify-center">
                             {(!dbMaterials || dbMaterials.length === 0) && (
@@ -1230,7 +1228,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             <div className="text-5xl mb-4">{s.emojiIcon}</div>
                             <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
                             <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">
-                                {new Date(s.createdAt?.seconds * 1000).toLocaleDateString() || 'Discovery'}
+                                {s.createdAt?.toDate ? new Date(s.createdAt?.seconds * 1000).toLocaleDateString() : 'Discovery'}
                             </p>
                             {canEdit && (
                                 <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
@@ -1293,5 +1291,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
-    
