@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Sigma, Languages
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -24,6 +24,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import ArtsHub from '@/app/dashboard/early-years/components/ArtsHub';
+import ScienceExploration from '@/app/dashboard/early-years/components/ScienceExploration';
+import LiteracyZone from '@/app/dashboard/early-years/components/LiteracyZone';
+import NumeracyCorner from '@/app/dashboard/early-years/components/NumeracyCorner';
+import { generateLessonIdeasAction } from '@/app/actions/generate-lesson-ideas';
+import { generateLessonImageAction } from '@/app/dashboard/early-years/actions';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -435,7 +441,7 @@ function ABCKingdom() {
     const [caseMode, setCaseMode] = useState<'upper' | 'lower' | 'both'>('upper');
     
     // Tracing Canvas Refs
-    const traceCanvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isTracing, setIsTracing] = useState(false);
 
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
@@ -479,8 +485,8 @@ function ABCKingdom() {
 
     // Tracing Logic
     useEffect(() => {
-        if (activeTab === 'tracing' && traceCanvasRef.current) {
-            const ctx = traceCanvasRef.current.getContext('2d');
+        if (activeTab === 'tracing' && canvasRef.current) {
+            const ctx = canvasRef.current.getContext('2d');
             if (ctx) {
                 ctx.clearRect(0, 0, 400, 400);
                 ctx.font = "bold 300px sans-serif";
@@ -493,9 +499,9 @@ function ABCKingdom() {
     }, [selectedLetter, activeTab]);
 
     const startTracing = (e: any) => {
-        const ctx = traceCanvasRef.current?.getContext('2d');
+        const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
-        const rect = traceCanvasRef.current!.getBoundingClientRect();
+        const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
@@ -504,7 +510,7 @@ function ABCKingdom() {
 
     const draw = (e: any) => {
         if (!isTracing) return;
-        const canvas = traceCanvasRef.current; if (!canvas) return;
+        const canvas = canvasRef.current; if (!canvas) return;
         const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
@@ -517,7 +523,7 @@ function ABCKingdom() {
     };
 
     const resetTracingCanvas = () => {
-        const canvas = traceCanvasRef.current;
+        const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
         if (canvas && ctx) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -596,12 +602,12 @@ function ABCKingdom() {
                                     </div>
                                     <div className="relative bg-white border-4 border-slate-100 rounded-3xl shadow-inner">
                                         <canvas 
-                                            ref={traceCanvasRef} width={400} height={400} 
+                                            ref={canvasRef} width={400} height={400} 
                                             className="touch-none cursor-crosshair"
                                             onMouseDown={startTracing}
                                             onMouseMove={draw}
-                                            onMouseUp={stopTracing}
-                                            onMouseLeave={stopTracing}
+                                            onMouseUp={stopDrawing}
+                                            onMouseLeave={stopDrawing}
                                             onTouchStart={startTracing}
                                             onTouchMove={draw}
                                             onTouchEnd={stopTracing}
@@ -821,9 +827,9 @@ function MathPlayground() {
              {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
                     {/* Minute hand (Longer, points to 12) */}
-                    <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom"></div>
+                    <div className="absolute bottom-1/2 left-1/2 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 origin-bottom"></div>
                     {/* Hour hand (Shorter, rotates) */}
-                    <div className="absolute top-2/4 left-2/4 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) * 30}deg)` }}></div>
+                    <div className="absolute bottom-1/2 left-1/2 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) * 30}deg)` }}></div>
                     <div className="absolute top-2">12</div>
                     <div className="absolute bottom-2">6</div>
                     <div className="absolute left-2">9</div>
@@ -1217,6 +1223,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     };
 
+    // FIXED DELETE FUNCTION
     const handleDeleteSorterItem = async (id: string, e?: React.MouseEvent) => {
         if(e) e.stopPropagation();
         if (!firestore) return;
@@ -1227,10 +1234,12 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 
                 toast({ title: "Item Removed" });
                 
+                // Refresh data
                 if (refetchSorter) {
-                    forceRefetch(); // Use the hook's refetch function
+                    await refetchSorter();
                 }
                 
+                // Reset index if we deleted the only remaining item or are out of bounds
                 setCurrentIndex(0);
             }
         } catch (error) {
@@ -1242,7 +1251,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             });
         }
     };
-
 
     // --- 5. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
@@ -1414,10 +1422,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                                         size="icon" 
                                                         variant="ghost" 
                                                         className="text-red-400 hover:text-red-600 hover:bg-red-50" 
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteSorterItem(item.id);
-                                                        }}
+                                                        onClick={(e) => handleDeleteSorterItem(item.id, e)}
                                                     >
                                                         <Trash2 className="h-4 w-4"/>
                                                     </Button>
@@ -1728,7 +1733,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
                 <div className="lg:col-span-3 flex flex-col items-center gap-4">
                     <canvas 
-                        ref={canvasRef} 
+                        ref={canvasRef}
                         onClick={handleCanvasClick} 
                         onMouseDown={startDrawing}
                         onMouseMove={draw}
@@ -1911,7 +1916,7 @@ function hexToRgb(hex: string) {
 }
 
 // --- MAIN PAGE ---
-export default function JuniorCampusPage() {
+export default function JuniorAcademyPage() {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
@@ -1924,7 +1929,7 @@ export default function JuniorCampusPage() {
       </div>
       <div className="max-w-6xl mx-auto">
         <Tabs defaultValue="coach" className="w-full">
-            <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto">
+            <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto no-scrollbar">
                 <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Coach</TabsTrigger>
                 <TabsTrigger value="phonics" className="rounded-xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Music className="w-5 h-5"/> Phonics</TabsTrigger>
                 <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
