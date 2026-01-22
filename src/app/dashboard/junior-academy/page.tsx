@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -439,7 +440,7 @@ function ABCKingdom() {
     
     // Tracing Canvas Refs
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [isTracing, setIsTracing] = useState(false);
+    const [isDrawing, setIsDrawing] = useState(false);
 
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     const dict: Record<string, { word: string, emoji: string, phonic: string }> = {
@@ -1142,15 +1143,27 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
-// --- 6. SCIENCE WORLD (NON-SAAS DYNAMIC & CYCLING) ---
-function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
+// --- 6. SCIENCE WORLD (FIXED JOURNAL SAVE) ---
+function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool(); // Ensure this is here
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
-    // --- 1. DATA FETCHING ---
+    // --- 1. DATA FETCHING (Corrected Query) ---
+    // Note: If this list is empty, check Console for "Index Required" link
+    const scienceQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(
+            collection(firestore, 'junior_science'), 
+            where('schoolId', '==', schoolId), 
+            orderBy('createdAt', 'desc')
+        ) : null, 
+    [firestore, schoolId]);
+    
+    const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
+    
     const sorterQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'junior_sorter_items'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
     [firestore, schoolId]);
@@ -1160,11 +1173,7 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
         (firestore && schoolId) ? query(collection(firestore, 'junior_science_materials'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
     [firestore, schoolId]);
     const { data: dbMaterials, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
-
-    const scienceQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_science'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
-    const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
     
-    // --- 2. GAME & ADMIN STATES ---
     const [currentIndex, setCurrentIndex] = useState(0);
     const [newItem, setNewItem] = useState({ name: '', emoji: '', type: 'living' });
     const [temp, setTemp] = useState(20);
@@ -1173,8 +1182,6 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
     const [topic, setTopic] = useState(''); 
     const [fact, setFact] = useState<any>(null); 
     const [loading, setLoading] = useState(false);
-
-    // --- 3. NEW MATERIAL FORM STATE (Matter Lab) ---
     const [newMat, setNewMat] = useState({
         name: '',
         solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' },
@@ -1182,7 +1189,6 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
         gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
     });
 
-    // --- 4. SORTER LOGIC ---
     const handleNextSorter = () => {
         if (!dbSorterItems || dbSorterItems.length === 0) return;
         setCurrentIndex((prev) => (prev + 1) % dbSorterItems.length);
@@ -1242,7 +1248,6 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
         }
     };
 
-    // --- 5. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
         if (!newMat.name || !firestore || !schoolId) return;
         const statesArray = [
@@ -1270,33 +1275,59 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
         return state || selectedMaterial.states[0];
     };
 
-    // --- 6. DISCOVERY LAB LOGIC ---
     const handleGenerate = async () => { 
         setLoading(true); 
-        const res = await generateJuniorScience(topic); 
-        if(res.success) setFact(res.data); 
-        setLoading(false); 
+        try {
+            const res = await generateJuniorScience(topic); 
+            if(res.success) {
+                setFact(res.data);
+            } else {
+                toast({ variant: "destructive", title: "AI Error", description: "Could not generate fact." });
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false); 
+        }
     };
 
     const handleSave = async () => { 
         if(!user || !fact || !firestore || !schoolId) return; 
-        await addDoc(collection(firestore,'junior_science'), {
-            ...fact,
-            createdAt: serverTimestamp(),
-            createdBy: user.uid,
-            schoolId: schoolId,
-        }); 
-        setFact(null); 
-        refetchScience(); 
-        toast({title: "Discovery Saved!"});
+        
+        try {
+            // Save to Firestore
+            await addDoc(collection(firestore,'junior_science'), {
+                title: fact.title,
+                fact: fact.fact,
+                emojiIcon: fact.emojiIcon,
+                observation: fact.observation || "",
+                experiment: fact.experiment || "",
+                createdAt: serverTimestamp(),
+                createdBy: user.uid,
+                schoolId: schoolId
+            }); 
+            
+            setFact(null); 
+            setTopic('');
+            
+            if (refetchScience) refetchScience(); 
+            
+            toast({title: "Discovery Saved!", description: "Check your Journal tab."});
+            
+            setActiveTab('library');
+
+        } catch (e: any) {
+            console.error("Save Error:", e);
+            toast({ variant: "destructive", title: "Save Failed", description: e.message });
+        }
     };
     
     const handleDeleteDiscovery = async (id: string) => {
         if (!firestore) return;
-        if(window.confirm("Are you sure?")){
+        if(confirm("Delete this discovery?")){
             await deleteDoc(doc(firestore, 'junior_science', id));
-            refetchScience();
-            toast({ title: "Deleted discovery" });
+            if(refetchScience) refetchScience();
+            toast({ title: "Deleted" });
         }
     };
 
@@ -1309,7 +1340,6 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
 
-            {/* DISCOVERY LAB */}
             {activeTab === 'lab' && (
                  <div className="space-y-6 animate-in fade-in">
                      {canEdit && (
@@ -1353,8 +1383,7 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                     )}
                 </div>
             )}
-
-            {/* SORTER TAB */}
+            
             {activeTab === 'sorter' && (
                 <div className="space-y-6">
                     {canEdit && (
@@ -1433,9 +1462,8 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                         </Dialog>
                     )}
 
-                    {/* Rest of Sorter Game UI code... */}
                     <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
-                        {!dbSorterItems || dbSorterItems.length === 0 ? (
+                        {(!dbSorterItems || dbSorterItems.length === 0) ? (
                             <div className="py-10 text-slate-400 font-bold">Your library is empty. Please add items above!</div>
                         ) : (
                             <div className="animate-in zoom-in space-y-8">
@@ -1475,7 +1503,34 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                 </div>
             )}
             
-            {/* ... Rest of Tab Contents ... */}
+            {activeTab === 'library' && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
+                    {savedScience?.map((s:any)=>(
+                        <div 
+                            key={s.id} 
+                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1"
+                            onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}
+                        >
+                            <div className="text-5xl mb-4">{s.emojiIcon}</div>
+                            <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
+                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">
+                                {new Date(s.createdAt?.seconds * 1000).toLocaleDateString() || 'Discovery'}
+                            </p>
+                            {canEdit && (
+                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
+                                    <Trash2 className="w-4 w-4"/>
+                                </Button>
+                            )}
+                        </div>
+                    ))}
+                    
+                    {(!savedScience || savedScience.length === 0) && (
+                        <div className="col-span-4 text-center py-10 text-slate-400">
+                            No discoveries yet. Go to the <strong>Discovery</strong> tab to create one!
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
@@ -1914,7 +1969,6 @@ function hexToRgb(hex: string) {
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
   const { role } = useRole();
-  const { schoolId } = useCurrentSchool();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
 
@@ -1944,7 +1998,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
-                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} schoolId={schoolId} /></TabsContent>
+                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio canEdit={canEdit} schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
             </div>
@@ -1953,3 +2007,4 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
