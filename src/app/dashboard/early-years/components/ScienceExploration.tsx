@@ -36,7 +36,7 @@ const ScienceExploration: React.FC = () => {
     { id: 'organs', label: 'Inside Me', icon: HeartPulse },
     { id: 'growth', label: 'Growing Up', icon: TrendingUp },
     { id: 'senses', label: 'My Senses', icon: Ear },
-    { id: 'water', label: 'Water World', icon: Droplet },
+    { id: 'water', label: 'Water World', icon: Droplets },
     { id: 'float-sink', label: 'Float or Sink', icon: Anchor },
     { id: 'needs', label: 'What we Need', icon: HandHeart },
     { id: 'diet', label: 'Healthy Food', icon: Apple },
@@ -134,7 +134,7 @@ const WaterWorld: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
         case 'fa-cloud-showers-heavy': return <CloudRain />;
         case 'fa-faucet': return <Droplets />;
         case 'fa-water': return <Waves />;
-        default: return <Droplet />;
+        default: return <Droplets />;
       }
   }
 
