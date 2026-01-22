@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -435,8 +436,8 @@ function ABCKingdom() {
     const [caseMode, setCaseMode] = useState<'upper' | 'lower' | 'both'>('upper');
     
     // Tracing Canvas Refs
-    const traceCanvasRef = useRef<HTMLCanvasElement>(null);
-    const [isTracing, setIsTracing] = useState(false);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isDrawing, setIsDrawing] = useState(false);
 
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     const dict: Record<string, { word: string, emoji: string, phonic: string }> = {
@@ -479,8 +480,8 @@ function ABCKingdom() {
 
     // Tracing Logic
     useEffect(() => {
-        if (activeTab === 'tracing' && traceCanvasRef.current) {
-            const ctx = traceCanvasRef.current.getContext('2d');
+        if (activeTab === 'tracing' && canvasRef.current) {
+            const ctx = canvasRef.current.getContext('2d');
             if (ctx) {
                 ctx.clearRect(0, 0, 400, 400);
                 ctx.font = "bold 300px sans-serif";
@@ -492,18 +493,18 @@ function ABCKingdom() {
         }
     }, [selectedLetter, activeTab]);
 
-    const startTracing = (e: any) => {
+    const startDrawing = (e: any) => {
         const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
         const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
-        setIsTracing(true);
+        setIsDrawing(true);
     };
 
     const draw = (e: any) => {
-        if (!isTracing) return;
+        if (!isDrawing) return;
         const canvas = canvasRef.current; if (!canvas) return;
         const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
@@ -512,10 +513,10 @@ function ABCKingdom() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopTracing = () => { setIsDrawing(false); };
+    const stopDrawing = () => { setIsDrawing(false); };
 
     const resetTracingCanvas = () => {
-        const canvas = traceCanvasRef.current;
+        const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
         if (canvas && ctx) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -594,13 +595,13 @@ function ABCKingdom() {
                                     </div>
                                     <div className="relative bg-white border-4 border-slate-100 rounded-3xl shadow-inner">
                                         <canvas 
-                                            ref={traceCanvasRef} width={400} height={400} 
+                                            ref={canvasRef} width={400} height={400} 
                                             className="touch-none cursor-crosshair"
-                                            onMouseDown={startTracing}
+                                            onMouseDown={startDrawing}
                                             onMouseMove={draw}
                                             onMouseUp={stopDrawing}
                                             onMouseLeave={stopDrawing}
-                                            onTouchStart={startTracing}
+                                            onTouchStart={startDrawing}
                                             onTouchMove={draw}
                                             onTouchEnd={stopDrawing}
                                         />
@@ -818,8 +819,10 @@ function MathPlayground() {
             
              {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                    <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) % 12 * 30}deg)` }}></div>
-                    <div className="absolute top-2/4 left-2/4 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom"></div>
+                    {/* Minute hand (Longer, points to 12) */}
+                    <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom"></div>
+                    {/* Hour hand (Shorter, rotates) */}
+                    <div className="absolute top-2/4 left-2/4 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) * 30}deg)` }}></div>
                     <div className="absolute top-2">12</div>
                     <div className="absolute bottom-2">6</div>
                     <div className="absolute left-2">9</div>
@@ -1179,7 +1182,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
     });
 
-    // --- 4. SORTER LOGIC (Cycling Loop) ---
+    // --- 4. SORTER LOGIC ---
     const handleNextSorter = () => {
         if (!dbSorterItems || dbSorterItems.length === 0) return;
         setCurrentIndex((prev) => (prev + 1) % dbSorterItems.length);
@@ -1224,7 +1227,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 toast({ title: "Item Removed" });
                 
                 if (refetchSorter) {
-                    refetchSorter();
+                    forceRefetch(); // Use the hook's refetch function
                 }
                 
                 setCurrentIndex(0);
@@ -1410,10 +1413,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                                         size="icon" 
                                                         variant="ghost" 
                                                         className="text-red-400 hover:text-red-600 hover:bg-red-50" 
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteSorterItem(item.id);
-                                                        }}
+                                                        onClick={(e) => handleDeleteSorterItem(item.id, e)}
                                                     >
                                                         <Trash2 className="h-4 w-4"/>
                                                     </Button>
@@ -1907,7 +1907,7 @@ function hexToRgb(hex: string) {
 }
 
 // --- MAIN PAGE ---
-export default function JuniorCampusPage() {
+export default function JuniorAcademyPage() {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
