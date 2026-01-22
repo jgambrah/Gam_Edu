@@ -15,7 +15,7 @@ import {
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, GraduationCap, Languages, Sigma
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge, generateLessonImageAction, generateTTSAction, generateRhymingWords, generateBlendsExample, generateArtDetailsAction, generateNumeracyTask, generateDictionDetails, generateStorytellingScene, generateThemedVocab, generateMissingLetterChallenge, generateSentence } from '@/app/dashboard/early-years/actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -25,7 +25,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { PHONICS_DATA, INITIAL_WORDS, VOWELS_CONSONANTS, DICTION_DATA, READING_DATA, SENTENCE_DATA, HIDDEN_WORDS_DATA, GRAMMAR_DATA, OPPOSITES_DATA, BLENDS_DATA, RHYMES_DATA, MISSING_LETTERS_DATA, STORYTELLING_DATA, THEME_VOCAB_DATA } from '../early-years/constants';
+import { PHONICS_DATA, INITIAL_WORDS, VOWELS_CONSONANTS, DICTION_DATA, READING_DATA, SENTENCE_DATA, HIDDEN_WORDS_DATA, GRAMMAR_DATA, OPPOSITES_DATA, BLENDS_DATA, RHYMES_DATA, MISSING_LETTERS_DATA, STORYTELLING_DATA, THEME_VOCAB_DATA, ARTS_DATA, SCIENCE_DATA } from '../early-years/constants';
 import { playRawPcm } from '../early-years/services/audio';
 
 type LiteracyTab = 'alphabet' | 'blends' | 'rhymes' | 'words' | 'missing-letters' | 'building' | 'grammar' | 'reading' | 'sentences' | 'hidden-words' | 'opposites' | 'storytelling' | 'themes' | 'diction' | 'writing' | 'songs';
@@ -111,6 +111,14 @@ const LiteracyZone: React.FC = () => {
       </div>
     </div>
   );
+};
+
+const ArtStudio: React.FC<{ canEdit: boolean }> = ({ canEdit }) => {
+    return <ArtsHub />;
+};
+
+const ScienceWorld: React.FC<{ canEdit: boolean }> = ({ canEdit }) => {
+    return <ScienceExploration />;
 };
 
 // --- DUMMY COMPONENTS (To be implemented) ---
@@ -1252,392 +1260,11 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 }
 
 // --- 6. SCIENCE WORLD (NON-SAAS DYNAMIC & CYCLING) ---
-function ScienceWorld({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    
-    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
-    
-    // --- 1. DATA FETCHING (Standard Firestore) ---
-    const sorterQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'asc')) : null, 
-    [firestore]);
-    const { data: dbSorterItems, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
-    
-    const materialsQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'junior_science_materials'), orderBy('createdAt', 'asc')) : null, 
-    [firestore]);
-    const { data: dbMaterials, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
-
-    const scienceQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
-    
-    // --- 2. GAME & ADMIN STATES ---
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [newItem, setNewItem] = useState({ name: '', emoji: '', type: 'living' });
-    const [temp, setTemp] = useState(20);
-    const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
-    const [showAddMatForm, setShowAddMatForm] = useState(false);
-    const [topic, setTopic] = useState(''); 
-    const [fact, setFact] = useState<any>(null); 
-    const [loading, setLoading] = useState(false);
-
-    // --- 3. NEW MATERIAL FORM STATE (Matter Lab) ---
-    const [newMat, setNewMat] = useState({
-        name: '',
-        solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' },
-        liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' },
-        gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
-    });
-
-    // --- 4. SORTER LOGIC (Cycling Loop) ---
-    const handleNextSorter = () => {
-        if (!dbSorterItems || dbSorterItems.length === 0) return;
-        setCurrentIndex((prev) => (prev + 1) % dbSorterItems.length);
-    };
-
-    const handleAnswer = (choice: string) => {
-        if (!dbSorterItems) return;
-        const currentItem = dbSorterItems[currentIndex];
-        if (choice === currentItem.type) {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            speak(`Correct! ${currentItem.name} is ${currentItem.type}!`);
-            setTimeout(handleNextSorter, 1500);
-        } else {
-            speak(`Not quite! Try again.`);
-            toast({ title: "Try again!", description: `Is it really ${choice}?`, variant: "destructive" });
-        }
-    };
-
-    const handleSaveSorterItem = async () => {
-        if (!newItem.name || !newItem.emoji || !firestore) return;
-        await addDoc(collection(firestore, 'junior_sorter_items'), {
-            ...newItem,
-            createdAt: serverTimestamp()
-        });
-        setNewItem({ name: '', emoji: '', type: 'living' });
-        refetchSorter();
-        toast({ title: "Item Added!" });
-    };
-
-    const handleDeleteSorterItem = async (id: string) => {
-        if (!firestore) return;
-        if (window.confirm("Are you sure you want to delete this item?")) {
-            await deleteDoc(doc(firestore, 'junior_sorter_items', id));
-            toast({ title: "Item Removed" });
-            refetchSorter();
-        }
-    };
-
-
-    // --- 5. MATTER LAB LOGIC ---
-    const handleSaveMaterial = async () => {
-        if (!newMat.name || !firestore) return;
-        const statesArray = [
-            { ...newMat.solid }, 
-            { ...newMat.liquid }, 
-            { ...newMat.gas }
-        ];
-
-        await addDoc(collection(firestore, 'junior_science_materials'), {
-            name: newMat.name,
-            states: statesArray,
-            createdAt: serverTimestamp()
-        });
-
-        setShowAddMatForm(false);
-        setNewMat({ name: '', solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' }, liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' }, gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' } });
-        refetchMaterials();
-        toast({ title: "Material Created!" });
-    };
-
-    const getCurrentState = () => {
-        if (!selectedMaterial) return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
-        const state = [...selectedMaterial.states].sort((a,b) => b.temp - a.temp).find(s => temp >= s.temp);
-        return state || selectedMaterial.states[0];
-    };
-
-    // --- 6. DISCOVERY LAB LOGIC ---
-    const handleGenerate = async () => { 
-        setLoading(true); 
-        const res = await generateJuniorScience(topic); 
-        if(res.success) setFact(res.data); 
-        setLoading(false); 
-    };
-
-    const handleSave = async () => { 
-        if(!user || !fact || !firestore) return; 
-        await addDoc(collection(firestore,'junior_science'), {
-            ...fact,
-            createdAt: serverTimestamp(),
-            createdBy: user.uid
-        }); 
-        setFact(null); 
-        refetchScience(); 
-        toast({title: "Discovery Saved!"});
-    };
-    
-    const handleDeleteDiscovery = async (id: string) => {
-        if (!firestore) return;
-        if(window.confirm("Are you sure?")){
-            await deleteDoc(doc(firestore, 'junior_science', id));
-            refetchScience();
-            toast({ title: "Deleted discovery" });
-        }
-    };
-
-    return (
-        <div className="space-y-8">
-            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
-                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')}>Discovery</Button>
-                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')}>Sorter</Button>
-                <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
-                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
-            </div>
-
-            {/* DISCOVERY LAB */}
-            {activeTab === 'lab' && (
-                 <div className="space-y-6 animate-in fade-in">
-                     {canEdit && (
-                        <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
-                            <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> What should we investigate?</h3>
-                            <div className="flex gap-2">
-                                <Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Gravity, Ants, Clouds)" className="text-lg h-12 rounded-xl"/>
-                                <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 px-6">
-                                    {loading ? <Loader2 className="animate-spin"/> : "Investigate"}
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                    {fact && (
-                        <Card className="border-4 border-blue-400 overflow-hidden rounded-[40px] shadow-2xl animate-in zoom-in">
-                           <div className="bg-blue-500 p-8 text-center text-white">
-                                <div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div>
-                                <h2 className="text-4xl font-black mb-2">{fact.title}</h2>
-                            </div>
-                            <CardContent className="p-8 space-y-6">
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
-                                        <h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p>
-                                    </div>
-                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100">
-                                        <h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you to see this in action!"}</p>
-                                    </div>
-                                </div>
-                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200">
-                                    <h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4>
-                                    <p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example of this in your backyard?"}"</p>
-                                </div>
-                                <div className="flex gap-4">
-                                    <Button onClick={() => speak(`${fact.title}. ${fact.fact}. Try this: ${fact.experiment}`)} className="flex-1 h-14 bg-blue-600 text-lg font-bold rounded-2xl">Read Lesson</Button>
-                                    {canEdit && <Button onClick={handleSave} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                </div>
-            )}
-
-            {/* SORTER TAB */}
-            {activeTab === 'sorter' && (
-                <div className="space-y-6">
-                    {canEdit && (
-                         <Dialog>
-                            <DialogTrigger asChild>
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700"><PlusCircle className="mr-2 h-4 w-4"/> Add or Manage Sorter Items</Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader><DialogTitle>Manage Sorter Library</DialogTitle></DialogHeader>
-                                <div className="space-y-4">
-                                    <div className="flex flex-wrap gap-2 p-4 border rounded-lg bg-slate-50">
-                                        <Input placeholder="Name" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} className="flex-1"/>
-                                        <Input placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})} className="w-20"/>
-                                        <Select value={newItem.type} onValueChange={(v) => setNewItem({...newItem, type: v})}>
-                                            <SelectTrigger><SelectValue/></SelectTrigger>
-                                            <SelectContent><SelectItem value="living">Living</SelectItem><SelectItem value="non-living">Non-Living</SelectItem></SelectContent>
-                                        </Select>
-                                        <Button onClick={handleSaveSorterItem}>Save</Button>
-                                    </div>
-                                    <div className="max-h-64 overflow-y-auto space-y-2">
-                                        {dbSorterItems?.map((item) => (
-                                            <div key={item.id} className="flex justify-between items-center p-2 border rounded-md">
-                                                <span>{item.emoji} {item.name} <Badge variant="secondary">{item.type}</Badge></span>
-                                                <Button size="icon" variant="ghost" onClick={() => handleDeleteSorterItem(item.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-                    )}
-
-                    <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
-                        {!dbSorterItems || dbSorterItems.length === 0 ? (
-                            <div className="py-10 text-slate-400 font-bold">Your library is empty. Please add items above!</div>
-                        ) : (
-                            <div className="animate-in zoom-in space-y-8">
-                                <div className="flex justify-center gap-1">
-                                    {dbSorterItems.map((_, i) => (
-                                        <div 
-                                            key={i} 
-                                            className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} 
-                                        />
-                                    ))}
-                                </div>
-                                <div className="text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 border-blue-50">
-                                    {dbSorterItems[currentIndex].emoji}
-                                </div>
-                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex].name}</h3>
-                                
-                                <div className="flex justify-center gap-6">
-                                    <Button 
-                                        onClick={() => handleAnswer('living')}
-                                        className="h-24 px-12 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#15803d] active:shadow-none active:translate-y-2 transition-all"
-                                    >
-                                        🌳 Living
-                                    </Button>
-                                    <Button 
-                                        onClick={() => handleAnswer('non-living')}
-                                        className="h-24 px-12 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#334155] active:shadow-none active:translate-y-2 transition-all"
-                                    >
-                                        🧸 Non-Living
-                                    </Button>
-                                </div>
-                                <p className="text-slate-400 font-bold">
-                                    Item {currentIndex + 1} of {dbSorterItems.length}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* MATTER LAB TAB */}
-            {activeTab === 'experiment' && (
-                <div className="space-y-8 animate-in zoom-in">
-                    
-                    {/* Material Selector */}
-                    <div className="text-center space-y-4">
-                        <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            {dbMaterials?.map(m => (
-                                <Button 
-                                    key={m.id} 
-                                    variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} 
-                                    onClick={() => setSelectedMaterial(m)}
-                                    className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}
-                                >
-                                    {m.name}
-                                </Button>
-                            ))}
-                            {canEdit && (
-                                <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">
-                                    {showAddMatForm ? 'Close Creator' : '+ Add New Material'}
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Material Creator Form */}
-                    {showAddMatForm && canEdit && (
-                        <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px] animate-in slide-in-from-top-4">
-                            <h4 className="text-xl font-black text-cyan-800 mb-4">Laboratory: Create New Material</h4>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div className="space-y-4">
-                                    <Input placeholder="Material Name (e.g. Honey)" value={newMat.name} onChange={e => setNewMat({...newMat, name: e.target.value})} className="bg-white" />
-                                    <div className="flex gap-2">
-                                        <div className="flex-1 space-y-1">
-                                            <label className="text-[10px] font-bold text-slate-400">LIQUID AT (°C)</label>
-                                            <Input type="number" value={newMat.liquid.temp} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, temp: parseInt(e.target.value)}})} />
-                                        </div>
-                                        <div className="flex-1 space-y-1">
-                                            <label className="text-[10px] font-bold text-slate-400">GAS AT (°C)</label>
-                                            <Input type="number" value={newMat.gas.temp} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, temp: parseInt(e.target.value)}})} />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="flex gap-2">
-                                        <Input placeholder="Solid Emoji" value={newMat.solid.emoji} onChange={e => setNewMat({...newMat, solid: {...newMat.solid, emoji: e.target.value}})} />
-                                        <Input placeholder="Liquid Emoji" value={newMat.liquid.emoji} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, emoji: e.target.value}})} />
-                                        <Input placeholder="Gas Emoji" value={newMat.gas.emoji} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, emoji: e.target.value}})} />
-                                    </div>
-                                    <Button onClick={handleSaveMaterial} className="w-full h-12 bg-cyan-600 text-white font-black rounded-xl">Save to Lab</Button>
-                                </div>
-                            </div>
-                        </Card>
-                    )}
-
-                    {/* Simulator Display */}
-                    <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
-                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
-                            {getCurrentState().emoji}
-                        </div>
-                        <div className="text-center">
-                            <h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2>
-                            <p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p>
-                        </div>
-                        
-                        <div className="w-full max-w-md space-y-4">
-                            <div className="flex justify-between font-black text-xl text-slate-400">
-                                <span className="text-blue-400">COLD</span>
-                                <span className="text-cyan-600 bg-cyan-50 px-4 py-1 rounded-full border border-cyan-100">{temp}°C</span>
-                                <span className="text-red-400">HOT</span>
-                            </div>
-                            <input 
-                                type="range" min="-50" max="150" value={temp} 
-                                onChange={e => setTemp(parseInt(e.target.value))} 
-                                className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
-             {/* JOURNAL TAB */}
-             {activeTab === 'library' && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
-                    {savedScience?.map((s:any)=>(
-                        <div 
-                            key={s.id} 
-                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1"
-                            onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}
-                        >
-                            <div className="text-5xl mb-4">{s.emojiIcon}</div>
-                            <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
-                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Discovery</p>
-                            {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
-                                    <Trash2 className="w-4 w-4"/>
-                                </Button>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}
+// Note: This has been replaced by the full component further up. This is a placeholder.
 
 // --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
-function ArtStudio({ canEdit }: { canEdit: boolean }) {
-    const [activeTab, setActiveTab] = useState<'freestyle' | 'quests' | 'gallery'>('freestyle');
+// Note: This has been replaced by the full component further up. This is a placeholder.
 
-    return (
-        <div className="space-y-6">
-            <div className="flex gap-2 p-1 bg-pink-50 rounded-2xl w-fit mx-auto border border-pink-100">
-                <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={() => setActiveTab('freestyle')}>Freestyle</Button>
-                <Button variant={activeTab === 'quests' ? 'default' : 'ghost'} onClick={() => setActiveTab('quests')}>Quests</Button>
-                <Button variant={activeTab === 'gallery' ? 'default' : 'ghost'} onClick={() => setActiveTab('gallery')}>Gallery</Button>
-            </div>
-             {activeTab === 'freestyle' && <div className="text-center p-8">Freestyle Drawing Canvas Here</div>}
-             {activeTab === 'quests' && <div className="text-center p-8">Art Quests/Challenges Here</div>}
-             {activeTab === 'gallery' && <div className="text-center p-8">Student Gallery Here</div>}
-        </div>
-    );
-}
 
 // --- 8. REWARDS (THE HALL OF FAME) ---
 function StickerBook() {
@@ -1780,25 +1407,6 @@ function StickerBook() {
             </div>
         </div>
     );
-}
-
-// Utility Helpers for Flood Fill
-function getPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number) {
-    const i = (y * width + x) * 4;
-    return [data[i], data[i+1], data[i+2], data[i+3]];
-}
-function setPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number, color: number[]) {
-    const i = (y * width + x) * 4;
-    data[i] = color[0]; data[i+1] = color[1]; data[i+2] = color[2]; data[i+3] = 255;
-}
-function colorsMatch(c1: number[], c2: number[]) {
-    return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2];
-}
-function hexToRgb(hex: string) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return [r, g, b];
 }
 
 // --- MAIN PAGE ---
