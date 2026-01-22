@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -436,8 +435,8 @@ function ABCKingdom() {
     const [caseMode, setCaseMode] = useState<'upper' | 'lower' | 'both'>('upper');
     
     // Tracing Canvas Refs
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [isDrawing, setIsDrawing] = useState(false);
+    const traceCanvasRef = useRef<HTMLCanvasElement>(null);
+    const [isTracing, setIsTracing] = useState(false);
 
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     const dict: Record<string, { word: string, emoji: string, phonic: string }> = {
@@ -480,8 +479,8 @@ function ABCKingdom() {
 
     // Tracing Logic
     useEffect(() => {
-        if (activeTab === 'tracing' && canvasRef.current) {
-            const ctx = canvasRef.current.getContext('2d');
+        if (activeTab === 'tracing' && traceCanvasRef.current) {
+            const ctx = traceCanvasRef.current.getContext('2d');
             if (ctx) {
                 ctx.clearRect(0, 0, 400, 400);
                 ctx.font = "bold 300px sans-serif";
@@ -493,19 +492,19 @@ function ABCKingdom() {
         }
     }, [selectedLetter, activeTab]);
 
-    const startDrawing = (e: any) => {
-        const ctx = canvasRef.current?.getContext('2d');
+    const startTracing = (e: any) => {
+        const ctx = traceCanvasRef.current?.getContext('2d');
         if (!ctx) return;
-        const rect = canvasRef.current!.getBoundingClientRect();
+        const rect = traceCanvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
-        setIsDrawing(true);
+        setIsTracing(true);
     };
 
     const draw = (e: any) => {
-        if (!isDrawing) return;
-        const canvas = canvasRef.current; if (!canvas) return;
+        if (!isTracing) return;
+        const canvas = traceCanvasRef.current; if (!canvas) return;
         const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
@@ -513,10 +512,12 @@ function ABCKingdom() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopDrawing = () => { setIsDrawing(false); };
+    const stopTracing = () => {
+        setIsTracing(false);
+    };
 
     const resetTracingCanvas = () => {
-        const canvas = canvasRef.current;
+        const canvas = traceCanvasRef.current;
         const ctx = canvas?.getContext('2d');
         if (canvas && ctx) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -595,15 +596,15 @@ function ABCKingdom() {
                                     </div>
                                     <div className="relative bg-white border-4 border-slate-100 rounded-3xl shadow-inner">
                                         <canvas 
-                                            ref={canvasRef} width={400} height={400} 
+                                            ref={traceCanvasRef} width={400} height={400} 
                                             className="touch-none cursor-crosshair"
-                                            onMouseDown={startDrawing}
+                                            onMouseDown={startTracing}
                                             onMouseMove={draw}
-                                            onMouseUp={stopDrawing}
-                                            onMouseLeave={stopDrawing}
-                                            onTouchStart={startDrawing}
+                                            onMouseUp={stopTracing}
+                                            onMouseLeave={stopTracing}
+                                            onTouchStart={startTracing}
                                             onTouchMove={draw}
-                                            onTouchEnd={stopDrawing}
+                                            onTouchEnd={stopTracing}
                                         />
                                         <Button 
                                             variant="ghost" size="sm" 
@@ -1413,7 +1414,10 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                                         size="icon" 
                                                         variant="ghost" 
                                                         className="text-red-400 hover:text-red-600 hover:bg-red-50" 
-                                                        onClick={(e) => handleDeleteSorterItem(item.id, e)}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleDeleteSorterItem(item.id);
+                                                        }}
                                                     >
                                                         <Trash2 className="h-4 w-4"/>
                                                     </Button>
@@ -1907,7 +1911,7 @@ function hexToRgb(hex: string) {
 }
 
 // --- MAIN PAGE ---
-export default function JuniorAcademyPage() {
+export default function JuniorCampusPage() {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
