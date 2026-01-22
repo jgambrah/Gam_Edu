@@ -48,8 +48,7 @@ export async function generateJuniorStory(topic: string, wordCount: number = 100
     console.error("Story Generation Error:", error);
     return { 
       success: false, 
-      error: error instanceof Error ? error.message : "Unknown error",
-      details: error 
+      error: error instanceof Error ? error.message : "Unknown error"
     };
   }
 }
@@ -88,8 +87,7 @@ export async function generateJuniorScience(topic: string) {
     console.error("Science Generation Error:", error);
     return { 
         success: false, 
-        error: error instanceof Error ? error.message : "Unknown error",
-        details: error 
+        error: error instanceof Error ? error.message : "Unknown error"
     };
   }
 }
@@ -133,8 +131,7 @@ export async function generatePhonicsChallenge(level: 'easy' | 'medium' | 'hard'
     console.error("Phonics Generation Error:", error);
     return { 
         success: false, 
-        error: error instanceof Error ? error.message : "Unknown error",
-        details: error 
+        error: error instanceof Error ? error.message : "Unknown error"
     };
   }
 }
@@ -179,8 +176,7 @@ export async function generateWordDetails(word: string) {
     console.error("Word Details Generation Error:", error);
     return { 
         success: false, 
-        error: error instanceof Error ? error.message : "Unknown error",
-        details: error 
+        error: error instanceof Error ? error.message : "Unknown error"
     };
   }
 }
@@ -228,8 +224,7 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
         console.error("TTS Generation Error:", error);
         return { 
             success: false, 
-            error: error instanceof Error ? error.message : "Unknown error",
-            details: error 
+            error: error instanceof Error ? error.message : "Unknown error"
         };
     }
 }
