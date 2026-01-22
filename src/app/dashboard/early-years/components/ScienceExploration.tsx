@@ -8,15 +8,8 @@ import { z } from 'zod';
 import { 
   generateTTSAction,
   generateLessonImageAction as generateLessonImage,
-  // These are not actually defined in the provided junior-actions, but assuming they should be there.
-  // generateConceptDetails, 
-  // generateWaterExample, 
-  // generateFloatSinkExample, 
-  // generateLivingNeedExample, 
-  // generateDietExample, 
-  // generateDentistExample, 
-  // generateHealthScenario 
 } from '../actions';
+import { Wand2, CloudRain, Droplets, Waves, ArrowLeft, ArrowRight, User, HeartPulse, TrendingUp, Ear, Anchor, HandHeart, Apple, Stethoscope, Leaf, CloudSun, PawPrint, Car, Shapes, Search, X, Loader2, BookOpen, Microscope, Sparkles, Atom, Database, PlusCircle, PenSquare } from 'lucide-react';
 
 type ScienceTab = 'body' | 'organs' | 'growth' | 'senses' | 'diet' | 'dentist' | 'health' | 'water' | 'float-sink' | 'needs' | 'living' | 'weather' | 'animals' | 'transport' | 'concepts' | 'skills';
 
@@ -38,23 +31,23 @@ const ScienceExploration: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ScienceTab>('body');
   const [errorMsg, setErrorMsg] = useState('');
   
-  const tabs: {id: ScienceTab, label: string, icon: string}[] = [
-    { id: 'body', label: 'My Body', icon: 'fa-user' },
-    { id: 'organs', label: 'Inside Me', icon: 'fa-heart-pulse' },
-    { id: 'growth', label: 'Growing Up', icon: 'fa-arrow-up-right-dots' },
-    { id: 'senses', label: 'My Senses', icon: 'fa-ear-listen' },
-    { id: 'water', label: 'Water World', icon: 'fa-droplet' },
-    { id: 'float-sink', label: 'Float or Sink', icon: 'fa-anchor' },
-    { id: 'needs', label: 'What we Need', icon: 'fa-hands-holding-child' },
-    { id: 'diet', label: 'Healthy Food', icon: 'fa-apple-whole' },
-    { id: 'dentist', label: 'The Dentist', icon: 'fa-tooth' },
-    { id: 'health', label: 'Health Care', icon: 'fa-stethoscope' },
-    { id: 'living', label: 'Living Things', icon: 'fa-leaf' },
-    { id: 'weather', label: 'Weather', icon: 'fa-cloud-sun' },
-    { id: 'animals', label: 'Animals', icon: 'fa-paw' },
-    { id: 'transport', label: 'Travel', icon: 'fa-car' },
-    { id: 'concepts', label: 'Concepts', icon: 'fa-shapes' },
-    { id: 'skills', label: 'Skills', icon: 'fa-magnifying-glass' },
+  const tabs: {id: ScienceTab, label: string, icon: React.FC<any>}[] = [
+    { id: 'body', label: 'My Body', icon: User },
+    { id: 'organs', label: 'Inside Me', icon: HeartPulse },
+    { id: 'growth', label: 'Growing Up', icon: TrendingUp },
+    { id: 'senses', label: 'My Senses', icon: Ear },
+    { id: 'water', label: 'Water World', icon: Droplet },
+    { id: 'float-sink', label: 'Float or Sink', icon: Anchor },
+    { id: 'needs', label: 'What we Need', icon: HandHeart },
+    { id: 'diet', label: 'Healthy Food', icon: Apple },
+    { id: 'dentist', label: 'The Dentist', icon: Stethoscope }, // Placeholder
+    { id: 'health', label: 'Health Care', icon: Stethoscope },
+    { id: 'living', label: 'Living Things', icon: Leaf },
+    { id: 'weather', label: 'Weather', icon: CloudSun },
+    { id: 'animals', label: 'Animals', icon: PawPrint },
+    { id: 'transport', label: 'Travel', icon: Car },
+    { id: 'concepts', label: 'Concepts', icon: Shapes },
+    { id: 'skills', label: 'Skills', icon: Search },
   ];
 
   return (
@@ -66,7 +59,7 @@ const ScienceExploration: React.FC = () => {
 
       {errorMsg && (
         <div className="bg-orange-100 text-orange-700 px-6 py-3 rounded-2xl font-bold text-sm animate-bounce flex items-center gap-3">
-          <i className="fas fa-circle-exclamation"></i>{errorMsg}
+          <X className="w-4 h-4" />{errorMsg}
         </div>
       )}
 
@@ -80,7 +73,7 @@ const ScienceExploration: React.FC = () => {
                 activeTab === tab.id ? 'bg-green-500 text-white shadow-lg scale-105' : 'text-green-300 hover:bg-green-50'
               }`}
             >
-              <i className={`fas ${tab.icon} text-lg`}></i>
+              <tab.icon className="h-5 w-5" />
               <span>{tab.label}</span>
             </button>
           ))}
@@ -135,14 +128,23 @@ const WaterWorld: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
         }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
+  
+  const getIcon = (iconName: string) => {
+      switch(iconName) {
+        case 'fa-cloud-showers-heavy': return <CloudRain />;
+        case 'fa-faucet': return <Droplets />;
+        case 'fa-water': return <Waves />;
+        default: return <Droplet />;
+      }
+  }
 
   return (
     <div className="relative">
-      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-blue-200 text-blue-500 px-4 py-2 rounded-full font-bold shadow-sm uppercase tracking-widest z-10"><i className="fas fa-magic"></i> AI Water Assistant</button>
+      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-blue-200 text-blue-500 px-4 py-2 rounded-full font-bold shadow-sm uppercase tracking-widest z-10 flex items-center gap-2"><Wand2 className="h-4 w-4"/> AI Water Assistant</button>
       <div className="w-full flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 animate-in zoom-in duration-500 min-h-[550px]">
         <h3 className="text-4xl font-black text-blue-500 mb-8 uppercase tracking-tighter text-center">Water World 💧</h3>
         <div className="flex items-center gap-8 mb-10">
-           <div className="w-20 h-20 bg-blue-500 text-white rounded-2xl flex items-center justify-center text-4xl shadow-xl border-4 border-white"><i className={`fas ${current.icon}`}></i></div>
+           <div className="w-20 h-20 bg-blue-500 text-white rounded-2xl flex items-center justify-center text-4xl shadow-xl border-4 border-white">{getIcon(current.icon)}</div>
            <div className="text-center">
              <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Source</p>
              <h4 className="text-4xl font-black text-blue-600 uppercase">{current.source}</h4>
@@ -152,9 +154,9 @@ const WaterWorld: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
           {loading ? <div className="w-16 h-16 border-8 border-blue-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} alt={current.source} className="w-full h-full object-cover transition-transform group-hover:scale-110 p-6" />}
         </div>
         <div className="bg-blue-50 p-8 rounded-3xl border-4 border-dashed border-blue-200 mb-10 text-center"><p className="text-xs font-black text-blue-400 uppercase tracking-widest mb-1">How we use it:</p><p className="text-2xl font-bold text-blue-800 italic">"{current.use}"</p></div>
-        <div className="flex gap-6"><button onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center active:scale-90 transition-all shadow-md"><i className="fas fa-arrow-left text-2xl"></i></button><button onClick={handleLearn} className="px-10 py-3 bg-blue-500 text-white font-black rounded-2xl shadow-xl uppercase">Splash!</button><button onClick={() => setIndex(p => (p + 1) % data.length)} className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center active:scale-90 transition-all shadow-md"><i className="fas fa-arrow-right text-2xl"></i></button></div>
+        <div className="flex gap-6"><button onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center active:scale-90 transition-all shadow-md"><ArrowLeft className="w-6 h-6"/></button><button onClick={handleLearn} className="px-10 py-3 bg-blue-500 text-white font-black rounded-2xl shadow-xl uppercase">Splash!</button><button onClick={() => setIndex(p => (p + 1) % data.length)} className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center active:scale-90 transition-all shadow-md"><ArrowRight className="w-6 h-6"/></button></div>
       </div>
-      {isDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-50"><h3 className="text-3xl font-black text-blue-600 mb-6">AI Water Lesson</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Water Scene/Source</label><input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder="e.g. Ice cube, Waterfall" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTopic} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE MAGIC'}</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
+      {isDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-50"><h3 className="text-3xl font-black text-blue-600 mb-6">AI Water Lesson</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Water Scene/Source</label><input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder="e.g. Ice cube, Waterfall" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTopic} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">{isAiLoading ? <Loader2 className="animate-spin" /> : 'CREATE MAGIC'}</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
     </div>
   );
 };

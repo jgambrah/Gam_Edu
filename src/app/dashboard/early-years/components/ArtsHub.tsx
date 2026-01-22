@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -12,6 +10,7 @@ import {
     generateArtDetailsAction,
     generateLessonImageAction
 } from '../actions';
+import { Sparkles, Volume2, Eraser, RefreshCw, X, Wand2, Leaf, ChevronLeft, ChevronRight, Shapes, Hand, Search, Circle, Square, Play, Star, Triangle, Loader2 } from 'lucide-react';
 
 
 type ArtsTab = 'studio' | 'colors' | 'shapes' | 'texture';
@@ -176,7 +175,7 @@ const CreativeStudio: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
 
   return (
     <div className="relative">
-      <button onClick={() => setIsAdminOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-pink-200 text-pink-500 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-pink-50 transition-colors flex items-center gap-2 z-10"><i className="fas fa-sparkles"></i> Teacher's Drawer</button>
+      <button onClick={() => setIsAdminOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-pink-200 text-pink-500 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-pink-50 transition-colors flex items-center gap-2 z-10"><Sparkles className="h-4 w-4" /> Teacher's Drawer</button>
       <div className="w-full bg-white p-8 md:p-12 rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center animate-in slide-in-from-top duration-500">
         <div className="text-center mb-8">
           <h3 className="text-3xl font-black text-pink-500 uppercase">Today's Prompt: {prompts[promptIndex].title}</h3>
@@ -190,7 +189,7 @@ const CreativeStudio: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
                 <div className="aspect-square bg-white rounded-3xl overflow-hidden border-2 border-pink-100 flex items-center justify-center">
                   {loading ? <div className="w-8 h-8 border-4 border-pink-400 border-t-transparent rounded-full animate-spin"></div> : inspirationUrl && <img src={inspirationUrl} className="w-full h-full object-cover" />}
                 </div>
-                <button onClick={() => onSound(`Let's draw ${prompts[promptIndex].title}! Use your favorite colors!`)} className="mt-4 w-full py-2 bg-pink-100 text-pink-500 rounded-xl font-bold text-xs"><i className="fas fa-volume-high mr-2"></i> Listen</button>
+                <button onClick={() => onSound(`Let's draw ${prompts[promptIndex].title}! Use your favorite colors!`)} className="mt-4 w-full py-2 bg-pink-100 text-pink-500 rounded-xl font-bold text-xs flex items-center justify-center gap-2"><Volume2 className="h-4 w-4"/> Listen</button>
              </div>
              <div className="bg-white p-6 rounded-[2.5rem] border-4 border-pink-50 shadow-md">
                 <p className="text-xs font-black text-gray-400 mb-4 uppercase tracking-widest">Brushes</p>
@@ -218,8 +217,8 @@ const CreativeStudio: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
                 />
              </div>
              <div className="flex gap-4 mt-6">
-                <button onClick={() => { const ctx = canvasRef.current?.getContext('2d'); if (ctx) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height); } }} className="px-6 py-2 bg-gray-100 text-gray-500 rounded-full font-bold text-xs uppercase"><i className="fas fa-eraser mr-2"></i> Clear Canvas</button>
-                <button onClick={() => setPromptIndex(p => (p + 1) % prompts.length)} className="px-6 py-2 bg-pink-500 text-white rounded-full font-bold text-xs uppercase shadow-md"><i className="fas fa-shuffle mr-2"></i> Next Idea</button>
+                <button onClick={() => { const ctx = canvasRef.current?.getContext('2d'); if (ctx) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height); } }} className="px-6 py-2 bg-gray-100 text-gray-500 rounded-full font-bold text-xs uppercase flex items-center gap-2"><Eraser className="h-4 w-4"/> Clear Canvas</button>
+                <button onClick={() => setPromptIndex(p => (p + 1) % prompts.length)} className="px-6 py-2 bg-pink-500 text-white rounded-full font-bold text-xs uppercase shadow-md flex items-center gap-2"><RefreshCw className="h-4 w-4"/> Next Idea</button>
              </div>
           </div>
         </div>
@@ -230,14 +229,14 @@ const CreativeStudio: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
           <div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-300">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-black text-gray-800 tracking-tight">Add Art Prompt</h3>
-              <button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><i className="fas fa-times"></i></button>
+              <button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><X className="w-5 h-5"/></button>
             </div>
             <form onSubmit={handleAddPrompt} className="space-y-6">
               <div>
                 <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Subject Name</label>
                 <div className="flex gap-2">
                   <input type="text" required value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Blue Robot" className="flex-grow px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-pink-300 focus:outline-none text-lg font-bold" />
-                  <button type="button" onClick={handleMagicPrompt} disabled={!newName || isMagicLoading} className="w-12 h-12 bg-pink-100 text-pink-500 rounded-2xl flex items-center justify-center hover:bg-pink-200 disabled:opacity-50">{isMagicLoading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-wand-magic-sparkles"></i>}</button>
+                  <button type="button" onClick={handleMagicPrompt} disabled={!newName || isMagicLoading} className="w-12 h-12 bg-pink-100 text-pink-500 rounded-2xl flex items-center justify-center hover:bg-pink-200 disabled:opacity-50">{isMagicLoading ? <Loader2 className="animate-spin" /> : <Wand2 />}</button>
                 </div>
               </div>
               <div>
@@ -293,7 +292,7 @@ const ColorGarden: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =>
 
   return (
     <div className="relative">
-      <button onClick={() => setIsAdminOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-500 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-green-50 transition-colors flex items-center gap-2 z-10"><i className="fas fa-leaf"></i> Teacher's Drawer</button>
+      <button onClick={() => setIsAdminOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-500 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-green-50 transition-colors flex items-center gap-2 z-10"><Leaf className="h-4 w-4"/> Teacher's Drawer</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center animate-in slide-in-from-right duration-500 min-h-[600px]">
         <h3 className="text-3xl font-black text-green-600 mb-8 uppercase tracking-tight">Color Nature Discovery</h3>
         <div className="text-center mb-10">
@@ -302,16 +301,16 @@ const ColorGarden: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =>
            </span>
            <p className="text-gray-400 font-bold mt-4 italic">"{items[index].name} is {items[index].color.toLowerCase()}!"</p>
         </div>
-        <div onClick={() => onSound(`Look at the ${items[index].name}! It is so ${items[index].color.toLowerCase()}!`)} className="relative w-80 h-80 md:w-96 md:h-96 bg-green-50 rounded-[3.5rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group">
+        <div onClick={() => onSound(`Look at the ${items[index].name}! It is so ${items[index].color.toLowerCase()}!`)} className="relative w-80 h-80 md:w-96 md:h-96 bg-green-50 rounded-[3.5rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group flex items-center justify-center">
           {loading ? <div className="w-16 h-16 border-8 border-green-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110" />}
-          <div className="absolute inset-0 bg-green-500/0 group-hover:bg-green-500/5 transition-colors flex items-center justify-center"><i className="fas fa-volume-high text-white text-5xl opacity-0 group-hover:opacity-100 drop-shadow-lg"></i></div>
+          <div className="absolute inset-0 bg-green-500/0 group-hover:bg-green-500/5 transition-colors flex items-center justify-center"><Volume2 className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 drop-shadow-lg"/></div>
         </div>
         <div className="flex gap-6 mt-12">
-           <button onClick={() => setIndex(i => (i === 0 ? items.length - 1 : i - 1))} className="w-14 h-14 bg-green-100 text-green-500 rounded-full flex items-center justify-center hover:bg-green-200 transition-all shadow-md active:scale-90"><i className="fas fa-chevron-left fa-xl"></i></button>
-           <button onClick={() => setIndex(i => (i + 1) % items.length)} className="w-14 h-14 bg-green-100 text-green-500 rounded-full flex items-center justify-center hover:bg-green-200 transition-all shadow-md active:scale-90"><i className="fas fa-chevron-right fa-xl"></i></button>
+           <button onClick={() => setIndex(i => (i === 0 ? items.length - 1 : i - 1))} className="w-14 h-14 bg-green-100 text-green-500 rounded-full flex items-center justify-center hover:bg-green-200 transition-all shadow-md active:scale-90"><ChevronLeft className="w-6 h-6"/></button>
+           <button onClick={() => setIndex(i => (i + 1) % items.length)} className="w-14 h-14 bg-green-100 text-green-500 rounded-full flex items-center justify-center hover:bg-green-200 transition-all shadow-md active:scale-90"><ChevronRight className="w-6 h-6"/></button>
         </div>
       </div>
-      {isAdminOpen && (<div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-300"><div className="flex justify-between items-center mb-6"><h3 className="text-2xl font-black text-gray-800 tracking-tight">Add Nature Item</h3><button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><i className="fas fa-times"></i></button></div><form onSubmit={handleAddItem} className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Object Name</label><div className="flex gap-2"><input type="text" required value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Butterfly" className="flex-grow px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-green-300 focus:outline-none text-lg font-bold" /><button type="button" onClick={handleMagicPrompt} disabled={!newName || isGenerating} className="w-12 h-12 bg-green-100 text-green-500 rounded-2xl flex items-center justify-center hover:bg-green-200 disabled:opacity-50">{isGenerating ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-wand-magic-sparkles"></i>}</button></div></div><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Main Color</label><select value={newColor} onChange={(e) => setNewColor(e.target.value)} className="w-full px-5 py-3 rounded-2xl border-2 border-gray-100 bg-white font-bold"><option>Red</option><option>Blue</option><option>Yellow</option><option>Green</option><option>Purple</option><option>Orange</option></select></div><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Image Prompt</label><textarea required value={newPrompt} onChange={(e) => setNewPrompt(e.target.value)} className="w-full px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-green-300 focus:outline-none text-sm font-medium h-24 resize-none" /></div><button type="submit" className="w-full py-5 bg-green-500 text-white font-black text-xl rounded-2xl shadow-xl hover:bg-green-600 transition-all">Add to Garden! 🌿</button></form></div></div>)}
+      {isAdminOpen && (<div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-300"><div className="flex justify-between items-center mb-6"><h3 className="text-2xl font-black text-gray-800 tracking-tight">Add Nature Item</h3><button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><X className="w-5 h-5"/></button></div><form onSubmit={handleAddItem} className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Object Name</label><div className="flex gap-2"><input type="text" required value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Butterfly" className="flex-grow px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-green-300 focus:outline-none text-lg font-bold" /><button type="button" onClick={handleMagicPrompt} disabled={!newName || isGenerating} className="w-12 h-12 bg-green-100 text-green-500 rounded-2xl flex items-center justify-center hover:bg-green-200 disabled:opacity-50">{isGenerating ? <Loader2 className="animate-spin"/> : <Wand2 />}</button></div></div><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Main Color</label><select value={newColor} onChange={(e) => setNewColor(e.target.value)} className="w-full px-5 py-3 rounded-2xl border-2 border-gray-100 bg-white font-bold"><option>Red</option><option>Blue</option><option>Yellow</option><option>Green</option><option>Purple</option><option>Orange</option></select></div><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Image Prompt</label><textarea required value={newPrompt} onChange={(e) => setNewPrompt(e.target.value)} className="w-full px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-green-300 focus:outline-none text-sm font-medium h-24 resize-none" /></div><button type="submit" className="w-full py-5 bg-green-500 text-white font-black text-xl rounded-2xl shadow-xl hover:bg-green-600 transition-all">Add to Garden! 🌿</button></form></div></div>)}
     </div>
   );
 };
@@ -347,10 +346,20 @@ const ShapeWorld: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
     setIndex(challenges.length);
     onSound(`Cool! New drawing challenge: ${newName}!`);
   };
+  
+  const getShapeIcon = (shape: string) => {
+      switch(shape) {
+          case 'Circle': return <Circle className="text-4xl text-orange-300" fill="currentColor"/>;
+          case 'Square': return <Square className="text-4xl text-orange-300" fill="currentColor"/>;
+          case 'Triangle': return <Triangle className="text-4xl text-orange-300" fill="currentColor"/>;
+          case 'Star': return <Star className="text-4xl text-orange-300" fill="currentColor"/>;
+          default: return null;
+      }
+  }
 
   return (
     <div className="relative">
-      <button onClick={() => setIsAdminOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-orange-200 text-orange-400 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-orange-50 transition-colors flex items-center gap-2 z-10"><i className="fas fa-shapes"></i> Teacher's Drawer</button>
+      <button onClick={() => setIsAdminOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-orange-200 text-orange-400 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-orange-50 transition-colors flex items-center gap-2 z-10"><Shapes className="h-4 w-4"/> Teacher's Drawer</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center animate-in zoom-in duration-500 min-h-[500px]">
         <h3 className="text-3xl font-black text-orange-500 mb-8 uppercase tracking-tight">Shape Builder</h3>
         <div className="text-center max-w-md bg-orange-50 p-8 rounded-[2.5rem] border-4 border-white shadow-lg mb-10">
@@ -358,15 +367,15 @@ const ShapeWorld: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
           <p className="text-orange-400 font-bold italic mb-6 leading-relaxed">{current.description}</p>
           <div className="flex gap-4 justify-center">
             {current.parts.map((p, i) => (
-              <div key={i} className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center border-4 border-orange-100 text-orange-300 shadow-sm animate-bounce" style={{ animationDelay: `${i * 0.2}s` }}>
-                <i className={`fas ${p === 'Circle' ? 'fa-circle' : p === 'Square' ? 'fa-square' : p === 'Triangle' ? 'fa-play rotate-[270deg]' : 'fa-star'} text-4xl`}></i>
+              <div key={i} className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center border-4 border-orange-100 shadow-sm animate-bounce" style={{ animationDelay: `${i * 0.2}s` }}>
+                {getShapeIcon(p)}
               </div>
             ))}
           </div>
         </div>
         <div className="flex gap-4">
-          <button onClick={() => onSound(current.description)} className="px-10 py-4 bg-orange-500 text-white font-black rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2"><i className="fas fa-volume-high"></i> Tell Me Again</button>
-          <button onClick={() => setIndex(i => (i + 1) % challenges.length)} className="px-10 py-4 bg-orange-100 text-orange-500 font-black rounded-2xl transition-all flex items-center gap-2">Next Challenge <i className="fas fa-arrow-right"></i></button>
+          <button onClick={() => onSound(current.description)} className="px-10 py-4 bg-orange-500 text-white font-black rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2"><Volume2 /> Tell Me Again</button>
+          <button onClick={() => setIndex(i => (i + 1) % challenges.length)} className="px-10 py-4 bg-orange-100 text-orange-500 font-black rounded-2xl transition-all flex items-center gap-2">Next Challenge <ArrowRight /></button>
         </div>
       </div>
       {isAdminOpen && (
@@ -374,14 +383,14 @@ const ShapeWorld: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
           <div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-300">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-black text-gray-800 tracking-tight">New Shape Challenge</h3>
-              <button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><i className="fas fa-times"></i></button>
+              <button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><X className="w-5 h-5"/></button>
             </div>
             <form onSubmit={handleAddChallenge} className="space-y-6">
               <div>
                 <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Challenge Title</label>
                 <div className="flex gap-2">
                   <input type="text" required value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. My Toy Block" className="flex-grow px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-orange-300 focus:outline-none text-lg font-bold" />
-                  <button type="button" onClick={handleMagicFill} disabled={!newName || isMagicLoading} className="w-12 h-12 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center hover:bg-orange-200 disabled:opacity-50">{isMagicLoading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-wand-magic-sparkles"></i>}</button>
+                  <button type="button" onClick={handleMagicFill} disabled={!newName || isMagicLoading} className="w-12 h-12 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center hover:bg-orange-200 disabled:opacity-50">{isMagicLoading ? <Loader2 className="animate-spin"/> : <Wand2/>}</button>
                 </div>
               </div>
               <div>
@@ -441,14 +450,14 @@ const TextureBin: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
 
   return (
     <div className="relative">
-      <button onClick={() => setIsAdminOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-blue-200 text-blue-500 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-blue-50 transition-colors flex items-center gap-2 z-10"><i className="fas fa-hand-dots"></i> Teacher's Drawer</button>
+      <button onClick={() => setIsAdminOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-blue-200 text-blue-500 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-blue-50 transition-colors flex items-center gap-2 z-10"><Hand className="h-4 w-4"/> Teacher's Drawer</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center animate-in slide-in-from-bottom duration-500 min-h-[600px]">
         <h3 className="text-3xl font-black text-blue-500 mb-8 uppercase tracking-tight">Texture Bin</h3>
         <p className="text-gray-400 font-bold mb-10">Look closely! How does this feel?</p>
         <div onClick={() => onSound(textures[index].description)} className="relative w-72 h-72 md:w-96 md:h-96 bg-blue-50 rounded-[4rem] border-8 border-white shadow-inner flex items-center justify-center cursor-pointer group overflow-hidden mb-10">
           {loading ? <div className="w-16 h-16 border-8 border-blue-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} alt={textures[index].name} className="w-full h-full object-cover transition-transform group-hover:scale-125" />}
           <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/10 transition-colors flex items-center justify-center">
-             <i className="fas fa-magnifying-glass text-white text-5xl opacity-0 group-hover:opacity-100 drop-shadow-lg"></i>
+             <Search className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 drop-shadow-lg"/>
           </div>
         </div>
         <div className="text-center bg-blue-50 px-10 py-6 rounded-[2.5rem] border-4 border-white shadow-lg mb-8">
@@ -462,14 +471,14 @@ const TextureBin: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
           <div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-300">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-black text-gray-800 tracking-tight">New Sensory Texture</h3>
-              <button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><i className="fas fa-times"></i></button>
+              <button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><X className="w-5 h-5"/></button>
             </div>
             <form onSubmit={handleAddTexture} className="space-y-6">
               <div>
                 <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Texture Name</label>
                 <div className="flex gap-2">
                   <input type="text" required value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Rough Sandpaper" className="flex-grow px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-blue-300 focus:outline-none text-lg font-bold" />
-                  <button type="button" onClick={handleMagicFill} disabled={!newName || isMagicLoading} className="w-12 h-12 bg-blue-100 text-blue-500 rounded-2xl flex items-center justify-center hover:bg-blue-200 disabled:opacity-50">{isMagicLoading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-wand-magic-sparkles"></i>}</button>
+                  <button type="button" onClick={handleMagicFill} disabled={!newName || isMagicLoading} className="w-12 h-12 bg-blue-100 text-blue-500 rounded-2xl flex items-center justify-center hover:bg-blue-200 disabled:opacity-50">{isMagicLoading ? <Loader2 className="animate-spin"/> : <Wand2/>}</button>
                 </div>
               </div>
               <div>

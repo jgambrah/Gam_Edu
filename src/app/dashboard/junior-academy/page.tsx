@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -12,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, GraduationCap, Languages, Sigma
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, GraduationCap, Languages, Sigma, Layers, Repeat, BookUser, ListOrdered, ArrowLeftRight, Tags, MessageCircle as MessageCircleIcon, Pen, Hammer, SpellCheck, Underline
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge, generateLessonImageAction, generateTTSAction, generateRhymingWords, generateBlendsExample, generateArtDetailsAction, generateNumeracyTask, generateDictionDetails, generateStorytellingScene, generateThemedVocab, generateMissingLetterChallenge, generateSentence } from '@/app/dashboard/early-years/actions';
@@ -35,23 +34,23 @@ type LiteracyTab = 'alphabet' | 'blends' | 'rhymes' | 'words' | 'missing-letters
 const LiteracyZone: React.FC = () => {
   const [activeTab, setActiveTab] = useState<LiteracyTab>('alphabet');
 
-  const tabIcons: Record<LiteracyTab, string> = {
-    alphabet: 'fa-font',
-    blends: 'fa-layer-group',
-    rhymes: 'fa-repeat',
-    words: 'fa-book-open',
-    'missing-letters': 'fa-underline',
-    building: 'fa-hammer',
-    grammar: 'fa-spell-check',
-    reading: 'fa-book-reader',
-    sentences: 'fa-list-ol',
-    'hidden-words': 'fa-magnifying-glass',
-    opposites: 'fa-arrows-left-right',
-    storytelling: 'fa-comment-dots',
-    themes: 'fa-tags',
-    diction: 'fa-mouth',
-    writing: 'fa-pen-nib',
-    songs: 'fa-music',
+  const tabIcons: Record<LiteracyTab, React.FC<any>> = {
+    alphabet: Type,
+    blends: Layers,
+    rhymes: Repeat,
+    words: BookOpen,
+    'missing-letters': Underline,
+    building: Hammer,
+    grammar: SpellCheck,
+    reading: BookUser,
+    sentences: ListOrdered,
+    'hidden-words': Search,
+    opposites: ArrowLeftRight,
+    storytelling: MessageSquare,
+    themes: Tags,
+    diction: MessageCircleIcon,
+    writing: Pen,
+    songs: Music,
   };
 
   const tabColors: Record<LiteracyTab, string> = {
@@ -78,18 +77,21 @@ const LiteracyZone: React.FC = () => {
       {/* Tab Switcher - Scrollable */}
       <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
         <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-pink-50 min-w-max">
-          {(['alphabet', 'blends', 'rhymes', 'words', 'missing-letters', 'building', 'grammar', 'reading', 'sentences', 'hidden-words', 'opposites', 'storytelling', 'themes', 'diction', 'writing', 'songs'] as LiteracyTab[]).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`min-w-[100px] px-5 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${
-                activeTab === tab ? `${tabColors[tab]} text-white shadow-xl scale-110 -translate-y-1` : 'text-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              <i className={`fas ${tabIcons[tab]} text-lg`}></i>
-              <span>{tab.replace('-', ' ')}</span>
-            </button>
-          ))}
+          {(['alphabet', 'blends', 'rhymes', 'words', 'missing-letters', 'building', 'grammar', 'reading', 'sentences', 'hidden-words', 'opposites', 'storytelling', 'themes', 'diction', 'writing', 'songs'] as LiteracyTab[]).map((tab) => {
+            const Icon = tabIcons[tab];
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`min-w-[100px] px-5 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${
+                  activeTab === tab ? `${tabColors[tab]} text-white shadow-xl scale-110 -translate-y-1` : 'text-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{tab.replace('-', ' ')}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -774,6 +776,55 @@ function ABCKingdom() {
     );
 }
 
+// --- MAIN PAGE ---
+export default function JuniorAcademyPage() {
+  const { role } = useRole();
+  const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
+
+  return (
+    <div className="min-h-screen bg-[#F0F9FF] p-4 md:p-8 font-sans">
+      <div className="max-w-6xl mx-auto mb-8 flex items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border-b-4 border-slate-200">
+        <div className="bg-yellow-400 p-3 rounded-2xl shadow-inner"><Rabbit className="h-10 w-10 text-white" /></div>
+        <div>
+          <h1 className="text-4xl font-extrabold text-slate-800">Junior Campus</h1>
+          <p className="text-slate-500 font-medium">Core Skills Academy for Primary Learners</p>
+        </div>
+      </div>
+      <div className="max-w-6xl mx-auto">
+        <Tabs defaultValue="literacy" className="w-full">
+            <TabsList className="grid w-full grid-cols-5 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16 overflow-x-auto">
+                <TabsTrigger value="literacy" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <Languages className="w-6 h-6"/> Literacy
+                </TabsTrigger>
+                <TabsTrigger value="math" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <Sigma className="w-6 h-6"/> Numeracy
+                </TabsTrigger>
+                <TabsTrigger value="science" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-green-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <AtomIcon className="w-6 h-6"/> Science
+                </TabsTrigger>
+                <TabsTrigger value="arts" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <Palette className="w-6 h-6"/> Arts
+                </TabsTrigger>
+                <TabsTrigger value="rewards" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-yellow-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <Trophy className="w-6 h-6"/> Rewards
+                </TabsTrigger>
+            </TabsList>
+            
+            {/* CONTENT AREAS */}
+            <div className="min-h-[500px]">
+                <TabsContent value="literacy" className="mt-0"><LiteracyZone /></TabsContent>
+                <TabsContent value="math" className="mt-0"><MathPlayground /></TabsContent>
+                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
+                <TabsContent value="arts" className="mt-0"><ArtStudio canEdit={canEdit} /></TabsContent>
+                <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
+            </div>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
+
+
 // --- 4. MATH PLAYGROUND (ULTIMATE VERSION) ---
 function MathPlayground() {
   type MathMode = 'add' | 'sub' | 'mul' | 'div' | 'compare' | 'patterns' | 'shapes' | 'time';
@@ -1261,14 +1312,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 6. SCIENCE WORLD (NON-SAAS DYNAMIC & CYCLING) ---
-// Note: This has been replaced by the full component further up. This is a placeholder.
-
-// --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
-// Note: This has been replaced by the full component further up. This is a placeholder.
-
-
-// --- 8. REWARDS (THE HALL OF FAME) ---
+// --- 6. REWARDS (THE HALL OF FAME) ---
 function StickerBook() {
     const { user } = useUser(); 
     const firestore = useFirestore();
@@ -1346,7 +1390,7 @@ function StickerBook() {
                 {[
                     { label: 'Math Whiz', count: stats.math, color: 'bg-orange-500', icon: <Calculator className="w-4 h-4" /> },
                     { label: 'Reading Hero', count: stats.literacy, color: 'bg-purple-500', icon: <BookOpen className="w-4 h-4" /> },
-                    { label: 'Science Pro', count: stats.science, color: 'bg-blue-500', icon: <Atom className="w-4 h-4" /> },
+                    { label: 'Science Pro', count: stats.science, color: 'bg-blue-500', icon: <AtomIcon className="w-4 h-4" /> },
                     { label: 'Art Legend', count: stats.art, color: 'bg-pink-500', icon: <Palette className="w-4 h-4" /> },
                 ].map((p) => (
                     <div key={p.label} className="bg-white p-5 rounded-3xl border-2 border-slate-50 shadow-sm">
@@ -1426,27 +1470,31 @@ export default function JuniorAcademyPage() {
         </div>
       </div>
       <div className="max-w-6xl mx-auto">
-        <Tabs defaultValue="coach" className="w-full">
-            <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto">
-                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Coach</TabsTrigger>
-                <TabsTrigger value="phonics" className="rounded-xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Music className="w-5 h-5"/> Phonics</TabsTrigger>
-                <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
-                <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
-                <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
-                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
-                <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
-                <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
+        <Tabs defaultValue="literacy" className="w-full">
+            <TabsList className="grid w-full grid-cols-5 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16 overflow-x-auto">
+                <TabsTrigger value="literacy" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <Languages className="w-6 h-6"/> Literacy
+                </TabsTrigger>
+                <TabsTrigger value="math" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <Sigma className="w-6 h-6"/> Numeracy
+                </TabsTrigger>
+                <TabsTrigger value="science" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-green-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <AtomIcon className="w-6 h-6"/> Science
+                </TabsTrigger>
+                <TabsTrigger value="arts" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <Palette className="w-6 h-6"/> Arts
+                </TabsTrigger>
+                <TabsTrigger value="rewards" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-yellow-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                    <Trophy className="w-6 h-6"/> Rewards
+                </TabsTrigger>
             </TabsList>
             
             {/* CONTENT AREAS */}
             <div className="min-h-[500px]">
-                <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
-                <TabsContent value="phonics" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div></TabsContent>
-                <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
-                <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
-                <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
+                <TabsContent value="literacy" className="mt-0"><LiteracyZone /></TabsContent>
+                <TabsContent value="math" className="mt-0"><MathPlayground /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
-                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio canEdit={canEdit} /></div></TabsContent>
+                <TabsContent value="arts" className="mt-0"><ArtStudio canEdit={canEdit} /></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
             </div>
         </Tabs>
