@@ -165,6 +165,38 @@ export async function generateWordDetails(word: string) {
   }
 }
 
+// --- SCIENCE WORLD ENTRY GENERATOR (NEW) ---
+const ScienceWorldEntrySchema = z.object({
+    name: z.string(),
+    fact: z.string(),
+    imagePrompt: z.string(),
+    icon: z.string(),
+});
+
+export async function generateScienceWorldEntry(topic: string, category: string) {
+    try {
+        const prompt = `
+            Create a nursery science discovery entry for a child.
+            The topic is "${topic}" and it should fit within the category "${category}".
+            Provide a short, amazing fact and a simple emoji icon.
+            Also, provide a creative DALL-E style prompt to generate an image for this fact.
+            Output strictly JSON.
+        `;
+
+        const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
+            prompt,
+            output: { schema: ScienceWorldEntrySchema }
+        });
+        if (!output) throw new Error("AI did not generate a valid science entry.");
+        return { success: true, data: output };
+    } catch (error: any) {
+        console.error("Science World AI Error:", error);
+        return { success: false, error: (error as Error).message };
+    }
+}
+
+
 // --- TTS HELPER ---
 async function toWav(pcmData: Buffer): Promise<string> {
     return new Promise((resolve, reject) => {

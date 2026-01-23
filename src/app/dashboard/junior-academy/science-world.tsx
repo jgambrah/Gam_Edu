@@ -1,13 +1,12 @@
+
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { 
   Microscope, Atom, Leaf, Thermometer, Ghost, 
   Wand2, Volume2, Loader2, Sparkles, Plus, Trash2,
@@ -15,10 +14,9 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
-import { generateLessonImage } from '@/ai/flows/junior-actions';
-import { GoogleGenAI } from "@google/genai";
+import { generateScienceWorldEntry, generateLessonImageAction } from '@/app/dashboard/junior-actions';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 // --- JUNIOR SCIENCE THEME ---
 const juniorStyles = {
@@ -146,12 +144,6 @@ function MatterLab({ schoolId }: { schoolId: string }) {
         firestore ? query(collection(firestore, 'junior_science_materials'), where('schoolId', '==', schoolId)) : null, 
     [firestore, schoolId]));
 
-    useEffect(() => {
-        if (dbMaterials && dbMaterials.length > 0 && !selectedMaterial) {
-            setSelectedMaterial(dbMaterials[0]);
-        }
-    }, [dbMaterials, selectedMaterial]);
-
     const state = useMemo(() => {
         if (!selectedMaterial) return { emoji: '🔍', label: 'Pick Item', desc: 'Select a material to test!' };
         const sorted = [...selectedMaterial.states].sort((a,b) => b.temp - a.temp);
@@ -215,28 +207,30 @@ function DiscoveryModule({ tab, schoolId, canEdit, onSound }: { tab: ScienceTab,
     const loadVisual = useCallback(async () => {
         if (!current) return;
         setIsLoading(true);
-        const url = await generateLessonImage(current.imagePrompt || `3D illustration of ${current.name} for children`);
+        setLocalImg(null);
+        const url = await generateLessonImageAction(current.imagePrompt || `3D illustration of ${current.name} for children`);
         setLocalImg(url);
         setIsLoading(false);
     }, [current]);
 
     useEffect(() => {
-        if (current) loadVisual();
+        if (current) {
+            loadVisual();
+        }
     }, [current, loadVisual]);
 
     const generateWithAi = async () => {
+        if (!firestore) return;
         setIsLoading(true);
         try {
-            const genAI = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const prompt = `Create a nursery science entry for "${aiTopic}" in the category "${tab}". 
-            Return JSON: { "name": "string", "fact": "string", "imagePrompt": "string", "icon": "string" }`;
+            const result = await generateScienceWorldEntry(aiTopic, tab);
             
-            const result = await model.generateContent(prompt);
-            const data = JSON.parse(result.response.text().replace(/```json|```/g, ""));
-            
-            await addDoc(collection(firestore!, 'junior_science_world'), {
-                ...data,
+            if (!result.success || !result.data) {
+                throw new Error(result.error || "AI did not generate valid data.");
+            }
+    
+            await addDoc(collection(firestore, 'junior_science_world'), {
+                ...result.data,
                 tab,
                 schoolId,
                 createdAt: serverTimestamp()
@@ -245,7 +239,11 @@ function DiscoveryModule({ tab, schoolId, canEdit, onSound }: { tab: ScienceTab,
             setIsDrawerOpen(false);
             setAiTopic('');
             confetti();
-        } catch (e) { console.error(e); } finally { setIsLoading(false); }
+        } catch (e: any) { 
+            console.error(e); 
+        } finally { 
+            setIsLoading(false); 
+        }
     };
 
     return (
@@ -290,13 +288,13 @@ function DiscoveryModule({ tab, schoolId, canEdit, onSound }: { tab: ScienceTab,
                             <div className={juniorStyles.bubble}>
                                 <p className="text-3xl font-bold text-slate-700 leading-relaxed italic">"{current.fact}"</p>
                             </div>
-                            <Button onClick={() => onSound(current.fact)} className={"w-full uppercase " + juniorStyles.button}>
+                            <Button onClick={() => onSound(current.fact)} className="h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all w-full uppercase">
                                 Read Story! 🎙️
                             </Button>
                             
                             <div className="flex gap-4 justify-center">
                                 <button onClick={() => setIndex(i => Math.max(0, i - 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight className="rotate-180" /></button>
-                                <button onClick={() => setIndex(i => (i + 1) % (items?.length || 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
+                                <button onClick={() => items && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
                             </div>
                         </div>
                     </CardContent>
