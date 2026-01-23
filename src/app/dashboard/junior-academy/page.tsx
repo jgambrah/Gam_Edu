@@ -30,6 +30,7 @@ import { Textarea } from '@/components/ui/textarea';
 import StickerBook from './sticker-book';
 import ArtStudio from './art-studio';
 import JuniorScienceWorld from './science-world';
+import MathPlayground from './math-playground';
 
 
 // --- HELPER: TEXT TO SPEECH ---
@@ -550,194 +551,6 @@ function ABCKingdom() {
     );
 }
 
-// --- 4. MATH PLAYGROUND (ULTIMATE VERSION) ---
-function MathPlayground({ schoolId }: { schoolId: string | null }) {
-  type MathMode = 'add' | 'sub' | 'mul' | 'div' | 'compare' | 'patterns' | 'shapes' | 'time';
-  const [mode, setMode] = useState<MathMode>('add');
-  const [question, setQuestion] = useState<any>({ a: 0, b: 0, icon: '🍎', ans: '', options: [], displayPrompt: "" });
-  const [feedback, setFeedback] = useState("");
-  const [streak, setStreak] = useState(0);
-  const { user } = useUser(); 
-  const firestore = useFirestore(); 
-  const { toast } = useToast();
-
-  const generateQuestion = useCallback(() => {
-    const icons = ['🍎', '🍓', '🐶', '🐱', '⭐', '🚗', '🦖', '🍪', '🎈', '⚽️'];
-    const icon = icons[Math.floor(Math.random() * icons.length)];
-    let a, b, ans, options: any[] = [];
-    let displayPrompt = "";
-
-    switch (mode) {
-      case 'add':
-        a = Math.floor(Math.random() * 9) + 1; b = Math.floor(Math.random() * 9) + 1;
-        ans = a + b;
-        options = [ans, ans + 1, Math.max(0, ans - 1)].sort(() => Math.random() - 0.5);
-        break;
-      case 'sub':
-        a = Math.floor(Math.random() * 10) + 5; b = Math.floor(Math.random() * a);
-        ans = a - b;
-        options = [ans, ans + 2, Math.max(0, ans - 1)].sort(() => Math.random() - 0.5);
-        break;
-      case 'mul':
-        a = Math.floor(Math.random() * 4) + 2; // Rows
-        b = Math.floor(Math.random() * 4) + 2; // Columns
-        ans = a * b;
-        displayPrompt = `${a} groups of ${b}`;
-        options = [ans, ans + b, ans - a].filter(n => n > 0).sort(() => Math.random() - 0.5);
-        if (options.length < 3) options.push(ans + 1);
-        break;
-      case 'div':
-        b = Math.floor(Math.random() * 3) + 2; // Divisor (groups)
-        ans = Math.floor(Math.random() * 4) + 2; // Quotient (items per group)
-        a = b * ans; // Dividend (total)
-        displayPrompt = `Share ${a} into ${b} groups`;
-        options = [ans, ans + 1, Math.max(1, ans - 1)].sort(() => Math.random() - 0.5);
-        break;
-      case 'compare':
-        a = Math.floor(Math.random() * 20); b = Math.floor(Math.random() * 20);
-        ans = a > b ? '>' : a < b ? '<' : '=';
-        options = ['>', '<', '='];
-        displayPrompt = `${a} ___ ${b}`;
-        break;
-      case 'patterns':
-        const step = Math.floor(Math.random() * 3) + 1;
-        const start = Math.floor(Math.random() * 10);
-        a = [start, start + step, start + step * 2];
-        ans = start + step * 3;
-        options = [ans, ans + 1, ans + step + 1].sort(() => Math.random() - 0.5);
-        displayPrompt = `${a[0]}, ${a[1]}, ${a[2]}, ?`;
-        break;
-      case 'shapes':
-        const shapes = [
-            { name: 'Triangle', icon: '▲' }, { name: 'Square', icon: '■' },
-            { name: 'Pentagon', icon: '⬠' }, { name: 'Circle', icon: '●' }
-        ];
-        const s = shapes[Math.floor(Math.random() * shapes.length)];
-        a = s.icon; ans = s.name;
-        options = shapes.map(sh => sh.name).sort(() => Math.random() - 0.5);
-        displayPrompt = `What shape is this?`;
-        break;
-      case 'time':
-        const hr = Math.floor(Math.random() * 12) + 1;
-        a = `${hr}:00`; ans = `${hr} o'clock`;
-        options = [ans, `${(hr % 12) + 1} o'clock`, `${hr === 1 ? 12 : hr - 1} o'clock`].sort(() => Math.random() - 0.5);
-        displayPrompt = `The clock says...`;
-        break;
-    }
-
-    setQuestion({ a, b, icon, ans, options, displayPrompt });
-    setFeedback("");
-  }, [mode]);
-
-  useEffect(() => { generateQuestion(); }, [generateQuestion]);
-
-  const checkAnswer = async (val: any) => {
-    if (val === question.ans) {
-      setStreak(s => s + 1);
-      setFeedback("CORRECT! 🎉");
-      confetti({ particleCount: 100, spread: 70 });
-      speak("Correct!");
-
-      if ((streak + 1) % 5 === 0 && user && firestore && schoolId) {
-          const sticker = '🎓';
-          await addDoc(collection(firestore, 'junior_stickers'), {
-              userId: user.uid,
-              emoji: sticker,
-              name: `${mode.toUpperCase()} Master`,
-              category: 'math',
-              earnedAt: serverTimestamp(),
-              schoolId: schoolId,
-          });
-          toast({ title: "Achievement!", description: "You earned a Math Master sticker!" });
-      }
-      setTimeout(generateQuestion, 1500);
-    } else {
-      setStreak(0);
-      setFeedback("Try Again! 🤔");
-      speak("Not quite.");
-    }
-  };
-
-  return (
-    <div className="flex flex-col items-center space-y-6">
-      <div className="flex gap-2 mb-4 bg-slate-100 p-2 rounded-3xl w-full overflow-x-auto no-scrollbar">
-          {(['add', 'sub', 'mul', 'div', 'compare', 'patterns', 'shapes', 'time'] as MathMode[]).map((m) => (
-            <Button 
-                key={m}
-                variant={mode === m ? 'default' : 'ghost'} 
-                onClick={() => setMode(m)} 
-                className={`rounded-2xl capitalize font-bold min-w-[100px] ${mode === m ? 'bg-orange-500' : 'text-slate-500'}`}
-            >
-                {m === 'mul' ? '× Multi' : m === 'div' ? '÷ Divide' : m}
-            </Button>
-          ))}
-      </div>
-
-      <Card className="w-full max-w-md bg-white border-4 border-orange-100 shadow-xl rounded-[40px] overflow-hidden">
-        <CardContent className="p-8 flex flex-col items-center min-h-[300px] justify-center">
-            
-            {/* MULTIPLICATION: Array Grid Visual */}
-            {mode === 'mul' && (
-                <div className="grid gap-2 mb-6" style={{ gridTemplateColumns: `repeat(${question.b}, minmax(0, 1fr))` }}>
-                    {Array.from({ length: question.a * question.b }).map((_, i) => (
-                        <span key={i} className="text-3xl animate-in zoom-in">{question.icon}</span>
-                    ))}
-                </div>
-            )}
-
-            {(mode === 'add' || mode === 'sub') && (
-                <div className="flex flex-wrap justify-center gap-2 mb-6">
-                    {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl">{question.icon}</span>)}
-                    <span className="text-3xl font-black text-orange-300 mx-2">{mode === 'add' ? '+' : '-'}</span>
-                    {Array.from({ length: question.b }).map((_, i) => <span key={i} className="text-3xl opacity-50">{question.icon}</span>)}
-                </div>
-            )}
-            
-            <div className="text-center">
-                <p className="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'Solve'}</p>
-                 <div className="text-5xl font-black text-slate-800">
-                    {(mode === 'add' || mode === 'sub') && (
-                        <div className="flex items-center gap-3">
-                            <span>{question.a}</span>
-                            <span className="text-orange-400">{mode === 'add' ? '+' : '-'}</span>
-                            <span>{question.b}</span>
-                            <span className="text-slate-300">=</span>
-                            <span className="text-orange-500">?</span>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-3 gap-4 w-full max-w-md">
-        {question.options.map((opt: any, i: number) => (
-          <button 
-            key={i} 
-            onClick={() => checkAnswer(opt)} 
-            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-2xl md:text-3xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
-
-      <div className="h-12 flex items-center">
-         {feedback && (
-             <p className={`text-2xl font-black animate-in zoom-in ${feedback.includes("CORRECT") ? "text-green-500" : "text-red-400"}`}>
-                {feedback}
-             </p>
-         )}
-      </div>
-
-      <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border shadow-sm">
-          <Star className="text-yellow-400 fill-yellow-400 w-5 h-5" />
-          <span className="font-bold text-slate-600">Streak: {streak}</span>
-      </div>
-    </div>
-  );
-}
-
 // --- 5. STORY SPARK (Story Time) ---
 function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
     const firestore = useFirestore();
@@ -906,7 +719,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 export default function JuniorCampusPage() {
   const { role } = useRole();
   const { schoolId } = useCurrentSchool();
-  const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
+  const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
   const { toast } = useToast(); 
 
   return (
