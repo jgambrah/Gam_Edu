@@ -16,15 +16,15 @@ import {
   Pencil, Pen, Heart, Utensils, Smile, Tv, Users, BrainCircuit, Activity
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { generateTTSAction, generateLessonImageAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateTTSAction, generateLessonImageAction, generateSkillDetails, generateRhyme } from '@/ai/flows/junior-actions';
 import { Label } from '@/components/ui/label';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { assessHandwritingAction } from '@/ai/flows/junior-actions';
-import { StorySpark } from './voice-coach';
+import { StorySpark, VoiceCoach } from './voice-coach';
 import MathPlayground from './math-playground';
 import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
@@ -38,6 +38,9 @@ const juniorStyles = {
     bubble: "bg-white/80 backdrop-blur-md p-6 rounded-[40px] border-4 border-dashed border-pink-200 shadow-inner",
     btnPrimary: "h-16 px-8 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-3xl shadow-[0_8px_0_#be185d] active:translate-y-1 active:shadow-none transition-all",
 };
+
+const NUMBERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 // --- SUB-COMPONENT: LIFE SKILLS HUB ---
 type LifeSkillTab = 'emotions' | 'routine-songs' | 'modeling' | 'practical-life' | 'communication' | 'social' | 'puppet-theater' | 'cognitive' | 'physical-health';
@@ -122,6 +125,7 @@ function LifeSkillsModule({ tab, schoolId, onSound, onComplete }: { tab: LifeSki
     const [isLoading, setIsLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
+    // SaaS Query for specific skill category
     const dataQuery = useMemoFirebase(() => 
         firestore ? query(
             collection(firestore, 'junior_lifeskills_world'), 
@@ -196,6 +200,7 @@ function LifeSkillsModule({ tab, schoolId, onSound, onComplete }: { tab: LifeSki
     );
 }
 
+// --- SUB-COMPONENT: MAGIC PEN (TRACING & AI EVALUATION) ---
 function WritingCanvas() {
   const { schoolId } = useCurrentSchool();
   const traceCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -218,19 +223,19 @@ function WritingCanvas() {
     }
   };
 
+  const initCanvases = useCallback(() => {
+    setupCanvas(traceCanvasRef.current, true);
+    setupCanvas(freeCanvasRef.current, false);
+    setFeedback('');
+    setShowSuccess(false);
+  }, [mode, selectedLetter, selectedNumber]);
+
   useEffect(() => {
     if (mode === 'numbers') setBrushColor('#FF9F43');
     else if (mode === 'letters') setBrushColor('#FF6B6B');
     else setBrushColor('#45AAF2');
     initCanvases();
-  }, [selectedLetter, selectedNumber, mode]);
-
-  const initCanvases = () => {
-    setupCanvas(traceCanvasRef.current, true);
-    setupCanvas(freeCanvasRef.current, false);
-    setFeedback('');
-    setShowSuccess(false);
-  };
+  }, [selectedLetter, selectedNumber, mode, initCanvases]);
 
   const setupCanvas = (canvas: HTMLCanvasElement | null, isTrace: boolean) => {
     if (!canvas) return;
@@ -363,10 +368,10 @@ function WritingCanvas() {
 
 // --- MAIN CAMPUS PAGE ---
 export default function JuniorCampusPage() {
-    const { role, profile } = useRole();
+    const { role } = useRole();
     const { user } = useUser();
-    
     const { schoolId } = useCurrentSchool();
+    
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
 
     if (!schoolId) {
