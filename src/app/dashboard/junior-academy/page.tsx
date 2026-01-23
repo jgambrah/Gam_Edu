@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -13,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, FolderOpen, Eraser, PenTool, Database
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Database
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -27,6 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { Eraser } from 'lucide-react';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -441,7 +441,7 @@ function ABCKingdom() {
     // Tracing Canvas Refs
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
-    const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp' | 'pencil' | 'crayon' | 'paint_brush' | 'marker'>('brush');
+    const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp'>('brush');
     const [color, setColor] = useState('#4f46e5');
     const [brushSize, setBrushSize] = useState(8);
 
@@ -800,7 +800,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             speak("All correct! Wonderful reading.");
         } else {
-            speak("Good try! Check the green checks for correct answers.");
+            speak(`Good try! Check the green checks for correct answers.`);
         }
     };
 
@@ -937,6 +937,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [topic, setTopic] = useState(''); 
     const [fact, setFact] = useState<any>(null); 
     const [loading, setLoading] = useState(false);
+    const [sorterFeedback, setSorterFeedback] = useState("");
+
 
     // --- 3. NEW MATERIAL FORM STATE ---
     const [newMat, setNewMat] = useState({
@@ -981,42 +983,66 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         const state = [...selectedMaterial.states].sort((a:any,b:any) => b.temp - a.temp).find((s:any) => temp >= s.temp);
         return state || selectedMaterial.states[0];
     };
-
+    
     // --- 5. DISCOVERY LAB LOGIC ---
     const handleGenerate = async () => { 
         setLoading(true); 
         try {
             const res = await generateJuniorScience(topic); 
-            if(res.success) setFact(res.data);
-            else toast({ variant: "destructive", title: "Error", description: "AI failed." });
-        } catch(e) { console.error(e); }
-        finally { setLoading(false); }
+            if(res.success) {
+                setFact(res.data);
+            } else {
+                toast({ variant: "destructive", title: "AI Error", description: "Could not generate fact." });
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false); 
+        }
     };
 
     const handleSave = async () => { 
         if(!user || !fact || !firestore || !schoolId) return; 
         
-        await addDoc(collection(firestore,'junior_science'), {
-            title: fact.title,
-            fact: fact.fact,
-            emojiIcon: fact.emojiIcon,
-            observation: fact.observation || "",
-            experiment: fact.experiment || "",
-            createdAt: serverTimestamp(),
-            createdBy: user.uid,
-            schoolId: schoolId
-        }); 
-        
-        setFact(null); 
-        setTopic('');
-        
-        if(refetchScience) refetchScience(); 
-        
-        toast({title: "Discovery Saved!", description: "Check your Journal tab."});
-        
-        setActiveTab('library');
+        try {
+            // Save to Firestore
+            await addDoc(collection(firestore,'junior_science'), {
+                title: fact.title,      // Explicitly save fields to ensure structure
+                fact: fact.fact,
+                emojiIcon: fact.emojiIcon,
+                observation: fact.observation || "",
+                experiment: fact.experiment || "",
+                createdAt: serverTimestamp(),
+                createdBy: user.uid,
+                schoolId: schoolId
+            }); 
+            
+            setFact(null); 
+            setTopic('');
+            
+            // Force refresh (just in case)
+            if (refetchScience) refetchScience(); 
+            
+            toast({title: "Discovery Saved!", description: "Check your Journal tab."});
+            
+            // Auto-switch to Journal tab so user sees it worked
+            setActiveTab('library');
+
+        } catch (e: any) {
+            console.error("Save Error:", e);
+            toast({ variant: "destructive", title: "Save Failed", description: e.message });
+        }
     };
     
+    const handleDeleteDiscovery = async (id: string) => {
+        if (!firestore) return;
+        if(confirm("Delete this discovery?")){
+            await deleteDoc(doc(firestore, 'junior_science', id));
+            if(refetchScience) refetchScience();
+            toast({ title: "Deleted" });
+        }
+    };
+
     const handleSaveSorterItem = async () => {
         if (!newItem.name || !newItem.emoji || !schoolId) return;
         await addDoc(collection(firestore, 'junior_sorter_items'), {
@@ -1028,18 +1054,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         if (refetchSorter) refetchSorter();
         toast({ title: 'Item Added!'});
     };
-
-    const handleDeleteDiscovery = async (id: string) => {
-        if (!firestore) return;
-        if(confirm("Delete this discovery?")){
-            await deleteDoc(doc(firestore, 'junior_science', id));
-            if(refetchScience) refetchScience();
-            toast({ title: "Deleted" });
-        }
-    };
     
-    // --- SORTER LOGIC ---
-    const [sorterFeedback, setSorterFeedback] = useState("");
     const handleDrop = (type: 'living' | 'non-living', item: any) => {
         if (item.type === type) {
             setSorterFeedback("Correct! 🎉");
@@ -1051,7 +1066,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         setTimeout(() => setSorterFeedback(""), 1500);
     };
 
-
     return (
         <div className="space-y-8">
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
@@ -1061,7 +1075,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
             
-            {/* DISCOVERY TAB */}
             {activeTab === 'lab' && (
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <div className="space-y-4">
@@ -1096,7 +1109,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
-            {/* SORTER TAB */}
             {activeTab === 'sorter' && (
                  <div className="space-y-6">
                     <div className="text-center p-4 rounded-xl bg-white border shadow-sm">
@@ -1127,7 +1139,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
-            {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
                     <div className="text-center space-y-4">
@@ -1200,8 +1211,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
-            {/* JOURNAL TAB (FIXED RENDERING) */}
-             {activeTab === 'library' && (
+            {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
                         <div 
@@ -1232,6 +1242,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
+
 // --- 7. STICKER BOOK (REWARDS) ---
 function StickerBook({ schoolId }: { schoolId: string | null }) {
     const { user } = useUser();
@@ -1271,6 +1282,58 @@ function StickerBook({ schoolId }: { schoolId: string | null }) {
     );
 }
 
+// --- 5. ART STUDIO (PAINT & SHAPES) ---
+function ArtStudio() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [color, setColor] = useState('#4f46e5');
+    const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp'>('brush');
+
+    useEffect(() => {
+        const c = canvasRef.current;
+        if (c) { 
+            c.width = c.parentElement?.clientWidth || 800; c.height = 500;
+            const ctx = c.getContext('2d');
+            if(ctx) { ctx.fillStyle = "white"; ctx.fillRect(0,0,c.width,c.height); }
+        }
+    }, []);
+
+    const handleCanvasClick = (e: any) => {
+        const rect = canvasRef.current!.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const ctx = canvasRef.current?.getContext('2d');
+        if(!ctx) return;
+
+        if (tool === 'stamp') {
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.arc(x, y, 30, 0, Math.PI * 2); ctx.fill();
+        }
+    };
+
+    return (
+        <div className="grid lg:grid-cols-4 gap-6">
+            <Card className="p-6 rounded-[40px] border-4 border-pink-100 space-y-6">
+                <div className="flex gap-2">
+                    <Button size="icon" variant={tool === 'brush' ? 'default' : 'outline'} onClick={() => setTool('brush')}><PenTool /></Button>
+                    <Button size="icon" variant={tool === 'bucket' ? 'default' : 'outline'} onClick={() => setTool('bucket')}><Database /></Button>
+                    <Button size="icon" variant={tool === 'stamp' ? 'default' : 'outline'} onClick={() => setTool('stamp')}><Star /></Button>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                    {['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#000000', '#FFFFFF'].map(c => (
+                        <button key={c} onClick={() => setColor(c)} className={`w-10 h-10 rounded-full border-4 ${color === c ? 'border-slate-800' : 'border-white shadow-sm'}`} style={{backgroundColor: c}} />
+                    ))}
+                </div>
+                <Button variant="destructive" className="w-full rounded-2xl h-12" onClick={() => {
+                    const ctx = canvasRef.current?.getContext('2d');
+                    ctx?.clearRect(0,0,800,500);
+                }}><Eraser className="mr-2" /> Clear All</Button>
+            </Card>
+            <div className="lg:col-span-3">
+                <canvas ref={canvasRef} onClick={handleCanvasClick} className="bg-white rounded-[60px] shadow-2xl border-[12px] border-white w-full h-[500px] cursor-crosshair touch-none" />
+            </div>
+        </div>
+    );
+}
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
@@ -1314,4 +1377,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-```
