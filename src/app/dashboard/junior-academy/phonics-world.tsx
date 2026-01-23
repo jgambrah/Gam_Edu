@@ -17,6 +17,7 @@ import {
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { generateTTSAction, generatePhonicsWorldEntry, generateLessonImageAction } from '@/app/dashboard/junior-actions';
+import { Label } from '@/components/ui/label';
 
 const juniorStyles = {
     card: "rounded-[60px] border-8 border-pink-100 shadow-[0_20px_0_#FCE7F3] bg-white overflow-hidden",
@@ -108,14 +109,14 @@ export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`min-w-[120px] px-6 py-4 rounded-3xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-2 border-4 ${
+                                className={`px-6 py-4 rounded-[2rem] font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center gap-2 border-4 ${
                                     activeTab === tab.id 
                                     ? 'bg-pink-500 text-white border-pink-700 shadow-2xl scale-110 -translate-y-2' 
                                     : 'bg-white text-slate-400 border-transparent hover:bg-pink-50'
                                 }`}
                             >
                                 <Icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-white' : 'text-pink-300'}`} />
-                                <span className="whitespace-nowrap">{tab.label}</span>
+                                <span>{tab.label}</span>
                             </button>
                         )
                     })}
@@ -161,13 +162,15 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
         if (!current) return;
         setIsLoading(true);
         setImageUrl(null);
-        const url = await generateLessonImageAction(current.imagePrompt || `Nursery illustration of ${current.title || current.letter}`);
+        const url = await generateLessonImageAction(current.imagePrompt || `Nursery illustration of ${current.name || current.letter}`);
         setImageUrl(url);
         setIsLoading(false);
     }, [current]);
 
     useEffect(() => {
-        if (current) loadVisual();
+        if (current) {
+            loadVisual();
+        }
     }, [current, loadVisual]);
 
     const handleGenerate = async () => {
@@ -198,10 +201,10 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
     };
 
     return (
-        <div className="space-y-6">
+        <div className="animate-in slide-in-from-bottom-10 duration-700">
             {canEdit && (
-                <div className="flex justify-end">
-                    <Button onClick={() => setIsDrawerOpen(true)} className="rounded-full bg-white border-2 border-pink-200 text-pink-600 font-black text-[10px] uppercase hover:bg-pink-50 shadow-sm">
+                <div className="flex justify-end mb-4">
+                    <Button onClick={() => setIsDrawerOpen(true)} className="rounded-full bg-white border-2 border-pink-200 text-pink-600 font-black text-[10px] uppercase shadow-sm">
                         <Wand2 className="w-3 h-3 mr-2" /> AI {tab.replace('-', ' ')} Maker
                     </Button>
                 </div>
@@ -256,7 +259,7 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
                 <div className="py-40 text-center bg-white rounded-[60px] border-8 border-dashed border-pink-50">
                     <Music className="w-20 h-20 text-pink-100 mx-auto mb-4" />
                     <p className="text-pink-200 font-black text-2xl uppercase">Phonics Studio Empty...</p>
-                    {canEdit && <p className="text-slate-400 text-sm mt-2">Use the AI Maker to add lessons for your school.</p>}
+                    {canEdit && <p className="text-slate-400 text-sm mt-2">Use the AI Maker button to add items!</p>}
                 </div>
             )}
 
