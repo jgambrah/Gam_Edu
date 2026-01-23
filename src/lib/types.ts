@@ -1302,5 +1302,17 @@ export interface AiInsight {
   classTrends: string; // General observation
   teachingStrategy: string; // Advice for the teacher
 }
+
+export type ModuleType =
+  | 'SINGING_DICTIONARY' | 'PHONICS' | 'READING_WRITING'
+  | 'NUMERACY' | 'LIFE_SKILLS' | 'SCIENCE'
+  | 'CREATIVE_ARTS' | 'TUTOR';
+
+export interface DictionaryWord {
+  word: string;
+  category: string;
+  imagePrompt: string;
+}
     
     
+
