@@ -10,10 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Loader2, Star, Rabbit, Rocket, Wand2, Mic, 
+  Loader2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
-  Trophy, Gift, Check, PenTool, Eraser, Database, Pencil, Pen
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Pen
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import PhonicsWorld from './phonics-world';
@@ -22,8 +24,7 @@ import ArtStudio from './art-studio';
 import JuniorScienceWorld from './science-world';
 import MathPlayground from './math-playground';
 import StickerBook from './sticker-book';
-import { assessHandwritingAction } from '@/ai/flows/junior-actions';
-import confetti from 'canvas-confetti';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- NEW COMPONENT: WRITING CANVAS (MAGIC PEN) ---
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -35,7 +36,8 @@ const STROKES = [
   { id: 'circle', label: 'Circle', icon: 'fa-circle' },
 ];
 
-function WritingCanvas({ schoolId }: { schoolId: string }) {
+function WritingCanvas() {
+  const { schoolId } = useCurrentSchool();
   const traceCanvasRef = useRef<HTMLCanvasElement>(null);
   const freeCanvasRef = useRef<HTMLCanvasElement>(null);
   const [mode, setMode] = useState<'letters' | 'strokes' | 'numbers'>('numbers');
@@ -76,9 +78,22 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
       ctx.strokeText(text, 200, 220);
     }
   };
+  
+    const speak = async (text: string) => {
+        if (!text || !schoolId) return;
+        try {
+            const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
+            if (result.success && result.data && typeof window !== 'undefined') {
+                const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+                audio.play();
+            }
+        } catch (e) {
+            console.error("Audio error", e);
+        }
+    };
 
   const handleAssessment = async () => {
-    if (!freeCanvasRef.current) return;
+    if (!freeCanvasRef.current || !schoolId) return;
     setIsEvaluating(true);
     setFeedback("Magic eyes checking...");
     try {
@@ -92,9 +107,11 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
             setShowSuccess(true);
             setFeedback('Number Superstar! ⭐');
             confetti();
+            speak(`Wonderful! You wrote ${target} perfectly!`);
             setTimeout(() => setShowSuccess(false), 5000);
         } else {
             setFeedback('Try once more! 💪');
+            speak(`So close! Let's try to trace ${target} again.`);
         }
       } else {
           throw new Error(result.error || "AI Assessment failed");
@@ -126,7 +143,7 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
           ))}
       </div>
 
-      <Card className="rounded-[60px] border-8 border-purple-100 overflow-hidden bg-white shadow-2xl">
+      <Card className={juniorStyles.card}>
         <CardContent className="p-10 space-y-10">
             <div className="flex overflow-x-auto gap-2 pb-4 no-scrollbar">
                 {(mode === 'letters' ? LETTERS : mode === 'numbers' ? NUMBERS : []).map(item => (
@@ -189,6 +206,7 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
   );
 }
 
+
 export default function JuniorCampusPage() {
     const { role, profile } = useRole();
     const { user } = useUser();
@@ -206,10 +224,6 @@ export default function JuniorCampusPage() {
                             <p className="text-xl font-bold text-pink-500 uppercase tracking-widest italic">The Magic of Learning! ✨</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 bg-slate-50 px-6 py-3 rounded-[20px] border-2 border-slate-100">
-                        <Badge className="bg-indigo-500 text-white border-none px-3">SaaS Node</Badge>
-                        <span className="text-xs font-black text-slate-400">{schoolId}</span>
-                    </div>
                 </header>
 
                 <Tabs defaultValue="writing" className="w-full">
@@ -219,12 +233,12 @@ export default function JuniorCampusPage() {
                         <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center gap-1"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                         <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center gap-1"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                         <TabsTrigger value="art" className="rounded-2xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-black flex flex-col items-center gap-1"><Palette className="w-5 h-5"/> Art</TabsTrigger>
-                        <TabsTrigger value="phonics" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center gap-1"><Mic className="w-5 h-5"/> Phonics</TabsTrigger>
+                        <TabsTrigger value="coach" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center gap-1"><Mic className="w-5 h-5"/> Coach</TabsTrigger>
                         <TabsTrigger value="rewards" className="rounded-2xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-black flex flex-col items-center gap-1"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
                     </TabsList>
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
-                        <TabsContent value="writing" className="mt-0"><WritingCanvas schoolId={schoolId}/></TabsContent>
+                        <TabsContent value="writing" className="mt-0"><WritingCanvas /></TabsContent>
                         <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId} /></TabsContent>
                         <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
@@ -237,3 +251,5 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
+// ... Ensure all sub-components like MathPlayground, StorySpark, etc are defined as per previous SaaS versions ...
