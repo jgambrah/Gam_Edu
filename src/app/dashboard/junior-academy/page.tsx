@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Palette, Trophy, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Database, Eraser, Music
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Palette, Trophy, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Database, Eraser, Music, PenTool
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails } from '@/ai/flows/junior-actions';
@@ -433,7 +433,6 @@ function PhonicsForest() {
     );
 }
 
-
 // --- 3. ABC KINGDOM (ALPHABET ACADEMY) ---
 function ABCKingdom() {
     const [activeTab, setActiveTab] = useState<'explorer' | 'tracing' | 'matcher'>('explorer');
@@ -839,7 +838,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                 )}
                 <Card className="max-h-[70vh] flex flex-col">
                     <CardHeader className="py-3"><CardTitle className="text-md">Story Library</CardTitle></CardHeader>
-                    <CardContent className="p-0 flex-1 min-h-0">
+                    <CardContent className="p-0 flex-1 min-h-0 overflow-hidden">
                         <ScrollArea className="h-full">
                             <div className="p-2 space-y-1">
                                 {isLoading && <div className="text-center p-4"><Loader2 className="animate-spin"/></div>}
@@ -854,7 +853,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                                             <p className="font-bold text-sm text-slate-800 truncate">{story.title}</p>
                                             <p className="text-xs text-slate-400">{story.topic}</p>
                                         </div>
-                                        {canEdit && <Button size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-red-400" onClick={(e) => {e.stopPropagation(); handleDelete(story.id);}}><Trash2 className="w-4 h-4"/></Button>}
+                                        {canEdit && <Button size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-red-400" onClick={(e) => {e.stopPropagation(); handleDelete(story.id);}}><Trash2 className="w-4 w-4"/></Button>}
                                     </button>
                                 ))}
                             </div>
@@ -901,25 +900,30 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 }
 
 // --- 6. SCIENCE WORLD ---
-function ScienceWorld({ canEdit }: { canEdit: boolean }) {
+function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
-    const { schoolId } = useCurrentSchool();
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
-    // Data Fetching
-    const sorterQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_sorter_items'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, [firestore, schoolId]);
+    // --- 1. DATA FETCHING (Scoped to School) ---
+    const sorterQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'junior_sorter_items'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
+    [firestore, schoolId]);
     const { data: dbSorterItems, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
     
-    const materialsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_science_materials'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, [firestore, schoolId]);
+    const materialsQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'junior_science_materials'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
+    [firestore, schoolId]);
     const { data: dbMaterials, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
 
-    const scienceQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_science'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+    const scienceQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'junior_science'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
+    [firestore, schoolId]);
     const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
     
-    // States
+    // --- 2. GAME STATES ---
     const [currentIndex, setCurrentIndex] = useState(0);
     const [newItem, setNewItem] = useState({ name: '', emoji: '', type: 'living' });
     const [temp, setTemp] = useState(20);
@@ -930,16 +934,37 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [loading, setLoading] = useState(false);
     const [sorterFeedback, setSorterFeedback] = useState("");
 
-    const [newMat, setNewMat] = useState({ name: '', solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' }, liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' }, gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' } });
+    // --- 3. NEW MATERIAL FORM STATE ---
+    const [newMat, setNewMat] = useState({
+        name: '',
+        solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' },
+        liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' },
+        gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
+    });
 
+    // Select the first material automatically when data loads
     useEffect(() => {
-        if (dbMaterials && dbMaterials.length > 0 && !selectedMaterial) setSelectedMaterial(dbMaterials[0]);
+        if (dbMaterials && dbMaterials.length > 0 && !selectedMaterial) {
+            setSelectedMaterial(dbMaterials[0]);
+        }
     }, [dbMaterials, selectedMaterial]);
 
+    // --- 4. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
         if (!newMat.name || !firestore || !schoolId) return;
-        const statesArray = [{ ...newMat.solid }, { ...newMat.liquid }, { ...newMat.gas }];
-        await addDoc(collection(firestore, 'junior_science_materials'), { name: newMat.name, states: statesArray, schoolId: schoolId, createdAt: serverTimestamp() });
+        const statesArray = [
+            { ...newMat.solid }, 
+            { ...newMat.liquid }, 
+            { ...newMat.gas }
+        ];
+
+        await addDoc(collection(firestore, 'junior_science_materials'), {
+            name: newMat.name,
+            states: statesArray,
+            schoolId: schoolId, // CRITICAL FIX
+            createdAt: serverTimestamp()
+        });
+
         setShowAddMatForm(false);
         setNewMat({ name: '', solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' }, liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' }, gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' } });
         if(refetchMaterials) refetchMaterials();
@@ -948,17 +973,19 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     const getCurrentState = () => {
         if (!selectedMaterial) return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
+        // Logic: Find state matching temperature
         const state = [...selectedMaterial.states].sort((a:any,b:any) => b.temp - a.temp).find((s:any) => temp >= s.temp);
         return state || selectedMaterial.states[0];
     };
 
+    // --- 5. DISCOVERY LAB LOGIC ---
     const handleGenerate = async () => { 
         setLoading(true); 
         try {
             const res = await generateJuniorScience(topic); 
             if(res.success && res.data) setFact(res.data);
             else toast({ variant: "destructive", title: "Error", description: res.error || "AI failed." });
-        } catch(e: any) { console.error(e); }
+        } catch(e) { console.error(e); }
         finally { setLoading(false); }
     };
 
@@ -968,7 +995,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             ...fact,
             createdAt: serverTimestamp(),
             createdBy: user.uid,
-            schoolId: schoolId
+            schoolId: schoolId // CRITICAL FIX
         }); 
         setFact(null); 
         if(refetchScience) refetchScience(); 
@@ -976,8 +1003,9 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         setActiveTab('library');
     };
     
+    // --- 6. SORTER LOGIC ---
     const handleSaveSorterItem = async () => {
-        if (!newItem.name || !newItem.emoji || !schoolId) return;
+        if (!newItem.name || !newItem.emoji || !schoolId || !firestore) return;
         await addDoc(collection(firestore, 'junior_sorter_items'), { ...newItem, schoolId: schoolId, createdAt: serverTimestamp() });
         setNewItem({ name: '', emoji: '', type: 'living' });
         if (refetchSorter) refetchSorter();
@@ -1004,6 +1032,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     };
     
+
     return (
         <div className="space-y-8">
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
@@ -1060,19 +1089,70 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <div className="space-y-8 animate-in zoom-in">
                     <div className="text-center space-y-4">
                         <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
+                        
                         <div className="flex flex-wrap gap-2 justify-center">
-                            {(!dbMaterials || dbMaterials.length === 0) && (<p className="text-sm text-slate-400">No materials found. Add one to start!</p>)}
-                            {dbMaterials?.map((m: any) => (<Button key={m.id} variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} onClick={() => setSelectedMaterial(m)} className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}>{m.name}</Button>))}
-                            {canEdit && (<Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">{showAddMatForm ? 'Close Creator' : '+ Add New Material'}</Button>)}
+                            {(!dbMaterials || dbMaterials.length === 0) && (
+                                <p className="text-sm text-slate-400">No materials found. Add one to start!</p>
+                            )}
+                            {dbMaterials?.map((m: any) => (
+                                <Button 
+                                    key={m.id} 
+                                    variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} 
+                                    onClick={() => setSelectedMaterial(m)}
+                                    className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}
+                                >
+                                    {m.name}
+                                </Button>
+                            ))}
+                            {canEdit && (
+                                <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">
+                                    {showAddMatForm ? 'Close Creator' : '+ Add New Material'}
+                                </Button>
+                            )}
                         </div>
                     </div>
+
+                    {/* Material Creator Form */}
                     {showAddMatForm && canEdit && (
-                        <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px]"><h4 className="text-xl font-black text-cyan-800 mb-4">Create New Material</h4><div className="grid md:grid-cols-2 gap-4"><div className="space-y-4"><Input placeholder="Material Name (e.g. Chocolate)" value={newMat.name} onChange={e => setNewMat({...newMat, name: e.target.value})} className="bg-white" /><p className="text-xs text-slate-500">Define emojis for Solid (-100°C), Liquid (1°C), Gas (100°C)</p><div className="flex gap-2"><Input placeholder="Solid 🍫" value={newMat.solid.emoji} onChange={e => setNewMat({...newMat, solid: {...newMat.solid, emoji: e.target.value}})} /><Input placeholder="Liquid 🥣" value={newMat.liquid.emoji} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, emoji: e.target.value}})} /><Input placeholder="Gas ♨️" value={newMat.gas.emoji} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, emoji: e.target.value}})} /></div><Button onClick={handleSaveMaterial} className="w-full h-12 bg-cyan-600 text-white font-black rounded-xl">Save to Lab</Button></div></div></Card>
+                        <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px]">
+                            <h4 className="text-xl font-black text-cyan-800 mb-4">Create New Material</h4>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-4">
+                                    <Input placeholder="Material Name (e.g. Chocolate)" value={newMat.name} onChange={e => setNewMat({...newMat, name: e.target.value})} className="bg-white" />
+                                    <p className="text-xs text-slate-500">Define emojis for Solid (-100°C), Liquid (1°C), Gas (100°C)</p>
+                                    <div className="flex gap-2">
+                                        <Input placeholder="Solid 🍫" value={newMat.solid.emoji} onChange={e => setNewMat({...newMat, solid: {...newMat.solid, emoji: e.target.value}})} />
+                                        <Input placeholder="Liquid 🥣" value={newMat.liquid.emoji} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, emoji: e.target.value}})} />
+                                        <Input placeholder="Gas ♨️" value={newMat.gas.emoji} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, emoji: e.target.value}})} />
+                                    </div>
+                                    <Button onClick={handleSaveMaterial} className="w-full h-12 bg-cyan-600 text-white font-black rounded-xl">Save to Lab</Button>
+                                </div>
+                            </div>
+                        </Card>
                     )}
+
+                    {/* Simulator Display */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
-                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">{getCurrentState().emoji}</div>
-                        <div className="text-center"><h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2><p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p></div>
-                        <div className="w-full max-w-md space-y-4"><div className="flex justify-between font-black text-xl text-slate-400"><span className="text-blue-400">COLD</span><span className="text-cyan-600 bg-cyan-50 px-4 py-1 rounded-full border border-cyan-100">{temp}°C</span><span className="text-red-400">HOT</span></div><input type="range" min="-50" max="150" value={temp} onChange={e => setTemp(parseInt(e.target.value))} className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" /></div>
+                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
+                            {getCurrentState().emoji}
+                        </div>
+                        <div className="text-center">
+                            <h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2>
+                            <p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p>
+                        </div>
+                        
+                        <div className="w-full max-w-md space-y-4">
+                            <div className="flex justify-between font-black text-xl text-slate-400">
+                                <span className="text-blue-400">COLD</span>
+                                <span className="text-cyan-600 bg-cyan-50 px-4 py-1 rounded-full border border-cyan-100">{temp}°C</span>
+                                <span className="text-red-400">HOT</span>
+                            </div>
+                            <input 
+                                type="range" min="-50" max="150" value={temp} 
+                                onChange={e => setTemp(parseInt(e.target.value))} 
+                                className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
+                            />
+                        </div>
                     </div>
                 </div>
             )}
@@ -1114,7 +1194,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
                 <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
-                <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
+                <TabsTrigger value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
             
@@ -1127,11 +1207,10 @@ export default function JuniorCampusPage() {
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
-                <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
+                <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
             </div>
         </Tabs>
       </div>
     </div>
   );
 }
-```
