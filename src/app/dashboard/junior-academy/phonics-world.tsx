@@ -1,77 +1,57 @@
-
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Mic, Volume2, Wand2, Loader2, Sparkles, Music, 
-  BookOpen, AudioLines, Ear, Gamepad2, Layers, 
-  Repeat, Underline, Milestone, BookCheck, ArrowRight, Smile,
-  AlertCircle,
-  FolderOpen
-} from 'lucide-react';
+import { Mic, Volume2, Wand2, Loader2, Sparkles, Trash2, Ear } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
-import { generatePhonicsWorldEntry, generateLessonImageAction, generateTTSAction } from '@/ai/flows/junior-actions';
+import { generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const juniorStyles = {
-    card: "rounded-[60px] border-8 border-pink-100 shadow-[0_20px_0_#FCE7F3] bg-white overflow-hidden",
-    header: "bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 p-8 text-white",
-    bubble: "bg-white/80 backdrop-blur-md p-6 rounded-[40px] border-4 border-dashed border-pink-200 shadow-inner",
-    button: "h-20 px-12 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-[30px] shadow-[0_10px_0_#9d174d] active:translate-y-1 active:shadow-none transition-all",
+    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
+    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
-type PhonicsTab = 'jolly-phonics' | 'alphabet' | 'picture-reading' | 'syllables' | 'alliteration' | 'sound-games' | 'blends' | 'rhymes' | 'diction' | 'missing-letters' | 'environmental-print' | 'book-handling';
 
-// --- TEACHER MAGIC MODAL ---
-const TeacherModal: React.FC<{
-  title: string; topicValue: string; 
-  onTopicChange: (v: string) => void; onGenerate: () => void; 
-  isLoading: boolean; onClose: () => void;
-}> = ({ title, topicValue, onTopicChange, onGenerate, isLoading, onClose }) => (
-  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-    <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-pink-50 animate-in zoom-in duration-300">
-      <h3 className="text-3xl font-black text-slate-800 mb-6 uppercase tracking-tighter">AI {title}</h3>
-      <div className="space-y-6">
-        <div>
-          <Label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">What should the AI create?</Label>
-          <Input 
-            value={topicValue} 
-            onChange={(e) => onTopicChange(e.target.value)} 
-            placeholder="e.g. The 'Ch' sound, Short Vowels" 
-            className="h-14 rounded-2xl border-4 border-slate-100 font-bold uppercase" 
-          />
-        </div>
-        <Button 
-          onClick={onGenerate} 
-          disabled={isLoading || !topicValue} 
-          className="w-full h-16 rounded-2xl font-black text-white bg-pink-500 hover:bg-pink-600 shadow-xl"
-        >
-          {isLoading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} CREATE MAGIC
-        </Button>
-        <button onClick={onClose} className="w-full text-slate-400 uppercase text-[10px] font-black tracking-widest mt-4">Close</button>
-      </div>
-    </div>
-  </div>
-);
+// --- SUB-COMPONENT: VOICE COACH ---
+function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean, schoolId: string }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [word, setWord] = useState('');
+    const [details, setDetails] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [newWord, setNewWord] = useState('');
 
+    const { data: dbWords, forceRefetch } = useCollection<any>(useMemoFirebase(() =>
+        (firestore && schoolId) ? query(collection(firestore, 'junior_phonics'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null,
+    [firestore, schoolId]));
 
-export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
-    const { role } = useRole();
-    const [activeTab, setActiveTab] = useState<PhonicsTab>('jolly-phonics');
-    const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
+    const fetchDetails = useCallback(async (w: string) => {
+        if (!schoolId) return;
+        setIsLoading(true);
+        setDetails(null);
+        setWord(w); // Set the current word
+        const result = await generateWordDetails({ word: w, schoolId });
+        if (result.success) {
+            setDetails(result.data);
+        } else {
+            toast({ title: "AI Error", description: result.error || "Could not get word details." });
+        }
+        setIsLoading(false);
+    }, [toast, schoolId]);
 
-    const onSound = async (text: string) => {
-        if (!text) return;
+    const speak = async (text: string) => {
+        if (!text || !schoolId) return;
         try {
-            const result = await generateTTSAction({ text, voice: 'Achernar' });
+            const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
             if (result.success && result.data && typeof window !== 'undefined') {
                 const audio = new Audio(`data:audio/wav;base64,${result.data}`);
                 audio.play();
@@ -80,199 +60,77 @@ export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
             console.error("Audio error", e);
         }
     };
+    
+    // Fetch details for the first word in the list initially
+    useEffect(() => {
+        if (dbWords && dbWords.length > 0 && !word) {
+            fetchDetails(dbWords[0].word);
+        } else if (!dbWords && !isLoading) {
+            fetchDetails('Apple'); // Fallback
+        }
+    }, [dbWords, word, fetchDetails, isLoading]);
 
-    // --- FIX: Verified Lucide Icon Names ---
-    const tabs: {id: PhonicsTab, label: string, icon: any}[] = [
-        { id: 'jolly-phonics', label: 'Jolly Sounds', icon: Smile },
-        { id: 'alphabet', label: 'ABC Phonics', icon: Music },
-        { id: 'picture-reading', label: 'Reading', icon: BookOpen },
-        { id: 'syllables', label: 'Clap Out', icon: AudioLines },
-        { id: 'alliteration', label: 'Listening', icon: Ear },
-        { id: 'sound-games', label: 'Sound Play', icon: Gamepad2 },
-        { id: 'blends', label: 'Blends', icon: Layers },
-        { id: 'rhymes', label: 'Rhymes', icon: Repeat },
-        { id: 'diction', label: 'Speech', icon: Mic },
-        { id: 'missing-letters', label: 'Gaps', icon: Underline },
-        { id: 'environmental-print', label: 'Signs', icon: Milestone },
-        { id: 'book-handling', label: 'Books', icon: BookCheck },
-    ];
+    const handleSaveWord = async () => {
+        if(!firestore || !newWord.trim() || !schoolId) return;
+        try {
+            await addDoc(collection(firestore, 'junior_phonics'), {
+                word: newWord.trim(),
+                schoolId: schoolId,
+                createdAt: serverTimestamp()
+            });
+            toast({title: "Word Saved!"});
+            forceRefetch();
+            setNewWord('');
+        } catch (e) {
+            console.error(e);
+            toast({variant: "destructive", title: "Error"});
+        }
+    };
 
     return (
-        <div className="flex flex-col items-center max-w-7xl mx-auto space-y-8 pb-20 font-sans selection:bg-pink-100">
-            <div className="text-center space-y-2">
-                <h2 className="text-6xl font-black text-pink-600 uppercase tracking-tighter drop-shadow-sm">Phonics World 🎵</h2>
-                <p className="text-slate-400 font-bold italic text-xl">Let's learn to read and speak with magic!</p>
-            </div>
+        <div className="text-center">
+            <h2 className="text-5xl font-black text-pink-500 uppercase tracking-tighter">Voice & Diction Coach</h2>
+            <p className="text-slate-400 font-bold italic text-xl mt-2 mb-12">Learn to pronounce words clearly!</p>
 
-            {/* NAV BAR */}
-            <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
-                <div className="flex justify-start md:justify-center gap-4 bg-white p-4 rounded-[3rem] shadow-xl border-4 border-pink-50 min-w-max">
-                    {tabs.map((tab) => {
-                        const Icon = tab.icon || AlertCircle; // --- FIX: Fallback to prevent "undefined" crash ---
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`px-6 py-4 rounded-[2rem] font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center gap-2 border-4 ${
-                                    activeTab === tab.id 
-                                    ? 'bg-pink-500 text-white border-pink-700 shadow-2xl scale-110 -translate-y-2' 
-                                    : 'bg-white text-slate-400 border-transparent hover:bg-pink-50'
-                                }`}
-                            >
-                                <Icon className="w-5 h-5" />
-                                <span>{tab.label}</span>
-                            </button>
-                        );
-                    })}
+            <div className="grid md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
+                <div className="p-10 bg-pink-50 rounded-[4rem] border-8 border-white shadow-xl">
+                    <p className="text-[10px] uppercase font-black text-pink-300 mb-2">Word of the Day</p>
+                    {details ? (
+                        <div className="space-y-4 text-center animate-in fade-in">
+                            <p className="text-8xl font-black text-slate-800">{details.word}</p>
+                            <p className="text-2xl font-bold text-pink-400 italic">{details.phonetic}</p>
+                            <div className="text-6xl">{details.emoji}</div>
+                            <Button onClick={() => speak(details.sentence)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
+                        </div>
+                    ) : <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>}
                 </div>
-            </div>
 
-            <div className="w-full px-4">
-                <PhonicsModule 
-                    tab={activeTab} 
-                    schoolId={schoolId} 
-                    canEdit={canEdit} 
-                    onSound={onSound} 
-                />
+                <div className="space-y-4">
+                    <p className="font-bold text-slate-500">Practice other words:</p>
+                    <div className="flex flex-wrap gap-3 justify-center">
+                        {dbWords?.map((w: any) => (
+                            <button key={w.id} onClick={() => fetchDetails(w.word)} className="px-6 py-3 bg-white border-2 border-slate-100 rounded-full font-bold text-slate-600 hover:bg-pink-50 hover:border-pink-200 transition-all">{w.word}</button>
+                        ))}
+                    </div>
+                    {canEdit && (
+                        <div className="pt-4 border-t flex gap-2">
+                            <Input value={newWord} onChange={e => setNewWord(e.target.value)} placeholder="Add new word..."/>
+                            <Button onClick={handleSaveWord}>+</Button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
 }
 
-// --- SUB-COMPONENT: PhonicsModule (The "Brains") ---
-function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, schoolId: string, canEdit: boolean, onSound: (t: string) => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [index, setIndex] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [aiTopic, setAiTopic] = useState('');
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-    const dataQuery = useMemoFirebase(() => 
-        firestore ? query(
-            collection(firestore, 'junior_phonics_world'), 
-            where('schoolId', '==', schoolId),
-            where('tab', '==', tab),
-            orderBy('createdAt', 'asc')
-        ) : null, [firestore, schoolId, tab]);
-    
-    const { data: items, forceRefetch } = useCollection<any>(dataQuery);
-    const current = items?.[index];
-
-    const loadVisual = useCallback(async () => {
-      if (!current) return;
-      setIsLoading(true);
-      setLocalImg(null);
-      const url = await generateLessonImageAction(current.imagePrompt || `3D nursery illustration of ${current.title || current.letter}`);
-      setLocalImg(url);
-      setIsLoading(false);
-    }, [current]);
-
-    useEffect(() => {
-        if (current) {
-            loadVisual();
-        }
-    }, [current, loadVisual]);
-
-    const handleGenerate = async () => {
-        setIsLoading(true);
-        try {
-            const result = await generatePhonicsWorldEntry(aiTopic, tab);
-            if(result.success && result.data){
-                await addDoc(collection(firestore!, 'junior_phonics_world'), {
-                    ...result.data,
-                    tab,
-                    schoolId,
-                    createdAt: serverTimestamp()
-                });
-                
-                setIsDrawerOpen(false);
-                setAiTopic('');
-                confetti();
-                forceRefetch();
-            } else {
-                throw new Error(result.error || "Failed to generate entry")
-            }
-        } catch (e: any) { 
-            console.error(e); 
-            toast({ title: "Magic Failed", variant: "destructive", description: e.message });
-        } finally { setIsLoading(false); }
-    };
-    
-    const [localImg, setLocalImg] = useState<string | null>(null);
+export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
+    const { role } = useRole();
+    const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
 
     return (
-        <div className="animate-in slide-in-from-bottom-10 duration-700">
-            {canEdit && (
-                <div className="flex justify-end mb-4">
-                    <Button onClick={() => setIsDrawerOpen(true)} className="rounded-full bg-white border-2 border-pink-200 text-pink-600 font-black text-[10px] uppercase hover:bg-pink-50 shadow-sm">
-                        <Wand2 className="w-3 h-3 mr-2" /> AI {tab.replace('-', ' ')} Maker
-                    </Button>
-                </div>
-            )}
-
-            {current ? (
-                <Card className={juniorStyles.card}>
-                    <div className={juniorStyles.header}>
-                        <div className="flex items-center gap-8">
-                            <div className="text-8xl p-8 bg-white/20 rounded-[3rem] backdrop-blur-md animate-bounce">
-                                {current.icon || '🎵'}
-                            </div>
-                            <div className="text-left">
-                                <h3 className="text-6xl font-black uppercase tracking-tighter">{current.title || current.letter || current.sound}</h3>
-                                <p className="text-2xl font-bold opacity-80 italic">Sound: "{current.sound}"</p>
-                            </div>
-                        </div>
-                    </div>
-                    <CardContent className="p-12 flex flex-col md:flex-row gap-12 items-center">
-                        <div 
-                            onClick={() => onSound(current.description || current.story || current.title)}
-                            className="relative aspect-square w-full max-w-md bg-pink-50 rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group"
-                        >
-                            {isLoading ? (
-                                <div className="absolute inset-0 flex items-center justify-center"><Loader2 className="animate-spin text-pink-400 w-12 h-12" /></div>
-                            ) : localImg && (
-                                <img src={localImg} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" alt={current.name} />
-                            )}
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                                <Volume2 className="text-white w-16 h-16 opacity-0 group-hover:opacity-100 drop-shadow-lg" />
-                            </div>
-                        </div>
-
-                        <div className="flex-1 space-y-8">
-                            <div className={juniorStyles.bubble}>
-                                <p className="text-3xl font-bold text-slate-700 leading-relaxed italic">"{current.description || current.story || current.sound}"</p>
-                            </div>
-                            
-                            <Button onClick={() => onSound(current.description || current.story || current.title)} className={juniorStyles.button + " w-full uppercase"}>
-                                Read Story! 🎙️
-                            </Button>
-                            
-                            <div className="flex gap-4 justify-center">
-                                <button onClick={() => setIndex(i => Math.max(0, i - 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight className="rotate-180" /></button>
-                                <button onClick={() => items && items.length > 0 && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="py-40 text-center bg-white rounded-[60px] border-8 border-dashed border-pink-50">
-                    <Music className="w-20 h-20 text-pink-100 mx-auto mb-4" />
-                    <p className="text-pink-200 font-black text-2xl uppercase">Phonics Studio Empty...</p>
-                </div>
-            )}
-
-            {isDrawerOpen && (
-                <TeacherModal 
-                    title={tab} 
-                    topicValue={aiTopic} 
-                    onTopicChange={setAiTopic} 
-                    onGenerate={handleGenerate} 
-                    isLoading={isLoading} 
-                    onClose={() => setIsDrawerOpen(false)} 
-                />
-            )}
+        <div className="space-y-8 animate-in fade-in duration-500">
+            <VoiceCoach canEdit={canEdit} schoolId={schoolId} />
         </div>
     );
 }
