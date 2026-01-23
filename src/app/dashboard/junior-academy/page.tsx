@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
@@ -13,10 +13,11 @@ import {
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, 
-  Pencil, Pen, Heart, Utensils, Smile, Tv, Users, BrainCircuit, Activity
+  Pencil, Pen, Heart, Utensils, Smile, Tv, Users, BrainCircuit, Activity,
+  FolderOpen
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateTTSAction, generateLessonImageAction, assessHandwritingAction, generateSkillDetails, generateRhyme, generatePhonicsWorldEntry, generateMathWorldEntry, generateScienceWorldEntry } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateTTSAction, generateLessonImageAction, assessHandwritingAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -214,12 +215,185 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
   );
 }
 
+// --- SUB-COMPONENT: LIFE SKILLS HUB ---
 type LifeSkillTab = 'emotions' | 'routine-songs' | 'modeling' | 'practical-life' | 'communication' | 'social' | 'puppet-theater' | 'cognitive' | 'physical-health';
+
+const TeacherModal: React.FC<{
+  title: string; topicValue: string; 
+  onTopicChange: (v: string) => void; onGenerate: () => void; 
+  isLoading: boolean; onClose: () => void;
+}> = ({ title, topicValue, onTopicChange, onGenerate, isLoading, onClose }) => (
+  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+    <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-green-100 animate-in zoom-in duration-300">
+      <h3 className="text-3xl font-black text-slate-800 mb-6 uppercase tracking-tighter">AI {title}</h3>
+      <div className="space-y-6">
+        <div>
+          <Label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">What should the AI create?</Label>
+          <Input 
+            value={topicValue} 
+            onChange={(e) => onTopicChange(e.target.value)} 
+            placeholder="e.g. Venus Flytrap, Lungs, Solar Power" 
+            className="h-14 rounded-2xl border-4 border-slate-100 font-bold uppercase" 
+          />
+        </div>
+        <Button 
+          onClick={onGenerate} 
+          disabled={isLoading || !topicValue} 
+          className="w-full h-16 rounded-2xl font-black text-white bg-green-500 hover:bg-green-600 shadow-xl"
+        >
+          {isLoading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} CREATE MAGIC
+        </Button>
+        <button onClick={onClose} className="w-full text-slate-400 uppercase text-[10px] font-black tracking-widest mt-4">Close Drawer</button>
+      </div>
+    </div>
+  </div>
+);
+
+
+function LifeSkillsModule({ tab, schoolId, onSound, onComplete, canEdit }: { tab: LifeSkillTab, schoolId: string, onSound: (t: string) => void, onComplete: () => void, canEdit: boolean }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [index, setIndex] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+    // AI Creator State
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [aiTopic, setAiTopic] = useState('');
+    const [isAiGenerating, setIsAiGenerating] = useState(false);
+
+    // SaaS Query for specific skill category
+    const dataQuery = useMemoFirebase(() => 
+        firestore ? query(
+            collection(firestore, 'junior_lifeskills_world'), 
+            where('schoolId', '==', schoolId),
+            where('category', '==', tab),
+            orderBy('createdAt', 'asc')
+        ) : null, [firestore, schoolId, tab]);
+    
+    const { data: items, forceRefetch } = useCollection<any>(dataQuery);
+    const current = items?.[index];
+
+    const loadVisual = useCallback(async () => {
+        if (!current || !schoolId) return;
+        setIsLoading(true);
+        setImageUrl(null);
+        try {
+            const result = await generateLessonImageAction({
+                prompt: current.imagePrompt || `Nursery 3D illustration of ${current.title}`,
+                schoolId: schoolId,
+            });
+            if (result.success && result.data) {
+                setImageUrl(result.data);
+            }
+        } catch (e) {
+            console.error("Image generation failed", e);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [current, schoolId]);
+
+    useEffect(() => {
+        if (current) {
+            loadVisual();
+        }
+    }, [current, loadVisual]);
+
+    const handleGenerate = async () => {
+        if (!firestore || !schoolId || !aiTopic) return;
+        setIsAiGenerating(true);
+        try {
+            const result = await generateLifeSkillEntry(aiTopic, tab, schoolId);
+            if(result.success && result.data){
+                await addDoc(collection(firestore, 'junior_lifeskills_world'), {
+                    ...result.data,
+                    category: tab,
+                    schoolId,
+                    createdAt: serverTimestamp()
+                });
+                
+                setIsDrawerOpen(false);
+                setAiTopic('');
+                toast({ title: "Content Created!", description: "New life skill activity added." });
+                forceRefetch();
+            } else {
+                throw new Error(result.error || "Failed to generate entry");
+            }
+        } catch(e: any) { 
+            console.error(e); 
+            toast({ title: "Magic Failed", variant: "destructive", description: e.message });
+        } finally { 
+            setIsAiGenerating(false); 
+        }
+    };
+
+    return (
+        <div className="animate-in zoom-in duration-500 relative">
+             {canEdit && (
+                <Button 
+                    onClick={() => setIsDrawerOpen(true)} 
+                    className="absolute -top-12 right-0 z-10 bg-white border-2 border-teal-200 text-teal-600 font-black text-[10px] uppercase hover:bg-teal-50 shadow-md">
+                    <Wand2 className="w-3 h-3 mr-2" /> AI Maker
+                </Button>
+            )}
+
+            {current ? (
+                <Card className={juniorStyles.card}>
+                    <div className={juniorStyles.header}>
+                        <div className="text-center space-y-2">
+                             <Badge className="bg-white/20 text-white border-none uppercase px-4">{tab.replace('-', ' ')}</Badge>
+                             <CardTitle className="text-5xl font-black uppercase tracking-tighter">{current.title}</CardTitle>
+                        </div>
+                    </div>
+                    <CardContent className="p-12 flex flex-col md:flex-row gap-12 items-center">
+                        <div onClick={() => onSound(current.description)} className="relative aspect-square w-full max-w-md bg-teal-50 rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group">
+                             {isLoading ? (
+                                <div className="absolute inset-0 flex items-center justify-center"><Loader2 className="animate-spin text-teal-400 w-12 h-12" /></div>
+                             ) : imageUrl && (
+                                <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" alt="Skill Visual" />
+                             )}
+                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                                <Volume2 className="text-white w-20 h-20 opacity-0 group-hover:opacity-100 drop-shadow-xl" />
+                             </div>
+                        </div>
+                        <div className="flex-1 space-y-8">
+                             <div className={juniorStyles.bubble}>
+                                <p className="text-3xl font-bold text-slate-700 leading-relaxed italic">"{current.description}"</p>
+                             </div>
+                             <Button onClick={() => { onSound(current.description); onComplete(); }} className={juniorStyles.btnPrimary + " w-full h-20 text-2xl"}>
+                                I LEARNED THIS! 🌟
+                             </Button>
+                             <div className="flex gap-4 justify-center">
+                                <button onClick={() => setIndex(i => Math.max(0, i - 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight className="rotate-180" /></button>
+                                <button onClick={() => items && items.length > 0 && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
+                             </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            ) : (
+                <div className="py-40 text-center bg-white rounded-[60px] border-8 border-dashed border-teal-100">
+                    <Heart className="w-20 h-20 text-teal-100 mx-auto mb-4 animate-pulse" />
+                    <p className="text-teal-200 font-black text-2xl uppercase">Skill Hub Awaiting Content...</p>
+                </div>
+            )}
+            
+            {isDrawerOpen && (
+                <TeacherModal 
+                    title={tab} 
+                    topicValue={aiTopic} 
+                    onTopicChange={setAiTopic} 
+                    onGenerate={handleGenerate} 
+                    isLoading={isAiGenerating} 
+                    onClose={() => setIsDrawerOpen(false)} 
+                />
+            )}
+        </div>
+    );
+}
 
 function LifeSkillsZone({ schoolId }: { schoolId: string }) {
   const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
   const [stars, setStars] = useState(0);
-  const firestore = useFirestore();
 
   const onSound = async (text: string) => {
     if (!text || !schoolId) return;
@@ -236,6 +410,10 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
     confetti({ particleCount: 100, spread: 70 });
     setStars(prev => prev + 1);
   };
+  
+    const { role } = useRole();
+    const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
+
 
   const tabs: {id: LifeSkillTab, label: string, icon: any, color: string}[] = [
     { id: 'physical-health', label: 'Health', icon: Activity, color: 'bg-green-500' },
@@ -285,95 +463,12 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
       </div>
 
       <div className="w-full px-4">
-        <LifeSkillsModule tab={activeTab} schoolId={schoolId} onSound={onSound} onComplete={addStar} />
+        <LifeSkillsModule tab={activeTab} schoolId={schoolId} onSound={onSound} onComplete={addStar} canEdit={canEdit} />
       </div>
     </div>
   );
 }
 
-// --- DYNAMIC LIFE SKILLS MODULE ENGINE ---
-function LifeSkillsModule({ tab, schoolId, onSound, onComplete }: { tab: LifeSkillTab, schoolId: string, onSound: (t: string) => void, onComplete: () => void }) {
-    const firestore = useFirestore();
-    const [index, setIndex] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-    // SaaS Query for specific skill category
-    const dataQuery = useMemoFirebase(() => 
-        firestore ? query(
-            collection(firestore, 'junior_lifeskills_world'), 
-            where('schoolId', '==', schoolId),
-            where('category', '==', tab),
-            orderBy('createdAt', 'asc')
-        ) : null, [firestore, schoolId, tab]);
-    
-    const { data: items } = useCollection<any>(dataQuery);
-    const current = items?.[index];
-
-    const loadVisual = useCallback(async () => {
-        if (!current || !schoolId) return;
-        setIsLoading(true);
-        setImageUrl(null);
-        const result = await generateLessonImageAction({
-            prompt: current.imagePrompt || `Nursery 3D illustration of ${current.title}`,
-            schoolId
-        });
-        if (result.success && result.data) {
-            setImageUrl(result.data);
-        }
-        setIsLoading(false);
-    }, [current, schoolId]);
-    
-    useEffect(() => {
-        if (current) {
-            loadVisual();
-        }
-    }, [current, loadVisual]);
-
-    return (
-        <div className="animate-in zoom-in duration-500">
-            {current ? (
-                <Card className={juniorStyles.card}>
-                    <div className={juniorStyles.header}>
-                        <div className="text-center space-y-2">
-                             <Badge className="bg-white/20 text-white border-none uppercase px-4">{tab.replace('-', ' ')}</Badge>
-                             <CardTitle className="text-5xl font-black uppercase tracking-tighter">{current.title}</CardTitle>
-                        </div>
-                    </div>
-                    <CardContent className="p-12 flex flex-col md:flex-row gap-12 items-center">
-                        <div onClick={() => onSound(current.description)} className="relative aspect-square w-full max-w-md bg-teal-50 rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group">
-                             {isLoading ? (
-                                <div className="absolute inset-0 flex items-center justify-center"><Loader2 className="animate-spin text-teal-400 w-12 h-12" /></div>
-                             ) : imageUrl && (
-                                <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" alt="Skill Visual" />
-                             )}
-                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                                <Volume2 className="text-white w-20 h-20 opacity-0 group-hover:opacity-100 drop-shadow-xl" />
-                             </div>
-                        </div>
-                        <div className="flex-1 space-y-8">
-                             <div className={juniorStyles.bubble}>
-                                <p className="text-3xl font-bold text-slate-700 leading-relaxed italic">"{current.description}"</p>
-                             </div>
-                             <Button onClick={() => { onSound(current.description); onComplete(); }} className={juniorStyles.btnPrimary + " w-full h-20 text-2xl"}>
-                                I LEARNED THIS! 🌟
-                             </Button>
-                             <div className="flex gap-4 justify-center">
-                                <button onClick={() => setIndex(i => Math.max(0, i - 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight className="rotate-180" /></button>
-                                <button onClick={() => items && items.length > 0 && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
-                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="py-40 text-center bg-white rounded-[60px] border-8 border-dashed border-teal-100">
-                    <Heart className="w-20 h-20 text-teal-100 mx-auto mb-4 animate-pulse" />
-                    <p className="text-teal-200 font-black text-2xl uppercase tracking-widest">Skill Hub Awaiting Content...</p>
-                </div>
-            )}
-        </div>
-    );
-}
 
 // --- MAIN CAMPUS PAGE ---
 export default function JuniorCampusPage() {
