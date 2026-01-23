@@ -72,7 +72,6 @@ const juniorStyles = {
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
-
 // --- TEACHER MAGIC MODAL ---
 const TeacherModal: React.FC<{
   title: string; topicValue: string; 
@@ -372,7 +371,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 // --- SUB-COMPONENT: SINGING DICTIONARY ---
 function SingingDictionary({ schoolId }: { schoolId: string }) {
     const [index, setIndex] = useState(0);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [rhyme, setRhyme] = useState('');
     const { toast } = useToast();
@@ -397,7 +396,7 @@ function SingingDictionary({ schoolId }: { schoolId: string }) {
             setLoading(false);
         }
     }, [current, schoolId, toast]);
-
+    
     useEffect(() => {
         loadPage();
     }, [index, loadPage]);
@@ -458,7 +457,157 @@ function SingingDictionary({ schoolId }: { schoolId: string }) {
     );
 }
 
-// --- SUB-COMPONENT: Life Skills Zone ---
+// --- SUB-COMPONENT: WRITING CANVAS ---
+const WritingCanvas: React.FC<{ onSound: (t: string) => void; schoolId: string }> = ({ onSound, schoolId }) => {
+    const traceCanvasRef = useRef<HTMLCanvasElement>(null);
+    const freeCanvasRef = useRef<HTMLCanvasElement>(null);
+    const [mode, setMode] = useState<'letters' | 'numbers'>('letters');
+    const [selectedItem, setSelectedItem] = useState('A');
+    const [isDrawingFree, setIsDrawingFree] = useState(false);
+    const [isEvaluating, setIsEvaluating] = useState(false);
+    const [feedback, setFeedback] = useState('');
+  
+    const setupCanvases = useCallback(() => {
+        [traceCanvasRef, freeCanvasRef].forEach((ref, isTraceCanvas) => {
+            const canvas = ref.current;
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            
+            // Set canvas size (can be responsive)
+            const size = Math.min(canvas.parentElement?.clientWidth || 400, 400);
+            canvas.width = size; 
+            canvas.height = size;
+            
+            // Clear canvas
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, size, size);
+
+            // Draw the guide character on the trace canvas
+            if (isTraceCanvas === 0 && traceCanvasRef.current) {
+                const c = traceCanvasRef.current.getContext('2d')!;
+                c.font = `900 ${size * 0.8}px "Nunito", sans-serif`; 
+                c.textAlign = 'center'; 
+                c.textBaseline = 'middle';
+                c.strokeStyle = '#E2E8F0'; 
+                c.setLineDash([10, 10]);
+                c.lineWidth = 4;
+                c.strokeText(selectedItem, size / 2, size / 2 + 10);
+            } else if (isTraceCanvas === 1) {
+                // Prepare freehand canvas
+                 ctx.lineWidth = 12;
+                 ctx.lineCap = 'round';
+                 ctx.lineJoin = 'round';
+            }
+        });
+    }, [selectedItem]);
+  
+    useEffect(() => {
+        setupCanvases();
+        window.addEventListener('resize', setupCanvases);
+        return () => window.removeEventListener('resize', setupCanvases);
+    }, [setupCanvases]);
+
+    const startFreeDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+        const canvas = freeCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = ('touches' in e) ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
+        const y = ('touches' in e) ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        setIsDrawingFree(true);
+    };
+
+    const drawFree = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isDrawingFree) return;
+        const canvas = freeCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = ('touches' in e) ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
+        const y = ('touches' in e) ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    };
+
+    const handleCheck = async () => {
+        if (!freeCanvasRef.current || !schoolId) return;
+        setIsEvaluating(true);
+        setFeedback("Magic eyes checking...");
+        
+        const imageDataUri = freeCanvasRef.current.toDataURL('image/png');
+        const result = await assessHandwritingAction({ imageDataUri, targetCharacter: selectedItem, schoolId });
+
+        if (result.success) {
+            if (result.isCorrect) {
+                confetti();
+                setFeedback("You are a Number Superstar! ⭐");
+                onSound(`Wonderful! You wrote ${selectedItem} perfectly!`);
+            } else {
+                setFeedback("Almost there! Try tracing one more time.");
+                onSound("Not quite, but good try! Let's look at the example again.");
+            }
+        } else {
+            setFeedback("The AI couldn't see your drawing. Try again!");
+        }
+        
+        setIsEvaluating(false);
+    };
+
+    return (
+      <Card className="rounded-[60px] border-8 border-purple-100 overflow-hidden bg-white shadow-2xl">
+          <div className="bg-purple-500 p-8 text-white text-center">
+              <h3 className="text-4xl font-black uppercase tracking-tighter">Number Magic Pen 🪄</h3>
+          </div>
+          <CardContent className="p-12 space-y-10">
+              <div className="flex justify-center gap-2 overflow-x-auto py-4">
+                 <div className="bg-white p-2 rounded-full flex gap-1 border-2 border-slate-100">
+                    <Button variant={mode === 'letters' ? 'secondary' : 'ghost'} className="rounded-full" onClick={() => { setMode('letters'); setSelectedItem('A'); }}>Letters</Button>
+                    <Button variant={mode === 'numbers' ? 'secondary' : 'ghost'} className="rounded-full" onClick={() => { setMode('numbers'); setSelectedItem('1'); }}>Numbers</Button>
+                 </div>
+              </div>
+              <div className="flex justify-center gap-2 overflow-x-auto pb-4 no-scrollbar">
+                  {(mode === 'letters' ? constants.LETTERS : constants.NUMBERS).map(item => (
+                      <button key={item} onClick={() => setSelectedItem(item)} className={`flex-shrink-0 w-14 h-14 rounded-2xl font-black text-2xl border-4 ${selectedItem === item ? 'bg-purple-600 text-white border-white scale-110' : 'bg-slate-50 text-slate-400 border-transparent'}`}>{item}</button>
+                  ))}
+              </div>
+              <div className="grid md:grid-cols-2 gap-10">
+                  <div className="space-y-4 text-center">
+                      <p className="text-slate-400 font-bold uppercase text-xs">1. Trace This</p>
+                      <canvas ref={traceCanvasRef} className="border-4 border-slate-100 rounded-[3rem] w-full aspect-square" />
+                  </div>
+                  <div className="space-y-4 text-center relative">
+                      <p className="text-slate-800 font-bold uppercase text-xs">2. Write it yourself</p>
+                      <canvas 
+                          ref={freeCanvasRef} 
+                          onMouseDown={startFreeDrawing}
+                          onMouseUp={() => setIsDrawingFree(false)}
+                          onMouseLeave={() => setIsDrawingFree(false)}
+                          onTouchStart={startFreeDrawing}
+                          onTouchEnd={() => setIsDrawingFree(false)}
+                          onMouseMove={drawFree}
+                          onTouchMove={drawFree}
+                          className="border-8 border-purple-200 rounded-[3rem] w-full aspect-square cursor-crosshair" 
+                      />
+                      {isEvaluating && <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center rounded-[3rem] animate-pulse"><Loader2 className="w-12 h-12 animate-spin text-purple-600"/></div>}
+                  </div>
+              </div>
+              <div className="text-center space-y-6">
+                  {feedback && <Badge className="bg-purple-100 text-purple-700 text-xl p-4 rounded-2xl border-none">{feedback}</Badge>}
+                  <div className="flex gap-4 justify-center">
+                      <Button onClick={() => setupCanvases()} variant="outline" className="h-16 px-10 rounded-2xl border-4 font-black">CLEAR</Button>
+                      <Button onClick={handleCheck} disabled={isEvaluating} className="h-16 px-16 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-black shadow-xl">CHECK MY WORK!</Button>
+                  </div>
+              </div>
+          </CardContent>
+      </Card>
+  );
+};
+// --- LIFE SKILLS COMPONENT ---
 function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: boolean }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -469,7 +618,6 @@ function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: bool
     const [aiTopic, setAiTopic] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // AI-generated image state
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [isImageLoading, setIsImageLoading] = useState(false);
 
@@ -635,10 +783,6 @@ function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: bool
     );
 }
 
-// --- SUB-COMPONENT: WRITING CANVAS ---
-const WritingCanvas = () => <div className="text-center p-8">Writing Canvas Module</div>;
-
-
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
     const { role } = useRole();
@@ -646,6 +790,13 @@ export default function JuniorCampusPage() {
     
     const schoolId = 'default-school'; // Placeholder
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
+    
+    const speak = (text: string) => {
+        if (typeof window === 'undefined') return;
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.9;
+        window.speechSynthesis.speak(u);
+    };
 
     return (
         <div className="min-h-screen bg-[#FFFBEB] p-4 md:p-8 font-sans">
@@ -679,7 +830,7 @@ export default function JuniorCampusPage() {
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
                         <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone schoolId={schoolId} canEdit={canEdit} /></TabsContent>
-                        <TabsContent value="writing" className="mt-0"><WritingCanvas /></TabsContent>
+                        <TabsContent value="writing" className="mt-0"><WritingCanvas onSound={speak} schoolId={schoolId} /></TabsContent>
                         <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                         <TabsContent value="phonics" className="mt-0"><PhonicsWorld schoolId={schoolId} /></TabsContent>
                         <TabsContent value="dictionary" className="mt-0"><SingingDictionary schoolId={schoolId} /></TabsContent>
@@ -693,3 +844,4 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
