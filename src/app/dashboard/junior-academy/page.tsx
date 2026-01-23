@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generatePhonicsWorldEntry, generateMathWorldEntry, generateScienceWorldEntry, generateRhyme } from '@/ai/flows/junior-actions';
@@ -30,26 +30,25 @@ import * as constants from '@/lib/constants';
 import * as LucideIcons from 'lucide-react';
 import PhonicsWorld from './phonics-world';
 
-
 // --- ICON MAPPER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-  const map: Record<string, keyof typeof LucideIcons> = {
-    'fa-spell-check': 'Languages', 'fa-ear-listen': 'Ear', 'fa-pen-nib': 'PenNib',
-    'fa-arrow-1-9': 'Calculator', 'fa-hand-holding-heart': 'HeartHandshake', 'fa-flask-vial': 'FlaskConical',
-    'fa-palette': 'Palette', 'fa-robot': 'Bot', 'fa-face-smile': 'Smile', 'fa-tooth': 'Sparkles',
-    'fa-heart-pulse': 'HeartPulse', 'fa-vest': 'Shirt', 'fa-sun': 'Sun', 'fa-utensils': 'Utensils',
-    'fa-school': 'School', 'fa-house': 'Home', 'fa-recycle': 'Recycle', 'fa-water': 'Droplets',
-    'fa-broom': 'Trash2', 'fa-flag': 'Flag', 'fa-hand-pointer': 'MousePointer2', 'fa-cube': 'Cube',
-    'fa-chalkboard-user': 'User', 'fa-rabbit': 'Rabbit', 'fa-carrot': 'Carrot', 'fa-apple-whole': 'Apple',
-    'fa-cookie': 'Cookie', 'fa-star': 'Star', 'fa-tv': 'Tv', 'fa-bed': 'Bed', 'fa-eye': 'Eye',
-    'fa-cloud-showers-heavy': 'CloudRain', 'fa-guitar': 'Guitar', 'fa-plane': 'Plane', 'fa-car': 'Car',
-  };
-
-  const LucideName = map[iconName] || 'HelpCircle';
-  const IconComponent = (LucideIcons as any)[LucideName];
-  return <IconComponent className={className} />;
+    const map: Record<string, keyof typeof LucideIcons> = {
+      'fa-spell-check': 'Languages', 'fa-ear-listen': 'Ear', 'fa-pen-nib': 'PenNib',
+      'fa-arrow-1-9': 'Calculator', 'fa-hand-holding-heart': 'HeartHandshake', 'fa-flask-vial': 'FlaskConical',
+      'fa-palette': 'Palette', 'fa-robot': 'Bot', 'fa-face-smile': 'Smile', 'fa-tooth': 'Sparkles',
+      'fa-heart-pulse': 'HeartPulse', 'fa-vest': 'Shirt', 'fa-sun': 'Sun', 'fa-utensils': 'Utensils',
+      'fa-school': 'School', 'fa-house': 'Home', 'fa-recycle': 'Recycle', 'fa-water': 'Droplets',
+      'fa-broom': 'Trash2', 'fa-flag': 'Flag', 'fa-hand-pointer': 'MousePointer2', 'fa-cube': 'Cube',
+      'fa-chalkboard-user': 'User', 'fa-rabbit': 'Rabbit', 'fa-carrot': 'Carrot', 'fa-apple-whole': 'Apple',
+      'fa-cookie': 'Cookie', 'fa-star': 'Star', 'fa-tv': 'Tv', 'fa-bed': 'Bed', 'fa-eye': 'Eye',
+      'fa-cloud-showers-heavy': 'CloudRain', 'fa-guitar': 'Guitar', 'fa-plane': 'Plane', 'fa-car': 'Car',
+    };
+  
+    const LucideName = map[iconName] || 'HelpCircle';
+    const IconComponent = (LucideIcons as any)[LucideName];
+  
+    return <IconComponent className={className} />;
 };
-
 
 // --- HELPERS ---
 const isJuniorLevel = (grade: string) => 
@@ -95,7 +94,7 @@ const TeacherModal: React.FC<{
         >
           {isLoading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} CREATE MAGIC
         </Button>
-        <button onClick={onClose} className="w-full text-slate-400 uppercase text-[10px] font-black tracking-widest mt-4">Close</button>
+        <button onClick={onClose} className="w-full text-slate-400 uppercase text-[10px] font-black tracking-widest mt-4">Close Drawer</button>
       </div>
     </div>
   </div>
@@ -108,18 +107,15 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const firestore = useFirestore();
     const { toast } = useToast();
     
-    // Generation State
     const [topic, setTopic] = useState('');
     const [wordCount, setWordCount] = useState('150');
     const [story, setStory] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     
-    // Quiz Progress State (The 3-Question Pathway)
     const [currentQ, setCurrentQ] = useState(0);
     const [userAns, setUserAns] = useState('');
     const [quizStatus, setQuizStatus] = useState<'typing' | 'correct' | 'wrong'>('typing');
 
-    // SaaS Query: Load saved stories only for this school
     const storiesQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(
             collection(firestore, 'junior_stories'), 
@@ -140,7 +136,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const handleGenerate = async () => {
         if (!topic.trim() || !schoolId) return;
         setLoading(true);
-        // AI call with topic and length
         const res = await generateJuniorStory({ topic, wordCount: parseInt(wordCount), schoolId });
         if (res.success && res.data) {
             setStory(res.data);
@@ -160,7 +155,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             await addDoc(collection(firestore, 'junior_stories'), {
                 ...story,
                 topic,
-                schoolId: schoolId, // SaaS tagging
+                schoolId: schoolId,
                 createdAt: serverTimestamp(),
                 createdBy: user?.uid
             });
@@ -174,7 +169,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const checkAnswer = () => {
         if (!userAns.trim()) return;
         const currentQuestion = story.questions[currentQ];
-        // Fuzzy match: check if user answer contains the key part of the correct answer
         const isCorrect = userAns.toLowerCase().includes(currentQuestion.answer.toLowerCase()) || 
                           currentQuestion.answer.toLowerCase().includes(userAns.toLowerCase());
 
@@ -194,7 +188,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             setUserAns('');
             setQuizStatus('typing');
         } else {
-            // Quiz finished
             setStory(null);
             setTopic('');
             confetti({ particleCount: 200, spread: 100 });
@@ -204,7 +197,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
-            {/* 1. TEACHER'S MAGIC WRITING TOOL */}
             {canEdit && (
                 <div className="bg-white p-6 rounded-[35px] border-4 border-purple-100 flex flex-col md:flex-row gap-4 shadow-lg">
                     <div className="flex-1 space-y-1">
@@ -237,8 +229,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </Button>
                 </div>
             )}
-
-            {/* 2. ACTIVE STORY WORKSTATION (MAGIC STORYBOOK) */}
             {story ? (
                 <Card className="rounded-[60px] border-8 border-orange-100 overflow-hidden shadow-2xl bg-[#FFFDE7] animate-in zoom-in duration-500">
                     <div className="bg-orange-400 p-8 text-white flex justify-between items-center border-b-8 border-orange-500/20">
@@ -252,16 +242,12 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                              <Button variant="ghost" onClick={() => setStory(null)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><XCircle /></Button>
                         </div>
                     </div>
-
                     <CardContent className="p-12 space-y-12">
-                        {/* THE STORY CONTENT */}
                         <div className="max-w-4xl mx-auto">
                             <p className="text-3xl font-bold text-orange-900 leading-relaxed font-serif first-letter:text-7xl first-letter:font-black first-letter:mr-3 first-letter:float-left whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
-
-                        {/* 3-QUESTION CHALLENGE BOX */}
                         <div className="bg-white/80 backdrop-blur-sm p-10 rounded-[50px] border-4 border-dashed border-orange-300 shadow-inner space-y-8 relative overflow-hidden">
                             <div className="flex justify-between items-center mb-4">
                                 <Badge className="bg-purple-600 text-white px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest">
@@ -273,11 +259,9 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                                     ))}
                                 </div>
                             </div>
-
                             <h3 className="text-3xl font-black text-blue-900 leading-tight">
                                 {story.questions[currentQ].question}
                             </h3>
-
                             {quizStatus === 'typing' ? (
                                 <div className="flex flex-col md:flex-row gap-4">
                                     <Input 
@@ -322,7 +306,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </CardContent>
                 </Card>
             ) : (
-                /* 3. LIBRARY SECTION: SAVED STORIES */
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-2xl font-black text-slate-700 flex items-center gap-2">
@@ -330,7 +313,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                         </h3>
                         <Badge variant="outline" className="text-slate-400 font-bold">{savedStories?.length || 0} Stories</Badge>
                     </div>
-
                     {!savedStories || savedStories.length === 0 ? (
                         <div className="py-20 text-center bg-white rounded-[50px] border-8 border-dashed border-slate-50">
                             <BookOpen className="h-16 w-16 text-slate-100 mx-auto mb-4" />
@@ -377,7 +359,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
-// --- 1. SINGING DICTIONARY MODULE ---
+// --- SUB-COMPONENT: SINGING DICTIONARY ---
 function SingingDictionary({ schoolId }: { schoolId: string }) {
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -469,7 +451,6 @@ function SingingDictionary({ schoolId }: { schoolId: string }) {
     );
 }
 
-// ... other components ...
 export default function JuniorCampusPage() {
     const { role, profile } = useRole();
     const { user } = useUser();
@@ -527,146 +508,3 @@ export default function JuniorCampusPage() {
 // These are defined in other files, but we need placeholders here if this file is isolated.
 const WritingCanvas = () => <div className="text-center p-8">Writing Canvas Module</div>;
 const LifeSkillsZone = ({schoolId}: {schoolId: string}) => <div className="text-center p-8">Life Skills Module</div>;
-
-```
-</content>
-  </change>
-  <change>
-    <file>/src/app/dashboard/junior-academy/phonics-world.tsx</file>
-    <content><![CDATA[
-'use client';
-
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Mic, Volume2, Wand2, Loader2, Sparkles, Trash2, Ear } from 'lucide-react';
-import confetti from 'canvas-confetti';
-import { useToast } from '@/hooks/use-toast';
-import { generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
-import { useCurrentSchool } from '@/hooks/use-current-school';
-
-const juniorStyles = {
-    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
-    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
-};
-
-
-// --- SUB-COMPONENT: VOICE COACH ---
-function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean, schoolId: string }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [word, setWord] = useState('');
-    const [details, setDetails] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [newWord, setNewWord] = useState('');
-
-    const { data: dbWords, forceRefetch } = useCollection<any>(useMemoFirebase(() =>
-        (firestore && schoolId) ? query(collection(firestore, 'junior_phonics'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null,
-    [firestore, schoolId]));
-
-    const fetchDetails = useCallback(async (w: string) => {
-        if (!schoolId) return;
-        setIsLoading(true);
-        setDetails(null);
-        setWord(w); // Set the current word
-        const result = await generateWordDetails({ word: w, schoolId });
-        if (result.success) {
-            setDetails(result.data);
-        } else {
-            toast({ title: "AI Error", description: result.error || "Could not get word details." });
-        }
-        setIsLoading(false);
-    }, [toast, schoolId]);
-
-    const speak = async (text: string) => {
-        if (!text || !schoolId) return;
-        try {
-            const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
-            if (result.success && result.data && typeof window !== 'undefined') {
-                const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-                audio.play();
-            }
-        } catch (e) {
-            console.error("Audio error", e);
-        }
-    };
-    
-    // Fetch details for the first word in the list initially
-    useEffect(() => {
-        if (dbWords && dbWords.length > 0 && !word) {
-            fetchDetails(dbWords[0].word);
-        } else if (!dbWords && !isLoading) {
-            fetchDetails('Apple'); // Fallback
-        }
-    }, [dbWords, word, fetchDetails, isLoading]);
-
-    const handleSaveWord = async () => {
-        if(!firestore || !newWord.trim() || !schoolId) return;
-        try {
-            await addDoc(collection(firestore, 'junior_phonics'), {
-                word: newWord.trim(),
-                schoolId: schoolId,
-                createdAt: serverTimestamp()
-            });
-            toast({title: "Word Saved!"});
-            forceRefetch();
-            setNewWord('');
-        } catch (e) {
-            console.error(e);
-            toast({variant: "destructive", title: "Error"});
-        }
-    };
-
-    return (
-        <div className="text-center">
-            <h2 className="text-5xl font-black text-pink-500 uppercase tracking-tighter">Voice & Diction Coach</h2>
-            <p className="text-slate-400 font-bold italic text-xl mt-2 mb-12">Learn to pronounce words clearly!</p>
-
-            <div className="grid md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
-                <div className="p-10 bg-pink-50 rounded-[4rem] border-8 border-white shadow-xl">
-                    <p className="text-[10px] uppercase font-black text-pink-300 mb-2">Word of the Day</p>
-                    {details ? (
-                        <div className="space-y-4 text-center animate-in fade-in">
-                            <p className="text-8xl font-black text-slate-800">{details.word}</p>
-                            <p className="text-2xl font-bold text-pink-400 italic">{details.phonetic}</p>
-                            <div className="text-6xl">{details.emoji}</div>
-                            <Button onClick={() => speak(details.sentence)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
-                        </div>
-                    ) : <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>}
-                </div>
-
-                <div className="space-y-4">
-                    <p className="font-bold text-slate-500">Practice other words:</p>
-                    <div className="flex flex-wrap gap-3 justify-center">
-                        {dbWords?.map((w: any) => (
-                            <button key={w.id} onClick={() => fetchDetails(w.word)} className="px-6 py-3 bg-white border-2 border-slate-100 rounded-full font-bold text-slate-600 hover:bg-pink-50 hover:border-pink-200 transition-all">{w.word}</button>
-                        ))}
-                    </div>
-                    {canEdit && (
-                        <div className="pt-4 border-t flex gap-2">
-                            <Input value={newWord} onChange={e => setNewWord(e.target.value)} placeholder="Add new word..."/>
-                            <Button onClick={handleSaveWord}>+</Button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-}
-
-export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
-    const { role } = useRole();
-    const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
-
-    return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            <VoiceCoach canEdit={canEdit} schoolId={schoolId} />
-        </div>
-    );
-}

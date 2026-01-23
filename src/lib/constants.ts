@@ -1,3 +1,4 @@
+
 import { ModuleType, DictionaryWord } from './types';
 
 export const COLORS = {
@@ -67,6 +68,9 @@ export const MODULES: { type: ModuleType; title: string; icon: string; color: st
     description: 'Talk to your very own interactive tutor Mr. Bloom!'
   },
 ];
+
+export const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+export const NUMBERS = '0123456789'.split('');
 
 export const DICTIONARY_WORDS: DictionaryWord[] = [
   { word: 'Apple', category: 'Nature', imagePrompt: 'A shiny red apple with a happy face, nursery style' },
@@ -156,7 +160,7 @@ export const STORYTELLING_DATA = [
     prompt: 'A boy pouring milk for his cat',
     sequence: [
       { id: 1, text: 'A small boy sees his thirsty cat.', prompt: 'A 3D nursery scene of a boy looking at his orange cat.' }, 
-      { id: 2, text: 'He is pouring milk into a blue bowl.', prompt: 'A boy pouring fresh white milk into a small blue bowl.' }, 
+      { id: 2, text: 'He is pouring milk into a small blue bowl.', prompt: 'A boy pouring fresh white milk into a small blue bowl.' }, 
       { id: 3, text: 'The boy and cat are happy.', prompt: 'A happy cat drinking milk and the boy patting its back.' }
     ] 
   }
@@ -454,7 +458,7 @@ export const LIFE_SKILLS_DATA = {
       { q: 'The floor is messy with toys. How do we fix it?', options: ['fa-broom', 'fa-tv', 'fa-bed'], labels: ['Tidy Up', 'Watch TV', 'Go to Bed'], correct: 0, prompt: 'A room with many toys on the floor, nursery style' }
     ],
     patterns: [
-      { sequence: ['fa-apple-whole', 'fa-carrot', 'fa-apple-whole'], next: 'carrot', options: ['apple-whole', 'carrot'], prompt: 'A simple pattern of fruit and vegetables' }
+      { sequence: ['fa-apple-whole', 'fa-carrot', 'fa-apple-whole'], next: 'fa-carrot', options: ['fa-apple-whole', 'fa-carrot'], prompt: 'A simple pattern of fruit and vegetables' }
     ],
     whatIf: [
       { q: 'What if we could fly like birds?', a: 'We would see the whole world from high in the sky!', prompt: 'A child with bird wings flying over a colorful town' }
