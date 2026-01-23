@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,10 +12,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Pen, Heart, Utensils, Smile, Tv, Users, BrainCircuit, Activity
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generatePhonicsWorldEntry, generateMathWorldEntry, generateScienceWorldEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -27,13 +27,16 @@ import MathPlayground from './math-playground';
 import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from "@google/genai";
+import * as constants from '@/lib/constants';
 
-// --- JUNIOR STYLES ---
+// --- HELPERS ---
+const isJuniorLevel = (grade: string) => 
+    grade === 'Early Childhood' || grade === 'Lower Primary';
+
 const juniorStyles = {
     card: "rounded-[40px] border-8 border-yellow-200 shadow-[0_15px_0_#FEF9C3] bg-white overflow-hidden",
     header: "bg-gradient-to-r from-pink-400 via-yellow-400 to-orange-400 p-8 text-white",
-    bubble: "bg-white/80 backdrop-blur-md p-6 rounded-[40px] border-4 border-dashed border-pink-200 shadow-inner",
     btnPrimary: "h-16 px-8 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-3xl shadow-[0_8px_0_#be185d] active:translate-y-1 active:shadow-none transition-all",
 };
 
@@ -61,6 +64,19 @@ function WritingCanvas() {
   const [feedback, setFeedback] = useState('');
   const { schoolId } = useCurrentSchool();
 
+  const speak = async (text: string, schoolId: string) => {
+    if (!text) return;
+    try {
+      const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
+      if (result.success && result.data && typeof window !== 'undefined') {
+        const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+        audio.play();
+      }
+    } catch (e) {
+      console.error("Audio error", e);
+    }
+  };
+
   useEffect(() => {
     if (mode === 'numbers') setBrushColor('#FF9F43');
     else if (mode === 'letters') setBrushColor('#FF6B6B');
@@ -87,19 +103,6 @@ function WritingCanvas() {
       ctx.font = "900 300px sans-serif"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       const text = mode === 'letters' ? selectedLetter : mode === 'numbers' ? selectedNumber : '|';
       ctx.strokeText(text, 200, 220);
-    }
-  };
-
-  const speak = async (text: string, schoolId: string) => {
-    if (!text) return;
-    try {
-      const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
-      if (result.success && result.data && typeof window !== 'undefined') {
-        const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-        audio.play();
-      }
-    } catch (e) {
-      console.error("Audio error", e);
     }
   };
 
@@ -210,8 +213,9 @@ function WritingCanvas() {
   );
 }
 
+
 // --- SUB-COMPONENT: LIFE SKILLS HUB ---
-type LifeSkillTab = 'emotions' | 'routine-songs' | 'modeling' | 'practical-life' | 'communication' | 'social' | 'puppet-theater' | 'cognitive' | 'physical-health';
+type LifeSkillTab = 'emotions' | 'physical-health' | 'social' | 'routine-songs' | 'modeling' | 'practical-life' | 'communication' | 'puppet-theater' | 'cognitive';
 
 // --- TEACHER MAGIC MODAL for Life Skills ---
 const TeacherModal: React.FC<{
@@ -239,7 +243,7 @@ const TeacherModal: React.FC<{
         >
           {isLoading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} CREATE MAGIC
         </Button>
-        <button onClick={onClose} className="w-full text-slate-400 uppercase text-[10px] font-black tracking-widest mt-4">Close Drawer</button>
+        <button onClick={onClose} className="w-full text-slate-400 uppercase text-[10px] font-black tracking-widest mt-4">Close</button>
       </div>
     </div>
   </div>
@@ -263,15 +267,28 @@ function LifeSkillsModule({ tab, schoolId, onSound, canEdit }: { tab: LifeSkillT
             orderBy('createdAt', 'asc')
         ) : null, [firestore, schoolId, tab]);
     
-    const { data: items, forceRefetch } = useCollection<any>(dataQuery);
-    const current = items?.[index];
+    const { data: dbItems, forceRefetch } = useCollection<any>(dataQuery);
+    
+    const displayItems = useMemo(() => {
+        if (dbItems && dbItems.length > 0) return dbItems;
+
+        switch (tab) {
+            case 'emotions': return constants.LIFE_SKILLS_DATA.emotions.map(e => ({ ...e, title: e.name }));
+            case 'social': return constants.LIFE_SKILLS_DATA.social;
+            case 'physical-health': return constants.LIFE_SKILLS_DATA.health.map(h => ({ ...h, prompt: h.action }));
+            case 'routine-songs': return constants.LIFE_SKILLS_DATA.music;
+            default: return [];
+        }
+    }, [dbItems, tab]);
+
+    const current = displayItems?.[index];
     
     const loadVisual = useCallback(async () => {
-        if (!current || !schoolId) return;
+        if (!current || !schoolId || !current.imagePrompt) return;
         setIsLoading(true);
         setLocalImg(null);
         try {
-            const result = await generateLessonImageAction({prompt: current.imagePrompt || `3D nursery illustration of ${current.title}`, schoolId });
+            const result = await generateLessonImageAction({prompt: current.imagePrompt, schoolId });
             if (result.success) setLocalImg(result.data || null);
         } catch (e) { console.error(e); }
         finally { setIsLoading(false); }
@@ -348,7 +365,7 @@ function LifeSkillsModule({ tab, schoolId, onSound, canEdit }: { tab: LifeSkillT
                             </Button>
                             <div className="flex gap-4 justify-center">
                                 <button onClick={() => setIndex(i => Math.max(0, i - 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight className="rotate-180" /></button>
-                                <button onClick={() => items && items.length > 0 && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
+                                <button onClick={() => displayItems && displayItems.length > 0 && setIndex(i => (i + 1) % displayItems.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
                             </div>
                         </div>
                     </CardContent>
@@ -377,13 +394,13 @@ function LifeSkillsModule({ tab, schoolId, onSound, canEdit }: { tab: LifeSkillT
 // --- SUB-COMPONENT: LIFE SKILLS HUB ---
 function LifeSkillsZone({ schoolId }: { schoolId: string }) {
   const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
-  const firestore = useFirestore();
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast } = useToast();
+  const firestore = useFirestore();
 
   const onSound = async (text: string, schoolId: string) => {
     if (!text) return;
@@ -459,19 +476,7 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
             schoolId={schoolId} 
             onSound={onSound} 
             canEdit={canEdit}
-            onOpenCreator={() => setIsDrawerOpen(true)}
-            onComplete={() => {}}
         />
-        {isDrawerOpen && (
-            <TeacherModal 
-                title={activeTab} 
-                topicValue={aiTopic} 
-                onTopicChange={setAiTopic} 
-                onGenerate={handleGenerate} 
-                isLoading={isAiLoading} 
-                onClose={() => setIsDrawerOpen(false)} 
-            />
-        )}
       </div>
     </div>
   );
@@ -493,7 +498,7 @@ export default function JuniorCampusPage() {
                         <div className="bg-yellow-400 p-5 rounded-[30px] shadow-inner rotate-3"><Rabbit className="h-12 w-12 text-white" /></div>
                         <div>
                             <h1 className="text-5xl font-black text-slate-800 tracking-tighter">Junior Campus</h1>
-                            <p className="text-xl font-bold text-pink-500 uppercase tracking-widest italic">Play, Learn & Grow! ✨</p>
+                            <p className="text-xl font-bold text-pink-500 uppercase tracking-widest italic">The Magic of Learning! ✨</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 bg-slate-50 px-6 py-3 rounded-[20px] border-2 border-slate-100">
@@ -529,3 +534,8 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
+```
+- src/hooks/use-current-school.ts
+- src/lib/types.ts
+- src/ai/flows/junior-actions.ts
