@@ -1,9 +1,8 @@
-
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, query, where, serverTimestamp, orderBy, doc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,10 +10,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { 
   Loader2, Volume2, Star, Wand2, Mic, XCircle, 
-  Save, Trash2, Library, CheckCircle2, Plus, BookOpen
+  Save, Trash2, Library, CheckCircle2, Plus, BookOpen,
+  Zap, ShieldCheck, MonitorPlay, StopCircle, Clock
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateWordDetails, generateTTSAction, generateLessonImageAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 
 const juniorStyles = {
@@ -22,19 +22,6 @@ const juniorStyles = {
     storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
     button: "h-20 px-12 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-[30px] shadow-[0_10px_0_#9d174d] active:translate-y-1 active:shadow-none transition-all",
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
-};
-
-const speak = async (text: string, schoolId: string, rate = 0.9) => {
-    if (!text) return;
-    try {
-        const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
-        if (result.success && result.data && typeof window !== 'undefined') {
-            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-            audio.play();
-        }
-    } catch (e) {
-        console.error("Audio error", e);
-    }
 };
 
 // --- SUB-COMPONENT: VOICE COACH ---
@@ -57,6 +44,19 @@ export function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean; schoolId: 
         else toast({ title: "AI Error", description: result.error || "Could not get word details." });
         setIsLoading(false);
     }, [toast, schoolId]);
+    
+    const speak = async (text: string) => {
+        if (!text) return;
+        try {
+            const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
+            if (result.success && result.data && typeof window !== 'undefined') {
+                const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+                audio.play();
+            }
+        } catch (e) {
+            console.error("Audio error", e);
+        }
+    };
     
     useEffect(() => { fetchDetails('Apple'); }, [fetchDetails]);
 
@@ -84,7 +84,7 @@ export function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean; schoolId: 
                             <p className="text-8xl font-black text-slate-800">{details.word}</p>
                             <p className="text-2xl font-bold text-pink-400 italic">{details.phonetic}</p>
                             <div className="text-6xl">{details.emoji}</div>
-                            <Button onClick={() => speak(details.sentence, schoolId)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
+                            <Button onClick={() => speak(details.sentence)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
                         </div>
                     ) : <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>}
                 </div>
@@ -108,259 +108,155 @@ export function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean; schoolId: 
     );
 }
 
-// --- SUB-COMPONENT: STORY SPARK ---
+// --- SUB-COMPONENT: STORY SPARK (Dr. Gam Version) ---
+interface VisualState {
+  type: 'letter' | 'word' | 'image' | 'number' | 'concept' | 'quiz';
+  value: string;
+  url?: string;
+  id: number;
+}
+
 export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string }) {
-    const { user } = useUser();
-    const firestore = useFirestore();
     const { toast } = useToast();
     
-    // Generation State
-    const [topic, setTopic] = useState('');
-    const [wordCount, setWordCount] = useState('150');
-    const [story, setStory] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
+    // Simplified State
+    const [isActive, setIsActive] = useState(false);
+    const [isConnecting, setIsConnecting] = useState(false);
+    const [activeVisual, setActiveVisual] = useState<VisualState | null>(null);
+    const [lastTranscript, setLastTranscript] = useState('');
+    const [isVisualLoading, setIsVisualLoading] = useState(false);
     
-    // Quiz Progress State (The 3-Question Pathway)
-    const [currentQ, setCurrentQ] = useState(0);
-    const [userAns, setUserAns] = useState('');
-    const [quizStatus, setQuizStatus] = useState<'typing' | 'correct' | 'wrong'>('typing');
+    const inactivityTimeoutRef = useRef<number | null>(null);
+    const lastActivityTimeRef = useRef<number>(Date.now());
+    const requestIdRef = useRef(0);
 
-    // SaaS Query: Load saved stories only for this school
-    const storiesQuery = useMemoFirebase(() => 
-        firestore ? query(
-            collection(firestore, 'junior_stories'), 
-            where('schoolId', '==', schoolId), 
-            orderBy('createdAt', 'desc')
-        ) : null, [firestore, schoolId]);
-    const { data: savedStories, forceRefetch } = useCollection<any>(storiesQuery);
+    const INACTIVITY_TIMEOUT = 120000; 
 
-    const handleGenerate = async () => {
-        if (!topic.trim()) return;
-        setLoading(true);
-        const res = await generateJuniorStory({ topic, wordCount: parseInt(wordCount), schoolId });
-        if (res.success && res.data) {
-            setStory(res.data);
-            setCurrentQ(0);
-            setUserAns('');
-            setQuizStatus('typing');
-            speak(`I've written a story about ${topic}. Let's read!`, schoolId);
-        } else {
-            toast({ title: "Magic Failed", description: res.error || "The story book is stuck!", variant: "destructive" });
-        }
-        setLoading(false);
+    const endSession = () => {
+        setIsActive(false); 
+        setIsConnecting(false);
+        if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
+        setActiveVisual(null); 
     };
 
-    const handleSave = async () => {
-        if (!story || !firestore) return;
+    const resetInactivityTimer = () => {
+        lastActivityTimeRef.current = Date.now();
+        if (inactivityTimeoutRef.current) window.clearTimeout(inactivityTimeoutRef.current);
+        inactivityTimeoutRef.current = window.setTimeout(() => {
+          console.warn("⚠️ Inactivity Limit: Auto-closing Dr. Gam.");
+          endSession();
+        }, INACTIVITY_TIMEOUT);
+    };
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden' && isActive) {
+                endSession();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('beforeunload', endSession);
+        if (isActive) resetInactivityTimer();
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('beforeunload', endSession);
+            endSession();
+        };
+    }, [isActive]);
+
+    const startSession = async () => {
+        setIsConnecting(true);
+        toast({
+            variant: "destructive",
+            title: "Feature Not Available",
+            description: "Live voice tutoring is not configured for this project environment."
+        });
+        setTimeout(() => setIsConnecting(false), 1000);
+    };
+
+    const updateVisualsFromText = async (fullText: string) => {
+        const cleanText = fullText.toUpperCase();
+        const commands = Array.from(cleanText.matchAll(/SHOW\s+BOARD:\s*([\w\s]+?)(?=[.!?]|$)/gi));
+        if (commands.length === 0) return;
+
+        const lastCommand = commands[commands.length - 1][1].trim();
+        const newId = ++requestIdRef.current;
+        setIsVisualLoading(true);
+
+        let detectedValue = lastCommand;
+        let detectedType: VisualState['type'] = 'concept';
+        if (detectedValue.includes("QUIZ")) { detectedType = 'quiz'; } 
+        else if (detectedValue.length === 1 && /[A-Z]/.test(detectedValue)) { detectedType = 'letter'; } 
+        else if (/^\d+$/.test(detectedValue)) { detectedType = 'number'; }
+
+        setActiveVisual({ type: detectedType, value: detectedValue, id: newId });
         try {
-            await addDoc(collection(firestore, 'junior_stories'), {
-                ...story,
-                topic,
-                schoolId: schoolId, // SaaS tagging
-                createdAt: serverTimestamp(),
-                createdBy: user?.uid
-            });
-            toast({ title: "Saved!", description: "This story is now in the school library." });
-            forceRefetch();
-        } catch (e) {
-            toast({ title: "Error", description: "Could not save to library." });
-        }
+            const result = await generateLessonImageAction({ prompt: `Academic high-quality 3D ${detectedValue}, centered, professional clean style, white background`, schoolId });
+            if (newId === requestIdRef.current) {
+                setActiveVisual(prev => prev ? { ...prev, url: result.data || undefined } : null);
+                setIsVisualLoading(false);
+            }
+        } catch (e) { setIsVisualLoading(false); }
     };
-
-    const checkAnswer = () => {
-        if (!userAns.trim()) return;
-        const currentQuestion = story.questions[currentQ];
-        const isCorrect = userAns.toLowerCase().includes(currentQuestion.answer.toLowerCase()) || 
-                          currentQuestion.answer.toLowerCase().includes(userAns.toLowerCase());
-
-        if (isCorrect) {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
-            setQuizStatus('correct');
-            speak("That is exactly right! You are a brilliant reader!", schoolId);
-        } else {
-            setQuizStatus('wrong');
-            speak("Not quite, but good try! Let's look at the story again.", schoolId);
-        }
-    };
-
-    const handleNext = () => {
-        if (currentQ < 2) {
-            setCurrentQ(currentQ + 1);
-            setUserAns('');
-            setQuizStatus('typing');
-        } else {
-            setStory(null);
-            setTopic('');
-            confetti({ particleCount: 200, spread: 100 });
-            toast({ title: "Mission Complete!", description: "You mastered the whole story!" });
-        }
-    };
-
+    
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
-            {canEdit && (
-                <div className="bg-white p-6 rounded-[35px] border-4 border-purple-100 flex flex-col md:flex-row gap-4 shadow-lg">
-                    <div className="flex-1 space-y-1">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 ml-2">Story Topic</Label>
-                        <Input 
-                            value={topic} 
-                            onChange={e => setTopic(e.target.value)} 
-                            placeholder="e.g. A brave cat in space" 
-                            className="rounded-2xl h-14 border-2 focus:border-purple-400" 
-                        />
-                    </div>
-                    <div className="w-full md:w-48 space-y-1">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 ml-2">Length</Label>
-                        <select 
-                            value={wordCount} 
-                            onChange={(e) => setWordCount(e.target.value)}
-                            className="w-full h-14 rounded-2xl bg-slate-50 border-2 px-4 font-bold outline-none"
-                        >
-                            <option value="50">Short (50 words)</option>
-                            <option value="150">Medium (150 words)</option>
-                            <option value="300">Long (300 words)</option>
-                        </select>
-                    </div>
-                    <Button 
-                        onClick={handleGenerate} 
-                        disabled={loading || !topic} 
-                        className="md:mt-6 h-14 bg-purple-600 hover:bg-purple-500 text-white font-black rounded-2xl px-8 shadow-lg shadow-purple-900/20"
-                    >
-                        {loading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2 h-5 w-5" /> MAGIC WRITE</>}
-                    </Button>
+        <div className="flex flex-col items-center p-6 md:p-12 bg-[#F8FAFC] rounded-[4rem] shadow-2xl max-w-7xl mx-auto border-[12px] border-slate-900 relative overflow-hidden font-black selection:bg-indigo-100">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            {/* PROFESSOR CARD */}
+            <div className="lg:col-span-3 flex flex-col items-center justify-center p-10 bg-white rounded-[4rem] border-4 border-slate-900 shadow-xl">
+                <div className={`relative w-44 h-44 rounded-full bg-slate-50 flex items-center justify-center mb-8 border-8 transition-all duration-500 ${isActive ? 'border-indigo-500 scale-105' : 'border-slate-200'}`}>
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=DrGam" alt="Dr. Gam" className="w-36 h-36 rounded-full object-cover" />
+                    {isActive && <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-xl animate-pulse"><Mic className="w-8 h-8" /></div>}
                 </div>
-            )}
+                <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter text-center mb-6">Dr. Gam</h2>
+                {isActive ? (
+                  <Button onClick={endSession} className="w-full h-14 bg-red-50 text-red-600 rounded-3xl font-black uppercase text-xs hover:bg-red-600 hover:text-white border-4 border-red-50">Stop Lecture</Button>
+                ) : (
+                    <Badge variant="outline" className="text-slate-400 uppercase font-black tracking-widest text-[10px]">Awaiting Instruction</Badge>
+                )}
+            </div>
 
-            {story ? (
-                <Card className="rounded-[60px] border-8 border-orange-100 overflow-hidden shadow-2xl bg-[#FFFDE7] animate-in zoom-in duration-500">
-                    <div className="bg-orange-400 p-8 text-white flex justify-between items-center border-b-8 border-orange-500/20">
-                        <div className="flex items-center gap-4">
-                            <span className="text-6xl drop-shadow-md">{story.emojiIcon || '📖'}</span>
-                            <CardTitle className="text-4xl font-black uppercase tracking-tighter">{story.title}</CardTitle>
-                        </div>
-                        <div className="flex gap-2">
-                             <Button variant="ghost" onClick={() => speak(story.content, schoolId)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><Volume2 /></Button>
-                             {canEdit && <Button onClick={handleSave} variant="ghost" className="text-white hover:bg-white/20 rounded-full h-12 w-12"><Save /></Button>}
-                             <Button variant="ghost" onClick={() => setStory(null)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><XCircle /></Button>
-                        </div>
-                    </div>
-
-                    <CardContent className="p-12 space-y-12">
-                        <div className="max-w-4xl mx-auto">
-                            <p className="text-3xl font-bold text-orange-900 leading-relaxed font-serif first-letter:text-7xl first-letter:font-black first-letter:mr-3 first-letter:float-left whitespace-pre-wrap">
-                                {story.content}
-                            </p>
-                        </div>
-                        <div className="bg-white/80 backdrop-blur-sm p-10 rounded-[50px] border-4 border-dashed border-orange-300 shadow-inner space-y-8 relative overflow-hidden">
-                            <div className="flex justify-between items-center mb-4">
-                                <Badge className="bg-purple-600 text-white px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest">
-                                    Question {currentQ + 1} of 3
-                                </Badge>
-                                <div className="flex gap-2">
-                                    {[0,1,2].map(i => (
-                                        <div key={i} className={`h-3 w-3 rounded-full ${i === currentQ ? 'bg-purple-600 animate-pulse' : i < currentQ ? 'bg-green-400' : 'bg-slate-200'}`} />
-                                    ))}
-                                </div>
-                            </div>
-
-                            <h3 className="text-3xl font-black text-blue-900 leading-tight">
-                                {story.questions[currentQ].question}
-                            </h3>
-
-                            {quizStatus === 'typing' ? (
-                                <div className="flex flex-col md:flex-row gap-4">
-                                    <Input 
-                                        value={userAns} 
-                                        onChange={e => setUserAns(e.target.value)} 
-                                        placeholder="Speak your answer or type it here..." 
-                                        className="h-20 text-2xl rounded-[30px] border-4 border-orange-100 shadow-inner px-8"
-                                        onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
-                                    />
-                                    <Button 
-                                        onClick={checkAnswer}
-                                        disabled={!userAns.trim()}
-                                        className="h-20 px-12 bg-blue-600 hover:bg-blue-500 text-white text-2xl font-black rounded-[30px] shadow-[0_8px_0_#1e3a8a] transition-all active:translate-y-1 active:shadow-none"
-                                    >
-                                        CHECK! 🚀
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="space-y-6 animate-in zoom-in duration-300">
-                                    <div className={`p-8 rounded-[40px] border-4 flex items-center gap-6 ${quizStatus === 'correct' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-rose-50 border-rose-200 text-rose-800'}`}>
-                                        <div className={`h-20 w-20 rounded-full flex items-center justify-center text-4xl shadow-lg ${quizStatus === 'correct' ? 'bg-green-500 text-white' : 'bg-rose-500 text-white'}`}>
-                                            {quizStatus === 'correct' ? <CheckCircle2 className="h-10 w-10" /> : <XCircle className="h-10 w-10" />}
-                                        </div>
-                                        <div>
-                                            <p className="text-3xl font-black uppercase tracking-tight">{quizStatus === 'correct' ? "Amazing Thinking!" : "Almost There!"}</p>
-                                            <p className="text-lg font-bold opacity-80">
-                                                {quizStatus === 'correct' 
-                                                    ? "You found the correct answer in the story book!" 
-                                                    : `Let's try again! The story says: ${story.questions[currentQ].answer}`}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <Button 
-                                        onClick={handleNext} 
-                                        className="w-full h-20 bg-purple-600 hover:bg-purple-500 text-white text-3xl font-black rounded-[40px] shadow-[0_10px_0_#581c87] transition-all active:translate-y-1 active:shadow-none"
-                                    >
-                                        {currentQ < 2 ? "NEXT QUESTION 🌈" : "FINISH MISSION 🏆"}
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between px-2">
-                        <h3 className="text-2xl font-black text-slate-700 flex items-center gap-2">
-                            <Library className="text-purple-500" /> School Story Library
-                        </h3>
-                        <Badge variant="outline" className="text-slate-400 font-bold">{savedStories?.length || 0} Stories</Badge>
-                    </div>
-
-                    {!savedStories || savedStories.length === 0 ? (
-                        <div className="py-20 text-center bg-white rounded-[50px] border-8 border-dashed border-slate-50">
-                            <BookOpen className="h-16 w-16 text-slate-100 mx-auto mb-4" />
-                            <p className="text-slate-300 font-bold uppercase tracking-widest">Library is quiet today...</p>
+            {/* INTERACTIVE BOARD */}
+            <div className="lg:col-span-9">
+                <div className="w-full aspect-[16/10] bg-slate-900 rounded-[5rem] border-[16px] border-slate-800 shadow-inner flex items-center justify-center relative overflow-hidden group">
+                    {!activeVisual ? (
+                        <div className="text-center opacity-10 flex flex-col items-center gap-8 group-hover:opacity-20 transition-opacity">
+                            <MonitorPlay className="w-48 h-48" />
+                            <p className="font-black text-3xl uppercase tracking-[0.4em]">Visual Board Offline</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {savedStories.map((s: any) => (
-                                <Card 
-                                    key={s.id} 
-                                    className="group cursor-pointer rounded-[40px] border-none shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 overflow-hidden bg-white"
-                                    onClick={() => {
-                                        setStory(s);
-                                        setCurrentQ(0);
-                                        setQuizStatus('typing');
-                                        speak(s.title, schoolId);
-                                    }}
-                                >
-                                    <div className="p-6 flex items-center gap-4">
-                                        <div className="text-5xl bg-slate-50 p-4 rounded-3xl transition-transform group-hover:scale-110">{s.emojiIcon}</div>
-                                        <div className="flex-1 overflow-hidden">
-                                            <h4 className="text-xl font-black text-slate-800 truncate leading-tight">{s.title}</h4>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <Badge className="bg-orange-100 text-orange-600 border-none text-[10px] px-2">{s.wordCount} words</Badge>
-                                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest truncate">{s.topic || 'Fun Tale'}</span>
-                                            </div>
-                                        </div>
-                                        {canEdit && (
-                                            <button 
-                                                onClick={(e) => { e.stopPropagation(); deleteDoc(doc(firestore!, 'junior_stories', s.id)); }}
-                                                className="opacity-0 group-hover:opacity-100 p-2 text-rose-300 hover:text-rose-600 transition-opacity"
-                                            >
-                                                <Trash2 className="h-5 w-5" />
-                                            </button>
-                                        )}
-                                    </div>
-                                </Card>
-                            ))}
+                        <div className="w-full h-full p-16 animate-in zoom-in duration-500">
+                            <div className="w-full h-full rounded-[4rem] bg-white shadow-2xl flex items-center justify-center overflow-hidden border-[12px] border-slate-700">
+                               {isVisualLoading ? (
+                                 <div className="flex flex-col items-center gap-4">
+                                   <Loader2 className="w-20 h-20 animate-spin text-slate-300" />
+                                   <span className="text-slate-400 font-bold uppercase text-xs tracking-widest">Preparing Visual...</span>
+                                 </div>
+                               ) : activeVisual.url && (
+                                 <img src={activeVisual.url} className="w-full h-full object-cover p-10 animate-in fade-in duration-700" alt="visual aid" />
+                               )}
+                            </div>
                         </div>
                     )}
+                    <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-slate-800 rounded-full border border-slate-700">
+                        <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em]">Dr. Gam Digital Board</span>
+                    </div>
                 </div>
-            )}
+            </div>
+          </div>
+          
+          {!isActive && (
+            <div className="mt-16 flex flex-col items-center w-full animate-in slide-in-from-bottom-10 duration-700">
+               <button 
+                 onClick={() => startSession(false)} 
+                 disabled={isConnecting}
+                 className="px-24 py-12 bg-slate-900 text-white text-5xl font-black rounded-[4rem] shadow-[0_15px_0_0_#000] hover:translate-y-1 active:translate-y-4 active:shadow-none transition-all flex items-center gap-6 uppercase tracking-tighter border-8 border-white mb-16"
+               >
+                 {isConnecting ? <><Loader2 className="animate-spin w-12 h-12"/> Awakening...</> : 'Enter Classroom'}
+               </button>
+            </div>
+          )}
         </div>
     );
 }
