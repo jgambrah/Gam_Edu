@@ -29,6 +29,9 @@ import StickerBook from './sticker-book';
 import * as constants from '@/lib/constants';
 import * as LucideIcons from 'lucide-react';
 import PhonicsWorld from './phonics-world';
+import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
+import type { DictionaryWord, LessonCard } from '@/lib/types';
+
 
 // --- ICON MAPPER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
@@ -242,12 +245,14 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                              <Button variant="ghost" onClick={() => setStory(null)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><XCircle /></Button>
                         </div>
                     </div>
+
                     <CardContent className="p-12 space-y-12">
                         <div className="max-w-4xl mx-auto">
                             <p className="text-3xl font-bold text-orange-900 leading-relaxed font-serif first-letter:text-7xl first-letter:font-black first-letter:mr-3 first-letter:float-left whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
+
                         <div className="bg-white/80 backdrop-blur-sm p-10 rounded-[50px] border-4 border-dashed border-orange-300 shadow-inner space-y-8 relative overflow-hidden">
                             <div className="flex justify-between items-center mb-4">
                                 <Badge className="bg-purple-600 text-white px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest">
@@ -259,9 +264,11 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                                     ))}
                                 </div>
                             </div>
+
                             <h3 className="text-3xl font-black text-blue-900 leading-tight">
                                 {story.questions[currentQ].question}
                             </h3>
+
                             {quizStatus === 'typing' ? (
                                 <div className="flex flex-col md:flex-row gap-4">
                                     <Input 
@@ -361,42 +368,44 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
 // --- SUB-COMPONENT: SINGING DICTIONARY ---
 function SingingDictionary({ schoolId }: { schoolId: string }) {
-    const [index, setIndex] = useState(0);
+    const [selectedWord, setSelectedWord] = useState<constants.DictionaryWord | null>(null);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [rhyme, setRhyme] = useState('');
     const { toast } = useToast();
     
     const words = constants.DICTIONARY_WORDS; 
-    const current = words[index];
 
-    const loadPage = useCallback(async () => {
-        if (!current || !schoolId) return;
-        setLoading(true);
-        setRhyme('');
-        try {
-            const result = await generateLessonImageAction({ prompt: current.imagePrompt, schoolId });
-            if (result.success && result.data) {
-                setImageUrl(result.data);
-            } else {
-                toast({ title: 'AI Error', description: result.error || 'Could not generate image.', variant: 'destructive' });
+    useEffect(() => {
+        const loadPage = async (word: constants.DictionaryWord) => {
+            if (!schoolId) return;
+            setLoading(true);
+            setRhyme('');
+            setImageUrl(null);
+            try {
+                const result = await generateLessonImageAction({ prompt: word.imagePrompt, schoolId });
+                if (result.success && result.data) {
+                    setImageUrl(result.data);
+                } else {
+                    toast({ title: 'AI Error', description: result.error || 'Could not generate image.', variant: 'destructive' });
+                }
+            } catch (e) {
+                toast({ title: 'Network Error', description: 'Could not connect to image service.', variant: 'destructive' });
+            } finally {
+                setLoading(false);
             }
-        } catch (e) {
-            toast({ title: 'Network Error', description: 'Could not connect to image service.', variant: 'destructive' });
-        } finally {
-            setLoading(false);
-        }
-    }, [current, schoolId, toast]);
+        };
 
-    useEffect(() => { 
-        loadPage();
-    }, [loadPage]);
+        if (selectedWord) {
+            loadPage(selectedWord);
+        }
+    }, [selectedWord, schoolId, toast]);
 
     const playSong = async () => {
-        if (!current || !schoolId) return;
+        if (!selectedWord || !schoolId) return;
         setLoading(true);
         try {
-            const rhymeResult = await generateRhyme({ topic: current.word, schoolId });
+            const rhymeResult = await generateRhyme({ topic: selectedWord.word, schoolId });
             if (!rhymeResult.success || !rhymeResult.rhyme) {
                 throw new Error(rhymeResult.error || 'Failed to generate rhyme.');
             }
@@ -407,8 +416,10 @@ function SingingDictionary({ schoolId }: { schoolId: string }) {
             if (!ttsResult.success || !ttsResult.data) {
                 throw new Error(ttsResult.error || 'Failed to generate audio.');
             }
-            const audio = new Audio(`data:audio/wav;base64,${ttsResult.data}`);
-            audio.play();
+            if (typeof window !== 'undefined') {
+              const audio = new Audio(`data:audio/wav;base64,${ttsResult.data}`);
+              audio.play();
+            }
         } catch (e: any) {
             toast({ title: 'AI Error', description: e.message, variant: 'destructive' });
         } finally {
@@ -418,35 +429,45 @@ function SingingDictionary({ schoolId }: { schoolId: string }) {
 
     return (
         <div className="flex flex-col items-center space-y-8 animate-in fade-in">
-            <div className="flex justify-center gap-2 overflow-x-auto p-4 bg-white rounded-3xl shadow-lg border-4 border-red-50">
+            <div className="flex justify-center gap-2 overflow-x-auto p-4 bg-white rounded-3xl shadow-lg border-4 border-red-50 w-full max-w-4xl">
                 {words.map((w, i) => (
-                    <button key={i} onClick={() => setIndex(i)} className={`w-10 h-10 rounded-lg font-black ${index === i ? 'bg-red-500 text-white' : 'bg-red-50 text-red-400'}`}>
+                    <button 
+                        key={i} 
+                        onClick={() => setSelectedWord(w)} 
+                        className={`flex-shrink-0 w-12 h-12 rounded-lg font-black text-xl transition-all ${selectedWord?.word === w.word ? 'bg-red-500 text-white scale-110' : 'bg-red-50 text-red-400 hover:bg-red-100'}`}
+                    >
                         {w.word[0]}
                     </button>
                 ))}
             </div>
 
-            <Card className={juniorStyles.card}>
-                <div className="bg-gradient-to-r from-red-400 to-pink-400 p-8 text-white text-center">
-                    <h2 className="text-7xl font-black">{current.word[0]}{current.word.substring(1).toLowerCase()}</h2>
-                    <p className="text-2xl font-bold uppercase tracking-widest">{current.word}</p>
-                </div>
-                <CardContent className="p-10 flex flex-col items-center space-y-8">
-                    <div className="w-80 h-80 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden bg-red-50">
-                        {loading && !imageUrl ? <div className="flex h-full items-center justify-center animate-spin text-red-200"><Loader2 size={48}/></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={current.word} />}
+            {selectedWord ? (
+                <Card className={juniorStyles.card}>
+                    <div className="bg-gradient-to-r from-red-400 to-pink-400 p-8 text-white text-center">
+                        <h2 className="text-7xl font-black">{selectedWord.word}</h2>
+                        <p className="text-2xl font-bold uppercase tracking-widest">{selectedWord.category}</p>
                     </div>
-                    
-                    {rhyme && (
-                        <div className="bg-red-50 p-6 rounded-3xl border-4 border-dashed border-red-200 text-center animate-in zoom-in">
-                            <p className="text-xl font-bold text-red-700 whitespace-pre-wrap">{rhyme}</p>
+                    <CardContent className="p-10 flex flex-col items-center space-y-8">
+                        <div className="w-80 h-80 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden bg-red-50">
+                            {loading && !imageUrl ? <div className="flex h-full items-center justify-center animate-spin text-red-200"><Loader2 size={48}/></div> : imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={selectedWord.word} /> : <div className="flex h-full items-center justify-center text-red-200"><Loader2 size={48}/></div>}
                         </div>
-                    )}
+                        
+                        {rhyme && (
+                            <div className="bg-red-50 p-6 rounded-3xl border-4 border-dashed border-red-200 text-center animate-in zoom-in">
+                                <p className="text-xl font-bold text-red-700 whitespace-pre-wrap">{rhyme}</p>
+                            </div>
+                        )}
 
-                    <Button onClick={playSong} disabled={loading} className={`${juniorStyles.button} bg-red-500 hover:bg-red-600 shadow-[0_10px_0_#991b1b]`}>
-                        <Music className="mr-3" /> SING ALONG!
-                    </Button>
-                </CardContent>
-            </Card>
+                        <Button onClick={playSong} disabled={loading} className={`${juniorStyles.button} bg-red-500 hover:bg-red-600 shadow-[0_10px_0_#991b1b]`}>
+                            <Music className="mr-3" /> SING ALONG!
+                        </Button>
+                    </CardContent>
+                </Card>
+            ) : (
+                <div className="text-center py-20 bg-white/50 rounded-full">
+                    <p className="text-2xl font-bold text-slate-400">Select a letter to begin!</p>
+                </div>
+            )}
         </div>
     );
 }
