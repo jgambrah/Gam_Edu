@@ -17,21 +17,20 @@ import {
   FolderOpen
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateTTSAction, generateLessonImageAction, assessHandwritingAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateTTSAction, generateLessonImageAction, assessHandwritingAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Label } from '@/components/ui/label';
-
-// Import sub-components
+import { z } from 'zod';
 import { StorySpark, VoiceCoach } from './voice-coach';
 import MathPlayground from './math-playground';
 import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
 import PhonicsWorld from './phonics-world';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- JUNIOR STYLES ---
 const juniorStyles = {
@@ -44,20 +43,12 @@ const juniorStyles = {
 // --- NEW COMPONENT: WRITING CANVAS (MAGIC PEN) ---
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-const STROKES = [
-  { id: 'standing', label: 'Standing', icon: 'fa-grip-lines-vertical' },
-  { id: 'sleeping', label: 'Sleeping', icon: 'fa-grip-lines' },
-  { id: 'slanting', label: 'Slanting', icon: 'fa-slash' },
-  { id: 'circle', label: 'Circle', icon: 'fa-circle' },
-];
 
 function WritingCanvas({ schoolId }: { schoolId: string }) {
   const traceCanvasRef = useRef<HTMLCanvasElement>(null);
   const freeCanvasRef = useRef<HTMLCanvasElement>(null);
-  const [mode, setMode] = useState<'letters' | 'strokes' | 'numbers'>('numbers');
-  const [selectedLetter, setSelectedLetter] = useState('A');
-  const [selectedNumber, setSelectedNumber] = useState('1');
-  const [selectedStroke, setSelectedStroke] = useState('standing');
+  const [mode, setMode] = useState<'letters' | 'numbers'>('numbers');
+  const [selectedItem, setSelectedItem] = useState('1');
   const [isDrawingFree, setIsDrawingFree] = useState(false);
   const [brushColor, setBrushColor] = useState('#FF9F43');
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -75,19 +66,12 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
     } catch(e) { console.error("Speech Synthesis failed:", e) }
   };
 
-  useEffect(() => {
-    if (mode === 'numbers') setBrushColor('#FF9F43');
-    else if (mode === 'letters') setBrushColor('#FF6B6B');
-    else setBrushColor('#45AAF2');
-    initCanvases();
-  }, [selectedLetter, selectedNumber, selectedStroke, mode]);
-
-  const initCanvases = () => {
+  const initCanvases = useCallback(() => {
     setupCanvas(traceCanvasRef.current, true);
     setupCanvas(freeCanvasRef.current, false);
     setFeedback('');
     setShowSuccess(false);
-  };
+  }, [traceCanvasRef, freeCanvasRef]);
 
   const setupCanvas = (canvas: HTMLCanvasElement | null, isTrace: boolean) => {
     if (!canvas) return;
@@ -99,10 +83,19 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
     if (isTrace) {
       ctx.strokeStyle = '#E2E8F0'; ctx.lineWidth = 4; ctx.setLineDash([10, 10]);
       ctx.font = "900 300px sans-serif"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      const text = mode === 'letters' ? selectedLetter : mode === 'numbers' ? selectedNumber : '|';
-      ctx.strokeText(text, 200, 220);
+      ctx.strokeText(selectedItem, 200, 220);
     }
   };
+
+  useEffect(() => {
+    if (mode === 'numbers') { setBrushColor('#FF9F43'); setSelectedItem('1'); }
+    else if (mode === 'letters') { setBrushColor('#FF6B6B'); setSelectedItem('A'); }
+    initCanvases();
+  }, [mode, initCanvases]);
+
+  useEffect(() => {
+    initCanvases();
+  }, [selectedItem, initCanvases]);
 
   const handleAssessment = async () => {
     if (!freeCanvasRef.current || !schoolId) return;
@@ -110,11 +103,10 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
     setFeedback("Magic eyes checking...");
     try {
       const dataUrl = freeCanvasRef.current.toDataURL('image/png');
-      const target = mode === 'letters' ? selectedLetter : selectedNumber;
       
       const result = await assessHandwritingAction({
           imageDataUri: dataUrl,
-          targetCharacter: target,
+          targetCharacter: selectedItem,
           schoolId: schoolId,
       });
       
@@ -122,11 +114,11 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
         setShowSuccess(true);
         setFeedback('Number Superstar! ⭐');
         confetti();
-        speak(`Wonderful! You wrote ${target} perfectly!`);
+        speak(`Wonderful! You wrote ${selectedItem} perfectly!`);
         setTimeout(() => setShowSuccess(false), 5000);
       } else {
         setFeedback('Try once more! 💪');
-        speak(`So close! Let's try to trace ${target} again.`);
+        speak(`So close! Let's try to trace ${selectedItem} again.`);
       }
     } catch (e) { setFeedback('Magic is sleeping...'); }
     finally { setIsEvaluating(false); }
@@ -145,7 +137,7 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
       )}
 
       <div className="flex bg-white p-2 rounded-3xl shadow-xl border-4 border-slate-100 gap-2">
-          {['numbers', 'letters', 'strokes'].map((m: any) => (
+          {['numbers', 'letters'].map((m: any) => (
             <Button key={m} onClick={() => setMode(m)} variant={mode === m ? 'default' : 'ghost'} className="rounded-2xl font-black uppercase text-xs">
               {m}
             </Button>
@@ -155,8 +147,8 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
       <Card className={juniorStyles.card}>
         <CardContent className="p-10 space-y-10">
             <div className="flex overflow-x-auto gap-2 pb-4 no-scrollbar">
-                {(mode === 'letters' ? LETTERS : mode === 'numbers' ? NUMBERS : []).map(item => (
-                    <button key={item} onClick={() => mode === 'letters' ? setSelectedLetter(item) : setSelectedNumber(item)} className={`flex-shrink-0 w-14 h-14 rounded-xl font-black text-2xl border-4 transition-all ${ (mode === 'letters' ? selectedLetter : selectedNumber) === item ? 'bg-purple-500 text-white border-white scale-110 shadow-lg' : 'bg-slate-50 text-slate-400 border-transparent'}`}>{item}</button>
+                {(mode === 'letters' ? LETTERS : NUMBERS).map(item => (
+                    <button key={item} onClick={() => setSelectedItem(item)} className={`flex-shrink-0 w-14 h-14 rounded-xl font-black text-2xl border-4 transition-all ${ selectedItem === item ? 'bg-purple-500 text-white border-white scale-110 shadow-lg' : 'bg-slate-50 text-slate-400 border-transparent'}`}>{item}</button>
                 ))}
             </div>
 
@@ -215,7 +207,7 @@ function WritingCanvas({ schoolId }: { schoolId: string }) {
   );
 }
 
-// --- SUB-COMPONENT: LIFE SKILLS HUB ---
+// --- LIFE SKILLS COMPONENTS ---
 type LifeSkillTab = 'emotions' | 'routine-songs' | 'modeling' | 'practical-life' | 'communication' | 'social' | 'puppet-theater' | 'cognitive' | 'physical-health';
 
 const TeacherModal: React.FC<{
@@ -232,7 +224,7 @@ const TeacherModal: React.FC<{
           <Input 
             value={topicValue} 
             onChange={(e) => onTopicChange(e.target.value)} 
-            placeholder="e.g. Venus Flytrap, Lungs, Solar Power" 
+            placeholder="e.g. Being Sad, Sharing Toys, Brushing Teeth" 
             className="h-14 rounded-2xl border-4 border-slate-100 font-bold uppercase" 
           />
         </div>
@@ -249,144 +241,174 @@ const TeacherModal: React.FC<{
   </div>
 );
 
-
-function LifeSkillsModule({ tab, schoolId, onSound, onComplete, canEdit }: { tab: LifeSkillTab, schoolId: string, onSound: (t: string) => void, onComplete: () => void, canEdit: boolean }) {
+function EmotionsModule({ schoolId, canEdit, onSound, onComplete }: { schoolId: string; canEdit: boolean; onSound: (text: string) => void; onComplete: () => void; }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [index, setIndex] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-    // AI Creator State
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isAiGenerating, setIsAiGenerating] = useState(false);
 
-    // SaaS Query for specific skill category
-    const dataQuery = useMemoFirebase(() => 
-        firestore ? query(
-            collection(firestore, 'junior_lifeskills_world'), 
-            where('schoolId', '==', schoolId),
-            where('category', '==', tab),
-            orderBy('createdAt', 'asc')
-        ) : null, [firestore, schoolId, tab]);
-    
+    const dataQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_lifeskills_world'), where('schoolId', '==', schoolId), where('category', '==', 'emotions'), orderBy('createdAt', 'asc')) : null, [firestore, schoolId]);
     const { data: items, forceRefetch } = useCollection<any>(dataQuery);
     const current = items?.[index];
-
-    const loadVisual = useCallback(async () => {
-        if (!current || !schoolId) return;
-        setIsLoading(true);
-        setImageUrl(null);
-        try {
-            const result = await generateLessonImageAction({
-                prompt: current.imagePrompt || `Nursery 3D illustration of ${current.title}`,
-                schoolId: schoolId,
-            });
-            if (result.success && result.data) {
-                setImageUrl(result.data);
-            }
-        } catch (e) {
-            console.error("Image generation failed", e);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [current, schoolId]);
-
-    useEffect(() => {
-        if (current) {
-            loadVisual();
-        }
-    }, [current, loadVisual]);
 
     const handleGenerate = async () => {
         if (!firestore || !schoolId || !aiTopic) return;
         setIsAiGenerating(true);
         try {
-            const result = await generateLifeSkillEntry(aiTopic, tab, schoolId);
-            if(result.success && result.data){
-                await addDoc(collection(firestore, 'junior_lifeskills_world'), {
-                    ...result.data,
-                    category: tab,
-                    schoolId,
-                    createdAt: serverTimestamp()
-                });
-                
-                setIsDrawerOpen(false);
-                setAiTopic('');
-                toast({ title: "Content Created!", description: "New life skill activity added." });
-                forceRefetch();
-            } else {
-                throw new Error(result.error || "Failed to generate entry");
-            }
-        } catch(e: any) { 
-            console.error(e); 
-            toast({ title: "Magic Failed", variant: "destructive", description: e.message });
-        } finally { 
-            setIsAiGenerating(false); 
-        }
+            const prompt = `Create a nursery lesson for the feeling: ${aiTopic}. Return JSON: { "name": "string", "color": "string (pick from: bg-yellow-400, bg-blue-400, bg-red-400, bg-green-400)", "icon": "emoji", "prompt": "string", "technique": "string" }`;
+            const schema = z.object({ name: z.string(), color: z.string(), icon: z.string(), prompt: z.string(), technique: z.string() });
+            const result = await generateLifeSkillEntry({ topic: aiTopic, prompt, schema, schoolId });
+            if (result.success && result.data) {
+                await addDoc(collection(firestore, 'junior_lifeskills_world'), { ...result.data, category: "emotions", schoolId, createdAt: serverTimestamp() });
+                setIsDrawerOpen(false); setAiTopic(''); forceRefetch(); toast({ title: "Feeling Created!" });
+            } else { throw new Error(result.error || "AI failed"); }
+        } catch (e: any) { toast({ variant: "destructive", title: "Magic Failed", description: e.message }); }
+        finally { setIsAiGenerating(false); }
     };
 
     return (
-        <div className="animate-in zoom-in duration-500 relative">
-             {canEdit && (
-                <Button 
-                    onClick={() => setIsDrawerOpen(true)} 
-                    className="absolute -top-12 right-0 z-10 bg-white border-2 border-teal-200 text-teal-600 font-black text-[10px] uppercase hover:bg-teal-50 shadow-md">
-                    <Wand2 className="w-3 h-3 mr-2" /> AI Maker
-                </Button>
-            )}
-
+        <div className="relative">
+            {canEdit && <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 z-10 bg-white border-2 border-yellow-200 text-yellow-600 font-black text-[10px] uppercase hover:bg-yellow-50 shadow-md">AI Maker</Button>}
             {current ? (
-                <Card className={juniorStyles.card}>
-                    <div className={juniorStyles.header}>
-                        <div className="text-center space-y-2">
-                             <Badge className="bg-white/20 text-white border-none uppercase px-4">{tab.replace('-', ' ')}</Badge>
-                             <CardTitle className="text-5xl font-black uppercase tracking-tighter">{current.title}</CardTitle>
-                        </div>
+                <Card className={`rounded-[60px] border-8 border-yellow-100 shadow-2xl bg-white overflow-hidden`}>
+                    <div className={`${current.color} p-10 text-white text-center`}>
+                        <h3 className="text-5xl font-black uppercase tracking-tighter">{current.name}</h3>
                     </div>
-                    <CardContent className="p-12 flex flex-col md:flex-row gap-12 items-center">
-                        <div onClick={() => onSound(current.description)} className="relative aspect-square w-full max-w-md bg-teal-50 rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group">
-                             {isLoading ? (
-                                <div className="absolute inset-0 flex items-center justify-center"><Loader2 className="animate-spin text-teal-400 w-12 h-12" /></div>
-                             ) : imageUrl && (
-                                <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" alt="Skill Visual" />
-                             )}
-                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                                <Volume2 className="text-white w-20 h-20 opacity-0 group-hover:opacity-100 drop-shadow-xl" />
-                             </div>
+                    <CardContent className="p-12 flex flex-col items-center gap-8">
+                        <div className="text-[150px] animate-bounce">{current.icon}</div>
+                        <p className="text-2xl font-bold text-slate-600 text-center">"{current.prompt}"</p>
+                        <div className="p-6 bg-yellow-50 rounded-3xl border-2 border-yellow-100">
+                            <p className="text-xl font-bold text-slate-700 text-center">When you feel this way, try this: <span className="text-yellow-600">{current.technique}</span></p>
                         </div>
-                        <div className="flex-1 space-y-8">
-                             <div className={juniorStyles.bubble}>
-                                <p className="text-3xl font-bold text-slate-700 leading-relaxed italic">"{current.description}"</p>
-                             </div>
-                             <Button onClick={() => { onSound(current.description); onComplete(); }} className={juniorStyles.btnPrimary + " w-full h-20 text-2xl"}>
-                                I LEARNED THIS! 🌟
-                             </Button>
-                             <div className="flex gap-4 justify-center">
-                                <button onClick={() => setIndex(i => Math.max(0, i - 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight className="rotate-180" /></button>
-                                <button onClick={() => items && items.length > 0 && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
-                             </div>
-                        </div>
+                        <Button onClick={() => { onSound(current.prompt); onComplete(); items && setIndex((index + 1) % items.length) }} className={juniorStyles.button + " bg-yellow-500 hover:bg-yellow-600 shadow-[0_12px_0_#ca8a04]"}>Next Feeling</Button>
                     </CardContent>
                 </Card>
-            ) : (
-                <div className="py-40 text-center bg-white rounded-[60px] border-8 border-dashed border-teal-100">
-                    <Heart className="w-20 h-20 text-teal-100 mx-auto mb-4 animate-pulse" />
-                    <p className="text-teal-200 font-black text-2xl uppercase">Skill Hub Awaiting Content...</p>
-                </div>
-            )}
-            
-            {isDrawerOpen && (
-                <TeacherModal 
-                    title={tab} 
-                    topicValue={aiTopic} 
-                    onTopicChange={setAiTopic} 
-                    onGenerate={handleGenerate} 
-                    isLoading={isAiGenerating} 
-                    onClose={() => setIsDrawerOpen(false)} 
-                />
-            )}
+            ) : <div className="text-center py-20"><Loader2 className="animate-spin text-yellow-300 h-10 w-10 mx-auto" /><p className="mt-2 text-slate-400">Loading feelings...</p></div>}
+            {isDrawerOpen && <TeacherModal title="Emotions" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={handleGenerate} isLoading={isAiGenerating} onClose={() => setIsDrawerOpen(false)} />}
+        </div>
+    );
+}
+
+function PhysicalHealthModule({ schoolId, canEdit, onSound, onComplete }: { schoolId: string; canEdit: boolean; onSound: (text: string) => void; onComplete: () => void; }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [index, setIndex] = useState(0);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [aiTopic, setAiTopic] = useState('');
+    const [isAiGenerating, setIsAiGenerating] = useState(false);
+
+    const dataQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_lifeskills_world'), where('schoolId', '==', schoolId), where('category', '==', 'physical-health'), orderBy('createdAt', 'asc')) : null, [firestore, schoolId]);
+    const { data: items, forceRefetch } = useCollection<any>(dataQuery);
+    const current = items?.[index];
+
+    const handleGenerate = async () => {
+        if (!firestore || !schoolId || !aiTopic) return;
+        setIsAiGenerating(true);
+        try {
+            const prompt = `Create a physical activity or hygiene habit for children about: ${aiTopic}. Return JSON: { "title": "string", "action": "string", "icon": "emoji", "prompt": "string" }`;
+            const schema = z.object({ title: z.string(), action: z.string(), icon: z.string(), prompt: z.string() });
+            const result = await generateLifeSkillEntry({ topic: aiTopic, prompt, schema, schoolId });
+            if (result.success && result.data) {
+                await addDoc(collection(firestore, 'junior_lifeskills_world'), {
+                    ...result.data, category: "physical-health", schoolId, createdAt: serverTimestamp()
+                });
+                setIsDrawerOpen(false); setAiTopic(''); forceRefetch();
+                toast({ title: "Activity Created!" });
+            } else { throw new Error(result.error || "AI failed"); }
+        } catch (e: any) { toast({ variant: "destructive", title: "Magic Failed", description: e.message }); }
+        finally { setIsAiGenerating(false); }
+    };
+    
+    return (
+        <div className="relative">
+             {canEdit && <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 z-10 bg-white border-2 border-green-200 text-green-600 font-black text-[10px] uppercase hover:bg-green-50 shadow-md">AI Maker</Button>}
+             {current ? (
+                 <Card className="rounded-[60px] border-8 border-green-100 shadow-2xl bg-white overflow-hidden">
+                     <CardHeader className="bg-green-500 p-10 text-white text-center"><CardTitle className="text-5xl font-black uppercase tracking-tighter">{current.title}</CardTitle></CardHeader>
+                     <CardContent className="p-12 flex flex-col items-center gap-8">
+                         <div className="text-[150px]">{current.icon}</div>
+                         <p className="text-2xl font-bold text-slate-600 text-center">"{current.prompt}"</p>
+                         <Button onClick={() => { onSound(current.action); onComplete(); }} className={juniorStyles.button + " bg-green-600 hover:bg-green-700 shadow-[0_12px_0_#15803d]"}>{current.action}</Button>
+                         <Button variant="outline" onClick={() => items && setIndex((index + 1) % items.length)}>Next Activity</Button>
+                     </CardContent>
+                 </Card>
+             ) : <div className="text-center py-20"><Loader2 className="animate-spin text-green-300 h-10 w-10 mx-auto" /><p className="mt-2 text-slate-400">Loading activities...</p></div>}
+             {isDrawerOpen && <TeacherModal title="Health" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={handleGenerate} isLoading={isAiGenerating} onClose={() => setIsDrawerOpen(false)} />}
+        </div>
+    );
+}
+
+function SocialScenariosModule({ schoolId, canEdit, onSound, onComplete }: { schoolId: string; canEdit: boolean; onSound: (text: string) => void; onComplete: () => void; }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [index, setIndex] = useState(0);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [aiTopic, setAiTopic] = useState('');
+    const [isAiGenerating, setIsAiGenerating] = useState(false);
+    const [answerStatus, setAnswerStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
+
+    const dataQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_lifeskills_world'), where('schoolId', '==', schoolId), where('category', '==', 'social'), orderBy('createdAt', 'asc')) : null, [firestore, schoolId]);
+    const { data: items, forceRefetch } = useCollection<any>(dataQuery);
+    const current = items?.[index];
+
+    const handleAnswer = (selectedIndex: number) => {
+        if (selectedIndex === current.correct) {
+            setAnswerStatus('correct');
+            confetti();
+            onComplete();
+        } else {
+            setAnswerStatus('wrong');
+        }
+    };
+    
+    const handleGenerate = async () => {
+        if (!firestore || !schoolId || !aiTopic) return;
+        setIsAiGenerating(true);
+        try {
+            const prompt = `Create a kindness or community helper scenario for children about: ${aiTopic}. Return JSON: { "title": "string", "q": "string (the question)", "options": ["string", "string", "string"], "correct": "number (index 0-2)", "prompt": "string" }`;
+            const schema = z.object({ title: z.string(), q: z.string(), options: z.array(z.string()).length(3), correct: z.number(), prompt: z.string() });
+            const result = await generateLifeSkillEntry({ topic: aiTopic, prompt, schema, schoolId });
+            if (result.success && result.data) {
+                await addDoc(collection(firestore, 'junior_lifeskills_world'), {
+                    ...result.data, category: "social", schoolId, createdAt: serverTimestamp()
+                });
+                setIsDrawerOpen(false); setAiTopic(''); forceRefetch();
+                toast({ title: "Scenario Created!" });
+            } else { throw new Error(result.error || "AI failed"); }
+        } catch(e: any) { toast({ variant: "destructive", title: "Magic Failed", description: e.message }); }
+        finally { setIsAiGenerating(false); }
+    };
+
+    return (
+        <div className="relative">
+            {canEdit && <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 z-10 bg-white border-2 border-rose-200 text-rose-600 font-black text-[10px] uppercase hover:bg-rose-50 shadow-md">AI Maker</Button>}
+            {current ? (
+                <Card className="rounded-[60px] border-8 border-rose-100 shadow-2xl bg-white overflow-hidden">
+                    <CardHeader className="bg-rose-500 p-10 text-white text-center"><CardTitle className="text-5xl font-black uppercase tracking-tighter">{current.title}</CardTitle></CardHeader>
+                    <CardContent className="p-12 flex flex-col items-center gap-8">
+                        <p className="text-3xl font-bold text-slate-800 text-center">"{current.q}"</p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                            {current.options.map((opt: string, i: number) => (
+                                <button key={i} onClick={() => handleAnswer(i)} disabled={answerStatus !== 'idle'} 
+                                    className={`p-8 rounded-[30px] border-4 font-bold text-xl text-center transition-all ${
+                                        answerStatus === 'correct' && i === current.correct ? 'bg-green-500 text-white border-white scale-105' :
+                                        answerStatus === 'wrong' && i === current.correct ? 'bg-green-500 text-white border-white' :
+                                        answerStatus === 'wrong' && i !== current.correct ? 'bg-red-500 text-white border-white' :
+                                        'bg-rose-50 text-rose-800 border-rose-100 hover:bg-rose-100'
+                                    }`}>
+                                    {opt}
+                                </button>
+                            ))}
+                        </div>
+                        {answerStatus !== 'idle' && (
+                            <Button onClick={() => { setAnswerStatus('idle'); items && setIndex((index + 1) % items.length) }}>Next Scenario</Button>
+                        )}
+                    </CardContent>
+                </Card>
+            ) : <div className="text-center py-20"><Loader2 className="animate-spin text-rose-300 h-10 w-10 mx-auto" /><p className="mt-2 text-slate-400">Loading scenarios...</p></div>}
+            {isDrawerOpen && <TeacherModal title="Social Scenarios" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={handleGenerate} isLoading={isAiGenerating} onClose={() => setIsDrawerOpen(false)} />}
         </div>
     );
 }
@@ -394,6 +416,8 @@ function LifeSkillsModule({ tab, schoolId, onSound, onComplete, canEdit }: { tab
 function LifeSkillsZone({ schoolId }: { schoolId: string }) {
   const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
   const [stars, setStars] = useState(0);
+  const { role } = useRole();
+  const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
 
   const onSound = async (text: string) => {
     if (!text || !schoolId) return;
@@ -410,10 +434,6 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
     confetti({ particleCount: 100, spread: 70 });
     setStars(prev => prev + 1);
   };
-  
-    const { role } = useRole();
-    const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
-
 
   const tabs: {id: LifeSkillTab, label: string, icon: any, color: string}[] = [
     { id: 'physical-health', label: 'Health', icon: Activity, color: 'bg-green-500' },
@@ -448,7 +468,7 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`min-w-[120px] px-6 py-4 rounded-3xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-2 border-4 ${
+                className={`min-w-[120px] px-6 py-4 rounded-3xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center border-4 ${
                   activeTab === tab.id 
                   ? `${tab.color} text-white shadow-xl scale-110 -translate-y-1` 
                   : 'bg-white text-slate-400 border-transparent hover:bg-teal-50'
@@ -463,17 +483,20 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
       </div>
 
       <div className="w-full px-4">
-        <LifeSkillsModule tab={activeTab} schoolId={schoolId} onSound={onSound} onComplete={addStar} canEdit={canEdit} />
+        {activeTab === 'emotions' && <EmotionsModule schoolId={schoolId} canEdit={canEdit} onSound={onSound} onComplete={addStar} />}
+        {activeTab === 'physical-health' && <PhysicalHealthModule schoolId={schoolId} canEdit={canEdit} onSound={onSound} onComplete={addStar} />}
+        {activeTab === 'social' && <SocialScenariosModule schoolId={schoolId} canEdit={canEdit} onSound={onSound} onComplete={addStar} />}
+        {!['emotions', 'physical-health', 'social'].includes(activeTab) && (
+            <LifeSkillsModule tab={activeTab} schoolId={schoolId} onSound={onSound} onComplete={addStar} canEdit={canEdit} />
+        )}
       </div>
     </div>
   );
 }
 
-
 // --- MAIN CAMPUS PAGE ---
 export default function JuniorCampusPage() {
     const { role } = useRole();
-    const { user } = useUser();
     const { schoolId } = useCurrentSchool();
     
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
@@ -527,3 +550,226 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+```
+- src/ai/flows/junior-actions.ts
+```ts
+'use server';
+
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
+import wav from 'wav';
+import { checkAndSpendCredits } from '@/app/actions/credits';
+
+// --- STORY GENERATOR ---
+const JuniorStorySchema = z.object({
+  title: z.string().describe("A fun, simple title for a short children's story."),
+  emojiIcon: z.string().emoji().describe("A single emoji that represents the story."),
+  content: z.string().describe("The full story text. It should be simple, positive, and easy for a 5-7 year old to understand."),
+  questions: z.array(z.object({
+    question: z.string().describe("A simple comprehension question about the story."),
+    answer: z.string().describe("A short, one or two-word answer to the question.")
+  })).length(3).describe("Exactly three simple questions to check understanding.")
+});
+
+export async function generateJuniorStory(topic: string, wordCount: number, schoolId: string) {
+  try {
+    const creditResult = await checkAndSpendCredits(schoolId, 3);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient AI credits to generate a story." };
+    }
+
+    const prompt = `
+      You are a kindergarten teacher. Write an educational story for a 5-year-old about: ${topic}.
+      
+      RULES:
+      1. The story must be engaging and approximately ${wordCount || 100} words long.
+      2. Use simple, age-appropriate words.
+      3. The output MUST be a JSON object that strictly follows the provided schema.
+      4. The 'questions' array must contain exactly 3 comprehension questions about the story.
+    `;
+
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
+      prompt: prompt,
+      output: {
+        schema: JuniorStorySchema
+      }
+    });
+
+    if (!output) {
+      throw new Error("AI did not return a valid story object.");
+    }
+    
+    return { success: true, data: output };
+  } catch (error) {
+    console.error("Story Generation Error:", error);
+    return { success: false, error: "The story robot is sleeping." };
+  }
+}
+
+// --- SCIENCE FACT GENERATOR ---
+const JuniorScienceSchema = z.object({
+  title: z.string().describe("The science topic, e.g., 'Volcanoes'."),
+  emojiIcon: z.string().emoji().describe("A single relevant emoji."),
+  fact: z.string().describe("A single, simple, 'wow' science fact for a 6-year-old."),
+  observation: z.string().describe("A one-sentence observation related to the fact. e.g., 'This is why bubbles pop!'"),
+  experiment: z.string().describe("A very simple, safe at-home activity. e.g., 'Mix baking soda and vinegar to see bubbles!'"),
+});
+
+export async function generateJuniorScience(input: { topic: string; schoolId: string; }) {
+  try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient AI credits." };
+    }
+
+    const prompt = `
+      Generate a super simple and fun science 'discovery' for a 6-year-old child about "${input.topic}".
+      Provide a title, an emoji, a simple one-sentence 'wow' fact, a related observation, and a very easy, safe home experiment suggestion.
+      Output strictly JSON.
+    `;
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
+      prompt,
+      output: { schema: JuniorScienceSchema }
+    });
+    if (!output) throw new Error("AI did not return data.");
+    return { success: true, data: output };
+  } catch (error) {
+    console.error("AI Science Error:", error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+
+// --- WORD DETAILS GENERATION (for Voice Coach) ---
+const WordDetailSchema = z.object({
+  word: z.string(),
+  phonetic: z.string().describe("A simple phonetic spelling, e.g., /kat/"),
+  sentence: z.string().describe("A very simple sentence using the word, for a 5-year-old."),
+  emoji: z.string().emoji().describe("A single emoji for the word."),
+});
+
+export async function generateWordDetails(input: { word: string; schoolId: string; }) {
+  try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 1);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient AI credits." };
+    }
+    const prompt = `
+      For the word "${input.word}", provide:
+      1. A simple phonetic spelling (e.g., /kat/).
+      2. A very simple sentence a 5-year-old would understand.
+      3. A single, relevant emoji.
+      Output strictly JSON.
+    `;
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
+      prompt,
+      output: { schema: WordDetailSchema }
+    });
+    if (!output) throw new Error("AI did not return data.");
+    return { success: true, data: { ...output, word: input.word } };
+  } catch (error) {
+    console.error("AI Word Detail Error:", error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+
+
+// --- TTS HELPER ---
+async function toWav(pcmData: Buffer): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const writer = new wav.Writer({ channels: 1, sampleRate: 24000, bitDepth: 16 });
+        const chunks: Buffer[] = [];
+        writer.on('data', (chunk) => chunks.push(chunk));
+        writer.on('end', () => resolve(Buffer.concat(chunks).toString('base64')));
+        writer.on('error', reject);
+        writer.write(pcmData);
+        writer.end();
+    });
+}
+
+// --- TTS ACTION ---
+const TTSInputSchema = z.object({
+    text: z.string(),
+    voice: z.enum(['Puck', 'Algenib', 'Achernar', 'Enif', 'Kore']),
+});
+
+export async function generateTTS(text: string) {
+    try {
+        const { media } = await ai.generate({
+            model: 'googleai/gemini-2.5-flash-preview-tts',
+            config: {
+                responseModalities: ['AUDIO'],
+                speechConfig: {
+                    voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Achernar' } },
+                },
+            },
+            prompt: text,
+        });
+
+        if (!media || !media.url) throw new Error("No audio returned from TTS.");
+
+        const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
+        const wavBase64 = await toWav(audioBuffer);
+        return wavBase64;
+    } catch (error: any) {
+        console.error("TTS Generation Error:", error);
+        return null;
+    }
+}
+
+
+// --- IMAGE GENERATION ACTION ---
+export const generateLessonImage = async (prompt: string): Promise<string | null> => {
+    try {
+      const { media } = await ai.generate({
+        model: 'googleai/imagen-4.0-fast-generate-001',
+        prompt: prompt,
+      });
+  
+      if (media && media.url) {
+        return media.url;
+      }
+      return null;
+    } catch (error) {
+      console.error("Image generation error:", error);
+      return null;
+    }
+};
+
+// --- HANDWRITING ASSESSMENT ACTION ---
+export async function assessHandwritingAction(input: { imageDataUri: string; targetCharacter: string, schoolId: string; }) {
+  try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 3);
+    if (!creditResult.success) {
+      return { success: false, isCorrect: false, error: creditResult.error || "Insufficient AI credits." };
+    }
+    const prompt = `
+      You are an expert in early childhood education.
+      Analyze the attached image. The user was trying to write the letter or digit "${input.targetCharacter}".
+      Is this a recognizable attempt? Answer only with the word YES or the word NO.
+    `;
+
+    const { text } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
+      prompt: [
+        { text: prompt },
+        { media: { url: input.imageDataUri } },
+      ],
+      config: { temperature: 0.1 }
+    });
+
+    const isYes = text.toUpperCase().includes('YES');
+    return { success: true, isCorrect: isYes };
+
+  } catch (error: any) {
+    console.error("AI Handwriting Assessment Error:", error);
+    return { success: false, isCorrect: false, error: "The AI teacher is busy right now." };
+  }
+}
+
+// Placeholder for new functions
+export async function generateSkillDetails(input: { skill: string; schoolId: string }) { return { success: false, data: null }; }
+export async function generateRhyme(input: { topic: string; schoolId: string }) { return { success: false, data: null }; }
+
