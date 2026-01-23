@@ -2,15 +2,20 @@
 // This file contains a code snippet for the Firestore query
 // that requires a composite index for the 'junior_lifeskills_world' collection.
 
-// Running a query like this in your application will produce an error in the
-// browser's developer console. This error includes a direct link to the
-// Firebase Console to automatically create the required index for you.
+// Running a query like this in your application (e.g., inside a React component)
+// will produce an error in the browser's developer console. This error includes
+// a direct link to the Firebase Console to automatically create the required index for you.
 
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { getFirestore, collection, query, where, orderBy } from 'firebase/firestore';
 
-// --- Query Snippet ---
+// --- Query Snippet to trigger the index creation link ---
 
 // Assuming 'firestore', 'schoolId', and 'tab' variables are available in your component.
+// Here's a self-contained example you can use:
+
+const firestore = getFirestore(); // Make sure Firestore is initialized
+const schoolId = "your-school-id"; // Replace with an actual schoolId from your DB
+const tab = "emotions"; // Replace with a category you have data for
 
 const lifeSkillsQuery = query(
     collection(firestore, 'junior_lifeskills_world'), 
