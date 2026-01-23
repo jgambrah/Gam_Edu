@@ -5,13 +5,16 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { generateLessonImageAction, generateTTSAction } from '@/ai/flows/junior-actions';
 import { 
   Loader2, Mic, StopCircle, Zap, ShieldCheck, 
-  MonitorPlay, Volume2, XCircle, Sparkles, Clock 
+  MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Badge } from '@/components/ui/badge';
+import { useUser, useFirestore } from '@/firebase'; 
+import { collection, doc, onSnapshot, addDoc, setDoc, getDoc, updateDoc, deleteDoc, getDocs, serverTimestamp, query } from 'firebase/firestore';
+
 
 interface VisualState {
   type: 'letter' | 'word' | 'image' | 'number' | 'concept' | 'quiz';
@@ -44,6 +47,7 @@ const DrGamTutor: React.FC = () => {
   const requestIdRef = useRef(0);
   const timerIntervalRef = useRef<number | null>(null);
   const inactivityTimeoutRef = useRef<number | null>(null);
+  const totalSessionTimerRef = useRef<number | null>(null); // NEW: Circuit Breaker
   const lastActivityTimeRef = useRef<number>(Date.now());
   
   const autoReconnectAttempts = useRef(0);
@@ -57,30 +61,33 @@ const DrGamTutor: React.FC = () => {
     setIsResyncing(false);
     setIsConnecting(false);
     
+    // 1. Clear ALL timers
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
-
-    if (scriptProcessorRef.current) {
-      scriptProcessorRef.current.disconnect();
-      scriptProcessorRef.current.onaudioprocess = null;
-      scriptProcessorRef.current = null;
-    }
-
+    if (totalSessionTimerRef.current) clearTimeout(totalSessionTimerRef.current); // Clear circuit breaker
+    
+    // 2. Close API Session
     if (sessionRef.current) {
       try { sessionRef.current.close(); } catch(e){}
       sessionRef.current = null;
     }
 
+    // 3. KILL HARDWARE
+    if (scriptProcessorRef.current) {
+      scriptProcessorRef.current.disconnect();
+      scriptProcessorRef.current.onaudioprocess = null;
+      scriptProcessorRef.current = null;
+    }
     if (micStreamRef.current) {
       micStreamRef.current.getTracks().forEach(track => {
         track.stop();
-        track.enabled = false;
       });
       micStreamRef.current = null;
     }
 
     setActiveVisual(null); 
     lastProcessedCommandRef.current = "";
+    console.log("🔒 Safety Check: Session and Hardware fully purged.");
   };
 
   const resetInactivityTimer = () => {
@@ -129,10 +136,9 @@ const DrGamTutor: React.FC = () => {
   const handleTrialEnd = async () => {
     endSession();
     setShowTrialEnd(true);
-    // Use server action for TTS
     if(schoolId) {
         const result = await generateTTSAction({ text: "Dr. Gam's power cell needs recharging! To continue our advanced session, please connect your Magic Key.", schoolId, voice: 'Algenib' });
-        // if (result.success && result.data) await playRawPcm(result.data); // playRawPcm is not available
+        // Play logic would be here
     }
   };
 
@@ -178,15 +184,27 @@ const DrGamTutor: React.FC = () => {
   const startSession = async (isReconnect = false) => {
     setShowTrialEnd(false);
     if (document.visibilityState === 'hidden') return;
+    
     setIsConnecting(true);
+    
+    // NEW: HARD CIRCUIT BREAKER (30 Minute Absolute Max)
+    totalSessionTimerRef.current = window.setTimeout(() => {
+        console.error("🚨 30-Minute Circuit Breaker Triggered. Safety Shutdown.");
+        endSession();
+        toast({ title: "Session Timeout", description: "Dr. Gam needs a break! Class closed for safety." });
+    }, 1800000); // 30 minutes in milliseconds
+
     toast({
         variant: "destructive",
         title: "Feature Not Available",
         description: "Live voice tutoring is not configured for this project environment."
     });
+    
+    // Simulate connection failure for demo purposes
     setTimeout(() => {
         setIsConnecting(false);
         setIsActive(false);
+        endSession(); // Ensure cleanup happens
     }, 1500);
   };
 
@@ -204,7 +222,6 @@ const DrGamTutor: React.FC = () => {
   return (
     <div className="flex flex-col items-center p-6 md:p-12 bg-[#F8FAFC] rounded-[4rem] shadow-2xl max-w-7xl mx-auto border-[12px] border-slate-900 relative overflow-hidden font-black selection:bg-indigo-100">
       
-      {/* TRIAL OVERLAY */}
       {showTrialEnd && (
         <div className="absolute inset-0 z-[150] bg-slate-900/95 backdrop-blur-xl flex flex-col items-center justify-center p-12 text-center animate-in zoom-in">
            <Zap className="w-24 h-24 text-yellow-400 mb-8 animate-bounce" />
@@ -216,7 +233,6 @@ const DrGamTutor: React.FC = () => {
 
       <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        {/* PROFESSOR CARD */}
         <div className="lg:col-span-3 flex flex-col items-center justify-center p-10 bg-white rounded-[4rem] border-4 border-slate-900 shadow-xl">
             <div className={`relative w-44 h-44 rounded-full bg-slate-50 flex items-center justify-center mb-8 border-8 transition-all duration-500 ${isActive ? 'border-indigo-500 scale-105' : 'border-slate-200'}`}>
                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=DrGam" alt="Dr. Gam" className="w-36 h-36 rounded-full object-cover" />
@@ -237,7 +253,6 @@ const DrGamTutor: React.FC = () => {
             )}
         </div>
 
-        {/* INTERACTIVE BOARD */}
         <div className="lg:col-span-9">
             <div className="w-full aspect-[16/10] bg-slate-900 rounded-[5rem] border-[16px] border-slate-800 shadow-inner flex items-center justify-center relative overflow-hidden group">
                 {!activeVisual ? (
@@ -259,7 +274,6 @@ const DrGamTutor: React.FC = () => {
                         </div>
                     </div>
                 )}
-                {/* Board Label */}
                 <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-slate-800 rounded-full border border-slate-700">
                     <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em]">Dr. Gam Digital Board</span>
                 </div>
@@ -267,7 +281,6 @@ const DrGamTutor: React.FC = () => {
         </div>
       </div>
       
-      {/* START INTERFACE */}
       {!isActive && (
         <div className="mt-16 flex flex-col items-center w-full animate-in slide-in-from-bottom-10 duration-700">
            <button 
