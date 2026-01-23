@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -13,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, FolderOpen
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, FolderOpen, Eraser
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -26,6 +25,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -993,10 +993,11 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 }
 
 // --- 6. SCIENCE WORLD (FIXED: Journal & Matter Lab) ---
-function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
+function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
@@ -1045,7 +1046,6 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
         }
     }, [dbMaterials, selectedMaterial]);
 
-    // --- 4. SORTER LOGIC ---
     const currentItem = dbSorterItems ? dbSorterItems[currentIndex] : null;
 
     const handleDrop = async (type: 'living' | 'non-living') => {
@@ -1067,7 +1067,7 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
         toast({ title: 'Item Added!' });
     };
 
-    // --- 5. MATTER LAB LOGIC ---
+    // --- 4. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
         if (!newMat.name || !firestore || !schoolId) return;
         const statesArray = [
@@ -1096,44 +1096,40 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
         return state || selectedMaterial.states[0];
     };
 
-    // --- 6. DISCOVERY LAB LOGIC ---
+    // --- 5. DISCOVERY LAB LOGIC ---
     const handleGenerate = async () => { 
         setLoading(true); 
         try {
             const res = await generateJuniorScience(topic); 
-            if(res.success) {
-                setFact(res.data);
-            } else {
-                toast({ variant: "destructive", title: "AI Error", description: "Could not generate fact." });
-            }
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false); 
-        }
+            if(res.success) setFact(res.data);
+            else toast({ variant: "destructive", title: "Error", description: "AI failed." });
+        } catch(e) { console.error(e); }
+        finally { setLoading(false); }
     };
 
     const handleSave = async () => { 
         if(!user || !fact || !firestore || !schoolId) return; 
         
-        await addDoc(collection(firestore,'junior_science'), {
-            title: fact.title,
-            fact: fact.fact,
-            emojiIcon: fact.emojiIcon,
-            observation: fact.observation || "",
-            experiment: fact.experiment || "",
-            createdAt: serverTimestamp(),
-            createdBy: user.uid,
-            schoolId: schoolId
-        }); 
-        
-        setFact(null); 
-        setTopic('');
-        
-        if(refetchScience) refetchScience(); 
-        
-        toast({title: "Discovery Saved!", description: "Check Journal Tab"});
-        setActiveTab('library');
+        try {
+            await addDoc(collection(firestore, 'junior_science'), {
+                title: fact.title,
+                fact: fact.fact,
+                emojiIcon: fact.emojiIcon,
+                observation: fact.observation || "",
+                experiment: fact.experiment || "",
+                createdAt: serverTimestamp(),
+                createdBy: user.uid,
+                schoolId: schoolId,
+            });
+            toast({ title: 'Discovery Saved!', description: 'Check your Journal tab.' });
+            setFact(null);
+            setTopic('');
+            if (refetchScience) refetchScience();
+            setActiveTab('library');
+        } catch (e: any) {
+            console.error("Save Error:", e);
+            toast({ variant: "destructive", title: "Save Failed", description: e.message });
+        }
     };
     
     const handleDeleteDiscovery = async (id: string) => {
@@ -1153,7 +1149,7 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                 <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
-
+            
             {/* DISCOVERY LAB TAB */}
             {activeTab === 'lab' && (
                 <div className="grid lg:grid-cols-2 gap-8 items-start animate-in fade-in">
@@ -1194,7 +1190,7 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                     )}
                 </div>
             )}
-            
+
             {/* SORTER TAB */}
             {activeTab === 'sorter' && (
                 <div className="space-y-6 animate-in fade-in">
@@ -1299,7 +1295,7 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
                 </div>
             )}
             
-            {/* JOURNAL TAB (FIXED RENDERING) */}
+            {/* JOURNAL TAB */}
              {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
@@ -1331,6 +1327,127 @@ function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: strin
         </div>
     );
 }
+
+// --- Art Studio Component ---
+function ArtStudio() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [color, setColor] = useState('#EF4444'); // Red
+  const [brushSize, setBrushSize] = useState(10);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const parent = canvas.parentElement;
+      canvas.width = parent?.clientWidth || 500;
+      canvas.height = 400; // Fixed height
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+  }, []);
+
+  const startDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+    const { offsetX, offsetY } = nativeEvent;
+    const ctx = canvasRef.current?.getContext('2d');
+    if (ctx) {
+      ctx.beginPath();
+      ctx.moveTo(offsetX, offsetY);
+    }
+  };
+
+  const draw = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!nativeEvent.buttons) return; // Only draw when mouse is pressed
+    const { offsetX, offsetY } = nativeEvent;
+    const ctx = canvasRef.current?.getContext('2d');
+    if (ctx) {
+      ctx.lineWidth = brushSize;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = color;
+      ctx.lineTo(offsetX, offsetY);
+      ctx.stroke();
+    }
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if(canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Palette/> Art Studio</CardTitle>
+        <CardDescription>Unleash your creativity! Draw, paint, and express yourself.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex justify-center items-center gap-4 p-2 bg-slate-100 rounded-lg border">
+          <Label>Color:</Label>
+          <Input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-16 h-10 p-1" />
+          <Label>Brush Size:</Label>
+          <Input type="range" min="1" max="50" value={brushSize} onChange={e => setBrushSize(Number(e.target.value))} className="w-48"/>
+          <Button variant="outline" onClick={clearCanvas}><Eraser className="mr-2 h-4 w-4"/> Clear</Button>
+        </div>
+        <div className="bg-white rounded-lg shadow-inner border-4 border-slate-200">
+           <canvas
+            ref={canvasRef}
+            onMouseDown={startDrawing}
+            onMouseMove={draw}
+            className="cursor-crosshair"
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Sticker Book Component ---
+function StickerBook({ schoolId }: { schoolId: string | null }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+
+    const stickersQuery = useMemoFirebase(() => 
+        (firestore && user && schoolId) ? query(collection(firestore, 'junior_stickers'), where('userId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
+    [firestore, user, schoolId]);
+
+    const { data: stickers, isLoading } = useCollection(stickersQuery);
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Trophy/> My Sticker Book</CardTitle>
+                <CardDescription>Collect stickers by completing challenges and learning new things!</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? (
+                    <div className="flex justify-center p-8"><Loader2 className="animate-spin h-8 w-8"/></div>
+                ) : (
+                    <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
+                        {stickers && stickers.length > 0 ? stickers.map((sticker: any) => (
+                            <div key={sticker.id} className="flex flex-col items-center text-center p-4 bg-slate-50 rounded-lg border-2 border-dashed">
+                                <span className="text-5xl">{sticker.emoji}</span>
+                                <span className="text-xs font-bold mt-2 text-slate-700">{sticker.name}</span>
+                            </div>
+                        )) : (
+                            <div className="col-span-full text-center py-10 text-slate-400">
+                                <Gift className="h-10 w-10 mx-auto mb-2 opacity-50"/>
+                                Your sticker book is empty. Complete activities to earn stickers!
+                            </div>
+                        )}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
@@ -1366,8 +1483,8 @@ export default function JuniorCampusPage() {
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
-                {/* <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio canEdit={canEdit} schoolId={schoolId} /></div></TabsContent>
-                <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent> */}
+                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
+                <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
             </div>
         </Tabs>
       </div>
