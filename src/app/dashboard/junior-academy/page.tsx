@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -29,6 +28,8 @@ import { format } from 'date-fns';
 import { Textarea } from '@/components/ui/textarea';
 import StickerBook from './sticker-book';
 import ArtStudio from './art-studio';
+import JuniorScienceWorld from './science-world';
+
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -90,7 +91,7 @@ function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
             if (activeMode === 'fluency') {
                 // Check if they got the gist of the sentence
-                const matchCount = targetSentence.split(' ').filter(word => spoken.includes(word.replace(/[.,!]/g, ''))).length;
+                const matchCount = targetSentence.split(' ').filter((word: string) => spoken.includes(word.replace(/[.,!]/g, ''))).length;
                 if (matchCount >= targetSentence.split(' ').length / 2) {
                     onSuccess(spoken);
                 } else {
@@ -899,279 +900,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
-// --- 6. SCIENCE WORLD ---
-function ScienceWorld({ canEdit, schoolId }: { canEdit: boolean, schoolId: string | null }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    
-    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
-    
-    // --- 1. DATA FETCHING (Scoped to School) ---
-    const sorterQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'junior_sorter_items'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
-    [firestore, schoolId]);
-    const { data: dbSorterItems, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
-    
-    const materialsQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'junior_science_materials'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
-    [firestore, schoolId]);
-    const { data: dbMaterials, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
-
-    const scienceQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'junior_science'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
-    [firestore, schoolId]);
-    const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
-    
-    // --- 2. GAME STATES ---
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [newItem, setNewItem] = useState({ name: '', emoji: '', type: 'living' });
-    const [temp, setTemp] = useState(20);
-    const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
-    const [showAddMatForm, setShowAddMatForm] = useState(false);
-    const [topic, setTopic] = useState(''); 
-    const [fact, setFact] = useState<any>(null); 
-    const [loading, setLoading] = useState(false);
-    const [sorterFeedback, setSorterFeedback] = useState("");
-
-    // --- 3. NEW MATERIAL FORM STATE ---
-    const [newMat, setNewMat] = useState({
-        name: '',
-        solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' },
-        liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' },
-        gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
-    });
-
-    // Select the first material automatically when data loads
-    useEffect(() => {
-        if (dbMaterials && dbMaterials.length > 0 && !selectedMaterial) {
-            setSelectedMaterial(dbMaterials[0]);
-        }
-    }, [dbMaterials, selectedMaterial]);
-
-    // --- 4. MATTER LAB LOGIC ---
-    const handleSaveMaterial = async () => {
-        if (!newMat.name || !firestore || !schoolId) return;
-        const statesArray = [
-            { ...newMat.solid }, 
-            { ...newMat.liquid }, 
-            { ...newMat.gas }
-        ];
-
-        await addDoc(collection(firestore, 'junior_science_materials'), {
-            name: newMat.name,
-            states: statesArray,
-            schoolId: schoolId, // CRITICAL FIX
-            createdAt: serverTimestamp()
-        });
-
-        setShowAddMatForm(false);
-        setNewMat({ name: '', solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' }, liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' }, gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' } });
-        if(refetchMaterials) refetchMaterials();
-        toast({ title: "Material Created!" });
-    };
-
-    const getCurrentState = () => {
-        if (!selectedMaterial) return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
-        // Logic: Find state matching temperature
-        const state = [...selectedMaterial.states].sort((a:any,b:any) => b.temp - a.temp).find((s:any) => temp >= s.temp);
-        return state || selectedMaterial.states[0];
-    };
-
-    // --- 5. DISCOVERY LAB LOGIC ---
-    const handleGenerate = async () => { 
-        setLoading(true); 
-        try {
-            const res = await generateJuniorScience(topic); 
-            if(res.success && res.data) setFact(res.data);
-            else toast({ variant: "destructive", title: "Error", description: res.error || "AI failed." });
-        } catch(e) { console.error(e); }
-        finally { setLoading(false); }
-    };
-
-    const handleSave = async () => { 
-        if(!user || !fact || !firestore || !schoolId) return; 
-        await addDoc(collection(firestore,'junior_science'), {
-            ...fact,
-            createdAt: serverTimestamp(),
-            createdBy: user.uid,
-            schoolId: schoolId // CRITICAL FIX
-        }); 
-        setFact(null); 
-        if(refetchScience) refetchScience(); 
-        toast({title: "Discovery Saved!", description: "Check Journal Tab"});
-        setActiveTab('library');
-    };
-    
-    // --- 6. SORTER LOGIC ---
-    const handleSaveSorterItem = async () => {
-        if (!newItem.name || !newItem.emoji || !schoolId || !firestore) return;
-        await addDoc(collection(firestore, 'junior_sorter_items'), { ...newItem, schoolId: schoolId, createdAt: serverTimestamp() });
-        setNewItem({ name: '', emoji: '', type: 'living' });
-        if (refetchSorter) refetchSorter();
-        toast({ title: 'Item Added!'});
-    };
-    
-    const handleDrop = (type: 'living' | 'non-living', item: any) => {
-        if (item.type === type) {
-            setSorterFeedback("Correct! 🎉");
-            confetti({ particleCount: 50, spread: 30, origin: { x: type === 'living' ? 0.25 : 0.75, y: 0.7 }});
-            setCurrentIndex(i => (i + 1) % (dbSorterItems?.length || 1));
-        } else {
-            setSorterFeedback("Oops, try again! 🤔");
-        }
-        setTimeout(() => setSorterFeedback(""), 1500);
-    };
-
-    const handleDeleteDiscovery = async (id: string) => {
-        if (!firestore) return;
-        if(confirm("Delete this discovery?")) {
-            await deleteDoc(doc(firestore, 'junior_science', id));
-            if(refetchScience) refetchScience();
-            toast({ title: "Deleted" });
-        }
-    };
-    
-
-    return (
-        <div className="space-y-8">
-            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
-                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')}>Discovery</Button>
-                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')}>Sorter</Button>
-                <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
-                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
-            </div>
-
-            {activeTab === 'lab' && (
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                    <div className="space-y-4">
-                        <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="What are you curious about?" className="h-14 text-lg rounded-2xl" onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}/>
-                        <Button onClick={handleGenerate} disabled={loading || !topic} className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-lg font-bold rounded-xl">
-                            {loading ? <Loader2 className="animate-spin" /> : <><Sparkles className="mr-2"/> Discover</>}
-                        </Button>
-                    </div>
-                     {fact && (
-                        <Card className="animate-in fade-in zoom-in-95 border-blue-200">
-                            <CardHeader><CardTitle className="flex items-center gap-3 text-2xl text-blue-800"><span className="text-4xl">{fact.emojiIcon}</span> {fact.title}</CardTitle></CardHeader>
-                            <CardContent><p className="text-xl text-slate-700 leading-relaxed font-medium">{fact.fact}</p></CardContent>
-                            <CardFooter><Button onClick={handleSave} className="w-full"><Save className="mr-2"/> Save to my Journal</Button></CardFooter>
-                        </Card>
-                    )}
-                </div>
-            )}
-            
-            {activeTab === 'sorter' && (
-                 <div className="space-y-6">
-                    <div className="text-center p-4 rounded-xl bg-white border shadow-sm">
-                        <h3 className="text-2xl font-black text-slate-800">Living or Non-Living?</h3>
-                        <p className="text-slate-500">Drag the item to the correct box!</p>
-                    </div>
-                    <div className="h-40 flex items-center justify-center">
-                        {dbSorterItems && dbSorterItems.length > 0 && (
-                            <div className="draggable text-8xl cursor-grab active:cursor-grabbing" draggable onDragStart={(e) => e.dataTransfer.setData('text/plain', JSON.stringify(dbSorterItems[currentIndex]))}>
-                                {dbSorterItems[currentIndex].emoji}
-                            </div>
-                        )}
-                    </div>
-                    <div className="text-center h-10 font-bold text-2xl animate-in zoom-in">{sorterFeedback}</div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="droppable h-48 rounded-2xl bg-green-50 border-4 border-dashed border-green-200 flex flex-col items-center justify-center" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop('living', JSON.parse(e.dataTransfer.getData('text/plain')))}>
-                           <span className="text-5xl">🌳</span> <span className="font-bold text-green-700 mt-2">Living</span>
-                        </div>
-                        <div className="droppable h-48 rounded-2xl bg-slate-100 border-4 border-dashed border-slate-200 flex flex-col items-center justify-center" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop('non-living', JSON.parse(e.dataTransfer.getData('text/plain')))}>
-                             <span className="text-5xl">🪨</span> <span className="font-bold text-slate-600 mt-2">Non-Living</span>
-                        </div>
-                    </div>
-                </div>
-            )}
-            
-            {activeTab === 'experiment' && (
-                <div className="space-y-8 animate-in zoom-in">
-                    <div className="text-center space-y-4">
-                        <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
-                        
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            {(!dbMaterials || dbMaterials.length === 0) && (
-                                <p className="text-sm text-slate-400">No materials found. Add one to start!</p>
-                            )}
-                            {dbMaterials?.map((m: any) => (
-                                <Button 
-                                    key={m.id} 
-                                    variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} 
-                                    onClick={() => setSelectedMaterial(m)}
-                                    className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}
-                                >
-                                    {m.name}
-                                </Button>
-                            ))}
-                            {canEdit && (
-                                <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">
-                                    {showAddMatForm ? 'Close Creator' : '+ Add New Material'}
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Material Creator Form */}
-                    {showAddMatForm && canEdit && (
-                        <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px]">
-                            <h4 className="text-xl font-black text-cyan-800 mb-4">Create New Material</h4>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div className="space-y-4">
-                                    <Input placeholder="Material Name (e.g. Chocolate)" value={newMat.name} onChange={e => setNewMat({...newMat, name: e.target.value})} className="bg-white" />
-                                    <p className="text-xs text-slate-500">Define emojis for Solid (-100°C), Liquid (1°C), Gas (100°C)</p>
-                                    <div className="flex gap-2">
-                                        <Input placeholder="Solid 🍫" value={newMat.solid.emoji} onChange={e => setNewMat({...newMat, solid: {...newMat.solid, emoji: e.target.value}})} />
-                                        <Input placeholder="Liquid 🥣" value={newMat.liquid.emoji} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, emoji: e.target.value}})} />
-                                        <Input placeholder="Gas ♨️" value={newMat.gas.emoji} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, emoji: e.target.value}})} />
-                                    </div>
-                                    <Button onClick={handleSaveMaterial} className="w-full h-12 bg-cyan-600 text-white font-black rounded-xl">Save to Lab</Button>
-                                </div>
-                            </div>
-                        </Card>
-                    )}
-
-                    {/* Simulator Display */}
-                    <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
-                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
-                            {getCurrentState().emoji}
-                        </div>
-                        <div className="text-center">
-                            <h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2>
-                            <p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p>
-                        </div>
-                        
-                        <div className="w-full max-w-md space-y-4">
-                            <div className="flex justify-between font-black text-xl text-slate-400">
-                                <span className="text-blue-400">COLD</span>
-                                <span className="text-cyan-600 bg-cyan-50 px-4 py-1 rounded-full border border-cyan-100">{temp}°C</span>
-                                <span className="text-red-400">HOT</span>
-                            </div>
-                            <input 
-                                type="range" min="-50" max="150" value={temp} 
-                                onChange={e => setTemp(parseInt(e.target.value))} 
-                                className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
-            
-            {activeTab === 'library' && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
-                    {savedScience?.map((s:any)=>(
-                        <div key={s.id} className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1" onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}>
-                            <div className="text-5xl mb-4">{s.emojiIcon}</div><h4 className="font-black text-slate-800 leading-tight">{s.title}</h4><p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">{new Date(s.createdAt?.seconds * 1000).toLocaleDateString() || 'Discovery'}</p>
-                            {canEdit && (<Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}><Trash2 className="w-4 w-4"/></Button>)}
-                        </div>
-                    ))}
-                    {(!savedScience || savedScience.length === 0) && (<div className="col-span-4 text-center py-10 text-slate-400">No discoveries yet. Go to the <strong>Discovery</strong> tab to create one!</div>)}
-                </div>
-            )}
-        </div>
-    );
-}
-
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
   const { role } = useRole();
@@ -1194,7 +922,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
                 <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
-                <TabsTrigger value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsTrigger>
+                <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-rose-100 data-[state=active]:text-rose-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
             
@@ -1205,7 +933,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
-                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
+                <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
                 <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
             </div>
