@@ -132,7 +132,7 @@ const DrGamTutor: React.FC = () => {
     // Use server action for TTS
     if(schoolId) {
         const result = await generateTTSAction({ text: "Dr. Gam's power cell needs recharging! To continue our advanced session, please connect your Magic Key.", schoolId, voice: 'Algenib' });
-        // if (result.success && result.data) await playRawPcm(result.data);
+        // if (result.success && result.data) await playRawPcm(result.data); // playRawPcm is not available
     }
   };
 
@@ -285,7 +285,7 @@ const DrGamTutor: React.FC = () => {
               </div>
               <div className="space-y-6 text-center">
                 <p className="text-2xl font-black text-slate-800 leading-tight">
-                  Professor Dr. Gam is ready for a professional deep-dive.
+                  Dr. Gam is ready for a professional deep-dive.
                 </p>
                 <div className="bg-white p-8 rounded-[2.5rem] border-4 border-indigo-200 shadow-inner">
                   <p className="text-xl font-bold text-slate-600 leading-relaxed">
