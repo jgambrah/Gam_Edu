@@ -239,18 +239,36 @@ export async function generateLifeSkillEntry(input: { topic: string; category: s
 
   let prompt = '';
   switch (category) {
-    case 'emotions':
+    case 'feelings':
       prompt = `Create a nursery lesson for the feeling: ${topic}. Return JSON: { "name": string, "color": "bg-yellow-400" | "bg-blue-400" | "bg-red-400", "icon": emoji, "prompt": string, "technique": string }`;
       break;
-    case 'physical-health':
+    case 'health':
       prompt = `Create a physical activity or hygiene habit for children about: ${topic}. Return JSON: { "title": string, "action": string, "icon": emoji, "prompt": string }`;
       break;
-    case 'social':
+    case 'kindness':
       prompt = `Create a kindness or community helper scenario for: ${topic}. Return JSON: { "title": string, "q": string, "options": [string, string, string], "correct": number (index 0-2), "prompt": string }`;
       break;
+    case 'songs':
+      prompt = `Generate a simple, short nursery rhyme or song (2-4 lines) for kids about: ${topic}. Return JSON: { "title": string, "content": string, "icon": "🎵", "imagePrompt": "A 3D Pixar-style illustration of a cute animal singing about ${topic}" }`;
+      break;
+    case 'watch':
+      prompt = `Create a very short story (2 sentences) modeling good behavior related to: ${topic}. The story is for a 5-year-old. Return JSON: { "title": string, "story": string, "icon": "📺", "imagePrompt": "A 3D Pixar-style illustration of a child learning about ${topic}" }`;
+      break;
+    case 'routine':
+      prompt = `Describe a simple daily routine step for a child related to: ${topic}. E.g., for 'Morning', the step could be 'Brush Your Teeth'. Return JSON: { "title": string, "step": string, "icon": "⏰", "imagePrompt": "A 3D Pixar-style illustration of a child doing a routine related to ${topic}" }`;
+      break;
+    case 'talk':
+      prompt = `Create a simple conversation starter or social script for a child about: ${topic}. Return JSON: { "title": string, "script": string, "icon": "💬", "imagePrompt": "A 3D Pixar-style illustration of two cute animals talking about ${topic}" }`;
+      break;
+    case 'puppets':
+      prompt = `Write a very short (2-3 lines) puppet show dialogue between two characters (e.g., Leo and Mia) about: ${topic}. Return JSON: { "title": string, "dialogue": string, "icon": "🎭", "imagePrompt": "A 3D Pixar-style illustration of cute animal puppets discussing ${topic}" }`;
+      break;
+    case 'solver':
+      prompt = `Create a simple 'what comes next?' pattern puzzle for a child based on: ${topic}. Return JSON: { "title": string, "pattern": [string, string, string], "answer": string, "icon": "🧩", "imagePrompt": "A 3D Pixar-style illustration of a simple pattern puzzle about ${topic}" }`;
+      break;
     default:
-      // Fallback for other categories
-      prompt = `Create a simple children's activity about ${topic} in the category ${category}. Return JSON: { "title": string, "prompt": string, "icon": emoji }`;
+      // Fallback for any other categories
+      prompt = `Create a simple children's activity about ${topic} in the category ${category}. Return JSON: { "title": string, "prompt": string, "icon": "🌟" }`;
   }
   
   try {
@@ -293,4 +311,103 @@ export async function generateRhyme(input: { topic: string; schoolId: string }) 
       imagePrompt: `3d illustration of a child rhyming about ${input.topic}`,
     },
   };
+}
+
+// PHONICS WORLD ENTRY GENERATOR
+const PhonicsWorldEntrySchema = z.object({
+    title: z.string(),
+    sound: z.string(),
+    description: z.string(),
+    imagePrompt: z.string(),
+    icon: z.string(),
+});
+export async function generatePhonicsWorldEntry(topic: string, category: string, schoolId: string) {
+    try {
+        const creditResult = await checkAndSpendCredits(schoolId, 2);
+        if (!creditResult.success) {
+            return { success: false, error: creditResult.error || "Insufficient AI credits." };
+        }
+        const prompt = `Create a nursery phonics entry for "${topic}" in category "${category}". 
+        Return JSON: { "title": "string", "sound": "string", "description": "string", "imagePrompt": "string", "icon": "string" }`;
+        const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
+            prompt,
+            output: { schema: PhonicsWorldEntrySchema }
+        });
+        if (!output) throw new Error("AI did not generate a valid phonics entry.");
+        return { success: true, data: output };
+    } catch (error: any) {
+        console.error("Phonics World AI Error:", error);
+        return { success: false, error: (error as Error).message };
+    }
+}
+
+// --- MATH WORLD ENTRY GENERATOR (NEW) ---
+const MathWorldEntrySchema = z.object({
+    title: z.string(),
+    question: z.string(),
+    imagePrompt: z.string(),
+    options: z.array(z.string()).length(4),
+    correctAnswer: z.string(),
+    icon: z.string(),
+});
+export async function generateMathWorldEntry(topic: string, category: string, schoolId: string) {
+    try {
+        const creditResult = await checkAndSpendCredits(schoolId, 2);
+        if (!creditResult.success) {
+            return { success: false, error: creditResult.error || "Insufficient AI credits." };
+        }
+        const prompt = `
+            Create a nursery math activity for a child.
+            The topic is "${topic}" and it should fit within the category "${category}".
+            Provide a simple question, 4 options (one must be correct), the correct answer, an emoji icon, and a creative DALL-E style prompt to generate an image for the question.
+            Output strictly JSON.
+        `;
+
+        const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
+            prompt,
+            output: { schema: MathWorldEntrySchema }
+        });
+        if (!output) throw new Error("AI did not generate a valid math entry.");
+        return { success: true, data: output };
+    } catch (error: any) {
+        console.error("Math World AI Error:", error);
+        return { success: false, error: (error as Error).message };
+    }
+}
+
+// --- SCIENCE WORLD ENTRY GENERATOR ---
+const ScienceWorldEntrySchema = z.object({
+    name: z.string(),
+    fact: z.string(),
+    imagePrompt: z.string(),
+    icon: z.string(),
+});
+
+export async function generateScienceWorldEntry(topic: string, category: string, schoolId: string) {
+    try {
+        const creditResult = await checkAndSpendCredits(schoolId, 2);
+        if (!creditResult.success) {
+            return { success: false, error: creditResult.error || "Insufficient AI credits." };
+        }
+        const prompt = `
+            Create a nursery science discovery entry for a child.
+            The topic is "${topic}" and it should fit within the category "${category}".
+            Provide a short, amazing fact and a simple emoji icon.
+            Also, provide a creative DALL-E style prompt to generate an image for this fact.
+            Output strictly JSON.
+        `;
+
+        const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
+            prompt,
+            output: { schema: ScienceWorldEntrySchema }
+        });
+        if (!output) throw new Error("AI did not generate a valid science entry.");
+        return { success: true, data: output };
+    } catch (error: any) {
+        console.error("Science World AI Error:", error);
+        return { success: false, error: (error as Error).message };
+    }
 }
