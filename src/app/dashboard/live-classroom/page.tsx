@@ -1,339 +1,266 @@
 
-
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-// FIX: Use useUser consistently
-import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
-import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
-import { Video, MessageSquare, BookOpen, Calendar, RefreshCw, AlertCircle, Plus, Send, Clock } from 'lucide-react';
-
-// UI Components
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { generateLessonImageAction, generateTTSAction } from '@/ai/flows/junior-actions';
+import { 
+  Loader2, Mic, StopCircle, Zap, ShieldCheck, 
+  MonitorPlay, Volume2, XCircle, Sparkles, Clock 
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Class } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
-import LiveRoom from '@/components/dashboard/live-classroom/live-room';
-
-// --- SUB-COMPONENT: Chat Window ---
-function ChatWindow({ roomId }: { roomId: string }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const [newMessage, setNewMessage] = useState('');
-    const scrollRef = useRef<HTMLDivElement>(null);
-
-    const messagesQuery = useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'active_classes', roomId, 'messages'), orderBy('createdAt', 'asc')) : null,
-        [firestore, roomId]
-    );
-    const { data: messages, isLoading } = useCollection<any>(messagesQuery);
-
-    useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [messages]);
-
-    const handleSend = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newMessage.trim() || !user) return;
-        try {
-            await addDoc(collection(firestore, 'active_classes', roomId, 'messages'), {
-                text: newMessage,
-                senderName: user.displayName || user.email?.split('@')[0] || 'User',
-                senderId: user.uid,
-                createdAt: serverTimestamp()
-            });
-            setNewMessage('');
-        } catch (error) {
-            console.error("Chat error:", error);
-        }
-    };
-
-    return (
-        <div className="flex flex-col h-full bg-white rounded-lg border shadow-sm">
-            <div className="p-3 border-b bg-slate-50 font-semibold text-slate-700 flex items-center gap-2">
-                <MessageSquare className="h-4 w-4"/> Live Chat
-            </div>
-            
-            <ScrollArea className="flex-1 p-4">
-                <div className="space-y-4">
-                    {isLoading && <p className="text-xs text-muted-foreground text-center">Loading chat...</p>}
-                    {!isLoading && messages?.length === 0 && (
-                        <p className="text-xs text-slate-400 text-center italic mt-10">No messages yet. Say hello!</p>
-                    )}
-                    {messages?.map((msg: any) => {
-                        const isMe = msg.senderId === user?.uid;
-                        return (
-                            <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                                <div className={`max-w-[85%] rounded-lg p-2 text-sm ${isMe ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-800'}`}>
-                                    {msg.text}
-                                </div>
-                                <span className="text-[10px] text-slate-400 mt-1 px-1">
-                                    {isMe ? 'You' : msg.senderName}
-                                </span>
-                            </div>
-                        )
-                    })}
-                    <div ref={scrollRef} />
-                </div>
-            </ScrollArea>
-
-            <form onSubmit={handleSend} className="p-3 border-t flex gap-2">
-                <Input 
-                    value={newMessage} 
-                    onChange={(e) => setNewMessage(e.target.value)} 
-                    placeholder="Type a message..." 
-                    className="flex-1"
-                />
-                <Button type="submit" size="icon" disabled={!newMessage.trim()}>
-                    <Send className="h-4 w-4" />
-                </Button>
-            </form>
-        </div>
-    );
+interface VisualState {
+  type: 'letter' | 'word' | 'image' | 'number' | 'concept' | 'quiz';
+  value: string;
+  url?: string;
+  id: number;
 }
 
-// --- SUB-COMPONENT: Schedule Class Dialog (Fixed with Native Select) ---
-function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
-    const firestore = useFirestore();
-    const [selectedClassId, setSelectedClassId] = useState('');
-    const [topic, setTopic] = useState('');
-    const [date, setDate] = useState('');
-    const [time, setTime] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    const handleSchedule = async () => {
-        if (!selectedClassId || !topic || !date || !time) return;
-        setLoading(true);
-        try {
-            const classRef = doc(firestore, 'classes', selectedClassId);
-            await updateDoc(classRef, {
-                nextSession: {
-                    topic,
-                    dateTime: `${date}T${time}`,
-                    isLive: false
-                }
-            });
-            setOpen(false);
-        } catch (error) {
-            console.error("Error scheduling:", error);
-            alert("Schedule Failed: Check console permissions");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Schedule Live Session</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                    
-                    <div className="space-y-2">
-                        <Label>Select Class</Label>
-                        <select 
-                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            value={selectedClassId}
-                            onChange={(e) => setSelectedClassId(e.target.value)}
-                        >
-                            <option value="">-- Choose a Class --</option>
-                            {classes && classes.length > 0 ? (
-                                classes.map(c => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.name}
-                                    </option>
-                                ))
-                            ) : (
-                                <option value="" disabled>No classes found in database</option>
-                            )}
-                        </select>
-                        {(!classes || classes.length === 0) && (
-                            <p className="text-xs text-red-500">
-                                Debug: 0 classes loaded. Check 'classes' collection in Firestore.
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label>Topic</Label>
-                        <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Algebra Review" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Date</Label>
-                            <Input type="date" value={date} onChange={e => setDate(e.target.value)} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Time</Label>
-                            <Input type="time" value={time} onChange={e => setTime(e.target.value)} />
-                        </div>
-                    </div>
-                    <Button onClick={handleSchedule} disabled={loading || !selectedClassId} className="w-full">
-                        {loading ? "Scheduling..." : "Schedule Class"}
-                    </Button>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-// --- MAIN PAGE ---
-export default function LiveClassroomPage() {
-  const { user, isUserLoading } = useUser();
-  const { role } = useRole();
-  const firestore = useFirestore();
+const DrGamTutor: React.FC = () => {
   const { schoolId } = useCurrentSchool();
+  const { toast } = useToast();
   
-  const [selectedClass, setSelectedClass] = useState<Class | null>(null);
-  const [isLive, setIsLive] = useState(false);
-  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isResyncing, setIsResyncing] = useState(false);
+  const [activeVisual, setActiveVisual] = useState<VisualState | null>(null);
+  const [lastTranscript, setLastTranscript] = useState('');
+  const [isVisualLoading, setIsVisualLoading] = useState(false);
+  const [sessionSeconds, setSessionSeconds] = useState(0);
+  const [isPaidSession, setIsPaidSession] = useState(false);
+  const [showTrialEnd, setShowTrialEnd] = useState(false);
+  const [isAiStudioEnv, setIsAiStudioEnv] = useState(false);
+  
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const sessionRef = useRef<any>(null);
+  const micStreamRef = useRef<MediaStream | null>(null);
+  const scriptProcessorRef = useRef<ScriptProcessorNode | null>(null);
+  const nextStartTimeRef = useRef(0);
+  const transcriptBufferRef = useRef('');
+  const requestIdRef = useRef(0);
+  const timerIntervalRef = useRef<number | null>(null);
+  const inactivityTimeoutRef = useRef<number | null>(null);
+  const lastActivityTimeRef = useRef<number>(Date.now());
+  
+  const autoReconnectAttempts = useRef(0);
+  const lastProcessedCommandRef = useRef<string>('');
 
-  const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+  const INACTIVITY_TIMEOUT = 120000; 
 
-  // 1. Fetch User's Classes
-  const classesQuery = useMemoFirebase(() => {
-      if (!firestore || !user || !schoolId) return null;
-      let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-      if (role === 'Teacher') {
-          q = query(q, where('teacherId', '==', user.uid));
-      }
-      return q;
-  }, [firestore, user, role, schoolId]);
-
-  const { data: classes, isLoading: classesLoading } = useCollection<Class>(classesQuery);
-
-  const handleJoin = async (cls: Class) => {
-      setSelectedClass(cls);
-      setIsLive(true);
-      if (isTeacher && firestore) {
-          try { await updateDoc(doc(firestore, 'classes', cls.id), { 'nextSession.isLive': true }); } catch(e) {}
-      }
+  const endSession = () => {
+    setIsActive(false); 
+    setIsResyncing(false);
+    setIsConnecting(false);
+    
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
   };
 
-  const handleLeave = async () => {
-      if (isTeacher && firestore && selectedClass) {
-          try { await updateDoc(doc(firestore, 'classes', selectedClass.id), { 'nextSession.isLive': false }); } catch(e) {}
+  const resetInactivityTimer = () => {
+    lastActivityTimeRef.current = Date.now();
+    if (inactivityTimeoutRef.current) window.clearTimeout(inactivityTimeoutRef.current);
+    inactivityTimeoutRef.current = window.setTimeout(() => {
+      endSession();
+    }, INACTIVITY_TIMEOUT);
+  };
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && (isActive || isConnecting)) {
+        endSession();
       }
-      setIsLive(false);
-      setSelectedClass(null);
-      window.location.reload();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', endSession);
+
+    if (isActive) {
+      resetInactivityTimer();
+      timerIntervalRef.current = window.setInterval(() => {
+        setSessionSeconds(prev => prev + 1);
+      }, 1000);
+    }
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', endSession);
+      endSession();
+    };
+  }, [isActive]);
+
+  const handleTrialEnd = async () => {
+    endSession();
+    setShowTrialEnd(true);
+    // Use server action for TTS
+    // const base64 = await generateTTS("Dr. Gam's power cell needs recharging! To continue our advanced session, please connect your Magic Key.");
+    // if (base64) await playRawPcm(base64);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const updateVisualsFromText = async (fullText: string) => {
+    if (!schoolId) return;
+    const cleanText = fullText.toUpperCase();
+    const commands = Array.from(cleanText.matchAll(/SHOW\s+BOARD:\s*([\w\s]+?)(?=[.!?]|$)/gi));
+    if (commands.length === 0) return;
+
+    const lastCommand = commands[commands.length - 1][1].trim();
+    if (lastCommand === lastProcessedCommandRef.current) return;
+    
+    lastProcessedCommandRef.current = lastCommand;
+    const newId = ++requestIdRef.current;
+    setIsVisualLoading(true);
+
+    let detectedValue = lastCommand;
+    let detectedType: VisualState['type'] = 'concept';
+    if (detectedValue.includes("QUIZ") || detectedValue.includes("QUESTION")) {
+      detectedValue = "QUIZ TIME!"; detectedType = 'quiz';
+    } else if (detectedValue.length === 1 && /[A-Z]/.test(detectedValue)) {
+      detectedType = 'letter';
+    } else if (/^\d+$/.test(detectedValue)) {
+      detectedType = 'number';
+    }
+
+    setActiveVisual({ type: detectedType, value: detectedValue, id: newId });
+    try {
+      const result = await generateLessonImageAction({ prompt: `Academic high-quality 3D ${detectedValue}, centered, professional clean style, white background`, schoolId });
+      if (newId === requestIdRef.current) {
+          setActiveVisual(prev => prev ? { ...prev, url: result.data || undefined } : null);
+          setIsVisualLoading(false);
+      }
+    } catch (e) { setIsVisualLoading(false); }
+  };
+
+  const startSession = async (isReconnect = false) => {
+    setShowTrialEnd(false);
+    if (document.visibilityState === 'hidden') return;
+    setIsConnecting(true);
+    toast({
+        variant: "destructive",
+        title: "Feature Not Available",
+        description: "Live voice tutoring is not configured for this project environment."
+    });
+    setTimeout(() => {
+        setIsConnecting(false);
+        setIsActive(false); // Make sure it's not stuck in active
+    }, 1500);
+  };
+
+  const handleUnexpectedClose = () => {
+    if (isActive && document.visibilityState === 'visible' && autoReconnectAttempts.current < 2) {
+      autoReconnectAttempts.current++;
+      setTimeout(() => {
+        if (isActive && document.visibilityState === 'visible') startSession(true);
+      }, 5000);
+    } else {
+      endSession();
+    }
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] gap-4 p-4 md:p-6 bg-slate-50/50">
+    <div className="flex flex-col items-center p-6 md:p-12 bg-[#F8FAFC] rounded-[4rem] shadow-2xl max-w-7xl mx-auto border-[12px] border-slate-900 relative overflow-hidden font-black selection:bg-indigo-100">
+      
+      {/* TRIAL OVERLAY */}
+      {showTrialEnd && (
+        <div className="absolute inset-0 z-[150] bg-slate-900/95 backdrop-blur-xl flex flex-col items-center justify-center p-12 text-center animate-in zoom-in">
+           <Zap className="w-24 h-24 text-yellow-400 mb-8 animate-bounce" />
+           <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-4">Lecture Interrupted</h2>
+           <p className="text-xl text-slate-400 max-w-xl mb-10">Dr. Gam's temporary connection has ended. Connect your Magic Key to continue this session.</p>
+           <Button className="bg-yellow-400 text-slate-900 h-16 px-10 rounded-2xl text-xl font-black shadow-xl" onClick={endSession}>Reset Session</Button>
+        </div>
+      )}
+
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        {/* HEADER */}
-        {!isLive && (
-            <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 shrink-0">
-                <CardHeader className="flex flex-row justify-between items-center">
-                    <div>
-                        <CardTitle className="flex items-center gap-2 text-2xl">
-                            <Video className="h-8 w-8"/> Live Classroom
-                        </CardTitle>
-                        <CardDescription className="text-blue-100">
-                            {isTeacher ? "Manage and conduct live sessions." : "Join your scheduled classes."}
-                        </CardDescription>
-                    </div>
-                    {isTeacher && (
-                        <Button onClick={() => setIsScheduleOpen(true)} variant="secondary" className="text-blue-700 font-bold">
-                            <Plus className="mr-2 h-4 w-4"/> Schedule Class
-                        </Button>
-                    )}
-                </CardHeader>
-            </Card>
-        )}
-
-        {/* MAIN CONTENT AREA */}
-        <div className="flex flex-1 gap-4 overflow-hidden min-h-0">
+        {/* PROFESSOR CARD */}
+        <div className="lg:col-span-3 flex flex-col items-center justify-center p-10 bg-white rounded-[4rem] border-4 border-slate-900 shadow-xl">
+            <div className={`relative w-44 h-44 rounded-full bg-slate-50 flex items-center justify-center mb-8 border-8 transition-all duration-500 ${isActive ? 'border-indigo-500 scale-105' : 'border-slate-200'}`}>
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=DrGam" alt="Dr. Gam" className="w-36 h-36 rounded-full object-cover" />
+                {isActive && <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-xl animate-pulse"><Mic className="w-8 h-8" /></div>}
+            </div>
+            <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter text-center mb-6">Dr. Gam</h2>
             
-            {/* LEFT SIDEBAR: CLASS LIST */}
-            {!isLive && (
-                <Card className="w-full md:w-1/3 lg:w-1/4 flex flex-col h-full">
-                    <CardHeader className="pb-2 flex flex-row justify-between items-center">
-                        <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="h-5 w-5 text-slate-500"/> Classes</CardTitle>
-                        <Button variant="ghost" size="icon" onClick={() => window.location.reload()}><RefreshCw className="h-4 w-4"/></Button>
-                    </CardHeader>
-                    <ScrollArea className="flex-1 px-4">
-                        <div className="space-y-3 pb-4">
-                            {classesLoading && (
-                                <>
-                                    <Skeleton className="h-20 w-full"/>
-                                    <Skeleton className="h-20 w-full"/>
-                                </>
-                            )}
-                            
-                            {!classesLoading && (!classes || classes.length === 0) && (
-                                <div className="text-center py-8 px-2 border-2 border-dashed rounded-lg">
-                                    <AlertCircle className="mx-auto h-8 w-8 text-slate-300 mb-2"/>
-                                    <p className="text-sm font-medium text-slate-500">No classes found.</p>
-                                    <p className="text-xs text-slate-400 mt-1">
-                                        {isTeacher ? "Go to Academics to create a class." : "No classes assigned."}
-                                    </p>
-                                </div>
-                            )}
-
-                            {classes?.map((cls: any) => {
-                                const session = cls.nextSession || {};
-                                const isSessionLive = session.isLive === true;
-                                return (
-                                    <div key={cls.id} className={`p-4 rounded-lg border transition-all ${isSessionLive ? 'border-red-400 bg-red-50' : 'hover:border-blue-500 hover:bg-blue-50'}`}>
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="font-bold text-slate-700">{cls.name}</h3>
-                                            {isSessionLive && <Badge className="bg-red-500 animate-pulse">LIVE NOW</Badge>}
-                                        </div>
-                                        <div className="text-xs text-muted-foreground mb-3 space-y-1">
-                                            <div className="flex items-center gap-2"><Calendar className="h-3 w-3"/><span>{session.dateTime ? new Date(session.dateTime).toLocaleString() : 'No session scheduled'}</span></div>
-                                            {session.topic && <p className="font-medium text-slate-600">Topic: {session.topic}</p>}
-                                        </div>
-                                        <Button className={`w-full ${isSessionLive ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`} onClick={() => handleJoin(cls)}>
-                                            {isSessionLive ? "Join Live Stream" : (isTeacher ? "Start Class" : "Enter Room")}
-                                        </Button>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </ScrollArea>
-                </Card>
+            {isActive && (
+              <div className="mb-8 px-6 py-2 bg-slate-900 text-white rounded-2xl font-mono text-lg flex items-center gap-3">
+                <Clock className="w-5 h-5 text-yellow-400" /> {formatTime(sessionSeconds)}
+              </div>
             )}
+            
+            {isActive ? (
+              <Button onClick={endSession} className="w-full h-14 bg-red-50 text-red-600 rounded-3xl font-black uppercase text-xs hover:bg-red-600 hover:text-white border-4 border-red-50">Stop Lecture</Button>
+            ) : (
+                <Badge variant="outline" className="text-slate-400 uppercase font-black tracking-widest text-[10px]">Awaiting Instruction</Badge>
+            )}
+        </div>
 
-            {/* RIGHT SIDE: STAGE */}
-            <div className="flex-1 flex flex-col h-full min-h-0 bg-white rounded-lg border shadow-sm overflow-hidden">
-                {isLive && selectedClass ? (
-                    <div className="flex flex-col lg:flex-row h-full">
-                        <div className="flex-1 flex flex-col p-2 bg-slate-900 overflow-hidden">
-                            <div className="flex justify-between items-center bg-slate-800 p-2 rounded mb-2 text-white">
-                                <h2 className="font-bold flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-red-500 animate-pulse"/>{selectedClass.name}</h2>
-                                <Button variant="destructive" size="sm" onClick={handleLeave}>Leave Class</Button>
-                            </div>
-                            <div className="flex-1 min-h-0"><LiveRoom roomId={selectedClass.id} isHost={isTeacher} /></div>
-                        </div>
-                        <div className="w-full lg:w-80 h-1/3 lg:h-full border-l"><ChatWindow roomId={selectedClass.id} /></div>
+        {/* INTERACTIVE BOARD */}
+        <div className="lg:col-span-9">
+            <div className="w-full aspect-[16/10] bg-slate-900 rounded-[5rem] border-[16px] border-slate-800 shadow-inner flex items-center justify-center relative overflow-hidden group">
+                {!activeVisual ? (
+                    <div className="text-center opacity-10 flex flex-col items-center gap-8 group-hover:opacity-20 transition-opacity">
+                        <MonitorPlay className="w-48 h-48" />
+                        <p className="font-black text-3xl uppercase tracking-[0.4em]">Visual Board Offline</p>
                     </div>
                 ) : (
-                    <div className="flex flex-1 items-center justify-center bg-slate-50 m-4 rounded-xl border-2 border-dashed">
-                        <div className="text-center text-slate-400">
-                            <Video className="h-16 w-16 mx-auto mb-4 opacity-50"/>
-                            <h3 className="text-xl font-bold text-slate-600">Welcome to the Classroom</h3>
-                            <p className="text-md mt-2 max-w-md mx-auto">{isTeacher ? "Schedule a class using the button above." : "Check the list on the left for live sessions."}</p>
+                    <div className="w-full h-full p-16 animate-in zoom-in duration-500">
+                        <div className="w-full h-full rounded-[4rem] bg-white shadow-2xl flex items-center justify-center overflow-hidden border-[12px] border-slate-700">
+                           {isVisualLoading ? (
+                             <div className="flex flex-col items-center gap-4">
+                               <Loader2 className="w-20 h-20 animate-spin text-slate-300" />
+                               <span className="text-slate-400 font-bold uppercase text-xs tracking-widest">Preparing Visual...</span>
+                             </div>
+                           ) : activeVisual.url && (
+                             <img src={activeVisual.url} className="w-full h-full object-cover p-10 animate-in fade-in duration-700" alt="visual aid" />
+                           )}
                         </div>
                     </div>
                 )}
+                {/* Board Label */}
+                <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-slate-800 rounded-full border border-slate-700">
+                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em]">Dr. Gam Digital Board</span>
+                </div>
             </div>
         </div>
-
-        {/* MODAL */}
-        <ScheduleDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} classes={classes} />
+      </div>
+      
+      {/* START INTERFACE */}
+      {!isActive && (
+        <div className="mt-16 flex flex-col items-center w-full animate-in slide-in-from-bottom-10 duration-700">
+           <button 
+             onClick={() => startSession(false)} 
+             disabled={isConnecting}
+             className="px-24 py-12 bg-slate-900 text-white text-5xl font-black rounded-[4rem] shadow-[0_15px_0_0_#000] hover:translate-y-1 active:translate-y-4 active:shadow-none transition-all flex items-center gap-6 uppercase tracking-tighter border-8 border-white mb-16"
+           >
+             {isConnecting ? <><Loader2 className="animate-spin w-12 h-12"/> Awakening...</> : 'Enter Classroom'}
+           </button>
+           
+           <div className="bg-indigo-50 p-12 rounded-[4rem] border-8 border-indigo-100 shadow-xl max-w-3xl transform rotate-1">
+              <div className="flex items-center justify-center gap-6 mb-8">
+                <ShieldCheck className="w-12 h-12 text-indigo-600" />
+                <h3 className="text-4xl font-black text-indigo-900 uppercase tracking-tighter">Academic Mastery</h3>
+              </div>
+              <div className="space-y-6 text-center">
+                <p className="text-2xl font-black text-slate-800 leading-tight">
+                  Professor Dr. Gam is ready for a professional deep-dive.
+                </p>
+                <div className="bg-white p-8 rounded-[2.5rem] border-4 border-indigo-200 shadow-inner">
+                  <p className="text-xl font-bold text-slate-600 leading-relaxed">
+                    Say <span className="text-indigo-600 underline">"Good morning, Dr. Gam"</span> to begin. Mention any topic—Accounting, Science, or Literature—and I will visualize the concepts on the digital board for you.
+                  </p>
+                </div>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default DrGamTutor;

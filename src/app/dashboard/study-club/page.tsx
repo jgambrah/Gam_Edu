@@ -34,7 +34,7 @@ export default function DrGamTutorPage() {
       setMessages([
         {
           role: 'model',
-          content: `Hello ${user.displayName?.split(' ')[0] || 'Scholar'}. I am Professor Dr. Gam, your personal AI tutor. What academic subject shall we explore today?`,
+          content: `Hello ${user.displayName?.split(' ')[0] || 'Scholar'}. I am your personal AI tutor. What academic subject shall we explore today?`,
         }
       ]);
     }
@@ -60,11 +60,10 @@ export default function DrGamTutorPage() {
           history: messages,
           message: input,
           userId: user.uid,
-          schoolId: schoolId,
       });
 
       if (!response.success) {
-        throw new Error(response.text || "Dr. Gam encountered an error.");
+        throw new Error(response.text || "The AI tutor encountered an error.");
       }
 
       const aiMessage: Message = { role: 'model', content: response.text };
@@ -76,6 +75,9 @@ export default function DrGamTutorPage() {
             title: "AI Error",
             description: error.message,
         });
+        // If there's an error, add the user's message back to the input
+        setInput(userMessage.content);
+        setMessages(prev => prev.slice(0, -1)); // Remove the user message that failed
     } finally {
       setIsLoading(false);
     }
@@ -90,7 +92,7 @@ export default function DrGamTutorPage() {
         </div>
         <div>
           <h2 className="font-bold text-lg flex items-center gap-2">
-            Dr. Gam - AI Professor <Sparkles className="h-4 w-4 text-yellow-300"/>
+            AI Study Club <Sparkles className="h-4 w-4 text-yellow-300"/>
           </h2>
           <p className="text-slate-300 text-xs">Your Personal Academic Tutor</p>
         </div>
@@ -109,11 +111,12 @@ export default function DrGamTutorPage() {
               }`}>
                 {msg.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
               </div>
-              <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm prose prose-sm ${
-                msg.role === 'user' 
-                  ? 'bg-blue-600 text-white rounded-br-none' 
+              <div className={cn(
+                'rounded-lg p-3 max-w-[80%] text-sm leading-relaxed shadow-sm prose prose-sm',
+                msg.role === 'user'
+                  ? 'bg-blue-600 text-white rounded-br-none'
                   : 'bg-white text-slate-800 border border-slate-100 rounded-bl-none'
-              }`}>
+              )}>
                 <p>{msg.content}</p>
               </div>
             </div>
@@ -121,7 +124,7 @@ export default function DrGamTutorPage() {
           {isLoading && (
             <div className="flex items-center gap-4 text-slate-400 text-sm ml-14">
               <Loader2 className="w-5 h-5 animate-spin"/>
-              <span>Dr. Gam is thinking...</span>
+              <span>AI Tutor is thinking...</span>
             </div>
           )}
           <div ref={messagesEndRef} />
