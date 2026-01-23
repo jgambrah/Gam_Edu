@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -11,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Database, Eraser, PenTool
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Palette, Trophy, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Database, Eraser, PenTool
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails } from '@/ai/flows/junior-actions';
@@ -27,6 +29,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Textarea } from '@/components/ui/textarea';
 import StickerBook from './sticker-book';
+import ArtStudio from './art-studio';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -898,7 +901,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
-// --- 6. SCIENCE WORLD ---
+// --- 6. SCIENCE WORLD (FIXED: Journal & Matter Lab) ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { user } = useUser();
@@ -909,16 +912,19 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     // --- 1. DATA FETCHING (Scoped to School) ---
     
+    // Sorter Items
     const sorterQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'junior_sorter_items'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
     [firestore, schoolId]);
     const { data: dbSorterItems, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
     
+    // Matter Lab Materials
     const materialsQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'junior_science_materials'), where('schoolId', '==', schoolId), orderBy('createdAt', 'asc')) : null, 
     [firestore, schoolId]);
     const { data: dbMaterials, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
 
+    // Science Journal
     const scienceQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'junior_science'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
     [firestore, schoolId]);
@@ -935,6 +941,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [loading, setLoading] = useState(false);
     const [sorterFeedback, setSorterFeedback] = useState("");
 
+
     // --- 3. NEW MATERIAL FORM STATE ---
     const [newMat, setNewMat] = useState({
         name: '',
@@ -943,16 +950,29 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
     });
 
+    // Select the first material automatically when data loads
     useEffect(() => {
         if (dbMaterials && dbMaterials.length > 0 && !selectedMaterial) {
             setSelectedMaterial(dbMaterials[0]);
         }
     }, [dbMaterials, selectedMaterial]);
 
+    // --- 4. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
         if (!newMat.name || !firestore || !schoolId) return;
-        const statesArray = [ { ...newMat.solid }, { ...newMat.liquid }, { ...newMat.gas }];
-        await addDoc(collection(firestore, 'junior_science_materials'), { name: newMat.name, states: statesArray, schoolId: schoolId, createdAt: serverTimestamp() });
+        const statesArray = [
+            { ...newMat.solid }, 
+            { ...newMat.liquid }, 
+            { ...newMat.gas }
+        ];
+
+        await addDoc(collection(firestore, 'junior_science_materials'), {
+            name: newMat.name,
+            states: statesArray,
+            schoolId: schoolId, // CRITICAL FIX
+            createdAt: serverTimestamp()
+        });
+
         setShowAddMatForm(false);
         setNewMat({ name: '', solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' }, liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' }, gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' } });
         if(refetchMaterials) refetchMaterials();
@@ -961,33 +981,36 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     const getCurrentState = () => {
         if (!selectedMaterial) return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
+        // Logic: Find state matching temperature
         const state = [...selectedMaterial.states].sort((a:any,b:any) => b.temp - a.temp).find((s:any) => temp >= s.temp);
         return state || selectedMaterial.states[0];
     };
 
+    // --- 5. DISCOVERY LAB LOGIC ---
     const handleGenerate = async () => { 
         setLoading(true); 
         try {
             const res = await generateJuniorScience(topic); 
             if(res.success && res.data) setFact(res.data);
             else toast({ variant: "destructive", title: "Error", description: res.error || "AI failed." });
-        } catch(e: any) { 
-            console.error(e);
-            toast({ variant: 'destructive', title: "Error", description: e.message || "An error occurred." });
-        } finally { 
-            setLoading(false); 
-        }
+        } catch(e: any) { console.error(e); }
+        finally { setLoading(false); }
     };
 
     const handleSave = async () => { 
         if(!user || !fact || !firestore || !schoolId) return; 
-        await addDoc(collection(firestore,'junior_science'), { ...fact, createdAt: serverTimestamp(), createdBy: user.uid, schoolId: schoolId }); 
+        await addDoc(collection(firestore,'junior_science'), {
+            ...fact,
+            createdAt: serverTimestamp(),
+            createdBy: user.uid,
+            schoolId: schoolId // CRITICAL FIX
+        }); 
         setFact(null); 
         if(refetchScience) refetchScience(); 
-        toast({title: "Discovery Saved!", description: "Check your Journal tab."});
+        toast({title: "Discovery Saved!", description: "Check Journal Tab"});
         setActiveTab('library');
     };
-
+    
     const handleSaveSorterItem = async () => {
         if (!newItem.name || !newItem.emoji || !schoolId) return;
         await addDoc(collection(firestore, 'junior_sorter_items'), { ...newItem, schoolId: schoolId, createdAt: serverTimestamp() });
@@ -1015,7 +1038,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             toast({ title: "Deleted" });
         }
     };
-
     return (
         <div className="space-y-8">
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
@@ -1025,6 +1047,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
 
+            {/* Discovery Lab Tab */}
             {activeTab === 'lab' && (
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <div className="space-y-4">
@@ -1058,7 +1081,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     )}
                 </div>
             )}
-            
+
+            {/* Sorter Tab */}
             {activeTab === 'sorter' && (
                  <div className="space-y-6">
                     <div className="text-center p-4 rounded-xl bg-white border shadow-sm">
@@ -1089,6 +1113,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
+            {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
                     <div className="text-center space-y-4">
@@ -1116,6 +1141,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </div>
                     </div>
 
+                    {/* Material Creator Form */}
                     {showAddMatForm && canEdit && (
                         <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px]">
                             <h4 className="text-xl font-black text-cyan-800 mb-4">Create New Material</h4>
@@ -1134,6 +1160,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </Card>
                     )}
 
+                    {/* Simulator Display */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
                         <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
                             {getCurrentState().emoji}
@@ -1159,6 +1186,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
+            {/* Journal Tab */}
             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
@@ -1187,92 +1215,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     )}
                 </div>
             )}
-        </div>
-    );
-}
-
-// --- 7. ART STUDIO (PAINT & SHAPES) ---
-function ArtStudio() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [isDrawing, setIsDrawing] = useState(false);
-    const [color, setColor] = useState('#4f46e5');
-    const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp'>('brush');
-
-    useEffect(() => {
-        const c = canvasRef.current;
-        if (c) { 
-            c.width = c.parentElement?.clientWidth || 800; c.height = 500;
-            const ctx = c.getContext('2d');
-            if(ctx) { ctx.fillStyle = "white"; ctx.fillRect(0,0,c.width,c.height); }
-        }
-    }, []);
-
-    const handleCanvasClick = (e: any) => {
-        const rect = canvasRef.current!.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const ctx = canvasRef.current?.getContext('2d');
-        if(!ctx) return;
-
-        if (tool === 'stamp') {
-            ctx.fillStyle = color;
-            ctx.beginPath(); ctx.arc(x, y, 30, 0, Math.PI * 2); ctx.fill();
-        }
-    };
-    
-    const startDrawing = (e: React.MouseEvent) => {
-        const ctx = canvasRef.current?.getContext('2d');
-        if (ctx && tool === 'brush') {
-            ctx.beginPath();
-            ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-            setIsDrawing(true);
-        }
-    };
-
-    const draw = (e: React.MouseEvent) => {
-        if (!isDrawing || tool !== 'brush') return;
-        const ctx = canvasRef.current?.getContext('2d');
-        if (ctx) {
-            ctx.strokeStyle = color;
-            ctx.lineCap = 'round';
-            ctx.lineWidth = 5;
-            ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-            ctx.stroke();
-        }
-    };
-    
-    const stopDrawing = () => {
-        setIsDrawing(false);
-    };
-
-
-    const clearBoard = () => {
-        const canvas = canvasRef.current;
-        const ctx = canvas?.getContext('2d');
-        if (canvas && ctx) {
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-    };
-
-    return (
-        <div className="grid lg:grid-cols-4 gap-6">
-            <Card className="p-6 rounded-[40px] border-4 border-pink-100 space-y-6">
-                <div className="flex gap-2">
-                    <Button size="icon" variant={tool === 'brush' ? 'default' : 'outline'} onClick={() => setTool('brush')}><PenTool /></Button>
-                    <Button size="icon" variant={tool === 'bucket' ? 'default' : 'outline'} onClick={() => setTool('bucket')}><Database /></Button>
-                    <Button size="icon" variant={tool === 'stamp' ? 'default' : 'outline'} onClick={() => setTool('stamp')}><Star /></Button>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                    {['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#000000', '#FFFFFF'].map(c => (
-                        <button key={c} onClick={() => setColor(c)} className={`w-10 h-10 rounded-full border-4 ${color === c ? 'border-slate-800' : 'border-white shadow-sm'}`} style={{backgroundColor: c}} />
-                    ))}
-                </div>
-                <Button variant="destructive" className="w-full rounded-2xl h-12" onClick={clearBoard}><Eraser className="mr-2" /> Clear All</Button>
-            </Card>
-            <div className="lg:col-span-3">
-                <canvas ref={canvasRef} onClick={handleCanvasClick} onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseLeave={stopDrawing} className="bg-white rounded-[60px] shadow-2xl border-[12px] border-white w-full h-[500px] cursor-crosshair touch-none" />
-            </div>
         </div>
     );
 }
@@ -1311,11 +1253,12 @@ export default function JuniorCampusPage() {
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
-                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
-                <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
+                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
+                <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
             </div>
         </Tabs>
       </div>
     </div>
   );
 }
+
