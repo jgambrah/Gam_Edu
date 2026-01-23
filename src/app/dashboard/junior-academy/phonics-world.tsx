@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -61,15 +62,6 @@ function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
         }
     };
     
-    // Fetch details for the first word in the list initially
-    useEffect(() => {
-        if (dbWords && dbWords.length > 0 && !word) {
-            fetchDetails(dbWords[0].word);
-        } else if (!dbWords && !isLoading) {
-            fetchDetails('Apple'); // Fallback
-        }
-    }, [dbWords, word, fetchDetails, isLoading]);
-
     const handleSaveWord = async () => {
         if(!firestore || !newWord.trim() || !schoolId) return;
         try {
@@ -93,16 +85,22 @@ function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             <p className="text-slate-400 font-bold italic text-xl mt-2 mb-12">Learn to pronounce words clearly!</p>
 
             <div className="grid md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
-                <div className="p-10 bg-pink-50 rounded-[4rem] border-8 border-white shadow-xl">
+                <div className="p-10 bg-pink-50 rounded-[4rem] border-8 border-white shadow-xl min-h-[500px] flex flex-col justify-center">
                     <p className="text-[10px] uppercase font-black text-pink-300 mb-2">Word of the Day</p>
-                    {details ? (
+                    {isLoading ? (
+                        <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>
+                    ) : details ? (
                         <div className="space-y-4 text-center animate-in fade-in">
                             <p className="text-8xl font-black text-slate-800">{details.word}</p>
                             <p className="text-2xl font-bold text-pink-400 italic">{details.phonetic}</p>
                             <div className="text-6xl">{details.emoji}</div>
                             <Button onClick={() => speak(details.sentence)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
                         </div>
-                    ) : <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>}
+                    ) : (
+                         <div className="text-center text-slate-400 py-10">
+                            <p>Select a word below to start practicing!</p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="space-y-4">
