@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
@@ -15,7 +14,12 @@ import {
   Apple, User, HeartPulse, Ear, CloudSun, PawPrint, Car, Shapes, Earth,
     Sigma, Languages, BookOpen, 
   Rocket, PenTool, Save, Library, Brain, CheckCircle2, XCircle, PlusCircle, FolderOpen,
-    Calculator, MessageSquare, Clapperboard, Users, BookCopy, BarChart, CalendarCheck, StaffIcon, Shield, Code, Activity, TrendingUp, Gamepad2, AlertCircle, Wallet, Settings, Megaphone, Wrench, Truck, Building2, Rabbit, FileQuestion, ArrowRight, PencilRuler, Globe, CheckSquare
+    Calculator, MessageSquare, Clapperboard, Users, BookCopy, BarChart, CalendarCheck, StaffIcon, Shield, Code, Activity, TrendingUp, Gamepad2, AlertCircle, Wallet, Settings, Megaphone, Wrench, Truck, Building2, Rabbit, FileQuestion, ArrowRight, PencilRuler, Globe, CheckSquare,
+    Database,
+    HeartHandshake,
+    Minus,
+    Clock,
+    PenSquare
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -227,9 +231,9 @@ export default function MathPlayground({ schoolId }: { schoolId: string }) {
         { id: 'sequence', icon: ArrowRight },
         { id: 'comparing', icon: Activity },
         { id: 'number-words', icon: BookOpen },
-        { id: 'bonds', icon: Users },
+        { id: 'bonds', icon: HeartHandshake },
         { id: 'addition', icon: Plus },
-        { id: 'subtraction', icon: Loader2 },
+        { id: 'subtraction', icon: Minus },
         { id: 'tens-units', icon: Database },
         { id: 'grouping', icon: Users },
         { id: 'time', icon: Clock },
@@ -285,3 +289,4 @@ export default function MathPlayground({ schoolId }: { schoolId: string }) {
     );
 }
 
+    
