@@ -37,7 +37,7 @@ import type { DictionaryWord, LessonCard } from '@/lib/types';
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const map: Record<string, keyof typeof LucideIcons> = {
       'fa-spell-check': 'Languages', 'fa-ear-listen': 'Ear', 'fa-pen-nib': 'PenNib',
-      'fa-arrow-1-9': 'Calculator', 'fa-hand-holding-heart': 'HeartHandshake', 'fa-flask-vial': 'FlaskConical',
+      'fa-arrow-1-9': 'Calculator', 'fa-hand-holding-heart': 'Handshake', 'fa-flask-vial': 'FlaskConical',
       'fa-palette': 'Palette', 'fa-robot': 'Bot', 'fa-face-smile': 'Smile', 'fa-tooth': 'Sparkles',
       'fa-heart-pulse': 'HeartPulse', 'fa-vest': 'Shirt', 'fa-sun': 'Sun', 'fa-utensils': 'Utensils',
       'fa-school': 'School', 'fa-house': 'Home', 'fa-recycle': 'Recycle', 'fa-water': 'Droplets',
@@ -60,13 +60,14 @@ const isJuniorLevel = (grade: string) =>
 const juniorStyles = {
     storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
     storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
-    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
-    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner",
+    
     questCard: "bg-gradient-to-b from-sky-400 to-blue-500 border-b-[12px] border-blue-700 rounded-[50px] text-white",
     stepBubble: "w-16 h-16 rounded-full bg-white text-blue-600 flex items-center justify-center text-3xl shadow-lg border-4 border-blue-200",
+    
     card: "rounded-[60px] border-8 border-yellow-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100",
     header: "p-10 text-center",
     mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
+    
     bubble: "bg-white/80 backdrop-blur-md p-6 rounded-[40px] border-4 border-dashed border-pink-200",
 };
 
@@ -368,44 +369,41 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
 // --- SUB-COMPONENT: SINGING DICTIONARY ---
 function SingingDictionary({ schoolId }: { schoolId: string }) {
-    const [selectedWord, setSelectedWord] = useState<constants.DictionaryWord | null>(null);
+    const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [rhyme, setRhyme] = useState('');
     const { toast } = useToast();
     
     const words = constants.DICTIONARY_WORDS; 
+    const current = words[index];
 
     useEffect(() => {
-        const loadPage = async (word: constants.DictionaryWord) => {
-            if (!schoolId) return;
+        const loadPage = async () => {
+            if (!current || !schoolId) return;
             setLoading(true);
             setRhyme('');
-            setImageUrl(null);
             try {
-                const result = await generateLessonImageAction({ prompt: word.imagePrompt, schoolId });
-                if (result.success && result.data) {
-                    setImageUrl(result.data);
+                const result = await generateLessonImageAction({ prompt: current.imagePrompt, schoolId });
+                if (result.success) {
+                    setImageUrl(result.data || null);
                 } else {
-                    toast({ title: 'AI Error', description: result.error || 'Could not generate image.', variant: 'destructive' });
+                    throw new Error(result.error);
                 }
-            } catch (e) {
-                toast({ title: 'Network Error', description: 'Could not connect to image service.', variant: 'destructive' });
+            } catch (e: any) {
+                toast({ title: 'Image Error', description: e.message, variant: 'destructive' });
             } finally {
                 setLoading(false);
             }
         };
-
-        if (selectedWord) {
-            loadPage(selectedWord);
-        }
-    }, [selectedWord, schoolId, toast]);
+        loadPage();
+    }, [index, current, schoolId, toast]);
 
     const playSong = async () => {
-        if (!selectedWord || !schoolId) return;
+        if (!current || !schoolId) return;
         setLoading(true);
         try {
-            const rhymeResult = await generateRhyme({ topic: selectedWord.word, schoolId });
+            const rhymeResult = await generateRhyme({ topic: current.word, schoolId });
             if (!rhymeResult.success || !rhymeResult.rhyme) {
                 throw new Error(rhymeResult.error || 'Failed to generate rhyme.');
             }
@@ -433,44 +431,316 @@ function SingingDictionary({ schoolId }: { schoolId: string }) {
                 {words.map((w, i) => (
                     <button 
                         key={i} 
-                        onClick={() => setSelectedWord(w)} 
-                        className={`flex-shrink-0 w-12 h-12 rounded-lg font-black text-xl transition-all ${selectedWord?.word === w.word ? 'bg-red-500 text-white scale-110' : 'bg-red-50 text-red-400 hover:bg-red-100'}`}
+                        onClick={() => setIndex(i)} 
+                        className={`flex-shrink-0 w-12 h-12 rounded-lg font-black text-xl transition-all ${index === i ? 'bg-red-500 text-white scale-110 shadow-lg' : 'bg-red-50 text-red-400 hover:bg-red-100'}`}
                     >
                         {w.word[0]}
                     </button>
                 ))}
             </div>
 
-            {selectedWord ? (
-                <Card className={juniorStyles.card}>
-                    <div className="bg-gradient-to-r from-red-400 to-pink-400 p-8 text-white text-center">
-                        <h2 className="text-7xl font-black">{selectedWord.word}</h2>
-                        <p className="text-2xl font-bold uppercase tracking-widest">{selectedWord.category}</p>
-                    </div>
-                    <CardContent className="p-10 flex flex-col items-center space-y-8">
-                        <div className="w-80 h-80 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden bg-red-50">
-                            {loading && !imageUrl ? <div className="flex h-full items-center justify-center animate-spin text-red-200"><Loader2 size={48}/></div> : imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={selectedWord.word} /> : <div className="flex h-full items-center justify-center text-red-200"><Loader2 size={48}/></div>}
-                        </div>
-                        
-                        {rhyme && (
-                            <div className="bg-red-50 p-6 rounded-3xl border-4 border-dashed border-red-200 text-center animate-in zoom-in">
-                                <p className="text-xl font-bold text-red-700 whitespace-pre-wrap">{rhyme}</p>
-                            </div>
-                        )}
-
-                        <Button onClick={playSong} disabled={loading} className={`${juniorStyles.button} bg-red-500 hover:bg-red-600 shadow-[0_10px_0_#991b1b]`}>
-                            <Music className="mr-3" /> SING ALONG!
-                        </Button>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="text-center py-20 bg-white/50 rounded-full">
-                    <p className="text-2xl font-bold text-slate-400">Select a letter to begin!</p>
+            <Card className={juniorStyles.card}>
+                <div className="bg-gradient-to-r from-red-400 to-pink-400 p-8 text-white text-center">
+                    <h2 className="text-7xl font-black">{current.word}</h2>
+                    <p className="text-2xl font-bold uppercase tracking-widest">{current.category}</p>
                 </div>
+                <CardContent className="p-10 flex flex-col items-center space-y-8">
+                    <div className="w-80 h-80 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden bg-red-50">
+                        {loading && !imageUrl ? <div className="flex h-full items-center justify-center animate-spin text-red-200"><Loader2 size={48}/></div> : imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={current.word} /> : <div className="flex h-full items-center justify-center text-red-200"><Loader2 size={48}/></div>}
+                    </div>
+                    
+                    {rhyme && (
+                        <div className="bg-red-50 p-6 rounded-3xl border-4 border-dashed border-red-200 text-center animate-in zoom-in">
+                            <p className="text-xl font-bold text-red-700 whitespace-pre-wrap">{rhyme}</p>
+                        </div>
+                    )}
+
+                    <Button onClick={playSong} disabled={loading} className={`${juniorStyles.button} bg-red-500 hover:bg-red-600 shadow-[0_10px_0_#991b1b]`}>
+                        <Music className="mr-3" /> SING ALONG!
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+// --- SUB-COMPONENT: Life Skills Zone ---
+function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: boolean }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+
+    const [activeTab, setActiveTab] = useState('feelings');
+    const [activeItem, setActiveItem] = useState<any>(null);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [aiTopic, setAiTopic] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    // AI-generated image state
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [isImageLoading, setIsImageLoading] = useState(false);
+
+    const tabs = [
+        { id: 'feelings', icon: Smile, label: 'Feelings' },
+        { id: 'health', icon: HeartPulse, label: 'My Body & Health' },
+        { id: 'kindness', icon: Users, label: 'Kindness & Community' },
+        { id: 'songs', icon: Music, label: 'Routine Songs' },
+        { id: 'watch', icon: Tv, label: 'Watch & Learn' },
+        { id: 'routine', icon: Activity, label: 'My Day' },
+        { id: 'talk', icon: MessageSquare, label: 'Let\'s Talk' },
+        { id: 'puppets', icon: Handshake, label: 'Puppet Shows' },
+        { id: 'solver', icon: CheckSquare, label: 'Problem Solver' },
+    ];
+
+    const dataQuery = useMemoFirebase(() => 
+        firestore ? query(
+            collection(firestore, 'junior_lifeskills_world'), 
+            where('schoolId', '==', schoolId),
+            where('category', '==', activeTab),
+            orderBy('createdAt', 'asc')
+        ) : null, [firestore, schoolId, activeTab]);
+    
+    const { data: dbItems, forceRefetch } = useCollection<any>(dataQuery);
+
+    const displayItems = useMemo(() => {
+        if (dbItems && dbItems.length > 0) return dbItems;
+
+        switch (activeTab) {
+            case 'feelings': return constants.LIFE_SKILLS_DATA.emotions.map(e => ({ ...e, title: e.name }));
+            case 'health': return constants.LIFE_SKILLS_DATA.health.map(h => ({ ...h, prompt: h.action }));
+            case 'kindness': return constants.LIFE_SKILLS_DATA.social;
+            case 'songs': return constants.LIFE_SKILLS_DATA.music;
+            case 'watch': return constants.LIFE_SKILLS_DATA.practicalLife.pretendPlay;
+            case 'routine': return constants.LIFE_SKILLS_DATA.practicalLife.schedules;
+            case 'talk': return constants.LIFE_SKILLS_DATA.communication.pictureTalk;
+            case 'puppets': return []; 
+            case 'solver': return constants.LIFE_SKILLS_DATA.cognitive.patterns;
+            default: return [];
+        }
+    }, [dbItems, activeTab]);
+
+    useEffect(() => {
+        if (displayItems && displayItems.length > 0) {
+            setActiveItem(displayItems[0]);
+        } else {
+            setActiveItem(null);
+        }
+    }, [displayItems, activeTab]);
+
+    useEffect(() => {
+        const generateImage = async () => {
+            if (!activeItem?.imagePrompt || !schoolId) {
+                setImageUrl(null);
+                return;
+            }
+            setIsImageLoading(true);
+            try {
+                const res = await generateLessonImageAction({ prompt: activeItem.imagePrompt, schoolId });
+                if (res.success) {
+                    setImageUrl(res.data || null);
+                }
+            } catch (e) { console.error(e); }
+            finally { setIsImageLoading(false); }
+        };
+        generateImage();
+    }, [activeItem, schoolId]);
+
+    const handleAiGenerate = async () => {
+        if (!aiTopic.trim() || !schoolId) return;
+        setIsLoading(true);
+        try {
+            const result = await generateLifeSkillEntry({ category: activeTab, topic: aiTopic, schoolId });
+            if (result.success && result.data) {
+                await addDoc(collection(firestore!, 'junior_lifeskills_world'), {
+                    ...result.data,
+                    category: activeTab,
+                    schoolId: schoolId,
+                    createdAt: serverTimestamp()
+                });
+                toast({ title: 'AI created a new activity!' });
+                forceRefetch();
+                setIsDrawerOpen(false);
+                setAiTopic('');
+            } else {
+                throw new Error(result.error || "AI failed to generate content.");
+            }
+        } catch (e: any) {
+            toast({ variant: "destructive", title: "Error", description: e.message });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="grid lg:grid-cols-4 gap-6 animate-in fade-in">
+            <Card className="lg:col-span-1 rounded-[40px] border-4 border-green-100 shadow-sm bg-white">
+                 <CardHeader className="text-center">
+                    <CardTitle className="text-2xl font-black text-green-800">Life Skills Lab</CardTitle>
+                    <CardDescription className="text-green-500 font-bold">Growing Smarter & Kinder</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-2">
+                        {tabs.map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`w-full p-4 rounded-2xl flex items-center gap-3 transition-all text-left font-black ${
+                                    activeTab === tab.id ? 'bg-green-500 text-white shadow-md' : 'bg-white text-slate-500 hover:bg-green-50'
+                                }`}
+                            >
+                                <tab.icon className="w-5 h-5" />
+                                <span className="text-sm">{tab.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="lg:col-span-3 space-y-4">
+                 {canEdit && (
+                    <Button onClick={() => setIsDrawerOpen(true)} className="w-full h-12 bg-green-500 hover:bg-green-600 rounded-2xl font-black shadow-lg">
+                        <Wand2 className="w-4 h-4 mr-2" /> AI Magic: Create New Activity
+                    </Button>
+                 )}
+
+                 {activeItem ? (
+                     <Card className="rounded-[40px] border-8 border-green-100 shadow-xl bg-white overflow-hidden min-h-[500px]">
+                        <CardHeader className="bg-green-500 text-white p-8">
+                            <h3 className="text-4xl font-black uppercase tracking-tighter">{activeItem.title}</h3>
+                        </CardHeader>
+                        <CardContent className="p-10 flex flex-col items-center gap-8">
+                             <div className="w-80 h-64 bg-green-50 rounded-3xl border-4 border-white shadow-inner flex items-center justify-center overflow-hidden">
+                                {isImageLoading ? <Loader2 className="animate-spin text-green-200" /> : <img src={imageUrl || "https://placehold.co/400x300/a7f3d0/14532d?text=Activity"} className="w-full h-full object-cover" />}
+                             </div>
+                             <div className="text-2xl text-center font-bold text-slate-700">
+                                {activeItem.prompt || activeItem.action || activeItem.q || activeItem.story}
+                             </div>
+                        </CardContent>
+                     </Card>
+                 ) : (
+                    <Card className="min-h-[500px] flex items-center justify-center bg-slate-50 border-2 border-dashed">
+                        <div className="text-center text-slate-400">
+                            <p>No activities for this topic yet.</p>
+                            {canEdit && <p>Use the AI Maker to create one!</p>}
+                        </div>
+                    </Card>
+                 )}
+            </div>
+             {isDrawerOpen && (
+                <TeacherModal 
+                    title="Life Skills Activity" 
+                    topicValue={aiTopic} 
+                    onTopicChange={setAiTopic} 
+                    onGenerate={handleAiGenerate} 
+                    isLoading={isLoading} 
+                    onClose={() => setIsDrawerOpen(false)} 
+                />
             )}
         </div>
     );
 }
+
+// --- SUB-COMPONENT: WRITING CANVAS ---
+const WritingCanvas = () => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [color, setColor] = useState('#3B82F6'); 
+    const [mode, setMode] = useState<'letters' | 'numbers'>('letters');
+    const [selectedItem, setSelectedItem] = useState('A');
+    
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        canvas.width = canvas.parentElement?.clientWidth || 500;
+        canvas.height = canvas.parentElement?.clientHeight || 500;
+        
+        ctx.fillStyle = '#F1F5F9';
+        ctx.fillRect(0,0, canvas.width, canvas.height);
+
+        ctx.font = `900 ${canvas.height * 0.8}px 'Nunito', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.strokeStyle = '#E2E8F0';
+        ctx.lineWidth = 6;
+        ctx.setLineDash([20, 15]);
+        ctx.strokeText(selectedItem, canvas.width / 2, canvas.height / 2 + 10);
+        ctx.setLineDash([]);
+        
+    }, [selectedItem]);
+
+    const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+        const ctx = canvasRef.current?.getContext('2d');
+        if (!ctx) return;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        ctx.lineWidth = 15;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = color;
+        setIsDrawing(true);
+    };
+
+    const draw = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isDrawing) return;
+        const ctx = canvasRef.current?.getContext('2d');
+        if (!ctx) return;
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+    };
+
+    const getPos = (e: React.MouseEvent | React.TouchEvent) => {
+        const rect = canvasRef.current!.getBoundingClientRect();
+        return {
+            x: ('touches' in e) ? e.touches[0].clientX - rect.left : e.nativeEvent.offsetX,
+            y: ('touches' in e) ? e.touches[0].clientY - rect.top : e.nativeEvent.offsetY,
+        };
+    };
+
+    const clearCanvas = () => {
+         const canvas = canvasRef.current;
+         const ctx = canvas?.getContext('2d');
+         if (!ctx || !canvas) return;
+         ctx.clearRect(0,0, canvas.width, canvas.height);
+         ctx.fillStyle = '#F1F5F9';
+         ctx.fillRect(0,0, canvas.width, canvas.height);
+         ctx.strokeText(selectedItem, canvas.width / 2, canvas.height / 2 + 10);
+    };
+
+    return (
+        <Card className="rounded-[60px] border-8 border-purple-100 overflow-hidden bg-white shadow-2xl">
+            <div className="bg-purple-500 p-8 text-white text-center">
+                <h3 className="text-4xl font-black uppercase tracking-tighter">Magic Writing Pad</h3>
+            </div>
+            <CardContent className="p-10 space-y-10">
+                <div className="flex justify-center gap-2 overflow-x-auto py-4">
+                    {(mode === 'letters' ? constants.LETTERS : constants.NUMBERS).map(item => (
+                        <button key={item} onClick={() => setSelectedItem(item)} className={`flex-shrink-0 w-14 h-14 rounded-2xl font-black text-2xl border-4 ${selectedItem === item ? 'bg-purple-500 text-white border-white scale-110 shadow-lg' : 'bg-slate-50 text-slate-400'}`}>{item}</button>
+                    ))}
+                </div>
+                
+                <div className="w-full max-w-lg mx-auto aspect-square rounded-[3rem] bg-slate-200 overflow-hidden shadow-inner border-8 border-white">
+                    <canvas 
+                        ref={canvasRef} 
+                        onMouseDown={startDrawing}
+                        onMouseUp={() => setIsDrawing(false)}
+                        onMouseLeave={() => setIsDrawing(false)}
+                        onMouseMove={draw}
+                        className="cursor-crosshair"
+                    />
+                </div>
+                
+                <div className="flex justify-center items-center gap-4">
+                     <Button onClick={clearCanvas} variant="outline" className="h-16 px-10 rounded-2xl border-4 font-black"><Eraser className="mr-2"/> Clear</Button>
+                     <Button className="h-20 px-12 bg-purple-600 hover:bg-purple-700 rounded-3xl font-black text-xl shadow-lg">Check My Work! ✅</Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
 
 export default function JuniorCampusPage() {
     const { role, profile } = useRole();
@@ -510,7 +780,7 @@ export default function JuniorCampusPage() {
                     </TabsList>
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
-                        <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone schoolId={schoolId} /></TabsContent>
+                        <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone schoolId={schoolId} canEdit={canEdit} /></TabsContent>
                         <TabsContent value="writing" className="mt-0"><WritingCanvas /></TabsContent>
                         <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                         <TabsContent value="phonics" className="mt-0"><PhonicsWorld schoolId={schoolId} /></TabsContent>
@@ -525,7 +795,3 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-// These are defined in other files, but we need placeholders here if this file is isolated.
-const WritingCanvas = () => <div className="text-center p-8">Writing Canvas Module</div>;
-const LifeSkillsZone = ({schoolId}: {schoolId: string}) => <div className="text-center p-8">Life Skills Module</div>;
