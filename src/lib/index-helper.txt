@@ -1,0 +1,28 @@
+
+// This file contains a code snippet for the Firestore query
+// that requires a composite index for the 'junior_lifeskills_world' collection.
+
+// Running a query like this in your application will produce an error in the
+// browser's developer console. This error includes a direct link to the
+// Firebase Console to automatically create the required index for you.
+
+import { collection, query, where, orderBy } from 'firebase/firestore';
+
+// --- Query Snippet ---
+
+// Assuming 'firestore', 'schoolId', and 'tab' variables are available.
+
+const lifeSkillsQuery = query(
+    collection(firestore, 'junior_lifeskills_world'), 
+    where('schoolId', '==', schoolId),
+    where('category', '==', tab),
+    orderBy('createdAt', 'asc')
+);
+
+
+// --- Index Required ---
+// Collection: junior_lifeskills_world
+// Fields to Index:
+// 1. schoolId (Ascending)
+// 2. category (Ascending)
+// 3. createdAt (Ascending)
