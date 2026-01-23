@@ -1,7 +1,9 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import wav from 'wav';
 
 // --- STORY GENERATION ---
 const JuniorStorySchema = z.object({
@@ -107,4 +109,164 @@ export async function generatePhonicsChallenge() {
     // This can be expanded later
     const sample = { sound: "sh", correctWord: "ship", distractors: ["chip", "sip", "shop"] };
     return { success: true, data: sample };
+}
+
+// --- PHONICS WORLD ENTRY GENERATOR ---
+const PhonicsWorldEntrySchema = z.object({
+    title: z.string(),
+    sound: z.string(),
+    description: z.string(),
+    imagePrompt: z.string(),
+    icon: z.string(),
+});
+
+export async function generatePhonicsWorldEntry(topic: string, category: string) {
+    try {
+        const prompt = `Create a nursery phonics entry for "${topic}" in category "${category}". 
+        Return JSON: { "title": "string", "sound": "string", "description": "string", "imagePrompt": "string", "icon": "string" }`;
+        const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
+            prompt,
+            output: { schema: PhonicsWorldEntrySchema }
+        });
+        if (!output) throw new Error("AI did not generate a valid phonics entry.");
+        return { success: true, data: output };
+    } catch (error: any) {
+        console.error("Phonics World AI Error:", error);
+        return { success: false, error: (error as Error).message };
+    }
+}
+
+// --- SCIENCE WORLD ENTRY GENERATOR ---
+const ScienceWorldEntrySchema = z.object({
+    name: z.string(),
+    fact: z.string(),
+    imagePrompt: z.string(),
+    icon: z.string(),
+});
+
+export async function generateScienceWorldEntry(topic: string, category: string) {
+    try {
+        const prompt = `
+            Create a nursery science discovery entry for a child.
+            The topic is "${topic}" and it should fit within the category "${category}".
+            Provide a short, amazing fact and a simple emoji icon.
+            Also, provide a creative DALL-E style prompt to generate an image for this fact.
+            Output strictly JSON.
+        `;
+
+        const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
+            prompt,
+            output: { schema: ScienceWorldEntrySchema }
+        });
+        if (!output) throw new Error("AI did not generate a valid science entry.");
+        return { success: true, data: output };
+    } catch (error: any) {
+        console.error("Science World AI Error:", error);
+        return { success: false, error: (error as Error).message };
+    }
+}
+
+
+// --- TTS HELPER ---
+async function toWav(pcmData: Buffer): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const writer = new wav.Writer({ channels: 1, sampleRate: 24000, bitDepth: 16 });
+        const chunks: Buffer[] = [];
+        writer.on('data', (chunk) => chunks.push(chunk));
+        writer.on('end', () => resolve(Buffer.concat(chunks).toString('base64')));
+        writer.on('error', reject);
+        writer.write(pcmData);
+        writer.end();
+    });
+}
+
+// --- TTS ACTION ---
+const TTSInputSchema = z.object({
+    text: z.string(),
+    voice: z.enum(['Puck', 'Algenib', 'Achernar', 'Enif', 'Kore']),
+});
+
+export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
+    try {
+        const { media } = await ai.generate({
+            model: 'googleai/gemini-2.5-flash-preview-tts',
+            config: {
+                responseModalities: ['AUDIO'],
+                speechConfig: {
+                    voiceConfig: { prebuiltVoiceConfig: { voiceName: input.voice } },
+                },
+            },
+            prompt: input.text,
+        });
+
+        if (!media || !media.url) throw new Error("No audio returned from TTS.");
+
+        const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
+        const wavBase64 = await toWav(audioBuffer);
+
+        return { success: true, data: wavBase64 };
+
+    } catch (error: any) {
+        console.error("TTS Generation Error:", error);
+        return { success: false, error: error.message || "Failed to generate speech." };
+    }
+}
+
+
+// --- IMAGE GENERATION ACTION ---
+export const generateLessonImageAction = async (prompt: string): Promise<string | null> => {
+    try {
+      const { media } = await ai.generate({
+        model: 'googleai/imagen-4.0-fast-generate-001',
+        prompt,
+      });
+  
+      if (media && media.url) {
+        return media.url;
+      }
+      return null;
+    } catch (error) {
+      console.error("Image generation error:", error);
+      return null;
+    }
+};
+
+// --- Dummy Server Actions (replace with actual AI flows) ---
+export async function generateArtDetailsAction(input: { item: string, type: 'shapes' | 'textures' }): Promise<any> {
+    // This is a placeholder. Implement the actual Genkit flow here.
+    return { success: true, data: { description: 'Generated description', parts: ['Circle'], prompt: 'Generated prompt' } };
+}
+
+export async function generateNumeracyTask(input: { task: string, topic: string }): Promise<any> {
+    return { success: true, data: { question: `What is 1+1?`, answer: 2, options: [1,2,3] } };
+}
+
+export async function generateDictionDetails(word: string): Promise<any> {
+    return { success: true, data: { syllables: 'AP-PLE', instruction: 'Say it loud!' } };
+}
+
+export async function generateStorytellingScene(topic: string): Promise<any> {
+    return { success: true, data: { title: topic, prompt: `A picture of ${topic}`, questions: [`What is the ${topic}?`] } };
+}
+
+export async function generateThemedVocab(theme: string): Promise<any> {
+    return { success: true, data: { name: theme, words: ['one', 'two'], prompt: `A picture of ${theme}` } };
+}
+
+export async function generateMissingLetterChallenge(word: string): Promise<any> {
+    return { success: true, data: { word: 'D_G', missing: 'O', options: ['A','E','I','O'], prompt: 'A dog' } };
+}
+
+export async function generateSentence(topic: string): Promise<any> {
+    return { success: true, data: { text: `The ${topic} is big.` } };
+}
+
+export async function generateRhymingWords(ending: string): Promise<any> {
+    return { success: true, data: { ending, words: [{word: `c${ending}`}, {word: `b${ending}`}] } };
+}
+
+export async function generateBlendsExample(blend: string): Promise<any> {
+    return { success: true, data: { blend, words: [{word: `${blend}ip`}]} };
 }
