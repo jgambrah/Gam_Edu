@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -22,12 +21,11 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Label } from '@/components/ui/label';
-import { StorySpark, VoiceCoach } from './voice-coach';
+import { StorySpark } from './voice-coach';
 import MathPlayground from './math-playground';
 import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
-import { GoogleGenAI } from "@google/genai";
 import * as constants from '@/lib/constants';
 import * as LucideIcons from 'lucide-react';
 
@@ -252,7 +250,7 @@ function WritingCanvas() {
                     <button key={c} onClick={() => setBrushColor(c)} className={`w-12 h-12 rounded-full border-4 ${brushColor === c ? 'border-slate-800 scale-110 shadow-lg' : 'border-white'}`} style={{backgroundColor: c}} />
                 ))}
                 <div className="w-px h-12 bg-slate-100 mx-2" />
-                <Button onClick={initCanvases} variant="outline" className="h-14 rounded-2xl font-bold uppercase"><Eraser className="mr-2" /> Reset</Button>
+                <Button onClick={initCanvases} variant="outline" className="h-14 rounded-2xl font-black">CLEAR</Button>
                 <Button onClick={handleCheck} disabled={isEvaluating} className="h-14 px-12 bg-black text-white rounded-2xl font-black shadow-xl hover:bg-slate-800">
                     {isEvaluating ? <Loader2 className="animate-spin mr-2" /> : <PenTool className="mr-2" />} CHECK MY WORK!
                 </Button>
@@ -263,6 +261,112 @@ function WritingCanvas() {
       <style>{`@keyframes scan { 0% { top: 0; } 100% { top: 100%; } }`}</style>
     </div>
   );
+}
+
+
+// --- SUB-COMPONENT: VOICE COACH ---
+export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [details, setDetails] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const { schoolId } = useCurrentSchool();
+
+    const { data: dbWords, forceRefetch } = useCollection<any>(useMemoFirebase(() =>
+        (firestore && schoolId) ? query(collection(firestore, 'junior_phonics'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null,
+    [firestore, schoolId]));
+
+    const fetchDetails = useCallback(async (w: string) => {
+        if (!schoolId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'School not identified.' });
+            return;
+        }
+        setIsLoading(true);
+        setDetails(null);
+        try {
+            const result = await generateWordDetails({ word: w, schoolId });
+            if (result.success) {
+                setDetails(result.data);
+            } else {
+                toast({ title: "AI Error", description: result.error || "Could not get word details." });
+            }
+        } catch (error) {
+            toast({ title: "Request Failed", description: "Could not connect to the AI service." });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [toast, schoolId]);
+
+    const speak = async (text: string) => {
+        if (!text || !schoolId) return;
+        try {
+            const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
+            if (result.success && result.data && typeof window !== 'undefined') {
+                const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+                audio.play();
+            }
+        } catch (e) {
+            console.error("Audio error", e);
+        }
+    };
+    
+    const [newWord, setNewWord] = useState('');
+
+    const handleSaveWord = async () => {
+        if(!firestore || !schoolId || !newWord.trim()) return;
+        try {
+            await addDoc(collection(firestore, 'junior_phonics'), {
+                word: newWord.trim(),
+                schoolId: schoolId,
+                createdAt: serverTimestamp()
+            });
+            toast({title: "Word Saved!"});
+            forceRefetch();
+            setNewWord(''); // Clear input
+        } catch(e) {
+            toast({ title: 'Save failed.', variant: 'destructive'});
+        }
+    };
+    
+    return (
+        <div className="text-center">
+            <h2 className="text-5xl font-black text-pink-500 uppercase tracking-tighter">Voice & Diction Coach</h2>
+            <p className="text-slate-400 font-bold italic text-xl mt-2 mb-12">Learn to pronounce words clearly!</p>
+
+            <div className="grid md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
+                <div className="p-10 bg-pink-50 rounded-[4rem] border-8 border-white shadow-xl h-full flex flex-col justify-center">
+                    <p className="text-[10px] uppercase font-black text-pink-300 mb-2">Practice Word</p>
+                    {isLoading ? (
+                        <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>
+                    ) : details ? (
+                        <div className="space-y-4 text-center animate-in fade-in">
+                            <p className="text-8xl font-black text-slate-800">{details.word}</p>
+                            <p className="text-2xl font-bold text-pink-400 italic">{details.phonetic}</p>
+                            <div className="text-6xl">{details.emoji}</div>
+                            <Button onClick={() => speak(details.sentence)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
+                        </div>
+                    ) : (
+                        <div className="text-center text-slate-400 font-bold">Select a word below to begin!</div>
+                    )}
+                </div>
+
+                <div className="space-y-4">
+                    <p className="font-bold text-slate-500">Practice other words:</p>
+                    <div className="flex flex-wrap gap-3 justify-center">
+                        {dbWords?.map((w: any) => (
+                            <button key={w.id} onClick={() => fetchDetails(w.word)} className="px-6 py-3 bg-white border-2 border-slate-100 rounded-full font-bold text-slate-600 hover:bg-pink-50 hover:border-pink-200 transition-all">{w.word}</button>
+                        ))}
+                    </div>
+                    {canEdit && (
+                        <div className="pt-4 border-t flex gap-2">
+                            <Input value={newWord} onChange={e => setNewWord(e.target.value)} placeholder="Add new word..."/>
+                            <Button onClick={handleSaveWord} disabled={!newWord.trim()}>+</Button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 }
 
 // --- SUB-COMPONENT: LIFE SKILLS HUB ---
@@ -350,7 +454,7 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
         <LifeSkillsModule 
             tab={activeTab} 
             schoolId={schoolId} 
-            onSound={(text) => onSound(text, schoolId)} 
+            onSound={(text) => onSound(text)} 
             canEdit={canEdit}
         />
       </div>
@@ -555,5 +659,3 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-    
