@@ -30,7 +30,7 @@ export default function JuniorCampusPage() {
       </div>
       <div className="max-w-7xl mx-auto">
         <Tabs defaultValue="coach" className="w-full">
-            <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto no-scrollbar">
+            <TabsList className="grid w-full grid-cols-7 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto no-scrollbar">
                 <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Voice Coach</TabsTrigger>
                 <TabsTrigger value="phonics-world" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Sparkles className="w-5 h-5"/>Phonics World</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
