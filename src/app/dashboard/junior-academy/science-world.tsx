@@ -5,8 +5,10 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { 
   Microscope, Atom, Leaf, Thermometer, Ghost, 
   Wand2, Volume2, Loader2, Sparkles, Plus, Trash2,
@@ -14,9 +16,8 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
-import { generateScienceWorldEntry, generateLessonImageAction } from '@/app/dashboard/junior-actions';
+import { generateScienceWorldEntry, generateLessonImageAction, generateTTSAction } from '@/app/dashboard/junior-actions';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 
 // --- JUNIOR SCIENCE THEME ---
 const juniorStyles = {
@@ -38,7 +39,7 @@ const TeacherModal: React.FC<{
       <h3 className="text-3xl font-black text-slate-800 mb-6 uppercase tracking-tighter">AI {title}</h3>
       <div className="space-y-6">
         <div>
-          <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">What should the AI create?</label>
+          <Label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">What should the AI create?</Label>
           <Input 
             value={topicValue} 
             onChange={(e) => onTopicChange(e.target.value)} 
@@ -68,14 +69,16 @@ export default function JuniorScienceWorld({ schoolId }: { schoolId: string }) {
     const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
 
-    const speak = (text: string) => {
-        if (typeof window === 'undefined') return;
-        const u = new SpeechSynthesisUtterance(text);
-        u.rate = 0.9;
-        window.speechSynthesis.speak(u);
+    const speak = async (text: string) => {
+        if (!text) return;
+        const { success, data } = await generateTTSAction({ text, voice: 'Algenib' });
+        if (success && data && typeof window !== 'undefined') {
+            const audio = new Audio(`data:audio/wav;base64,${data}`);
+            audio.play();
+        }
     };
 
-    const tabs: {id: ScienceTab, label: string, icon: any, color: string}[] = [
+    const tabs: {id: ScienceTab, label: string, icon: React.ElementType, color: string}[] = [
         { id: 'environment', label: 'EVS Hub', icon: Earth, color: 'bg-green-500' },
         { id: 'body', label: 'My Body', icon: User, color: 'bg-blue-500' },
         { id: 'organs', label: 'Inside Me', icon: HeartPulse, color: 'bg-red-500' },
@@ -100,20 +103,23 @@ export default function JuniorScienceWorld({ schoolId }: { schoolId: string }) {
             {/* SCROLLABLE NAV */}
             <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
                 <div className="flex justify-start md:justify-center gap-4 bg-white p-4 rounded-[3rem] shadow-xl border-4 border-sky-50 min-w-max">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`px-6 py-4 rounded-[2rem] font-black text-xs uppercase tracking-wider transition-all flex flex-col items-center gap-2 border-4 ${
-                                activeTab === tab.id 
-                                ? 'bg-slate-900 text-white border-slate-900 shadow-2xl scale-110 -translate-y-2' 
-                                : 'bg-white text-slate-400 border-transparent hover:bg-sky-50'
-                            }`}
-                        >
-                            <tab.icon className={`w-6 h-6 ${activeTab === tab.id ? 'text-sky-400' : 'text-slate-300'}`} />
-                            <span>{tab.label}</span>
-                        </button>
-                    ))}
+                    {tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`px-6 py-4 rounded-[2rem] font-black text-xs uppercase tracking-wider transition-all flex flex-col items-center gap-2 border-4 ${
+                                    activeTab === tab.id 
+                                    ? 'bg-slate-900 text-white border-slate-900 shadow-2xl scale-110 -translate-y-2' 
+                                    : 'bg-white text-slate-400 border-transparent hover:bg-sky-50'
+                                }`}
+                            >
+                                <Icon className={`w-6 h-6 ${activeTab === tab.id ? 'text-sky-400' : 'text-slate-300'}`} />
+                                <span>{tab.label}</span>
+                            </button>
+                        )
+                    })}
                 </div>
             </div>
 
@@ -186,13 +192,13 @@ function MatterLab({ schoolId }: { schoolId: string }) {
 // --- SUB-COMPONENT: GENERAL DISCOVERY (AI + DB DRIVEN) ---
 function DiscoveryModule({ tab, schoolId, canEdit, onSound }: { tab: ScienceTab, schoolId: string, canEdit: boolean, onSound: (t: string) => void }) {
     const firestore = useFirestore();
+    const { toast } = useToast();
     const [index, setIndex] = useState(0);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [localImg, setLocalImg] = useState<string | null>(null);
 
-    // SaaS Query
     const dataQuery = useMemoFirebase(() => 
         firestore ? query(
             collection(firestore, 'junior_science_world'), 
@@ -201,7 +207,7 @@ function DiscoveryModule({ tab, schoolId, canEdit, onSound }: { tab: ScienceTab,
             orderBy('createdAt', 'asc')
         ) : null, [firestore, schoolId, tab]);
     
-    const { data: items } = useCollection<any>(dataQuery);
+    const { data: items, forceRefetch } = useCollection<any>(dataQuery);
     const current = items?.[index];
 
     const loadVisual = useCallback(async () => {
@@ -220,7 +226,6 @@ function DiscoveryModule({ tab, schoolId, canEdit, onSound }: { tab: ScienceTab,
     }, [current, loadVisual]);
 
     const generateWithAi = async () => {
-        if (!firestore) return;
         setIsLoading(true);
         try {
             const result = await generateScienceWorldEntry(aiTopic, tab);
@@ -229,7 +234,7 @@ function DiscoveryModule({ tab, schoolId, canEdit, onSound }: { tab: ScienceTab,
                 throw new Error(result.error || "AI did not generate valid data.");
             }
     
-            await addDoc(collection(firestore, 'junior_science_world'), {
+            await addDoc(collection(firestore!, 'junior_science_world'), {
                 ...result.data,
                 tab,
                 schoolId,
@@ -239,8 +244,10 @@ function DiscoveryModule({ tab, schoolId, canEdit, onSound }: { tab: ScienceTab,
             setIsDrawerOpen(false);
             setAiTopic('');
             confetti();
+            forceRefetch();
         } catch (e: any) { 
-            console.error(e); 
+            console.error(e);
+            toast({ variant: "destructive", title: "AI Generation Failed", description: e.message });
         } finally { 
             setIsLoading(false); 
         }
@@ -288,13 +295,13 @@ function DiscoveryModule({ tab, schoolId, canEdit, onSound }: { tab: ScienceTab,
                             <div className={juniorStyles.bubble}>
                                 <p className="text-3xl font-bold text-slate-700 leading-relaxed italic">"{current.fact}"</p>
                             </div>
-                            <Button onClick={() => onSound(current.fact)} className="h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all w-full uppercase">
+                            <Button onClick={() => onSound(current.fact)} className={juniorStyles.button + " w-full uppercase"}>
                                 Read Story! 🎙️
                             </Button>
                             
                             <div className="flex gap-4 justify-center">
                                 <button onClick={() => setIndex(i => Math.max(0, i - 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight className="rotate-180" /></button>
-                                <button onClick={() => items && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
+                                <button onClick={() => items && items.length > 0 && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
                             </div>
                         </div>
                     </CardContent>

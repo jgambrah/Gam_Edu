@@ -45,7 +45,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="phonics-world" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-purple-200">{schoolId && <PhonicsWorld schoolId={schoolId} />}</div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative">{schoolId && <MathPlayground schoolId={schoolId} />}</div></TabsContent>
                 <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
-                <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
+                <TabsContent value="science" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-sky-200">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</div></TabsContent>
                 <TabsContent value="art" className="mt-0">
                     <div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">
                         {schoolId && <ArtStudio schoolId={schoolId} />}

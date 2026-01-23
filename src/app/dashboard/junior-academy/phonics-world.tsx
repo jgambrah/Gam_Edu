@@ -1,10 +1,10 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, where, serverTimestamp, orderBy } from 'firebase/firestore';
+import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
-import { generateTTSAction, generatePhonicsWorldEntry, generateLessonImageAction } from '@/ai/flows/junior-actions';
+import { generateTTSAction, generatePhonicsWorldEntry, generateLessonImageAction } from '@/app/dashboard/junior-actions';
 
 const juniorStyles = {
     card: "rounded-[60px] border-8 border-pink-100 shadow-[0_20px_0_#FCE7F3] bg-white overflow-hidden",
@@ -27,13 +27,14 @@ const juniorStyles = {
 
 type PhonicsTab = 'jolly-phonics' | 'alphabet' | 'picture-reading' | 'syllables' | 'alliteration' | 'sound-games' | 'blends' | 'rhymes' | 'diction' | 'missing-letters' | 'environmental-print' | 'book-handling';
 
+// --- TEACHER MAGIC MODAL ---
 const TeacherModal: React.FC<{
   title: string; topicValue: string; 
   onTopicChange: (v: string) => void; onGenerate: () => void; 
   isLoading: boolean; onClose: () => void;
 }> = ({ title, topicValue, onTopicChange, onGenerate, isLoading, onClose }) => (
   <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-    <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-green-100 animate-in zoom-in duration-300">
+    <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-pink-50 animate-in zoom-in duration-300">
       <h3 className="text-3xl font-black text-slate-800 mb-6 uppercase tracking-tighter">AI {title}</h3>
       <div className="space-y-6">
         <div>
@@ -41,14 +42,14 @@ const TeacherModal: React.FC<{
           <Input 
             value={topicValue} 
             onChange={(e) => onTopicChange(e.target.value)} 
-            placeholder="e.g. Venus Flytrap, Lungs, Solar Power" 
+            placeholder="e.g. The 'Ch' sound, Short Vowels" 
             className="h-14 rounded-2xl border-4 border-slate-100 font-bold uppercase" 
           />
         </div>
         <Button 
           onClick={onGenerate} 
           disabled={isLoading || !topicValue} 
-          className="w-full h-16 rounded-2xl font-black text-white bg-green-500 hover:bg-green-600 shadow-xl"
+          className="w-full h-16 rounded-2xl font-black text-white bg-pink-500 hover:bg-pink-600 shadow-xl"
         >
           {isLoading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} CREATE MAGIC
         </Button>
@@ -58,8 +59,12 @@ const TeacherModal: React.FC<{
   </div>
 );
 
+// --- MAIN PHONICS WORLD COMPONENT ---
 export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
+    const { user } = useUser();
     const { role } = useRole();
+    const firestore = useFirestore();
+    const { toast } = useToast();
     const [activeTab, setActiveTab] = useState<PhonicsTab>('jolly-phonics');
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
 
@@ -72,7 +77,7 @@ export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
         }
     };
 
-    const tabs: {id: PhonicsTab, label: string, icon: any}[] = [
+    const tabs: {id: PhonicsTab, label: string, icon: React.ElementType}[] = [
         { id: 'jolly-phonics', label: 'Jolly Sounds', icon: Smile },
         { id: 'alphabet', label: 'ABC Phonics', icon: Music },
         { id: 'picture-reading', label: 'Reading', icon: BookOpen },
@@ -94,25 +99,30 @@ export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
                 <p className="text-slate-400 font-bold italic text-xl">Let's learn to read and speak with magic!</p>
             </div>
 
+            {/* NAV BAR */}
             <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
                 <div className="flex justify-start md:justify-center gap-4 bg-white p-4 rounded-[3rem] shadow-xl border-4 border-pink-50 min-w-max">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`min-w-[120px] px-6 py-4 rounded-3xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-2 border-4 ${
-                                activeTab === tab.id 
-                                ? 'bg-pink-500 text-white border-pink-700 shadow-2xl scale-110 -translate-y-2' 
-                                : 'bg-white text-slate-400 border-transparent hover:bg-pink-50'
-                            }`}
-                        >
-                            <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-white' : 'text-pink-300'}`} />
-                            <span className="whitespace-nowrap">{tab.label}</span>
-                        </button>
-                    ))}
+                    {tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`min-w-[120px] px-6 py-4 rounded-3xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-2 border-4 ${
+                                    activeTab === tab.id 
+                                    ? 'bg-pink-500 text-white border-pink-700 shadow-2xl scale-110 -translate-y-2' 
+                                    : 'bg-white text-slate-400 border-transparent hover:bg-pink-50'
+                                }`}
+                            >
+                                <Icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-white' : 'text-pink-300'}`} />
+                                <span className="whitespace-nowrap">{tab.label}</span>
+                            </button>
+                        )
+                    })}
                 </div>
             </div>
 
+            {/* MODULE LOADER */}
             <div className="w-full px-4">
                 <PhonicsModule 
                     tab={activeTab} 
@@ -125,6 +135,7 @@ export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
     );
 }
 
+// --- UNIVERSAL PHONICS MODULE (AI + SaaS DB) ---
 function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, schoolId: string, canEdit: boolean, onSound: (t: string) => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -134,6 +145,7 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
     const [aiTopic, setAiTopic] = useState('');
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
+    // SaaS Query
     const dataQuery = useMemoFirebase(() => 
         firestore ? query(
             collection(firestore, 'junior_phonics_world'), 
@@ -153,17 +165,18 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
         setImageUrl(url);
         setIsLoading(false);
     }, [current]);
-    
+
     useEffect(() => {
         if (current) loadVisual();
     }, [current, loadVisual]);
 
     const handleGenerate = async () => {
+        if (!firestore) return;
         setIsLoading(true);
         try {
             const result = await generatePhonicsWorldEntry(aiTopic, tab);
             if(result.success && result.data){
-                await addDoc(collection(firestore!, 'junior_phonics_world'), {
+                await addDoc(collection(firestore, 'junior_phonics_world'), {
                     ...result.data,
                     tab,
                     schoolId,
@@ -185,10 +198,10 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
     };
 
     return (
-        <div className="animate-in slide-in-from-bottom-10 duration-700">
+        <div className="space-y-6">
             {canEdit && (
-                <div className="flex justify-end mb-4">
-                    <Button onClick={() => setIsDrawerOpen(true)} className="rounded-full bg-white border-2 border-pink-200 text-pink-600 font-black text-[10px] uppercase shadow-sm">
+                <div className="flex justify-end">
+                    <Button onClick={() => setIsDrawerOpen(true)} className="rounded-full bg-white border-2 border-pink-200 text-pink-600 font-black text-[10px] uppercase hover:bg-pink-50 shadow-sm">
                         <Wand2 className="w-3 h-3 mr-2" /> AI {tab.replace('-', ' ')} Maker
                     </Button>
                 </div>
@@ -234,7 +247,7 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
 
                             <div className="flex gap-4 justify-center">
                                 <button onClick={() => setIndex(i => Math.max(0, i - 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight className="rotate-180" /></button>
-                                <button onClick={() => setIndex(i => items && items.length > 0 ? (i + 1) % items.length : 0)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
+                                <button onClick={() => items && items.length > 0 && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>
                             </div>
                         </div>
                     </CardContent>
@@ -260,4 +273,3 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
         </div>
     );
 }
-
