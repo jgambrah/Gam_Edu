@@ -226,6 +226,50 @@ export async function assessHandwritingAction(input: { imageDataUri: string; tar
   }
 }
 
+// --- NEWLY ADDED: LIFE SKILLS GENERATOR ---
+const LifeSkillEntrySchema = z.any(); // Flexible schema for varied outputs
+
+export async function generateLifeSkillEntry(input: { topic: string; category: string; schoolId: string; }) {
+  const { topic, category, schoolId } = input;
+  
+  const creditResult = await checkAndSpendCredits(schoolId, 2);
+  if (!creditResult.success) {
+    return { success: false, error: creditResult.error || "Insufficient AI credits." };
+  }
+
+  let prompt = '';
+  switch (category) {
+    case 'emotions':
+      prompt = `Create a nursery lesson for the feeling: ${topic}. Return JSON: { "name": string, "color": "bg-yellow-400" | "bg-blue-400" | "bg-red-400", "icon": emoji, "prompt": string, "technique": string }`;
+      break;
+    case 'physical-health':
+      prompt = `Create a physical activity or hygiene habit for children about: ${topic}. Return JSON: { "title": string, "action": string, "icon": emoji, "prompt": string }`;
+      break;
+    case 'social':
+      prompt = `Create a kindness or community helper scenario for: ${topic}. Return JSON: { "title": string, "q": string, "options": [string, string, string], "correct": number (index 0-2), "prompt": string }`;
+      break;
+    default:
+      // Fallback for other categories
+      prompt = `Create a simple children's activity about ${topic} in the category ${category}. Return JSON: { "title": string, "prompt": string, "icon": emoji }`;
+  }
+  
+  try {
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
+      prompt,
+      output: { schema: LifeSkillEntrySchema }
+    });
+
+    if (!output) throw new Error("AI did not generate any content.");
+    
+    return { success: true, data: output };
+  } catch (error: any) {
+    console.error(`AI Error for category "${category}":`, error);
+    return { success: false, error: "The AI helper is resting right now. Please try again." };
+  }
+}
+
+
 // Dummy placeholder functions for newly added features
 export async function generateSkillDetails(input: { skill: string; schoolId: string }) {
   // In a real implementation, call Genkit AI here
