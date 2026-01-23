@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -143,4 +144,8 @@ export default function DrGamTutorPage() {
           className="bg-blue-600 hover:bg-blue-700 text-white rounded-full h-12 w-12 p-0"
         >
           <Send className="w-5 h-5" />
-        </Button
+        </Button>
+      </form>
+    </div>
+  );
+}
