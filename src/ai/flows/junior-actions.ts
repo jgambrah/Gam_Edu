@@ -1,11 +1,11 @@
 
-'use server';
+'use client';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 
-// --- STORY GENERATION ---
+// --- STORY GENERATOR ---
 const JuniorStorySchema = z.object({
   title: z.string().describe("A fun, simple title for a short children's story."),
   emojiIcon: z.string().emoji().describe("A single emoji that represents the story."),
@@ -39,7 +39,7 @@ export async function generateJuniorStory(topic: string, wordCount: number) {
   }
 }
 
-// --- SCIENCE FACT GENERATION ---
+// --- SCIENCE FACT GENERATOR ---
 const JuniorScienceSchema = z.object({
   title: z.string().describe("The science topic, e.g., 'Volcanoes'."),
   emojiIcon: z.string().emoji().describe("A single relevant emoji."),
@@ -136,6 +136,40 @@ export async function generatePhonicsWorldEntry(topic: string, category: string)
         return { success: false, error: (error as Error).message };
     }
 }
+
+// --- MATH WORLD ENTRY GENERATOR (NEW) ---
+const MathWorldEntrySchema = z.object({
+    title: z.string(),
+    question: z.string(),
+    imageUrl: z.string().url().optional(),
+    imagePrompt: z.string(),
+    options: z.array(z.string()).length(4),
+    correctAnswer: z.string(),
+    icon: z.string(),
+});
+
+export async function generateMathWorldEntry(topic: string, category: string) {
+    try {
+        const prompt = `
+            Create a nursery math activity for a child.
+            The topic is "${topic}" and it should fit within the category "${category}".
+            Provide a simple question, 4 options (one must be correct), the correct answer, an emoji icon, and a creative DALL-E style prompt to generate an image for the question.
+            Output strictly JSON.
+        `;
+
+        const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
+            prompt,
+            output: { schema: MathWorldEntrySchema }
+        });
+        if (!output) throw new Error("AI did not generate a valid math entry.");
+        return { success: true, data: output };
+    } catch (error: any) {
+        console.error("Math World AI Error:", error);
+        return { success: false, error: (error as Error).message };
+    }
+}
+
 
 // --- SCIENCE WORLD ENTRY GENERATOR ---
 const ScienceWorldEntrySchema = z.object({

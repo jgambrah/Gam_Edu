@@ -1,46 +1,115 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { collection, addDoc, query, where, serverTimestamp, orderBy } from 'firebase/firestore';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Microscope, Atom, Leaf, Thermometer, Ghost, 
-  Wand2, Volume2, Loader2, Sparkles, Plus, Trash2,
-  Apple, User, HeartPulse, Ear, CloudSun, PawPrint, Car, Shapes, Earth,
-    Sigma, Languages, BookOpen, 
-  Rocket, PenTool, Save, Library, Brain, CheckCircle2, XCircle, PlusCircle, FolderOpen,
-    Calculator, MessageSquare, Clapperboard, Users, BookCopy, BarChart, CalendarCheck, StaffIcon, Shield, Code, Activity, TrendingUp, Gamepad2, AlertCircle, Wallet, Settings, Megaphone, Wrench, Truck, Building2, Rabbit, FileQuestion, ArrowRight, PencilRuler, Globe, CheckSquare,
-    Database,
-    HeartHandshake,
-    Minus,
-    Clock,
-    PenSquare
+  Loader2, Wand2, ArrowRight,
+  Calculator, CheckCircle2, XCircle, Plus, Minus, Layers, Users, Clock, Wallet, Ruler, Shapes, Globe, CheckSquare, Handshake
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
+import { generateMathWorldEntry } from '@/app/dashboard/junior-actions';
 import { Label } from '@/components/ui/label';
 
-// --- JUNIOR SCIENCE THEME ---
+// --- JUNIOR MATH THEME ---
 const juniorStyles = {
-    card: "rounded-[50px] border-8 border-sky-100 shadow-[0_20px_0_#E0F2FE] bg-white overflow-hidden",
-    header: "bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 p-8 text-white",
-    bubble: "bg-white/80 backdrop-blur-md p-6 rounded-[40px] border-4 border-dashed border-sky-200",
-    math: { // Adding specific math theme from the prompt
-        card: "rounded-[60px] border-8 border-yellow-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100",
-        header: "p-10 text-center",
-        mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
-        button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
-        input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
-    }
+    card: "rounded-[60px] border-8 border-yellow-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100",
+    header: "p-10 text-center",
+    mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
+    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
+    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
+
 
 type MathTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'grouping' | 'time' | 'money' | 'measurement' | 'shapes' | 'spatial' | 'comparison' | 'patterns' | 'one-to-one' | 'tracing';
 
+// --- 2. NUMERACY ACADEMY (PRECISE INTEGRATION) ---
+export default function MathPlayground({ schoolId }: { schoolId: string }) {
+    const { user } = useUser();
+    const { role } = useRole();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
+
+    const [activeTab, setActiveTab] = useState<MathTab>('numbers');
+
+    const speak = (text: string) => {
+        if (typeof window === 'undefined') return;
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.9;
+        window.speechSynthesis.speak(u);
+    };
+
+    const tabs: {id: MathTab, icon: React.ElementType, label: string}[] = [
+        { id: 'numbers', icon: () => <span className="font-black">123</span>, label: 'Numbers' },
+        { id: 'counting', icon: Users, label: 'Counting' },
+        { id: 'sequence', icon: ArrowRight, label: 'Sequence' },
+        { id: 'comparing', icon: () => <span className="font-black">&lt;&gt;=</span>, label: 'Comparing' },
+        { id: 'number-words', icon: () => <span className="font-black">One</span>, label: 'Words' },
+        { id: 'bonds', icon: Handshake, label: 'Bonds' },
+        { id: 'addition', icon: Plus, label: 'Addition' },
+        { id: 'subtraction', icon: Minus, label: 'Subtraction' },
+        { id: 'tens-units', icon: Layers, label: 'Tens & Units' },
+        { id: 'grouping', icon: Users, label: 'Grouping' },
+        { id: 'time', icon: Clock, label: 'Time' },
+        { id: 'money', icon: Wallet, label: 'Money' },
+        { id: 'measurement', icon: Ruler, label: 'Measurement' },
+        { id: 'shapes', icon: Shapes, label: 'Shapes' },
+        { id: 'spatial', icon: Globe, label: 'Spatial' },
+        { id: 'comparison', icon: () => <span className="font-black">&gt;</span>, label: 'Comparison' },
+        { id: 'patterns', icon: CheckSquare, label: 'Patterns' },
+        { id: 'one-to-one', icon: Users, label: 'One-to-One' },
+        { id: 'tracing', icon: PenTool, label: 'Tracing' }
+    ];
+
+    return (
+        <div className="flex flex-col items-center max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
+            {/* SCROLLABLE CATEGORY NAV */}
+            <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
+                <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-xl border-4 border-purple-50 min-w-max">
+                    {tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`min-w-[120px] px-6 py-4 rounded-3xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-2 border-4 ${
+                                    activeTab === tab.id 
+                                    ? 'bg-purple-600 text-white border-purple-700 shadow-xl scale-110 -translate-y-2' 
+                                    : 'bg-white text-slate-400 border-transparent hover:bg-purple-50'
+                                }`}
+                            >
+                                <Icon className={`text-xl ${activeTab === tab.id ? 'text-white' : 'text-purple-300'}`} />
+                                <span className="whitespace-nowrap">{tab.label}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* DYNAMIC MODULE LOADER */}
+            <div className="w-full px-4">
+                {activeTab === 'tracing' ? (
+                    <NumberMagicPen onSound={speak} />
+                ) : (
+                    <GenericMathModule 
+                        tab={activeTab} 
+                        schoolId={schoolId} 
+                        canEdit={canEdit} 
+                        onSound={speak} 
+                    />
+                )}
+            </div>
+        </div>
+    );
+}
 
 // --- SUB-COMPONENT: MAGIC PEN (TRACING & AI EVALUATION) ---
 const NumberMagicPen: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
@@ -58,7 +127,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
             const canvas = ref.current;
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            if(!ctx) return;
+            if (!ctx) return;
             canvas.width = 400; canvas.height = 400;
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, 400, 400);
@@ -108,7 +177,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
                             onMouseMove={(e) => {
                                 if(!isDrawingFree) return;
                                 const ctx = freeCanvasRef.current?.getContext('2d');
-                                if(!ctx) return;
+                                if (!ctx) return;
                                 const rect = freeCanvasRef.current!.getBoundingClientRect();
                                 ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
                                 ctx.stroke();
@@ -149,7 +218,7 @@ function GenericMathModule({ tab, schoolId, canEdit, onSound }: { tab: string, s
     const current = items?.[index];
 
     const handleAnswer = (val: any) => {
-        if(!current) return;
+        if (!current) return;
         setUserAnswer(val);
         if (val === current.correctAnswer) {
             confetti();
@@ -207,86 +276,3 @@ function GenericMathModule({ tab, schoolId, canEdit, onSound }: { tab: string, s
         </div>
     );
 }
-
-// --- 2. NUMERACY ACADEMY (PRECISE INTEGRATION) ---
-export default function MathPlayground({ schoolId }: { schoolId: string }) {
-    const { user } = useUser();
-    const { role } = useRole();
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
-
-    const [activeTab, setActiveTab] = useState<MathTab>('numbers');
-
-    const speak = (text: string) => {
-        if (typeof window === 'undefined') return;
-        const u = new SpeechSynthesisUtterance(text);
-        u.rate = 0.9;
-        window.speechSynthesis.speak(u);
-    };
-
-    const tabs: {id: MathTab, icon: React.ElementType}[] = [
-        { id: 'numbers', icon: Sigma },
-        { id: 'counting', icon: Users },
-        { id: 'sequence', icon: ArrowRight },
-        { id: 'comparing', icon: Activity },
-        { id: 'number-words', icon: BookOpen },
-        { id: 'bonds', icon: HeartHandshake },
-        { id: 'addition', icon: Plus },
-        { id: 'subtraction', icon: Minus },
-        { id: 'tens-units', icon: Database },
-        { id: 'grouping', icon: Users },
-        { id: 'time', icon: Clock },
-        { id: 'money', icon: Wallet },
-        { id: 'measurement', icon: PencilRuler },
-        { id: 'shapes', icon: Shapes },
-        { id: 'spatial', icon: Globe },
-        { id: 'comparison', icon: Activity },
-        { id: 'patterns', icon: CheckSquare },
-        { id: 'one-to-one', icon: Users },
-        { id: 'tracing', icon: PenSquare }
-    ];
-    
-    return (
-        <div className="flex flex-col items-center max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
-            {/* SCROLLABLE CATEGORY NAV */}
-            <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
-                <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-xl border-4 border-purple-50 min-w-max">
-                    {tabs.map((tab) => {
-                        const Icon = tab.icon;
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`min-w-[120px] px-6 py-4 rounded-3xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-2 border-4 ${
-                                    activeTab === tab.id 
-                                    ? 'bg-purple-600 text-white border-purple-700 shadow-xl scale-110 -translate-y-2' 
-                                    : 'bg-white text-slate-400 border-transparent hover:bg-purple-50'
-                                }`}
-                            >
-                                <Icon className={`w-6 h-6 ${activeTab === tab.id ? 'text-white' : 'text-purple-300'}`} />
-                                <span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
-                            </button>
-                        )
-                    })}
-                </div>
-            </div>
-
-            {/* DYNAMIC MODULE LOADER */}
-            <div className="w-full px-4">
-                {activeTab === 'tracing' ? (
-                    <NumberMagicPen onSound={speak} />
-                ) : (
-                    <GenericMathModule 
-                        tab={activeTab} 
-                        schoolId={schoolId} 
-                        canEdit={canEdit} 
-                        onSound={speak} 
-                    />
-                )}
-            </div>
-        </div>
-    );
-}
-
-    
