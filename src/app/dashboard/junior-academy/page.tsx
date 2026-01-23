@@ -4,18 +4,12 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Loader2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
+  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Pen
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import PhonicsWorld from './phonics-world';
@@ -25,6 +19,12 @@ import JuniorScienceWorld from './science-world';
 import MathPlayground from './math-playground';
 import StickerBook from './sticker-book';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { assessHandwritingAction } from '@/ai/flows/junior-actions';
+import confetti from 'canvas-confetti';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 // --- NEW COMPONENT: WRITING CANVAS (MAGIC PEN) ---
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -35,6 +35,15 @@ const STROKES = [
   { id: 'slanting', label: 'Slanting', icon: 'fa-slash' },
   { id: 'circle', label: 'Circle', icon: 'fa-circle' },
 ];
+
+const juniorStyles = {
+    card: "rounded-[60px] border-8 border-yellow-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100",
+    header: "p-10 text-center",
+    mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
+    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
+    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
+};
+
 
 function WritingCanvas() {
   const { schoolId } = useCurrentSchool();
@@ -49,6 +58,14 @@ function WritingCanvas() {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [feedback, setFeedback] = useState('');
+
+  const speak = (text: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.9;
+    window.speechSynthesis.speak(u);
+  };
 
   useEffect(() => {
     if (mode === 'numbers') setBrushColor('#FF9F43');
@@ -78,19 +95,6 @@ function WritingCanvas() {
       ctx.strokeText(text, 200, 220);
     }
   };
-  
-    const speak = async (text: string) => {
-        if (!text || !schoolId) return;
-        try {
-            const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
-            if (result.success && result.data && typeof window !== 'undefined') {
-                const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-                audio.play();
-            }
-        } catch (e) {
-            console.error("Audio error", e);
-        }
-    };
 
   const handleAssessment = async () => {
     if (!freeCanvasRef.current || !schoolId) return;
@@ -233,7 +237,7 @@ export default function JuniorCampusPage() {
                         <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center gap-1"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                         <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center gap-1"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                         <TabsTrigger value="art" className="rounded-2xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-black flex flex-col items-center gap-1"><Palette className="w-5 h-5"/> Art</TabsTrigger>
-                        <TabsTrigger value="coach" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center gap-1"><Mic className="w-5 h-5"/> Coach</TabsTrigger>
+                        <TabsTrigger value="phonics" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center gap-1"><Mic className="w-5 h-5"/> Phonics</TabsTrigger>
                         <TabsTrigger value="rewards" className="rounded-2xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-black flex flex-col items-center gap-1"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
                     </TabsList>
 
