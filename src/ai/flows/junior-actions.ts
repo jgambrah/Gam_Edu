@@ -35,7 +35,7 @@ export async function generateJuniorStory(input: { topic: string; wordCount?: nu
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-3-flash-preview',
+      model: 'googleai/gemini-1.5-flash',
       prompt: prompt,
       output: {
         schema: JuniorStorySchema
@@ -75,7 +75,7 @@ export async function generateJuniorScience(input: { topic: string; schoolId: st
       Output strictly JSON.
     `;
     const { output } = await ai.generate({
-      model: 'googleai/gemini-3-flash-preview',
+      model: 'googleai/gemini-1.5-flash',
       prompt,
       output: { schema: JuniorScienceSchema }
     });
@@ -109,7 +109,7 @@ export async function generateWordDetails(input: { word: string; schoolId: strin
       Output strictly JSON.
     `;
     const { output } = await ai.generate({
-      model: 'googleai/gemini-3-flash-preview',
+      model: 'googleai/gemini-1.5-flash',
       prompt,
       output: { schema: WordDetailSchema }
     });
@@ -119,121 +119,6 @@ export async function generateWordDetails(input: { word: string; schoolId: strin
     console.error("AI Word Detail Error:", error);
     return { success: false, error: (error as Error).message };
   }
-}
-
-// --- PHONICS CHALLENGE (Not currently used but ready) ---
-const PhonicsChallengeSchema = z.object({
-  sound: z.string(),
-  correctWord: z.string(),
-  distractors: z.array(z.string()).length(3),
-});
-
-export async function generatePhonicsChallenge() {
-    // This can be expanded later
-    const sample = { sound: "sh", correctWord: "ship", distractors: ["chip", "sip", "shop"] };
-    return { success: true, data: sample };
-}
-
-// --- PHONICS WORLD ENTRY GENERATOR ---
-const PhonicsWorldEntrySchema = z.object({
-    title: z.string(),
-    sound: z.string(),
-    description: z.string(),
-    imagePrompt: z.string(),
-    icon: z.string(),
-});
-
-export async function generatePhonicsWorldEntry(input: { topic: string; category: string; schoolId: string; }) {
-    try {
-        const creditResult = await checkAndSpendCredits(input.schoolId, 2);
-        if (!creditResult.success) {
-          return { success: false, error: creditResult.error || "Insufficient AI credits." };
-        }
-        const prompt = `Create a nursery phonics entry for "${input.topic}" in category "${input.category}". 
-        Return JSON: { "title": "string", "sound": "string", "description": "string", "imagePrompt": "string", "icon": "string" }`;
-        const { output } = await ai.generate({
-            model: 'googleai/gemini-3-flash-preview',
-            prompt,
-            output: { schema: PhonicsWorldEntrySchema }
-        });
-        if (!output) throw new Error("AI did not generate a valid phonics entry.");
-        return { success: true, data: output };
-    } catch (error: any) {
-        console.error("Phonics World AI Error:", error);
-        return { success: false, error: (error as Error).message };
-    }
-}
-
-// --- MATH WORLD ENTRY GENERATOR (NEW) ---
-const MathWorldEntrySchema = z.object({
-    title: z.string(),
-    question: z.string(),
-    imageUrl: z.string().url().optional(),
-    imagePrompt: z.string(),
-    options: z.array(z.string()).length(4),
-    correctAnswer: z.string(),
-    icon: z.string(),
-});
-
-export async function generateMathWorldEntry(input: { topic: string; category: string; schoolId: string; }) {
-    try {
-        const creditResult = await checkAndSpendCredits(input.schoolId, 2);
-        if (!creditResult.success) {
-          return { success: false, error: creditResult.error || "Insufficient AI credits." };
-        }
-        const prompt = `
-            Create a nursery math activity for a child.
-            The topic is "${input.topic}" and it should fit within the category "${input.category}".
-            Provide a simple question, 4 options (one must be correct), the correct answer, an emoji icon, and a creative DALL-E style prompt to generate an image for the question.
-            Output strictly JSON.
-        `;
-
-        const { output } = await ai.generate({
-            model: 'googleai/gemini-3-flash-preview',
-            prompt,
-            output: { schema: MathWorldEntrySchema }
-        });
-        if (!output) throw new Error("AI did not generate a valid math entry.");
-        return { success: true, data: output };
-    } catch (error: any) {
-        console.error("Math World AI Error:", error);
-        return { success: false, error: (error as Error).message };
-    }
-}
-
-// --- SCIENCE WORLD ENTRY GENERATOR ---
-const ScienceWorldEntrySchema = z.object({
-    name: z.string(),
-    fact: z.string(),
-    imagePrompt: z.string(),
-    icon: z.string(),
-});
-
-export async function generateScienceWorldEntry(input: { topic: string; category: string; schoolId: string; }) {
-    try {
-        const creditResult = await checkAndSpendCredits(input.schoolId, 2);
-        if (!creditResult.success) {
-          return { success: false, error: creditResult.error || "Insufficient AI credits." };
-        }
-        const prompt = `
-            Create a nursery science discovery entry for a child.
-            The topic is "${input.topic}" and it should fit within the category "${input.category}".
-            Provide a short, amazing fact and a simple emoji icon.
-            Also, provide a creative DALL-E style prompt to generate an image for this fact.
-            Output strictly JSON.
-        `;
-
-        const { output } = await ai.generate({
-            model: 'googleai/gemini-3-flash-preview',
-            prompt,
-            output: { schema: ScienceWorldEntrySchema }
-        });
-        if (!output) throw new Error("AI did not generate a valid science entry.");
-        return { success: true, data: output };
-    } catch (error: any) {
-        console.error("Science World AI Error:", error);
-        return { success: false, error: (error as Error).message };
-    }
 }
 
 
@@ -296,7 +181,7 @@ export const generateLessonImageAction = async (input: { prompt: string; schoolI
         return { success: false, error: creditResult.error || "Insufficient AI credits." };
       }
       const { media } = await ai.generate({
-        model: 'googleai/gemini-2.5-flash-image',
+        model: 'googleai/imagen-4.0-fast-generate-001',
         prompt: input.prompt,
       });
   
@@ -324,7 +209,7 @@ export async function assessHandwritingAction(input: { imageDataUri: string; tar
     `;
 
     const { text } = await ai.generate({
-      model: 'googleai/gemini-3-flash-preview',
+      model: 'googleai/gemini-1.5-flash',
       prompt: [
         { text: prompt },
         { media: { url: input.imageDataUri } },
@@ -339,4 +224,29 @@ export async function assessHandwritingAction(input: { imageDataUri: string; tar
     console.error("AI Handwriting Assessment Error:", error);
     return { success: false, isCorrect: false, error: "The AI teacher is busy right now." };
   }
+}
+
+// Dummy placeholder functions for newly added features
+export async function generateSkillDetails(input: { skill: string; schoolId: string }) {
+  // In a real implementation, call Genkit AI here
+  return {
+    success: true,
+    data: {
+      title: input.skill,
+      description: `This is a placeholder description for the '${input.skill}' life skill.`,
+      imagePrompt: `3d illustration of a child learning about ${input.skill}`,
+    },
+  };
+}
+
+export async function generateRhyme(input: { topic: string; schoolId: string }) {
+  // In a real implementation, call Genkit AI here
+  return {
+    success: true,
+    data: {
+      title: `Rhyme about ${input.topic}`,
+      rhyme: `The ${input.topic} is great,\nIt's never too late,\nTo learn and to wait!`,
+      imagePrompt: `3d illustration of a child rhyming about ${input.topic}`,
+    },
+  };
 }
