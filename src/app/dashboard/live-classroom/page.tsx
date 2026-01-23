@@ -1,20 +1,57 @@
-
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 import { generateLessonImageAction, generateTTSAction } from '@/ai/flows/junior-actions';
 import { 
   Loader2, Mic, StopCircle, Zap, ShieldCheck, 
-  MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw
+  MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useUser, useFirestore } from '@/firebase'; 
-import { collection, doc, onSnapshot, addDoc, setDoc, getDoc, updateDoc, deleteDoc, getDocs, serverTimestamp, query } from 'firebase/firestore';
+import { useUser } from '@/firebase';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
+// --- AUDIO HELPERS ---
+// These functions are client-side only and wrap browser APIs.
+
+/** Decodes a Base64 string to a Uint8Array. */
+function decode(base64: string): Uint8Array {
+  const binaryString = window.atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
+/** Decodes raw audio bytes into an AudioBuffer. */
+async function decodeAudioData(bytes: Uint8Array, context: AudioContext, sampleRate: number, channels: number): Promise<AudioBuffer> {
+  const pcm = new Float32Array(bytes.length / 2);
+  const view = new DataView(bytes.buffer);
+  for (let i = 0; i < pcm.length; i++) {
+    pcm[i] = view.getInt16(i * 2, true) / 32768;
+  }
+  const buffer = context.createBuffer(channels, pcm.length, sampleRate);
+  for (let i = 0; i < channels; i++) {
+    buffer.getChannelData(i).set(pcm);
+  }
+  return buffer;
+}
+
+/** Creates a Blob from an ArrayBuffer for sending. */
+function createBlob(data: Float32Array): Blob {
+    const buffer = new ArrayBuffer(data.length * 2);
+    const view = new DataView(buffer);
+    for (let i = 0; i < data.length; i++) {
+        view.setInt16(i * 2, Math.max(-1, Math.min(1, data[i])) * 0x7FFF, true);
+    }
+    return new Blob([buffer], { type: 'application/octet-stream' });
+}
 
 interface VisualState {
   type: 'letter' | 'word' | 'image' | 'number' | 'concept' | 'quiz';
@@ -24,6 +61,7 @@ interface VisualState {
 }
 
 const DrGamTutor: React.FC = () => {
+  const { user } = useUser();
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
   
@@ -47,7 +85,7 @@ const DrGamTutor: React.FC = () => {
   const requestIdRef = useRef(0);
   const timerIntervalRef = useRef<number | null>(null);
   const inactivityTimeoutRef = useRef<number | null>(null);
-  const totalSessionTimerRef = useRef<number | null>(null); // NEW: Circuit Breaker
+  const totalSessionTimerRef = useRef<number | null>(null);
   const lastActivityTimeRef = useRef<number>(Date.now());
   
   const autoReconnectAttempts = useRef(0);
@@ -55,29 +93,21 @@ const DrGamTutor: React.FC = () => {
 
   const INACTIVITY_TIMEOUT = 120000; 
 
-  const endSession = () => {
+  const endSession = useCallback(() => {
     console.log("🛑 TERMINATING DR. GAM SESSION");
     setIsActive(false); 
     setIsResyncing(false);
     setIsConnecting(false);
     
-    // 1. Clear ALL timers
+    if (totalSessionTimerRef.current) clearTimeout(totalSessionTimerRef.current);
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
-    if (totalSessionTimerRef.current) clearTimeout(totalSessionTimerRef.current); // Clear circuit breaker
-    
-    // 2. Close API Session
+
     if (sessionRef.current) {
       try { sessionRef.current.close(); } catch(e){}
       sessionRef.current = null;
     }
 
-    // 3. KILL HARDWARE
-    if (scriptProcessorRef.current) {
-      scriptProcessorRef.current.disconnect();
-      scriptProcessorRef.current.onaudioprocess = null;
-      scriptProcessorRef.current = null;
-    }
     if (micStreamRef.current) {
       micStreamRef.current.getTracks().forEach(track => {
         track.stop();
@@ -88,16 +118,28 @@ const DrGamTutor: React.FC = () => {
     setActiveVisual(null); 
     lastProcessedCommandRef.current = "";
     console.log("🔒 Safety Check: Session and Hardware fully purged.");
-  };
+  }, []);
 
-  const resetInactivityTimer = () => {
+  const resetInactivityTimer = useCallback(() => {
     lastActivityTimeRef.current = Date.now();
     if (inactivityTimeoutRef.current) window.clearTimeout(inactivityTimeoutRef.current);
     inactivityTimeoutRef.current = window.setTimeout(() => {
       console.warn("⚠️ Inactivity Limit: Auto-closing Dr. Gam.");
       endSession();
     }, INACTIVITY_TIMEOUT);
-  };
+  }, [endSession]);
+
+  const handleTrialEnd = useCallback(async () => {
+    endSession();
+    setShowTrialEnd(true);
+    if(schoolId) {
+        const result = await generateTTSAction({ text: "Dr. Gam's power cell needs recharging! To continue our advanced session, please connect your Magic Key.", schoolId, voice: 'Algenib' });
+        if (result.success && result.data && typeof window !== 'undefined') {
+            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+            audio.play();
+        }
+    }
+  }, [endSession, schoolId]);
 
   useEffect(() => {
     // @ts-ignore
@@ -131,16 +173,7 @@ const DrGamTutor: React.FC = () => {
       window.removeEventListener('beforeunload', endSession);
       endSession();
     };
-  }, [isActive, isPaidSession, isAiStudioEnv]);
-
-  const handleTrialEnd = async () => {
-    endSession();
-    setShowTrialEnd(true);
-    if(schoolId) {
-        const result = await generateTTSAction({ text: "Dr. Gam's power cell needs recharging! To continue our advanced session, please connect your Magic Key.", schoolId, voice: 'Algenib' });
-        // Play logic would be here
-    }
-  };
+  }, [isActive, isPaidSession, isAiStudioEnv, endSession, resetInactivityTimer, handleTrialEnd]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -174,49 +207,137 @@ const DrGamTutor: React.FC = () => {
     setActiveVisual({ type: detectedType, value: detectedValue, id: newId });
     try {
       const result = await generateLessonImageAction({ prompt: `Academic high-quality 3D ${detectedValue}, centered, professional clean style, white background`, schoolId });
-      if (newId === requestIdRef.current) {
+      if (result.success && newId === requestIdRef.current) {
           setActiveVisual(prev => prev ? { ...prev, url: result.data || undefined } : null);
           setIsVisualLoading(false);
       }
     } catch (e) { setIsVisualLoading(false); }
   };
+  
+  const handleUnexpectedClose = useCallback(() => {
+    if (isActive && document.visibilityState === 'visible' && autoReconnectAttempts.current < 2) {
+      autoReconnectAttempts.current++;
+      setTimeout(() => {
+        if (isActive && document.visibilityState === 'visible') {
+           // startSession(true); // Re-enable if live feature is restored
+        }
+      }, 5000);
+    } else {
+      endSession();
+    }
+  }, [isActive, endSession]);
+
 
   const startSession = async (isReconnect = false) => {
     setShowTrialEnd(false);
     if (document.visibilityState === 'hidden') return;
     
     setIsConnecting(true);
+
+    // METERING LOGIC
+    if (!schoolId) {
+        toast({ variant: "destructive", title: "Error", description: "School ID not found for credit check." });
+        setIsConnecting(false);
+        return;
+    }
+    const creditResult = await checkAndSpendCredits(schoolId, 20);
+    if (!creditResult.success) {
+        toast({ variant: "destructive", title: "AI Credit Limit Reached", description: creditResult.error });
+        setIsConnecting(false);
+        return;
+    }
+    toast({ title: "Live Session Started", description: "20 credits have been deducted." });
     
-    // NEW: HARD CIRCUIT BREAKER (30 Minute Absolute Max)
+    // API KEY CHECK (Client Side)
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (!apiKey) {
+      toast({ variant: 'destructive', title: 'Client API Key Missing', description: 'The NEXT_PUBLIC_GEMINI_API_KEY is not set.' });
+      setIsConnecting(false);
+      return;
+    }
+    const ai = new GoogleGenAI({ apiKey });
+
+    // HARD CIRCUIT BREAKER (30 Minute Absolute Max)
     totalSessionTimerRef.current = window.setTimeout(() => {
         console.error("🚨 30-Minute Circuit Breaker Triggered. Safety Shutdown.");
         endSession();
         toast({ title: "Session Timeout", description: "Dr. Gam needs a break! Class closed for safety." });
-    }, 1800000); // 30 minutes in milliseconds
+    }, 1800000); 
 
-    toast({
-        variant: "destructive",
-        title: "Feature Not Available",
-        description: "Live voice tutoring is not configured for this project environment."
-    });
-    
-    // Simulate connection failure for demo purposes
-    setTimeout(() => {
-        setIsConnecting(false);
-        setIsActive(false);
-        endSession(); // Ensure cleanup happens
-    }, 1500);
-  };
-
-  const handleUnexpectedClose = () => {
-    if (isActive && document.visibilityState === 'visible' && autoReconnectAttempts.current < 2) {
-      autoReconnectAttempts.current++;
-      setTimeout(() => {
-        if (isActive && document.visibilityState === 'visible') startSession(true);
-      }, 5000);
-    } else {
-      endSession();
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     }
+    
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    micStreamRef.current = stream;
+    const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
+
+    const sessionPromise = ai.live.connect({
+      model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+      callbacks: {
+        onopen: () => {
+          setIsConnecting(false);
+          setIsResyncing(false);
+          setIsActive(true);
+          
+          const source = inputAudioContext.createMediaStreamSource(stream);
+          const scriptProcessor = inputAudioContext.createScriptProcessor(4096, 1, 1);
+          scriptProcessorRef.current = scriptProcessor;
+          
+          scriptProcessor.onaudioprocess = (e) => {
+            if (!sessionRef.current) return;
+            const inputData = e.inputBuffer.getChannelData(0);
+            const energy = inputData.reduce((sum, val) => sum + val * val, 0) / inputData.length;
+            if (energy > 0.015) { 
+              resetInactivityTimer();
+              const pcmBlob = createBlob(inputData);
+              sessionRef.current.sendRealtimeInput({ media: pcmBlob });
+            }
+          };
+          
+          source.connect(scriptProcessor);
+          scriptProcessor.connect(inputAudioContext.destination);
+          
+          const stitchPrompt = isReconnect 
+            ? `Continue the lecture as Dr. Gam.`
+            : `Professor Dr. Gam is joining the call. Greet the students professionally. IF YOU WANT TO SHOW AN IMAGE OR TEXT ON THE BOARD, SAY "SHOW BOARD: [NAME]". SPEAK ENGLISH ONLY.`;
+
+          sessionPromise.then(s => s.sendRealtimeInput({ text: stitchPrompt }));
+        },
+        onmessage: async (message: LiveServerMessage) => {
+          resetInactivityTimer();
+          const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
+          if (base64 && audioContextRef.current) {
+            nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
+            const bytes = decode(base64);
+            const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
+            const source = audioContextRef.current.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContextRef.current.destination);
+            source.start(nextStartTimeRef.current);
+            nextStartTimeRef.current += buffer.duration;
+          }
+
+          if (message.serverContent?.outputTranscription) {
+            const text = message.serverContent.outputTranscription.text;
+            transcriptBufferRef.current = (transcriptBufferRef.current + text).slice(-2000);
+            setLastTranscript(transcriptBufferRef.current);
+            updateVisualsFromText(transcriptBufferRef.current);
+          }
+        },
+        onerror: (e) => handleUnexpectedClose(),
+        onclose: (e) => isActive && handleUnexpectedClose(),
+      },
+      config: {
+        responseModalities: [Modality.AUDIO],
+        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
+        systemInstruction: `YOU ARE DR. GAM - AN EXPERT, FRIENDLY PROFESSOR.
+        - YOU TEACH K-12 TOPICS, SCIENCE, ECONOMICS, AND ACCOUNTING.
+        - BE ENCOURAGING BUT ACADEMICALLY RIGOROUS.
+        - ALWAYS SPEAK ENGLISH.`,
+      }
+    });
+    sessionRef.current = await sessionPromise;
   };
 
   return (

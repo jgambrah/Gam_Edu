@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -11,11 +12,12 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Loader2, Volume2, Star, Wand2, Mic, XCircle, 
   Save, Trash2, Library, CheckCircle2, Plus, BookOpen,
-  Zap, ShieldCheck, MonitorPlay, StopCircle, Clock
+  Zap
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateWordDetails, generateTTSAction, generateLessonImageAction } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const juniorStyles = {
     storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
@@ -25,28 +27,30 @@ const juniorStyles = {
 };
 
 // --- SUB-COMPONENT: VOICE COACH ---
-export function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean; schoolId: string;}) {
+export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [word, setWord] = useState('Apple');
     const [details, setDetails] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const { schoolId } = useCurrentSchool();
     
     const { data: dbWords, forceRefetch } = useCollection<any>(useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'junior_phonics'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
     [firestore, schoolId]));
 
     const fetchDetails = useCallback(async (w: string) => {
+        if (!schoolId) return;
         setIsLoading(true);
         setDetails(null);
-        const result = await generateWordDetails({ word: w, schoolId });
+        const result = await generateWordDetails({word: w, schoolId});
         if (result.success) setDetails(result.data);
         else toast({ title: "AI Error", description: result.error || "Could not get word details." });
         setIsLoading(false);
     }, [toast, schoolId]);
     
     const speak = async (text: string) => {
-        if (!text) return;
+        if (!text || !schoolId) return;
         try {
             const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
             if (result.success && result.data && typeof window !== 'undefined') {
@@ -58,7 +62,11 @@ export function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean; schoolId: 
         }
     };
     
-    useEffect(() => { fetchDetails('Apple'); }, [fetchDetails]);
+    useEffect(() => { 
+        if (schoolId) {
+            fetchDetails('Apple'); 
+        }
+    }, [fetchDetails, schoolId]);
 
     const handleSaveWord = async () => {
         if(!firestore || !schoolId) return;
@@ -109,154 +117,105 @@ export function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean; schoolId: 
 }
 
 // --- SUB-COMPONENT: STORY SPARK (Dr. Gam Version) ---
-interface VisualState {
-  type: 'letter' | 'word' | 'image' | 'number' | 'concept' | 'quiz';
-  value: string;
-  url?: string;
-  id: number;
-}
-
 export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string }) {
-    const { toast } = useToast();
-    
-    // Simplified State
-    const [isActive, setIsActive] = useState(false);
-    const [isConnecting, setIsConnecting] = useState(false);
-    const [activeVisual, setActiveVisual] = useState<VisualState | null>(null);
-    const [lastTranscript, setLastTranscript] = useState('');
-    const [isVisualLoading, setIsVisualLoading] = useState(false);
-    
-    const inactivityTimeoutRef = useRef<number | null>(null);
-    const lastActivityTimeRef = useRef<number>(Date.now());
-    const requestIdRef = useRef(0);
+  const { toast } = useToast();
+  const firestore = useFirestore();
+  const [topic, setTopic] = useState('');
+  const [activeStory, setActiveStory] = useState<any>(null);
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-    const INACTIVITY_TIMEOUT = 120000; 
+  const storiesQuery = useMemoFirebase(() => 
+      (firestore && schoolId) ? query(collection(firestore, 'junior_stories'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
+  [firestore, schoolId]);
+  const { data: dbStories, forceRefetch } = useCollection<any>(storiesQuery);
 
-    const endSession = () => {
-        setIsActive(false); 
-        setIsConnecting(false);
-        if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
-        setActiveVisual(null); 
-    };
-
-    const resetInactivityTimer = () => {
-        lastActivityTimeRef.current = Date.now();
-        if (inactivityTimeoutRef.current) window.clearTimeout(inactivityTimeoutRef.current);
-        inactivityTimeoutRef.current = window.setTimeout(() => {
-          console.warn("⚠️ Inactivity Limit: Auto-closing Dr. Gam.");
-          endSession();
-        }, INACTIVITY_TIMEOUT);
-    };
-
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'hidden' && isActive) {
-                endSession();
-            }
-        };
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        window.addEventListener('beforeunload', endSession);
-        if (isActive) resetInactivityTimer();
-        return () => {
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-            window.removeEventListener('beforeunload', endSession);
-            endSession();
-        };
-    }, [isActive]);
-
-    const startSession = async () => {
-        setIsConnecting(true);
-        toast({
-            variant: "destructive",
-            title: "Feature Not Available",
-            description: "Live voice tutoring is not configured for this project environment."
+  const generateNewStory = async () => {
+    if (!topic || !schoolId) return;
+    setIsGenerating(true);
+    const result = await generateJuniorStory({topic, schoolId});
+    if (result.success && result.data) {
+        await addDoc(collection(firestore!, 'junior_stories'), {
+            ...result.data,
+            schoolId: schoolId,
+            createdAt: serverTimestamp()
         });
-        setTimeout(() => setIsConnecting(false), 1000);
-    };
+        forceRefetch();
+        toast({title: "New Story Created!"});
+    }
+    setIsGenerating(false);
+  };
+  
+  const checkAnswers = () => {
+    let correct = 0;
+    activeStory.questions.forEach((q: any, i: number) => {
+        if (answers[i]?.toLowerCase().trim() === q.answer.toLowerCase().trim()) correct++;
+    });
+    if (correct === activeStory.questions.length) { 
+        confetti(); 
+        toast({ title: "Perfect!", description: "You answered all questions correctly." });
+    } else {
+        toast({ title: "Good Try!", description: `You got ${correct} out of ${activeStory.questions.length} right.` });
+    }
+  };
 
-    const updateVisualsFromText = async (fullText: string) => {
-        const cleanText = fullText.toUpperCase();
-        const commands = Array.from(cleanText.matchAll(/SHOW\s+BOARD:\s*([\w\s]+?)(?=[.!?]|$)/gi));
-        if (commands.length === 0) return;
+  return (
+    <div className="grid lg:grid-cols-4 gap-8">
+      {/* LIBRARY */}
+      <div className="lg:col-span-1">
+        <Card className="shadow-inner bg-slate-50 border-slate-100">
+            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Library className="text-orange-500"/> Story Library</CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+                {dbStories?.map(story => (
+                    <Button key={story.id} variant={activeStory?.id === story.id ? 'default' : 'outline'} className="w-full justify-start gap-2" onClick={() => setActiveStory(story)}>
+                        {story.emojiIcon} {story.title}
+                    </Button>
+                ))}
+            </CardContent>
+        </Card>
+        {canEdit && (
+             <Card className="mt-4 shadow-inner bg-slate-50 border-slate-100">
+                <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Wand2 className="text-purple-500"/> AI Story Generator</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                    <Input placeholder="Story Topic..." value={topic} onChange={e => setTopic(e.target.value)} />
+                    <Button onClick={generateNewStory} disabled={isGenerating || !topic} className="w-full bg-purple-600">
+                       {isGenerating ? <Loader2 className="animate-spin"/> : 'Create Story'}
+                    </Button>
+                </CardContent>
+            </Card>
+        )}
+      </div>
 
-        const lastCommand = commands[commands.length - 1][1].trim();
-        const newId = ++requestIdRef.current;
-        setIsVisualLoading(true);
+      {/* STORYBOOK */}
+      <div className="lg:col-span-3">
+          {activeStory ? (
+              <div className={juniorStyles.storybook}>
+                  <div className="text-center mb-8">
+                      <div className="text-7xl mb-4 animate-bounce">{activeStory.emojiIcon}</div>
+                      <h2 className="text-5xl font-black text-orange-800">{activeStory.title}</h2>
+                      <p className="text-orange-400 font-black mt-2 uppercase tracking-widest">A Magic Tale</p>
+                  </div>
+                  <p className={juniorStyles.storyText}>{activeStory.content}</p>
 
-        let detectedValue = lastCommand;
-        let detectedType: VisualState['type'] = 'concept';
-        if (detectedValue.includes("QUIZ")) { detectedType = 'quiz'; } 
-        else if (detectedValue.length === 1 && /[A-Z]/.test(detectedValue)) { detectedType = 'letter'; } 
-        else if (/^\d+$/.test(detectedValue)) { detectedType = 'number'; }
-
-        setActiveVisual({ type: detectedType, value: detectedValue, id: newId });
-        try {
-            const result = await generateLessonImageAction({ prompt: `Academic high-quality 3D ${detectedValue}, centered, professional clean style, white background`, schoolId });
-            if (newId === requestIdRef.current) {
-                setActiveVisual(prev => prev ? { ...prev, url: result.data || undefined } : null);
-                setIsVisualLoading(false);
-            }
-        } catch (e) { setIsVisualLoading(false); }
-    };
-    
-    return (
-        <div className="flex flex-col items-center p-6 md:p-12 bg-[#F8FAFC] rounded-[4rem] shadow-2xl max-w-7xl mx-auto border-[12px] border-slate-900 relative overflow-hidden font-black selection:bg-indigo-100">
-          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12">
-            
-            {/* PROFESSOR CARD */}
-            <div className="lg:col-span-3 flex flex-col items-center justify-center p-10 bg-white rounded-[4rem] border-4 border-slate-900 shadow-xl">
-                <div className={`relative w-44 h-44 rounded-full bg-slate-50 flex items-center justify-center mb-8 border-8 transition-all duration-500 ${isActive ? 'border-indigo-500 scale-105' : 'border-slate-200'}`}>
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=DrGam" alt="Dr. Gam" className="w-36 h-36 rounded-full object-cover" />
-                    {isActive && <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-xl animate-pulse"><Mic className="w-8 h-8" /></div>}
-                </div>
-                <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter text-center mb-6">Dr. Gam</h2>
-                {isActive ? (
-                  <Button onClick={endSession} className="w-full h-14 bg-red-50 text-red-600 rounded-3xl font-black uppercase text-xs hover:bg-red-600 hover:text-white border-4 border-red-50">Stop Lecture</Button>
-                ) : (
-                    <Badge variant="outline" className="text-slate-400 uppercase font-black tracking-widest text-[10px]">Awaiting Instruction</Badge>
-                )}
-            </div>
-
-            {/* INTERACTIVE BOARD */}
-            <div className="lg:col-span-9">
-                <div className="w-full aspect-[16/10] bg-slate-900 rounded-[5rem] border-[16px] border-slate-800 shadow-inner flex items-center justify-center relative overflow-hidden group">
-                    {!activeVisual ? (
-                        <div className="text-center opacity-10 flex flex-col items-center gap-8 group-hover:opacity-20 transition-opacity">
-                            <MonitorPlay className="w-48 h-48" />
-                            <p className="font-black text-3xl uppercase tracking-[0.4em]">Visual Board Offline</p>
-                        </div>
-                    ) : (
-                        <div className="w-full h-full p-16 animate-in zoom-in duration-500">
-                            <div className="w-full h-full rounded-[4rem] bg-white shadow-2xl flex items-center justify-center overflow-hidden border-[12px] border-slate-700">
-                               {isVisualLoading ? (
-                                 <div className="flex flex-col items-center gap-4">
-                                   <Loader2 className="w-20 h-20 animate-spin text-slate-300" />
-                                   <span className="text-slate-400 font-bold uppercase text-xs tracking-widest">Preparing Visual...</span>
-                                 </div>
-                               ) : activeVisual.url && (
-                                 <img src={activeVisual.url} className="w-full h-full object-cover p-10 animate-in fade-in duration-700" alt="visual aid" />
-                               )}
-                            </div>
-                        </div>
-                    )}
-                    <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-slate-800 rounded-full border border-slate-700">
-                        <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em]">Dr. Gam Digital Board</span>
-                    </div>
-                </div>
-            </div>
-          </div>
-          
-          {!isActive && (
-            <div className="mt-16 flex flex-col items-center w-full animate-in slide-in-from-bottom-10 duration-700">
-               <button 
-                 onClick={() => startSession(false)} 
-                 disabled={isConnecting}
-                 className="px-24 py-12 bg-slate-900 text-white text-5xl font-black rounded-[4rem] shadow-[0_15px_0_0_#000] hover:translate-y-1 active:translate-y-4 active:shadow-none transition-all flex items-center gap-6 uppercase tracking-tighter border-8 border-white mb-16"
-               >
-                 {isConnecting ? <><Loader2 className="animate-spin w-12 h-12"/> Awakening...</> : 'Enter Classroom'}
-               </button>
-            </div>
+                  <div className="mt-12 bg-white/80 p-10 rounded-[50px] border-4 border-dashed border-orange-300 space-y-8">
+                      <h3 className="text-4xl font-black text-pink-500 text-center">🌟 Discovery Questions 🌟</h3>
+                      {activeStory.questions.map((q:any, i: number) => (
+                           <div key={i} className="space-y-4 text-center">
+                                <p className="text-2xl font-black text-blue-900">🌈 {q.question}</p>
+                                <Input placeholder="Type your answer..." value={answers[i] || ""} onChange={e => { const newAnswers = [...answers]; newAnswers[i] = e.target.value; setAnswers(newAnswers); }} className={juniorStyles.input} />
+                           </div>
+                      ))}
+                      <Button onClick={checkAnswers} className={juniorStyles.button}>I'M FINISHED! 🏆</Button>
+                  </div>
+              </div>
+          ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center">
+                  <div className="p-10 rounded-full bg-yellow-100 mb-6 animate-pulse"><BookOpen className="w-20 h-20 text-yellow-500"/></div>
+                  <h2 className="text-3xl font-black text-slate-300">Choose a Magic Book</h2>
+              </div>
           )}
-        </div>
-    );
+      </div>
+    </div>
+  );
 }
+```
