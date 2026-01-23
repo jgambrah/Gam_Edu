@@ -218,7 +218,7 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/study-club',
-            title: 'Study Club (AI Tutor)',
+            title: 'Dr. Gam AI Tutor',
             icon: BrainCircuit,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },

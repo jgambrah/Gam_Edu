@@ -1,19 +1,18 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
+  Loader2, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Pen
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import PhonicsWorld from './phonics-world';
-import { VoiceCoach, StorySpark } from './voice-coach';
+import { StorySpark } from './voice-coach';
 import ArtStudio from './art-studio';
 import JuniorScienceWorld from './science-world';
 import MathPlayground from './math-playground';
@@ -210,12 +209,22 @@ function WritingCanvas() {
   );
 }
 
+// ... Rest of your existing components (MathPlayground, ScienceWorld, StorySpark, etc.) go here ...
 
 export default function JuniorCampusPage() {
     const { role, profile } = useRole();
     const { user } = useUser();
-    const schoolId = profile?.schoolId || (user as any)?.schoolId || "sunnyside-default";
+    const { schoolId } = useCurrentSchool();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
+
+    if (!schoolId) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <Loader2 className="animate-spin h-8 w-8 text-slate-300"/>
+                <p className="ml-4 text-slate-500">Loading school data...</p>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-[#FFFBEB] p-4 md:p-8 font-sans">
@@ -245,15 +254,13 @@ export default function JuniorCampusPage() {
                         <TabsContent value="writing" className="mt-0"><WritingCanvas /></TabsContent>
                         <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId} /></TabsContent>
-                        <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
-                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
-                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
-                        <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="science" className="mt-0"><JuniorScienceWorld schoolId={schoolId} /></TabsContent>
+                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio schoolId={schoolId} /></div></TabsContent>
+                        <TabsContent value="phonics" className="mt-0"><PhonicsWorld schoolId={schoolId} /></TabsContent>
+                        <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
                     </div>
                 </Tabs>
             </div>
         </div>
     );
 }
-
-// ... Ensure all sub-components like MathPlayground, StorySpark, etc are defined as per previous SaaS versions ...
