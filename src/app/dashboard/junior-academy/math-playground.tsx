@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
   Loader2, Wand2, ArrowRight,
-  Calculator, CheckCircle2, XCircle, Plus, Minus, Layers, Users, Clock, Wallet, Ruler, Shapes, Globe, CheckSquare, Handshake
+  Calculator, CheckCircle2, XCircle, Plus, Minus, Layers, Users, Clock, Wallet, Ruler, Shapes, Globe, CheckSquare, Handshake, PenTool
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
