@@ -62,7 +62,7 @@ export async function autoReconcileFlow(bankLines: BankTx[], ledgerLines: Intern
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-pro',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       output: {
         schema: ReconciliationSchema,

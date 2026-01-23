@@ -14,7 +14,7 @@ export async function generateSMSDraftAction(topic: string, tone: 'formal' | 'ur
     `;
 
     const response = await ai.generate({
-      model: 'googleai/gemini-2.5-flash', // Use your verified model string
+      model: 'googleai/gemini-3-flash-preview', // Use your verified model string
       prompt: prompt,
       config: { temperature: 0.7 }
     });

@@ -36,7 +36,7 @@ export async function generateScienceLessonAction(input: { topic: string, grade:
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       output: { schema: LessonSchema },
     });

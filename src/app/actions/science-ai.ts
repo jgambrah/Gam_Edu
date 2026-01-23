@@ -11,7 +11,7 @@ export async function generateScienceFactAction(topic?: string) {
 
     // 🔥 FIX: Reverted to the stable gemini-pro model
     const response = await ai.generate({
-      model: 'googleai/gemini-pro', 
+      model: 'googleai/gemini-3-flash-preview', 
       prompt: promptText,
       config: {
         temperature: 0.7,

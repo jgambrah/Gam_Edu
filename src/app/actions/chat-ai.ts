@@ -14,7 +14,7 @@ export async function chatAIAction(schoolId: string, message: string) {
     const response = await ai.generate({
       // FAILSAFE MODEL: Gemini 1.0 Pro
       // This is the most stable string available
-      model: 'googleai/gemini-2.5-flash', 
+      model: 'googleai/gemini-3-flash-preview', 
       prompt: `You are a helpful AI Tutor. User: ${message}`,
       config: { temperature: 0.7 }
     });

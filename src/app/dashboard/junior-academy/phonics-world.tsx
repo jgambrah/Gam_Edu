@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, where, serverTimestamp, orderBy } from 'firebase/firestore';
+import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
-import { generatePhonicsWorldEntry, generateLessonImageAction, generateTTSAction } from '@/app/dashboard/junior-actions';
+import { generatePhonicsWorldEntry, generateLessonImageAction, generateTTSAction } from '@/ai/flows/junior-actions';
 
 const juniorStyles = {
     card: "rounded-[60px] border-8 border-pink-100 shadow-[0_20px_0_#FCE7F3] bg-white overflow-hidden",
@@ -81,19 +81,20 @@ export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
         }
     };
 
+    // --- FIX: Verified Lucide Icon Names ---
     const tabs: {id: PhonicsTab, label: string, icon: any}[] = [
         { id: 'jolly-phonics', label: 'Jolly Sounds', icon: Smile },
         { id: 'alphabet', label: 'ABC Phonics', icon: Music },
         { id: 'picture-reading', label: 'Reading', icon: BookOpen },
-        { id: 'syllables', label: 'Clap Out', icon: AudioLines }, // Changed from HandsClapping
+        { id: 'syllables', label: 'Clap Out', icon: AudioLines },
         { id: 'alliteration', label: 'Listening', icon: Ear },
         { id: 'sound-games', label: 'Sound Play', icon: Gamepad2 },
         { id: 'blends', label: 'Blends', icon: Layers },
         { id: 'rhymes', label: 'Rhymes', icon: Repeat },
         { id: 'diction', label: 'Speech', icon: Mic },
         { id: 'missing-letters', label: 'Gaps', icon: Underline },
-        { id: 'environmental-print', label: 'Signs', icon: Milestone }, // Changed from Signpost
-        { id: 'book-handling', label: 'Books', icon: BookCheck }, // Changed from BookOpenCheck
+        { id: 'environmental-print', label: 'Signs', icon: Milestone },
+        { id: 'book-handling', label: 'Books', icon: BookCheck },
     ];
 
     return (
@@ -103,10 +104,11 @@ export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
                 <p className="text-slate-400 font-bold italic text-xl">Let's learn to read and speak with magic!</p>
             </div>
 
+            {/* NAV BAR */}
             <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
                 <div className="flex justify-start md:justify-center gap-4 bg-white p-4 rounded-[3rem] shadow-xl border-4 border-pink-50 min-w-max">
                     {tabs.map((tab) => {
-                        const Icon = tab.icon || AlertCircle;
+                        const Icon = tab.icon || AlertCircle; // --- FIX: Fallback to prevent "undefined" crash ---
                         return (
                             <button
                                 key={tab.id}
@@ -137,6 +139,7 @@ export default function PhonicsWorld({ schoolId }: { schoolId: string }) {
     );
 }
 
+// --- SUB-COMPONENT: PhonicsModule (The "Brains") ---
 function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, schoolId: string, canEdit: boolean, onSound: (t: string) => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -160,9 +163,9 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
     const loadVisual = useCallback(async () => {
       if (!current) return;
       setIsLoading(true);
-      const prompt = current.imagePrompt || `3D nursery illustration of ${current.title || current.letter}`;
-      const url = await generateLessonImageAction(prompt);
-      setImageUrl(url);
+      setLocalImg(null);
+      const url = await generateLessonImageAction(current.imagePrompt || `3D nursery illustration of ${current.title || current.letter}`);
+      setLocalImg(url);
       setIsLoading(false);
     }, [current]);
 
@@ -173,12 +176,11 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
     }, [current, loadVisual]);
 
     const handleGenerate = async () => {
-        if (!firestore || !schoolId) return;
         setIsLoading(true);
         try {
             const result = await generatePhonicsWorldEntry(aiTopic, tab);
             if(result.success && result.data){
-                await addDoc(collection(firestore, 'junior_phonics_world'), {
+                await addDoc(collection(firestore!, 'junior_phonics_world'), {
                     ...result.data,
                     tab,
                     schoolId,
@@ -197,12 +199,14 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
             toast({ title: "Magic Failed", variant: "destructive", description: e.message });
         } finally { setIsLoading(false); }
     };
+    
+    const [localImg, setLocalImg] = useState<string | null>(null);
 
     return (
-        <div className="space-y-6">
+        <div className="animate-in slide-in-from-bottom-10 duration-700">
             {canEdit && (
-                <div className="flex justify-end">
-                    <Button onClick={() => setIsDrawerOpen(true)} className="rounded-full bg-white border-2 border-pink-200 text-pink-600 font-black text-[10px] uppercase shadow-sm">
+                <div className="flex justify-end mb-4">
+                    <Button onClick={() => setIsDrawerOpen(true)} className="rounded-full bg-white border-2 border-pink-200 text-pink-600 font-black text-[10px] uppercase hover:bg-pink-50 shadow-sm">
                         <Wand2 className="w-3 h-3 mr-2" /> AI {tab.replace('-', ' ')} Maker
                     </Button>
                 </div>
@@ -228,11 +232,11 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
                         >
                             {isLoading ? (
                                 <div className="absolute inset-0 flex items-center justify-center"><Loader2 className="animate-spin text-pink-400 w-12 h-12" /></div>
-                            ) : imageUrl && (
-                                <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" alt="Lesson" />
+                            ) : localImg && (
+                                <img src={localImg} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" alt={current.name} />
                             )}
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
-                                <Volume2 className="text-white w-20 h-20 opacity-0 group-hover:opacity-100 drop-shadow-xl" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                                <Volume2 className="text-white w-16 h-16 opacity-0 group-hover:opacity-100 drop-shadow-lg" />
                             </div>
                         </div>
 
@@ -241,10 +245,10 @@ function PhonicsModule({ tab, schoolId, canEdit, onSound }: { tab: PhonicsTab, s
                                 <p className="text-3xl font-bold text-slate-700 leading-relaxed italic">"{current.description || current.story || current.sound}"</p>
                             </div>
                             
-                            <Button onClick={() => onSound(current.description || current.story || current.title)} className={juniorStyles.button + " w-full"}>
-                                Listen to Sound! 🎙️
+                            <Button onClick={() => onSound(current.description || current.story || current.title)} className={juniorStyles.button + " w-full uppercase"}>
+                                Read Story! 🎙️
                             </Button>
-
+                            
                             <div className="flex gap-4 justify-center">
                                 <button onClick={() => setIndex(i => Math.max(0, i - 1))} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight className="rotate-180" /></button>
                                 <button onClick={() => items && items.length > 0 && setIndex(i => (i + 1) % items.length)} className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all"><ArrowRight /></button>

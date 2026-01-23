@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for generating lesson plan ideas.
@@ -47,7 +48,7 @@ const generateLessonIdeasFlow = ai.defineFlow(
     outputSchema: GenerateLessonIdeasOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input, { model: 'googleai/gemini-2.5-flash' });
+    const { output } = await prompt(input, { model: 'googleai/gemini-3-flash-preview' });
     return output!;
   }
 );

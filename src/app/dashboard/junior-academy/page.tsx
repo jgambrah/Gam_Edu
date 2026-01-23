@@ -92,10 +92,10 @@ function WritingCanvas() {
     setIsEvaluating(true);
     setFeedback("Magic eyes checking...");
     try {
-        const imageDataUri = freeCanvasRef.current.toDataURL('image/png');
-        const target = mode === 'letters' ? selectedLetter : selectedNumber;
-        
-        const result = await assessHandwritingAction({ imageDataUri, targetCharacter: target });
+      const imageDataUri = freeCanvasRef.current.toDataURL('image/png');
+      const target = mode === 'letters' ? selectedLetter : selectedNumber;
+      
+      const result = await assessHandwritingAction({ imageDataUri, targetCharacter: target });
       
       if(result.success) {
         if (result.isCorrect) {
@@ -111,7 +111,7 @@ function WritingCanvas() {
       } else {
           throw new Error(result.error || "AI Assessment failed");
       }
-    } catch (e) { 
+    } catch (e: any) { 
         console.error(e);
         setFeedback('Magic is sleeping...'); 
     }
@@ -251,5 +251,3 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-// ... Ensure all sub-components like MathPlayground, StorySpark, etc are defined as per previous SaaS versions ...

@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -62,7 +63,7 @@ export async function evaluateReadingSubmissionAction(input: EvaluationInput) {
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       output: { schema: FeedbackSchema },
     });

@@ -37,7 +37,7 @@ const generateDailyFactFlow = ai.defineFlow(
     outputSchema: GenerateDailyFactOutputSchema,
   },
   async () => {
-    const { output } = await prompt(undefined, { model: 'googleai/gemini-pro' });
+    const { output } = await prompt(undefined, { model: 'googleai/gemini-3-flash-preview' });
     return output!;
   }
 );

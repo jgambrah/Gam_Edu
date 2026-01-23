@@ -16,26 +16,34 @@ const JuniorStorySchema = z.object({
   })).length(3).describe("Exactly three simple questions to check understanding.")
 });
 
-export async function generateJuniorStory(topic: string, wordCount: number) {
+export async function generateJuniorStory(topic: string, wordCount: number = 100) {
   try {
     const prompt = `
-      Generate a very simple, happy, and imaginative story for a 5-7 year old child.
-      The story should be about: "${topic}".
-      It must be approximately ${wordCount} words long.
-      Also generate 3 simple comprehension questions with short, one-word answers.
-      Include a single emoji for the story.
-      Output strictly JSON.
+      You are a kindergarten teacher. Write an educational story for a 5-year-old about: ${topic}.
+      
+      RULES:
+      1. The story must be engaging and approximately ${wordCount} words long.
+      2. Use simple, age-appropriate words.
+      3. The output MUST be a JSON object that strictly follows the provided schema.
+      4. The 'questions' array must contain exactly 3 comprehension questions about the story.
     `;
+
     const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
-      prompt,
-      output: { schema: JuniorStorySchema }
+      model: 'googleai/gemini-3-flash-preview',
+      prompt: prompt,
+      output: {
+        schema: JuniorStorySchema
+      }
     });
-    if (!output) throw new Error("AI did not return data.");
+
+    if (!output) {
+      throw new Error("AI did not return a valid story object.");
+    }
+    
     return { success: true, data: output };
   } catch (error) {
-    console.error("AI Story Error:", error);
-    return { success: false, error: (error as Error).message };
+    console.error("Story Generation Error:", error);
+    return { success: false, error: "The story robot is sleeping." };
   }
 }
 
@@ -56,7 +64,7 @@ export async function generateJuniorScience(topic: string) {
       Output strictly JSON.
     `;
     const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt,
       output: { schema: JuniorScienceSchema }
     });
@@ -86,7 +94,7 @@ export async function generateWordDetails(word: string) {
       Output strictly JSON.
     `;
     const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt,
       output: { schema: WordDetailSchema }
     });
@@ -125,7 +133,7 @@ export async function generatePhonicsWorldEntry(topic: string, category: string)
         const prompt = `Create a nursery phonics entry for "${topic}" in category "${category}". 
         Return JSON: { "title": "string", "sound": "string", "description": "string", "imagePrompt": "string", "icon": "string" }`;
         const { output } = await ai.generate({
-            model: 'googleai/gemini-1.5-flash',
+            model: 'googleai/gemini-3-flash-preview',
             prompt,
             output: { schema: PhonicsWorldEntrySchema }
         });
@@ -158,7 +166,7 @@ export async function generateMathWorldEntry(topic: string, category: string) {
         `;
 
         const { output } = await ai.generate({
-            model: 'googleai/gemini-1.5-flash',
+            model: 'googleai/gemini-3-flash-preview',
             prompt,
             output: { schema: MathWorldEntrySchema }
         });
@@ -169,7 +177,6 @@ export async function generateMathWorldEntry(topic: string, category: string) {
         return { success: false, error: (error as Error).message };
     }
 }
-
 
 // --- SCIENCE WORLD ENTRY GENERATOR ---
 const ScienceWorldEntrySchema = z.object({
@@ -190,7 +197,7 @@ export async function generateScienceWorldEntry(topic: string, category: string)
         `;
 
         const { output } = await ai.generate({
-            model: 'googleai/gemini-1.5-flash',
+            model: 'googleai/gemini-3-flash-preview',
             prompt,
             output: { schema: ScienceWorldEntrySchema }
         });
@@ -253,7 +260,7 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
 export const generateLessonImageAction = async (prompt: string): Promise<string | null> => {
     try {
       const { media } = await ai.generate({
-        model: 'googleai/imagen-4.0-fast-generate-001',
+        model: 'googleai/gemini-2.5-flash-image',
         prompt,
       });
   
@@ -277,7 +284,7 @@ export async function assessHandwritingAction(input: { imageDataUri: string; tar
     `;
 
     const { text } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: [
         { text: prompt },
         { media: { url: input.imageDataUri } },
