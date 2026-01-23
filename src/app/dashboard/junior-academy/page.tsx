@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Database
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Database, Eraser, PenTool
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -26,7 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { Eraser } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -939,7 +939,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [loading, setLoading] = useState(false);
     const [sorterFeedback, setSorterFeedback] = useState("");
 
-
     // --- 3. NEW MATERIAL FORM STATE ---
     const [newMat, setNewMat] = useState({
         name: '',
@@ -983,20 +982,21 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         const state = [...selectedMaterial.states].sort((a:any,b:any) => b.temp - a.temp).find((s:any) => temp >= s.temp);
         return state || selectedMaterial.states[0];
     };
-    
+
     // --- 5. DISCOVERY LAB LOGIC ---
     const handleGenerate = async () => { 
         setLoading(true); 
         try {
             const res = await generateJuniorScience(topic); 
-            if(res.success) {
+            if(res.success && res.data) {
                 setFact(res.data);
             } else {
-                toast({ variant: "destructive", title: "AI Error", description: "Could not generate fact." });
+                toast({ variant: "destructive", title: "Error", description: res.error || "AI failed." });
             }
-        } catch (e) {
+        } catch(e: any) { 
             console.error(e);
-        } finally {
+            toast({ variant: 'destructive', title: "Error", description: e.message || "An error occurred." });
+        } finally { 
             setLoading(false); 
         }
     };
@@ -1004,45 +1004,20 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const handleSave = async () => { 
         if(!user || !fact || !firestore || !schoolId) return; 
         
-        try {
-            // Save to Firestore
-            await addDoc(collection(firestore,'junior_science'), {
-                title: fact.title,      // Explicitly save fields to ensure structure
-                fact: fact.fact,
-                emojiIcon: fact.emojiIcon,
-                observation: fact.observation || "",
-                experiment: fact.experiment || "",
-                createdAt: serverTimestamp(),
-                createdBy: user.uid,
-                schoolId: schoolId
-            }); 
-            
-            setFact(null); 
-            setTopic('');
-            
-            // Force refresh (just in case)
-            if (refetchScience) refetchScience(); 
-            
-            toast({title: "Discovery Saved!", description: "Check your Journal tab."});
-            
-            // Auto-switch to Journal tab so user sees it worked
-            setActiveTab('library');
-
-        } catch (e: any) {
-            console.error("Save Error:", e);
-            toast({ variant: "destructive", title: "Save Failed", description: e.message });
-        }
+        await addDoc(collection(firestore, 'junior_science'), {
+            ...fact,
+            createdAt: serverTimestamp(),
+            createdBy: user.uid,
+            schoolId: schoolId,
+        }); 
+        
+        setFact(null); 
+        if(refetchScience) refetchScience(); 
+        toast({title: "Discovery Saved!", description: "Check your Journal tab."});
+        setActiveTab('library');
     };
     
-    const handleDeleteDiscovery = async (id: string) => {
-        if (!firestore) return;
-        if(confirm("Delete this discovery?")){
-            await deleteDoc(doc(firestore, 'junior_science', id));
-            if(refetchScience) refetchScience();
-            toast({ title: "Deleted" });
-        }
-    };
-
+    // --- 6. SORTER LOGIC ---
     const handleSaveSorterItem = async () => {
         if (!newItem.name || !newItem.emoji || !schoolId) return;
         await addDoc(collection(firestore, 'junior_sorter_items'), {
@@ -1066,6 +1041,15 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         setTimeout(() => setSorterFeedback(""), 1500);
     };
 
+    const handleDeleteDiscovery = async (id: string) => {
+        if (!firestore) return;
+        if(confirm("Delete this discovery?")) {
+            await deleteDoc(doc(firestore, 'junior_science', id));
+            if(refetchScience) refetchScience();
+            toast({ title: "Deleted" });
+        }
+    };
+
     return (
         <div className="space-y-8">
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
@@ -1074,7 +1058,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
-            
+
+            {/* DISCOVERY TAB */}
             {activeTab === 'lab' && (
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <div className="space-y-4">
@@ -1109,6 +1094,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
+            {/* SORTER TAB */}
             {activeTab === 'sorter' && (
                  <div className="space-y-6">
                     <div className="text-center p-4 rounded-xl bg-white border shadow-sm">
@@ -1138,7 +1124,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     </div>
                 </div>
             )}
-
+            
+            {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
                     <div className="text-center space-y-4">
@@ -1166,7 +1153,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </div>
                     </div>
 
-                    {/* Material Creator Form */}
                     {showAddMatForm && canEdit && (
                         <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px]">
                             <h4 className="text-xl font-black text-cyan-800 mb-4">Create New Material</h4>
@@ -1185,7 +1171,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </Card>
                     )}
 
-                    {/* Simulator Display */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
                         <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
                             {getCurrentState().emoji}
@@ -1211,6 +1196,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
+            {/* JOURNAL TAB */}
             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
@@ -1285,6 +1271,7 @@ function StickerBook({ schoolId }: { schoolId: string | null }) {
 // --- 5. ART STUDIO (PAINT & SHAPES) ---
 function ArtStudio() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isDrawing, setIsDrawing] = useState(false);
     const [color, setColor] = useState('#4f46e5');
     const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp'>('brush');
 
@@ -1309,6 +1296,41 @@ function ArtStudio() {
             ctx.beginPath(); ctx.arc(x, y, 30, 0, Math.PI * 2); ctx.fill();
         }
     };
+    
+    const startDrawing = (e: React.MouseEvent) => {
+        const ctx = canvasRef.current?.getContext('2d');
+        if (ctx && tool === 'brush') {
+            ctx.beginPath();
+            ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+            setIsDrawing(true);
+        }
+    };
+
+    const draw = (e: React.MouseEvent) => {
+        if (!isDrawing || tool !== 'brush') return;
+        const ctx = canvasRef.current?.getContext('2d');
+        if (ctx) {
+            ctx.strokeStyle = color;
+            ctx.lineCap = 'round';
+            ctx.lineWidth = 5;
+            ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+            ctx.stroke();
+        }
+    };
+    
+    const stopDrawing = () => {
+        setIsDrawing(false);
+    };
+
+
+    const clearBoard = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext('2d');
+        if (canvas && ctx) {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    };
 
     return (
         <div className="grid lg:grid-cols-4 gap-6">
@@ -1323,13 +1345,18 @@ function ArtStudio() {
                         <button key={c} onClick={() => setColor(c)} className={`w-10 h-10 rounded-full border-4 ${color === c ? 'border-slate-800' : 'border-white shadow-sm'}`} style={{backgroundColor: c}} />
                     ))}
                 </div>
-                <Button variant="destructive" className="w-full rounded-2xl h-12" onClick={() => {
-                    const ctx = canvasRef.current?.getContext('2d');
-                    ctx?.clearRect(0,0,800,500);
-                }}><Eraser className="mr-2" /> Clear All</Button>
+                <Button variant="destructive" className="w-full rounded-2xl h-12" onClick={clearBoard}><Eraser className="mr-2" /> Clear All</Button>
             </Card>
             <div className="lg:col-span-3">
-                <canvas ref={canvasRef} onClick={handleCanvasClick} className="bg-white rounded-[60px] shadow-2xl border-[12px] border-white w-full h-[500px] cursor-crosshair touch-none" />
+                <canvas 
+                    ref={canvasRef} 
+                    onClick={handleCanvasClick}
+                    onMouseDown={startDrawing}
+                    onMouseMove={draw}
+                    onMouseUp={stopDrawing}
+                    onMouseLeave={stopDrawing}
+                    className="bg-white rounded-[60px] shadow-2xl border-[12px] border-white w-full h-[500px] cursor-crosshair touch-none" 
+                />
             </div>
         </div>
     );
@@ -1377,3 +1404,5 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
+    
