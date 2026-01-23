@@ -11,6 +11,7 @@ import confetti from 'canvas-confetti';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Badge } from '@/components/ui/badge';
 
 interface VisualState {
   type: 'letter' | 'word' | 'image' | 'number' | 'concept' | 'quiz';
@@ -51,23 +52,50 @@ const DrGamTutor: React.FC = () => {
   const INACTIVITY_TIMEOUT = 120000; 
 
   const endSession = () => {
+    console.log("🛑 TERMINATING DR. GAM SESSION");
     setIsActive(false); 
     setIsResyncing(false);
     setIsConnecting(false);
     
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
+
+    if (scriptProcessorRef.current) {
+      scriptProcessorRef.current.disconnect();
+      scriptProcessorRef.current.onaudioprocess = null;
+      scriptProcessorRef.current = null;
+    }
+
+    if (sessionRef.current) {
+      try { sessionRef.current.close(); } catch(e){}
+      sessionRef.current = null;
+    }
+
+    if (micStreamRef.current) {
+      micStreamRef.current.getTracks().forEach(track => {
+        track.stop();
+        track.enabled = false;
+      });
+      micStreamRef.current = null;
+    }
+
+    setActiveVisual(null); 
+    lastProcessedCommandRef.current = "";
   };
 
   const resetInactivityTimer = () => {
     lastActivityTimeRef.current = Date.now();
     if (inactivityTimeoutRef.current) window.clearTimeout(inactivityTimeoutRef.current);
     inactivityTimeoutRef.current = window.setTimeout(() => {
+      console.warn("⚠️ Inactivity Limit: Auto-closing Dr. Gam.");
       endSession();
     }, INACTIVITY_TIMEOUT);
   };
 
   useEffect(() => {
+    // @ts-ignore
+    setIsAiStudioEnv(!!(window.aistudio && typeof window.aistudio.openSelectKey === 'function'));
+
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden' && (isActive || isConnecting)) {
         endSession();
@@ -80,7 +108,14 @@ const DrGamTutor: React.FC = () => {
     if (isActive) {
       resetInactivityTimer();
       timerIntervalRef.current = window.setInterval(() => {
-        setSessionSeconds(prev => prev + 1);
+        setSessionSeconds(prev => {
+          const next = prev + 1;
+          if (isAiStudioEnv && !isPaidSession && next >= 300) {
+            handleTrialEnd();
+            return prev;
+          }
+          return next;
+        });
       }, 1000);
     }
 
@@ -89,14 +124,16 @@ const DrGamTutor: React.FC = () => {
       window.removeEventListener('beforeunload', endSession);
       endSession();
     };
-  }, [isActive]);
+  }, [isActive, isPaidSession, isAiStudioEnv]);
 
   const handleTrialEnd = async () => {
     endSession();
     setShowTrialEnd(true);
     // Use server action for TTS
-    // const base64 = await generateTTS("Dr. Gam's power cell needs recharging! To continue our advanced session, please connect your Magic Key.");
-    // if (base64) await playRawPcm(base64);
+    if(schoolId) {
+        const result = await generateTTSAction({ text: "Dr. Gam's power cell needs recharging! To continue our advanced session, please connect your Magic Key.", schoolId, voice: 'Algenib' });
+        // if (result.success && result.data) await playRawPcm(result.data);
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -149,7 +186,7 @@ const DrGamTutor: React.FC = () => {
     });
     setTimeout(() => {
         setIsConnecting(false);
-        setIsActive(false); // Make sure it's not stuck in active
+        setIsActive(false);
     }, 1500);
   };
 
