@@ -10,7 +10,7 @@ import { collection, query, where, orderBy } from 'firebase/firestore';
 
 // --- Query Snippet ---
 
-// Assuming 'firestore', 'schoolId', and 'tab' variables are available.
+// Assuming 'firestore', 'schoolId', and 'tab' variables are available in your component.
 
 const lifeSkillsQuery = query(
     collection(firestore, 'junior_lifeskills_world'), 
@@ -26,3 +26,7 @@ const lifeSkillsQuery = query(
 // 1. schoolId (Ascending)
 // 2. category (Ascending)
 // 3. createdAt (Ascending)
+
+// When you run a component that uses this query, check the browser's developer console
+// for an error message from Firestore. It will contain a long URL.
+// Copy and paste that URL into your browser to automatically create the index.
