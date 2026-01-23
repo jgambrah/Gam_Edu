@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generatePhonicsWorldEntry, generateMathWorldEntry, generateScienceWorldEntry } from '@/ai/flows/junior-actions';
@@ -28,6 +29,7 @@ import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
 import * as constants from '@/lib/constants';
 import * as LucideIcons from 'lucide-react';
+
 
 // --- ICON MAPPER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
@@ -98,16 +100,39 @@ const juniorStyles = {
 };
 
 
-// --- NEW COMPONENT: WRITING CANVAS (MAGIC PEN) ---
-const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-const STROKES = [
-  { id: 'standing', label: 'Standing', icon: 'fa-grip-lines-vertical' },
-  { id: 'sleeping', label: 'Sleeping', icon: 'fa-grip-lines' },
-  { id: 'slanting', label: 'Slanting', icon: 'fa-slash' },
-  { id: 'circle', label: 'Circle', icon: 'fa-circle' },
-];
+// --- TEACHER MAGIC MODAL ---
+const TeacherModal: React.FC<{
+  title: string; topicValue: string; 
+  onTopicChange: (v: string) => void; onGenerate: () => void; 
+  isLoading: boolean; onClose: () => void;
+}> = ({ title, topicValue, onTopicChange, onGenerate, isLoading, onClose }) => (
+  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+    <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-green-100 animate-in zoom-in duration-300">
+      <h3 className="text-3xl font-black text-slate-800 mb-6 uppercase tracking-tighter">AI {title}</h3>
+      <div className="space-y-6">
+        <div>
+          <Label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">What should the AI create?</Label>
+          <Input 
+            value={topicValue} 
+            onChange={(e) => onTopicChange(e.target.value)} 
+            placeholder="e.g. Venus Flytrap, Lungs, Solar Power" 
+            className="h-14 rounded-2xl border-4 border-slate-100 font-bold uppercase" 
+          />
+        </div>
+        <Button 
+          onClick={onGenerate} 
+          disabled={isLoading || !topicValue} 
+          className="w-full h-16 rounded-2xl font-black text-white bg-green-500 hover:bg-green-600 shadow-xl"
+        >
+          {isLoading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} CREATE MAGIC
+        </Button>
+        <button onClick={onClose} className="w-full text-slate-400 uppercase text-[10px] font-black tracking-widest mt-4">Close Drawer</button>
+      </div>
+    </div>
+  </div>
+);
 
+// --- NEW COMPONENT: WRITING CANVAS (MAGIC PEN) ---
 function WritingCanvas() {
   const traceCanvasRef = useRef<HTMLCanvasElement>(null);
   const freeCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -209,7 +234,7 @@ function WritingCanvas() {
       <Card className={juniorStyles.card}>
         <CardContent className="p-10 space-y-10">
             <div className="flex overflow-x-auto gap-2 pb-4 no-scrollbar">
-                {(mode === 'letters' ? LETTERS : mode === 'numbers' ? NUMBERS : []).map(item => (
+                {(mode === 'letters' ? constants.LETTERS : mode === 'numbers' ? constants.NUMBERS : []).map(item => (
                     <button key={item} onClick={() => setSelectedItem(item)} className={`flex-shrink-0 w-14 h-14 rounded-2xl font-black text-2xl border-4 ${selectedItem === item ? 'bg-purple-500 text-white border-white scale-110 shadow-lg' : 'bg-slate-50 text-slate-400'}`}>{item}</button>
                 ))}
             </div>
@@ -263,11 +288,11 @@ function WritingCanvas() {
   );
 }
 
-
 // --- SUB-COMPONENT: VOICE COACH ---
 export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { toast } = useToast();
+    const [word, setWord] = useState('Apple');
     const [details, setDetails] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { schoolId } = useCurrentSchool();
@@ -277,10 +302,7 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     [firestore, schoolId]));
 
     const fetchDetails = useCallback(async (w: string) => {
-        if (!schoolId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'School not identified.' });
-            return;
-        }
+        if (!schoolId) return;
         setIsLoading(true);
         setDetails(null);
         try {
@@ -292,9 +314,8 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
             }
         } catch (error) {
             toast({ title: "Request Failed", description: "Could not connect to the AI service." });
-        } finally {
-            setIsLoading(false);
         }
+        setIsLoading(false);
     }, [toast, schoolId]);
 
     const speak = async (text: string) => {
@@ -322,7 +343,7 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
             });
             toast({title: "Word Saved!"});
             forceRefetch();
-            setNewWord(''); // Clear input
+            setNewWord('');
         } catch(e) {
             toast({ title: 'Save failed.', variant: 'destructive'});
         }
@@ -376,12 +397,7 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
   const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [aiTopic, setAiTopic] = useState('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const { toast } = useToast();
-  const firestore = useFirestore();
-
+  
   const onSound = async (text: string) => {
     if (!text || !schoolId) return;
     try {
@@ -395,20 +411,6 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
     }
   };
   
-  const handleGenerate = async () => {
-    if (!aiTopic || !firestore || !schoolId) return;
-    setIsAiLoading(true);
-    try {
-        const result = await generateLifeSkillEntry({ topic: aiTopic, category: activeTab, schoolId });
-        if (result.success && result.data) {
-            await addDoc(collection(firestore, 'junior_lifeskills_world'), { ...result.data, category: activeTab, schoolId, createdAt: serverTimestamp() });
-            setIsDrawerOpen(false); setAiTopic('');
-            toast({ title: 'Magic Created!', description: 'A new learning activity is now available.' });
-        } else { throw new Error(result.error || "AI failed."); }
-    } catch (e: any) { toast({ variant: "destructive", title: "Error", description: e.message }); }
-    finally { setIsAiLoading(false); }
-  };
-
   const tabs: {id: LifeSkillTab, label: string, icon: any, color: string}[] = [
     { id: 'physical-health', label: 'Health', icon: Activity, color: 'bg-green-500' },
     { id: 'emotions', label: 'Feelings', icon: Smile, color: 'bg-yellow-500' },
@@ -503,7 +505,7 @@ function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: string, sc
         try {
             const result = await generateLessonImageAction({prompt: current.imagePrompt, schoolId });
             if (result.success) setLocalImg(result.data || null);
-        } catch (e) { console.error(e); }
+        } catch(e) { console.error(e); }
         finally { setIsLoading(false); }
     }, [current, schoolId]);
 
@@ -511,7 +513,7 @@ function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: string, sc
         if (current) loadVisual();
     }, [current, loadVisual]);
 
-    const generateWithAi = async () => {
+    const handleGenerate = async () => {
         if (!aiTopic || !firestore || !schoolId) return;
         setIsLoading(true);
         try {
@@ -598,7 +600,7 @@ function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: string, sc
                     title={tab} 
                     topicValue={aiTopic} 
                     onTopicChange={setAiTopic} 
-                    onGenerate={generateWithAi} 
+                    onGenerate={handleGenerate} 
                     isLoading={isLoading} 
                     onClose={() => setIsDrawerOpen(false)} 
                 />
@@ -659,3 +661,5 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
+    
