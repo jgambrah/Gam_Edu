@@ -6,18 +6,15 @@ import { z } from 'zod';
 import wav from 'wav';
 
 // --- STORY GENERATOR ---
-const StorySchema = z.object({
-  title: z.string(),
-  content: z.string().describe("A story for a 5-year-old that is at least 4-5 paragraphs long."),
-  questions: z.array(
-    z.object({
-      question: z.string().describe("A simple comprehension question about the story."),
-      answer: z.string().describe("The answer to the question.")
-    })
-  ).length(3).describe("An array containing exactly 3 question-answer objects."),
-  emojiIcon: z.string().describe("A single emoji representing the story (e.g., 🦖).")
+const JuniorStorySchema = z.object({
+  title: z.string().describe("A fun, simple title for a short children's story."),
+  emojiIcon: z.string().emoji().describe("A single emoji that represents the story."),
+  content: z.string().describe("The full story text. It should be simple, positive, and easy for a 5-7 year old to understand."),
+  questions: z.array(z.object({
+    question: z.string().describe("A simple comprehension question about the story."),
+    answer: z.string().describe("A short, one or two-word answer to the question.")
+  })).length(3).describe("Exactly three simple questions to check understanding.")
 });
-
 
 export async function generateJuniorStory(topic: string, wordCount: number = 100) {
   try {
@@ -34,7 +31,7 @@ export async function generateJuniorStory(topic: string, wordCount: number = 100
     const { output } = await ai.generate({
       prompt: prompt,
       output: {
-        schema: StorySchema
+        schema: JuniorStorySchema
       }
     });
 
@@ -50,122 +47,137 @@ export async function generateJuniorStory(topic: string, wordCount: number = 100
 }
 
 // --- SCIENCE FACT GENERATOR ---
-const ScienceFactSchema = z.object({
-  title: z.string(),
-  fact: z.string(),
-  emojiIcon: z.string()
+const JuniorScienceSchema = z.object({
+  title: z.string().describe("The science topic, e.g., 'Volcanoes'."),
+  emojiIcon: z.string().emoji().describe("A single relevant emoji."),
+  fact: z.string().describe("A single, simple, 'wow' science fact for a 6-year-old."),
+  observation: z.string().describe("A one-sentence observation related to the fact. e.g., 'This is why bubbles pop!'"),
+  experiment: z.string().describe("A very simple, safe at-home activity. e.g., 'Mix baking soda and vinegar to see bubbles!'"),
 });
 
 export async function generateJuniorScience(topic: string) {
   try {
     const prompt = `
-      Explain "${topic}" to a 4-year-old.
-      Rules:
-      1. Keep it under 20 words.
-      2. Make it sound magical.
-      3. Return JSON: { title, fact, emojiIcon }
+      Generate a super simple and fun science 'discovery' for a 6-year-old child about "${topic}".
+      Provide a title, an emoji, a simple one-sentence 'wow' fact, a related observation, and a very easy, safe home experiment suggestion.
+      Output strictly JSON.
     `;
-
     const { output } = await ai.generate({
-      prompt: prompt,
-      output: {
-        schema: ScienceFactSchema
-      }
+      model: 'googleai/gemini-2.5-flash',
+      prompt,
+      output: { schema: JuniorScienceSchema }
     });
-
-    if (!output) {
-      throw new Error("AI did not return a valid science fact object.");
-    }
-
+    if (!output) throw new Error("AI did not return data.");
     return { success: true, data: output };
   } catch (error) {
-    console.error("Science Generation Error:", error);
-    return { success: false, error: "Science lab is closed." };
+    console.error("AI Science Error:", error);
+    return { success: false, error: (error as Error).message };
   }
 }
 
-
-// --- PHONICS CHALLENGE GENERATOR ---
-const PhonicsChallengeSchema = z.object({
-    word: z.string().describe("The target word (e.g. Splash)"),
-    phonetic: z.string().describe("How it sounds (e.g. s-p-l-a-sh)"),
-    sentence: z.string().describe("A simple sentence using the word."),
-    emoji: z.string().describe("A visual icon")
-});
-
-export async function generatePhonicsChallenge(level: 'easy' | 'medium' | 'hard') {
-  try {
-    const prompt = `
-      Generate a Phonics/Pronunciation challenge for a child (Level: ${level}).
-      Return JSON:
-      {
-        "word": "The target word (e.g. Splash)",
-        "phonetic": "How it sounds (e.g. s-p-l-a-sh)",
-        "sentence": "A simple sentence using the word.",
-        "emoji": "A visual icon"
-      }
-    `;
-
-    const { output } = await ai.generate({
-      prompt: prompt,
-      output: {
-        schema: PhonicsChallengeSchema
-      }
-    });
-
-    if (!output) {
-        throw new Error("AI did not return a valid phonics challenge object.");
-    }
-
-    return { success: true, data: output };
-  } catch (error: any) {
-    console.error("Phonics Generation Error:", error);
-    return { success: false, error: "Phonics engine offline." };
-  }
-}
-
-// --- NEW: GENERATE DATA FOR A SPECIFIC WORD ---
-const WordDetailsSchema = z.object({
-    word: z.string(),
-    phonetic: z.string(),
-    sentence: z.string(),
-    emoji: z.string()
+// --- WORD DETAILS GENERATION (for Voice Coach) ---
+const WordDetailSchema = z.object({
+  word: z.string(),
+  phonetic: z.string().describe("A simple phonetic spelling, e.g., /kat/"),
+  sentence: z.string().describe("A very simple sentence using the word, for a 5-year-old."),
+  emoji: z.string().emoji().describe("A single emoji for the word."),
 });
 
 export async function generateWordDetails(word: string) {
   try {
     const prompt = `
-      I need phonics data for the word: "${word}".
-      Target audience: 5-year-old child.
-      
-      Return JSON:
-      {
-        "word": "${word}",
-        "phonetic": "Simple phonetic spelling (e.g. 'el-e-fant')",
-        "sentence": "A very simple, fun sentence using the word.",
-        "emoji": "A single matching emoji"
-      }
+      For the word "${word}", provide:
+      1. A simple phonetic spelling (e.g., /kat/).
+      2. A very simple sentence a 5-year-old would understand.
+      3. A single, relevant emoji.
+      Output strictly JSON.
     `;
-
     const { output } = await ai.generate({
-      prompt: prompt,
-      output: {
-        schema: WordDetailsSchema,
-      }
+      model: 'googleai/gemini-2.5-flash',
+      prompt,
+      output: { schema: WordDetailSchema }
     });
-
-    if (!output) {
-        throw new Error("AI did not return a valid word details object.");
-    }
-
-    return { success: true, data: output };
+    if (!output) throw new Error("AI did not return data.");
+    return { success: true, data: { ...output, word } };
   } catch (error) {
-    console.error("Word Details Generation Error:", error);
-    return { success: false, error: "Could not analyze word." };
+    console.error("AI Word Detail Error:", error);
+    return { success: false, error: (error as Error).message };
   }
 }
 
-// --- SCIENCE WORLD ENTRY GENERATOR (NEW) ---
+// --- PHONICS CHALLENGE (Not currently used but ready) ---
+const PhonicsChallengeSchema = z.object({
+  sound: z.string(),
+  correctWord: z.string(),
+  distractors: z.array(z.string()).length(3),
+});
+
+export async function generatePhonicsChallenge() {
+    // This can be expanded later
+    const sample = { sound: "sh", correctWord: "ship", distractors: ["chip", "sip", "shop"] };
+    return { success: true, data: sample };
+}
+
+// --- PHONICS WORLD ENTRY GENERATOR ---
+const PhonicsWorldEntrySchema = z.object({
+    title: z.string(),
+    sound: z.string(),
+    description: z.string(),
+    imagePrompt: z.string(),
+    icon: z.string(),
+});
+
+export async function generatePhonicsWorldEntry(topic: string, category: string) {
+    try {
+        const prompt = `Create a nursery phonics entry for "${topic}" in category "${category}". 
+        Return JSON: { "title": "string", "sound": "string", "description": "string", "imagePrompt": "string", "icon": "string" }`;
+        const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
+            prompt,
+            output: { schema: PhonicsWorldEntrySchema }
+        });
+        if (!output) throw new Error("AI did not generate a valid phonics entry.");
+        return { success: true, data: output };
+    } catch (error: any) {
+        console.error("Phonics World AI Error:", error);
+        return { success: false, error: (error as Error).message };
+    }
+}
+
+// --- MATH WORLD ENTRY GENERATOR (NEW) ---
+const MathWorldEntrySchema = z.object({
+    title: z.string(),
+    question: z.string(),
+    imageUrl: z.string().url().optional(),
+    imagePrompt: z.string(),
+    options: z.array(z.string()).length(4),
+    correctAnswer: z.string(),
+    icon: z.string(),
+});
+
+export async function generateMathWorldEntry(topic: string, category: string) {
+    try {
+        const prompt = `
+            Create a nursery math activity for a child.
+            The topic is "${topic}" and it should fit within the category "${category}".
+            Provide a simple question, 4 options (one must be correct), the correct answer, an emoji icon, and a creative DALL-E style prompt to generate an image for the question.
+            Output strictly JSON.
+        `;
+
+        const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
+            prompt,
+            output: { schema: MathWorldEntrySchema }
+        });
+        if (!output) throw new Error("AI did not generate a valid math entry.");
+        return { success: true, data: output };
+    } catch (error: any) {
+        console.error("Math World AI Error:", error);
+        return { success: false, error: (error as Error).message };
+    }
+}
+
+// --- SCIENCE WORLD ENTRY GENERATOR ---
 const ScienceWorldEntrySchema = z.object({
     name: z.string(),
     fact: z.string(),

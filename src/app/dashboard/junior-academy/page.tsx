@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { 
-  Mic, Calculator, BookOpen, Atom, Palette, Trophy, Sparkles, Rabbit, Music, Brain
+  Mic, Calculator, BookOpen, Atom, Palette, Trophy, Sparkles, Rabbit, Music, Brain,
+  Headphones
 } from 'lucide-react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -29,8 +30,8 @@ export default function JuniorCampusPage() {
       </div>
       <div className="max-w-7xl mx-auto">
         <Tabs defaultValue="coach" className="w-full">
-            <TabsList className="grid w-full grid-cols-7 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto no-scrollbar">
-                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Coach</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto no-scrollbar">
+                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Voice Coach</TabsTrigger>
                 <TabsTrigger value="phonics-world" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Sparkles className="w-5 h-5"/>Phonics World</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
@@ -40,10 +41,10 @@ export default function JuniorCampusPage() {
             </TabsList>
             
             <div className="min-h-[500px]">
-                <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} schoolId={schoolId} /></div></TabsContent>
-                <TabsContent value="phonics-world" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200">{schoolId && <PhonicsWorld schoolId={schoolId} />}</div></TabsContent>
+                <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200">{schoolId && <VoiceCoach canEdit={canEdit} schoolId={schoolId} />}</div></TabsContent>
+                <TabsContent value="phonics-world" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-purple-200">{schoolId && <PhonicsWorld schoolId={schoolId} />}</div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative">{schoolId && <MathPlayground schoolId={schoolId} />}</div></TabsContent>
-                <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
+                <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
                 <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
                 <TabsContent value="art" className="mt-0">
                     <div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">
@@ -57,6 +58,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
-// Re-export nested components if needed, or keep them internal.
-export { VoiceCoach, MathPlayground, StorySpark, JuniorScienceWorld, ArtStudio, StickerBook };
