@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
@@ -29,6 +29,58 @@ import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
 import { GoogleGenAI } from "@google/genai";
 import * as constants from '@/lib/constants';
+import * as LucideIcons from 'lucide-react';
+
+// --- ICON MAPPER ---
+const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
+  const map: Record<string, keyof typeof LucideIcons> = {
+    // Life Skills
+    'fa-face-smile': 'Smile',
+    'fa-tooth': 'Sparkles', // Placeholder for Tooth
+    'fa-heart-pulse': 'HeartPulse',
+    'fa-vest': 'Shirt',
+    'fa-sun': 'Sun',
+    'fa-utensils': 'Utensils',
+    'fa-school': 'School',
+    'fa-house': 'Home',
+    'fa-recycle': 'Recycle',
+    'fa-water': 'Droplets',
+    'fa-broom': 'Trash2',
+    'fa-flag': 'Flag',
+    'fa-hand-pointer': 'MousePointer2',
+    'fa-palette': 'Palette',
+    'fa-cube': 'Cube',
+    'fa-chalkboard-user': 'User',
+    'fa-hand-holding-heart': 'HeartHandshake',
+    // Numeracy
+    'fa-rabbit': 'Rabbit',
+    'fa-carrot': 'Carrot',
+    'fa-apple-whole': 'Apple',
+    'fa-cookie': 'Cookie',
+    'fa-star': 'Star',
+    'fa-tv': 'Tv',
+    'fa-bed': 'Bed',
+    // Phonics
+    'fa-spell-check': 'Languages',
+    'fa-ear-listen': 'Ear',
+    'fa-pen-nib': 'PenNib',
+    'fa-arrow-1-9': 'Sigma',
+    // Science
+    'fa-flask-vial': 'FlaskConical',
+    'fa-eye': 'Eye',
+    'fa-cloud-showers-heavy': 'CloudRain',
+    // Creative Arts
+    'fa-guitar': 'Guitar',
+    // Default
+    'fa-robot': 'Bot',
+  };
+
+  const LucideName = map[iconName] || 'HelpCircle';
+  const IconComponent = (LucideIcons as any)[LucideName];
+
+  return <IconComponent className={className} />;
+};
+
 
 // --- HELPERS ---
 const isJuniorLevel = (grade: string) => 
@@ -38,8 +90,15 @@ const juniorStyles = {
     storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
     storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
     button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
-    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
+    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner",
+    questCard: "bg-gradient-to-b from-sky-400 to-blue-500 border-b-[12px] border-blue-700 rounded-[50px] text-white",
+    stepBubble: "w-16 h-16 rounded-full bg-white text-blue-600 flex items-center justify-center text-3xl shadow-lg border-4 border-blue-200",
+    card: "rounded-[60px] border-8 border-yellow-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100",
+    header: "p-10 text-center",
+    mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
+    bubble: "bg-white/80 backdrop-blur-md p-6 rounded-[40px] border-4 border-dashed border-pink-200",
 };
+
 
 // --- NEW COMPONENT: WRITING CANVAS (MAGIC PEN) ---
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -153,7 +212,7 @@ function WritingCanvas() {
         <CardContent className="p-10 space-y-10">
             <div className="flex overflow-x-auto gap-2 pb-4 no-scrollbar">
                 {(mode === 'letters' ? LETTERS : mode === 'numbers' ? NUMBERS : []).map(item => (
-                    <button key={item} onClick={() => setSelectedItem(item)} className={`flex-shrink-0 w-14 h-14 rounded-xl font-black text-2xl border-4 transition-all ${ selectedItem === item ? 'bg-purple-500 text-white border-white scale-110 shadow-lg' : 'bg-slate-50 text-slate-400'}`}>{item}</button>
+                    <button key={item} onClick={() => setSelectedItem(item)} className={`flex-shrink-0 w-14 h-14 rounded-2xl font-black text-2xl border-4 ${selectedItem === item ? 'bg-purple-500 text-white border-white scale-110 shadow-lg' : 'bg-slate-50 text-slate-400'}`}>{item}</button>
                 ))}
             </div>
 
@@ -164,7 +223,7 @@ function WritingCanvas() {
                         <canvas ref={traceCanvasRef} className="w-full aspect-square opacity-50" />
                     </div>
                 </div>
-                <div className="space-y-4 text-center">
+                <div className="space-y-4 text-center relative">
                     <p className="text-slate-800 font-bold uppercase text-xs flex items-center justify-center gap-2"><span className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white">2</span> Draw Your Own!</p>
                     <div className="bg-white border-8 border-purple-100 rounded-[3rem] shadow-2xl overflow-hidden relative">
                         <canvas 
@@ -291,7 +350,7 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
         <LifeSkillsModule 
             tab={activeTab} 
             schoolId={schoolId} 
-            onSound={onSound} 
+            onSound={(text) => onSound(text, schoolId)} 
             canEdit={canEdit}
         />
       </div>
@@ -300,7 +359,7 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
 }
 
 // --- SUB-COMPONENT: GENERAL LIFE SKILLS MODULE (AI + DB DRIVEN) ---
-function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: LifeSkillTab, schoolId: string, canEdit: boolean, onSound: (t: string, schoolId: string) => void }) {
+function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: string, schoolId: string, canEdit: boolean, onSound: (t: string) => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [index, setIndex] = useState(0);
@@ -334,7 +393,7 @@ function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: LifeSkillT
     const current = displayItems?.[index];
     
     const loadVisual = useCallback(async () => {
-        if (!current || !schoolId || !current.imagePrompt) return;
+        if (!current || !current.imagePrompt || !schoolId) return;
         setIsLoading(true);
         setLocalImg(null);
         try {
@@ -360,6 +419,7 @@ function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: LifeSkillT
                     schoolId,
                     createdAt: serverTimestamp()
                 });
+                
                 setIsDrawerOpen(false);
                 setAiTopic('');
                 confetti();
@@ -384,7 +444,7 @@ function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: LifeSkillT
                     <div className={juniorStyles.header}>
                         <div className="flex items-center gap-8">
                             <div className="text-8xl p-8 bg-white/20 rounded-[3rem] backdrop-blur-md animate-bounce">
-                                {current.icon || '🌟'}
+                                {current.icon ? <IconRenderer iconName={current.icon} className="w-24 h-24 text-white" /> : '🌟'}
                             </div>
                             <div className="text-left">
                                 <h3 className="text-6xl font-black uppercase tracking-tighter">{current.title || current.name}</h3>
@@ -393,7 +453,7 @@ function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: LifeSkillT
                     </div>
                      <CardContent className="p-12 flex flex-col md:flex-row gap-12 items-center">
                         <div 
-                            onClick={() => onSound(current.prompt || current.action, schoolId)}
+                            onClick={() => onSound(current.prompt || current.action)}
                             className="relative aspect-square w-full max-w-md bg-green-50 rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group"
                         >
                             {isLoading ? (
@@ -410,8 +470,9 @@ function LifeSkillsModule({ tab, schoolId, canEdit, onSound }: { tab: LifeSkillT
                             <div className={juniorStyles.bubble}>
                                 <p className="text-3xl font-bold text-slate-700 leading-relaxed italic">"{current.prompt || current.action}"</p>
                             </div>
-                            <Button onClick={() => onSound(current.prompt || current.action, schoolId)} className={juniorStyles.button + " w-full uppercase"}>
-                                Listen! 🎙️
+                            
+                            <Button onClick={() => onSound(current.prompt || current.action)} className={juniorStyles.button + " w-full uppercase"}>
+                                Read Story! 🎙️
                             </Button>
                             
                             <div className="flex gap-4 justify-center">
@@ -462,7 +523,7 @@ export default function JuniorCampusPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2 bg-slate-50 px-6 py-3 rounded-[20px] border-2 border-slate-100">
-                        <Badge className="bg-indigo-500 text-white border-none px-3">SaaS Node</Badge>
+                        <Badge variant="outline" className="text-indigo-500 border-indigo-200">SaaS Node</Badge>
                         <span className="text-xs font-black text-slate-400">{schoolId}</span>
                     </div>
                 </header>
@@ -482,7 +543,7 @@ export default function JuniorCampusPage() {
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
                         <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone schoolId={schoolId} /></TabsContent>
                         <TabsContent value="writing" className="mt-0"><WritingCanvas /></TabsContent>
-                        <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
+                        <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId} /></TabsContent>
                         <TabsContent value="science" className="mt-0"><JuniorScienceWorld schoolId={schoolId} /></TabsContent>
                         <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio schoolId={schoolId} /></div></TabsContent>
@@ -494,3 +555,5 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
+    
