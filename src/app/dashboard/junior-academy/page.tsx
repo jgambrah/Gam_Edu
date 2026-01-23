@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -899,7 +900,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
-// --- 6. SCIENCE WORLD (FIXED: All Tabs Included) ---
+// --- 6. SCIENCE WORLD ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { user } = useUser();
@@ -963,7 +964,12 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     const handleSave = async () => { 
         if(!user || !fact || !firestore || !schoolId) return; 
-        await addDoc(collection(firestore,'junior_science'), { ...fact, createdAt: serverTimestamp(), createdBy: user.uid, schoolId: schoolId }); 
+        await addDoc(collection(firestore,'junior_science'), {
+            ...fact,
+            createdAt: serverTimestamp(),
+            createdBy: user.uid,
+            schoolId: schoolId
+        }); 
         setFact(null); 
         if(refetchScience) refetchScience(); 
         toast({title: "Discovery Saved!", description: "Check Journal Tab"});
@@ -1007,11 +1013,10 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
 
-            {/* Discovery Lab */}
             {activeTab === 'lab' && (
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <div className="space-y-4">
-                        <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="What are you curious about?" className="h-14 text-lg rounded-2xl" onKeyDown={(e) => e.key === 'Enter' && handleGenerate()} />
+                        <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="What are you curious about?" className="h-14 text-lg rounded-2xl" onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}/>
                         <Button onClick={handleGenerate} disabled={loading || !topic} className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-lg font-bold rounded-xl">
                             {loading ? <Loader2 className="animate-spin" /> : <><Sparkles className="mr-2"/> Discover</>}
                         </Button>
@@ -1026,7 +1031,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
-            {/* Sorter Tab */}
             {activeTab === 'sorter' && (
                  <div className="space-y-6">
                     <div className="text-center p-4 rounded-xl bg-white border shadow-sm">
@@ -1052,7 +1056,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
-            {/* Matter Lab Tab */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
                     <div className="text-center space-y-4">
@@ -1074,7 +1077,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
-            {/* Journal Tab */}
             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
@@ -1112,7 +1114,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
                 <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
-                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
+                <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
             
@@ -1124,7 +1126,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
-                <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
+                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
             </div>
         </Tabs>
@@ -1132,3 +1134,4 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+```
