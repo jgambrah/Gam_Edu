@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -811,7 +812,8 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
         setFeedback([]);
     };
     
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: string, e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
         if (!firestore) return;
         if (confirm("Delete this story?")) {
             await deleteDoc(doc(firestore, 'junior_stories', id));
@@ -844,18 +846,18 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                             <div className="p-2 space-y-1">
                                 {isLoading && <div className="text-center p-4"><Loader2 className="animate-spin"/></div>}
                                 {storyLibrary?.map((story: any) => (
-                                    <button 
+                                    <div 
                                         key={story.id}
                                         onClick={() => selectStory(story)}
-                                        className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors group relative ${activeStory?.id === story.id ? 'bg-purple-100' : 'hover:bg-slate-50'}`}
+                                        className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors group relative cursor-pointer ${activeStory?.id === story.id ? 'bg-purple-100' : 'hover:bg-slate-50'}`}
                                     >
                                         <span className="text-2xl">{story.emojiIcon}</span>
                                         <div className="flex-1 overflow-hidden">
                                             <p className="font-bold text-sm text-slate-800 truncate">{story.title}</p>
                                             <p className="text-xs text-slate-400">{story.topic}</p>
                                         </div>
-                                        {canEdit && <Button size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-red-400" onClick={(e) => {e.stopPropagation(); handleDelete(story.id);}}><Trash2 className="w-4 w-4"/></Button>}
-                                    </button>
+                                        {canEdit && <Button size="icon" variant="ghost" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-red-400" onClick={(e) => handleDelete(story.id, e)}><Trash2 className="w-4 w-4"/></Button>}
+                                    </div>
                                 ))}
                             </div>
                         </ScrollArea>
@@ -934,7 +936,11 @@ export default function JuniorCampusPage() {
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground schoolId={schoolId} /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                 <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
-                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
+                <TabsContent value="art" className="mt-0">
+                    <div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">
+                        {schoolId && <ArtStudio schoolId={schoolId} />}
+                    </div>
+                </TabsContent>
                 <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
             </div>
         </Tabs>
