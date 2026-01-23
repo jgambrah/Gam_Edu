@@ -1,18 +1,17 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, where, serverTimestamp, orderBy, doc, deleteDoc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, CheckCircle2, XCircle, Plus, BookOpen
+  Loader2, Volume2, Star, Wand2, Mic, XCircle, 
+  Save, Trash2, Library, CheckCircle2, Plus, BookOpen
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
@@ -25,10 +24,10 @@ const juniorStyles = {
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
-const speak = async (text: string, rate = 0.9) => {
+const speak = async (text: string, schoolId: string, rate = 0.9) => {
     if (!text) return;
     try {
-        const result = await generateTTSAction({ text, voice: 'Achernar' });
+        const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
         if (result.success && result.data && typeof window !== 'undefined') {
             const audio = new Audio(`data:audio/wav;base64,${result.data}`);
             audio.play();
@@ -53,11 +52,11 @@ export function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean; schoolId: 
     const fetchDetails = useCallback(async (w: string) => {
         setIsLoading(true);
         setDetails(null);
-        const result = await generateWordDetails(w);
+        const result = await generateWordDetails({ word: w, schoolId });
         if (result.success) setDetails(result.data);
-        else toast({ title: "AI Error", description: "Could not get word details." });
+        else toast({ title: "AI Error", description: result.error || "Could not get word details." });
         setIsLoading(false);
-    }, [toast]);
+    }, [toast, schoolId]);
     
     useEffect(() => { fetchDetails('Apple'); }, [fetchDetails]);
 
@@ -85,7 +84,7 @@ export function VoiceCoach({ canEdit, schoolId }: { canEdit: boolean; schoolId: 
                             <p className="text-8xl font-black text-slate-800">{details.word}</p>
                             <p className="text-2xl font-bold text-pink-400 italic">{details.phonetic}</p>
                             <div className="text-6xl">{details.emoji}</div>
-                            <Button onClick={() => speak(details.sentence)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
+                            <Button onClick={() => speak(details.sentence, schoolId)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
                         </div>
                     ) : <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>}
                 </div>
@@ -138,16 +137,15 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
     const handleGenerate = async () => {
         if (!topic.trim()) return;
         setLoading(true);
-        // AI call with topic and length
-        const res = await generateJuniorStory(topic, parseInt(wordCount));
-        if (res.success) {
+        const res = await generateJuniorStory({ topic, wordCount: parseInt(wordCount), schoolId });
+        if (res.success && res.data) {
             setStory(res.data);
             setCurrentQ(0);
             setUserAns('');
             setQuizStatus('typing');
-            speak(`I've written a story about ${topic}. Let's read!`);
+            speak(`I've written a story about ${topic}. Let's read!`, schoolId);
         } else {
-            toast({ title: "Magic Failed", description: "The story book is stuck!", variant: "destructive" });
+            toast({ title: "Magic Failed", description: res.error || "The story book is stuck!", variant: "destructive" });
         }
         setLoading(false);
     };
@@ -172,17 +170,16 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
     const checkAnswer = () => {
         if (!userAns.trim()) return;
         const currentQuestion = story.questions[currentQ];
-        // Fuzzy match: check if user answer contains the key part of the correct answer
         const isCorrect = userAns.toLowerCase().includes(currentQuestion.answer.toLowerCase()) || 
                           currentQuestion.answer.toLowerCase().includes(userAns.toLowerCase());
 
         if (isCorrect) {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
             setQuizStatus('correct');
-            speak("That is exactly right! You are a brilliant reader!");
+            speak("That is exactly right! You are a brilliant reader!", schoolId);
         } else {
             setQuizStatus('wrong');
-            speak("Not quite, but good try! Let's look at the story again.");
+            speak("Not quite, but good try! Let's look at the story again.", schoolId);
         }
     };
 
@@ -192,7 +189,6 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
             setUserAns('');
             setQuizStatus('typing');
         } else {
-            // Quiz finished
             setStory(null);
             setTopic('');
             confetti({ particleCount: 200, spread: 100 });
@@ -202,7 +198,6 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
-            {/* 1. TEACHER'S MAGIC WRITING TOOL */}
             {canEdit && (
                 <div className="bg-white p-6 rounded-[35px] border-4 border-purple-100 flex flex-col md:flex-row gap-4 shadow-lg">
                     <div className="flex-1 space-y-1">
@@ -236,7 +231,6 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
                 </div>
             )}
 
-            {/* 2. ACTIVE STORY WORKSTATION (MAGIC STORYBOOK) */}
             {story ? (
                 <Card className="rounded-[60px] border-8 border-orange-100 overflow-hidden shadow-2xl bg-[#FFFDE7] animate-in zoom-in duration-500">
                     <div className="bg-orange-400 p-8 text-white flex justify-between items-center border-b-8 border-orange-500/20">
@@ -245,21 +239,18 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
                             <CardTitle className="text-4xl font-black uppercase tracking-tighter">{story.title}</CardTitle>
                         </div>
                         <div className="flex gap-2">
-                             <Button variant="ghost" onClick={() => speak(story.content)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><Volume2 /></Button>
+                             <Button variant="ghost" onClick={() => speak(story.content, schoolId)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><Volume2 /></Button>
                              {canEdit && <Button onClick={handleSave} variant="ghost" className="text-white hover:bg-white/20 rounded-full h-12 w-12"><Save /></Button>}
                              <Button variant="ghost" onClick={() => setStory(null)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><XCircle /></Button>
                         </div>
                     </div>
 
                     <CardContent className="p-12 space-y-12">
-                        {/* THE STORY CONTENT */}
                         <div className="max-w-4xl mx-auto">
                             <p className="text-3xl font-bold text-orange-900 leading-relaxed font-serif first-letter:text-7xl first-letter:font-black first-letter:mr-3 first-letter:float-left whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
-
-                        {/* 3-QUESTION CHALLENGE BOX */}
                         <div className="bg-white/80 backdrop-blur-sm p-10 rounded-[50px] border-4 border-dashed border-orange-300 shadow-inner space-y-8 relative overflow-hidden">
                             <div className="flex justify-between items-center mb-4">
                                 <Badge className="bg-purple-600 text-white px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest">
@@ -320,7 +311,6 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
                     </CardContent>
                 </Card>
             ) : (
-                /* 3. LIBRARY SECTION: SAVED STORIES */
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-2xl font-black text-slate-700 flex items-center gap-2">
@@ -344,7 +334,7 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
                                         setStory(s);
                                         setCurrentQ(0);
                                         setQuizStatus('typing');
-                                        speak(s.title);
+                                        speak(s.title, schoolId);
                                     }}
                                 >
                                     <div className="p-6 flex items-center gap-4">

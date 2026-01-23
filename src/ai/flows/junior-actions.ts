@@ -4,6 +4,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // --- STORY GENERATOR ---
 const JuniorStorySchema = z.object({
@@ -16,13 +17,18 @@ const JuniorStorySchema = z.object({
   })).length(3).describe("Exactly three simple questions to check understanding.")
 });
 
-export async function generateJuniorStory(topic: string, wordCount: number = 100) {
+export async function generateJuniorStory(input: { topic: string; wordCount?: number; schoolId: string; }) {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 3);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient AI credits to generate a story." };
+    }
+
     const prompt = `
-      You are a kindergarten teacher. Write an educational story for a 5-year-old about: ${topic}.
+      You are a kindergarten teacher. Write an educational story for a 5-year-old about: ${input.topic}.
       
       RULES:
-      1. The story must be engaging and approximately ${wordCount} words long.
+      1. The story must be engaging and approximately ${input.wordCount || 100} words long.
       2. Use simple, age-appropriate words.
       3. The output MUST be a JSON object that strictly follows the provided schema.
       4. The 'questions' array must contain exactly 3 comprehension questions about the story.
@@ -56,10 +62,15 @@ const JuniorScienceSchema = z.object({
   experiment: z.string().describe("A very simple, safe at-home activity. e.g., 'Mix baking soda and vinegar to see bubbles!'"),
 });
 
-export async function generateJuniorScience(topic: string) {
+export async function generateJuniorScience(input: { topic: string; schoolId: string; }) {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient AI credits." };
+    }
+
     const prompt = `
-      Generate a super simple and fun science 'discovery' for a 6-year-old child about "${topic}".
+      Generate a super simple and fun science 'discovery' for a 6-year-old child about "${input.topic}".
       Provide a title, an emoji, a simple one-sentence 'wow' fact, a related observation, and a very easy, safe home experiment suggestion.
       Output strictly JSON.
     `;
@@ -84,10 +95,14 @@ const WordDetailSchema = z.object({
   emoji: z.string().emoji().describe("A single emoji for the word."),
 });
 
-export async function generateWordDetails(word: string) {
+export async function generateWordDetails(input: { word: string; schoolId: string; }) {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 1);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient AI credits." };
+    }
     const prompt = `
-      For the word "${word}", provide:
+      For the word "${input.word}", provide:
       1. A simple phonetic spelling (e.g., /kat/).
       2. A very simple sentence a 5-year-old would understand.
       3. A single, relevant emoji.
@@ -99,7 +114,7 @@ export async function generateWordDetails(word: string) {
       output: { schema: WordDetailSchema }
     });
     if (!output) throw new Error("AI did not return data.");
-    return { success: true, data: { ...output, word } };
+    return { success: true, data: { ...output, word: input.word } };
   } catch (error) {
     console.error("AI Word Detail Error:", error);
     return { success: false, error: (error as Error).message };
@@ -128,9 +143,13 @@ const PhonicsWorldEntrySchema = z.object({
     icon: z.string(),
 });
 
-export async function generatePhonicsWorldEntry(topic: string, category: string) {
+export async function generatePhonicsWorldEntry(input: { topic: string; category: string; schoolId: string; }) {
     try {
-        const prompt = `Create a nursery phonics entry for "${topic}" in category "${category}". 
+        const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+        if (!creditResult.success) {
+          return { success: false, error: creditResult.error || "Insufficient AI credits." };
+        }
+        const prompt = `Create a nursery phonics entry for "${input.topic}" in category "${input.category}". 
         Return JSON: { "title": "string", "sound": "string", "description": "string", "imagePrompt": "string", "icon": "string" }`;
         const { output } = await ai.generate({
             model: 'googleai/gemini-3-flash-preview',
@@ -156,11 +175,15 @@ const MathWorldEntrySchema = z.object({
     icon: z.string(),
 });
 
-export async function generateMathWorldEntry(topic: string, category: string) {
+export async function generateMathWorldEntry(input: { topic: string; category: string; schoolId: string; }) {
     try {
+        const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+        if (!creditResult.success) {
+          return { success: false, error: creditResult.error || "Insufficient AI credits." };
+        }
         const prompt = `
             Create a nursery math activity for a child.
-            The topic is "${topic}" and it should fit within the category "${category}".
+            The topic is "${input.topic}" and it should fit within the category "${input.category}".
             Provide a simple question, 4 options (one must be correct), the correct answer, an emoji icon, and a creative DALL-E style prompt to generate an image for the question.
             Output strictly JSON.
         `;
@@ -186,11 +209,15 @@ const ScienceWorldEntrySchema = z.object({
     icon: z.string(),
 });
 
-export async function generateScienceWorldEntry(topic: string, category: string) {
+export async function generateScienceWorldEntry(input: { topic: string; category: string; schoolId: string; }) {
     try {
+        const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+        if (!creditResult.success) {
+          return { success: false, error: creditResult.error || "Insufficient AI credits." };
+        }
         const prompt = `
             Create a nursery science discovery entry for a child.
-            The topic is "${topic}" and it should fit within the category "${category}".
+            The topic is "${input.topic}" and it should fit within the category "${input.category}".
             Provide a short, amazing fact and a simple emoji icon.
             Also, provide a creative DALL-E style prompt to generate an image for this fact.
             Output strictly JSON.
@@ -227,10 +254,15 @@ async function toWav(pcmData: Buffer): Promise<string> {
 const TTSInputSchema = z.object({
     text: z.string(),
     voice: z.enum(['Puck', 'Algenib', 'Achernar', 'Enif', 'Kore']),
+    schoolId: z.string(),
 });
 
 export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
     try {
+        const creditResult = await checkAndSpendCredits(input.schoolId, 1);
+        if (!creditResult.success) {
+          return { success: false, error: creditResult.error || "Insufficient AI credits." };
+        }
         const { media } = await ai.generate({
             model: 'googleai/gemini-2.5-flash-preview-tts',
             config: {
@@ -257,26 +289,34 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
 
 
 // --- IMAGE GENERATION ACTION ---
-export const generateLessonImageAction = async (prompt: string): Promise<string | null> => {
+export const generateLessonImageAction = async (input: { prompt: string; schoolId: string; }): Promise<{ success: boolean; data?: string | null, error?: string }> => {
     try {
+      const creditResult = await checkAndSpendCredits(input.schoolId, 5);
+      if (!creditResult.success) {
+        return { success: false, error: creditResult.error || "Insufficient AI credits." };
+      }
       const { media } = await ai.generate({
         model: 'googleai/gemini-2.5-flash-image',
-        prompt,
+        prompt: input.prompt,
       });
   
       if (media && media.url) {
-        return media.url;
+        return { success: true, data: media.url };
       }
-      return null;
+      return { success: true, data: null };
     } catch (error) {
       console.error("Image generation error:", error);
-      return null;
+      return { success: false, error: "Image generation failed." };
     }
 };
 
 // --- HANDWRITING ASSESSMENT ACTION ---
-export async function assessHandwritingAction(input: { imageDataUri: string; targetCharacter: string }) {
+export async function assessHandwritingAction(input: { imageDataUri: string; targetCharacter: string, schoolId: string; }) {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 3);
+    if (!creditResult.success) {
+      return { success: false, isCorrect: false, error: creditResult.error || "Insufficient AI credits." };
+    }
     const prompt = `
       You are an expert in early childhood education.
       Analyze the attached image. The user was trying to write the letter or digit "${input.targetCharacter}".
@@ -297,44 +337,6 @@ export async function assessHandwritingAction(input: { imageDataUri: string; tar
 
   } catch (error: any) {
     console.error("AI Handwriting Assessment Error:", error);
-    return { success: false, error: "The AI teacher is busy right now." };
+    return { success: false, isCorrect: false, error: "The AI teacher is busy right now." };
   }
-}
-
-// --- Dummy Server Actions (replace with actual AI flows) ---
-export async function generateArtDetailsAction(input: { item: string, type: 'shapes' | 'textures' }): Promise<any> {
-    // This is a placeholder. Implement the actual Genkit flow here.
-    return { success: true, data: { description: 'Generated description', parts: ['Circle'], prompt: 'Generated prompt' } };
-}
-
-export async function generateNumeracyTask(input: { task: string, topic: string }): Promise<any> {
-    return { success: true, data: { question: `What is 1+1?`, answer: 2, options: [1,2,3] } };
-}
-
-export async function generateDictionDetails(word: string): Promise<any> {
-    return { success: true, data: { syllables: 'AP-PLE', instruction: 'Say it loud!' } };
-}
-
-export async function generateStorytellingScene(topic: string): Promise<any> {
-    return { success: true, data: { title: topic, prompt: `A picture of ${topic}`, questions: [`What is the ${topic}?`] } };
-}
-
-export async function generateThemedVocab(theme: string): Promise<any> {
-    return { success: true, data: { name: theme, words: ['one', 'two'], prompt: `A picture of ${theme}` } };
-}
-
-export async function generateMissingLetterChallenge(word: string): Promise<any> {
-    return { success: true, data: { word: 'D_G', missing: 'O', options: ['A','E','I','O'], prompt: 'A dog' } };
-}
-
-export async function generateSentence(topic: string): Promise<any> {
-    return { success: true, data: { text: `The ${topic} is big.` } };
-}
-
-export async function generateRhymingWords(ending: string): Promise<any> {
-    return { success: true, data: { ending, words: [{word: `c${ending}`}, {word: `b${ending}`}] } };
-}
-
-export async function generateBlendsExample(blend: string): Promise<any> {
-    return { success: true, data: { blend, words: [{word: `${blend}ip`}]} };
 }

@@ -10,11 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
+  Loader2, Star, Rabbit, Rocket, Wand2, Mic, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Pen
+  Trophy, Gift, Check, PenTool, Eraser, Database, Pencil, Pen
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import PhonicsWorld from './phonics-world';
@@ -24,16 +23,7 @@ import JuniorScienceWorld from './science-world';
 import MathPlayground from './math-playground';
 import StickerBook from './sticker-book';
 import { assessHandwritingAction } from '@/ai/flows/junior-actions';
-
-
-// --- HELPERS ---
-const speak = (text: string, rate = 0.9) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = rate;
-    window.speechSynthesis.speak(u);
-};
+import confetti from 'canvas-confetti';
 
 // --- NEW COMPONENT: WRITING CANVAS (MAGIC PEN) ---
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -45,7 +35,7 @@ const STROKES = [
   { id: 'circle', label: 'Circle', icon: 'fa-circle' },
 ];
 
-function WritingCanvas() {
+function WritingCanvas({ schoolId }: { schoolId: string }) {
   const traceCanvasRef = useRef<HTMLCanvasElement>(null);
   const freeCanvasRef = useRef<HTMLCanvasElement>(null);
   const [mode, setMode] = useState<'letters' | 'strokes' | 'numbers'>('numbers');
@@ -95,18 +85,16 @@ function WritingCanvas() {
       const imageDataUri = freeCanvasRef.current.toDataURL('image/png');
       const target = mode === 'letters' ? selectedLetter : selectedNumber;
       
-      const result = await assessHandwritingAction({ imageDataUri, targetCharacter: target });
+      const result = await assessHandwritingAction({ imageDataUri, targetCharacter: target, schoolId });
       
       if(result.success) {
         if (result.isCorrect) {
             setShowSuccess(true);
             setFeedback('Number Superstar! ⭐');
             confetti();
-            speak(`Wonderful! You wrote ${target} perfectly!`);
             setTimeout(() => setShowSuccess(false), 5000);
         } else {
             setFeedback('Try once more! 💪');
-            speak(`So close! Let's try to trace ${target} again.`);
         }
       } else {
           throw new Error(result.error || "AI Assessment failed");
@@ -201,8 +189,6 @@ function WritingCanvas() {
   );
 }
 
-// ... Rest of your existing components (MathPlayground, ScienceWorld, StorySpark, etc.) go here ...
-
 export default function JuniorCampusPage() {
     const { role, profile } = useRole();
     const { user } = useUser();
@@ -238,7 +224,7 @@ export default function JuniorCampusPage() {
                     </TabsList>
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
-                        <TabsContent value="writing" className="mt-0"><WritingCanvas /></TabsContent>
+                        <TabsContent value="writing" className="mt-0"><WritingCanvas schoolId={schoolId}/></TabsContent>
                         <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId} /></TabsContent>
                         <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
