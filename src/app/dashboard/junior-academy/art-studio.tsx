@@ -12,9 +12,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
-import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 
 // --- JUNIOR ART STUDIO COMPONENT ---
 export default function ArtStudio({ schoolId }: { schoolId: string }) {
@@ -256,9 +254,9 @@ export default function ArtStudio({ schoolId }: { schoolId: string }) {
                                 onClick={() => {
                                     const canvas = canvasRef.current;
                                     const ctx = canvas?.getContext('2d');
-                                    if (canvas && ctx) {
-                                        ctx.fillStyle = "#FFFFFF";
-                                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                    if(canvas && ctx) {
+                                      ctx.fillStyle = "#FFFFFF";
+                                      ctx.fillRect(0, 0, canvas.width, canvas.height);
                                     }
                                 }}
                                 className="w-full h-12 rounded-2xl font-black uppercase text-xs tracking-widest"
@@ -338,4 +336,8 @@ function setPixelColor(data: Uint8ClampedArray, x: number, y: number, width: num
 
 function colorsMatch(c1: number[], c2: number[]) {
     return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2];
+}
+
+function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
+    return <span className={`inline-block font-bold rounded-md ${className}`}>{children}</span>;
 }
