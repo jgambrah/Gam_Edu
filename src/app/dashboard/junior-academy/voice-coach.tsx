@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
@@ -17,14 +18,12 @@ import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 
-
 const juniorStyles = {
     storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
     storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
     button: "h-20 px-12 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-[30px] shadow-[0_10px_0_#9d174d] active:translate-y-1 active:shadow-none transition-all",
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
-
 
 const speak = async (text: string, rate = 0.9) => {
     if (!text) return;

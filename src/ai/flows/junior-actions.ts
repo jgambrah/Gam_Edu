@@ -1,5 +1,5 @@
 
-'use client';
+'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -266,6 +266,33 @@ export const generateLessonImageAction = async (prompt: string): Promise<string 
       return null;
     }
 };
+
+// --- HANDWRITING ASSESSMENT ACTION ---
+export async function assessHandwritingAction(input: { imageDataUri: string; targetCharacter: string }) {
+  try {
+    const prompt = `
+      You are an expert in early childhood education.
+      Analyze the attached image. The user was trying to write the letter or digit "${input.targetCharacter}".
+      Is this a recognizable attempt? Answer only with the word YES or the word NO.
+    `;
+
+    const { text } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
+      prompt: [
+        { text: prompt },
+        { media: { url: input.imageDataUri } },
+      ],
+      config: { temperature: 0.1 }
+    });
+
+    const isYes = text.toUpperCase().includes('YES');
+    return { success: true, isCorrect: isYes };
+
+  } catch (error: any) {
+    console.error("AI Handwriting Assessment Error:", error);
+    return { success: false, error: "The AI teacher is busy right now." };
+  }
+}
 
 // --- Dummy Server Actions (replace with actual AI flows) ---
 export async function generateArtDetailsAction(input: { item: string, type: 'shapes' | 'textures' }): Promise<any> {
