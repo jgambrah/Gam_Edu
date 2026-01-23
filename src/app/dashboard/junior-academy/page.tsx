@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Palette, Trophy, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Database, Eraser, PenTool
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Palette, Trophy, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Database, Eraser, PenTool, Music
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails } from '@/ai/flows/junior-actions';
@@ -1038,6 +1038,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             toast({ title: "Deleted" });
         }
     };
+    
     return (
         <div className="space-y-8">
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
@@ -1112,7 +1113,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     </div>
                 </div>
             )}
-
+            
             {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
@@ -1254,11 +1255,10 @@ export default function JuniorCampusPage() {
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
-                <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
+                <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
             </div>
         </Tabs>
       </div>
     </div>
   );
 }
-
