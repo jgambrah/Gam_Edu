@@ -1,18 +1,17 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Loader2, Volume2, Star, Wand2, Mic, XCircle, 
-  Save, Trash2, Library, CheckCircle2, Plus, BookOpen,
-  Zap
+import {
+  Loader2, Volume2, Star, Wand2, Mic, XCircle,
+  Save, Trash2, Library, CheckCircle2, Plus, BookOpen
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
@@ -22,7 +21,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 const juniorStyles = {
     storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
     storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
-    button: "h-20 px-12 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-[30px] shadow-[0_10px_0_#9d174d] active:translate-y-1 active:shadow-none transition-all",
+    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
@@ -34,9 +33,9 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const [details, setDetails] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { schoolId } = useCurrentSchool();
-    
-    const { data: dbWords, forceRefetch } = useCollection<any>(useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'junior_phonics'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
+
+    const { data: dbWords, forceRefetch } = useCollection<any>(useMemoFirebase(() =>
+        (firestore && schoolId) ? query(collection(firestore, 'junior_phonics'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null,
     [firestore, schoolId]));
 
     const fetchDetails = useCallback(async (w: string) => {
@@ -48,7 +47,7 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
         else toast({ title: "AI Error", description: result.error || "Could not get word details." });
         setIsLoading(false);
     }, [toast, schoolId]);
-    
+
     const speak = async (text: string) => {
         if (!text || !schoolId) return;
         try {
@@ -61,10 +60,10 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
             console.error("Audio error", e);
         }
     };
-    
-    useEffect(() => { 
+
+    useEffect(() => {
         if (schoolId) {
-            fetchDetails('Apple'); 
+            fetchDetails('Apple');
         }
     }, [fetchDetails, schoolId]);
 
@@ -83,7 +82,7 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
         <div className="text-center">
             <h2 className="text-5xl font-black text-pink-500 uppercase tracking-tighter">Voice & Diction Coach</h2>
             <p className="text-slate-400 font-bold italic text-xl mt-2 mb-12">Learn to pronounce words clearly!</p>
-            
+
             <div className="grid md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
                 <div className="p-10 bg-pink-50 rounded-[4rem] border-8 border-white shadow-xl">
                     <p className="text-[10px] uppercase font-black text-pink-300 mb-2">Word of the Day</p>
@@ -96,7 +95,7 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                         </div>
                     ) : <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>}
                 </div>
-                
+
                 <div className="space-y-4">
                     <p className="font-bold text-slate-500">Practice other words:</p>
                     <div className="flex flex-wrap gap-3 justify-center">
@@ -125,8 +124,8 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
   const [answers, setAnswers] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const storiesQuery = useMemoFirebase(() => 
-      (firestore && schoolId) ? query(collection(firestore, 'junior_stories'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
+  const storiesQuery = useMemoFirebase(() =>
+      (firestore && schoolId) ? query(collection(firestore, 'junior_stories'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null,
   [firestore, schoolId]);
   const { data: dbStories, forceRefetch } = useCollection<any>(storiesQuery);
 
@@ -142,17 +141,19 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
         });
         forceRefetch();
         toast({title: "New Story Created!"});
+    } else {
+        toast({title: "AI Error", description: result.error, variant: 'destructive'});
     }
     setIsGenerating(false);
   };
-  
+
   const checkAnswers = () => {
     let correct = 0;
     activeStory.questions.forEach((q: any, i: number) => {
         if (answers[i]?.toLowerCase().trim() === q.answer.toLowerCase().trim()) correct++;
     });
-    if (correct === activeStory.questions.length) { 
-        confetti(); 
+    if (correct === activeStory.questions.length) {
+        confetti();
         toast({ title: "Perfect!", description: "You answered all questions correctly." });
     } else {
         toast({ title: "Good Try!", description: `You got ${correct} out of ${activeStory.questions.length} right.` });
@@ -218,4 +219,3 @@ export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: 
     </div>
   );
 }
-```
