@@ -287,8 +287,26 @@ export async function generateLifeSkillEntry(input: { topic: string; category: s
   }
 }
 
+// --- RHYME GENERATOR ---
+export async function generateRhyme(input: { topic: string; schoolId: string }): Promise<{ success: boolean; error?: string; rhyme: string; }> {
+  try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 1);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient credits.", rhyme: '' };
+    }
 
-// Dummy placeholder functions for newly added features
+    const prompt = `Write a very simple, 4-line nursery rhyme for a 5-year-old about: ${input.topic}. The rhyme should be positive and easy to sing.`;
+    const response = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
+      prompt,
+    });
+    
+    return { success: true, rhyme: response.text.trim() };
+  } catch (e: any) {
+    return { success: false, error: e.message, rhyme: '' };
+  }
+}
+
 export async function generateSkillDetails(input: { skill: string; schoolId: string }) {
   // In a real implementation, call Genkit AI here
   return {
@@ -297,18 +315,6 @@ export async function generateSkillDetails(input: { skill: string; schoolId: str
       title: input.skill,
       description: `This is a placeholder description for the '${input.skill}' life skill.`,
       imagePrompt: `3d illustration of a child learning about ${input.skill}`,
-    },
-  };
-}
-
-export async function generateRhyme(input: { topic: string; schoolId: string }) {
-  // In a real implementation, call Genkit AI here
-  return {
-    success: true,
-    data: {
-      title: `Rhyme about ${input.topic}`,
-      rhyme: `The ${input.topic} is great,\nIt's never too late,\nTo learn and to wait!`,
-      imagePrompt: `3d illustration of a child rhyming about ${input.topic}`,
     },
   };
 }

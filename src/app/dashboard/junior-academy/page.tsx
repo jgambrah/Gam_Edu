@@ -12,10 +12,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generatePhonicsWorldEntry, generateMathWorldEntry, generateScienceWorldEntry } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generatePhonicsWorldEntry, generateMathWorldEntry, generateScienceWorldEntry, generateRhyme } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -34,9 +34,16 @@ import * as LucideIcons from 'lucide-react';
 // --- ICON MAPPER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
   const map: Record<string, keyof typeof LucideIcons> = {
-    // Life Skills
+    'fa-spell-check': 'Languages',
+    'fa-ear-listen': 'Ear',
+    'fa-pen-nib': 'PenNib',
+    'fa-arrow-1-9': 'Calculator',
+    'fa-hand-holding-heart': 'HeartHandshake',
+    'fa-flask-vial': 'FlaskConical',
+    'fa-palette': 'Palette',
+    'fa-robot': 'Bot',
     'fa-face-smile': 'Smile',
-    'fa-tooth': 'Sparkles', // Placeholder for Tooth
+    'fa-tooth': 'Sparkles',
     'fa-heart-pulse': 'HeartPulse',
     'fa-vest': 'Shirt',
     'fa-sun': 'Sun',
@@ -48,11 +55,8 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     'fa-broom': 'Trash2',
     'fa-flag': 'Flag',
     'fa-hand-pointer': 'MousePointer2',
-    'fa-palette': 'Palette',
     'fa-cube': 'Cube',
     'fa-chalkboard-user': 'User',
-    'fa-hand-holding-heart': 'HeartHandshake',
-    // Numeracy
     'fa-rabbit': 'Rabbit',
     'fa-carrot': 'Carrot',
     'fa-apple-whole': 'Apple',
@@ -60,19 +64,11 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     'fa-star': 'Star',
     'fa-tv': 'Tv',
     'fa-bed': 'Bed',
-    // Phonics
-    'fa-spell-check': 'Languages',
-    'fa-ear-listen': 'Ear',
-    'fa-pen-nib': 'PenNib',
-    'fa-arrow-1-9': 'Sigma',
-    // Science
-    'fa-flask-vial': 'FlaskConical',
     'fa-eye': 'Eye',
     'fa-cloud-showers-heavy': 'CloudRain',
-    // Creative Arts
     'fa-guitar': 'Guitar',
-    // Default
-    'fa-robot': 'Bot',
+    'fa-plane': 'Plane',
+    'fa-car': 'Car',
   };
 
   const LucideName = map[iconName] || 'HelpCircle';
@@ -126,11 +122,104 @@ const TeacherModal: React.FC<{
         >
           {isLoading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} CREATE MAGIC
         </Button>
-        <button onClick={onClose} className="w-full text-slate-400 uppercase text-[10px] font-black tracking-widest mt-4">Close Drawer</button>
+        <button onClick={onClose} className="w-full text-slate-400 uppercase text-[10px] font-black tracking-widest mt-4">Close</button>
       </div>
     </div>
   </div>
 );
+
+// --- 1. SINGING DICTIONARY MODULE ---
+function SingingDictionary({ schoolId }: { schoolId: string }) {
+    const [index, setIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [rhyme, setRhyme] = useState('');
+    const { toast } = useToast();
+    
+    const words = constants.DICTIONARY_WORDS; 
+    const current = words[index];
+
+    const loadPage = useCallback(async () => {
+        if (!current || !schoolId) return;
+        setLoading(true);
+        setRhyme('');
+        setImageUrl(null);
+        try {
+            const result = await generateLessonImageAction({ prompt: current.imagePrompt, schoolId });
+            if (result.success && result.data) {
+                setImageUrl(result.data);
+            } else {
+                toast({ title: 'AI Error', description: result.error || 'Could not generate image.', variant: 'destructive' });
+            }
+        } catch (e) {
+            toast({ title: 'Network Error', description: 'Could not connect to image service.', variant: 'destructive' });
+        } finally {
+            setLoading(false);
+        }
+    }, [current, schoolId, toast]);
+
+    useEffect(() => { 
+        loadPage();
+    }, [loadPage]);
+
+    const playSong = async () => {
+        if (!current || !schoolId) return;
+        setLoading(true);
+        try {
+            const rhymeResult = await generateRhyme({ topic: current.word, schoolId });
+            if (!rhymeResult.success || !rhymeResult.rhyme) {
+                throw new Error(rhymeResult.error || 'Failed to generate rhyme.');
+            }
+            const songText = rhymeResult.rhyme;
+            setRhyme(songText);
+
+            const ttsResult = await generateTTSAction({ text: songText, voice: 'Puck', schoolId });
+            if (!ttsResult.success || !ttsResult.data) {
+                throw new Error(ttsResult.error || 'Failed to generate audio.');
+            }
+            const audio = new Audio(`data:audio/wav;base64,${ttsResult.data}`);
+            audio.play();
+        } catch (e: any) {
+            toast({ title: 'AI Error', description: e.message, variant: 'destructive' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex flex-col items-center space-y-8 animate-in fade-in">
+            <div className="flex justify-center gap-2 overflow-x-auto p-4 bg-white rounded-3xl shadow-lg border-4 border-red-50">
+                {words.map((w, i) => (
+                    <button key={i} onClick={() => setIndex(i)} className={`w-10 h-10 rounded-lg font-black ${index === i ? 'bg-red-500 text-white' : 'bg-red-50 text-red-400'}`}>
+                        {w.word[0]}
+                    </button>
+                ))}
+            </div>
+
+            <Card className={juniorStyles.card}>
+                <div className="bg-gradient-to-r from-red-400 to-pink-400 p-8 text-white text-center">
+                    <h2 className="text-7xl font-black">{current.word[0]}{current.word.substring(1).toLowerCase()}</h2>
+                    <p className="text-2xl font-bold uppercase tracking-widest">{current.word}</p>
+                </div>
+                <CardContent className="p-10 flex flex-col items-center space-y-8">
+                    <div className="w-80 h-80 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden bg-red-50">
+                        {loading && !imageUrl ? <div className="flex h-full items-center justify-center animate-spin text-red-200"><Loader2 size={48}/></div> : <img src={imageUrl!} className="w-full h-full object-cover" alt={current.word} />}
+                    </div>
+                    
+                    {rhyme && (
+                        <div className="bg-red-50 p-6 rounded-3xl border-4 border-dashed border-red-200 text-center animate-in zoom-in">
+                            <p className="text-xl font-bold text-red-700 whitespace-pre-wrap">{rhyme}</p>
+                        </div>
+                    )}
+
+                    <Button onClick={playSong} disabled={loading} className={`${juniorStyles.button} bg-red-500 hover:bg-red-600 shadow-[0_10px_0_#991b1b]`}>
+                        <Music className="mr-3" /> SING ALONG!
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
 
 // --- NEW COMPONENT: WRITING CANVAS (MAGIC PEN) ---
 function WritingCanvas() {
@@ -286,108 +375,6 @@ function WritingCanvas() {
       <style>{`@keyframes scan { 0% { top: 0; } 100% { top: 100%; } }`}</style>
     </div>
   );
-}
-
-// --- SUB-COMPONENT: VOICE COACH ---
-export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [word, setWord] = useState('Apple');
-    const [details, setDetails] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const { schoolId } = useCurrentSchool();
-
-    const { data: dbWords, forceRefetch } = useCollection<any>(useMemoFirebase(() =>
-        (firestore && schoolId) ? query(collection(firestore, 'junior_phonics'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null,
-    [firestore, schoolId]));
-
-    const fetchDetails = useCallback(async (w: string) => {
-        if (!schoolId) return;
-        setIsLoading(true);
-        setDetails(null);
-        try {
-            const result = await generateWordDetails({ word: w, schoolId });
-            if (result.success) {
-                setDetails(result.data);
-            } else {
-                toast({ title: "AI Error", description: result.error || "Could not get word details." });
-            }
-        } catch (error) {
-            toast({ title: "Request Failed", description: "Could not connect to the AI service." });
-        }
-        setIsLoading(false);
-    }, [toast, schoolId]);
-
-    const speak = async (text: string) => {
-        if (!text || !schoolId) return;
-        try {
-            const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
-            if (result.success && result.data && typeof window !== 'undefined') {
-                const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-                audio.play();
-            }
-        } catch (e) {
-            console.error("Audio error", e);
-        }
-    };
-    
-    const [newWord, setNewWord] = useState('');
-
-    const handleSaveWord = async () => {
-        if(!firestore || !schoolId || !newWord.trim()) return;
-        try {
-            await addDoc(collection(firestore, 'junior_phonics'), {
-                word: newWord.trim(),
-                schoolId: schoolId,
-                createdAt: serverTimestamp()
-            });
-            toast({title: "Word Saved!"});
-            forceRefetch();
-            setNewWord('');
-        } catch(e) {
-            toast({ title: 'Save failed.', variant: 'destructive'});
-        }
-    };
-    
-    return (
-        <div className="text-center">
-            <h2 className="text-5xl font-black text-pink-500 uppercase tracking-tighter">Voice & Diction Coach</h2>
-            <p className="text-slate-400 font-bold italic text-xl mt-2 mb-12">Learn to pronounce words clearly!</p>
-
-            <div className="grid md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
-                <div className="p-10 bg-pink-50 rounded-[4rem] border-8 border-white shadow-xl h-full flex flex-col justify-center">
-                    <p className="text-[10px] uppercase font-black text-pink-300 mb-2">Practice Word</p>
-                    {isLoading ? (
-                        <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>
-                    ) : details ? (
-                        <div className="space-y-4 text-center animate-in fade-in">
-                            <p className="text-8xl font-black text-slate-800">{details.word}</p>
-                            <p className="text-2xl font-bold text-pink-400 italic">{details.phonetic}</p>
-                            <div className="text-6xl">{details.emoji}</div>
-                            <Button onClick={() => speak(details.sentence)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
-                        </div>
-                    ) : (
-                        <div className="text-center text-slate-400 font-bold">Select a word below to begin!</div>
-                    )}
-                </div>
-
-                <div className="space-y-4">
-                    <p className="font-bold text-slate-500">Practice other words:</p>
-                    <div className="flex flex-wrap gap-3 justify-center">
-                        {dbWords?.map((w: any) => (
-                            <button key={w.id} onClick={() => fetchDetails(w.word)} className="px-6 py-3 bg-white border-2 border-slate-100 rounded-full font-bold text-slate-600 hover:bg-pink-50 hover:border-pink-200 transition-all">{w.word}</button>
-                        ))}
-                    </div>
-                    {canEdit && (
-                        <div className="pt-4 border-t flex gap-2">
-                            <Input value={newWord} onChange={e => setNewWord(e.target.value)} placeholder="Add new word..."/>
-                            <Button onClick={handleSaveWord} disabled={!newWord.trim()}>+</Button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
 }
 
 // --- SUB-COMPONENT: LIFE SKILLS HUB ---
@@ -634,15 +621,15 @@ export default function JuniorCampusPage() {
                     </div>
                 </header>
 
-                <Tabs defaultValue="lifeskills" className="w-full">
+                <Tabs defaultValue="stories" className="w-full">
                     <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-[30px] shadow-xl border-2 border-yellow-100 mb-10 overflow-x-auto no-scrollbar">
                         <TabsTrigger value="lifeskills" className="rounded-2xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-black flex flex-col items-center gap-1"><Heart className="w-5 h-5"/> Life Skills</TabsTrigger>
                         <TabsTrigger value="writing" className="rounded-2xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-black flex flex-col items-center gap-1"><Pencil className="w-5 h-5"/> Writing</TabsTrigger>
                         <TabsTrigger value="stories" className="rounded-2xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-black flex flex-col items-center gap-1"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
+                        <TabsTrigger value="dictionary" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><Languages className="w-5 h-5"/> Dictionary</TabsTrigger>
                         <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center gap-1"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                         <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center gap-1"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                         <TabsTrigger value="art" className="rounded-2xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-black flex flex-col items-center gap-1"><Palette className="w-5 h-5"/> Art</TabsTrigger>
-                        <TabsTrigger value="coach" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center gap-1"><Mic className="w-5 h-5"/> Coach</TabsTrigger>
                         <TabsTrigger value="rewards" className="rounded-2xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-black flex flex-col items-center gap-1"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
                     </TabsList>
 
@@ -650,10 +637,10 @@ export default function JuniorCampusPage() {
                         <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone schoolId={schoolId} /></TabsContent>
                         <TabsContent value="writing" className="mt-0"><WritingCanvas /></TabsContent>
                         <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
+                        <TabsContent value="dictionary" className="mt-0"><SingingDictionary schoolId={schoolId} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId} /></TabsContent>
                         <TabsContent value="science" className="mt-0"><JuniorScienceWorld schoolId={schoolId} /></TabsContent>
                         <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio schoolId={schoolId} /></div></TabsContent>
-                        <TabsContent value="coach" className="mt-0"><VoiceCoach canEdit={canEdit} /></TabsContent>
                         <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId} /></TabsContent>
                     </div>
                 </Tabs>
@@ -661,5 +648,3 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-    
