@@ -13,30 +13,24 @@ import {
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, 
-  Pencil, Pen, Heart, Utensils, Smile, Tv, Users, BrainCircuit, Activity,
-  AlertCircle
+  Pencil, Pen, Heart, Utensils, Smile, Tv, Users, BrainCircuit, Activity
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { 
-    generateJuniorStory, 
-    generateTTSAction, 
-    generateLessonImageAction, 
-    assessHandwritingAction,
-    generateSkillDetails,
-    generateRhyme
-} from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateTTSAction, generateLessonImageAction, assessHandwritingAction, generateSkillDetails, generateRhyme, generatePhonicsWorldEntry, generateMathWorldEntry, generateScienceWorldEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Label } from '@/components/ui/label';
 
-// Import sub-components that were moved into this file
+// Import sub-components
 import { StorySpark, VoiceCoach } from './voice-coach';
 import MathPlayground from './math-playground';
 import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
+import PhonicsWorld from './phonics-world';
 
 // --- JUNIOR STYLES ---
 const juniorStyles = {
@@ -56,10 +50,9 @@ const STROKES = [
   { id: 'circle', label: 'Circle', icon: 'fa-circle' },
 ];
 
-function WritingCanvas() {
+function WritingCanvas({ schoolId }: { schoolId: string }) {
   const traceCanvasRef = useRef<HTMLCanvasElement>(null);
   const freeCanvasRef = useRef<HTMLCanvasElement>(null);
-  const { schoolId } = useCurrentSchool();
   const [mode, setMode] = useState<'letters' | 'strokes' | 'numbers'>('numbers');
   const [selectedLetter, setSelectedLetter] = useState('A');
   const [selectedNumber, setSelectedNumber] = useState('1');
@@ -80,7 +73,6 @@ function WritingCanvas() {
         }
     } catch(e) { console.error("Speech Synthesis failed:", e) }
   };
-
 
   useEffect(() => {
     if (mode === 'numbers') setBrushColor('#FF9F43');
@@ -188,7 +180,7 @@ function WritingCanvas() {
                             }}
                             onMouseUp={() => setIsDrawingFree(false)}
                             onMouseMove={(e) => {
-                                if (!isDrawingFree) return;
+                                if(!isDrawingFree) return;
                                 const ctx = freeCanvasRef.current?.getContext('2d');
                                 const rect = freeCanvasRef.current!.getBoundingClientRect();
                                 if (ctx) {
@@ -222,7 +214,6 @@ function WritingCanvas() {
   );
 }
 
-// --- SUB-COMPONENT: LIFE SKILLS HUB ---
 type LifeSkillTab = 'emotions' | 'routine-songs' | 'modeling' | 'practical-life' | 'communication' | 'social' | 'puppet-theater' | 'cognitive' | 'physical-health';
 
 function LifeSkillsZone({ schoolId }: { schoolId: string }) {
@@ -232,11 +223,13 @@ function LifeSkillsZone({ schoolId }: { schoolId: string }) {
 
   const onSound = async (text: string) => {
     if (!text || !schoolId) return;
-    const result = await generateTTSAction({ text, voice: 'Puck', schoolId });
-    if (result.success && result.data && typeof window !== 'undefined') {
-        const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-        audio.play();
-    }
+    try {
+        const result = await generateTTSAction({ text, voice: 'Puck', schoolId });
+        if (result.success && result.data && typeof window !== 'undefined') {
+            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+            audio.play();
+        }
+    } catch(e) { console.error("TTS failed:", e); }
   };
 
   const addStar = () => {
@@ -330,7 +323,7 @@ function LifeSkillsModule({ tab, schoolId, onSound, onComplete }: { tab: LifeSki
         }
         setIsLoading(false);
     }, [current, schoolId]);
-
+    
     useEffect(() => {
         if (current) {
             loadVisual();
@@ -354,7 +347,7 @@ function LifeSkillsModule({ tab, schoolId, onSound, onComplete }: { tab: LifeSki
                              ) : imageUrl && (
                                 <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" alt="Skill Visual" />
                              )}
-                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
+                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                                 <Volume2 className="text-white w-20 h-20 opacity-0 group-hover:opacity-100 drop-shadow-xl" />
                              </div>
                         </div>
@@ -385,7 +378,9 @@ function LifeSkillsModule({ tab, schoolId, onSound, onComplete }: { tab: LifeSki
 // --- MAIN CAMPUS PAGE ---
 export default function JuniorCampusPage() {
     const { role } = useRole();
+    const { user } = useUser();
     const { schoolId } = useCurrentSchool();
+    
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
 
     if (!schoolId) {
@@ -410,7 +405,7 @@ export default function JuniorCampusPage() {
                     </div>
                 </header>
 
-                <Tabs defaultValue="writing" className="w-full">
+                <Tabs defaultValue="lifeskills" className="w-full">
                     <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-[30px] shadow-xl border-2 border-yellow-100 mb-10 overflow-x-auto no-scrollbar">
                         <TabsTrigger value="lifeskills" className="rounded-2xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-black flex flex-col items-center gap-1"><Heart className="w-5 h-5"/> Life Skills</TabsTrigger>
                         <TabsTrigger value="stories" className="rounded-2xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-black flex flex-col items-center gap-1"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
@@ -425,7 +420,7 @@ export default function JuniorCampusPage() {
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
                         <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone schoolId={schoolId} /></TabsContent>
                         <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId} /></TabsContent>
-                        <TabsContent value="writing" className="mt-0"><WritingCanvas /></TabsContent>
+                        <TabsContent value="writing" className="mt-0"><WritingCanvas schoolId={schoolId} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId} /></TabsContent>
                         <TabsContent value="science" className="mt-0"><JuniorScienceWorld schoolId={schoolId} /></TabsContent>
                         <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio schoolId={schoolId} /></div></TabsContent>
@@ -437,4 +432,3 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-```
