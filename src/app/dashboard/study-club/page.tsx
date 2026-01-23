@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -34,7 +33,7 @@ export default function DrGamTutorPage() {
       setMessages([
         {
           role: 'model',
-          content: `Hello ${user.displayName?.split(' ')[0] || 'Scholar'}. I am your personal AI tutor. What academic subject shall we explore today?`,
+          content: `Hello ${user.displayName?.split(' ')[0] || 'Scholar'}. I am Dr. Gam, your personal AI tutor. What academic subject shall we explore today?`,
         }
       ]);
     }
@@ -92,7 +91,7 @@ export default function DrGamTutorPage() {
         </div>
         <div>
           <h2 className="font-bold text-lg flex items-center gap-2">
-            AI Study Club <Sparkles className="h-4 w-4 text-yellow-300"/>
+            Dr. Gam AI Tutor <Sparkles className="h-4 w-4 text-yellow-300"/>
           </h2>
           <p className="text-slate-300 text-xs">Your Personal Academic Tutor</p>
         </div>
