@@ -304,12 +304,6 @@ export const SCIENCE_DATA = {
   diet: [
     { name: 'Apple', group: 'Healthy', type: 'Fruit', prompt: 'A shiny red apple, nursery style' },
   ],
-  dentist: [
-    { task: 'Brushing', icon: 'fa-tooth', instruction: 'Brush up and down, twice a day!', prompt: 'A child brushing their teeth' },
-  ],
-  health: [
-    { state: 'Healthy', feeling: 'I feel full of energy and ready to play!', care: 'Keep eating healthy food and playing!' },
-  ],
   water: [
     { source: 'Rain', use: 'Watering plants', icon: 'fa-cloud-showers-heavy' },
   ],
@@ -417,6 +411,10 @@ export const ARTS_DATA = {
 export const CREATIVE_ARTS_DATA = ARTS_DATA;
 
 export const LIFE_SKILLS_DATA = {
+  health: [
+    { title: 'Brushing Teeth', action: 'Brush up and down, twice a day!', icon: 'fa-tooth', prompt: 'A child happily brushing their teeth, with sparkles on their teeth' },
+    { title: 'Being Healthy', action: 'Eat healthy food and play every day to feel full of energy!', icon: 'fa-heart-pulse', prompt: 'A group of children playing outside with a colorful salad on a nearby picnic blanket' }
+  ],
   music: [
     { title: 'Brushing Teeth Song', theme: 'brushing teeth every morning', icon: 'fa-tooth' },
   ],
@@ -456,7 +454,7 @@ export const LIFE_SKILLS_DATA = {
       { q: 'The floor is messy with toys. How do we fix it?', options: ['fa-broom', 'fa-tv', 'fa-bed'], labels: ['Tidy Up', 'Watch TV', 'Go to Bed'], correct: 0, prompt: 'A room with many toys on the floor, nursery style' }
     ],
     patterns: [
-      { sequence: ['fa-apple-whole', 'fa-carrot', 'fa-apple-whole'], next: 'fa-carrot', options: ['fa-apple-whole', 'fa-carrot'], prompt: 'A simple pattern of fruit and vegetables' }
+      { sequence: ['fa-apple-whole', 'fa-carrot', 'fa-apple-whole'], next: 'carrot', options: ['apple-whole', 'carrot'], prompt: 'A simple pattern of fruit and vegetables' }
     ],
     whatIf: [
       { q: 'What if we could fly like birds?', a: 'We would see the whole world from high in the sky!', prompt: 'A child with bird wings flying over a colorful town' }
