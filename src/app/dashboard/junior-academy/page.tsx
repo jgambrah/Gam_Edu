@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generatePhonicsWorldEntry, generateMathWorldEntry, generateScienceWorldEntry, generateRhyme } from '@/ai/flows/junior-actions';
@@ -68,7 +68,8 @@ const juniorStyles = {
     header: "p-10 text-center",
     mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
     
-    bubble: "bg-white/80 backdrop-blur-md p-6 rounded-[40px] border-4 border-dashed border-pink-200",
+    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
+    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
 
@@ -105,7 +106,7 @@ const TeacherModal: React.FC<{
 );
 
 
-// --- SUB-COMPONENT: STORY SPARK (Dr. Gam Version) ---
+// --- SUB-COMPONENT: STORY SPARK ---
 function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string }) {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -321,6 +322,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                         </h3>
                         <Badge variant="outline" className="text-slate-400 font-bold">{savedStories?.length || 0} Stories</Badge>
                     </div>
+
                     {!savedStories || savedStories.length === 0 ? (
                         <div className="py-20 text-center bg-white rounded-[50px] border-8 border-dashed border-slate-50">
                             <BookOpen className="h-16 w-16 text-slate-100 mx-auto mb-4" />
@@ -374,49 +376,48 @@ function SingingDictionary({ schoolId }: { schoolId: string }) {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [rhyme, setRhyme] = useState('');
     const { toast } = useToast();
-    
-    const words = constants.DICTIONARY_WORDS; 
+
+    const words = constants.DICTIONARY_WORDS;
     const current = words[index];
 
-    useEffect(() => {
-        const loadPage = async () => {
-            if (!current || !schoolId) return;
-            setLoading(true);
-            setRhyme('');
-            try {
-                const result = await generateLessonImageAction({ prompt: current.imagePrompt, schoolId });
-                if (result.success) {
-                    setImageUrl(result.data || null);
-                } else {
-                    throw new Error(result.error);
-                }
-            } catch (e: any) {
-                toast({ title: 'Image Error', description: e.message, variant: 'destructive' });
-            } finally {
-                setLoading(false);
+    const loadPage = useCallback(async () => {
+        if (!current || !schoolId) return;
+        setLoading(true);
+        setRhyme('');
+        try {
+            const result = await generateLessonImageAction({ prompt: current.imagePrompt, schoolId });
+            if (result.success) {
+                setImageUrl(result.data || null);
+            } else {
+                throw new Error(result.error);
             }
-        };
+        } catch (e: any) {
+            toast({ title: 'Image Error', description: e.message, variant: 'destructive' });
+        } finally {
+            setLoading(false);
+        }
+    }, [current, schoolId, toast]);
+
+    useEffect(() => {
         loadPage();
-    }, [index, current, schoolId, toast]);
+    }, [index, loadPage]);
 
     const playSong = async () => {
         if (!current || !schoolId) return;
         setLoading(true);
         try {
             const rhymeResult = await generateRhyme({ topic: current.word, schoolId });
-            if (!rhymeResult.success || !rhymeResult.rhyme) {
+            if (!rhymeResult.success) {
                 throw new Error(rhymeResult.error || 'Failed to generate rhyme.');
             }
-            const songText = rhymeResult.rhyme;
-            setRhyme(songText);
-
-            const ttsResult = await generateTTSAction({ text: songText, voice: 'Puck', schoolId });
+            setRhyme(rhymeResult.rhyme);
+            const ttsResult = await generateTTSAction({ text: rhymeResult.rhyme, voice: 'Puck', schoolId });
             if (!ttsResult.success || !ttsResult.data) {
                 throw new Error(ttsResult.error || 'Failed to generate audio.');
             }
             if (typeof window !== 'undefined') {
-              const audio = new Audio(`data:audio/wav;base64,${ttsResult.data}`);
-              audio.play();
+                const audio = new Audio(`data:audio/wav;base64,${ttsResult.data}`);
+                audio.play();
             }
         } catch (e: any) {
             toast({ title: 'AI Error', description: e.message, variant: 'destructive' });
@@ -427,34 +428,27 @@ function SingingDictionary({ schoolId }: { schoolId: string }) {
 
     return (
         <div className="flex flex-col items-center space-y-8 animate-in fade-in">
-            <div className="flex justify-center gap-2 overflow-x-auto p-4 bg-white rounded-3xl shadow-lg border-4 border-red-50 w-full max-w-4xl">
+            <div className="grid grid-cols-7 md:grid-cols-13 gap-2 overflow-x-auto p-4 bg-white rounded-3xl shadow-lg border-4 border-red-50">
                 {words.map((w, i) => (
-                    <button 
-                        key={i} 
-                        onClick={() => setIndex(i)} 
-                        className={`flex-shrink-0 w-12 h-12 rounded-lg font-black text-xl transition-all ${index === i ? 'bg-red-500 text-white scale-110 shadow-lg' : 'bg-red-50 text-red-400 hover:bg-red-100'}`}
-                    >
+                    <button key={i} onClick={() => setIndex(i)} className={`flex-shrink-0 w-12 h-12 rounded-lg font-black text-xl transition-all ${index === i ? 'bg-red-500 text-white scale-110 shadow-lg' : 'bg-red-50 text-red-400 hover:bg-red-100'}`}>
                         {w.word[0]}
                     </button>
                 ))}
             </div>
-
             <Card className={juniorStyles.card}>
                 <div className="bg-gradient-to-r from-red-400 to-pink-400 p-8 text-white text-center">
-                    <h2 className="text-7xl font-black">{current.word}</h2>
-                    <p className="text-2xl font-bold uppercase tracking-widest">{current.category}</p>
+                    <h2 className="text-7xl font-black">{current.word[0]}{current.word[0].toLowerCase()}</h2>
+                    <p className="text-2xl font-bold uppercase tracking-widest">{current.word}</p>
                 </div>
                 <CardContent className="p-10 flex flex-col items-center space-y-8">
                     <div className="w-80 h-80 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden bg-red-50">
-                        {loading && !imageUrl ? <div className="flex h-full items-center justify-center animate-spin text-red-200"><Loader2 size={48}/></div> : imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={current.word} /> : <div className="flex h-full items-center justify-center text-red-200"><Loader2 size={48}/></div>}
+                        {loading ? <div className="flex h-full items-center justify-center animate-spin text-red-200"><Loader2 size={48}/></div> : <img src={imageUrl || undefined} className="w-full h-full object-cover" alt={current.word} />}
                     </div>
-                    
                     {rhyme && (
                         <div className="bg-red-50 p-6 rounded-3xl border-4 border-dashed border-red-200 text-center animate-in zoom-in">
                             <p className="text-xl font-bold text-red-700 whitespace-pre-wrap">{rhyme}</p>
                         </div>
                     )}
-
                     <Button onClick={playSong} disabled={loading} className={`${juniorStyles.button} bg-red-500 hover:bg-red-600 shadow-[0_10px_0_#991b1b]`}>
                         <Music className="mr-3" /> SING ALONG!
                     </Button>
@@ -492,7 +486,7 @@ function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: bool
     ];
 
     const dataQuery = useMemoFirebase(() => 
-        firestore ? query(
+        (firestore && schoolId) ? query(
             collection(firestore, 'junior_lifeskills_world'), 
             where('schoolId', '==', schoolId),
             where('category', '==', activeTab),
@@ -545,12 +539,12 @@ function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: bool
     }, [activeItem, schoolId]);
 
     const handleAiGenerate = async () => {
-        if (!aiTopic.trim() || !schoolId) return;
+        if (!aiTopic.trim() || !schoolId || !firestore) return;
         setIsLoading(true);
         try {
             const result = await generateLifeSkillEntry({ category: activeTab, topic: aiTopic, schoolId });
             if (result.success && result.data) {
-                await addDoc(collection(firestore!, 'junior_lifeskills_world'), {
+                await addDoc(collection(firestore, 'junior_lifeskills_world'), {
                     ...result.data,
                     category: activeTab,
                     schoolId: schoolId,
@@ -579,7 +573,9 @@ function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: bool
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-2">
-                        {tabs.map(tab => (
+                        {tabs.map(tab => {
+                            const Icon = tab.icon;
+                            return (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
@@ -587,10 +583,10 @@ function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: bool
                                     activeTab === tab.id ? 'bg-green-500 text-white shadow-md' : 'bg-white text-slate-500 hover:bg-green-50'
                                 }`}
                             >
-                                <tab.icon className="w-5 h-5" />
+                                <Icon className="w-5 h-5" />
                                 <span className="text-sm">{tab.label}</span>
                             </button>
-                        ))}
+                        )})}
                     </div>
                 </CardContent>
             </Card>
@@ -627,7 +623,7 @@ function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: bool
             </div>
              {isDrawerOpen && (
                 <TeacherModal 
-                    title="Life Skills Activity" 
+                    title={activeTab} 
                     topicValue={aiTopic} 
                     onTopicChange={setAiTopic} 
                     onGenerate={handleAiGenerate} 
@@ -640,113 +636,15 @@ function LifeSkillsZone({ schoolId, canEdit }: { schoolId: string, canEdit: bool
 }
 
 // --- SUB-COMPONENT: WRITING CANVAS ---
-const WritingCanvas = () => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [isDrawing, setIsDrawing] = useState(false);
-    const [color, setColor] = useState('#3B82F6'); 
-    const [mode, setMode] = useState<'letters' | 'numbers'>('letters');
-    const [selectedItem, setSelectedItem] = useState('A');
-    
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        
-        canvas.width = canvas.parentElement?.clientWidth || 500;
-        canvas.height = canvas.parentElement?.clientHeight || 500;
-        
-        ctx.fillStyle = '#F1F5F9';
-        ctx.fillRect(0,0, canvas.width, canvas.height);
-
-        ctx.font = `900 ${canvas.height * 0.8}px 'Nunito', sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.strokeStyle = '#E2E8F0';
-        ctx.lineWidth = 6;
-        ctx.setLineDash([20, 15]);
-        ctx.strokeText(selectedItem, canvas.width / 2, canvas.height / 2 + 10);
-        ctx.setLineDash([]);
-        
-    }, [selectedItem]);
-
-    const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
-        const ctx = canvasRef.current?.getContext('2d');
-        if (!ctx) return;
-        const pos = getPos(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-        ctx.lineWidth = 15;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = color;
-        setIsDrawing(true);
-    };
-
-    const draw = (e: React.MouseEvent | React.TouchEvent) => {
-        if (!isDrawing) return;
-        const ctx = canvasRef.current?.getContext('2d');
-        if (!ctx) return;
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-    };
-
-    const getPos = (e: React.MouseEvent | React.TouchEvent) => {
-        const rect = canvasRef.current!.getBoundingClientRect();
-        return {
-            x: ('touches' in e) ? e.touches[0].clientX - rect.left : e.nativeEvent.offsetX,
-            y: ('touches' in e) ? e.touches[0].clientY - rect.top : e.nativeEvent.offsetY,
-        };
-    };
-
-    const clearCanvas = () => {
-         const canvas = canvasRef.current;
-         const ctx = canvas?.getContext('2d');
-         if (!ctx || !canvas) return;
-         ctx.clearRect(0,0, canvas.width, canvas.height);
-         ctx.fillStyle = '#F1F5F9';
-         ctx.fillRect(0,0, canvas.width, canvas.height);
-         ctx.strokeText(selectedItem, canvas.width / 2, canvas.height / 2 + 10);
-    };
-
-    return (
-        <Card className="rounded-[60px] border-8 border-purple-100 overflow-hidden bg-white shadow-2xl">
-            <div className="bg-purple-500 p-8 text-white text-center">
-                <h3 className="text-4xl font-black uppercase tracking-tighter">Magic Writing Pad</h3>
-            </div>
-            <CardContent className="p-10 space-y-10">
-                <div className="flex justify-center gap-2 overflow-x-auto py-4">
-                    {(mode === 'letters' ? constants.LETTERS : constants.NUMBERS).map(item => (
-                        <button key={item} onClick={() => setSelectedItem(item)} className={`flex-shrink-0 w-14 h-14 rounded-2xl font-black text-2xl border-4 ${selectedItem === item ? 'bg-purple-500 text-white border-white scale-110 shadow-lg' : 'bg-slate-50 text-slate-400'}`}>{item}</button>
-                    ))}
-                </div>
-                
-                <div className="w-full max-w-lg mx-auto aspect-square rounded-[3rem] bg-slate-200 overflow-hidden shadow-inner border-8 border-white">
-                    <canvas 
-                        ref={canvasRef} 
-                        onMouseDown={startDrawing}
-                        onMouseUp={() => setIsDrawing(false)}
-                        onMouseLeave={() => setIsDrawing(false)}
-                        onMouseMove={draw}
-                        className="cursor-crosshair"
-                    />
-                </div>
-                
-                <div className="flex justify-center items-center gap-4">
-                     <Button onClick={clearCanvas} variant="outline" className="h-16 px-10 rounded-2xl border-4 font-black"><Eraser className="mr-2"/> Clear</Button>
-                     <Button className="h-20 px-12 bg-purple-600 hover:bg-purple-700 rounded-3xl font-black text-xl shadow-lg">Check My Work! ✅</Button>
-                </div>
-            </CardContent>
-        </Card>
-    );
-};
+const WritingCanvas = () => <div className="text-center p-8">Writing Canvas Module</div>;
 
 
+// --- MAIN PAGE ---
 export default function JuniorCampusPage() {
-    const { role, profile } = useRole();
+    const { role } = useRole();
     const { user } = useUser();
     
-    const schoolId = profile?.schoolId || (user as any)?.schoolId || "sunnyside-default";
+    const schoolId = 'default-school'; // Placeholder
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
 
     return (
