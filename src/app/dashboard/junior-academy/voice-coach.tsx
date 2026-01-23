@@ -1,16 +1,23 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Wand2, XCircle, Save, Trash2, Library, BookOpen } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Loader2, Wand2, ArrowRight,
+  Save, Trash2, Library, BookOpen, Volume2, XCircle, CheckCircle2
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { generateJuniorStory, generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Label } from '@/components/ui/label';
 
 const juniorStyles = {
     storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
@@ -36,7 +43,7 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
         if (!schoolId) return;
         setIsLoading(true);
         setDetails(null);
-        const result = await generateWordDetails({word: w, schoolId});
+        const result = await generateWordDetails({ word: w, schoolId });
         if (result.success) setDetails(result.data);
         else toast({ title: "AI Error", description: result.error || "Could not get word details." });
         setIsLoading(false);
@@ -100,7 +107,7 @@ export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                     {canEdit && (
                         <div className="pt-4 border-t flex gap-2">
                             <Input value={word} onChange={e => setWord(e.target.value)} placeholder="Add new word..."/>
-                            <Button onClick={handleSaveWord}><Plus /></Button>
+                            <Button onClick={handleSaveWord}>+</Button>
                         </div>
                     )}
                 </div>
@@ -122,12 +129,12 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
     const [story, setStory] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     
-    // Quiz Progress State
+    // Quiz Progress State (The 3-Question Pathway)
     const [currentQ, setCurrentQ] = useState(0);
     const [userAns, setUserAns] = useState('');
     const [quizStatus, setQuizStatus] = useState<'typing' | 'correct' | 'wrong'>('typing');
 
-    // SaaS Query
+    // SaaS Query: Load saved stories only for this school
     const storiesQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(
             collection(firestore, 'junior_stories'), 
@@ -148,6 +155,7 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
     const handleGenerate = async () => {
         if (!topic.trim() || !schoolId) return;
         setLoading(true);
+        // AI call with topic and length
         const res = await generateJuniorStory({ topic, wordCount: parseInt(wordCount), schoolId });
         if (res.success && res.data) {
             setStory(res.data);
@@ -167,7 +175,7 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
             await addDoc(collection(firestore, 'junior_stories'), {
                 ...story,
                 topic,
-                schoolId: schoolId,
+                schoolId: schoolId, // SaaS tagging
                 createdAt: serverTimestamp(),
                 createdBy: user?.uid
             });
@@ -181,6 +189,7 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
     const checkAnswer = () => {
         if (!userAns.trim()) return;
         const currentQuestion = story.questions[currentQ];
+        // Fuzzy match: check if user answer contains the key part of the correct answer
         const isCorrect = userAns.toLowerCase().includes(currentQuestion.answer.toLowerCase()) || 
                           currentQuestion.answer.toLowerCase().includes(userAns.toLowerCase());
 
@@ -200,6 +209,7 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
             setUserAns('');
             setQuizStatus('typing');
         } else {
+            // Quiz finished
             setStory(null);
             setTopic('');
             confetti({ particleCount: 200, spread: 100 });
@@ -209,6 +219,7 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
+            {/* 1. TEACHER'S MAGIC WRITING TOOL */}
             {canEdit && (
                 <div className="bg-white p-6 rounded-[35px] border-4 border-purple-100 flex flex-col md:flex-row gap-4 shadow-lg">
                     <div className="flex-1 space-y-1">
@@ -242,6 +253,7 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
+            {/* 2. ACTIVE STORY WORKSTATION (MAGIC STORYBOOK) */}
             {story ? (
                 <Card className="rounded-[60px] border-8 border-orange-100 overflow-hidden shadow-2xl bg-[#FFFDE7] animate-in zoom-in duration-500">
                     <div className="bg-orange-400 p-8 text-white flex justify-between items-center border-b-8 border-orange-500/20">
@@ -257,12 +269,14 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
                     </div>
 
                     <CardContent className="p-12 space-y-12">
+                        {/* THE STORY CONTENT */}
                         <div className="max-w-4xl mx-auto">
                             <p className="text-3xl font-bold text-orange-900 leading-relaxed font-serif first-letter:text-7xl first-letter:font-black first-letter:mr-3 first-letter:float-left whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
 
+                        {/* 3-QUESTION CHALLENGE BOX */}
                         <div className="bg-white/80 backdrop-blur-sm p-10 rounded-[50px] border-4 border-dashed border-orange-300 shadow-inner space-y-8 relative overflow-hidden">
                             <div className="flex justify-between items-center mb-4">
                                 <Badge className="bg-purple-600 text-white px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest">
@@ -323,6 +337,7 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
                     </CardContent>
                 </Card>
             ) : (
+                /* 3. LIBRARY SECTION: SAVED STORIES */
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-2xl font-black text-slate-700 flex items-center gap-2">
