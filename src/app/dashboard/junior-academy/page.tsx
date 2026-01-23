@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -17,6 +18,7 @@ import ArtStudio from './art-studio';
 import JuniorScienceWorld from './science-world';
 import MathPlayground from './math-playground';
 import StickerBook from './sticker-book';
+import { GoogleGenAI } from '@google/genai';
 
 
 export default function JuniorCampusPage() {

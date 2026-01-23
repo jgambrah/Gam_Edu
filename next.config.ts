@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
             "http2": false,
             "dns": false,
             "async_hooks": false,
+            "node:async_hooks": false,
             "fs": false,
             "net": false,
             "tls": false,
