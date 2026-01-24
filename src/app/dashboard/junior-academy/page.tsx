@@ -9,10 +9,17 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
-  Bot, Shirt, FlaskConical, Bed, Eye
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, 
+  Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, 
+  Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
+  Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
+  CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
+  Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
+  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, 
+  Beaker, Bed, Eye
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
+
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generateRhyme, generateSkillDetails } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -45,13 +52,13 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-pen-nib': 'Pen', // Changed from PenNib (doesn't exist)
       'fa-arrow-1-9': 'Calculator',
       'fa-hand-holding-heart': 'Handshake',
-      'fa-flask-vial': 'FlaskConical',
+      'fa-flask-vial': 'Beaker', // Changed from FlaskConical
       'fa-palette': 'Palette',
-      'fa-robot': 'Bot',
+      'fa-robot': 'BotMessageSquare', // Changed from Bot
       'fa-face-smile': 'Smile',
       'fa-tooth': 'Sparkles',
       'fa-heart-pulse': 'HeartPulse',
-      'fa-vest': 'Shirt',
+      'fa-vest': 'User', // Changed from Shirt (doesn't exist)
       'fa-sun': 'Sun',
       'fa-utensils': 'Utensils',
       'fa-school': 'School',
@@ -85,7 +92,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-comments': 'MessageSquare',
       'fa-people-group': 'Users',
       'fa-masks-theater': 'Drama',
-      'fa-brain': 'BrainCircuit',
+      'fa-brain': 'Brain', // Changed from BrainCircuit
       'fa-child-reaching': 'User',
       'fa-music': 'Music',
       'fa-magic': 'Wand2',
@@ -496,7 +503,7 @@ export default function JuniorCampusPage() {
                     </TabsList>
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
-                        <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone /></TabsContent>
+                        <TabsContent value="lifeskills" className="mt-0">{schoolId && <LifeSkillsZone />}</TabsContent>
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
@@ -511,3 +518,5 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
+    
