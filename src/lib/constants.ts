@@ -886,3 +886,5 @@ export type DictionaryWord = {
   category: string;
   imagePrompt: string;
 };
+
+    

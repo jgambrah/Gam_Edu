@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment } from 'firebase/firestore';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import * as LucideIcons from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const LIFE_SKILLS_DATA = {
   physicalHealth: {
@@ -494,12 +495,12 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
                  <p className="text-2xl font-black text-pink-800 italic leading-relaxed font-black font-black">"{(current as any).fact}"</p>
               </div>
   
-              <div className="flex gap-4 font-black">
-                <Button onClick={() => setIndex(i => (i === 0 ? communityData.length - 1 : i - 1))} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><ArrowLeft/></Button>
-                <Button onClick={() => { onSound((current as any).fact); onComplete(); }} className="px-12 py-5 bg-pink-500 text-white font-black rounded-3xl shadow-xl border-4 border-white uppercase tracking-widest font-black">Learn Role! 🌟</Button>
-                <Button onClick={() => setIndex(i => (i + 1) % communityData.length)} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><ArrowRight/></Button>
+              <div className="flex gap-4 items-center font-black">
+                 <Button onClick={() => setIndex(i => (i === 0 ? communityData.length - 1 : i - 1))} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><ArrowLeft/></Button>
+                 <Button onClick={() => { onSound((current as any).fact); onComplete(); }} className="px-12 py-5 bg-pink-500 text-white font-black rounded-3xl shadow-xl border-4 border-white uppercase tracking-widest text-xl font-black">Learn Role! 🌟</Button>
+                 <Button onClick={() => setIndex(i => (i + 1) % communityData.length)} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><ArrowRight/></Button>
               </div>
-            </div>
+          </div>
           )}
         </div>
         {isDrawerOpen && <TeacherModal title={`AI Social Assistant`} topicLabel={subTab === 'community' ? 'Community Helper' : 'Social Skill'} topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
@@ -609,7 +610,7 @@ const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () =
 };
 
 const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    const [subTab, setSubTab] = useState<'gross-motor' | 'fine-motor' | 'hygiene' | 'nutrition'>('gross-motor');
+    const [subTab, setSubTab] = useState<'grossMotor' | 'fineMotor' | 'hygiene' | 'nutrition'>('grossMotor');
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -624,8 +625,8 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
     const [nutrition, setNutrition] = useState(LIFE_SKILLS_DATA.physicalHealth.nutrition);
   
     const getCurrentData = () => {
-      if (subTab === 'gross-motor') return grossMotor;
-      if (subTab === 'fine-motor') return fineMotor;
+      if (subTab === 'grossMotor') return grossMotor;
+      if (subTab === 'fineMotor') return fineMotor;
       if (subTab === 'hygiene') return hygiene;
       return nutrition;
     };
@@ -659,8 +660,8 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
         const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'health', schoolId });
         if(result.success && result.data){
             const newItem = result.data;
-            if (subTab === 'gross-motor') setGrossMotor(prev => [...prev, newItem]);
-            else if (subTab === 'fine-motor') setFineMotor(prev => [...prev, newItem]);
+            if (subTab === 'grossMotor') setGrossMotor(prev => [...prev, newItem]);
+            else if (subTab === 'fineMotor') setFineMotor(prev => [...prev, newItem]);
             else if (subTab === 'hygiene') setHygiene(prev => [...prev, newItem]);
             else setNutrition(prev => [...prev, newItem]);
 
@@ -690,8 +691,8 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
           <h3 className="text-4xl font-black text-green-600 mb-8 uppercase tracking-tighter text-center font-black">Physical & Health Hub 🏃‍♂️</h3>
           
           <div className="flex flex-wrap justify-center gap-2 mb-10 p-2 bg-green-50 rounded-2xl font-black">
-            <button onClick={() => {setSubTab('gross-motor'); setIndex(0);}} className={`px-6 py-2 rounded-xl font-black text-[10px] uppercase transition-all ${subTab === 'gross-motor' ? 'bg-green-500 text-white shadow-md' : 'text-green-700'}`}>Gross Motor</button>
-            <button onClick={() => {setSubTab('fine-motor'); setIndex(0);}} className={`px-6 py-2 rounded-xl font-black text-[10px] uppercase transition-all ${subTab === 'fine-motor' ? 'bg-green-500 text-white shadow-md' : 'text-green-700'}`}>Fine Motor</button>
+            <button onClick={() => {setSubTab('grossMotor'); setIndex(0);}} className={`px-6 py-2 rounded-xl font-black text-[10px] uppercase transition-all ${subTab === 'grossMotor' ? 'bg-green-500 text-white shadow-md' : 'text-green-700'}`}>Gross Motor</button>
+            <button onClick={() => {setSubTab('fineMotor'); setIndex(0);}} className={`px-6 py-2 rounded-xl font-black text-[10px] uppercase transition-all ${subTab === 'fineMotor' ? 'bg-green-500 text-white shadow-md' : 'text-green-700'}`}>Fine Motor</button>
             <button onClick={() => {setSubTab('hygiene'); setIndex(0);}} className={`px-6 py-2 rounded-xl font-black text-[10px] uppercase transition-all ${subTab === 'hygiene' ? 'bg-green-500 text-white shadow-md' : 'text-green-700'}`}>Hygiene</button>
             <button onClick={() => {setSubTab('nutrition'); setIndex(0);}} className={`px-6 py-2 rounded-xl font-black text-[10px] uppercase transition-all ${subTab === 'nutrition' ? 'bg-green-500 text-white shadow-md' : 'text-green-700'}`}>Nutrition</button>
           </div>
@@ -814,7 +815,7 @@ const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () =>
       </div>
     );
 };
-  
+
 const LifeSkillsZone: React.FC = () => {
     const { schoolId } = useCurrentSchool();
     const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
@@ -904,4 +905,6 @@ const LifeSkillsZone: React.FC = () => {
       </div>
     );
 };
+export default LifeSkillsZone;
 
+    
