@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -15,7 +14,7 @@ import {
   Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
   CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
   Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, 
+  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User as UserIcon, 
   Beaker, Bed, Eye
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
@@ -49,16 +48,16 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     const iconMap: Record<string, keyof typeof LucideIcons> = {
       'fa-spell-check': 'Languages',
       'fa-ear-listen': 'Ear',
-      'fa-pen-nib': 'Pen', // Changed from PenNib (doesn't exist)
+      'fa-pen-nib': 'Pen',
       'fa-arrow-1-9': 'Calculator',
       'fa-hand-holding-heart': 'Handshake',
-      'fa-flask-vial': 'Beaker', // Changed from FlaskConical
+      'fa-flask-vial': 'Beaker',
       'fa-palette': 'Palette',
-      'fa-robot': 'BotMessageSquare', // Changed from Bot
+      'fa-robot': 'BotMessageSquare',
       'fa-face-smile': 'Smile',
       'fa-tooth': 'Sparkles',
       'fa-heart-pulse': 'HeartPulse',
-      'fa-vest': 'User', // Changed from Shirt (doesn't exist)
+      'fa-vest': 'UserIcon',
       'fa-sun': 'Sun',
       'fa-utensils': 'Utensils',
       'fa-school': 'School',
@@ -69,7 +68,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-flag': 'Flag',
       'fa-hand-pointer': 'MousePointer2',
       'fa-cube': 'Cube',
-      'fa-chalkboard-user': 'User',
+      'fa-chalkboard-user': 'UserIcon',
       'fa-rabbit': 'Rabbit',
       'fa-carrot': 'Carrot',
       'fa-apple-whole': 'Apple',
@@ -92,8 +91,8 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-comments': 'MessageSquare',
       'fa-people-group': 'Users',
       'fa-masks-theater': 'Drama',
-      'fa-brain': 'Brain', // Changed from BrainCircuit
-      'fa-child-reaching': 'User',
+      'fa-brain': 'Brain',
+      'fa-child-reaching': 'UserIcon',
       'fa-music': 'Music',
       'fa-magic': 'Wand2',
       'fa-arrow-left': 'ArrowLeft',
