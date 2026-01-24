@@ -9,8 +9,9 @@ import {
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
-  Bot, Shirt, FlaskConical, Bed, Eye, User as UserIcon, TrendingUp, Leaf, Tree
+  BotMessageSquare as Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Tree, User as UserIcon, Hand
 } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 import confetti from 'canvas-confetti';
 import { generateLessonImageAction, generateTTSAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
@@ -83,6 +84,12 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
     if (!iconName) return <HelpCircle className={cn(className)} />;
     const IconComponent = iconMap[iconName] || HelpCircle;
+    
+    if (!IconComponent) {
+      console.error(`Icon "${iconMap[iconName] || 'HelpCircle'}" not found for key "${iconName}"`);
+      return <HelpCircle className={cn(className)} />;
+    }
+    
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
 
@@ -115,7 +122,7 @@ const TeacherModal: React.FC<{
           disabled={isLoading || !topicValue} 
           className="w-full"
         >
-          {isLoading ? <Loader2 className="animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>} CREATE MAGIC
+          {isLoading ? <Loader2 className="animate-spin mr-2"/> : <Sparkles className="mr-2 h-4 w-4"/>} CREATE MAGIC
         </Button>
       </div>
     </DialogContent>
@@ -161,46 +168,46 @@ const ScienceExploration: React.FC = () => {
     { id: 'transport', label: 'Travel', icon: 'fa-car' },
     { id: 'concepts', label: 'Concepts', icon: 'fa-shapes' },
   ];
+    
+    const renderActiveTab = () => {
+        if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
+        if (!started) return (
+            <Card className="rounded-[60px] border-8 border-blue-100 shadow-xl overflow-hidden bg-white">
+                <CardHeader className="bg-blue-500 p-10 text-white text-center">
+                    <CardTitle className="text-4xl font-black uppercase tracking-tighter flex items-center justify-center gap-4">
+                        <Atom className="h-12 w-12" />
+                        Science World
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-12 text-center">
+                    <div className="flex flex-col items-center gap-8 py-20">
+                        <Sparkles className="h-24 w-24 text-blue-300 animate-pulse" />
+                        <h3 className="text-3xl font-black text-blue-600">Start Your Adventure!</h3>
+                        <p className="text-xl text-slate-600 max-w-md">
+                           Click the button below to begin exploring the amazing world of science.
+                        </p>
+                        <Button onClick={() => setStarted(true)} className="h-16 px-12 text-xl bg-blue-600 hover:bg-blue-700">Start Exploring</Button>
+                    </div>
+                </CardContent>
+            </Card>
+        );
 
-  const renderActiveTab = () => {
-    if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
-    if (!started) return (
-        <Card className="rounded-[60px] border-8 border-blue-100 shadow-xl overflow-hidden bg-white">
-            <CardHeader className="bg-blue-500 p-10 text-white text-center">
-                <CardTitle className="text-4xl font-black uppercase tracking-tighter flex items-center justify-center gap-4">
-                    <Atom className="h-12 w-12" />
-                    Science World
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="p-12 text-center">
-                <div className="flex flex-col items-center gap-8 py-20">
-                    <Sparkles className="h-24 w-24 text-blue-300 animate-pulse" />
-                    <h3 className="text-3xl font-black text-blue-600">Start Your Adventure!</h3>
-                    <p className="text-xl text-slate-600 max-w-md">
-                       Click the button below to begin exploring the amazing world of science.
-                    </p>
-                    <Button onClick={() => setStarted(true)} className="h-16 px-12 text-xl bg-blue-600 hover:bg-blue-700">Start Exploring</Button>
-                </div>
-            </CardContent>
-        </Card>
-    );
-
-    const props = { onSound: playFeedbackSound, schoolId: schoolId };
-    switch(activeTab) {
-        case 'environment': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.environment.surroundings} title="Environment" type="environment" />;
-        case 'body': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.bodyParts} title="My Body Parts" type="body" />;
-        case 'organs': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.innerOrgans} title="Inside My Body" type="organ" />;
-        case 'growth': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.growth} title="Stages of Growth" type="growth" categoryKey="stage" />;
-        case 'senses': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.senses} title="The 5 Senses" type="sense" categoryKey="sense" />;
-        case 'diet': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.diet} title="Healthy Foods" type="diet" />;
-        case 'living': return <LivingSorting onSound={playFeedbackSound} schoolId={schoolId}/>;
-        case 'weather': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.weather} title="Weather Window" type="weather" categoryKey="type"/>;
-        case 'animals': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.animals} title="Animal Kingdom" type="animal" />;
-        case 'transport': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.transport} title="Transport Explorer" type="transport" />;
-        case 'concepts': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.properties.colors} title="World Concepts" type="concept"/>;
-        default: return null;
-    }
-  };
+        const props = { onSound: playFeedbackSound, schoolId: schoolId };
+        switch(activeTab) {
+            case 'environment': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.environment.surroundings} title="Environment" type="environment" />;
+            case 'body': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.bodyParts} title="My Body Parts" type="body" />;
+            case 'organs': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.innerOrgans} title="Inside My Body" type="organ" />;
+            case 'growth': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.growth} title="Stages of Growth" type="growth" categoryKey="stage" />;
+            case 'senses': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.senses} title="The 5 Senses" type="sense" categoryKey="sense" />;
+            case 'diet': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.diet} title="Healthy Foods" type="diet" />;
+            case 'living': return <LivingSorting onSound={playFeedbackSound} schoolId={schoolId}/>;
+            case 'weather': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.weather} title="Weather Window" type="weather" categoryKey="type"/>;
+            case 'animals': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.animals} title="Animal Kingdom" type="animal" />;
+            case 'transport': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.transport} title="Transport Explorer" type="transport" />;
+            case 'concepts': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.properties.colors} title="World Concepts" type="concept"/>;
+            default: return null;
+        }
+    };
 
   return (
     <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 font-black selection:bg-green-100">
@@ -241,6 +248,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [started, setStarted] = useState(false); // NEW STATE
 
   const current = data?.[index];
 
@@ -253,7 +261,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     setLoading(false);
   }, [current, categoryKey, schoolId]);
   
-  useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
+  useEffect(() => { if (started) fetchVisual(); }, [index, data, fetchVisual, started]);
   
   const generateWithAi = async () => {
     if (!aiTopic || !schoolId) return;
@@ -266,6 +274,17 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
+  
+  if (!started) {
+    return (
+        <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+            <IconRenderer iconName={initialData[0].icon} className="h-16 w-16 mx-auto text-green-300 mb-4"/>
+            <h3 className="text-2xl font-bold text-green-600 mb-2">{title}</h3>
+            <p className="text-slate-500 mb-4">Ready to explore the world of {title.toLowerCase()}?</p>
+            <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Learning</Button>
+        </div>
+    );
+  }
   
   if (!current) {
     return (
@@ -318,6 +337,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [started, setStarted] = useState(false);
 
   const [livingList, setLivingList] = useState(SCIENCE_DATA.living);
   const [nonLivingList, setNonLivingList] = useState(SCIENCE_DATA.nonLiving);
@@ -325,14 +345,17 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   const data = isLiving ? livingList : nonLivingList;
   const current = data[index % data.length];
 
-  useEffect(() => { 
+  const fetchImage = useCallback(async () => {
+    if (!current?.name || !schoolId) return;
     setLoading(true); 
     generateLessonImageAction({ prompt: `Centered high quality 3D illustration of ${current.name}, white background, nursery style`, schoolId }).then(res => {
       if (res.success) setImageUrl(res.data || null);
       setLoading(false); 
     });
     setFeedback(null);
-  }, [index, isLiving, livingList, nonLivingList, schoolId]);
+  }, [current, schoolId]);
+
+  useEffect(() => { if (started) fetchImage(); }, [index, isLiving, livingList, nonLivingList, started, fetchImage]);
 
   const handleSort = (choice: boolean) => {
     if (choice === isLiving) { setFeedback('YES! Correct! 🌟'); onSound(`That's right! A ${current.name} is a ${isLiving ? 'living' : 'non-living'} thing!`); }
@@ -353,6 +376,17 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
+  
+  if (!started) {
+    return (
+        <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+            <Leaf className="h-16 w-16 mx-auto text-green-300 mb-4"/>
+            <h3 className="text-2xl font-bold text-green-600 mb-2">Living or Not?</h3>
+            <p className="text-slate-500 mb-4">Let's sort things into living and non-living groups!</p>
+            <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Sorting</Button>
+        </div>
+    );
+  }
 
   return (
     <div className="relative font-black">
@@ -375,25 +409,5 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   );
 };
 
-const GrowthModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Growth Module Coming Soon!</div>;
-};
-const BalancedDiet: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Balanced Diet Module Coming Soon!</div>;
-};
-const WeatherWindow: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Weather Window Module Coming Soon!</div>;
-};
-const AnimalKingdom: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Animal Kingdom Module Coming Soon!</div>;
-};
-const TransportExplorer: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Transport Module Coming Soon!</div>;
-};
-const ConceptsZone: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Concepts Module Coming Soon!</div>;
-};
-
 export default ScienceExploration;
 
-    
