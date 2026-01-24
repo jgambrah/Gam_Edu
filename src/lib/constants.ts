@@ -1,3 +1,4 @@
+
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -466,6 +467,28 @@ export const navItems: NavItem[] = [
   },
 ];
 
+export const sampleAnnouncements = [
+  {
+    id: 1,
+    title: 'Annual Sports Day Postponed',
+    date: '2024-10-15',
+    content: `Dear Parents and Students,\nPlease note that the Annual Sports Day, originally scheduled for October 20th, has been postponed due to forecasted heavy rain. The new date will be November 5th. All event timings and venues remain the same. We apologize for any inconvenience this may cause and appreciate your understanding. Field trip permission slips for the science museum are due by this Friday, October 18th. Also, the parent-teacher conference is scheduled for next month.`,
+  },
+  {
+    id: 2,
+    title: 'Parent-Teacher Conference Schedule',
+    date: '2024-10-12',
+    content: `We are pleased to announce the schedule for the upcoming Parent-Teacher Conferences on November 10th and 11th. Please log in to the portal to book your slots with the respective teachers. Bookings will be open from October 15th to November 5th. This is a valuable opportunity to discuss your child's progress.`,
+  },
+  {
+    id: 3,
+    title: 'School Policy Update: Mobile Phones',
+    date: '2024-10-10',
+    content: `Effective immediately, there is an update to the school's mobile phone policy. Students are no longer permitted to use mobile phones during lunch breaks to encourage more social interaction. Phones must be kept in lockers during school hours. This policy change will be strictly enforced by all staff. Teachers are required to attend a brief meeting on this policy change this Friday after school in the staff room.`,
+  },
+];
+
+
 export const MOCK_SUBJECTS = [
     { id: 'math-01', name: 'Mathematics' },
     { id: 'sci-01', name: 'Science' },
@@ -575,7 +598,20 @@ export const MOCK_CROSSWORD_PUZZLES = [
   },
 ];
 
+// --- JUNIOR ACADEMY DATA ---
+
 export const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+export const STROKES = [
+  { id: 'standing', label: 'Standing Line', icon: 'fa-grip-lines-vertical' },
+  { id: 'sleeping', label: 'Sleeping Line', icon: 'fa-grip-lines' },
+  { id: 'slanting', label: 'Slanting Line', icon: 'fa-slash' },
+  { id: 'curve-up', label: 'Curve Up', icon: 'fa-chevron-up' },
+  { id: 'curve-down', label: 'Curve Down', icon: 'fa-chevron-down' },
+  { id: 'curve-left', label: 'Curve Left', icon: 'fa-chevron-left' },
+  { id: 'curve-right', label: 'Curve Right', icon: 'fa-chevron-right' },
+  { id: 'circle', label: 'Circle', icon: 'fa-circle' },
+];
 
 export const JOLLY_PHONICS_DATA = [
   { letter: 'S', sound: 'sss', action: 'Weave your hand like a snake and say sss.', story: 'Sammy the Snake lives in the sun. He slides through the grass and says sss!', imagePrompt: 'A friendly cartoon snake in a sunny garden, bright colors, nursery style, white background' },
@@ -642,4 +678,103 @@ export const VOCABULARY_DATA: DictionaryWord[] = [
   { word: 'Ball', category: 'General', imagePrompt: 'A colorful bouncy ball with stripes, nursery style' },
   { word: 'Cat', category: 'Animals', imagePrompt: 'A fluffy orange kitten with big eyes, nursery style' },
   { word: 'Dog', category: 'Animals', imagePrompt: 'A friendly brown puppy wagging its tail, nursery style' },
+];
+
+
+// --- NEW MATH DATA ---
+export const NUMERACY_DATA = {
+  numbers: [
+    { value: 1, word: 'One', prompt: 'A single red apple' },
+    { value: 2, word: 'Two', prompt: 'Two yellow bananas' },
+    { value: 3, word: 'Three', prompt: 'Three green frogs' },
+    { value: 4, word: 'Four', prompt: 'Four blue cars' },
+    { value: 5, word: 'Five', prompt: 'Five orange flowers' },
+  ],
+  shapes: [
+    { name: 'Circle', type: '2D', prompt: 'A round blue ball' },
+    { name: 'Square', type: '2D', prompt: 'A red square block' },
+    { name: 'Triangle', type: '2D', prompt: 'A yellow triangle cheese' },
+  ],
+  comparisons: [
+     { q: 'Which is bigger?', val1: 5, val2: 2, answer: 5, prompt: 'A big elephant and a small mouse' },
+     { q: 'Which is smaller?', val1: 8, val2: 10, answer: 8, prompt: 'A large ship and a small boat' }
+  ],
+  patterns: [
+    { sequence: ['apple-whole', 'carrot', 'apple-whole'], next: 'carrot', options: ['apple-whole', 'carrot'] },
+    { sequence: ['square', 'circle', 'square'], next: 'circle', options: ['square', 'circle'] }
+  ],
+  oneToOne: [
+    { count: 3, name: 'Rabbit', itemName: 'Carrot', character: 'fa-rabbit', item: 'fa-carrot' }
+  ]
+};
+
+export const COUNTING_TASK_DATA = [
+  { count: 3, icon: 'fa-apple-whole', theme: 'Apples', prompt: 'Three red apples on a table' },
+  { count: 5, icon: 'fa-car', theme: 'Cars', prompt: 'Five colorful toy cars' }
+];
+
+export const SEQUENCE_DATA = [
+    { type: 'before', question: 'What comes before 5?', sequence: [null, 5, 6], answer: 4, options: [3, 4, 7] },
+    { type: 'after', question: 'What comes after 8?', sequence: [7, 8, null], answer: 9, options: [7, 9, 10] },
+    { type: 'between', question: 'What comes between 2 and 4?', sequence: [2, null, 4], answer: 3, options: [1, 3, 5] },
+];
+
+export const NUM_COMPARISON_DATA = [
+    { q: 'Which is greater?', val1: 7, val2: 3, answer: 7 },
+    { q: 'Which is smaller?', val1: 9, val2: 12, answer: 9 },
+];
+
+export const NUMBER_WORDS_DATA = [
+    { digit: 1, word: 'One', prompt: 'One red ball' },
+    { digit: 2, word: 'Two', prompt: 'Two blue cars' },
+    { digit: 3, word: 'Three', prompt: 'Three green trees' },
+];
+
+export const NUMBER_BONDS_DATA = [
+    { target: 5, part1: 3, part2: 2, theme: 'Apples', prompt: 'A group of 3 red apples and a group of 2 green apples' },
+    { target: 10, part1: 6, part2: 4, theme: 'Stars', prompt: 'A group of 6 yellow stars and 4 blue stars' },
+];
+
+export const ADDITION_DATA = [
+    { val1: 2, val2: 3, icon: 'fa-star', theme: 'Stars', prompt: 'Two stars plus three stars' },
+    { val1: 4, val2: 1, icon: 'fa-heart', theme: 'Hearts', prompt: 'Four hearts plus one heart' },
+];
+
+export const SUBTRACTION_DATA = [
+    { val1: 5, val2: 2, icon: 'fa-cookie', theme: 'Cookies', prompt: 'Five cookies, with two being eaten' },
+    { val1: 7, val2: 4, icon: 'fa-bolt', theme: 'Lightning bolts', prompt: 'Seven lightning bolts, four fade away' },
+];
+
+export const TENS_UNITS_DATA = [
+    { number: 23, tens: 2, units: 3, prompt: 'Two groups of ten blocks and three single blocks' },
+    { number: 45, tens: 4, units: 5, prompt: 'Four groups of ten pencils and five single pencils' },
+];
+
+export const GROUPING_DATA = [
+    { groupSize: 2, totalItems: 6, theme: 'Pencils', prompt: 'Six pencils arranged in groups of two' },
+    { groupSize: 3, totalItems: 9, theme: 'Balls', prompt: 'Nine balls arranged in groups of three' },
+];
+
+export const TIME_DATA = [
+    { hour: 3, minute: 0, phrase: "Three o'clock", prompt: 'An analog clock showing 3:00' },
+    { hour: 9, minute: 0, phrase: "Nine o'clock", prompt: 'An analog clock showing 9:00' },
+];
+
+export const MONEY_DATA = [
+    { amount: 4, coins: 4, label: 'Four Pesewas', prompt: 'Four Ghana pesewas coins' },
+    { amount: 6, coins: 6, label: 'Six Pesewas', prompt: 'Six Ghana pesewas coins' },
+];
+
+export const MEASUREMENT_DATA = {
+    weight: [
+        { q: 'Which is heavier?', correct: 0, items: [{ label: 'Elephant', prompt: 'An elephant' }, { label: 'Feather', prompt: 'A bird feather' }] }
+    ],
+    height: [
+        { q: 'Which is taller?', correct: 0, items: [{ label: 'Giraffe', prompt: 'A tall giraffe' }, { label: 'Mouse', prompt: 'A small mouse' }] }
+    ]
+};
+
+export const SPATIAL_DATA = [
+    { target: 'Ball', position: 'above', refObject: 'Box', prompt: 'A red ball on top of a brown box' },
+    { target: 'Cat', position: 'below', refObject: 'Table', prompt: 'A cat sleeping under a wooden table' },
 ];
