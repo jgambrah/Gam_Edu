@@ -22,13 +22,13 @@ import {
   Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const iconMap: Record<string, keyof typeof LucideIcons> = {
       'fa-1': 'Hash', 'fa-list-ol': 'ListOrdered', 'fa-scale-unbalanced': 'Scale', 'fa-handshake': 'Handshake', 'fa-plus': 'Plus', 'fa-minus': 'Minus', 'fa-coins': 'Coins', 'fa-ruler-vertical': 'Ruler', 'fa-shapes': 'Shapes', 'fa-arrows-up-down-left-right': 'Move', 'fa-scale-balanced': 'Scale', 'fa-square-check': 'CheckSquare', 'fa-arrows-left-right': 'ArrowLeftRight', 'fa-pen-clip': 'PenTool',
       'fa-spell-check': 'Languages', 'fa-ear-listen': 'Ear', 'fa-pen-nib': 'Pen', 'fa-arrow-1-9': 'Calculator', 'fa-hand-holding-heart': 'Handshake', 'fa-flask-vial': 'Beaker',
-      'fa-palette': 'Palette', 'fa-robot': 'BotMessageSquare', 'fa-face-smile': 'Smile', 'fa-tooth': 'Sparkles',
+      'fa-palette': 'Palette', 'fa-robot': 'Bot', 'fa-face-smile': 'Smile', 'fa-tooth': 'Sparkles',
       'fa-heart-pulse': 'HeartPulse', 'fa-vest': 'User', 'fa-sun': 'Sun', 'fa-utensils': 'Utensils',
       'fa-school': 'School', 'fa-house': 'Home', 'fa-recycle': 'Recycle', 'fa-water': 'Droplets',
       'fa-broom': 'Trash2', 'fa-flag': 'Flag', 'fa-hand-pointer': 'MousePointer2', 'fa-cube': 'Cube',
@@ -38,7 +38,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-car': 'Car', 'fa-frog': 'Rabbit', 'fa-bolt': 'Zap', 'fa-circle-dot': 'CircleDot',
       'fa-soap': 'Sparkles', 'fa-broccoli': 'Carrot', 'fa-display': 'Monitor',
       'fa-graduation-cap': 'GraduationCap', 'fa-comments': 'MessageSquare',
-      'fa-people-group': 'Users', 'fa-masks-theater': 'Drama', 'fa-brain': 'Brain',
+      'fa-people-group': 'Users', 'fa-masks-theater': 'Drama', 'fa-brain': 'BrainCircuit',
       'fa-child-reaching': 'User', 'fa-music': 'Music', 'fa-magic': 'Wand2',
       'fa-arrow-left': 'ArrowLeft', 'fa-arrow-right': 'ArrowRight', 'fa-spinner': 'Loader2',
       'fa-volume-high': 'Volume2', 'fa-dna': 'Atom', 'fa-play': 'Play', 'fa-heart': 'Heart',
@@ -177,10 +177,10 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
   }, [current, schoolId]);
 
   useEffect(() => {
-    fetchVisual();
-    setAnswered(false);
+      fetchVisual();
+      setAnswered(false);
   }, [index, data, fetchVisual]);
-
+  
   const handleChoice = (pos: string) => {
     if (pos === current.position) {
       setAnswered(true);
@@ -215,13 +215,12 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
              <button key={pos} onClick={() => handleChoice(pos)} className={`px-8 py-4 rounded-2xl font-black text-xl transition-all border-4 ${answered && pos === current.position ? 'bg-green-500 text-white border-white scale-110 shadow-xl' : 'bg-blue-50 text-blue-600 border-white hover:bg-blue-100'}`}>{pos.toUpperCase()}</button>
            ))}
         </div>
-        {answered && <Button onClick={() => setIndex(p => (p + 1) % data.length)} className="mt-12 px-12 py-5 bg-green-500 text-white font-black rounded-3xl shadow-xl animate-bounce uppercase">Find Another! 🔍</Button>}
+        {answered && <button onClick={() => setIndex(p => (p + 1) % data.length)} className="mt-12 px-12 py-5 bg-green-500 text-white font-black rounded-3xl shadow-xl animate-bounce uppercase">Find Another! 🔍</button>}
       </div>
       {isDrawerOpen && <TeacherModal title="AI Position Maker" topicLabel="Main Object (e.g. Teddy Bear)" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
     </div>
   );
 };
-
 
 const NumeracyZone: React.FC = () => {
     const [activeTab, setActiveTab] = useState<MathTab>('numbers');
