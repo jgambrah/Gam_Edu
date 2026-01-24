@@ -14,7 +14,7 @@ import {
   Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
   CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
   Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User as UserIcon, 
+  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, 
   Beaker, Bed, Eye
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
@@ -45,19 +45,19 @@ import WritingCanvas from './writing-canvas';
 import * as constants from '@/lib/constants';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, keyof typeof LucideIcons> = {
+    const iconMap: Record<string, string> = {
       'fa-spell-check': 'Languages',
       'fa-ear-listen': 'Ear',
       'fa-pen-nib': 'Pen',
       'fa-arrow-1-9': 'Calculator',
       'fa-hand-holding-heart': 'Handshake',
-      'fa-flask-vial': 'Beaker',
+      'fa-flask-vial': 'Beaker', // Changed from FlaskConical
       'fa-palette': 'Palette',
-      'fa-robot': 'BotMessageSquare',
+      'fa-robot': 'BotMessageSquare', // Changed from Bot
       'fa-face-smile': 'Smile',
       'fa-tooth': 'Sparkles',
       'fa-heart-pulse': 'HeartPulse',
-      'fa-vest': 'UserIcon',
+      'fa-vest': 'User', // Changed from Shirt (doesn't exist)
       'fa-sun': 'Sun',
       'fa-utensils': 'Utensils',
       'fa-school': 'School',
@@ -68,7 +68,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-flag': 'Flag',
       'fa-hand-pointer': 'MousePointer2',
       'fa-cube': 'Cube',
-      'fa-chalkboard-user': 'UserIcon',
+      'fa-chalkboard-user': 'User',
       'fa-rabbit': 'Rabbit',
       'fa-carrot': 'Carrot',
       'fa-apple-whole': 'Apple',
@@ -91,8 +91,8 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-comments': 'MessageSquare',
       'fa-people-group': 'Users',
       'fa-masks-theater': 'Drama',
-      'fa-brain': 'Brain',
-      'fa-child-reaching': 'UserIcon',
+      'fa-brain': 'Brain', // Changed from BrainCircuit
+      'fa-child-reaching': 'User',
       'fa-music': 'Music',
       'fa-magic': 'Wand2',
       'fa-arrow-left': 'ArrowLeft',
@@ -106,11 +106,15 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     };
   
     const lucideIconName = iconMap[iconName] || 'HelpCircle';
-    const IconComponent = LucideIcons[lucideIconName] as React.ComponentType<{ className?: string }>;
+    
+    // ✅ SAFE: Get the icon component and validate it exists
+    const IconComponent = (LucideIcons as any)[lucideIconName];
   
-    if (!IconComponent) {
-      console.error('❌ Missing icon:', lucideIconName, 'for', iconName);
-      return <LucideIcons.HelpCircle className={className} />;
+    // ✅ CRITICAL: Check if it's actually a valid React component
+    if (!IconComponent || typeof IconComponent !== 'function') {
+      console.error('❌ Missing or invalid icon:', lucideIconName, 'for FA icon:', iconName);
+      const FallbackIcon = (LucideIcons as any)['HelpCircle'];
+      return <FallbackIcon className={className} />;
     }
   
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -428,8 +432,10 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     }, [schoolId]);
 
     useEffect(() => {
-        handleLetterClick('A');
-    }, [handleLetterClick]);
+        if (schoolId) {
+            handleLetterClick('A');
+        }
+    }, [handleLetterClick, schoolId]);
   
     const handleSing = async () => {
       if (!wordData || !schoolId) return;
@@ -453,7 +459,7 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
             ) : (
                 <div className="flex flex-col items-center gap-6 animate-in zoom-in">
                     <div className="w-80 h-80 bg-red-50 rounded-[4rem] border-8 border-white shadow-2xl flex items-center justify-center overflow-hidden">
-                        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-8" /> : <Loader2 className="w-12 h-12 animate-spin text-red-300"/>}
+                        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-8" alt={wordData.word}/> : <Loader2 className="w-12 h-12 animate-spin text-red-300"/>}
                     </div>
                     <h4 className="text-8xl font-black text-slate-800">{wordData.word}</h4>
                     <Button onClick={handleSing} className="h-20 px-16 bg-red-500 text-white rounded-full font-black text-3xl shadow-xl border-4 border-white">Sing with me! 🎤</Button>
@@ -518,4 +524,3 @@ export default function JuniorCampusPage() {
     );
 }
 
-    
