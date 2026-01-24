@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import * as constants from '@/lib/constants';
 import { generateLessonImageAction, generateTTSAction, generateMathWorldEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import { 
   Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, CaseSensitive, 
@@ -55,6 +56,7 @@ const TeacherModal: React.FC<{
           <Label>{topicLabel}</Label>
           <Input 
             type="text" 
+            autoFocus
             value={topicValue} 
             onChange={(e) => onTopicChange(e.target.value)} 
             placeholder="Type here..." 
@@ -105,7 +107,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     const generateWithAi = async () => {
       if (!aiTopic || !schoolId) return; setIsAiLoading(true);
       try {
-        const result = await generateMathWorldEntry(aiTopic, 'numbers', schoolId);
+        const result = await generateMathWorldEntry({topic: aiTopic, category: 'numbers', schoolId});
         if(result.success && result.data) {
           setData(prev => prev.map((item, i) => i === index ? { ...item, ...result.data } : item));
           setIsDrawerOpen(false); setAiTopic('');
@@ -129,88 +131,24 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     );
 };
 
-const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data, setData] = useState(constants.COUNTING_TASK_DATA);
-    const [index, setIndex] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [userAnswer, setUserAnswer] = useState<number | null>(null);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [isAiLoading, setIsAiLoading] = useState(false);
-    const [aiTopic, setAiTopic] = useState('');
-  
-    const current = data[index];
-    const options = [current.count, current.count + 1, current.count - 1].filter(o => o > 0).sort(() => Math.random() - 0.5);
-  
-    const fetchVisual = useCallback(async () => {
-        if(!schoolId) return;
-        setLoading(true); 
-        const url = await generateLessonImageAction({prompt: current.prompt, schoolId}); 
-        setImageUrl(url.data || null); 
-        setLoading(false);
-    }, [current, schoolId]);
-
-    useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
-    
-    const handleAnswer = (val: number) => {
-      setUserAnswer(val);
-      if (val === current.count) onSound(`Great counting! There are ${val} ${current.theme.toLowerCase()}!`);
-      else onSound(`Let's count them one by one!`);
-    };
-  
-    const generateWithAi = async () => {
-      if (!aiTopic) return; setIsAiLoading(true);
-      try {
-        const result = await generateMathWorldEntry(aiTopic, 'counting', schoolId);
-        if(result.success && result.data){
-            setData(prev => [...prev, result.data as any]);
-            setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
-        }
-      } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
-    };
-  
-    return (
-      <div className="relative font-black">
-        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-emerald-200 text-emerald-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-emerald-50 transition-colors"><Wand2 className="h-4 w-4 mr-1 inline-block"/> AI Counting</button>
-        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-emerald-100 flex flex-col items-center min-h-[550px]">
-          <h3 className="text-4xl font-black text-emerald-600 mb-10 uppercase tracking-tighter text-center">How Many? 🧮</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center w-full">
-             <div onClick={() => onSound(`How many ${current.theme.toLowerCase()} can you see?`)} className="relative aspect-square bg-emerald-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center overflow-hidden cursor-pointer group">
-                {loading ? <Loader2 className="w-16 h-16 animate-spin text-emerald-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt={current.theme} />}
-             </div>
-             <div className="flex flex-col items-center">
-                <p className="text-2xl font-black text-slate-500 mb-8 uppercase tracking-widest text-center">Count the {current.theme}!</p>
-                <div className="grid grid-cols-3 gap-4">
-                   {options.map(opt => (
-                     <button key={opt} onClick={() => handleAnswer(opt)} className={`w-20 h-20 rounded-3xl font-black text-4xl transition-all border-4 ${userAnswer === opt ? (opt === current.count ? 'bg-green-500 text-white border-white scale-110 shadow-xl' : 'bg-red-500 text-white border-white') : 'bg-emerald-50 text-emerald-600 border-white hover:bg-emerald-100'}`}>{opt}</button>
-                   ))}
-                </div>
-             </div>
-          </div>
-          {userAnswer === current.count && <button onClick={() => setIndex(p => (p + 1) % data.length)} className="mt-12 px-12 py-5 bg-emerald-500 text-white font-black rounded-3xl shadow-xl animate-bounce uppercase border-4 border-white tracking-widest">Next Count! 🦁</button>}
-        </div>
-        {isDrawerOpen && <TeacherModal title="AI Counting Maker" topicLabel="Topic Subject" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
-      </div>
-    );
-};
-
-const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><p>Coming Soon</p></ModuleContainer>;
-const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><p>Coming Soon</p></ModuleContainer>;
-const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Number Words" icon="fa-font"><p>Coming Soon</p></ModuleContainer>;
-const NumberBondsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Number Bonds" icon="fa-handshake"><p>Coming Soon</p></ModuleContainer>;
-const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Addition" icon="fa-plus"><p>Coming Soon</p></ModuleContainer>;
-const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Subtraction" icon="fa-minus"><p>Coming Soon</p></ModuleContainer>;
-const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Tens & Units" icon="fa-layer-group"><p>Coming Soon</p></ModuleContainer>;
-const GroupingModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Grouping" icon="fa-object-group"><p>Coming Soon</p></ModuleContainer>;
-const TellingTimeModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Telling Time" icon="fa-clock"><p>Coming Soon</p></ModuleContainer>;
-const MoneyCountingModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Counting Money" icon="fa-coins"><p>Coming Soon</p></ModuleContainer>;
-const MeasurementModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Measurement" icon="fa-ruler-vertical"><p>Coming Soon</p></ModuleContainer>;
-const ShapesModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Shapes" icon="fa-shapes"><p>Coming Soon</p></ModuleContainer>;
-const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Comparison Game" icon="fa-scale-balanced"><p>Coming Soon</p></ModuleContainer>;
-const PatternGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Pattern Game" icon="fa-square-check"><p>Coming Soon</p></ModuleContainer>;
-const OneToOneGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="One-to-One Correspondence" icon="fa-arrows-left-right"><p>Coming Soon</p></ModuleContainer>;
-const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><p>Coming Soon</p></ModuleContainer>;
-
+const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const NumberBondsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const GroupingModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const TellingTimeModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const MoneyCountingModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const MeasurementModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const ShapesModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const PatternGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const OneToOneGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
 
 const NumeracyZone: React.FC = () => {
     const [activeTab, setActiveTab] = useState<MathTab>('numbers');
@@ -258,32 +196,34 @@ const NumeracyZone: React.FC = () => {
       { id: 'one-to-one', icon: 'fa-arrows-left-right' },
       { id: 'tracing', icon: 'fa-pen-clip' }
     ];
-  
+    
     const renderModule = () => {
         if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
         const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
         
-        switch(activeTab) {
-            case 'numbers': return <ModuleContainer title="Number Recognition" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>;
-            case 'counting': return <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>;
-            case 'sequence': return <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>;
-            case 'comparing': return <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>;
-            case 'number-words': return <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>;
-            case 'bonds': return <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule {...commonProps} /></ModuleContainer>;
-            case 'addition': return <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>;
-            case 'subtraction': return <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>;
-            case 'tens-units': return <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>;
-            case 'grouping': return <ModuleContainer title="Grouping" icon="fa-object-group"><GroupingModule {...commonProps} /></ModuleContainer>;
-            case 'time': return <ModuleContainer title="Telling Time" icon="fa-clock"><TellingTimeModule {...commonProps} /></ModuleContainer>;
-            case 'money': return <ModuleContainer title="Counting Money" icon="fa-coins"><MoneyCountingModule {...commonProps} /></ModuleContainer>;
-            case 'measurement': return <ModuleContainer title="Measurement" icon="fa-ruler-vertical"><MeasurementModule {...commonProps} /></ModuleContainer>;
-            case 'shapes': return <ModuleContainer title="Shapes" icon="fa-shapes"><ShapesModule {...commonProps} /></ModuleContainer>;
-            case 'spatial': return <ModuleContainer title="Spatial Reasoning" icon="fa-arrows-up-down-left-right"><SpatialModule {...commonProps} /></ModuleContainer>;
-            case 'comparison': return <ModuleContainer title="Comparison Game" icon="fa-scale-balanced"><ComparisonGame {...commonProps} /></ModuleContainer>;
-            case 'patterns': return <ModuleContainer title="Patterns" icon="fa-square-check"><PatternGame {...commonProps} /></ModuleContainer>;
-            case 'one-to-one': return <ModuleContainer title="One-to-One Correspondence" icon="fa-arrows-left-right"><OneToOneGame {...commonProps} /></ModuleContainer>;
-            case 'tracing': return <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>;
-        }
+        const modules: Record<MathTab, React.ReactNode> = {
+            'numbers': <ModuleContainer title="Number Recognition" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>,
+            'counting': <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>,
+            'sequence': <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>,
+            'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>,
+            'number-words': <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>,
+            'bonds': <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule {...commonProps} /></ModuleContainer>,
+            'addition': <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>,
+            'subtraction': <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>,
+            'tens-units': <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>,
+            'grouping': <ModuleContainer title="Grouping" icon="fa-object-group"><GroupingModule {...commonProps} /></ModuleContainer>,
+            'time': <ModuleContainer title="Telling Time" icon="fa-clock"><TellingTimeModule {...commonProps} /></ModuleContainer>,
+            'money': <ModuleContainer title="Counting Money" icon="fa-coins"><MoneyCountingModule {...commonProps} /></ModuleContainer>,
+            'measurement': <ModuleContainer title="Measurement" icon="fa-ruler-vertical"><MeasurementModule {...commonProps} /></ModuleContainer>,
+            'shapes': <ModuleContainer title="Shapes" icon="fa-shapes"><ShapesModule {...commonProps} /></ModuleContainer>,
+            'spatial': <ModuleContainer title="Spatial Reasoning" icon="fa-arrows-up-down-left-right"><SpatialModule {...commonProps} /></ModuleContainer>,
+            'comparison': <ModuleContainer title="Comparison Game" icon="fa-scale-balanced"><ComparisonGame {...commonProps} /></ModuleContainer>,
+            'patterns': <ModuleContainer title="Patterns" icon="fa-square-check"><PatternGame {...commonProps} /></ModuleContainer>,
+            'one-to-one': <ModuleContainer title="One-to-One Correspondence" icon="fa-arrows-left-right"><OneToOneGame {...commonProps} /></ModuleContainer>,
+            'tracing': <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>,
+        };
+
+        return modules[activeTab] || <p>Coming Soon</p>;
     };
 
     return (
@@ -313,3 +253,5 @@ const NumeracyZone: React.FC = () => {
 };
   
 export default NumeracyZone;
+
+    
