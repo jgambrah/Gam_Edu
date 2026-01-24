@@ -8,7 +8,7 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot, User as UserIcon, Hand, Eye, Tree, TrendingUp, Leaf
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot, Eye, Tree, TrendingUp, Leaf
 } from 'lucide-react';
 import { generateLessonImageAction, generateTTSAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -19,8 +19,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import * as LucideIcons from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const SCIENCE_DATA = {
     bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child's head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
@@ -46,18 +46,18 @@ const SCIENCE_DATA = {
     }
   };
 
-const iconMap = {
-  'fa-earth-africa': Earth, 'fa-user': UserIcon, 'fa-child-reaching': UserIcon, 'fa-heart-pulse': HeartPulse, 'fa-lungs': Atom,
-  'fa-arrow-up-right-dots': TrendingUp, 'fa-ear-listen': Ear, 'fa-eye': Eye, 'fa-apple-whole': Apple, 'fa-leaf': Leaf,
-  'fa-tree': Tree, 'fa-cloud-sun': CloudSun, 'fa-cloud-showers-heavy': CloudRain, 'fa-paw': PawPrint, 'fa-car': Car,
-  'fa-plane': Plane, 'fa-shapes': Shapes, 'fa-recycle': Recycle, 'fa-water': Droplets, 'fa-magic': Wand2,
-  'fa-spinner': Loader2, 'fa-arrow-left': ArrowLeft, 'fa-arrow-right': ArrowRight, 'fa-volume-high': Volume2,
-  'fa-sun': Sun, 'fa-hand': Hand, 'fa-carrot': Carrot, 'fa-cube': Cube,
+const iconMap: Record<string, keyof typeof LucideIcons> = {
+  'fa-earth-africa': 'Earth', 'fa-user': 'User', 'fa-child-reaching': 'User', 'fa-heart-pulse': 'HeartPulse', 'fa-lungs': 'Atom',
+  'fa-arrow-up-right-dots': 'TrendingUp', 'fa-ear-listen': 'Ear', 'fa-eye': 'Eye', 'fa-apple-whole': 'Apple', 'fa-leaf': 'Leaf',
+  'fa-tree': 'Tree', 'fa-cloud-sun': 'CloudSun', 'fa-cloud-showers-heavy': 'CloudRain', 'fa-paw': 'PawPrint', 'fa-car': 'Car',
+  'fa-plane': 'Plane', 'fa-shapes': 'Shapes', 'fa-recycle': 'Recycle', 'fa-water': 'Droplets', 'fa-magic': 'Wand2',
+  'fa-spinner': 'Loader2', 'fa-arrow-left': 'ArrowLeft', 'fa-arrow-right': 'ArrowRight', 'fa-volume-high': 'Volume2',
+  'fa-sun': 'Sun', 'fa-hand': 'Hand', 'fa-carrot': 'Carrot', 'fa-cube': 'Cube',
 };
 
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
     if (!iconName) return <HelpCircle className={cn(className)} />;
-    const IconComponent = (iconMap as any)[iconName] || HelpCircle;
+    const IconComponent = (LucideIcons as any)[iconMap[iconName] || 'HelpCircle'];
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
 
@@ -68,28 +68,33 @@ const TeacherModal: React.FC<{
   onTopicChange: (v: string) => void; onGenerate: () => void; 
   isLoading: boolean; onClose: () => void;
 }> = ({ title, topicLabel, topicValue, onTopicChange, onGenerate, isLoading, onClose }) => (
-  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4 font-black">
-    <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-green-100 animate-in zoom-in duration-300">
-      <h3 className="text-3xl font-black text-slate-800 mb-6 uppercase tracking-tighter">{title}</h3>
-      <div className="space-y-6">
+  <Dialog open={true} onOpenChange={onClose}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>{title}</DialogTitle>
+      </DialogHeader>
+      <div className="space-y-6 py-4">
         <div>
-          <Label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-widest">{topicLabel}</Label>
+          <Label>{topicLabel}</Label>
           <Input 
             type="text" 
             autoFocus
             value={topicValue} 
             onChange={(e) => onTopicChange(e.target.value)} 
             placeholder="Type here..." 
-            className="w-full px-6 py-4 rounded-2xl border-4 border-slate-100 outline-none font-bold focus:border-green-300 transition-colors text-slate-800 uppercase" 
+            className="mt-2"
           />
         </div>
-        <Button onClick={onGenerate} disabled={isLoading || !topicValue} className="w-full py-5 rounded-2xl font-black text-white bg-green-500 shadow-xl hover:bg-green-600 disabled:bg-gray-300 transition-all flex items-center justify-center gap-3 border-4 border-white uppercase tracking-widest">
-          {isLoading ? <><Loader2 className="animate-spin"/> PREPARING...</> : <><Sparkles /> CREATE MAGIC</>}
+        <Button 
+          onClick={onGenerate} 
+          disabled={isLoading || !topicValue} 
+          className="w-full"
+        >
+          {isLoading ? <Loader2 className="animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>} CREATE MAGIC
         </Button>
-        <Button onClick={onClose} variant="ghost" className="w-full py-2 text-slate-400 uppercase text-[10px] font-black tracking-widest hover:text-slate-600 block text-center transition-colors">Close Drawer</Button>
       </div>
-    </div>
-  </div>
+    </DialogContent>
+  </Dialog>
 );
 
 const ScienceExploration: React.FC = () => {
@@ -147,7 +152,7 @@ const ScienceExploration: React.FC = () => {
                         <Sparkles className="h-24 w-24 text-blue-300 animate-pulse" />
                         <h3 className="text-3xl font-black text-blue-600">Start Your Adventure!</h3>
                         <p className="text-xl text-slate-600 max-w-md">
-                            Click the button below to begin exploring the amazing world of science.
+                           Click the button below to begin exploring the amazing world of science.
                         </p>
                         <Button onClick={() => setStarted(true)} className="h-16 px-12 text-xl bg-blue-600 hover:bg-blue-700">Start Exploring</Button>
                     </div>
@@ -163,7 +168,7 @@ const ScienceExploration: React.FC = () => {
             case 'growth': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.growth} title="Stages of Growth" type="growth" categoryKey="stage" />;
             case 'senses': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.senses} title="The 5 Senses" type="sense" categoryKey="sense" />;
             case 'diet': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.diet} title="Healthy Foods" type="diet" />;
-            case 'living': return <LivingSorting {...props} />;
+            case 'living': return <LivingSorting onSound={playFeedbackSound} schoolId={schoolId}/>;
             case 'weather': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.weather} title="Weather Window" type="weather" categoryKey="type"/>;
             case 'animals': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.animals} title="Animal Kingdom" type="animal" />;
             case 'transport': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.transport} title="Transport Explorer" type="transport" />;
@@ -202,6 +207,7 @@ const ScienceExploration: React.FC = () => {
     </div>
   );
 };
+
 
 const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound: (t: string) => void, categoryKey?: string, type: string, schoolId: string }> = ({ initialData, title, onSound, categoryKey = 'name', type, schoolId }) => {
   const [data, setData] = useState(initialData);
@@ -335,35 +341,28 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
 };
 
 const GrowthModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    // ... logic for growth module (can be simplified)
-    return <div>Growth Module Coming Soon</div>
+    return <div>Module in development.</div>
 };
 
 const BalancedDiet: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    // ... logic for diet module
-    return <div>Balanced Diet Module Coming Soon</div>
+    return <div>Module in development.</div>
 };
 
 const WeatherWindow: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    // ... logic for weather module
-    return <div>Weather Module Coming Soon</div>
+    return <div>Module in development.</div>
 };
 
 const AnimalKingdom: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    // ... logic for animal module
-    return <div>Animal Kingdom Module Coming Soon</div>
+    return <div>Module in development.</div>
 };
 
 const TransportExplorer: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    // ... logic for transport module
-    return <div>Transport Module Coming Soon</div>
+    return <div>Module in development.</div>
 };
 
 const ConceptsZone: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    // ... logic for concepts module
-    return <div>Concepts Module Coming Soon</div>
+    return <div>Module in development.</div>
 };
 
 
 export default ScienceExploration;
-```
