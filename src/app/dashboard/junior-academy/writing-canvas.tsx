@@ -207,6 +207,14 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
     }
   };
 
+  const clearAll = () => {
+    initCanvases();
+  };
+
+  const playEncouragement = () => {
+    playFeedbackSound("Yes! Great job! Keep going!");
+  };
+
   const handleFinish = async () => {
     if (!freeCanvasRef.current || !schoolId) return;
     
@@ -227,29 +235,29 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
       if (result.success && result.isCorrect) {
         setShowSuccess(true);
         setFeedbackMessage('You are a star!');
+        confetti();
         await playFeedbackSound(`Wow! You wrote the ${target} perfectly! You are a writing superstar!`);
         setTimeout(() => setShowSuccess(false), 5000);
       } else {
         setFeedbackMessage('So close! Try once more.');
         await playFeedbackSound(`Almost there! Let's try to trace the ${target} one more time. You can do it!`);
       }
-    } catch (error) {
-      console.error(error);
-      setFeedbackMessage('The magic is sleeping.');
+    } catch(e: any) {
+      setFeedbackMessage("The AI teacher is resting. Try again soon!");
     } finally {
       setIsEvaluating(false);
     }
   };
   
   if (!started) {
-      return (
-           <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-              <PenNib className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
-              <h3 className="text-2xl font-bold text-purple-600 mb-2">Writing Practice</h3>
-              <p className="text-slate-500 mb-4">Let's learn to write letters, numbers, and strokes!</p>
-              <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Writing</Button>
-            </div>
-      );
+    return (
+         <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+            <PenNib className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
+            <h3 className="text-2xl font-bold text-purple-600 mb-2">Writing Practice</h3>
+            <p className="text-slate-500 mb-4">Let's learn to write letters, numbers, and strokes!</p>
+            <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Writing</Button>
+        </div>
+    );
   }
 
   return (
@@ -268,16 +276,26 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
       )}
 
       <div className="flex bg-white p-2 rounded-3xl shadow-xl border-4 border-gray-50 flex-wrap justify-center gap-2">
-        <button onClick={() => setMode('numbers')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'numbers' ? 'bg-orange-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-orange-50'}`}><IconRenderer iconName="fa-1-9" className="mr-2"/> Numbers 1-10</button>
-        <button onClick={() => setMode('letters')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'letters' ? 'bg-pink-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-pink-50'}`}><IconRenderer iconName="fa-font" className="mr-2"/> Letters A-Z</button>
-        <button onClick={() => setMode('strokes')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'strokes' ? 'bg-blue-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-blue-50'}`}><IconRenderer iconName="fa-lines-leaning" className="mr-2"/> Strokes</button>
+          <button onClick={() => setMode('numbers')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'numbers' ? 'bg-orange-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-orange-50'}`}>
+            <Hash className="mr-2 h-4 w-4 inline-block"/> Numbers 1-10
+          </button>
+          <button onClick={() => setMode('letters')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'letters' ? 'bg-pink-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-pink-50'}`}>
+            <CaseSensitive className="mr-2 h-4 w-4 inline-block"/> Letters A-Z
+          </button>
+          <button onClick={() => setMode('strokes')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'strokes' ? 'bg-blue-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-blue-50'}`}>
+            <PenLine className="mr-2 h-4 w-4 inline-block"/> Strokes
+          </button>
       </div>
 
       <div className={`w-full bg-white p-4 rounded-[2.5rem] shadow-xl border-4 transition-colors duration-500 ${mode === 'letters' ? 'border-pink-100' : mode === 'numbers' ? 'border-orange-100' : 'border-blue-100'}`}>
         <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar px-4">
-          {mode === 'letters' && LETTERS.map(l => <button key={l} onClick={() => setSelectedLetter(l)} className={`flex-shrink-0 w-16 h-16 rounded-2xl font-black text-2xl flex items-center justify-center transition-all ${selectedLetter === l ? 'bg-pink-500 text-white scale-110 shadow-lg' : 'bg-pink-50 text-pink-300 hover:bg-pink-100'}`}>{l}</button>)}
-          {mode === 'numbers' && NUMBERS.map(n => <button key={n} onClick={() => setSelectedNumber(n)} className={`flex-shrink-0 w-16 h-16 rounded-2xl font-black text-2xl flex items-center justify-center transition-all ${selectedNumber === n ? 'bg-orange-500 text-white scale-110 shadow-lg' : 'bg-orange-50 text-orange-400 hover:bg-orange-100'}`}>{n}</button>)}
-          {mode === 'strokes' && STROKES.map(s => <button key={s.id} onClick={() => setSelectedStroke(s.id)} className={`flex-shrink-0 px-6 h-16 rounded-2xl font-black flex items-center gap-3 transition-all ${selectedStroke === s.id ? 'bg-blue-500 text-white scale-105 shadow-lg' : 'bg-blue-50 text-blue-300 hover:bg-blue-100'}`}><IconRenderer iconName={s.icon} className="text-2xl" /><span className="whitespace-nowrap uppercase text-[10px] tracking-widest">{s.label}</span></button>)}
+          {mode === 'letters' ? (
+            LETTERS.map(l => <button key={l} onClick={() => setSelectedLetter(l)} className={`flex-shrink-0 w-16 h-16 rounded-2xl font-black text-2xl flex items-center justify-center transition-all ${selectedLetter === l ? 'bg-pink-500 text-white scale-110 shadow-lg' : 'bg-pink-50 text-pink-300 hover:bg-pink-100'}`}>{l}</button>)
+          ) : mode === 'numbers' ? (
+            NUMBERS.map(n => <button key={n} onClick={() => setSelectedNumber(n)} className={`flex-shrink-0 w-16 h-16 rounded-2xl font-black text-2xl flex items-center justify-center transition-all ${selectedNumber === n ? 'bg-orange-500 text-white scale-110 shadow-lg' : 'bg-orange-50 text-orange-400 hover:bg-orange-100'}`}>{n}</button>)
+          ) : (
+            STROKES.map(s => <button key={s.id} onClick={() => setSelectedStroke(s.id)} className={`flex-shrink-0 px-6 h-16 rounded-2xl font-black flex items-center gap-3 transition-all ${selectedStroke === s.id ? 'bg-blue-500 text-white scale-105 shadow-lg' : 'bg-blue-50 text-blue-300 hover:bg-blue-100'}`}><IconRenderer iconName={s.icon} className="text-2xl" /><span className="whitespace-nowrap uppercase text-[10px] tracking-widest">{s.label}</span></button>)
+          )}
         </div>
       </div>
 
@@ -303,11 +321,11 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
         <div className="h-10 w-px bg-gray-200 hidden sm:block" />
 
         <div className="flex gap-4">
-          <Button onClick={initCanvases} variant="outline" className="px-8 py-3 rounded-2xl font-black text-slate-800 hover:bg-slate-200 transition-all flex items-center gap-2 uppercase text-xs tracking-widest border border-slate-200">
+          <Button onClick={clearAll} variant="outline" className="px-8 py-3 rounded-2xl font-black text-slate-800 hover:bg-slate-200 transition-all flex items-center gap-2 uppercase text-xs tracking-widest border border-slate-200">
             <IconRenderer iconName="fa-trash-can"/> Start Over
           </Button>
 
-          <Button onClick={() => onSound("You are doing great! Keep going!")} className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl hover:bg-yellow-500 transition-all flex items-center gap-2 uppercase text-xs tracking-widest shadow-md border border-yellow-500">
+          <Button onClick={playEncouragement} className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl hover:bg-yellow-500 transition-all flex items-center gap-2 uppercase text-xs tracking-widest shadow-md border border-yellow-500">
             <IconRenderer iconName="fa-thumbs-up"/> I'm Ready!
           </Button>
 

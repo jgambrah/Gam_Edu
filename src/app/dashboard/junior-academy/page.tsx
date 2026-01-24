@@ -11,7 +11,7 @@ import {
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction } from '@/app/dashboard/junior-actions';
+import { generateJuniorStory, generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -22,7 +22,6 @@ import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
 import * as constants from '@/lib/constants';
-import * as LucideIcons from 'lucide-react';
 import PhonicsWorld from './phonics-world';
 import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
 import type { DictionaryWord, LessonCard } from '@/lib/types';
@@ -34,7 +33,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { getAuth } from 'firebase/auth';
 import LifeSkillsZone from './life-skills-zone';
-import WritingCanvas from './writing-canvas'; // <-- IMPORT THE NEW COMPONENT
+import WritingCanvas from './writing-canvas'; 
 
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
@@ -412,7 +411,6 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     );
 };
 
-
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
     const { role } = useRole();
@@ -465,3 +463,5 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
+    
