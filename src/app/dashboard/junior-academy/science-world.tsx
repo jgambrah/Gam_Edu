@@ -8,8 +8,11 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot, Eye, TrendingUp, Leaf, Hand, Tree
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
+  Bot, Shirt, FlaskConical, Bed, Eye, User as UserIcon, TrendingUp, Leaf, Tree
 } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
+
 import confetti from 'canvas-confetti';
 import { generateLessonImageAction, generateTTSAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -20,7 +23,6 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
-import * as LucideIcons from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
@@ -30,8 +32,8 @@ const SCIENCE_DATA = {
     growth: [{ stage: "Baby", icon: 'fa-child-reaching', action: "I crawl and say goo-goo!", prompt: 'A happy baby crawling' }, { stage: "Child", icon: 'fa-user', action: "I run and play with my friends!", prompt: 'A child running in a park' }],
     senses: [{ sense: "See", icon: 'fa-eye', action: 'I see with my eyes!' }, { sense: "Hear", icon: 'fa-ear-listen', action: 'I hear with my ears!' }],
     diet: [{ name: 'Apple', type: 'Fruit', icon: 'fa-apple-whole', prompt: 'A shiny red apple' }, { name: 'Carrot', type: 'Vegetable', icon: 'fa-carrot', prompt: 'A crunchy orange carrot' }],
-    living: [{ name: 'Tree', icon: 'fa-tree', isLiving: true }, { name: 'Dog', icon: 'fa-paw', isLiving: true }],
-    nonLiving: [{ name: 'Rock', icon: 'fa-cube', isLiving: false }, { name: 'Car', icon: 'fa-car', isLiving: false }],
+    living: [{ name: 'Tree', icon: 'fa-tree', isLiving: true, prompt: 'a tall green tree' }, { name: 'Dog', icon: 'fa-paw', isLiving: true, prompt: 'a friendly puppy dog' }],
+    nonLiving: [{ name: 'Rock', icon: 'fa-cube', isLiving: false, prompt: 'a grey stone rock' }, { name: 'Car', icon: 'fa-car', isLiving: false, prompt: 'a red toy car' }],
     weather: [{ type: 'Sunny', icon: 'fa-sun', prompt: 'A bright yellow sun smiling' }, { type: 'Rainy', icon: 'fa-cloud-showers-heavy', prompt: 'A gray cloud with rain falling' }],
     animals: [{ name: 'Lion', sound: 'Roar!', fact: 'The lion is the king of the jungle.', icon: 'fa-paw', prompt: 'A friendly cartoon lion' }, { name: 'Monkey', sound: 'Ooh-ooh-aah-aah!', fact: 'Monkeys love to eat bananas.', icon: 'fa-paw', prompt: 'A cheeky cartoon monkey' }],
     transport: [{ name: 'Car', type: 'Road', icon: 'fa-car', prompt: 'A red toy car' }, { name: 'Airplane', type: 'Air', icon: 'fa-plane', prompt: 'A white airplane in the sky' }],
@@ -49,17 +51,45 @@ const SCIENCE_DATA = {
   };
 
 const iconMap: Record<string, keyof typeof LucideIcons> = {
-  'fa-earth-africa': 'Earth', 'fa-user': 'User', 'fa-child-reaching': 'User', 'fa-heart-pulse': 'HeartPulse', 'fa-lungs': 'Atom',
-  'fa-arrow-up-right-dots': 'TrendingUp', 'fa-ear-listen': 'Ear', 'fa-eye': 'Eye', 'fa-apple-whole': 'Apple', 'fa-leaf': 'Leaf',
-  'fa-tree': 'Tree', 'fa-cloud-sun': 'CloudSun', 'fa-cloud-showers-heavy': 'CloudRain', 'fa-paw': 'PawPrint', 'fa-car': 'Car',
-  'fa-plane': 'Plane', 'fa-shapes': 'Shapes', 'fa-recycle': 'Recycle', 'fa-water': 'Droplets', 'fa-magic': 'Wand2',
-  'fa-spinner': 'Loader2', 'fa-arrow-left': 'ArrowLeft', 'fa-arrow-right': 'ArrowRight', 'fa-volume-high': 'Volume2',
-  'fa-sun': 'Sun', 'fa-hand': 'Hand', 'fa-carrot': 'Carrot', 'fa-cube': 'Cube',
+  'fa-earth-africa': 'Earth',
+  'fa-user': 'UserIcon',
+  'fa-child-reaching': 'UserIcon',
+  'fa-heart-pulse': 'HeartPulse',
+  'fa-lungs': 'Atom',
+  'fa-arrow-up-right-dots': 'TrendingUp',
+  'fa-ear-listen': 'Ear',
+  'fa-eye': 'Eye',
+  'fa-apple-whole': 'Apple',
+  'fa-leaf': 'Leaf',
+  'fa-tree': 'Tree',
+  'fa-cloud-sun': 'CloudSun',
+  'fa-cloud-showers-heavy': 'CloudRain',
+  'fa-paw': 'PawPrint',
+  'fa-car': 'Car',
+  'fa-plane': 'Plane',
+  'fa-shapes': 'Shapes',
+  'fa-recycle': 'Recycle',
+  'fa-water': 'Droplets',
+  'fa-magic': 'Wand2',
+  'fa-spinner': 'Loader2',
+  'fa-arrow-left': 'ArrowLeft',
+  'fa-arrow-right': 'ArrowRight',
+  'fa-volume-high': 'Volume2',
+  'fa-sun': 'Sun',
+  'fa-hand': 'Hand',
+  'fa-carrot': 'Carrot',
+  'fa-cube': 'Cube',
 };
 
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
     if (!iconName) return <HelpCircle className={cn(className)} />;
     const IconComponent = (LucideIcons as any)[iconMap[iconName] || 'HelpCircle'];
+    
+    if (!IconComponent) {
+      console.error(`Icon "${iconMap[iconName] || 'HelpCircle'}" not found for key "${iconName}"`);
+      return <HelpCircle className={cn(className)} />;
+    }
+    
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
 
@@ -104,7 +134,6 @@ const ScienceExploration: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
   const [playing, setPlaying] = useState(false);
   const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-  const [started, setStarted] = useState(false);
 
   const playFeedbackSound = useCallback(async (text: string) => {
     if (!text || !schoolId) return;
@@ -125,7 +154,7 @@ const ScienceExploration: React.FC = () => {
     }
   }, [schoolId]);
 
-  const tabs: {id: ScienceTab, label: string, icon: keyof typeof iconMap}[] = [
+  const tabs: {id: ScienceTab, label: string, icon: string}[] = [
     { id: 'environment', label: 'EVS Hub', icon: 'fa-earth-africa' },
     { id: 'body', label: 'My Body', icon: 'fa-user' },
     { id: 'organs', label: 'Inside Me', icon: 'fa-heart-pulse' },
@@ -141,27 +170,7 @@ const ScienceExploration: React.FC = () => {
     
     const renderActiveTab = () => {
         if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
-        if (!started) return (
-            <Card className="rounded-[60px] border-8 border-blue-100 shadow-xl overflow-hidden bg-white">
-                <CardHeader className="bg-blue-500 p-10 text-white text-center">
-                    <CardTitle className="text-4xl font-black uppercase tracking-tighter flex items-center justify-center gap-4">
-                        <Atom className="h-12 w-12" />
-                        Science World
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-12 text-center">
-                    <div className="flex flex-col items-center gap-8 py-20">
-                        <Sparkles className="h-24 w-24 text-blue-300 animate-pulse" />
-                        <h3 className="text-3xl font-black text-blue-600">Start Your Adventure!</h3>
-                        <p className="text-xl text-slate-600 max-w-md">
-                           Click the button below to begin exploring the amazing world of science.
-                        </p>
-                        <Button onClick={() => setStarted(true)} className="h-16 px-12 text-xl bg-blue-600 hover:bg-blue-700">Start Exploring</Button>
-                    </div>
-                </CardContent>
-            </Card>
-        );
-
+        
         const props = { onSound: playFeedbackSound, schoolId: schoolId };
         switch(activeTab) {
             case 'environment': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.environment.surroundings} title="Environment" type="environment" />;
@@ -219,24 +228,9 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [started, setStarted] = useState(false);
 
   const current = data?.[index];
-
-  // ===================== FIX: ADD GUARD CLAUSE =====================
-  // This prevents crashes if `data` is empty or `current` is undefined.
-  if (!current) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-muted-foreground py-10">No items available in this category yet.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-  // ===================== END FIX =====================
 
   const fetchVisual = useCallback(async () => {
     if (!current || !schoolId) return;
@@ -247,7 +241,11 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     setLoading(false);
   }, [current, categoryKey, schoolId]);
   
-  useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
+  useEffect(() => { 
+      if (started) {
+          fetchVisual(); 
+      }
+  }, [index, data, fetchVisual, started]);
   
   const generateWithAi = async () => {
     if (!aiTopic || !schoolId) return;
@@ -261,14 +259,32 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   
-  // ===================== FIX: OPTIONAL CHAINING & NULLISH COALESCING =====================
+  if (!current) {
+    return (
+      <Card>
+        <CardHeader><CardTitle>{title}</CardTitle></CardHeader>
+        <CardContent><p className="text-center text-muted-foreground py-10">No items available in this category yet.</p></CardContent>
+      </Card>
+    );
+  }
+
   const getLabel = () => current?.[categoryKey];
   const getDescription = () => current?.action || current?.fact || current?.instruction || `This is ${getLabel()?.toLowerCase() ?? 'this item'}.`;
-  // ===================== END FIX =====================
+  
+  if (!started) {
+    return (
+         <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+            <IconRenderer iconName={current.icon} className="h-16 w-16 mx-auto text-green-300 mb-4"/>
+            <h3 className="text-2xl font-bold text-green-600 mb-2">{title}</h3>
+            <p className="text-slate-500 mb-4">Ready to explore the world of {title.toLowerCase()}?</p>
+            <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Learning</Button>
+        </div>
+    );
+  }
 
   return (
     <div className="relative font-black">
-      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Item</button>
+      <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Item</Button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center animate-in slide-in-from-bottom">
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase tracking-tighter text-center">{title}</h3>
         <div className="flex flex-col md:flex-row gap-10 w-full items-center">
@@ -305,6 +321,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [started, setStarted] = useState(false);
 
   const [livingList, setLivingList] = useState(SCIENCE_DATA.living);
   const [nonLivingList, setNonLivingList] = useState(SCIENCE_DATA.nonLiving);
@@ -312,14 +329,21 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   const data = isLiving ? livingList : nonLivingList;
   const current = data[index % data.length];
 
-  useEffect(() => { 
+  const fetchImage = useCallback(async () => {
+    if (!current?.name || !schoolId) return;
     setLoading(true); 
     generateLessonImageAction({ prompt: `Centered high quality 3D illustration of ${current.name}, white background, nursery style`, schoolId }).then(res => {
       if (res.success) setImageUrl(res.data || null);
       setLoading(false); 
     });
     setFeedback(null);
-  }, [index, isLiving, livingList, nonLivingList, schoolId]);
+  }, [current, schoolId]);
+
+  useEffect(() => { 
+    if(started) {
+        fetchImage();
+    }
+  }, [index, isLiving, livingList, nonLivingList, started, fetchImage]);
 
   const handleSort = (choice: boolean) => {
     if (choice === isLiving) { setFeedback('YES! Correct! 🌟'); onSound(`That's right! A ${current.name} is a ${isLiving ? 'living' : 'non-living'} thing!`); }
@@ -341,9 +365,20 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
+  if (!started) {
+    return (
+         <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+            <Leaf className="h-16 w-16 mx-auto text-green-300 mb-4"/>
+            <h3 className="text-2xl font-bold text-green-600 mb-2">Living or Not?</h3>
+            <p className="text-slate-500 mb-4">Let's sort things into living and non-living groups!</p>
+            <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Sorting</Button>
+        </div>
+    )
+  }
+
   return (
     <div className="relative font-black">
-      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Thing</button>
+      <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Thing</Button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-200 flex flex-col items-center">
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase text-center">Is it Living? 🌱</h3>
         <div className="w-80 h-80 bg-green-50 rounded-[4rem] border-8 border-white shadow-2xl mb-12 flex items-center justify-center overflow-hidden">
@@ -382,5 +417,3 @@ const ConceptsZone: React.FC<{ onSound: (t: string) => void, schoolId: string }>
 };
 
 export default ScienceExploration;
-
-    
