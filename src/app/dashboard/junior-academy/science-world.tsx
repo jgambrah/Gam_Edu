@@ -4,12 +4,12 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs } from 'firebase/firestore';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot, TrendingUp, Leaf, User as UserIcon, Hand, Wand, PlusCircle, Search
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot, TrendingUp, Leaf, User as UserIcon, Eye
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { generateLessonImageAction, generateTTSAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -20,39 +20,38 @@ import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import * as LucideIcons from 'lucide-react';
 
-// --- LOCAL DATA ---
 const SCIENCE_DATA = {
-  bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child's head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
-  innerOrgans: [{ name: "Heart", icon: 'fa-heart-pulse', fact: 'Your heart pumps blood to your body.', prompt: 'A simple cartoon heart with a smiley face' }, { name: "Lungs", icon: 'fa-lungs', fact: 'Your lungs help you breathe air.', prompt: 'Two friendly cartoon lungs' }],
-  growth: [{ stage: "Baby", icon: 'fa-child-reaching', action: "I crawl and say goo-goo!", prompt: 'A happy baby crawling' }, { stage: "Child", icon: 'fa-user', action: "I run and play with my friends!", prompt: 'A child running in a park' }],
-  senses: [{ sense: "See", icon: 'fa-eye', action: 'I see with my eyes!' }, { sense: "Hear", icon: 'fa-ear-listen', action: 'I hear with my ears!' }],
-  diet: [{ name: 'Apple', type: 'Fruit', icon: 'fa-apple-whole', prompt: 'A shiny red apple' }, { name: 'Carrot', type: 'Vegetable', icon: 'fa-carrot', prompt: 'A crunchy orange carrot' }],
-  living: [{ name: 'Tree', icon: 'fa-tree' }, { name: 'Dog', icon: 'fa-paw' }],
-  nonLiving: [{ name: 'Rock', icon: 'fa-cube' }, { name: 'Car', icon: 'fa-car' }],
-  weather: [{ type: 'Sunny', icon: 'fa-sun', prompt: 'A bright yellow sun smiling' }, { type: 'Rainy', icon: 'fa-cloud-showers-heavy', prompt: 'A gray cloud with rain falling' }],
-  animals: [{ name: 'Lion', sound: 'Roar!', fact: 'The lion is the king of the jungle.', icon: 'fa-paw', prompt: 'A friendly cartoon lion' }, { name: 'Monkey', sound: 'Ooh-ooh-aah-aah!', fact: 'Monkeys love to eat bananas.', icon: 'fa-paw', prompt: 'A cheeky cartoon monkey' }],
-  transport: [{ name: 'Car', type: 'Road', icon: 'fa-car', prompt: 'A red toy car' }, { name: 'Airplane', type: 'Air', icon: 'fa-plane', prompt: 'A white airplane in the sky' }],
-  properties: {
-    colors: [{ name: 'Red', explanation: 'Like a juicy apple!', icon: 'fa-circle', prompt: 'A big shiny red apple' }],
-    shapes: [{ name: 'Circle', explanation: 'A round shape like a ball.', icon: 'fa-shapes', prompt: 'A red bouncy ball' }],
-    sizes: [{ pair: 'Big/Small', icon: 'fa-shapes', prompt: 'A big elephant next to a small mouse' }],
-    feelings: [{ name: 'Happy', explanation: 'When you feel smiley!', icon: 'fa-face-smile', prompt: 'A very happy smiling sun' }],
-  },
-  environment: {
-    surroundings: [{ name: 'The Forest', icon: 'fa-tree', fact: 'Forests are home to many animals.', prompt: 'A dense green forest with tall trees' }],
-    greenHabits: [{ name: 'Recycling', icon: 'fa-recycle', fact: 'Recycling helps keep our Earth clean.', prompt: 'A child putting a plastic bottle in a recycling bin' }],
-    cleanWorld: [{ name: 'Clean Beach', icon: 'fa-water', fact: 'We should never leave trash on the beach.', prompt: 'A clean sandy beach with blue water' }],
-  }
-};
-
+    bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child's head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
+    innerOrgans: [{ name: "Heart", icon: 'fa-heart-pulse', fact: 'Your heart pumps blood to your body.', prompt: 'A simple cartoon heart with a smiley face' }, { name: "Lungs", icon: 'fa-lungs', fact: 'Your lungs help you breathe air.', prompt: 'Two friendly cartoon lungs' }],
+    growth: [{ stage: "Baby", icon: 'fa-child-reaching', action: "I crawl and say goo-goo!", prompt: 'A happy baby crawling' }, { stage: "Child", icon: 'fa-user', action: "I run and play with my friends!", prompt: 'A child running in a park' }],
+    senses: [{ sense: "See", icon: 'fa-eye', action: 'I see with my eyes!' }, { sense: "Hear", icon: 'fa-ear-listen', action: 'I hear with my ears!' }],
+    diet: [{ name: 'Apple', type: 'Fruit', icon: 'fa-apple-whole', prompt: 'A shiny red apple' }, { name: 'Carrot', type: 'Vegetable', icon: 'fa-carrot', prompt: 'A crunchy orange carrot' }],
+    living: [{ name: 'Tree', icon: 'fa-tree' }, { name: 'Dog', icon: 'fa-paw' }],
+    nonLiving: [{ name: 'Rock', icon: 'fa-cube' }, { name: 'Car', icon: 'fa-car' }],
+    weather: [{ type: 'Sunny', icon: 'fa-sun', prompt: 'A bright yellow sun smiling' }, { type: 'Rainy', icon: 'fa-cloud-showers-heavy', prompt: 'A gray cloud with rain falling' }],
+    animals: [{ name: 'Lion', sound: 'Roar!', fact: 'The lion is the king of the jungle.', icon: 'fa-paw', prompt: 'A friendly cartoon lion' }, { name: 'Monkey', sound: 'Ooh-ooh-aah-aah!', fact: 'Monkeys love to eat bananas.', icon: 'fa-paw', prompt: 'A cheeky cartoon monkey' }],
+    transport: [{ name: 'Car', type: 'Road', icon: 'fa-car', prompt: 'A red toy car' }, { name: 'Airplane', type: 'Air', icon: 'fa-plane', prompt: 'A white airplane in the sky' }],
+    properties: {
+      colors: [{ name: 'Red', explanation: 'Like a juicy apple!', icon: 'fa-circle', prompt: 'A big shiny red apple' }],
+      shapes: [{ name: 'Circle', explanation: 'A round shape like a ball.', icon: 'fa-shapes', prompt: 'A red bouncy ball' }],
+      sizes: [{ pair: 'Big/Small', icon: 'fa-shapes', prompt: 'A big elephant next to a small mouse' }],
+      feelings: [{ name: 'Happy', explanation: 'When you feel smiley!', icon: 'fa-face-smile', prompt: 'A very happy smiling sun' }],
+    },
+    environment: {
+      surroundings: [{ name: 'The Forest', icon: 'fa-tree', fact: 'Forests are home to many animals.', prompt: 'A dense green forest with tall trees' }],
+      greenHabits: [{ name: 'Recycling', icon: 'fa-recycle', fact: 'Recycling helps keep our Earth clean.', prompt: 'A child putting a plastic bottle in a recycling bin' }],
+      cleanWorld: [{ name: 'Clean Beach', icon: 'fa-water', fact: 'We should never leave trash on the beach.', prompt: 'A clean sandy beach with blue water' }],
+    }
+  };
 
 // --- ROBUST ICON RENDERER ---
 const iconMap = {
   'fa-earth-africa': Earth, 'fa-user': UserIcon, 'fa-child-reaching': UserIcon, 'fa-heart-pulse': HeartPulse, 'fa-lungs': Atom,
   'fa-arrow-up-right-dots': TrendingUp, 'fa-ear-listen': Ear, 'fa-eye': Eye, 'fa-apple-whole': Apple, 'fa-leaf': Leaf,
   'fa-tree': Tree, 'fa-cloud-sun': CloudSun, 'fa-cloud-showers-heavy': CloudRain, 'fa-paw': PawPrint, 'fa-car': Car,
-  'fa-plane': Plane, 'fa-shapes': Shapes, 'fa-recycle': Recycle, 'fa-water': Droplets, 'fa-magic': Wand,
+  'fa-plane': Plane, 'fa-shapes': Shapes, 'fa-recycle': Recycle, 'fa-water': Droplets, 'fa-magic': Wand2,
   'fa-spinner': Loader2, 'fa-arrow-left': ArrowLeft, 'fa-arrow-right': ArrowRight, 'fa-volume-high': Volume2,
   'fa-sun': Sun, 'fa-hand': Hand, 'fa-carrot': Carrot, 'fa-cube': Cube,
 };
@@ -78,8 +77,12 @@ const TeacherModal: React.FC<{
         <div>
           <Label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-widest">{topicLabel}</Label>
           <Input 
-            type="text" autoFocus value={topicValue} onChange={(e) => onTopicChange(e.target.value)} 
-            placeholder="Type here..." className="w-full px-6 py-4 rounded-2xl border-4 border-slate-100 outline-none font-bold focus:border-green-300 transition-colors text-slate-800 uppercase" 
+            type="text" 
+            autoFocus
+            value={topicValue} 
+            onChange={(e) => onTopicChange(e.target.value)} 
+            placeholder="Type here..." 
+            className="w-full px-6 py-4 rounded-2xl border-4 border-slate-100 outline-none font-bold focus:border-green-300 transition-colors text-slate-800 uppercase" 
           />
         </div>
         <Button onClick={onGenerate} disabled={isLoading || !topicValue} className="w-full py-5 rounded-2xl font-black text-white bg-green-500 shadow-xl hover:bg-green-600 disabled:bg-gray-300 transition-all flex items-center justify-center gap-3 border-4 border-white uppercase tracking-widest">
@@ -91,40 +94,48 @@ const TeacherModal: React.FC<{
   </div>
 );
 
+const ScienceExploration: React.FC = () => {
+  const { schoolId } = useCurrentSchool();
+  const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
+  const [playing, setPlaying] = useState(false);
+  const currentSourceRef = useRef<HTMLAudioElement | null>(null);
 
-const ScienceExploration: React.FC<{ schoolId: string }> = ({ schoolId }) => {
-    const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
-    const [playing, setPlaying] = useState(false);
+  const playFeedbackSound = useCallback(async (text: string) => {
+    if (!text || !schoolId) return;
+    if (currentSourceRef.current) {
+        try { currentSourceRef.current.pause(); } catch (e) {}
+    }
+    setPlaying(true);
+    try {
+        const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
+        if (result.success && result.data && typeof window !== 'undefined') {
+            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+            currentSourceRef.current = audio;
+            audio.play();
+            audio.onended = () => { setPlaying(false); currentSourceRef.current = null; };
+        } else { setPlaying(false); }
+    } catch (err: any) {
+        setPlaying(false);
+    }
+  }, [schoolId]);
 
-    const playFeedbackSound = useCallback(async (text: string) => {
-        if (!text || !schoolId) return;
-        setPlaying(true);
-        try {
-            const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-            if (result.success && result.data && typeof window !== 'undefined') {
-                const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-                audio.play();
-                audio.onended = () => setPlaying(false);
-            } else { setPlaying(false); }
-        } catch (err) { setPlaying(false); }
-    }, [schoolId]);
-
-    const tabs: {id: ScienceTab, label: string, icon: string}[] = [
-        { id: 'environment', label: 'EVS Hub', icon: 'fa-earth-africa' },
-        { id: 'body', label: 'My Body', icon: 'fa-user' },
-        { id: 'organs', label: 'Inside Me', icon: 'fa-heart-pulse' },
-        { id: 'growth', label: 'Growing Up', icon: 'fa-arrow-up-right-dots' },
-        { id: 'senses', label: 'My Senses', icon: 'fa-ear-listen' },
-        { id: 'diet', label: 'Healthy Food', icon: 'fa-apple-whole' },
-        { id: 'living', label: 'Nature Sorting', icon: 'fa-leaf' },
-        { id: 'weather', label: 'Weather Window', icon: 'fa-cloud-sun' },
-        { id: 'animals', label: 'Animal World', icon: 'fa-paw' },
-        { id: 'transport', label: 'Travel', icon: 'fa-car' },
-        { id: 'concepts', label: 'Concepts', icon: 'fa-shapes' },
-    ];
+  const tabs: {id: ScienceTab, label: string, icon: string}[] = [
+    { id: 'environment', label: 'EVS Hub', icon: 'fa-earth-africa' },
+    { id: 'body', label: 'My Body', icon: 'fa-user' },
+    { id: 'organs', label: 'Inside Me', icon: 'fa-heart-pulse' },
+    { id: 'growth', label: 'Growing Up', icon: 'fa-arrow-up-right-dots' },
+    { id: 'senses', label: 'My Senses', icon: 'fa-ear-listen' },
+    { id: 'diet', label: 'Healthy Food', icon: 'fa-apple-whole' },
+    { id: 'living', label: 'Nature Sorting', icon: 'fa-leaf' },
+    { id: 'weather', label: 'Weather Window', icon: 'fa-cloud-sun' },
+    { id: 'animals', label: 'Animal World', icon: 'fa-paw' },
+    { id: 'transport', label: 'Travel', icon: 'fa-car' },
+    { id: 'concepts', label: 'Concepts', icon: 'fa-shapes' },
+  ];
 
     const renderActiveTab = () => {
-        const props = { onSound: playFeedbackSound, schoolId };
+        if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
+        const props = { onSound: playFeedbackSound, schoolId: schoolId };
         switch(activeTab) {
             case 'environment': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.environment.surroundings} title="Environment" type="environment" />;
             case 'body': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.bodyParts} title="My Body Parts" type="body" />;
@@ -132,7 +143,7 @@ const ScienceExploration: React.FC<{ schoolId: string }> = ({ schoolId }) => {
             case 'growth': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.growth} title="Stages of Growth" type="growth" categoryKey="stage" />;
             case 'senses': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.senses} title="The 5 Senses" type="sense" categoryKey="sense" />;
             case 'diet': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.diet} title="Healthy Foods" type="diet" />;
-            case 'living': return <LivingSorting onSound={playFeedbackSound} schoolId={schoolId} />;
+            case 'living': return <LivingSorting {...props} />;
             case 'weather': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.weather} title="Weather Window" type="weather" categoryKey="type"/>;
             case 'animals': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.animals} title="Animal Kingdom" type="animal" />;
             case 'transport': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.transport} title="Transport Explorer" type="transport" />;
@@ -141,27 +152,35 @@ const ScienceExploration: React.FC<{ schoolId: string }> = ({ schoolId }) => {
         }
     };
 
-    return (
-        <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 font-black selection:bg-green-100">
-            <div className="text-center mb-4">
-                <h2 className="text-6xl font-black text-green-700 uppercase tracking-tighter drop-shadow-sm">Science Lab 🔬</h2>
-                <p className="text-slate-500 font-black italic text-xl">Let's discover our wonderful world!</p>
-            </div>
+  return (
+    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 font-black selection:bg-green-100">
+      <div className="text-center mb-4">
+        <h2 className="text-6xl font-black text-green-700 uppercase tracking-tighter drop-shadow-sm">Science Lab 🔬</h2>
+        <p className="text-slate-500 font-black italic text-xl">Let's discover our wonderful world!</p>
+      </div>
 
-            <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
-                <div className="flex justify-start md:justify-center gap-4 bg-white p-5 rounded-[4rem] shadow-2xl border-4 border-green-200 min-w-max">
-                {tabs.map((tab) => (
-                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`min-w-[130px] px-6 py-4 rounded-3xl font-black text-[13px] uppercase tracking-wider transition-all flex flex-col items-center gap-2 border-4 ${ activeTab === tab.id ? 'bg-black text-white border-black shadow-2xl scale-110 -translate-y-2' : 'bg-white text-black border-slate-100 hover:bg-green-50 hover:border-green-300' }`} >
-                        <IconRenderer iconName={tab.icon} className={`text-2xl ${activeTab === tab.id ? 'text-green-400' : 'text-green-600'}`} />
-                        <span className="leading-tight">{tab.label}</span>
-                    </button>
-                ))}
-                </div>
-            </div>
-
-            <div className="w-full px-4">{renderActiveTab()}</div>
+      <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
+        <div className="flex justify-start md:justify-center gap-4 bg-white p-5 rounded-[4rem] shadow-2xl border-4 border-green-200 min-w-max">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`min-w-[130px] px-6 py-4 rounded-3xl font-black text-[13px] uppercase tracking-wider transition-all flex flex-col items-center gap-2 border-4 ${
+                activeTab === tab.id 
+                ? 'bg-black text-white border-black shadow-2xl scale-110 -translate-y-2' 
+                : 'bg-white text-black border-slate-100 hover:bg-green-50 hover:border-green-300'
+              }`}
+            >
+              <IconRenderer iconName={tab.icon} className={`text-2xl ${activeTab === tab.id ? 'text-green-400' : 'text-green-600'}`} />
+              <span className="leading-tight">{tab.label}</span>
+            </button>
+          ))}
         </div>
-    );
+      </div>
+
+      <div className="w-full px-4">{renderActiveTab()}</div>
+    </div>
+  );
 };
 
 const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound: (t: string) => void, categoryKey?: string, type: string, schoolId: string }> = ({ initialData, title, onSound, categoryKey = 'name', type, schoolId }) => {
@@ -183,7 +202,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     if(res.success) setImageUrl(res.data || null); 
     setLoading(false); 
   }, [current, categoryKey, schoolId]);
-
+  
   useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
   
   const generateWithAi = async () => {
@@ -203,7 +222,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
 
   return (
     <div className="relative font-black">
-      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand className="h-3 w-3 mr-1 inline-block"/> AI Add Item</button>
+      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Item</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center animate-in slide-in-from-bottom">
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase tracking-tighter text-center">{title}</h3>
         <div className="flex flex-col md:flex-row gap-10 w-full items-center">
@@ -267,7 +286,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
     try {
       const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'living', schoolId });
       if (result.success && result.data) {
-        if (result.data.isLiving) setLivingList(prev => [...prev, { name: result.data.name }]);
+        if ((result.data as any).isLiving) setLivingList(prev => [...prev, { name: result.data.name }]);
         else setNonLivingList(prev => [...prev, { name: result.data.name }]);
         setIsDrawerOpen(false); setAiTopic('');
       }
@@ -276,7 +295,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
 
   return (
     <div className="relative font-black">
-      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand className="h-3 w-3 mr-1 inline-block"/> AI Add Thing</button>
+      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Thing</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-200 flex flex-col items-center">
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase text-center">Is it Living? 🌱</h3>
         <div className="w-80 h-80 bg-green-50 rounded-[4rem] border-8 border-white shadow-2xl mb-12 flex items-center justify-center overflow-hidden">
@@ -301,14 +320,20 @@ export default function JuniorScienceWorld({ schoolId }: { schoolId: string }) {
 
     if (!started) {
         return (
-            <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <Atom className="h-16 w-16 mx-auto text-blue-300 mb-4"/>
-                <h3 className="text-2xl font-bold text-blue-600 mb-2">Science Lab</h3>
-                <p className="text-slate-500 mb-4">Ready to explore the amazing world of science? Let's go!</p>
-                <Button onClick={() => setStarted(true)} className="bg-blue-500 hover:bg-blue-600">Start Exploring</Button>
-            </div>
+            <Card>
+                <CardHeader className="items-center text-center">
+                    <Atom className="h-16 w-16 text-blue-300 mb-4"/>
+                    <CardTitle className="text-2xl font-bold text-blue-600">Science Lab</CardTitle>
+                    <CardDescription className="max-w-md">Ready to explore the amazing world of science? Let's begin our first experiment!</CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-center">
+                    <Button onClick={() => setStarted(true)} className="bg-blue-500 hover:bg-blue-600 h-12 px-8 text-base">Start Exploring</Button>
+                </CardContent>
+            </Card>
         )
     }
     
-    return <ScienceExploration schoolId={schoolId} />;
+    return <ScienceExploration />;
 }
+
+    
