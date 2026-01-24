@@ -11,18 +11,18 @@ import {
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generateRhyme, generateSkillDetails } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Label } from '@/components/ui/label';
-import MathPlayground from './math-playground';
-import JuniorScienceWorld from './science-world';
-import ArtStudio from './art-studio';
-import StickerBook from './sticker-book';
+// import MathPlayground from './math-playground';
+// import JuniorScienceWorld from './science-world';
+// import ArtStudio from './art-studio';
+// import StickerBook from './sticker-book';
 import * as constants from '@/lib/constants';
-import PhonicsWorld from './phonics-world';
+// import PhonicsWorld from './phonics-world';
 import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
 import type { DictionaryWord, LessonCard } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -92,6 +92,7 @@ const juniorStyles = {
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
+// --- STORY SPARK COMPONENT ---
 function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string }) {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -354,6 +355,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
+// --- Singing Dictionary ---
 const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     const [selectedLetter, setSelectedLetter] = useState('A');
     const [wordData, setWordData] = useState<any>(null);
@@ -411,6 +413,7 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     );
 };
 
+
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
     const { role } = useRole();
@@ -451,12 +454,12 @@ export default function JuniorCampusPage() {
                         <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone /></TabsContent>
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
-                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
+                        {/* <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent> */}
                         <TabsContent value="dictionary" className="mt-0">{schoolId && <SingingDictionary schoolId={schoolId} />}</TabsContent>
-                        <TabsContent value="math" className="mt-0">{schoolId && <MathPlayground schoolId={schoolId} />}</TabsContent>
-                        <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
-                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
-                        <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
+                        {/* <TabsContent value="math" className="mt-0">{schoolId && <MathPlayground schoolId={schoolId} />}</TabsContent> */}
+                        {/* <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent> */}
+                        {/* <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent> */}
+                        {/* <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent> */}
                     </div>
                 </Tabs>
             </div>
