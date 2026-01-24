@@ -17,12 +17,13 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Label } from '@/components/ui/label';
-// import MathPlayground from './math-playground';
-// import JuniorScienceWorld from './science-world';
-// import ArtStudio from './art-studio';
-// import StickerBook from './sticker-book';
+import MathPlayground from './math-playground';
+import JuniorScienceWorld from './science-world';
+import ArtStudio from './art-studio';
+import StickerBook from './sticker-book';
 import * as constants from '@/lib/constants';
-// import PhonicsWorld from './phonics-world';
+import * as LucideIcons from 'lucide-react';
+import PhonicsWorld from './phonics-world';
 import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
 import type { DictionaryWord, LessonCard } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -160,6 +161,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const checkAnswer = () => {
         if (!userAns.trim()) return;
         const currentQuestion = story.questions[currentQ];
+        // Fuzzy match: check if user answer contains the key part of the correct answer
         const isCorrect = userAns.toLowerCase().includes(currentQuestion.answer.toLowerCase()) || 
                           currentQuestion.answer.toLowerCase().includes(userAns.toLowerCase());
 
@@ -179,6 +181,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             setUserAns('');
             setQuizStatus('typing');
         } else {
+            // Quiz finished
             setStory(null);
             setTopic('');
             confetti({ particleCount: 200, spread: 100 });
@@ -188,6 +191,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
+            {/* 1. TEACHER'S MAGIC WRITING TOOL */}
             {canEdit && (
                 <div className="bg-white p-6 rounded-[35px] border-4 border-purple-100 flex flex-col md:flex-row gap-4 shadow-lg">
                     <div className="flex-1 space-y-1">
@@ -236,11 +240,14 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </div>
 
                     <CardContent className="p-12 space-y-12">
+                        {/* THE STORY CONTENT */}
                         <div className="max-w-4xl mx-auto">
                             <p className="text-3xl font-bold text-orange-900 leading-relaxed font-serif first-letter:text-7xl first-letter:font-black first-letter:mr-3 first-letter:float-left whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
+
+                        {/* 3-QUESTION CHALLENGE BOX */}
                         <div className="bg-white/80 backdrop-blur-sm p-10 rounded-[50px] border-4 border-dashed border-orange-300 shadow-inner space-y-8 relative overflow-hidden">
                             <div className="flex justify-between items-center mb-4">
                                 <Badge className="bg-purple-600 text-white px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest">
@@ -301,6 +308,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </CardContent>
                 </Card>
             ) : (
+                /* 3. LIBRARY SECTION: SAVED STORIES */
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-2xl font-black text-slate-700 flex items-center gap-2">
@@ -454,17 +462,15 @@ export default function JuniorCampusPage() {
                         <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone /></TabsContent>
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
-                        {/* <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent> */}
+                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="dictionary" className="mt-0">{schoolId && <SingingDictionary schoolId={schoolId} />}</TabsContent>
-                        {/* <TabsContent value="math" className="mt-0">{schoolId && <MathPlayground schoolId={schoolId} />}</TabsContent> */}
-                        {/* <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent> */}
-                        {/* <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent> */}
-                        {/* <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent> */}
+                        <TabsContent value="math" className="mt-0">{schoolId && <MathPlayground schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
+                        <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
                     </div>
                 </Tabs>
             </div>
         </div>
     );
 }
-
-    
