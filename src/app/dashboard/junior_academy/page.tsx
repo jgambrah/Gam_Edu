@@ -13,7 +13,6 @@ import {
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generateRhyme, generateSkillDetails } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -34,6 +33,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { getAuth } from 'firebase/auth';
+import LifeSkillsZone from './life-skills-zone';
+import WritingCanvas from './writing-canvas'; 
 
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
@@ -76,11 +77,6 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
   
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
-
-
-// --- HELPERS ---
-const isJuniorLevel = (grade: string) => 
-    grade === 'Early Childhood' || grade === 'Lower Primary';
 
 const juniorStyles = {
     storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
@@ -165,6 +161,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const checkAnswer = () => {
         if (!userAns.trim()) return;
         const currentQuestion = story.questions[currentQ];
+        // Fuzzy match: check if user answer contains the key part of the correct answer
         const isCorrect = userAns.toLowerCase().includes(currentQuestion.answer.toLowerCase()) || 
                           currentQuestion.answer.toLowerCase().includes(userAns.toLowerCase());
 
@@ -184,6 +181,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             setUserAns('');
             setQuizStatus('typing');
         } else {
+            // Quiz finished
             setStory(null);
             setTopic('');
             confetti({ particleCount: 200, spread: 100 });
@@ -193,6 +191,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
+            {/* 1. TEACHER'S MAGIC WRITING TOOL */}
             {canEdit && (
                 <div className="bg-white p-6 rounded-[35px] border-4 border-purple-100 flex flex-col md:flex-row gap-4 shadow-lg">
                     <div className="flex-1 space-y-1">
@@ -241,11 +240,14 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </div>
 
                     <CardContent className="p-12 space-y-12">
+                        {/* THE STORY CONTENT */}
                         <div className="max-w-4xl mx-auto">
                             <p className="text-3xl font-bold text-orange-900 leading-relaxed font-serif first-letter:text-7xl first-letter:font-black first-letter:mr-3 first-letter:float-left whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
+
+                        {/* 3-QUESTION CHALLENGE BOX */}
                         <div className="bg-white/80 backdrop-blur-sm p-10 rounded-[50px] border-4 border-dashed border-orange-300 shadow-inner space-y-8 relative overflow-hidden">
                             <div className="flex justify-between items-center mb-4">
                                 <Badge className="bg-purple-600 text-white px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest">
@@ -306,6 +308,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </CardContent>
                 </Card>
             ) : (
+                /* 3. LIBRARY SECTION: SAVED STORIES */
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-2xl font-black text-slate-700 flex items-center gap-2">
@@ -418,304 +421,6 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     );
 };
 
-const WritingCanvas = ({ onSound, schoolId }: { onSound: (text: string) => void, schoolId: string }) => {
-    const traceCanvasRef = useRef<HTMLCanvasElement>(null);
-    const freeCanvasRef = useRef<HTMLCanvasElement>(null);
-    const [selectedItem, setSelectedItem] = useState('1');
-    const [isDrawingFree, setIsDrawingFree] = useState(false);
-    const [isEvaluating, setIsEvaluating] = useState(false);
-    const [feedback, setFeedback] = useState('');
-
-    const setupCanvases = useCallback(() => {
-        [traceCanvasRef, freeCanvasRef].forEach((ref, isTraceCanvas) => {
-            const canvas = ref.current;
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return;
-
-            const size = 400; // Fixed size
-            canvas.width = size;
-            canvas.height = size;
-            
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, size, size);
-
-            if (isTraceCanvas && traceCanvasRef.current) {
-                const traceCtx = traceCanvasRef.current.getContext('2d')!;
-                traceCtx.font = "900 300px 'Nunito', sans-serif";
-                traceCtx.textAlign = 'center';
-                traceCtx.textBaseline = 'middle';
-                traceCtx.strokeStyle = '#E2E8F0'; // Light gray
-                traceCtx.setLineDash([10, 15]);
-                traceCtx.lineWidth = 8;
-                traceCtx.strokeText(selectedItem, size / 2, size / 2 + 10);
-            } else if (freeCanvasRef.current) {
-                 const freeCtx = freeCanvasRef.current.getContext('2d')!;
-                 freeCtx.lineWidth = 20;
-                 freeCtx.lineCap = 'round';
-                 freeCtx.strokeStyle = '#3b82f6'; // Blue
-            }
-        });
-    }, [selectedItem]);
-
-    useEffect(() => {
-        setupCanvases();
-    }, [setupCanvases]);
-
-    const handleCheck = async () => {
-        const canvas = freeCanvasRef.current;
-        if (!canvas || !schoolId) return;
-
-        setIsEvaluating(true);
-        setFeedback("Magic eyes checking...");
-        
-        try {
-            const dataUrl = canvas.toDataURL('image/png');
-            const result = await assessHandwritingAction({ 
-                imageDataUri: dataUrl, 
-                targetCharacter: selectedItem,
-                schoolId: schoolId 
-            });
-
-            if (result.success && result.isCorrect) {
-                confetti();
-                setFeedback("You are a Number Superstar! ⭐");
-                onSound(`Wonderful! You wrote ${selectedItem} perfectly!`);
-            } else {
-                setFeedback("Almost! Try tracing one more time.");
-                onSound("Not quite, but good try! Let's try again!");
-            }
-        } catch(e: any) {
-            setFeedback("The AI teacher is resting. Try again soon!");
-        } finally {
-            setIsEvaluating(false);
-        }
-    };
-    
-    return (
-        <Card className="rounded-[60px] border-8 border-purple-100 overflow-hidden bg-white shadow-2xl">
-            <div className="bg-purple-500 p-8 text-white text-center">
-                <h3 className="text-4xl font-black uppercase tracking-tighter">Number Magic Pen 🪄</h3>
-            </div>
-            <CardContent className="p-12 space-y-10">
-                <div className="flex justify-center gap-2 overflow-x-auto py-4">
-                    {constants.NUMBERS.map((n) => (
-                        <button key={n} onClick={() => setSelectedItem(n)} className={`w-14 h-14 rounded-2xl font-black text-2xl border-4 ${selectedItem === n ? 'bg-purple-600 text-white border-white scale-110' : 'bg-slate-50 text-slate-400 border-transparent'}`}>{n}</button>
-                    ))}
-                </div>
-                <div className="grid md:grid-cols-2 gap-10">
-                    <div className="space-y-4 text-center">
-                        <p className="text-slate-400 font-bold uppercase text-xs">1. Trace This</p>
-                        <canvas ref={traceCanvasRef} className="border-4 border-slate-100 rounded-[3rem] w-full aspect-square" />
-                    </div>
-                    <div className="space-y-4 text-center relative">
-                        <p className="text-slate-800 font-bold uppercase text-xs">2. Write it yourself</p>
-                        <canvas 
-                            ref={freeCanvasRef} 
-                            onMouseDown={() => setIsDrawingFree(true)}
-                            onMouseUp={() => setIsDrawingFree(false)}
-                            onMouseMove={(e) => {
-                                if(!isDrawingFree) return;
-                                const ctx = freeCanvasRef.current?.getContext('2d');
-                                if (!ctx) return;
-                                const rect = freeCanvasRef.current!.getBoundingClientRect();
-                                ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-                                ctx.stroke();
-                            }}
-                            className="border-8 border-purple-200 rounded-[3rem] w-full aspect-square cursor-crosshair" 
-                        />
-                        {isEvaluating && <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center rounded-[3rem] animate-pulse"><Loader2 className="w-12 h-12 animate-spin text-purple-600"/></div>}
-                    </div>
-                </div>
-                <div className="text-center space-y-6">
-                    {feedback && <Badge className="bg-purple-100 text-purple-700 text-xl p-4 rounded-2xl border-none">{feedback}</Badge>}
-                    <div className="flex gap-4 justify-center">
-                        <Button onClick={setupCanvases} variant="outline" className="h-16 px-10 rounded-2xl border-4 font-black">CLEAR</Button>
-                        <Button onClick={handleCheck} disabled={isEvaluating} className="h-16 px-16 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-black shadow-xl">CHECK MY WORK!</Button>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
-};
-
-// --- Life Skills Sub-Modules ---
-type LifeSkillTab = 'emotions' | 'routine-songs' | 'modeling' | 'practical-life' | 'communication' | 'social' | 'puppet-theater' | 'cognitive' | 'physical-health';
-
-interface TeacherModalProps {
-  title: string;
-  topicLabel: string;
-  topicValue: string;
-  onTopicChange: (v: string) => void;
-  onGenerate: () => void;
-  isLoading: boolean;
-  onClose: () => void;
-}
-
-// ... All other sub-modules (RoutineSongsModule, ModelingModule, etc.) should be here ...
-
-const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [songs, setSongs] = useState(constants.LIFE_SKILLS_DATA.music);
-  const [index, setIndex] = useState(0);
-  const [singing, setSinging] = useState(false);
-  const current = songs[index];
-
-  const handleSing = async () => {
-    if (!schoolId) return;
-    setSinging(true);
-    const result = await generateRhyme({ topic: current.theme, schoolId });
-    await onSound(`Let's sing about ${current.theme}! ${result.rhyme}`);
-    setSinging(false);
-  };
-
-  return (
-    <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center animate-in zoom-in font-black">
-      <h3 className="text-4xl font-black text-pink-500 mb-10 uppercase tracking-tighter">Skill Songs! 🎵</h3>
-      <div className="w-32 h-32 bg-pink-100 text-pink-600 rounded-3xl flex items-center justify-center text-6xl mb-8 shadow-md border-4 border-white animate-bounce">
-        <IconRenderer iconName={current.icon} />
-      </div>
-      <h4 className="text-4xl font-black text-slate-800 mb-8 uppercase">{current.title}</h4>
-      <Button 
-        onClick={handleSing} 
-        disabled={singing}
-        className="px-16 py-6 bg-pink-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl hover:scale-105 transition-all border-4 border-white"
-      >
-        {singing ? <Loader2 className="animate-spin" /> : <><Music className="mr-4 h-6 w-6"/> Start Song</>}
-      </Button>
-      <div className="flex gap-4 mt-12">
-        <Button onClick={() => setIndex(i => (i === 0 ? songs.length - 1 : i - 1))} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowLeft/></Button>
-        <Button onClick={() => setIndex(i => (i + 1) % songs.length)} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowRight/></Button>
-      </div>
-    </div>
-  );
-};
-
-const ModelingModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-  const [data, setData] = useState(constants.LIFE_SKILLS_DATA.practicalLife.pretendPlay);
-  const [index, setIndex] = useState(0);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const current = data[index];
-
-  useEffect(() => { fetchVisual(); }, [index]);
-  const fetchVisual = async () => { if(!schoolId) return; setLoading(true); const result = await generateLessonImageAction({prompt: current.prompt, schoolId}); if (result.success) setImageUrl(result.data || null); setLoading(false); };
-
-  const handleWatch = () => {
-    onSound(`${current.scenario} ${current.modeling}`);
-    onComplete();
-  };
-
-  return (
-    <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center animate-in zoom-in font-black">
-      <h3 className="text-4xl font-black text-indigo-500 mb-10 uppercase tracking-tighter">I Can Do It! 🎥</h3>
-      <div onClick={handleWatch} className="w-full max-w-xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
-        {loading ? <Loader2 className="w-16 h-16 animate-spin text-indigo-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt={current.title} />}
-      </div>
-      <h4 className="text-4xl font-black text-slate-800 mb-4 uppercase">{current.title}</h4>
-      <p className="text-xl font-black text-slate-500 italic mb-10 text-center leading-relaxed">"{current.scenario}"</p>
-      <Button onClick={handleWatch} className="px-16 py-6 bg-indigo-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">Watch & Learn!</Button>
-    </div>
-  );
-};
-const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => { return <div></div>; };
-const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => { return <div></div>; };
-const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => { return <div></div>; };
-const PuppetTheater: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => { return <div></div>; };
-const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => { return <div></div>; };
-const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => { return <div></div>; };
-const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => { return <div></div>; };
-
-
-const LifeSkillsZone: React.FC = () => {
-    const { schoolId } = useCurrentSchool();
-    const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
-    const [playing, setPlaying] = useState(false);
-    const [stars, setStars] = useState(0);
-    const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-
-    const playFeedbackSound = async (text: string) => {
-      if (!text || !schoolId) return;
-      if (currentSourceRef.current) {
-        try { currentSourceRef.current.pause(); } catch (e) {}
-      }
-      setPlaying(true);
-      const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-      if (result.success && result.data && typeof window !== 'undefined') {
-        const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-        currentSourceRef.current = audio;
-        audio.play();
-        audio.onended = () => setPlaying(false);
-      } else { setPlaying(false); }
-    };
-
-    const addStar = () => { setStars(prev => prev + 1); };
-
-    const tabs: {id: LifeSkillTab, label: string, icon: React.ElementType, color: string}[] = [
-        { id: 'physical-health', label: 'Physical & Health', icon: HeartPulse, color: 'bg-green-500' },
-        { id: 'emotions', label: 'Feelings', icon: Smile, color: 'bg-yellow-500' },
-        { id: 'routine-songs', label: 'Skill Songs', icon: Music, color: 'bg-pink-500' },
-        { id: 'modeling', label: 'Modeling', icon: Tv, color: 'bg-indigo-500' },
-        { id: 'practical-life', label: 'Play & Routines', icon: GraduationCap, color: 'bg-blue-500' },
-        { id: 'communication', label: 'Talk & Listen', icon: MessageSquare, color: 'bg-orange-500' },
-        { id: 'social', label: 'Social & Kind', icon: Users, color: 'bg-rose-500' },
-        { id: 'puppet-theater', label: 'Puppet Show', icon: Drama, color: 'bg-purple-500' },
-        { id: 'cognitive', label: 'Super Solver', icon: Brain, color: 'bg-emerald-500' }
-    ];
-    
-    const renderModule = () => {
-        if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
-        switch (activeTab) {
-          case 'emotions': return <EmotionsModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-          case 'routine-songs': return <RoutineSongsModule onSound={playFeedbackSound} schoolId={schoolId}/>;
-          case 'modeling': return <ModelingModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-          case 'practical-life': return <PracticalLifeModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-          case 'communication': return <CommunicationModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-          case 'social': return <SocialScenarios onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-          case 'puppet-theater': return <PuppetTheater onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-          case 'cognitive': return <CognitiveSkills onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-          case 'physical-health': return <PhysicalHealthModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId} />;
-          default: return null;
-        }
-    };
-  
-    return (
-      <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 animate-in fade-in duration-500 font-black">
-        <div className="w-full flex justify-between items-center px-6">
-          <div className="text-left">
-            <h2 className="text-5xl font-black text-teal-600 uppercase tracking-tighter">Life Skills Hub 🌟</h2>
-            <p className="text-slate-800 font-black italic">Social, Emotional & Independence!</p>
-          </div>
-          <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-3xl shadow-xl border-4 border-yellow-100">
-             <Star className="h-8 w-8 text-yellow-400 fill-current" />
-             <span className="text-3xl font-black text-slate-800">{stars}</span>
-          </div>
-        </div>
-        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4 font-black">
-          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-teal-50 min-w-max font-black">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`min-w-[120px] px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 ${
-                    activeTab === tab.id ? `${tab.color} text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-800 hover:bg-teal-50 font-black'
-                  }`}
-                >
-                  <Icon className={`w-5 h-5`} />
-                  <span>{tab.label}</span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-        <div className="w-full px-4 font-black">
-          {renderModule()}
-        </div>
-      </div>
-    );
-};
-
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
@@ -755,14 +460,14 @@ export default function JuniorCampusPage() {
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
                         <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone /></TabsContent>
-                        <TabsContent value="writing" className="mt-0"><WritingCanvas onSound={() => {}} schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="phonics" className="mt-0"><PhonicsWorld schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="dictionary" className="mt-0"><SingingDictionary schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="science" className="mt-0"><JuniorScienceWorld schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio schoolId={schoolId!} /></div></TabsContent>
-                        <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId!} /></TabsContent>
+                        <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="dictionary" className="mt-0">{schoolId && <SingingDictionary schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="math" className="mt-0">{schoolId && <MathPlayground schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
+                        <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
                     </div>
                 </Tabs>
             </div>
