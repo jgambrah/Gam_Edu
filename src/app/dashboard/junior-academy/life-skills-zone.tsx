@@ -6,10 +6,10 @@ import { useUser, useFirestore } from '@/firebase';
 import { 
   Loader2, Sparkles, Music, ArrowLeft, ArrowRight, Tv, GraduationCap, 
   MessageSquare, Users, Drama, BrainCircuit, HeartPulse, Heart, 
-  CheckCircle2, XCircle, Wand2, PlusCircle, AlertCircle, HelpCircle
+  CheckCircle2, XCircle, Wand2, PlusCircle, AlertCircle, HelpCircle, Smile, Brain, Play, Volume2, Ear, PenNib, Languages, Calculator, Handshake, FlaskConical, Palette, Bot, Shirt, Sun, Utensils, School, Home, Recycle, Water, Droplets, Trash2, Flag, MousePointer2, Cube, User, Apple, Carrot, Cookie, Star, Bed, Eye, CloudRain, Guitar, Plane, Car, Rabbit, Zap, CircleDot, Monitor, MessageSquare as MessageSquareIcon, Drama as DramaIcon, Puzzle, PenSquare
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateLessonImageAction, generateTTSAction, generateRhyme, generateSkillDetails, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
+import { generateLessonImageAction, generateTTSAction, generateRhyme, generateSkillDetails, generateLifeSkillEntry } from '@/app/dashboard/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import * as constants from '@/lib/constants';
 import * as LucideIcons from 'lucide-react';
@@ -193,7 +193,7 @@ useEffect(() => {
   );
 };
 
-const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => { 
+const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
     const [subTab, setSubTab] = useState<'dressing' | 'schedules'>('dressing');
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -202,15 +202,15 @@ const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: 
     const data = subTab === 'dressing' ? constants.LIFE_SKILLS_DATA.practicalLife.dressing : constants.LIFE_SKILLS_DATA.practicalLife.schedules;
     const current = data[index] || data[0];
   
-    const fetchVisual = useCallback(async () => { 
-        if(!current || !schoolId) return;
-        setLoading(true); 
-        const result = await generateLessonImageAction({prompt: current.prompt, schoolId}); 
-        if (result.success) setImageUrl(result.data || null); 
-        setLoading(false); 
+    const fetchVisual = useCallback(async () => {
+        if (!current || !schoolId) return;
+        setLoading(true);
+        const result = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+        if (result.success) setImageUrl(result.data || null);
+        setLoading(false);
     }, [current, schoolId]);
-    
-    useEffect(() => { 
+
+    useEffect(() => {
         if (started) {
             fetchVisual();
         }
@@ -260,9 +260,9 @@ const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: 
             setImageUrl(null);
             return;
         }
-        setLoading(true); 
+        setLoading(true);
         const result = await generateLessonImageAction({ prompt: (current as any).prompt, schoolId });
-        if (result.success) setImageUrl(result.data || null); 
+        if (result.success) setImageUrl(result.data || null);
         setLoading(false);
     }, [current, schoolId, subTab]);
 
@@ -488,7 +488,7 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
       if (!aiTopic || !schoolId) return;
       setIsAiLoading(true);
       try {
-        const result = await generateLifeSkillEntry({ topic: aiTopic, category: subTab, schoolId });
+        const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'health', schoolId });
         if(result.success && result.data){
             const newItem = result.data;
             if (subTab === 'gross-motor') setGrossMotor(prev => [...prev, newItem]);
@@ -593,7 +593,7 @@ const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () =>
       if (!aiTopic || !schoolId) return;
       setIsAiLoading(true);
       try {
-        const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'feelings', schoolId });
+        const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'emotions', schoolId });
         if(result.success && result.data){
             setData(prev => [...prev, result.data]);
             setIsDrawerOpen(false); 
@@ -748,6 +748,7 @@ const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () =
     );
 };
 
+// Main Component
 export default function LifeSkillsZone() {
   const { schoolId } = useCurrentSchool();
   const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
@@ -794,7 +795,7 @@ export default function LifeSkillsZone() {
         case 'communication': return <CommunicationModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
         case 'social': return <SocialScenarios onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
         case 'puppet-theater': return <PuppetTheater onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-        case 'cognitive': return <CognitiveSkills onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
+        case 'cognitive': return <CognitiveSkills onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId} />;
         case 'physical-health': return <PhysicalHealthModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId} />;
         default: return null;
       }
