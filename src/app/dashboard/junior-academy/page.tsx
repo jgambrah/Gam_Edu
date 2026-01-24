@@ -11,7 +11,7 @@ import {
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction } from '@/app/dashboard/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -33,7 +33,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { getAuth } from 'firebase/auth';
-import LifeSkillsZone from './life-skills-zone'; // Import the refactored component
+import LifeSkillsZone from './life-skills-zone';
+import WritingCanvas from './writing-canvas'; // <-- IMPORT THE NEW COMPONENT
+
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const map: Record<string, keyof typeof LucideIcons> = {
@@ -410,126 +412,6 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     );
 };
 
-const WritingCanvas = ({ onSound, schoolId }: { onSound: (text: string) => void, schoolId: string }) => {
-    const traceCanvasRef = useRef<HTMLCanvasElement>(null);
-    const freeCanvasRef = useRef<HTMLCanvasElement>(null);
-    const [selectedItem, setSelectedItem] = useState('1');
-    const [isDrawingFree, setIsDrawingFree] = useState(false);
-    const [isEvaluating, setIsEvaluating] = useState(false);
-    const [feedback, setFeedback] = useState('');
-
-    const setupCanvases = useCallback(() => {
-        [traceCanvasRef, freeCanvasRef].forEach((ref, isTraceCanvas) => {
-            const canvas = ref.current;
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return;
-
-            const size = 400; // Fixed size
-            canvas.width = size;
-            canvas.height = size;
-            
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, size, size);
-
-            if (isTraceCanvas && traceCanvasRef.current) {
-                const traceCtx = traceCanvasRef.current.getContext('2d')!;
-                traceCtx.font = "900 300px 'Nunito', sans-serif";
-                traceCtx.textAlign = 'center';
-                traceCtx.textBaseline = 'middle';
-                traceCtx.strokeStyle = '#E2E8F0'; // Light gray
-                traceCtx.setLineDash([10, 15]);
-                traceCtx.lineWidth = 8;
-                traceCtx.strokeText(selectedItem, size / 2, size / 2 + 10);
-            } else if (freeCanvasRef.current) {
-                 const freeCtx = freeCanvasRef.current.getContext('2d')!;
-                 freeCtx.lineWidth = 20;
-                 freeCtx.lineCap = 'round';
-                 freeCtx.strokeStyle = '#3b82f6'; // Blue
-            }
-        });
-    }, [selectedItem]);
-
-    useEffect(() => {
-        setupCanvases();
-    }, [setupCanvases]);
-
-    const handleCheck = async () => {
-        const canvas = freeCanvasRef.current;
-        if (!canvas || !schoolId) return;
-
-        setIsEvaluating(true);
-        setFeedback("Magic eyes checking...");
-        
-        try {
-            const dataUrl = canvas.toDataURL('image/png');
-            const result = await assessHandwritingAction({ 
-                imageDataUri: dataUrl, 
-                targetCharacter: selectedItem,
-                schoolId: schoolId 
-            });
-
-            if (result.success && result.isCorrect) {
-                confetti();
-                setFeedback("You are a Number Superstar! ⭐");
-                onSound(`Wonderful! You wrote ${selectedItem} perfectly!`);
-            } else {
-                setFeedback("Almost! Try tracing one more time.");
-                onSound("Not quite, but good try! Let's try again!");
-            }
-        } catch(e: any) {
-            setFeedback("The AI teacher is resting. Try again soon!");
-        } finally {
-            setIsEvaluating(false);
-        }
-    };
-    
-    return (
-        <Card className="rounded-[60px] border-8 border-purple-100 overflow-hidden bg-white shadow-2xl">
-            <div className="bg-purple-500 p-8 text-white text-center">
-                <h3 className="text-4xl font-black uppercase tracking-tighter">Number Magic Pen 🪄</h3>
-            </div>
-            <CardContent className="p-12 space-y-10">
-                <div className="flex justify-center gap-2 overflow-x-auto py-4">
-                    {constants.NUMBERS.map((n) => (
-                        <button key={n} onClick={() => setSelectedItem(n)} className={`w-14 h-14 rounded-2xl font-black text-2xl border-4 ${selectedItem === n ? 'bg-purple-600 text-white border-white scale-110' : 'bg-slate-50 text-slate-400 border-transparent'}`}>{n}</button>
-                    ))}
-                </div>
-                <div className="grid md:grid-cols-2 gap-10">
-                    <div className="space-y-4 text-center">
-                        <p className="text-slate-400 font-bold uppercase text-xs">1. Trace This</p>
-                        <canvas ref={traceCanvasRef} className="border-4 border-slate-100 rounded-[3rem] w-full aspect-square" />
-                    </div>
-                    <div className="space-y-4 text-center relative">
-                        <p className="text-slate-800 font-bold uppercase text-xs">2. Write it yourself</p>
-                        <canvas 
-                            ref={freeCanvasRef} 
-                            onMouseDown={() => setIsDrawingFree(true)}
-                            onMouseUp={() => setIsDrawingFree(false)}
-                            onMouseMove={(e) => {
-                                if(!isDrawingFree) return;
-                                const ctx = freeCanvasRef.current?.getContext('2d');
-                                if (!ctx) return;
-                                const rect = freeCanvasRef.current!.getBoundingClientRect();
-                                ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-                                ctx.stroke();
-                            }}
-                            className="border-8 border-purple-200 rounded-[3rem] w-full aspect-square cursor-crosshair" 
-                        />
-                        {isEvaluating && <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center rounded-[3rem] animate-pulse"><Loader2 className="w-12 h-12 animate-spin text-purple-600"/></div>}
-                    </div>
-                </div>
-                <div className="text-center space-y-6">
-                    {feedback && <Badge className="bg-purple-100 text-purple-700 text-xl p-4 rounded-2xl border-none">{feedback}</Badge>}
-                    <div className="flex gap-4 justify-center">
-                        <Button onClick={setupCanvases} variant="outline" className="h-16 px-10 rounded-2xl border-4 font-black">CLEAR</Button>
-                        <Button onClick={handleCheck} disabled={isEvaluating} className="h-16 px-16 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-black shadow-xl">CHECK MY WORK!</Button>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
-};
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
@@ -569,14 +451,14 @@ export default function JuniorCampusPage() {
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
                         <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone /></TabsContent>
-                        <TabsContent value="writing" className="mt-0"><WritingCanvas onSound={() => {}} schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="phonics" className="mt-0"><PhonicsWorld schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="dictionary" className="mt-0"><SingingDictionary schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="science" className="mt-0"><JuniorScienceWorld schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio schoolId={schoolId!} /></div></TabsContent>
-                        <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId!} /></TabsContent>
+                        <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="dictionary" className="mt-0">{schoolId && <SingingDictionary schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="math" className="mt-0">{schoolId && <MathPlayground schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
+                        <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
                     </div>
                 </Tabs>
             </div>
