@@ -1,4 +1,3 @@
-
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -882,78 +881,8 @@ export const MONEY_DATA = [
   { amount: 5, coins: 5, label: 'Gold Coins', prompt: 'Five shiny gold coins on a table, nursery style' },
 ];
 
-export const LIFE_SKILLS_DATA = {
-  physicalHealth: {
-    grossMotor: [
-      { title: 'Jumping Jacks', action: 'Jump and spread your legs and arms!', icon: 'fa-star', prompt: 'A child doing a jumping jack, full of energy' },
-      { title: 'Running Race', action: 'Run as fast as you can to the finish line!', icon: 'fa-flag', prompt: 'Children racing in a field, with a finish line' }
-    ],
-    fineMotor: [
-      { title: 'Building Blocks', action: 'Stack the blocks as high as you can!', icon: 'fa-cube', prompt: 'A child stacking colorful toy blocks' },
-      { title: 'Drawing Fun', action: 'Draw a beautiful picture with your crayons!', icon: 'fa-pen-nib', prompt: 'A colorful drawing made by a child' }
-    ],
-    hygiene: [
-      { title: 'Washing Hands', action: 'Wash your hands with soap and water to get rid of germs!', icon: 'fa-soap', prompt: 'Hands being washed with soap under a faucet' },
-      { title: 'Brushing Teeth', action: 'Brush up and down, twice a day!', icon: 'fa-tooth', prompt: 'A child happily brushing their teeth, with sparkles on their teeth' }
-    ],
-    nutrition: [
-      { title: 'Eating Vegetables', action: 'Eat your vegetables to grow big and strong!', icon: 'fa-carrot', prompt: 'A child eating a plate of colorful vegetables' },
-      { title: 'Healthy Snack', action: 'An apple is a delicious and healthy snack!', icon: 'fa-apple-whole', prompt: 'A shiny red apple' }
-    ]
-  },
-  music: [
-    { title: 'Brushing Teeth Song', theme: 'brushing teeth every morning', icon: 'fa-tooth' },
-  ],
-  practicalLife: {
-    pretendPlay: [
-      { title: 'The Chef', scenario: 'Pretend to cook a yummy soup!', modeling: 'Stir the pot carefully so it does not spill.', action: 'Stir Soup', prompt: 'A child wearing a chef hat stirring a big pot, nursery style' },
-    ],
-    dressing: [
-      { item: 'Coat', need: 'it is cold outside', icon: 'fa-vest', prompt: 'A child putting on a warm winter coat, nursery style', clothing: 'winter coat' },
-    ],
-    schedules: [
-      { name: 'Morning Routine', sequence: ['Wake up', 'Eat breakfast', 'Go to school'], icons: ['fa-sun', 'fa-utensils', 'fa-school'], prompt: 'A simple morning routine sequence illustration' }
-    ]
-  },
-  emotions: [
-    { name: 'Happy', color: 'bg-yellow-400', icon: 'fa-face-smile', prompt: 'A very happy smiling child face, nursery style', technique: 'Smile big and show your teeth!' },
-  ],
-  communication: {
-    pictureTalk: [
-      { title: 'In the Park', prompt: 'A busy park with kids playing, a dog, and a slide, nursery style', description: 'I see kids playing on the slide and a brown dog!' }
-    ],
-    instructions: [
-      { task: 'Touch your nose', icon: 'fa-hand-pointer', spoken: 'Can you touch your nose with one finger?' }
-    ],
-    circleTime: [
-      { q: 'What is your favorite color?', icon: 'fa-palette', followUp: 'Tell us why you like it!' }
-    ]
-  },
-  social: [
-    { scenario: 'Sharing Toys', q: 'Your friend wants the ball. What do you do?', options: ['Give it to them', 'Keep it', 'Hide it'], correct: 0, prompt: 'Two kids looking at a colorful ball, nursery style' },
-  ],
-  community: [
-    { role: 'The Teacher', icon: 'fa-chalkboard-user', fact: 'Teachers help us learn new things and be kind to others.', prompt: 'A kind teacher reading a story to a group of happy children' },
-  ],
-  cognitive: {
-    scenarios: [
-      { q: 'The floor is messy with toys. How do we fix it?', options: ['fa-broom', 'fa-tv', 'fa-bed'], labels: ['Tidy Up', 'Watch TV', 'Go to Bed'], correct: 0, prompt: 'A room with many toys on the floor, nursery style' }
-    ],
-    patterns: [
-      { sequence: ['fa-apple-whole', 'fa-carrot', 'fa-apple-whole'], next: 'fa-carrot', options: ['fa-apple-whole', 'fa-carrot'], prompt: 'A simple pattern of fruit and vegetables' }
-    ],
-    whatIf: [
-      { q: 'What if we could fly like birds?', a: 'We would see the whole world from high in the sky!', prompt: 'A child with bird wings flying over a colorful town' }
-    ]
-  },
-  tidying: [
-    { title: 'Blocks', icon: 'fa-cube', prompt: 'Colorful toy blocks scattered on a rug' }
-  ]
-};
-
 export type DictionaryWord = {
   word: string;
   category: string;
   imagePrompt: string;
 };
-    

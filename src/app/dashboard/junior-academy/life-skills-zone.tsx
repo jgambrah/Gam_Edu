@@ -2,17 +2,17 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useRole } from '@/context/role-context';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
-  Loader2, Sparkles, Music, ArrowLeft, ArrowRight, Tv, GraduationCap, 
-  MessageSquare, Users, Drama, BrainCircuit, HeartPulse, Heart, 
-  CheckCircle2, XCircle, Wand2, PlusCircle, AlertCircle, HelpCircle, Smile, Brain, Play, Volume2, Ear, PenNib, Languages, Calculator, Handshake, FlaskConical, Palette, Bot, Shirt, Sun, Utensils, School, Home, Recycle, Water, Droplets, Trash2, Flag, MousePointer2, Cube, User, Apple, Carrot, Cookie, Star, Bed, Eye, CloudRain, Guitar, Plane, Car, Rabbit, Zap, CircleDot, Monitor, MessageSquare as MessageSquareIcon, Drama as DramaIcon, Puzzle, PenSquare
+  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateLessonImageAction, generateTTSAction, generateRhyme, generateSkillDetails, generateLifeSkillEntry } from '@/app/dashboard/junior-actions';
+import { generateLessonImageAction, generateTTSAction, generateRhyme, generateSkillDetails, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
-import * as constants from '@/lib/constants';
-import * as LucideIcons from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,76 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
+import * as LucideIcons from 'lucide-react';
 
+const LIFE_SKILLS_DATA = {
+  physicalHealth: {
+    grossMotor: [
+      { title: 'Jumping Jacks', action: 'Jump and spread your legs and arms!', icon: 'fa-star', prompt: 'A child doing a jumping jack, full of energy' },
+      { title: 'Running Race', action: 'Run as fast as you can to the finish line!', icon: 'fa-flag', prompt: 'Children racing in a field, with a finish line' }
+    ],
+    fineMotor: [
+      { title: 'Building Blocks', action: 'Stack the blocks as high as you can!', icon: 'fa-cube', prompt: 'A child stacking colorful toy blocks' },
+      { title: 'Drawing Fun', action: 'Draw a beautiful picture with your crayons!', icon: 'fa-pen-nib', prompt: 'A colorful drawing made by a child' }
+    ],
+    hygiene: [
+      { title: 'Washing Hands', action: 'Wash your hands with soap and water to get rid of germs!', icon: 'fa-soap', prompt: 'Hands being washed with soap under a faucet' },
+      { title: 'Brushing Teeth', action: 'Brush up and down, twice a day!', icon: 'fa-tooth', prompt: 'A child happily brushing their teeth, with sparkles on their teeth' }
+    ],
+    nutrition: [
+      { title: 'Eating Vegetables', action: 'Eat your vegetables to grow big and strong!', icon: 'fa-carrot', prompt: 'A child eating a plate of colorful vegetables' },
+      { title: 'Healthy Snack', action: 'An apple is a delicious and healthy snack!', icon: 'fa-apple-whole', prompt: 'A shiny red apple' }
+    ]
+  },
+  music: [
+    { title: 'Brushing Teeth Song', theme: 'brushing teeth every morning', icon: 'fa-tooth' },
+  ],
+  practicalLife: {
+    pretendPlay: [
+      { title: 'The Chef', scenario: 'Pretend to cook a yummy soup!', modeling: 'Stir the pot carefully so it does not spill.', action: 'Stir Soup', prompt: 'A child wearing a chef hat stirring a big pot, nursery style' },
+    ],
+    dressing: [
+      { item: 'Coat', need: 'it is cold outside', icon: 'fa-vest', prompt: 'A child putting on a warm winter coat, nursery style', clothing: 'winter coat' },
+    ],
+    schedules: [
+      { name: 'Morning Routine', sequence: ['Wake up', 'Eat breakfast', 'Go to school'], icons: ['fa-sun', 'fa-utensils', 'fa-school'], prompt: 'A simple morning routine sequence illustration' }
+    ]
+  },
+  emotions: [
+    { name: 'Happy', color: 'bg-yellow-400', icon: 'fa-face-smile', prompt: 'A very happy smiling child face, nursery style', technique: 'Smile big and show your teeth!' },
+  ],
+  communication: {
+    pictureTalk: [
+      { title: 'In the Park', prompt: 'A busy park with kids playing, a dog, and a slide, nursery style', description: 'I see kids playing on the slide and a brown dog!' }
+    ],
+    instructions: [
+      { task: 'Touch your nose', icon: 'fa-hand-pointer', spoken: 'Can you touch your nose with one finger?' }
+    ],
+    circleTime: [
+      { q: 'What is your favorite color?', icon: 'fa-palette', followUp: 'Tell us why you like it!' }
+    ]
+  },
+  social: [
+    { scenario: 'Sharing Toys', q: 'Your friend wants the ball. What do you do?', options: ['Give it to them', 'Keep it', 'Hide it'], correct: 0, prompt: 'Two kids looking at a colorful ball, nursery style' },
+  ],
+  community: [
+    { role: 'The Teacher', icon: 'fa-chalkboard-user', fact: 'Teachers help us learn new things and be kind to others.', prompt: 'A kind teacher reading a story to a group of happy children' },
+  ],
+  cognitive: {
+    scenarios: [
+      { q: 'The floor is messy with toys. How do we fix it?', options: ['fa-broom', 'fa-tv', 'fa-bed'], labels: ['Tidy Up', 'Watch TV', 'Go to Bed'], correct: 0, prompt: 'A room with many toys on the floor, nursery style' }
+    ],
+    patterns: [
+      { sequence: ['fa-apple-whole', 'fa-carrot', 'fa-apple-whole'], next: 'fa-carrot', options: ['fa-apple-whole', 'fa-carrot'], prompt: 'A simple pattern of fruit and vegetables' }
+    ],
+    whatIf: [
+      { q: 'What if we could fly like birds?', a: 'We would see the whole world from high in the sky!', prompt: 'A child with bird wings flying over a colorful town' }
+    ]
+  },
+  tidying: [
+    { title: 'Blocks', icon: 'fa-cube', prompt: 'Colorful toy blocks scattered on a rug' }
+  ]
+};
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const map: Record<string, keyof typeof LucideIcons> = {
@@ -104,9 +173,8 @@ const TeacherModal: React.FC<TeacherModalProps> = ({ title, topicLabel, topicVal
   </div>
 );
 
-
 const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [songs, setSongs] = useState(constants.LIFE_SKILLS_DATA.music);
+  const [songs, setSongs] = useState(LIFE_SKILLS_DATA.music);
   const [index, setIndex] = useState(0);
   const [singing, setSinging] = useState(false);
   const current = songs[index];
@@ -142,7 +210,7 @@ const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: str
 };
 
 const ModelingModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-  const [data, setData] = useState(constants.LIFE_SKILLS_DATA.practicalLife.pretendPlay);
+  const [data, setData] = useState(LIFE_SKILLS_DATA.practicalLife.pretendPlay);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -192,14 +260,13 @@ useEffect(() => {
     </div>
   );
 };
-
 const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
     const [subTab, setSubTab] = useState<'dressing' | 'schedules'>('dressing');
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [started, setStarted] = useState(false);
-    const data = subTab === 'dressing' ? constants.LIFE_SKILLS_DATA.practicalLife.dressing : constants.LIFE_SKILLS_DATA.practicalLife.schedules;
+    const data = subTab === 'dressing' ? LIFE_SKILLS_DATA.practicalLife.dressing : LIFE_SKILLS_DATA.practicalLife.schedules;
     const current = data[index] || data[0];
   
     const fetchVisual = useCallback(async () => {
@@ -252,7 +319,7 @@ const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [started, setStarted] = useState(false);
-    const data = constants.LIFE_SKILLS_DATA.communication[subTab];
+    const data = LIFE_SKILLS_DATA.communication[subTab];
     const current = data[index] || data[0];
   
     const fetchVisual = useCallback(async () => {
@@ -320,8 +387,8 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
     const [isAiLoading, setIsAiLoading] = useState(false);
     const [started, setStarted] = useState(false);
 
-    const [socialData, setSocialData] = useState(constants.LIFE_SKILLS_DATA.social);
-    const [communityData, setCommunityData] = useState(constants.LIFE_SKILLS_DATA.community);
+    const [socialData, setSocialData] = useState(LIFE_SKILLS_DATA.social);
+    const [communityData, setCommunityData] = useState(LIFE_SKILLS_DATA.community);
   
     const isCommunity = subTab === 'community';
     const data = isCommunity ? communityData : socialData;
@@ -440,6 +507,107 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
     );
 };
 
+const PuppetTheater: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
+    const [story, setStory] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [started, setStarted] = useState(false);
+    
+    const generateStory = async () => {
+      if (!schoolId) return;
+      setLoading(true);
+      const result = await generateRhyme({ topic: "Puppet Friends", schoolId });
+      setStory(result.rhyme);
+      await onSound(`Welcome to the Puppet Theater! ${result.rhyme}`);
+      onComplete();
+      setLoading(false);
+    };
+
+     if (!started) {
+        return (
+             <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+                <Drama className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
+                <h3 className="text-2xl font-bold text-purple-600 mb-2">Puppet Show</h3>
+                <p className="text-slate-500 mb-4">Let's put on a fun show with puppets!</p>
+                <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Show</Button>
+            </div>
+        )
+    }
+  
+    return (
+      <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center animate-in zoom-in font-black">
+        <h3 className="text-4xl font-black text-purple-600 mb-10 uppercase tracking-tighter">Puppet Theater 🎭</h3>
+        <div className="w-80 h-80 bg-purple-50 rounded-full border-8 border-white shadow-2xl flex items-center justify-center mb-10 relative overflow-hidden group">
+           <Drama className="text-8xl text-purple-200 group-hover:scale-110 transition-transform"/>
+        </div>
+        <Button onClick={generateStory} disabled={loading} className="px-16 py-6 bg-purple-600 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">
+          {loading ? <Loader2 className="animate-spin" /> : "Start Show!"}
+        </Button>
+        {story && <p className="mt-10 text-xl font-black text-slate-700 italic text-center max-w-lg">"{story}"</p>}
+      </div>
+    );
+};
+  
+const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
+    const [subTab, setSubTab] = useState<'scenarios' | 'patterns' | 'whatIf'>('scenarios');
+    const [index, setIndex] = useState(0);
+    const [userAnswer, setUserAnswer] = useState<number | null>(null);
+    const [started, setStarted] = useState(false);
+    const data = LIFE_SKILLS_DATA.cognitive[subTab];
+    const current = data[index] || data[0];
+  
+    useEffect(() => { setUserAnswer(null); }, [subTab, index]);
+  
+    const handleChoice = (idx: number) => {
+      setUserAnswer(idx);
+      if (idx === (current as any).correct || subTab === 'whatIf') {
+        onSound(`Great thinking!`);
+        onComplete();
+      }
+    };
+
+    if (!started) {
+        return (
+             <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+                <BrainCircuit className="h-16 w-16 mx-auto text-emerald-300 mb-4"/>
+                <h3 className="text-2xl font-bold text-emerald-600 mb-2">Super Solvers</h3>
+                <p className="text-slate-500 mb-4">Let's solve puzzles and think about big ideas!</p>
+                <Button onClick={() => setStarted(true)} className="bg-emerald-500 hover:bg-emerald-600">Start Thinking</Button>
+            </div>
+        )
+    }
+  
+    return (
+      <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-emerald-100 flex flex-col items-center animate-in zoom-in font-black">
+        <div className="flex gap-4 mb-10 font-black">
+          {(['scenarios', 'patterns', 'whatIf'] as const).map(t => (
+            <button key={t} onClick={() => {setSubTab(t); setIndex(0);}} className={`px-6 py-2 rounded-xl font-black text-xs uppercase ${subTab === t ? 'bg-emerald-500 text-white' : 'bg-slate-100'}`}>{t}</button>
+          ))}
+        </div>
+        <h3 className="text-3xl font-black text-emerald-600 mb-8 uppercase">Super Solver 🧠</h3>
+        <p className="text-2xl font-black text-slate-800 mb-10 text-center italic max-w-lg">"{(current as any).q}"</p>
+        
+        {subTab !== 'whatIf' && (
+          <div className="flex gap-4 font-black">
+            {(current as any).options.map((opt: string, i: number) => (
+              <button key={i} onClick={() => handleChoice(i)} className={`w-24 h-24 rounded-3xl font-black text-4xl border-4 transition-all ${userAnswer === i ? (i === (current as any).correct ? 'bg-green-500 text-white border-white scale-110' : 'bg-red-500 text-white border-white') : 'bg-emerald-50 text-emerald-600 border-white'}`}>
+                <IconRenderer iconName={opt} />
+              </button>
+            ))}
+          </div>
+        )}
+  
+        {subTab === 'whatIf' && (
+          <button onClick={() => { onSound((current as any).a); onComplete(); }} className="px-16 py-6 bg-emerald-500 text-white rounded-[3rem] font-black uppercase text-xl shadow-xl border-4 border-white">Answer Me!</button>
+        )}
+  
+        <div className="flex gap-4 mt-12 font-black">
+          <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowLeft/></Button>
+          <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowRight/></Button>
+        </div>
+      </div>
+    );
+};
+
 const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
     const [subTab, setSubTab] = useState<'gross-motor' | 'fine-motor' | 'hygiene' | 'nutrition'>('gross-motor');
     const [index, setIndex] = useState(0);
@@ -450,10 +618,10 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
     const [isAiLoading, setIsAiLoading] = useState(false);
     const [started, setStarted] = useState(false);
 
-    const [grossMotor, setGrossMotor] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.grossMotor);
-    const [fineMotor, setFineMotor] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.fineMotor);
-    const [hygiene, setHygiene] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.hygiene);
-    const [nutrition, setNutrition] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.nutrition);
+    const [grossMotor, setGrossMotor] = useState(LIFE_SKILLS_DATA.physicalHealth.grossMotor);
+    const [fineMotor, setFineMotor] = useState(LIFE_SKILLS_DATA.physicalHealth.fineMotor);
+    const [hygiene, setHygiene] = useState(LIFE_SKILLS_DATA.physicalHealth.hygiene);
+    const [nutrition, setNutrition] = useState(LIFE_SKILLS_DATA.physicalHealth.nutrition);
   
     const getCurrentData = () => {
       if (subTab === 'gross-motor') return grossMotor;
@@ -558,7 +726,7 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
 };
 
 const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    const [data, setData] = useState(constants.LIFE_SKILLS_DATA.emotions);
+    const [data, setData] = useState(LIFE_SKILLS_DATA.emotions);
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -647,194 +815,93 @@ const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () =>
     );
 };
   
-const PuppetTheater: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    const [story, setStory] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [started, setStarted] = useState(false);
+const LifeSkillsZone: React.FC = () => {
+    const { schoolId } = useCurrentSchool();
+    const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
+    const [playing, setPlaying] = useState(false);
+    const [stars, setStars] = useState(0);
+    const currentSourceRef = useRef<HTMLAudioElement | null>(null);
+
+    const playFeedbackSound = async (text: string) => {
+      if (!text || !schoolId) return;
+      if (currentSourceRef.current) {
+        try { currentSourceRef.current.pause(); } catch (e) {}
+      }
+      setPlaying(true);
+      const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
+      if (result.success && result.data && typeof window !== 'undefined') {
+        const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+        currentSourceRef.current = audio;
+        audio.play();
+        audio.onended = () => setPlaying(false);
+      } else { setPlaying(false); }
+    };
+
+    const addStar = () => { setStars(prev => prev + 1); };
+
+    const tabs: {id: LifeSkillTab, label: string, icon: React.ElementType, color: string}[] = [
+        { id: 'physical-health', label: 'Physical & Health', icon: HeartPulse, color: 'bg-green-500' },
+        { id: 'emotions', label: 'Feelings', icon: Smile, color: 'bg-yellow-500' },
+        { id: 'routine-songs', label: 'Skill Songs', icon: Music, color: 'bg-pink-500' },
+        { id: 'modeling', label: 'Modeling', icon: Tv, color: 'bg-indigo-500' },
+        { id: 'practical-life', label: 'Play & Routines', icon: GraduationCap, color: 'bg-blue-500' },
+        { id: 'communication', label: 'Talk & Listen', icon: MessageSquare, color: 'bg-orange-500' },
+        { id: 'social', label: 'Social & Kind', icon: Users, color: 'bg-rose-500' },
+        { id: 'puppet-theater', label: 'Puppet Show', icon: Drama, color: 'bg-purple-500' },
+        { id: 'cognitive', label: 'Super Solver', icon: Brain, color: 'bg-emerald-500' }
+    ];
     
-    const generateStory = async () => {
-      if (!schoolId) return;
-      setLoading(true);
-      const result = await generateRhyme({ topic: "Puppet Friends", schoolId });
-      setStory(result.rhyme);
-      await onSound(`Welcome to the Puppet Theater! ${result.rhyme}`);
-      onComplete();
-      setLoading(false);
+    const renderModule = () => {
+        if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
+        switch (activeTab) {
+          case 'emotions': return <EmotionsModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
+          case 'routine-songs': return <RoutineSongsModule onSound={playFeedbackSound} schoolId={schoolId}/>;
+          case 'modeling': return <ModelingModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
+          case 'practical-life': return <PracticalLifeModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
+          case 'communication': return <CommunicationModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
+          case 'social': return <SocialScenarios onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
+          case 'puppet-theater': return <PuppetTheater onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
+          case 'cognitive': return <CognitiveSkills onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
+          case 'physical-health': return <PhysicalHealthModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId} />;
+          default: return null;
+        }
     };
-
-     if (!started) {
-        return (
-             <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <Drama className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
-                <h3 className="text-2xl font-bold text-purple-600 mb-2">Puppet Show</h3>
-                <p className="text-slate-500 mb-4">Let's put on a fun show with puppets!</p>
-                <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Show</Button>
-            </div>
-        )
-    }
   
     return (
-      <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center animate-in zoom-in font-black">
-        <h3 className="text-4xl font-black text-purple-600 mb-10 uppercase tracking-tighter">Puppet Theater 🎭</h3>
-        <div className="w-80 h-80 bg-purple-50 rounded-full border-8 border-white shadow-2xl flex items-center justify-center mb-10 relative overflow-hidden group">
-           <Drama className="text-8xl text-purple-200 group-hover:scale-110 transition-transform"/>
-        </div>
-        <Button onClick={generateStory} disabled={loading} className="px-16 py-6 bg-purple-600 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">
-          {loading ? <Loader2 className="animate-spin" /> : "Start Show!"}
-        </Button>
-        {story && <p className="mt-10 text-xl font-black text-slate-700 italic text-center max-w-lg">"{story}"</p>}
-      </div>
-    );
-};
-  
-const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    const [subTab, setSubTab] = useState<'scenarios' | 'patterns' | 'whatIf'>('scenarios');
-    const [index, setIndex] = useState(0);
-    const [userAnswer, setUserAnswer] = useState<number | null>(null);
-    const [started, setStarted] = useState(false);
-    const data = constants.LIFE_SKILLS_DATA.cognitive[subTab];
-    const current = data[index] || data[0];
-  
-    useEffect(() => { setUserAnswer(null); }, [subTab, index]);
-  
-    const handleChoice = (idx: number) => {
-      setUserAnswer(idx);
-      if (idx === (current as any).correct || subTab === 'whatIf') {
-        onSound(`Great thinking!`);
-        onComplete();
-      }
-    };
-
-    if (!started) {
-        return (
-             <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <BrainCircuit className="h-16 w-16 mx-auto text-emerald-300 mb-4"/>
-                <h3 className="text-2xl font-bold text-emerald-600 mb-2">Super Solvers</h3>
-                <p className="text-slate-500 mb-4">Let's solve puzzles and think about big ideas!</p>
-                <Button onClick={() => setStarted(true)} className="bg-emerald-500 hover:bg-emerald-600">Start Thinking</Button>
-            </div>
-        )
-    }
-  
-    return (
-      <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-emerald-100 flex flex-col items-center animate-in zoom-in font-black">
-        <div className="flex gap-4 mb-10 font-black">
-          {(['scenarios', 'patterns', 'whatIf'] as const).map(t => (
-            <button key={t} onClick={() => {setSubTab(t); setIndex(0);}} className={`px-6 py-2 rounded-xl font-black text-xs uppercase ${subTab === t ? 'bg-emerald-500 text-white' : 'bg-slate-100'}`}>{t}</button>
-          ))}
-        </div>
-        <h3 className="text-3xl font-black text-emerald-600 mb-8 uppercase">Super Solver 🧠</h3>
-        <p className="text-2xl font-black text-slate-800 mb-10 text-center italic max-w-lg">"{(current as any).q}"</p>
-        
-        {subTab !== 'whatIf' && (
-          <div className="flex gap-4 font-black">
-            {(current as any).options.map((opt: string, i: number) => (
-              <button key={i} onClick={() => handleChoice(i)} className={`w-24 h-24 rounded-3xl font-black text-4xl border-4 transition-all ${userAnswer === i ? (i === (current as any).correct ? 'bg-green-500 text-white border-white scale-110' : 'bg-red-500 text-white border-white') : 'bg-emerald-50 text-emerald-600 border-white'}`}>
-                <IconRenderer iconName={opt} />
-              </button>
-            ))}
+      <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 animate-in fade-in duration-500 font-black">
+        <div className="w-full flex justify-between items-center px-6">
+          <div className="text-left">
+            <h2 className="text-5xl font-black text-teal-600 uppercase tracking-tighter">Life Skills Hub 🌟</h2>
+            <p className="text-slate-800 font-black italic">Social, Emotional & Independence!</p>
           </div>
-        )}
-  
-        {subTab === 'whatIf' && (
-          <button onClick={() => { onSound((current as any).a); onComplete(); }} className="px-16 py-6 bg-emerald-500 text-white rounded-[3rem] font-black uppercase text-xl shadow-xl border-4 border-white">Answer Me!</button>
-        )}
-  
-        <div className="flex gap-4 mt-12 font-black">
-          <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowLeft/></Button>
-          <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowRight/></Button>
+          <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-3xl shadow-xl border-4 border-yellow-100">
+             <Star className="h-8 w-8 text-yellow-400 fill-current" />
+             <span className="text-3xl font-black text-slate-800">{stars}</span>
+          </div>
+        </div>
+        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4 font-black">
+          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-teal-50 min-w-max font-black">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`min-w-[120px] px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 ${
+                    activeTab === tab.id ? `${tab.color} text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-800 hover:bg-teal-50 font-black'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5`} />
+                  <span>{tab.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+        <div className="w-full px-4 font-black">
+          {renderModule()}
         </div>
       </div>
     );
 };
 
-// Main Component
-export default function LifeSkillsZone() {
-  const { schoolId } = useCurrentSchool();
-  const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
-  const [playing, setPlaying] = useState(false);
-  const [stars, setStars] = useState(0);
-  const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-
-  const playFeedbackSound = async (text: string) => {
-    if (!text || !schoolId) return;
-    if (currentSourceRef.current) {
-      try { currentSourceRef.current.pause(); } catch (e) {}
-    }
-    setPlaying(true);
-    const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-    if (result.success && result.data && typeof window !== 'undefined') {
-      const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-      currentSourceRef.current = audio;
-      audio.play();
-      audio.onended = () => setPlaying(false);
-    } else { setPlaying(false); }
-  };
-
-  const addStar = () => { setStars(prev => prev + 1); };
-
-  const tabs: {id: LifeSkillTab, label: string, icon: React.ElementType, color: string}[] = [
-      { id: 'physical-health', label: 'Physical & Health', icon: HeartPulse, color: 'bg-green-500' },
-      { id: 'emotions', label: 'Feelings', icon: Smile, color: 'bg-yellow-500' },
-      { id: 'routine-songs', label: 'Skill Songs', icon: Music, color: 'bg-pink-500' },
-      { id: 'modeling', label: 'Modeling', icon: Tv, color: 'bg-indigo-500' },
-      { id: 'practical-life', label: 'Play & Routines', icon: GraduationCap, color: 'bg-blue-500' },
-      { id: 'communication', label: 'Talk & Listen', icon: MessageSquare, color: 'bg-orange-500' },
-      { id: 'social', label: 'Social & Kind', icon: Users, color: 'bg-rose-500' },
-      { id: 'puppet-theater', label: 'Puppet Show', icon: Drama, color: 'bg-purple-500' },
-      { id: 'cognitive', label: 'Super Solver', icon: Brain, color: 'bg-emerald-500' }
-  ];
-  
-  const renderModule = () => {
-      if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
-      switch (activeTab) {
-        case 'emotions': return <EmotionsModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-        case 'routine-songs': return <RoutineSongsModule onSound={playFeedbackSound} schoolId={schoolId}/>;
-        case 'modeling': return <ModelingModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-        case 'practical-life': return <PracticalLifeModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-        case 'communication': return <CommunicationModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-        case 'social': return <SocialScenarios onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-        case 'puppet-theater': return <PuppetTheater onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId}/>;
-        case 'cognitive': return <CognitiveSkills onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId} />;
-        case 'physical-health': return <PhysicalHealthModule onSound={playFeedbackSound} onComplete={addStar} schoolId={schoolId} />;
-        default: return null;
-      }
-  };
-
-  return (
-    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 animate-in fade-in duration-500 font-black">
-      <div className="w-full flex justify-between items-center px-6">
-        <div className="text-left">
-          <h2 className="text-5xl font-black text-teal-600 uppercase tracking-tighter">Life Skills Hub 🌟</h2>
-          <p className="text-slate-800 font-black italic">Social, Emotional & Independence!</p>
-        </div>
-        <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-3xl shadow-xl border-4 border-yellow-100">
-           <Star className="h-8 w-8 text-yellow-400 fill-current" />
-           <span className="text-3xl font-black text-slate-800">{stars}</span>
-        </div>
-      </div>
-      <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4 font-black">
-        <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-teal-50 min-w-max font-black">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`min-w-[120px] px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 ${
-                  activeTab === tab.id ? `${tab.color} text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-800 hover:bg-teal-50 font-black'
-                }`}
-              >
-                <Icon className={`w-5 h-5`} />
-                <span>{tab.label}</span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-      <div className="w-full px-4 font-black">
-        {renderModule()}
-      </div>
-    </div>
-  );
-};
