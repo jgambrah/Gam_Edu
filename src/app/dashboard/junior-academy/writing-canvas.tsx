@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { assessHandwritingAction, generateTTSAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
@@ -11,9 +11,10 @@ import { cn } from '@/lib/utils';
 // UI imports from the project
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenTool } from 'lucide-react';
+import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenNib } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Input } from '@/components/ui/input';
 
 // Icon Renderer to handle fa-* classes
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
@@ -31,9 +32,9 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
         'fa-check-double': 'CheckCheck',
         'fa-wand-magic-sparkles': 'Wand2',
         'fa-heart': 'Heart',
-        'fa-1-9': 'Hash', // Corrected from 'Binary'
+        'fa-1-9': 'Hash', 
         'fa-font': 'CaseSensitive',
-        'fa-lines-leaning': 'PenLine', // Changed to a better icon
+        'fa-lines-leaning': 'PenLine', 
     };
     const IconComponent = LucideIcons[iconMap[iconName] as keyof typeof LucideIcons] || LucideIcons.HelpCircle;
     return <IconComponent className={cn(className)} />;
@@ -260,11 +261,11 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
       {showSuccess && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none">
           <div className="bg-white/95 backdrop-blur-xl p-16 rounded-[4rem] shadow-[0_0_100px_rgba(255,159,67,0.3)] border-8 border-orange-400 flex flex-col items-center animate-in zoom-in duration-500">
-            <IconRenderer iconName="fa-wand-magic-sparkles" className="text-[10rem] text-yellow-400 animate-bounce mb-8"/>
+            <Wand2 className="text-[10rem] text-yellow-400 animate-bounce mb-8"/>
             <h2 className="text-6xl font-black text-orange-600 mb-4 tracking-tighter uppercase">MAGICAL!</h2>
             <p className="text-2xl font-bold text-orange-400 uppercase tracking-widest">Writing Superstar</p>
             <div className="mt-8 flex gap-4">
-              {[1,2,3,4,5].map(i => <IconRenderer key={i} iconName="fa-heart" className="text-4xl text-pink-400 animate-pulse" style={{animationDelay: `${i*0.2}s`}}/>)}
+              {[1,2,3,4,5].map(i => <Heart key={i} className="text-4xl text-pink-400 animate-pulse" style={{animationDelay: `${i*0.2}s`}}/>)}
             </div>
           </div>
         </div>
@@ -307,14 +308,14 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
 
         <div className="flex gap-4">
           <button onClick={initCanvases} className="px-8 py-3 bg-slate-100 text-slate-800 font-black rounded-2xl hover:bg-slate-200 transition-all flex items-center gap-2 uppercase text-xs tracking-widest border border-slate-200"><IconRenderer iconName="fa-trash-can"/> Start Over</button>
-          <button onClick={() => onSound("You are doing great! Keep it up!")} className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl hover:bg-yellow-500 transition-all flex items-center gap-2 uppercase text-xs tracking-widest shadow-md border border-yellow-500"><IconRenderer iconName="fa-thumbs-up"/> I'm Ready!</button>
+          <button onClick={() => onSound("You are doing great! Keep going!")} className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl hover:bg-yellow-500 transition-all flex items-center gap-2 uppercase text-xs tracking-widest shadow-md border border-yellow-500"><IconRenderer iconName="fa-thumbs-up"/> I'm Ready!</button>
           <button onClick={handleFinish} disabled={isEvaluating} className={`px-12 py-3 ${isEvaluating ? 'bg-gray-400' : 'bg-black'} text-white font-black rounded-2xl shadow-xl hover:translate-y-[2px] active:translate-y-[6px] active:shadow-none transition-all flex items-center gap-3 uppercase text-sm tracking-widest`}>
             {isEvaluating ? (<><Loader2 className="animate-spin mr-2"/> Magical Check...</>) : (<><IconRenderer iconName="fa-check-double"/> Check My Work!</>)}
           </button>
         </div>
       </div>
       
-      {feedbackMessage && !showSuccess && (<Badge className="bg-white text-black text-xl p-4 rounded-2xl border-4 border-slate-100 shadow-lg animate-bounce uppercase text-xs tracking-widest flex items-center gap-3"><IconRenderer iconName="fa-magic" className="text-purple-500"/>{feedbackMessage}</Badge>)}
+      {feedbackMessage && !showSuccess && (<Badge className="bg-white text-black text-xl p-4 rounded-2xl border-4 border-slate-100 shadow-lg animate-bounce uppercase text-xs tracking-widest flex items-center gap-3"><Wand2 className="text-purple-500"/>{feedbackMessage}</Badge>)}
       
       <style>{`
         @font-face {
