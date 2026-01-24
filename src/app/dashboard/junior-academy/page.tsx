@@ -8,8 +8,10 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
+  Bot, Shirt, FlaskConical, Bed, Eye
 } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generateRhyme, generateSkillDetails } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -21,8 +23,6 @@ import MathPlayground from './math-playground';
 import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
-import * as constants from '@/lib/constants';
-import * as LucideIcons from 'lucide-react';
 import PhonicsWorld from './phonics-world';
 import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
 import type { DictionaryWord, LessonCard } from '@/lib/types';
@@ -38,16 +38,42 @@ import WritingCanvas from './writing-canvas';
 
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const map: Record<string, keyof typeof LucideIcons> = {
-      'fa-spell-check': 'Languages', 'fa-ear-listen': 'Ear', 'fa-pen-nib': 'PenNib',
-      'fa-arrow-1-9': 'Calculator', 'fa-hand-holding-heart': 'Handshake', 'fa-flask-vial': 'FlaskConical',
-      'fa-palette': 'Palette', 'fa-robot': 'Bot', 'fa-face-smile': 'Smile', 'fa-tooth': 'Sparkles',
-      'fa-heart-pulse': 'HeartPulse', 'fa-vest': 'Shirt', 'fa-sun': 'Sun', 'fa-utensils': 'Utensils',
-      'fa-school': 'School', 'fa-house': 'Home', 'fa-recycle': 'Recycle', 'fa-water': 'Droplets',
-      'fa-broom': 'Trash2', 'fa-flag': 'Flag', 'fa-hand-pointer': 'MousePointer2', 'fa-cube': 'Cube',
-      'fa-chalkboard-user': 'User', 'fa-rabbit': 'Rabbit', 'fa-carrot': 'Carrot', 'fa-apple-whole': 'Apple',
-      'fa-cookie': 'Cookie', 'fa-star': 'Star', 'fa-tv': 'Tv', 'fa-bed': 'Bed', 'fa-eye': 'Eye',
-      'fa-cloud-showers-heavy': 'CloudRain', 'fa-guitar': 'Guitar', 'fa-plane': 'Plane', 'fa-car': 'Car',
+    const iconMap: Record<string, keyof typeof LucideIcons> = {
+      'fa-spell-check': 'Languages',
+      'fa-ear-listen': 'Ear',
+      'fa-pen-nib': 'Pen', // Changed from PenNib (doesn't exist)
+      'fa-arrow-1-9': 'Calculator',
+      'fa-hand-holding-heart': 'Handshake',
+      'fa-flask-vial': 'FlaskConical',
+      'fa-palette': 'Palette',
+      'fa-robot': 'Bot',
+      'fa-face-smile': 'Smile',
+      'fa-tooth': 'Sparkles',
+      'fa-heart-pulse': 'HeartPulse',
+      'fa-vest': 'Shirt',
+      'fa-sun': 'Sun',
+      'fa-utensils': 'Utensils',
+      'fa-school': 'School',
+      'fa-house': 'Home',
+      'fa-recycle': 'Recycle',
+      'fa-water': 'Droplets',
+      'fa-broom': 'Trash2',
+      'fa-flag': 'Flag',
+      'fa-hand-pointer': 'MousePointer2',
+      'fa-cube': 'Cube',
+      'fa-chalkboard-user': 'User',
+      'fa-rabbit': 'Rabbit',
+      'fa-carrot': 'Carrot',
+      'fa-apple-whole': 'Apple',
+      'fa-cookie': 'Cookie',
+      'fa-star': 'Star',
+      'fa-tv': 'Tv',
+      'fa-bed': 'Bed',
+      'fa-eye': 'Eye',
+      'fa-cloud-showers-heavy': 'CloudRain',
+      'fa-guitar': 'Guitar',
+      'fa-plane': 'Plane',
+      'fa-car': 'Car',
       'fa-frog': 'Rabbit', 
       'fa-bolt': 'Zap',
       'fa-circle-dot': 'CircleDot',
@@ -72,8 +98,12 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-face-smile-wink': 'Smile'
     };
   
-    const LucideName = map[iconName] || 'HelpCircle';
-    const IconComponent = (LucideIcons as any)[LucideName];
+    const lucideIconName = iconMap[iconName] || 'HelpCircle';
+    const IconComponent = LucideIcons[lucideIconName] as React.ComponentType<{ className?: string }>;
+  
+    if (!IconComponent) {
+      return <LucideIcons.HelpCircle className={className} />;
+    }
   
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
@@ -161,7 +191,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const checkAnswer = () => {
         if (!userAns.trim()) return;
         const currentQuestion = story.questions[currentQ];
-        // Fuzzy match: check if user answer contains the key part of the correct answer
         const isCorrect = userAns.toLowerCase().includes(currentQuestion.answer.toLowerCase()) || 
                           currentQuestion.answer.toLowerCase().includes(userAns.toLowerCase());
 
@@ -181,7 +210,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             setUserAns('');
             setQuizStatus('typing');
         } else {
-            // Quiz finished
             setStory(null);
             setTopic('');
             confetti({ particleCount: 200, spread: 100 });
@@ -191,7 +219,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
-            {/* 1. TEACHER'S MAGIC WRITING TOOL */}
             {canEdit && (
                 <div className="bg-white p-6 rounded-[35px] border-4 border-purple-100 flex flex-col md:flex-row gap-4 shadow-lg">
                     <div className="flex-1 space-y-1">
@@ -240,14 +267,12 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </div>
 
                     <CardContent className="p-12 space-y-12">
-                        {/* THE STORY CONTENT */}
                         <div className="max-w-4xl mx-auto">
                             <p className="text-3xl font-bold text-orange-900 leading-relaxed font-serif first-letter:text-7xl first-letter:font-black first-letter:mr-3 first-letter:float-left whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
 
-                        {/* 3-QUESTION CHALLENGE BOX */}
                         <div className="bg-white/80 backdrop-blur-sm p-10 rounded-[50px] border-4 border-dashed border-orange-300 shadow-inner space-y-8 relative overflow-hidden">
                             <div className="flex justify-between items-center mb-4">
                                 <Badge className="bg-purple-600 text-white px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest">
@@ -308,7 +333,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </CardContent>
                 </Card>
             ) : (
-                /* 3. LIBRARY SECTION: SAVED STORIES */
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-2xl font-black text-slate-700 flex items-center gap-2">
@@ -371,6 +395,7 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     const [isLoading, setIsLoading] = useState(false);
   
     const handleLetterClick = useCallback(async (letter: string) => {
+        if (!schoolId) return;
         setSelectedLetter(letter);
         setIsLoading(true);
         const wordInfo = constants.VOCABULARY_DATA.find(w => w.word.startsWith(letter)) || constants.VOCABULARY_DATA[0];
@@ -474,3 +499,5 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
+    
