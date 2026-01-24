@@ -659,6 +659,12 @@ export const MOCK_CROSSWORD_PUZZLES = [
 export const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 export const NUMBERS = '0123456789'.split('');
 
+export type DictionaryWord = {
+  word: string;
+  category: string;
+  imagePrompt: string;
+};
+
 export const DICTIONARY_WORDS: DictionaryWord[] = [
   { word: 'Apple', category: 'Nature', imagePrompt: 'A shiny red apple with a happy face, nursery style' },
   { word: 'Ball', category: 'General', imagePrompt: 'A colorful bouncy ball with stripes, nursery style' },
@@ -690,7 +696,7 @@ export const DICTION_DATA = [
 ];
 
 export const JOLLY_PHONICS_DATA = [
-  { letter: 'S', sound: 'sss', action: 'Weave your hand like a snake and say sss.', story: 'Sammy the Snake lives in the sun. He slides through the grass and says sss!', imagePrompt: 'A friendly cartoon snake in a sunny garden, bright colors, nursery style' },
+  { letter: 'S', sound: 'sss', action: 'Weave your hand like a snake and say sss.', story: 'Sammy the Snake lives in the sun. He slides through the grass and says sss!', imagePrompt: 'A friendly cartoon snake in a sunny garden, bright colors, nursery style, white background' },
   { letter: 'A', sound: 'a-a-a', action: 'Wiggle your fingers on your arm like ants and say a-a-a.', story: 'Annie the Ant found a big red apple. She invited her friends for a snack!', imagePrompt: 'A happy ant carrying a huge shiny red apple, nursery style' },
 ];
 
@@ -876,133 +882,25 @@ export const MONEY_DATA = [
   { amount: 5, coins: 5, label: 'Gold Coins', prompt: 'Five shiny gold coins on a table, nursery style' },
 ];
 
-export const SCIENCE_DATA = {
-  bodyParts: [
-    { name: 'Eyes', icon: 'fa-eye', action: 'I use my eyes to see the world!' },
-    { name: 'Ears', icon: 'fa-ear-listen', action: 'I use my ears to hear sounds!' },
-  ],
-  innerOrgans: [
-    { name: 'Heart', icon: 'fa-heart-pulse', action: 'My heart pumps blood to my whole body!', prompt: 'A red cartoon heart beating' },
-  ],
-  growth: [
-    { stage: 'Baby', action: 'I was a tiny baby who could crawl!' },
-    { stage: 'Toddler', action: 'I became a toddler and learned to walk!' },
-    { stage: 'Child', action: 'Now I am a child who can run and jump!' }
-  ],
-  senses: [
-    { sense: 'Sight', icon: 'fa-eye', action: 'I see a beautiful rainbow!', prompt: 'A child looking at a bright rainbow' },
-  ],
-  water: [
-    { source: 'Rain', use: 'Watering plants', icon: 'fa-cloud-showers-heavy' },
-  ],
-  floatSink: [
-    { name: 'Rubber Duck', result: 'Float', reason: 'It is light and filled with air!' },
-  ],
-  livingNeeds: [
-    { name: 'Plant', need: 'Sunlight', instruction: 'Put plants near the window to see the sun!' },
-  ],
-  living: [
-    { name: 'Tree' },
-    { name: 'Butterfly' },
-  ],
-  nonLiving: [
-    { name: 'Car' },
-    { name: 'Ball' },
-  ],
-  weather: [
-    { type: 'Sunny' },
-    { type: 'Rainy' },
-  ],
-  animals: [
-    { name: 'Lion', sound: 'ROAR', fact: 'Lions have big fluffy manes!', prompt: 'A brave lion with a big golden mane' },
-  ],
-  transport: [
-    { name: 'Aeroplane', icon: 'fa-plane', type: 'Air' },
-    { name: 'Car', icon: 'fa-car', type: 'Road' },
-  ],
-  properties: {
-    colors: [
-      { name: 'Red', prompt: 'A big red apple', explanation: 'Red is the color of apples and hearts!' },
-    ],
-    shapes: [
-      { name: 'Circle', prompt: 'A round yellow sun', explanation: 'A circle is perfectly round like a ball!', type: '2D' }
-    ],
-    sizes: [
-      { pair: 'Big and Small', items: [{ prompt: 'A giant elephant', label: 'Big' }, { prompt: 'A tiny mouse', label: 'Small' }], explanation: 'The elephant is big and the mouse is small!' }
-    ]
-  },
-  skills: {
-    observation: [
-      { name: 'Ladybird', task: 'Counting spots' }
-    ],
-    curiosity: [
-      { q: 'Why is the grass green?', a: 'Grass is green because it has magic called chlorophyll!' }
-    ],
-    care: [
-      { task: 'Feeding pets' }
-    ]
-  },
-  environment: {
-    surroundings: [
-        { name: 'My Home', icon: 'fa-house', prompt: 'A cozy colorful cottage with a garden and a white fence, nursery style', fact: 'My home is where I sleep and eat with my family.' },
-        { name: 'My School', icon: 'fa-school', prompt: 'A bright school building with a playground and slides, nursery style', fact: 'My school is where I play and learn with my friends!' },
-    ],
-    greenHabits: [
-        { name: 'Recycling', icon: 'fa-recycle', prompt: 'A friendly blue recycling bin with happy paper and bottles, nursery style', fact: 'We recycle to keep our Earth clean and happy!' },
-    ],
-    cleanWorld: [
-        { name: 'Clear Gutters', icon: 'fa-water', prompt: 'A clean paved gutter with clear blue water flowing freely, no trash inside, nursery style', fact: 'Gutters are for rain water! Never throw trash in the gutter so the water can flow away.' },
-        { name: 'Gutter Hero', icon: 'fa-broom', prompt: 'A group of children and adults cleaning a gutter, removing plastic bottles, nursery style', fact: 'We are Gutter Heroes! We keep our drains clear so the rain does not flood our homes.' },
-        { name: 'Ghana Clean & Green', icon: 'fa-flag', prompt: 'A beautiful clean Ghanaian street with green trees and the national flag waving, nursery style', fact: 'Let us keep Ghana clean and green! A clean Ghana is a healthy Ghana.' }
-    ]
-  }
-};
-
-export const ARTS_DATA = {
-  drawingPrompts: [
-    { title: 'A Happy Sun', prompt: 'A simple bold sun for a child to draw', difficulty: 'Easy' },
-  ],
-  colorNature: [
-    { name: 'Red Rose', color: 'Red', prompt: 'A bright red rose in a garden' },
-  ],
-  shapeChallenges: [
-    { name: 'Round Wheel', parts: ['Circle'], description: 'Draw a big circle for a wheel!' }
-  ],
-  visual: {
-    sculptures: [
-      { name: 'Red Apple Clay', prompt: 'A high-quality 3D clay sculpture of a shiny red apple, ceramic style', fact: 'Sculptures are art you can touch!' },
-    ],
-    paintings: [
-      { name: 'Magic Rainbow', prompt: 'A vibrant child-like oil painting of a rainbow over a green field', type: 'Oil Painting' },
-    ]
-  },
-  performing: {
-    instruments: [
-      { name: 'Magic Guitar', icon: 'fa-guitar', soundPrompt: 'Say: STRUM STRUM STRUM!' },
-    ],
-    dancePrompts: [
-      { character: 'Happy Robot', style: 'Disco', prompt: '3D animation of a friendly robot doing disco moves, nursery style' },
-    ]
-  },
-  drama: {
-    prompts: [
-      { situation: 'You are a tiny mouse eating cheese!', action: 'Squeak and nibble!' },
-    ]
-  },
-  literature: {
-    poets: [
-      { topic: 'Little Star', rhyme: 'Twinkle twinkle little star, \nhow I wonder what you are! \nUp above the world so high, \nlike a diamond in the sky.' }
-    ]
-  }
-};
-
-export const CREATIVE_ARTS_DATA = ARTS_DATA;
-
 export const LIFE_SKILLS_DATA = {
-  health: [
-    { title: 'Brushing Teeth', action: 'Brush up and down, twice a day!', icon: 'fa-tooth', prompt: 'A child happily brushing their teeth, with sparkles on their teeth' },
-    { title: 'Being Healthy', action: 'Eat healthy food and play every day to feel full of energy!', icon: 'fa-heart-pulse', prompt: 'A group of children playing outside with a colorful salad on a nearby picnic blanket' }
-  ],
+  physicalHealth: {
+    grossMotor: [
+      { title: 'Jumping Jacks', action: 'Jump and spread your legs and arms!', icon: 'fa-star', prompt: 'A child doing a jumping jack, full of energy' },
+      { title: 'Running Race', action: 'Run as fast as you can to the finish line!', icon: 'fa-flag', prompt: 'Children racing in a field, with a finish line' }
+    ],
+    fineMotor: [
+      { title: 'Building Blocks', action: 'Stack the blocks as high as you can!', icon: 'fa-cube', prompt: 'A child stacking colorful toy blocks' },
+      { title: 'Drawing Fun', action: 'Draw a beautiful picture with your crayons!', icon: 'fa-pen-nib', prompt: 'A colorful drawing made by a child' }
+    ],
+    hygiene: [
+      { title: 'Washing Hands', action: 'Wash your hands with soap and water to get rid of germs!', icon: 'fa-soap', prompt: 'Hands being washed with soap under a faucet' },
+      { title: 'Brushing Teeth', action: 'Brush up and down, twice a day!', icon: 'fa-tooth', prompt: 'A child happily brushing their teeth, with sparkles on their teeth' }
+    ],
+    nutrition: [
+      { title: 'Eating Vegetables', action: 'Eat your vegetables to grow big and strong!', icon: 'fa-carrot', prompt: 'A child eating a plate of colorful vegetables' },
+      { title: 'Healthy Snack', action: 'An apple is a delicious and healthy snack!', icon: 'fa-apple-whole', prompt: 'A shiny red apple' }
+    ]
+  },
   music: [
     { title: 'Brushing Teeth Song', theme: 'brushing teeth every morning', icon: 'fa-tooth' },
   ],
@@ -1052,3 +950,10 @@ export const LIFE_SKILLS_DATA = {
     { title: 'Blocks', icon: 'fa-cube', prompt: 'Colorful toy blocks scattered on a rug' }
   ]
 };
+
+export type DictionaryWord = {
+  word: string;
+  category: string;
+  imagePrompt: string;
+};
+    
