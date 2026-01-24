@@ -182,7 +182,7 @@ export const generateLessonImageAction = async (input: { prompt: string; schoolI
       }
       const { media } = await ai.generate({
         model: 'googleai/imagen-4.0-fast-generate-001',
-        prompt: `Award winning 3D Pixar-style illustration, nursery theme, centered subject: ${input.prompt}`,
+        prompt: input.prompt,
       });
   
       if (media && media.url) {
@@ -339,21 +339,56 @@ export async function generateSkillDetails(input: { skill: string; schoolId: str
 }
 
 // PHONICS WORLD ENTRY GENERATOR
-const PhonicsWorldEntrySchema = z.object({
-    title: z.string(),
-    sound: z.string(),
-    description: z.string(),
-    imagePrompt: z.string(),
-    icon: z.string(),
-});
+const PhonicsWorldEntrySchema = z.any();
 export async function generatePhonicsWorldEntry(topic: string, category: string, schoolId: string) {
     try {
         const creditResult = await checkAndSpendCredits(schoolId, 2);
         if (!creditResult.success) {
             return { success: false, error: creditResult.error || "Insufficient AI credits." };
         }
-        const prompt = `Create a nursery phonics entry for "${topic}" in category "${category}". 
-        Return JSON: { "title": "string", "sound": "string", "description": "string", "imagePrompt": "string", "icon": "string" }`;
+        
+        let prompt = '';
+        switch (category) {
+            case 'jolly-phonics':
+                prompt = `Create a nursery Jolly Phonics card for "${topic}". JSON: { "letter": string, "sound": string, "action": string, "story": string, "imagePrompt": string }`;
+                break;
+            case 'alphabet':
+                prompt = `Create a nursery phonics entry for letter "${topic.charAt(0).toUpperCase()}". JSON: { "upper": string, "lower": string, "word": string, "imagePrompt": string }`;
+                break;
+            case 'picture-reading':
+                prompt = `Create a nursery picture reading task for "${topic}". JSON: { "sound": string, "target": string, "options": [{ "name": string, "prompt": string }], "correctIdx": number } (3 options)`;
+                break;
+            case 'syllables':
+                 prompt = `Create a nursery "Syllables" lesson for word "${topic}". JSON: { "word": string, "syllables": string[], "prompt": string }`;
+                break;
+            case 'alliteration':
+                prompt = `Create a nursery "Alliteration" card for "${topic}". JSON: { "sound": string, "target": string, "options": [{ "word": string, "match": boolean }], "prompt": string } (2 options)`;
+                break;
+            case 'sound-games':
+                 prompt = `Create a Nursery 1 sound group for letter "${topic.charAt(0).toUpperCase()}". JSON: { "sound": string, "items": [{ "word": string, "prompt": string }] } (3 items)`;
+                break;
+            case 'blends':
+                prompt = `Create a nursery "Digraph/Blend" card for sound "${topic}". JSON: { "blend": string, "type": string, "words": [{ "word": string, "prompt": string }] } (2 words)`;
+                break;
+            case 'rhymes':
+                prompt = `Create a nursery "Rhyming Family" card for ending "${topic}". JSON: { "ending": string, "words": [{ "word": string, "prompt": string }] } (3 words)`;
+                break;
+            case 'diction':
+                 prompt = `Create a nursery diction lesson for word "${topic}". JSON: { "word": string, "syllables": string, "instruction": string, "prompt": string }`;
+                break;
+            case 'missing-letters':
+                prompt = `Create a nursery "missing letter" task for "${topic}". JSON: { "word": string, "missing": string, "options": string[], "prompt": string } (3 options)`;
+                break;
+            case 'environmental-print':
+                prompt = `Create a nursery "Environmental Print" card for "${topic}". JSON: { "text": string, "context": string, "prompt": string }`;
+                break;
+            case 'book-handling':
+                 prompt = `Create a nursery "Book Handling" lesson about "${topic}". JSON: { "title": string, "pages": [{ "text": string, "prompt": string }] } (2 pages)`;
+                break;
+            default:
+                throw new Error("Invalid phonics category");
+        }
+
         const { output } = await ai.generate({
             model: 'googleai/gemini-1.5-flash',
             prompt,

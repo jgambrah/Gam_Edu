@@ -740,7 +740,9 @@ export const ENVIRONMENTAL_PRINT_DATA = [
 ];
 
 export const BOOK_HANDLING_DATA = [
-  { title: 'How to Hold a Book', pages: [{ text: 'This is the FRONT of the book.', prompt: 'A close up of a colorful nursery book cover with a happy sun' }, { text: 'We turn the page from RIGHT to LEFT.', prompt: 'A hand flipping a page in a colorful picture book' }] }
+  { 
+    title: 'How to Hold a Book', 
+    pages: [{ text: 'This is the FRONT of the book.', prompt: 'A close up of a colorful nursery book cover with a happy sun' }, { text: 'We turn the page from RIGHT to LEFT.', prompt: 'A hand flipping a page in a colorful picture book' }] }
 ];
 
 export const MISSING_LETTERS_DATA = [
