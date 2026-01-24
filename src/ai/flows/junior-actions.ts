@@ -174,22 +174,24 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
 
 
 // --- IMAGE GENERATION ACTION ---
-export async function generateLessonImageAction(input: { prompt: string; schoolId: string; }): Promise<string | null> {
+export const generateLessonImageAction = async (input: { prompt: string; schoolId: string; }): Promise<{ success: boolean; data?: string | null, error?: string }> => {
     try {
       const creditResult = await checkAndSpendCredits(input.schoolId, 5);
       if (!creditResult.success) {
-        console.error("Credit check failed:", creditResult.error);
-        return null;
+        return { success: false, error: creditResult.error || "Insufficient AI credits." };
       }
       const { media } = await ai.generate({
         model: 'googleai/imagen-4.0-fast-generate-001',
         prompt: `Award winning 3D Pixar-style illustration, nursery theme, centered subject: ${input.prompt}`,
       });
   
-      return media?.url || null;
+      if (media && media.url) {
+        return { success: true, data: media.url };
+      }
+      return { success: true, data: null };
     } catch (error) {
       console.error("Image generation error:", error);
-      return null;
+      return { success: false, error: "Image generation failed." };
     }
 };
 
@@ -237,7 +239,7 @@ export async function generateLifeSkillEntry(input: { topic: string; category: s
 
   let prompt = '';
   switch (category) {
-    case 'feelings':
+    case 'emotions':
       prompt = `Create a nursery lesson for the feeling: ${topic}. Return JSON: { "name": string, "color": "bg-yellow-400" | "bg-blue-400" | "bg-red-400", "icon": string, "prompt": string, "technique": string }`;
       break;
     case 'health':
