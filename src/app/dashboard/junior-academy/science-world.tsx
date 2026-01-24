@@ -8,7 +8,7 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot, TrendingUp, Leaf, User as UserIcon, Eye
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot, User as UserIcon, Hand, Eye, Tree, TrendingUp, Leaf
 } from 'lucide-react';
 import { generateLessonImageAction, generateTTSAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -19,7 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import * as LucideIcons from 'lucide-react';
 
 const SCIENCE_DATA = {
@@ -35,7 +35,7 @@ const SCIENCE_DATA = {
     transport: [{ name: 'Car', type: 'Road', icon: 'fa-car', prompt: 'A red toy car' }, { name: 'Airplane', type: 'Air', icon: 'fa-plane', prompt: 'A white airplane in the sky' }],
     properties: {
       colors: [{ name: 'Red', explanation: 'Like a juicy apple!', icon: 'fa-circle', prompt: 'A big shiny red apple' }],
-      shapes: [{ name: 'Circle', explanation: 'A round shape like a ball.', icon: 'fa-shapes', prompt: 'A red bouncy ball' }],
+      shapes: [{ name: 'Square', explanation: 'A shape with four equal sides.', icon: 'fa-shapes', prompt: 'A blue square' }],
       sizes: [{ pair: 'Big/Small', icon: 'fa-shapes', prompt: 'A big elephant next to a small mouse' }],
       feelings: [{ name: 'Happy', explanation: 'When you feel smiley!', icon: 'fa-face-smile', prompt: 'A very happy smiling sun' }],
     },
@@ -46,7 +46,6 @@ const SCIENCE_DATA = {
     }
   };
 
-// --- ROBUST ICON RENDERER ---
 const iconMap = {
   'fa-earth-africa': Earth, 'fa-user': UserIcon, 'fa-child-reaching': UserIcon, 'fa-heart-pulse': HeartPulse, 'fa-lungs': Atom,
   'fa-arrow-up-right-dots': TrendingUp, 'fa-ear-listen': Ear, 'fa-eye': Eye, 'fa-apple-whole': Apple, 'fa-leaf': Leaf,
@@ -64,7 +63,6 @@ const IconRenderer = ({ iconName, className }: { iconName?: string; className?: 
 
 type ScienceTab = 'body' | 'organs' | 'growth' | 'senses' | 'diet' | 'living' | 'weather' | 'animals' | 'transport' | 'concepts' | 'environment';
 
-// --- TEACHER MODAL ---
 const TeacherModal: React.FC<{
   title: string; topicLabel: string; topicValue: string; 
   onTopicChange: (v: string) => void; onGenerate: () => void; 
@@ -99,6 +97,7 @@ const ScienceExploration: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
   const [playing, setPlaying] = useState(false);
   const currentSourceRef = useRef<HTMLAudioElement | null>(null);
+  const [started, setStarted] = useState(false);
 
   const playFeedbackSound = useCallback(async (text: string) => {
     if (!text || !schoolId) return;
@@ -132,9 +131,30 @@ const ScienceExploration: React.FC = () => {
     { id: 'transport', label: 'Travel', icon: 'fa-car' },
     { id: 'concepts', label: 'Concepts', icon: 'fa-shapes' },
   ];
-
+    
     const renderActiveTab = () => {
         if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
+        if (!started) return (
+            <Card className="rounded-[60px] border-8 border-blue-100 shadow-xl overflow-hidden bg-white">
+                <CardHeader className="bg-blue-500 p-10 text-white text-center">
+                    <CardTitle className="text-4xl font-black uppercase tracking-tighter flex items-center justify-center gap-4">
+                        <Atom className="h-12 w-12" />
+                        Science World
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-12 text-center">
+                    <div className="flex flex-col items-center gap-8 py-20">
+                        <Sparkles className="h-24 w-24 text-blue-300 animate-pulse" />
+                        <h3 className="text-3xl font-black text-blue-600">Start Your Adventure!</h3>
+                        <p className="text-xl text-slate-600 max-w-md">
+                            Click the button below to begin exploring the amazing world of science.
+                        </p>
+                        <Button onClick={() => setStarted(true)} className="h-16 px-12 text-xl bg-blue-600 hover:bg-blue-700">Start Exploring</Button>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+
         const props = { onSound: playFeedbackSound, schoolId: schoolId };
         switch(activeTab) {
             case 'environment': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.environment.surroundings} title="Environment" type="environment" />;
@@ -211,8 +231,8 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     try {
       const result = await generateLifeSkillEntry({ topic: aiTopic, category: type, schoolId });
       if(result.success && result.data){
-        setData(prev => [...prev, result.data]);
-        setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
+          setData(prev => [...prev, result.data]);
+          setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
@@ -286,8 +306,8 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
     try {
       const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'living', schoolId });
       if (result.success && result.data) {
-        if ((result.data as any).isLiving) setLivingList(prev => [...prev, { name: result.data.name }]);
-        else setNonLivingList(prev => [...prev, { name: result.data.name }]);
+        if ((result.data as any).isLiving) setLivingList(prev => [...prev, { name: result.data.name, icon: 'fa-leaf' }]);
+        else setNonLivingList(prev => [...prev, { name: result.data.name, icon: 'fa-cube' }]);
         setIsDrawerOpen(false); setAiTopic('');
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
@@ -314,26 +334,36 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   );
 };
 
+const GrowthModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
+    // ... logic for growth module (can be simplified)
+    return <div>Growth Module Coming Soon</div>
+};
 
-export default function JuniorScienceWorld({ schoolId }: { schoolId: string }) {
-    const [started, setStarted] = useState(false);
+const BalancedDiet: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
+    // ... logic for diet module
+    return <div>Balanced Diet Module Coming Soon</div>
+};
 
-    if (!started) {
-        return (
-            <Card>
-                <CardHeader className="items-center text-center">
-                    <Atom className="h-16 w-16 text-blue-300 mb-4"/>
-                    <CardTitle className="text-2xl font-bold text-blue-600">Science Lab</CardTitle>
-                    <CardDescription className="max-w-md">Ready to explore the amazing world of science? Let's begin our first experiment!</CardDescription>
-                </CardHeader>
-                <CardContent className="flex justify-center">
-                    <Button onClick={() => setStarted(true)} className="bg-blue-500 hover:bg-blue-600 h-12 px-8 text-base">Start Exploring</Button>
-                </CardContent>
-            </Card>
-        )
-    }
-    
-    return <ScienceExploration />;
-}
+const WeatherWindow: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
+    // ... logic for weather module
+    return <div>Weather Module Coming Soon</div>
+};
 
-    
+const AnimalKingdom: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
+    // ... logic for animal module
+    return <div>Animal Kingdom Module Coming Soon</div>
+};
+
+const TransportExplorer: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
+    // ... logic for transport module
+    return <div>Transport Module Coming Soon</div>
+};
+
+const ConceptsZone: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
+    // ... logic for concepts module
+    return <div>Concepts Module Coming Soon</div>
+};
+
+
+export default ScienceExploration;
+```
