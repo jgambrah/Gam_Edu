@@ -8,7 +8,7 @@ import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenNib } from 'lucide-react';
+import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenTool, Pen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Input } from '@/components/ui/input';
@@ -230,7 +230,7 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
       else if (mode === 'numbers') target = `number ${selectedNumber}`;
       else target = STROKES.find(s => s.id === selectedStroke)?.label || 'stroke';
 
-      const result = await assessHandwritingAction({ imageDataUri: dataUrl, targetCharacter: target, schoolId });
+      const result = await assessHandwritingAction({ imageDataUri: dataUrl, targetCharacter: target, schoolId: schoolId });
 
       if (result.success && result.isCorrect) {
         setShowSuccess(true);
@@ -252,7 +252,7 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
   if (!started) {
     return (
          <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-            <PenNib className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
+            <Pen className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
             <h3 className="text-2xl font-bold text-purple-600 mb-2">Writing Practice</h3>
             <p className="text-slate-500 mb-4">Let's learn to write letters, numbers, and strokes!</p>
             <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Writing</Button>
@@ -346,11 +346,10 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
       )}
       
       <style>{`
-        @font-face {
-          font-family: 'Fredoka';
-          src: url('/fonts/FredokaOne-Regular.ttf') format('truetype');
-          font-weight: 900;
-          font-style: normal;
+        @keyframes scan {
+          0% { top: 10%; opacity: 0; }
+          50% { opacity: 1; }
+          100% { top: 90%; opacity: 0; }
         }
       `}</style>
     </div>
