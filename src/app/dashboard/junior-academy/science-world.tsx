@@ -8,11 +8,12 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot, Eye, Tree, TrendingUp, Leaf
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot, Eye, TrendingUp, Leaf, Hand, Tree
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { generateLessonImageAction, generateTTSAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,6 +22,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import * as LucideIcons from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const SCIENCE_DATA = {
     bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child's head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
@@ -28,8 +30,8 @@ const SCIENCE_DATA = {
     growth: [{ stage: "Baby", icon: 'fa-child-reaching', action: "I crawl and say goo-goo!", prompt: 'A happy baby crawling' }, { stage: "Child", icon: 'fa-user', action: "I run and play with my friends!", prompt: 'A child running in a park' }],
     senses: [{ sense: "See", icon: 'fa-eye', action: 'I see with my eyes!' }, { sense: "Hear", icon: 'fa-ear-listen', action: 'I hear with my ears!' }],
     diet: [{ name: 'Apple', type: 'Fruit', icon: 'fa-apple-whole', prompt: 'A shiny red apple' }, { name: 'Carrot', type: 'Vegetable', icon: 'fa-carrot', prompt: 'A crunchy orange carrot' }],
-    living: [{ name: 'Tree', icon: 'fa-tree' }, { name: 'Dog', icon: 'fa-paw' }],
-    nonLiving: [{ name: 'Rock', icon: 'fa-cube' }, { name: 'Car', icon: 'fa-car' }],
+    living: [{ name: 'Tree', icon: 'fa-tree', isLiving: true }, { name: 'Dog', icon: 'fa-paw', isLiving: true }],
+    nonLiving: [{ name: 'Rock', icon: 'fa-cube', isLiving: false }, { name: 'Car', icon: 'fa-car', isLiving: false }],
     weather: [{ type: 'Sunny', icon: 'fa-sun', prompt: 'A bright yellow sun smiling' }, { type: 'Rainy', icon: 'fa-cloud-showers-heavy', prompt: 'A gray cloud with rain falling' }],
     animals: [{ name: 'Lion', sound: 'Roar!', fact: 'The lion is the king of the jungle.', icon: 'fa-paw', prompt: 'A friendly cartoon lion' }, { name: 'Monkey', sound: 'Ooh-ooh-aah-aah!', fact: 'Monkeys love to eat bananas.', icon: 'fa-paw', prompt: 'A cheeky cartoon monkey' }],
     transport: [{ name: 'Car', type: 'Road', icon: 'fa-car', prompt: 'A red toy car' }, { name: 'Airplane', type: 'Air', icon: 'fa-plane', prompt: 'A white airplane in the sky' }],
@@ -123,7 +125,7 @@ const ScienceExploration: React.FC = () => {
     }
   }, [schoolId]);
 
-  const tabs: {id: ScienceTab, label: string, icon: string}[] = [
+  const tabs: {id: ScienceTab, label: string, icon: keyof typeof iconMap}[] = [
     { id: 'environment', label: 'EVS Hub', icon: 'fa-earth-africa' },
     { id: 'body', label: 'My Body', icon: 'fa-user' },
     { id: 'organs', label: 'Inside Me', icon: 'fa-heart-pulse' },
@@ -218,15 +220,31 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
 
-  const current = data[index];
+  const current = data?.[index];
 
-  const fetchVisual = useCallback(async () => { 
+  // ===================== FIX: ADD GUARD CLAUSE =====================
+  // This prevents crashes if `data` is empty or `current` is undefined.
+  if (!current) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center text-muted-foreground py-10">No items available in this category yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+  // ===================== END FIX =====================
+
+  const fetchVisual = useCallback(async () => {
     if (!current || !schoolId) return;
-    setLoading(true); 
+    setLoading(true);
     const prompt = current.prompt || current.imagePrompt || `A simple nursery 3D illustration of ${current[categoryKey]}`;
-    const res = await generateLessonImageAction({prompt, schoolId});
-    if(res.success) setImageUrl(res.data || null); 
-    setLoading(false); 
+    const res = await generateLessonImageAction({ prompt, schoolId });
+    if (res.success) setImageUrl(res.data || null);
+    setLoading(false);
   }, [current, categoryKey, schoolId]);
   
   useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
@@ -243,8 +261,10 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   
-  const getLabel = () => current[categoryKey];
-  const getDescription = () => current.action || current.fact || current.instruction || `This is ${getLabel().toLowerCase()}.`;
+  // ===================== FIX: OPTIONAL CHAINING & NULLISH COALESCING =====================
+  const getLabel = () => current?.[categoryKey];
+  const getDescription = () => current?.action || current?.fact || current?.instruction || `This is ${getLabel()?.toLowerCase() ?? 'this item'}.`;
+  // ===================== END FIX =====================
 
   return (
     <div className="relative font-black">
@@ -311,9 +331,11 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
     setIsAiLoading(true);
     try {
       const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'living', schoolId });
-      if (result.success && result.data) {
-        if ((result.data as any).isLiving) setLivingList(prev => [...prev, { name: result.data.name, icon: 'fa-leaf' }]);
-        else setNonLivingList(prev => [...prev, { name: result.data.name, icon: 'fa-cube' }]);
+      if(result.success && result.data){
+        const isLivingResult = (result.data as any).isLiving;
+        const newItem = { name: (result.data as any).name, icon: (result.data as any).icon || 'fa-leaf' };
+        if (isLivingResult) setLivingList(prev => [...prev, newItem]);
+        else setNonLivingList(prev => [...prev, newItem]);
         setIsDrawerOpen(false); setAiTopic('');
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
@@ -340,29 +362,25 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   );
 };
 
-const GrowthModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    return <div>Module in development.</div>
+const GrowthModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+    return <div className="text-center text-muted-foreground p-8">Growth Module Coming Soon!</div>;
 };
-
-const BalancedDiet: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    return <div>Module in development.</div>
+const BalancedDiet: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+    return <div className="text-center text-muted-foreground p-8">Balanced Diet Module Coming Soon!</div>;
 };
-
-const WeatherWindow: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    return <div>Module in development.</div>
+const WeatherWindow: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+    return <div className="text-center text-muted-foreground p-8">Weather Window Module Coming Soon!</div>;
 };
-
-const AnimalKingdom: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    return <div>Module in development.</div>
+const AnimalKingdom: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+    return <div className="text-center text-muted-foreground p-8">Animal Kingdom Module Coming Soon!</div>;
 };
-
-const TransportExplorer: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    return <div>Module in development.</div>
+const TransportExplorer: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+    return <div className="text-center text-muted-foreground p-8">Transport Module Coming Soon!</div>;
 };
-
-const ConceptsZone: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    return <div>Module in development.</div>
+const ConceptsZone: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+    return <div className="text-center text-muted-foreground p-8">Concepts Module Coming Soon!</div>;
 };
-
 
 export default ScienceExploration;
+
+    
