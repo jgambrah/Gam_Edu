@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -9,8 +8,16 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, 
+  Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, 
+  Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
+  Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
+  CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
+  Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
+  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, 
+  Beaker, Bed, Eye
 } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generateRhyme, generateSkillDetails } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -22,8 +29,6 @@ import MathPlayground from './math-playground';
 import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
-import * as constants from '@/lib/constants';
-import * as LucideIcons from 'lucide-react';
 import PhonicsWorld from './phonics-world';
 import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
 import type { DictionaryWord, LessonCard } from '@/lib/types';
@@ -36,30 +41,56 @@ import { cn } from '@/lib/utils';
 import { getAuth } from 'firebase/auth';
 import LifeSkillsZone from './life-skills-zone';
 import WritingCanvas from './writing-canvas'; 
-
+import * as constants from '@/lib/constants';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const map: Record<string, keyof typeof LucideIcons> = {
-      'fa-spell-check': 'Languages', 'fa-ear-listen': 'Ear', 'fa-pen-nib': 'PenNib',
-      'fa-arrow-1-9': 'Calculator', 'fa-hand-holding-heart': 'Handshake', 'fa-flask-vial': 'FlaskConical',
-      'fa-palette': 'Palette', 'fa-robot': 'Bot', 'fa-face-smile': 'Smile', 'fa-tooth': 'Sparkles',
-      'fa-heart-pulse': 'HeartPulse', 'fa-vest': 'Shirt', 'fa-sun': 'Sun', 'fa-utensils': 'Utensils',
-      'fa-school': 'School', 'fa-house': 'Home', 'fa-recycle': 'Recycle', 'fa-water': 'Droplets',
-      'fa-broom': 'Trash2', 'fa-flag': 'Flag', 'fa-hand-pointer': 'MousePointer2', 'fa-cube': 'Cube',
-      'fa-chalkboard-user': 'User', 'fa-rabbit': 'Rabbit', 'fa-carrot': 'Carrot', 'fa-apple-whole': 'Apple',
-      'fa-cookie': 'Cookie', 'fa-star': 'Star', 'fa-tv': 'Tv', 'fa-bed': 'Bed', 'fa-eye': 'Eye',
-      'fa-cloud-showers-heavy': 'CloudRain', 'fa-guitar': 'Guitar', 'fa-plane': 'Plane', 'fa-car': 'Car',
-      'fa-frog': 'Rabbit', 
+    const iconMap: Record<string, keyof typeof LucideIcons> = {
+      'fa-spell-check': 'Languages',
+      'fa-ear-listen': 'Ear',
+      'fa-pen-nib': 'Pen',
+      'fa-arrow-1-9': 'Calculator',
+      'fa-hand-holding-heart': 'Handshake',
+      'fa-flask-vial': 'Beaker', // Changed from FlaskConical
+      'fa-palette': 'Palette',
+      'fa-robot': 'BotMessageSquare', // Changed from Bot
+      'fa-face-smile': 'Smile',
+      'fa-tooth': 'Sparkles',
+      'fa-heart-pulse': 'HeartPulse',
+      'fa-vest': 'User', // Changed from Shirt (doesn't exist)
+      'fa-sun': 'Sun',
+      'fa-utensils': 'Utensils',
+      'fa-school': 'School',
+      'fa-house': 'Home',
+      'fa-recycle': 'Recycle',
+      'fa-water': 'Droplets',
+      'fa-broom': 'Trash2',
+      'fa-flag': 'Flag',
+      'fa-hand-pointer': 'MousePointer2',
+      'fa-cube': 'Cube',
+      'fa-chalkboard-user': 'User',
+      'fa-rabbit': 'Rabbit',
+      'fa-carrot': 'Carrot',
+      'fa-apple-whole': 'Apple',
+      'fa-cookie': 'Cookie',
+      'fa-star': 'Star',
+      'fa-tv': 'Tv',
+      'fa-bed': 'Bed',
+      'fa-eye': 'Eye',
+      'fa-cloud-showers-heavy': 'CloudRain',
+      'fa-guitar': 'Guitar',
+      'fa-plane': 'Plane',
+      'fa-car': 'Car',
+      'fa-frog': 'Rabbit',
       'fa-bolt': 'Zap',
       'fa-circle-dot': 'CircleDot',
-      'fa-soap': 'Sparkles', 
-      'fa-broccoli': 'Carrot', 
+      'fa-soap': 'Sparkles',
+      'fa-broccoli': 'Carrot',
       'fa-display': 'Monitor',
       'fa-graduation-cap': 'GraduationCap',
       'fa-comments': 'MessageSquare',
       'fa-people-group': 'Users',
       'fa-masks-theater': 'Drama',
-      'fa-brain': 'BrainCircuit',
+      'fa-brain': 'Brain', // Changed from BrainCircuit
       'fa-child-reaching': 'User',
       'fa-music': 'Music',
       'fa-magic': 'Wand2',
@@ -73,8 +104,13 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-face-smile-wink': 'Smile'
     };
   
-    const LucideName = map[iconName] || 'HelpCircle';
-    const IconComponent = (LucideIcons as any)[LucideName];
+    const lucideIconName = iconMap[iconName] || 'HelpCircle';
+    const IconComponent = LucideIcons[lucideIconName] as React.ComponentType<{ className?: string }>;
+  
+    if (!IconComponent) {
+      console.error('❌ Missing icon:', lucideIconName, 'for', iconName);
+      return <LucideIcons.HelpCircle className={className} />;
+    }
   
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
@@ -100,15 +136,18 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const firestore = useFirestore();
     const { toast } = useToast();
     
+    // Generation State
     const [topic, setTopic] = useState('');
     const [wordCount, setWordCount] = useState('150');
     const [story, setStory] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     
+    // Quiz Progress State (The 3-Question Pathway)
     const [currentQ, setCurrentQ] = useState(0);
     const [userAns, setUserAns] = useState('');
     const [quizStatus, setQuizStatus] = useState<'typing' | 'correct' | 'wrong'>('typing');
 
+    // SaaS Query: Load saved stories only for this school
     const storiesQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(
             collection(firestore, 'junior_stories'), 
@@ -129,6 +168,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const handleGenerate = async () => {
         if (!topic.trim() || !schoolId) return;
         setLoading(true);
+        // AI call with topic and length
         const res = await generateJuniorStory({ topic, wordCount: parseInt(wordCount), schoolId });
         if (res.success && res.data) {
             setStory(res.data);
@@ -148,7 +188,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             await addDoc(collection(firestore, 'junior_stories'), {
                 ...story,
                 topic,
-                schoolId: schoolId,
+                schoolId: schoolId, // SaaS tagging
                 createdAt: serverTimestamp(),
                 createdBy: user?.uid
             });
@@ -372,6 +412,7 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     const [isLoading, setIsLoading] = useState(false);
   
     const handleLetterClick = useCallback(async (letter: string) => {
+        if (!schoolId) return;
         setSelectedLetter(letter);
         setIsLoading(true);
         const wordInfo = constants.VOCABULARY_DATA.find(w => w.word.startsWith(letter)) || constants.VOCABULARY_DATA[0];
@@ -386,8 +427,10 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     }, [schoolId]);
 
     useEffect(() => {
-        handleLetterClick('A');
-    }, [handleLetterClick]);
+        if (schoolId) {
+            handleLetterClick('A');
+        }
+    }, [handleLetterClick, schoolId]);
   
     const handleSing = async () => {
       if (!wordData || !schoolId) return;
@@ -460,7 +503,7 @@ export default function JuniorCampusPage() {
                     </TabsList>
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
-                        <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone /></TabsContent>
+                        <TabsContent value="lifeskills" className="mt-0">{schoolId && <LifeSkillsZone />}</TabsContent>
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
@@ -475,5 +518,7 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
+    
 
     
