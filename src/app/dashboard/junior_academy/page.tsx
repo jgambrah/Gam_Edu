@@ -18,6 +18,7 @@ import {
   Beaker, Bed, Eye
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
+
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generateRhyme, generateSkillDetails } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -50,13 +51,13 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-pen-nib': 'Pen',
       'fa-arrow-1-9': 'Calculator',
       'fa-hand-holding-heart': 'Handshake',
-      'fa-flask-vial': 'Beaker', // Changed from FlaskConical
+      'fa-flask-vial': 'Beaker',
       'fa-palette': 'Palette',
-      'fa-robot': 'BotMessageSquare', // Changed from Bot
+      'fa-robot': 'BotMessageSquare',
       'fa-face-smile': 'Smile',
       'fa-tooth': 'Sparkles',
       'fa-heart-pulse': 'HeartPulse',
-      'fa-vest': 'User', // Changed from Shirt (doesn't exist)
+      'fa-vest': 'User',
       'fa-sun': 'Sun',
       'fa-utensils': 'Utensils',
       'fa-school': 'School',
@@ -90,7 +91,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-comments': 'MessageSquare',
       'fa-people-group': 'Users',
       'fa-masks-theater': 'Drama',
-      'fa-brain': 'Brain', // Changed from BrainCircuit
+      'fa-brain': 'Brain',
       'fa-child-reaching': 'User',
       'fa-music': 'Music',
       'fa-magic': 'Wand2',
@@ -105,11 +106,12 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     };
   
     const lucideIconName = iconMap[iconName] || 'HelpCircle';
-    const IconComponent = LucideIcons[lucideIconName] as React.ComponentType<{ className?: string }>;
+    const IconComponent = (LucideIcons as any)[lucideIconName];
   
-    if (!IconComponent) {
-      console.error('❌ Missing icon:', lucideIconName, 'for', iconName);
-      return <LucideIcons.HelpCircle className={className} />;
+    if (!IconComponent || typeof IconComponent !== 'function') {
+      console.error('❌ Missing or invalid icon:', lucideIconName, 'for FA icon:', iconName);
+      const FallbackIcon = (LucideIcons as any)['HelpCircle'];
+      return <FallbackIcon className={className} />;
     }
   
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -454,7 +456,7 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
             ) : (
                 <div className="flex flex-col items-center gap-6 animate-in zoom-in">
                     <div className="w-80 h-80 bg-red-50 rounded-[4rem] border-8 border-white shadow-2xl flex items-center justify-center overflow-hidden">
-                        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-8" /> : <Loader2 className="w-12 h-12 animate-spin text-red-300"/>}
+                        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-8" alt={wordData.word}/> : <Loader2 className="w-12 h-12 animate-spin text-red-300"/>}
                     </div>
                     <h4 className="text-8xl font-black text-slate-800">{wordData.word}</h4>
                     <Button onClick={handleSing} className="h-20 px-16 bg-red-500 text-white rounded-full font-black text-3xl shadow-xl border-4 border-white">Sing with me! 🎤</Button>
@@ -518,7 +520,5 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-    
 
     

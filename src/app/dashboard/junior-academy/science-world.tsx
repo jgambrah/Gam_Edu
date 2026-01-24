@@ -9,8 +9,9 @@ import {
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
-  Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Hand, Tree, User
+  BotMessageSquare, User, Beaker, Bed, Eye, TrendingUp, Leaf, Tree
 } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 import confetti from 'canvas-confetti';
 import { generateLessonImageAction, generateTTSAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
@@ -26,7 +27,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const SCIENCE_DATA = {
-    bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child’s head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
+    bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child's head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
     innerOrgans: [{ name: "Heart", icon: 'fa-heart-pulse', fact: 'Your heart pumps blood to your body.', prompt: 'A simple cartoon heart with a smiley face' }, { name: "Lungs", icon: 'fa-lungs', fact: 'Your lungs help you breathe air.', prompt: 'Two friendly cartoon lungs' }],
     growth: [{ stage: "Baby", icon: 'fa-child-reaching', action: "I crawl and say goo-goo!", prompt: 'A happy baby crawling' }, { stage: "Child", icon: 'fa-user', action: "I run and play with my friends!", prompt: 'A child running in a park' }],
     senses: [{ sense: "See", icon: 'fa-eye', action: 'I see with my eyes!' }, { sense: "Hear", icon: 'fa-ear-listen', action: 'I hear with my ears!' }],
@@ -121,7 +122,7 @@ const TeacherModal: React.FC<{
           disabled={isLoading || !topicValue} 
           className="w-full"
         >
-          {isLoading ? <Loader2 className="animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>} CREATE MAGIC
+          {isLoading ? <Loader2 className="animate-spin mr-2"/> : <Sparkles className="mr-2 h-4 w-4"/>} CREATE MAGIC
         </Button>
       </div>
     </DialogContent>
@@ -133,7 +134,7 @@ const ScienceExploration: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
   const [playing, setPlaying] = useState(false);
   const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-  
+
   const playFeedbackSound = useCallback(async (text: string) => {
     if (!text || !schoolId) return;
     if (currentSourceRef.current) {
@@ -226,7 +227,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(false); // NEW STATE
 
   const current = data?.[index];
 
@@ -240,9 +241,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
   }, [current, categoryKey, schoolId]);
   
   useEffect(() => { 
-      if (started) {
-          fetchVisual(); 
-      }
+    if (started) fetchVisual(); 
   }, [index, data, fetchVisual, started]);
   
   const generateWithAi = async () => {
@@ -257,6 +256,17 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   
+  if (!started) {
+      return (
+          <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+              <IconRenderer iconName={initialData[0].icon} className="h-16 w-16 mx-auto text-green-300 mb-4"/>
+              <h3 className="text-2xl font-bold text-green-600 mb-2">{title}</h3>
+              <p className="text-slate-500 mb-4">Ready to explore the world of {title.toLowerCase()}?</p>
+              <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Learning</Button>
+          </div>
+      );
+  }
+  
   if (!current) {
     return (
       <Card>
@@ -267,18 +277,10 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
   }
 
   const getLabel = () => current?.[categoryKey];
-  const getDescription = () => current?.action || current?.fact || current?.instruction || `This is ${getLabel()?.toLowerCase() ?? 'this item'}.`;
-  
-  if (!started) {
-    return (
-      <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-        <IconRenderer iconName={current.icon} className="h-16 w-16 mx-auto text-green-300 mb-4"/>
-        <h3 className="text-2xl font-bold text-green-600 mb-2">{title}</h3>
-        <p className="text-slate-500 mb-4">Ready to explore the world of {title.toLowerCase()}?</p>
-        <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Learning</Button>
-      </div>
-    );
-  }
+  const getDescription = () => {
+      const label = getLabel();
+      return current?.action || current?.fact || current?.instruction || `This is ${label?.toLowerCase() ?? 'this item'}.`;
+  };
 
   return (
     <div className="relative font-black">
@@ -319,7 +321,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(false); // NEW STATE
 
   const [livingList, setLivingList] = useState(SCIENCE_DATA.living);
   const [nonLivingList, setNonLivingList] = useState(SCIENCE_DATA.nonLiving);
@@ -338,9 +340,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   }, [current, schoolId]);
 
   useEffect(() => { 
-    if(started) {
-        fetchImage();
-    }
+    if (started) fetchImage();
   }, [index, isLiving, livingList, nonLivingList, started, fetchImage]);
 
   const handleSort = (choice: boolean) => {
@@ -355,7 +355,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
       const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'living', schoolId });
       if(result.success && result.data){
         const isLivingResult = (result.data as any).isLiving;
-        const newItem = { name: (result.data as any).name, icon: (result.data as any).icon || 'fa-leaf' };
+        const newItem = { name: (result.data as any).name, icon: (result.data as any).icon || 'fa-leaf', prompt: (result.data as any).prompt || `A nursery illustration of ${aiTopic}` };
         if (isLivingResult) setLivingList(prev => [...prev, newItem]);
         else setNonLivingList(prev => [...prev, newItem]);
         setIsDrawerOpen(false); setAiTopic('');
@@ -373,7 +373,6 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
         </div>
     );
   }
-
 
   return (
     <div className="relative font-black">
