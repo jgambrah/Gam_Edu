@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -50,40 +49,40 @@ const SCIENCE_DATA = {
     }
   };
 
-const iconMap: Record<string, keyof typeof LucideIcons> = {
-  'fa-earth-africa': 'Earth',
-  'fa-user': 'UserIcon',
-  'fa-child-reaching': 'UserIcon',
-  'fa-heart-pulse': 'HeartPulse',
-  'fa-lungs': 'Atom',
-  'fa-arrow-up-right-dots': 'TrendingUp',
-  'fa-ear-listen': 'Ear',
-  'fa-eye': 'Eye',
-  'fa-apple-whole': 'Apple',
-  'fa-leaf': 'Leaf',
-  'fa-tree': 'Tree',
-  'fa-cloud-sun': 'CloudSun',
-  'fa-cloud-showers-heavy': 'CloudRain',
-  'fa-paw': 'PawPrint',
-  'fa-car': 'Car',
-  'fa-plane': 'Plane',
-  'fa-shapes': 'Shapes',
-  'fa-recycle': 'Recycle',
-  'fa-water': 'Droplets',
-  'fa-magic': 'Wand2',
-  'fa-spinner': 'Loader2',
-  'fa-arrow-left': 'ArrowLeft',
-  'fa-arrow-right': 'ArrowRight',
-  'fa-volume-high': 'Volume2',
-  'fa-sun': 'Sun',
-  'fa-hand': 'Hand',
-  'fa-carrot': 'Carrot',
-  'fa-cube': 'Cube',
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  'fa-earth-africa': Earth,
+  'fa-user': UserIcon,
+  'fa-child-reaching': UserIcon,
+  'fa-heart-pulse': HeartPulse,
+  'fa-lungs': Atom,
+  'fa-arrow-up-right-dots': TrendingUp,
+  'fa-ear-listen': Ear,
+  'fa-eye': Eye,
+  'fa-apple-whole': Apple,
+  'fa-leaf': Leaf,
+  'fa-tree': Tree,
+  'fa-cloud-sun': CloudSun,
+  'fa-cloud-showers-heavy': CloudRain,
+  'fa-paw': PawPrint,
+  'fa-car': Car,
+  'fa-plane': Plane,
+  'fa-shapes': Shapes,
+  'fa-recycle': Recycle,
+  'fa-water': Droplets,
+  'fa-magic': Wand2,
+  'fa-spinner': Loader2,
+  'fa-arrow-left': ArrowLeft,
+  'fa-arrow-right': ArrowRight,
+  'fa-volume-high': Volume2,
+  'fa-sun': Sun,
+  'fa-hand': Hand,
+  'fa-carrot': Carrot,
+  'fa-cube': Cube,
 };
 
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
     if (!iconName) return <HelpCircle className={cn(className)} />;
-    const IconComponent = (LucideIcons as any)[iconMap[iconName] || 'HelpCircle'];
+    const IconComponent = iconMap[iconName] || HelpCircle;
     
     if (!IconComponent) {
       console.error(`Icon "${iconMap[iconName] || 'HelpCircle'}" not found for key "${iconName}"`);
@@ -219,7 +218,6 @@ const ScienceExploration: React.FC = () => {
   );
 };
 
-
 const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound: (t: string) => void, categoryKey?: string, type: string, schoolId: string }> = ({ initialData, title, onSound, categoryKey = 'name', type, schoolId }) => {
   const [data, setData] = useState(initialData);
   const [index, setIndex] = useState(0);
@@ -259,6 +257,9 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   
+  const getLabel = () => current?.[categoryKey];
+  const getDescription = () => current?.action || current?.fact || current?.instruction || `This is ${getLabel()?.toLowerCase() ?? 'this item'}.`;
+
   if (!current) {
     return (
       <Card>
@@ -268,9 +269,6 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     );
   }
 
-  const getLabel = () => current?.[categoryKey];
-  const getDescription = () => current?.action || current?.fact || current?.instruction || `This is ${getLabel()?.toLowerCase() ?? 'this item'}.`;
-  
   if (!started) {
     return (
          <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
@@ -364,8 +362,8 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
-
-  if (!started) {
+  
+   if (!started) {
     return (
          <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
             <Leaf className="h-16 w-16 mx-auto text-green-300 mb-4"/>
@@ -373,8 +371,9 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
             <p className="text-slate-500 mb-4">Let's sort things into living and non-living groups!</p>
             <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Sorting</Button>
         </div>
-    )
+    );
   }
+
 
   return (
     <div className="relative font-black">
@@ -417,3 +416,5 @@ const ConceptsZone: React.FC<{ onSound: (t: string) => void, schoolId: string }>
 };
 
 export default ScienceExploration;
+
+    
