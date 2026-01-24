@@ -1,4 +1,3 @@
-
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -467,28 +466,6 @@ export const navItems: NavItem[] = [
   },
 ];
 
-export const sampleAnnouncements = [
-  {
-    id: 1,
-    title: 'Annual Sports Day Postponed',
-    date: '2024-10-15',
-    content: `Dear Parents and Students,\nPlease note that the Annual Sports Day, originally scheduled for October 20th, has been postponed due to forecasted heavy rain. The new date will be November 5th. All event timings and venues remain the same. We apologize for any inconvenience this may cause and appreciate your understanding. Field trip permission slips for the science museum are due by this Friday, October 18th. Also, the parent-teacher conference is scheduled for next month.`,
-  },
-  {
-    id: 2,
-    title: 'Parent-Teacher Conference Schedule',
-    date: '2024-10-12',
-    content: `We are pleased to announce the schedule for the upcoming Parent-Teacher Conferences on November 10th and 11th. Please log in to the portal to book your slots with the respective teachers. Bookings will be open from October 15th to November 5th. This is a valuable opportunity to discuss your child's progress.`,
-  },
-  {
-    id: 3,
-    title: 'School Policy Update: Mobile Phones',
-    date: '2024-10-10',
-    content: `Effective immediately, there is an update to the school's mobile phone policy. Students are no longer permitted to use mobile phones during lunch breaks to encourage more social interaction. Phones must be kept in lockers during school hours. This policy change will be strictly enforced by all staff. Teachers are required to attend a brief meeting on this policy change this Friday after school in the staff room.`,
-  },
-];
-
-
 export const MOCK_SUBJECTS = [
     { id: 'math-01', name: 'Mathematics' },
     { id: 'sci-01', name: 'Science' },
@@ -574,64 +551,6 @@ export const MOCK_STUDENTS_FOR_TRANSPORT = [
     { uid: 'student-06', firstName: 'Frank', lastName: 'White', classId: 'g7', transportStopId: undefined },
 ];
 
-export const mockAttendanceRecords = [
-  { id: '1', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Present', notes: '' },
-  { id: '2', studentId: 'student-02', studentName: 'Bob Johnson', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Absent', notes: 'Feeling unwell' },
-  { id: '3', studentId: 'student-03', studentName: 'Charlie Brown', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Late', notes: 'Traffic' },
-  { id: '4', studentId: 'student-04', studentName: 'grade-10-b', date: new Date('2024-05-20'), status: 'Present', notes: '' },
-  { id: '5', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Present', notes: '' },
-  { id: '6', studentId: 'student-02', studentName: 'Bob Johnson', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Present', notes: '' },
-  { id: '7', studentId: 'student-03', studentName: 'Charlie Brown', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Excused', notes: "Doctor's appointment" },
-  { id: '8', studentId: 'student-04', studentName: 'Diana Prince', classId: 'grade-10-b', date: new Date('2024-05-21'), status: 'Absent', notes: '' },
-  { id: '9', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-19'), status: 'Late', notes: 'Missed bus' },
-];
-
-export type MathProblem = {
-    id: string;
-    topic: string;
-    difficulty: 'Easy' | 'Medium' | 'Hard';
-    question_text: string;
-    correct_answer: number | string;
-    options: (number | string)[];
-    classId: string;
-};
-
-export const MOCK_MATH_PROBLEMS: MathProblem[] = [
-    { id: 'alg-e-01', topic: 'Algebra', difficulty: 'Easy', question_text: 'If x + 5 = 12, what is x?', correct_answer: 7, options: [5, 6, 7, 8], classId: 'class-1' },
-    { id: 'alg-e-02', topic: 'Algebra', difficulty: 'Easy', question_text: 'Solve for y: 3y = 21', correct_answer: 7, options: [3, 6, 7, 9], classId: 'class-1' },
-    { id: 'geo-m-01', topic: 'Geometry', difficulty: 'Medium', question_text: 'What is the area of a circle with a radius of 5?', correct_answer: '78.54', options: ['31.42', '50.00', '78.54', '100.00'], classId: 'class-2' },
-];
-
-export type GlobalLeaderboardEntry = {
-    userId: string;
-    userName: string;
-    profilePictureUrl?: string;
-    total_correct_answers: number;
-    total_quizzes_completed: number;
-};
-
-export const MOCK_LEADERBOARD: GlobalLeaderboardEntry[] = [
-    { userId: 'student-01', userName: 'Alice', total_correct_answers: 150, total_quizzes_completed: 20, profilePictureUrl: 'https://i.pravatar.cc/150?u=student-01' },
-    { userId: 'student-02', userName: 'Bob', total_correct_answers: 135, total_quizzes_completed: 18, profilePictureUrl: 'https://i.pravatar.cc/150?u=student-02' },
-    { userId: 'student-03', userName: 'Charlie', total_correct_answers: 120, total_quizzes_completed: 22, profilePictureUrl: 'https://i.pravatar.cc/150?u=student-03' },
-];
-
-export type ElaGrammarDrill = {
-    id: string;
-    topic: string;
-    type: 'MCQ' | 'Drag and Drop';
-    question_prompt: string;
-    options?: string[];
-    correct_answer: string | string[];
-    classId: string;
-};
-
-export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
-    { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
-    { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
-];
-
-
 export const MOCK_CROSSWORD_PUZZLES = [
   {
     id: "puzzle1",
@@ -657,47 +576,15 @@ export const MOCK_CROSSWORD_PUZZLES = [
 ];
 
 export const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-export const NUMBERS = '0123456789'.split('');
-
-export type DictionaryWord = {
-  word: string;
-  category: string;
-  imagePrompt: string;
-};
-
-export const DICTIONARY_WORDS: DictionaryWord[] = [
-  { word: 'Apple', category: 'Nature', imagePrompt: 'A shiny red apple with a happy face, nursery style' },
-  { word: 'Ball', category: 'General', imagePrompt: 'A colorful bouncy ball with stripes, nursery style' },
-  { word: 'Cat', category: 'Animals', imagePrompt: 'A fluffy orange kitten with big eyes, nursery style' },
-  { word: 'Dog', category: 'Animals', imagePrompt: 'A friendly brown puppy wagging its tail, nursery style' },
-  { word: 'Elephant', category: 'Animals', imagePrompt: 'A cute blue elephant with big ears, nursery style' },
-  { word: 'Fish', category: 'Nature', imagePrompt: 'A happy orange goldfish swimming, nursery style' },
-  { word: 'Giraffe', category: 'Animals', imagePrompt: 'A tall friendly giraffe with a long neck, nursery style' },
-  { word: 'House', category: 'Home', imagePrompt: 'A cozy little house with flowers, nursery style' },
-  { word: 'Igloo', category: 'Nature', imagePrompt: 'A white snowy igloo with a penguin nearby, nursery style' },
-  { word: 'Jellyfish', category: 'Nature', imagePrompt: 'A glowing purple jellyfish under the sea, nursery style' },
-  { word: 'Kite', category: 'General', imagePrompt: 'A colorful diamond kite flying in the sky, nursery style' },
-  { word: 'Lion', category: 'Animals', imagePrompt: 'A brave little lion cub with a fluffy mane, nursery style' },
-  { word: 'Moon', category: 'Nature', imagePrompt: 'A smiling crescent moon in the night sky, nursery style' },
-];
-
-export const VOCABULARY_DATA = DICTIONARY_WORDS;
-
-export const INITIAL_WORDS = [
-  { word: 'AT', sentence: 'The cat is AT the mat.', imagePrompt: 'A tiny cartoon cat sitting on a colorful mat, nursery style' },
-  { word: 'CAT', sentence: 'The CAT is fat.', imagePrompt: 'A fluffy fat cartoon kitten, orange fur, nursery style' },
-  { word: 'DOG', sentence: 'The DOG says woof!', imagePrompt: 'A friendly brown cartoon dog wagging its tail, nursery style' },
-  { word: 'SUN', sentence: 'The SUN is hot.', imagePrompt: 'A smiling yellow sun with bright rays, nursery style' },
-];
-
-export const DICTION_DATA = [
-  { word: 'APPLE', syllables: 'AP-PLE', instruction: 'Open your mouth wide like a lion for the "AP"!', prompt: 'A big red apple, nursery style' },
-  { word: 'BANANA', syllables: 'BA-NA-NA', instruction: 'Three happy bounces! BA... NA... NA!', prompt: 'A happy yellow banana, nursery style' },
-];
 
 export const JOLLY_PHONICS_DATA = [
   { letter: 'S', sound: 'sss', action: 'Weave your hand like a snake and say sss.', story: 'Sammy the Snake lives in the sun. He slides through the grass and says sss!', imagePrompt: 'A friendly cartoon snake in a sunny garden, bright colors, nursery style, white background' },
   { letter: 'A', sound: 'a-a-a', action: 'Wiggle your fingers on your arm like ants and say a-a-a.', story: 'Annie the Ant found a big red apple. She invited her friends for a snack!', imagePrompt: 'A happy ant carrying a huge shiny red apple, nursery style' },
+];
+
+export const PHONICS_DATA = [
+  { upper: 'S', lower: 's', word: 'Snake', imagePrompt: 'A friendly cartoon snake sliding in the grass, bright colors, nursery style, white background' },
+  { upper: 'A', lower: 'a', word: 'Apple', imagePrompt: 'A shiny red cartoon apple with a happy face, nursery style, white background' },
 ];
 
 export const PICTURE_READING_DATA = [
@@ -717,11 +604,6 @@ export const SOUND_MATCHING_DATA = [
   { sound: 'M', items: [{ word: 'Moon', prompt: 'A glowing crescent moon' }, { word: 'Mouse', prompt: 'A tiny grey mouse' }, { word: 'Fish', prompt: 'A goldfish' }] },
 ];
 
-export const PHONICS_DATA = [
-  { upper: 'S', lower: 's', word: 'Snake', imagePrompt: 'A friendly cartoon snake sliding in the grass, bright colors, nursery style, white background' },
-  { upper: 'A', lower: 'a', word: 'Apple', imagePrompt: 'A shiny red cartoon apple with a happy face, nursery style, white background' },
-];
-
 export const BLENDS_DATA = [
   { blend: 'sh', type: 'digraph', words: [{ word: 'Ship', prompt: 'A blue cartoon ship on water, nursery style' }, { word: 'Shell', prompt: 'A pink sea shell on sand, nursery style' }] },
 ];
@@ -730,9 +612,13 @@ export const RHYMES_DATA = [
   { ending: 'ug', words: [{ word: 'Bug', prompt: 'A tiny ladybug on a leaf, nursery style' }, { word: 'Hug', prompt: 'A bear hugging a cub, nursery style' }, { word: 'Mug', prompt: 'A hot cocoa mug, nursery style' }] },
 ];
 
-export const SIGHT_WORDS_DATA = [
-  { word: 'he', type: 'tricky', prompt: 'A boy pointing to himself, high contrast text "he", nursery style' },
-  { word: 'me', type: 'tricky', prompt: 'A happy girl pointing to her chest, high contrast text "me", nursery style' },
+export const DICTION_DATA = [
+  { word: 'APPLE', syllables: 'AP-PLE', instruction: 'Open your mouth wide like a lion for the "AP"!', prompt: 'A big red apple, nursery style' },
+  { word: 'BANANA', syllables: 'BA-NA-NA', instruction: 'Three happy bounces! BA... NA... NA!', prompt: 'A happy yellow banana, nursery style' },
+];
+
+export const MISSING_LETTERS_DATA = [
+  { word: 'CAT', missing: 'A', options: ['A', 'E', 'I'], prompt: 'A cute orange cat, nursery style' },
 ];
 
 export const ENVIRONMENTAL_PRINT_DATA = [
@@ -745,151 +631,15 @@ export const BOOK_HANDLING_DATA = [
     pages: [{ text: 'This is the FRONT of the book.', prompt: 'A close up of a colorful nursery book cover with a happy sun' }, { text: 'We turn the page from RIGHT to LEFT.', prompt: 'A hand flipping a page in a colorful picture book' }] }
 ];
 
-export const MISSING_LETTERS_DATA = [
-  { word: 'CAT', missing: 'A', options: ['A', 'E', 'I'], prompt: 'A cute orange cat, nursery style' },
-];
-
-export const STORYTELLING_DATA = [
-  { 
-    title: 'The Boy and His Cat', 
-    prompt: 'A boy pouring milk for his cat',
-    sequence: [
-      { id: 1, text: 'A small boy sees his thirsty cat.', prompt: 'A 3D nursery scene of a boy looking at his orange cat.' }, 
-      { id: 2, text: 'He is pouring milk into a small blue bowl.', prompt: 'A boy pouring fresh white milk into a small blue bowl.' }, 
-      { id: 3, text: 'The boy and cat are happy.', prompt: 'A happy cat drinking milk and the boy patting its back.' }
-    ] 
-  }
-];
-
-export const THEME_VOCAB_DATA = {
-  seasons: [
-    { name: 'Summer', prompt: 'A sunny beach scene, nursery style', words: ['Sun', 'Sand', 'Hot'] }, 
-  ],
-  family: [
-    { name: 'My Family', prompt: 'A diverse friendly family group smiling, nursery style', words: ['Mom', 'Dad', 'Baby', 'Love'] }
-  ]
-};
-
-export const READING_DATA = [
-  { title: 'The Blue Whale', text: 'A big whale is in the sea. It is blue and very happy. The whale loves to swim and play with fish.', imagePrompt: 'A big happy blue whale swimming in the ocean with small fish, colorful nursery style animation art', activities: [{ question: 'WHAT color is the whale?', options: ['Blue', 'Red', 'Green'], correct: 0 }, { question: 'WHERE is the whale?', options: ['Forest', 'Sea', 'Moon'], correct: 1 }] }
-];
-
-export const GRAMMAR_DATA = {
-  plurals: [{ singular: 'Apple', plural: 'Apples', prompt: 'A single red apple next to a pointer of red apples, nursery style' }],
-  articles: [{ word: 'Apple', article: 'an', prompt: 'A shiny red apple, nursery style' }],
-  nouns: [{ word: 'Boy', type: 'Person', prompt: 'A happy little boy smiling, nursery style' }],
-  verbs: [{ word: 'Run', action: 'Running fast', prompt: 'A cartoon child running in a park, motion lines, nursery style' }],
-  adjectives: [{ word: 'Big', prompt: 'A very big grey elephant, nursery style' }],
-  pronouns: [{ word: 'He', prompt: 'A happy boy pointing at himself, nursery style' }],
-  adverbs: [{ word: 'Quickly', prompt: 'A cheetah running very fast with wind lines, nursery style' }],
-  prepositions: [{ word: 'Under', prompt: 'A tiny cat hiding under a wooden chair, nursery style' }],
-  conjunctions: [{ word: 'And', prompt: 'An apple and a banana sitting together on a plate, nursery style' }],
-  interjections: [{ word: 'Wow!', prompt: 'A child looking at magical glowing sparkles with big eyes, nursery style' }],
-};
-
-export const OPPOSITES_DATA = [
-  { word: 'Happy', opposite: 'Sad', imagePrompt: 'A split screen: left side a smiling cartoon child, right side a sad cartoon child, nursery style' },
-];
-
-export const SENTENCE_DATA = [
-  { text: 'I see a red cat.', imagePrompt: 'A cute red cartoon kitten sitting on a floor, nursery style', pattern: 'I see a...' },
-];
-
-export const HIDDEN_WORDS_DATA = [
-  { target: 'CAT', options: ['CAT', 'BAT', 'CAR', 'CAN'], imagePrompt: 'A group of nursery items, a cat, a bat, a car, and a can, bright colors' },
-];
-
-export const NUMERACY_DATA = {
-  numbers: [
-    { value: 1, word: 'One', prompt: 'one friendly lion' },
-    { value: 2, word: 'Two', prompt: 'two happy monkeys' },
-  ],
-  shapes: [
-    { name: 'Circle', type: '2D', prompt: 'A round red circle' },
-    { name: 'Square', type: '2D', prompt: 'A blue square with four equal sides' },
-  ],
-  comparisons: [
-    {
-      q: "Which is BIG?",
-      category: 'Size',
-      options: [
-        { size: 'lg', label: 'Big Bear', prompt: 'A very large friendly brown bear' },
-        { size: 'sm', label: 'Small Bear', prompt: 'A tiny cute brown bear cub' }
-      ],
-      correct: 0
-    }
-  ],
-  patterns: [
-    { sequence: ['apple-whole', 'carrot', 'apple-whole'], next: 'carrot', options: ['apple-whole', 'carrot'] },
-  ],
-  oneToOne: [
-    { count: 3, name: 'Rabbit', itemName: 'Carrot', character: 'fa-rabbit', item: 'fa-carrot' },
-  ]
-};
-
-export const ADDITION_DATA = [
-  { val1: 2, val2: 3, icon: 'fa-apple-whole', theme: 'Apples', prompt: 'Two apples and three apples on a table, nursery style' },
-];
-
-export const SUBTRACTION_DATA = [
-  { val1: 5, val2: 2, icon: 'fa-cookie', theme: 'Cookies', prompt: 'Five cookies with two eaten, nursery style' },
-];
-
-export const NUMBER_WORDS_DATA = [
-  { digit: 1, word: 'ONE', prompt: 'The number one made of colorful blocks' },
-];
-
-export const TIME_DATA = [
-  { hour: 3, minute: 0, phrase: 'Three o\'clock', prompt: 'A round clock showing 3:00, nursery style' },
-];
-
-export const MEASUREMENT_DATA = {
-  weight: [
-    { q: 'Which is HEAVIER?', correct: 0, items: [{ label: 'Elephant', prompt: 'A big blue elephant' }, { label: 'Feather', prompt: 'A light pink feather' }] }
-  ],
-  height: [
-    { q: 'Which is TALLER?', correct: 0, items: [{ label: 'Giraffe', prompt: 'A tall friendly giraffe' }, { label: 'Mouse', prompt: 'A tiny grey mouse' }] }
-  ]
-};
-
-export const TENS_UNITS_DATA = [
-  { number: 12, tens: 1, units: 2, prompt: 'One bundle of ten sticks and two single sticks, nursery style' },
-];
-
-export const GROUPING_DATA = [
-  { groupSize: 2, totalItems: 6, theme: 'Birds', prompt: 'Six birds grouped into pairs of two, nursery style' },
-];
-
-export const SEQUENCE_DATA = [
-  { type: 'after', question: 'What comes after 2?', sequence: [1, 2, null], answer: 3, options: [3, 4, 5] },
-];
-
-export const NUM_COMPARISON_DATA = [
-  { q: 'Which is GREATER?', val1: 5, val2: 3, answer: 5, type: 'greater' },
-];
-
-export const COUNTING_TASK_DATA = [
-  { count: 4, icon: 'fa-star', theme: 'Stars', prompt: 'Four bright yellow stars in a blue sky, nursery style' },
-];
-
-export const NUMBER_BONDS_DATA = [
-  { target: 10, part1: 7, part2: 3, theme: 'Balloons', prompt: 'Seven red balloons and three blue balloons, nursery style' },
-];
-
-export const SPATIAL_DATA = [
-  { target: 'Ball', position: 'above', refObject: 'Box', prompt: 'A red ball hovering above a colorful toy box, nursery style' },
-];
-
-export const MONEY_DATA = [
-  { amount: 5, coins: 5, label: 'Gold Coins', prompt: 'Five shiny gold coins on a table, nursery style' },
-];
-
 export type DictionaryWord = {
   word: string;
   category: string;
   imagePrompt: string;
 };
 
-    
-
-    
+export const VOCABULARY_DATA: DictionaryWord[] = [
+  { word: 'Apple', category: 'Nature', imagePrompt: 'A shiny red apple with a happy face, nursery style' },
+  { word: 'Ball', category: 'General', imagePrompt: 'A colorful bouncy ball with stripes, nursery style' },
+  { word: 'Cat', category: 'Animals', imagePrompt: 'A fluffy orange kitten with big eyes, nursery style' },
+  { word: 'Dog', category: 'Animals', imagePrompt: 'A friendly brown puppy wagging its tail, nursery style' },
+];
