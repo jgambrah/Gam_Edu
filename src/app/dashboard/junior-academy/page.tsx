@@ -8,8 +8,8 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
-  Bot, Shirt, FlaskConical, Bed, Eye
+  Trophy, Gift, Check, CheckCircle2, XCircle, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
+  Bot, Shirt, FlaskConical, Bed, Eye, PenLine, CaseSensitive, PenTool
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -35,7 +35,7 @@ import { cn } from '@/lib/utils';
 import { getAuth } from 'firebase/auth';
 import LifeSkillsZone from './life-skills-zone';
 import WritingCanvas from './writing-canvas'; 
-
+import * as constants from '@/lib/constants';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const iconMap: Record<string, keyof typeof LucideIcons> = {
@@ -74,11 +74,11 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-guitar': 'Guitar',
       'fa-plane': 'Plane',
       'fa-car': 'Car',
-      'fa-frog': 'Rabbit', 
+      'fa-frog': 'Rabbit',
       'fa-bolt': 'Zap',
       'fa-circle-dot': 'CircleDot',
-      'fa-soap': 'Sparkles', 
-      'fa-broccoli': 'Carrot', 
+      'fa-soap': 'Sparkles',
+      'fa-broccoli': 'Carrot',
       'fa-display': 'Monitor',
       'fa-graduation-cap': 'GraduationCap',
       'fa-comments': 'MessageSquare',
@@ -102,6 +102,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     const IconComponent = LucideIcons[lucideIconName] as React.ComponentType<{ className?: string }>;
   
     if (!IconComponent) {
+      console.error('❌ Missing icon:', lucideIconName, 'for', iconName);
       return <LucideIcons.HelpCircle className={className} />;
     }
   
@@ -177,7 +178,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             await addDoc(collection(firestore, 'junior_stories'), {
                 ...story,
                 topic,
-                schoolId: schoolId,
+                schoolId: schoolId, // SaaS tagging
                 createdAt: serverTimestamp(),
                 createdBy: user?.uid
             });
@@ -191,6 +192,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const checkAnswer = () => {
         if (!userAns.trim()) return;
         const currentQuestion = story.questions[currentQ];
+        // Fuzzy match: check if user answer contains the key part of the correct answer
         const isCorrect = userAns.toLowerCase().includes(currentQuestion.answer.toLowerCase()) || 
                           currentQuestion.answer.toLowerCase().includes(userAns.toLowerCase());
 
@@ -210,6 +212,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
             setUserAns('');
             setQuizStatus('typing');
         } else {
+            // Quiz finished
             setStory(null);
             setTopic('');
             confetti({ particleCount: 200, spread: 100 });
@@ -219,6 +222,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
+            {/* 1. TEACHER'S MAGIC WRITING TOOL */}
             {canEdit && (
                 <div className="bg-white p-6 rounded-[35px] border-4 border-purple-100 flex flex-col md:flex-row gap-4 shadow-lg">
                     <div className="flex-1 space-y-1">
@@ -267,12 +271,14 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </div>
 
                     <CardContent className="p-12 space-y-12">
+                        {/* THE STORY CONTENT */}
                         <div className="max-w-4xl mx-auto">
                             <p className="text-3xl font-bold text-orange-900 leading-relaxed font-serif first-letter:text-7xl first-letter:font-black first-letter:mr-3 first-letter:float-left whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
 
+                        {/* 3-QUESTION CHALLENGE BOX */}
                         <div className="bg-white/80 backdrop-blur-sm p-10 rounded-[50px] border-4 border-dashed border-orange-300 shadow-inner space-y-8 relative overflow-hidden">
                             <div className="flex justify-between items-center mb-4">
                                 <Badge className="bg-purple-600 text-white px-6 py-2 rounded-full text-lg font-black uppercase tracking-widest">
@@ -333,6 +339,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                     </CardContent>
                 </Card>
             ) : (
+                /* 3. LIBRARY SECTION: SAVED STORIES */
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-2xl font-black text-slate-700 flex items-center gap-2">
@@ -501,3 +508,5 @@ export default function JuniorCampusPage() {
 }
 
     
+```
+
