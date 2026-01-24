@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -8,8 +9,8 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
-  Bot, Shirt, FlaskConical, Bed, Eye, PenLine, CaseSensitive, PenTool
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
+  Bot, Shirt, FlaskConical, Bed, Eye
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -130,15 +131,18 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const firestore = useFirestore();
     const { toast } = useToast();
     
+    // Generation State
     const [topic, setTopic] = useState('');
     const [wordCount, setWordCount] = useState('150');
     const [story, setStory] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     
+    // Quiz Progress State (The 3-Question Pathway)
     const [currentQ, setCurrentQ] = useState(0);
     const [userAns, setUserAns] = useState('');
     const [quizStatus, setQuizStatus] = useState<'typing' | 'correct' | 'wrong'>('typing');
 
+    // SaaS Query: Load saved stories only for this school
     const storiesQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(
             collection(firestore, 'junior_stories'), 
@@ -159,6 +163,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     const handleGenerate = async () => {
         if (!topic.trim() || !schoolId) return;
         setLoading(true);
+        // AI call with topic and length
         const res = await generateJuniorStory({ topic, wordCount: parseInt(wordCount), schoolId });
         if (res.success && res.data) {
             setStory(res.data);
@@ -506,7 +511,3 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-    
-```
-
