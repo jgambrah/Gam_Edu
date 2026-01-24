@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { assessHandwritingAction, generateTTSAction } from '@/app/dashboard/junior-actions';
+import { assessHandwritingAction, generateTTSAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
 import * as LucideIcons from 'lucide-react';
@@ -11,8 +11,9 @@ import { cn } from '@/lib/utils';
 // UI imports from the project
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenTool } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // Icon Renderer to handle fa-* classes
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
@@ -30,6 +31,9 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
         'fa-check-double': 'CheckCheck',
         'fa-wand-magic-sparkles': 'Wand2',
         'fa-heart': 'Heart',
+        'fa-1-9': 'Hash', // Corrected from 'Binary'
+        'fa-font': 'CaseSensitive',
+        'fa-lines-leaning': 'PenLine', // Changed to a better icon
     };
     const IconComponent = LucideIcons[iconMap[iconName] as keyof typeof LucideIcons] || LucideIcons.HelpCircle;
     return <IconComponent className={cn(className)} />;
@@ -51,7 +55,7 @@ const NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
 type PracticeMode = 'letters' | 'strokes' | 'numbers';
 
-const WritingCanvas: React.FC<{ onSound?: (t: string) => void, schoolId: string }> = ({ schoolId }) => {
+const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const traceCanvasRef = useRef<HTMLCanvasElement>(null);
   const freeCanvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
@@ -123,19 +127,19 @@ const WritingCanvas: React.FC<{ onSound?: (t: string) => void, schoolId: string 
 
     if (isTrace) {
       ctx.strokeStyle = '#CBD5E1';
-      ctx.lineWidth = 4;
-      ctx.setLineDash([10, 10]);
+      ctx.lineWidth = 8;
+      ctx.setLineDash([10, 15]);
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
 
       if (mode === 'letters') {
-        ctx.font = '900 350px Fredoka';
+        ctx.font = '900 350px Fredoka, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.strokeText(selectedLetter, midX, midY + 20);
       } else if (mode === 'numbers') {
         const fontSize = selectedNumber === '10' ? 280 : 350;
-        ctx.font = `900 ${fontSize}px Fredoka`;
+        ctx.font = `900 ${fontSize}px Fredoka, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.strokeText(selectedNumber, midX, midY + 20);
@@ -162,10 +166,7 @@ const WritingCanvas: React.FC<{ onSound?: (t: string) => void, schoolId: string 
     const rect = canvas.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    return {
-      x: clientX - rect.left,
-      y: clientY - rect.top
-    };
+    return { x: clientX - rect.left, y: clientY - rect.top };
   };
 
   const startDrawing = (e: any, canvasRef: React.RefObject<HTMLCanvasElement | null>, setDrawing: (v: boolean) => void) => {
@@ -197,16 +198,16 @@ const WritingCanvas: React.FC<{ onSound?: (t: string) => void, schoolId: string 
   };
 
   const playFeedbackSound = async (text: string) => {
-      if (!schoolId) return;
-      try {
-        const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-        if (result.success && result.data && typeof window !== 'undefined') {
-            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-            audio.play();
-        }
-      } catch (e) {
-          console.error("Audio playback error:", e);
+    if (!schoolId) return;
+    try {
+      const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
+      if (result.success && result.data && typeof window !== 'undefined') {
+          const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+          audio.play();
       }
+    } catch (e) {
+      console.error("Audio playback error:", e);
+    }
   };
 
   const handleFinish = async () => {
@@ -242,11 +243,11 @@ const WritingCanvas: React.FC<{ onSound?: (t: string) => void, schoolId: string 
       setIsEvaluating(false);
     }
   };
-
+  
   if (!started) {
       return (
            <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-              <LucideIcons.PenNib className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
+              <PenNib className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
               <h3 className="text-2xl font-bold text-purple-600 mb-2">Writing Practice</h3>
               <p className="text-slate-500 mb-4">Let's learn to write letters, numbers, and strokes!</p>
               <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Writing</Button>
@@ -270,7 +271,7 @@ const WritingCanvas: React.FC<{ onSound?: (t: string) => void, schoolId: string 
       )}
 
       <div className="flex bg-white p-2 rounded-3xl shadow-xl border-4 border-gray-50 flex-wrap justify-center gap-2">
-        <button onClick={() => setMode('numbers')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'numbers' ? 'bg-orange-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-orange-50'}`}><IconRenderer iconName="fa-arrow-1-9" className="mr-2"/> Numbers 1-10</button>
+        <button onClick={() => setMode('numbers')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'numbers' ? 'bg-orange-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-orange-50'}`}><IconRenderer iconName="fa-1-9" className="mr-2"/> Numbers 1-10</button>
         <button onClick={() => setMode('letters')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'letters' ? 'bg-pink-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-pink-50'}`}><IconRenderer iconName="fa-font" className="mr-2"/> Letters A-Z</button>
         <button onClick={() => setMode('strokes')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'strokes' ? 'bg-blue-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-blue-50'}`}><IconRenderer iconName="fa-lines-leaning" className="mr-2"/> Strokes</button>
       </div>
@@ -301,19 +302,33 @@ const WritingCanvas: React.FC<{ onSound?: (t: string) => void, schoolId: string 
         <div className="flex gap-3">
           {['#FF6B6B', '#FF9F43', '#FFE66D', '#4ECDC4', '#45AAF2', '#A55EEA', '#000000'].map(c => (<button key={c} onClick={() => setBrushColor(c)} style={{ backgroundColor: c }} className={`w-11 h-11 rounded-full border-4 transition-all ${brushColor === c ? 'border-black scale-125 shadow-lg' : 'border-white hover:scale-110'}`}/>))}
         </div>
+        
         <div className="h-10 w-px bg-gray-200 hidden sm:block" />
+
         <div className="flex gap-4">
           <button onClick={initCanvases} className="px-8 py-3 bg-slate-100 text-slate-800 font-black rounded-2xl hover:bg-slate-200 transition-all flex items-center gap-2 uppercase text-xs tracking-widest border border-slate-200"><IconRenderer iconName="fa-trash-can"/> Start Over</button>
-          <button onClick={() => playFeedbackSound("You are doing great! Keep it up!")} className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl hover:bg-yellow-500 transition-all flex items-center gap-2 uppercase text-xs tracking-widest shadow-md border border-yellow-500"><IconRenderer iconName="fa-thumbs-up"/> I'm Ready!</button>
+          <button onClick={() => onSound("You are doing great! Keep it up!")} className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl hover:bg-yellow-500 transition-all flex items-center gap-2 uppercase text-xs tracking-widest shadow-md border border-yellow-500"><IconRenderer iconName="fa-thumbs-up"/> I'm Ready!</button>
           <button onClick={handleFinish} disabled={isEvaluating} className={`px-12 py-3 ${isEvaluating ? 'bg-gray-400' : 'bg-black'} text-white font-black rounded-2xl shadow-xl hover:translate-y-[2px] active:translate-y-[6px] active:shadow-none transition-all flex items-center gap-3 uppercase text-sm tracking-widest`}>
-            {isEvaluating ? (<><Loader2 className="animate-spin"/> Magical Check...</>) : (<><IconRenderer iconName="fa-check-double"/> Check My Work!</>)}
+            {isEvaluating ? (<><Loader2 className="animate-spin mr-2"/> Magical Check...</>) : (<><IconRenderer iconName="fa-check-double"/> Check My Work!</>)}
           </button>
         </div>
       </div>
       
       {feedbackMessage && !showSuccess && (<Badge className="bg-white text-black text-xl p-4 rounded-2xl border-4 border-slate-100 shadow-lg animate-bounce uppercase text-xs tracking-widest flex items-center gap-3"><IconRenderer iconName="fa-magic" className="text-purple-500"/>{feedbackMessage}</Badge>)}
       
-      <style>{`@keyframes scan { 0% { top: 10%; opacity: 0; } 50% { opacity: 1; } 100% { top: 90%; opacity: 0; } }`}</style>
+      <style>{`
+        @font-face {
+          font-family: 'Fredoka';
+          src: url('/fonts/FredokaOne-Regular.ttf') format('truetype');
+          font-weight: 900;
+          font-style: normal;
+        }
+        @keyframes scan {
+          0% { top: 10%; opacity: 0; }
+          50% { opacity: 1; }
+          100% { top: 90%; opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 };
