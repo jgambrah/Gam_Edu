@@ -9,7 +9,7 @@ import {
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
-  Bot, Shirt, FlaskConical, Bed, Eye, Tree, Hand
+  Bot, Shirt, FlaskConical, Bed, Eye, Tree, Hand, TrendingUp, Leaf
 } from 'lucide-react';
 
 import confetti from 'canvas-confetti';
@@ -26,7 +26,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const SCIENCE_DATA = {
-    bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child’s head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
+    bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child's head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
     innerOrgans: [{ name: "Heart", icon: 'fa-heart-pulse', fact: 'Your heart pumps blood to your body.', prompt: 'A simple cartoon heart with a smiley face' }, { name: "Lungs", icon: 'fa-lungs', fact: 'Your lungs help you breathe air.', prompt: 'Two friendly cartoon lungs' }],
     growth: [{ stage: "Baby", icon: 'fa-child-reaching', action: "I crawl and say goo-goo!", prompt: 'A happy baby crawling' }, { stage: "Child", icon: 'fa-user', action: "I run and play with my friends!", prompt: 'A child running in a park' }],
     senses: [{ sense: "See", icon: 'fa-eye', action: 'I see with my eyes!' }, { sense: "Hear", icon: 'fa-ear-listen', action: 'I hear with my ears!' }],
@@ -51,8 +51,8 @@ const SCIENCE_DATA = {
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   'fa-earth-africa': Earth,
-  'fa-user': Users,
-  'fa-child-reaching': Users,
+  'fa-user': User,
+  'fa-child-reaching': User,
   'fa-heart-pulse': HeartPulse,
   'fa-lungs': Atom,
   'fa-arrow-up-right-dots': TrendingUp,
@@ -129,43 +129,43 @@ const TeacherModal: React.FC<{
 );
 
 const ScienceExploration: React.FC = () => {
-    const { schoolId } = useCurrentSchool();
-    const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
-    const [playing, setPlaying] = useState(false);
-    const currentSourceRef = useRef<HTMLAudioElement | null>(null);
+  const { schoolId } = useCurrentSchool();
+  const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
+  const [playing, setPlaying] = useState(false);
+  const currentSourceRef = useRef<HTMLAudioElement | null>(null);
 
-    const playFeedbackSound = useCallback(async (text: string) => {
-      if (!text || !schoolId) return;
-      if (currentSourceRef.current) {
-          try { currentSourceRef.current.pause(); } catch (e) {}
-      }
-      setPlaying(true);
-      try {
-          const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-          if (result.success && result.data && typeof window !== 'undefined') {
-              const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-              currentSourceRef.current = audio;
-              audio.play();
-              audio.onended = () => { setPlaying(false); currentSourceRef.current = null; };
-          } else { setPlaying(false); }
-      } catch (err: any) {
-          setPlaying(false);
-      }
-    }, [schoolId]);
+  const playFeedbackSound = useCallback(async (text: string) => {
+    if (!text || !schoolId) return;
+    if (currentSourceRef.current) {
+        try { currentSourceRef.current.pause(); } catch (e) {}
+    }
+    setPlaying(true);
+    try {
+        const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
+        if (result.success && result.data && typeof window !== 'undefined') {
+            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+            currentSourceRef.current = audio;
+            audio.play();
+            audio.onended = () => { setPlaying(false); currentSourceRef.current = null; };
+        } else { setPlaying(false); }
+    } catch (err: any) {
+        setPlaying(false);
+    }
+  }, [schoolId]);
 
-    const tabs: {id: ScienceTab, label: string, icon: string}[] = [
-      { id: 'environment', label: 'EVS Hub', icon: 'fa-earth-africa' },
-      { id: 'body', label: 'My Body', icon: 'fa-user' },
-      { id: 'organs', label: 'Inside Me', icon: 'fa-heart-pulse' },
-      { id: 'growth', label: 'Growing Up', icon: 'fa-arrow-up-right-dots' },
-      { id: 'senses', label: 'My Senses', icon: 'fa-ear-listen' },
-      { id: 'diet', label: 'Healthy Food', icon: 'fa-apple-whole' },
-      { id: 'living', label: 'Nature Sorting', icon: 'fa-leaf' },
-      { id: 'weather', label: 'Weather Window', icon: 'fa-cloud-sun' },
-      { id: 'animals', label: 'Animal World', icon: 'fa-paw' },
-      { id: 'transport', label: 'Travel', icon: 'fa-car' },
-      { id: 'concepts', label: 'Concepts', icon: 'fa-shapes' },
-    ];
+  const tabs: {id: ScienceTab, label: string, icon: string}[] = [
+    { id: 'environment', label: 'EVS Hub', icon: 'fa-earth-africa' },
+    { id: 'body', label: 'My Body', icon: 'fa-user' },
+    { id: 'organs', label: 'Inside Me', icon: 'fa-heart-pulse' },
+    { id: 'growth', label: 'Growing Up', icon: 'fa-arrow-up-right-dots' },
+    { id: 'senses', label: 'My Senses', icon: 'fa-ear-listen' },
+    { id: 'diet', label: 'Healthy Food', icon: 'fa-apple-whole' },
+    { id: 'living', label: 'Nature Sorting', icon: 'fa-leaf' },
+    { id: 'weather', label: 'Weather Window', icon: 'fa-cloud-sun' },
+    { id: 'animals', label: 'Animal World', icon: 'fa-paw' },
+    { id: 'transport', label: 'Travel', icon: 'fa-car' },
+    { id: 'concepts', label: 'Concepts', icon: 'fa-shapes' },
+  ];
     
     const renderActiveTab = () => {
         if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
@@ -257,9 +257,6 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   
-  const getLabel = () => current?.[categoryKey];
-  const getDescription = () => current?.action || current?.fact || current?.instruction || `This is ${getLabel()?.toLowerCase()}.`;
-
   if (!current) {
     return (
       <Card>
@@ -269,14 +266,17 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     );
   }
 
+  const getLabel = () => current?.[categoryKey];
+  const getDescription = () => current?.action || current?.fact || current?.instruction || `This is ${getLabel()?.toLowerCase() ?? 'this item'}.`;
+  
   if (!started) {
     return (
-         <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-            <IconRenderer iconName={current.icon} className="h-16 w-16 mx-auto text-green-300 mb-4"/>
-            <h3 className="text-2xl font-bold text-green-600 mb-2">{title}</h3>
-            <p className="text-slate-500 mb-4">Ready to explore the world of {title.toLowerCase()}?</p>
-            <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Learning</Button>
-        </div>
+      <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+        <IconRenderer iconName={current.icon} className="h-16 w-16 mx-auto text-green-300 mb-4"/>
+        <h3 className="text-2xl font-bold text-green-600 mb-2">{title}</h3>
+        <p className="text-slate-500 mb-4">Ready to explore the world of {title.toLowerCase()}?</p>
+        <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Learning</Button>
+      </div>
     );
   }
 
@@ -363,9 +363,9 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   
-   if (!started) {
+  if (!started) {
     return (
-         <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+        <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
             <Leaf className="h-16 w-16 mx-auto text-green-300 mb-4"/>
             <h3 className="text-2xl font-bold text-green-600 mb-2">Living or Not?</h3>
             <p className="text-slate-500 mb-4">Let's sort things into living and non-living groups!</p>
@@ -396,25 +396,4 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   );
 };
 
-const GrowthModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Growth Module Coming Soon!</div>;
-};
-const BalancedDiet: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Balanced Diet Module Coming Soon!</div>;
-};
-const WeatherWindow: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Weather Window Module Coming Soon!</div>;
-};
-const AnimalKingdom: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Animal Kingdom Module Coming Soon!</div>;
-};
-const TransportExplorer: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Transport Module Coming Soon!</div>;
-};
-const ConceptsZone: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <div className="text-center text-muted-foreground p-8">Concepts Module Coming Soon!</div>;
-};
-
 export default ScienceExploration;
-
-    
