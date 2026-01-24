@@ -5,10 +5,7 @@ import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { assessHandwritingAction, generateTTSAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
-import * as LucideIcons from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-// UI imports from the project
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenNib } from 'lucide-react';
@@ -16,28 +13,27 @@ import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Input } from '@/components/ui/input';
 
-// Icon Renderer to handle fa-* classes
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, keyof typeof LucideIcons> = {
-        'fa-grip-lines-vertical': 'GripVertical',
-        'fa-grip-lines': 'GripHorizontal',
-        'fa-slash': 'Minus',
-        'fa-chevron-up': 'ChevronUp',
-        'fa-chevron-down': 'ChevronDown',
-        'fa-chevron-left': 'ChevronLeft',
-        'fa-chevron-right': 'ChevronRight',
-        'fa-circle': 'Circle',
-        'fa-trash-can': 'Trash2',
-        'fa-thumbs-up': 'ThumbsUp',
-        'fa-check-double': 'CheckCheck',
-        'fa-wand-magic-sparkles': 'Wand2',
-        'fa-heart': 'Heart',
-        'fa-1-9': 'Hash', 
-        'fa-font': 'CaseSensitive',
-        'fa-lines-leaning': 'PenLine', 
-    };
-    const IconComponent = LucideIcons[iconMap[iconName] as keyof typeof LucideIcons] || LucideIcons.HelpCircle;
-    return <IconComponent className={cn(className)} />;
+    const props = { className };
+    switch (iconName) {
+        case 'fa-grip-lines-vertical': return <GripVertical {...props} />;
+        case 'fa-grip-lines': return <GripHorizontal {...props} />;
+        case 'fa-slash': return <Minus {...props} />;
+        case 'fa-chevron-up': return <ChevronUp {...props} />;
+        case 'fa-chevron-down': return <ChevronDown {...props} />;
+        case 'fa-chevron-left': return <ChevronLeft {...props} />;
+        case 'fa-chevron-right': return <ChevronRight {...props} />;
+        case 'fa-circle': return <Circle {...props} />;
+        case 'fa-trash-can': return <Trash2 {...props} />;
+        case 'fa-thumbs-up': return <ThumbsUp {...props} />;
+        case 'fa-check-double': return <CheckCheck {...props} />;
+        case 'fa-wand-magic-sparkles': return <Wand2 {...props} />;
+        case 'fa-heart': return <Heart {...props} />;
+        case 'fa-1-9': return <Hash {...props} />;
+        case 'fa-font': return <CaseSensitive {...props} />;
+        case 'fa-lines-leaning': return <PenLine {...props} />;
+        default: return <HelpCircle {...props} />;
+    }
 };
 
 const STROKES = [
@@ -252,7 +248,7 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
               <h3 className="text-2xl font-bold text-purple-600 mb-2">Writing Practice</h3>
               <p className="text-slate-500 mb-4">Let's learn to write letters, numbers, and strokes!</p>
               <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Writing</Button>
-          </div>
+            </div>
       );
   }
 
@@ -307,15 +303,29 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
         <div className="h-10 w-px bg-gray-200 hidden sm:block" />
 
         <div className="flex gap-4">
-          <button onClick={initCanvases} className="px-8 py-3 bg-slate-100 text-slate-800 font-black rounded-2xl hover:bg-slate-200 transition-all flex items-center gap-2 uppercase text-xs tracking-widest border border-slate-200"><IconRenderer iconName="fa-trash-can"/> Start Over</button>
-          <button onClick={() => onSound("You are doing great! Keep going!")} className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl hover:bg-yellow-500 transition-all flex items-center gap-2 uppercase text-xs tracking-widest shadow-md border border-yellow-500"><IconRenderer iconName="fa-thumbs-up"/> I'm Ready!</button>
-          <button onClick={handleFinish} disabled={isEvaluating} className={`px-12 py-3 ${isEvaluating ? 'bg-gray-400' : 'bg-black'} text-white font-black rounded-2xl shadow-xl hover:translate-y-[2px] active:translate-y-[6px] active:shadow-none transition-all flex items-center gap-3 uppercase text-sm tracking-widest`}>
-            {isEvaluating ? (<><Loader2 className="animate-spin mr-2"/> Magical Check...</>) : (<><IconRenderer iconName="fa-check-double"/> Check My Work!</>)}
-          </button>
+          <Button onClick={initCanvases} variant="outline" className="px-8 py-3 rounded-2xl font-black text-slate-800 hover:bg-slate-200 transition-all flex items-center gap-2 uppercase text-xs tracking-widest border border-slate-200">
+            <IconRenderer iconName="fa-trash-can"/> Start Over
+          </Button>
+
+          <Button onClick={() => onSound("You are doing great! Keep going!")} className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl hover:bg-yellow-500 transition-all flex items-center gap-2 uppercase text-xs tracking-widest shadow-md border border-yellow-500">
+            <IconRenderer iconName="fa-thumbs-up"/> I'm Ready!
+          </Button>
+
+          <Button onClick={handleFinish} disabled={isEvaluating} className={`px-12 py-3 ${isEvaluating ? 'bg-gray-400' : 'bg-black'} text-white font-black rounded-2xl shadow-xl hover:translate-y-[2px] active:translate-y-[6px] active:shadow-none transition-all flex items-center gap-3 uppercase text-sm tracking-widest`}>
+            {isEvaluating ? (
+              <><Loader2 className="animate-spin mr-2"/> Magical Check...</>
+            ) : (
+              <><IconRenderer iconName="fa-check-double"/> Check My Work!</>
+            )}
+          </Button>
         </div>
       </div>
       
-      {feedbackMessage && !showSuccess && (<Badge className="bg-white text-black text-xl p-4 rounded-2xl border-4 border-slate-100 shadow-lg animate-bounce uppercase text-xs tracking-widest flex items-center gap-3"><Wand2 className="text-purple-500"/>{feedbackMessage}</Badge>)}
+      {feedbackMessage && !showSuccess && (
+        <Badge className="bg-white text-black text-xl p-4 rounded-2xl border-4 border-slate-100 shadow-lg animate-bounce uppercase text-xs tracking-widest flex items-center gap-3">
+            <Wand2 className="text-purple-500"/>{feedbackMessage}
+        </Badge>
+      )}
       
       <style>{`
         @font-face {
@@ -323,11 +333,6 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
           src: url('/fonts/FredokaOne-Regular.ttf') format('truetype');
           font-weight: 900;
           font-style: normal;
-        }
-        @keyframes scan {
-          0% { top: 10%; opacity: 0; }
-          50% { opacity: 1; }
-          100% { top: 90%; opacity: 0; }
         }
       `}</style>
     </div>
