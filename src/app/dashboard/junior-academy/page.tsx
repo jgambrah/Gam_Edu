@@ -5,10 +5,10 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs } from 'firebase/firestore';
-import { 
-  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, User as UserIcon
+import {
+  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, PenNib, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generateRhyme, generateSkillDetails } from '@/ai/flows/junior-actions';
@@ -360,157 +360,6 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
-// --- LIFE SKILLS MODULES ---
-interface TeacherModalProps {
-  title: string;
-  topicLabel: string;
-  topicValue: string;
-  onTopicChange: (v: string) => void;
-  onGenerate: () => void;
-  isLoading: boolean;
-  onClose: () => void;
-}
-
-const TeacherModal: React.FC<TeacherModalProps> = ({ title, topicLabel, topicValue, onTopicChange, onGenerate, isLoading, onClose }) => (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-        <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-gray-50 animate-in zoom-in duration-300 font-black">
-        <h3 className="text-3xl font-black text-slate-800 mb-6 uppercase tracking-tighter">{title}</h3>
-        <div className="space-y-6">
-            <div>
-            <Label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-widest">{topicLabel}</Label>
-            <Input 
-                type="text" 
-                value={topicValue} 
-                onChange={(e) => onTopicChange(e.target.value)} 
-                placeholder="Type here..." 
-                className="w-full px-6 py-4 rounded-2xl border-4 border-slate-100 outline-none font-bold focus:border-teal-300 transition-colors text-slate-800 uppercase" 
-            />
-            </div>
-            <Button 
-            onClick={onGenerate} 
-            disabled={isLoading || !topicValue} 
-            className="w-full py-5 rounded-2xl font-black text-white bg-teal-500 shadow-xl hover:bg-teal-600 disabled:bg-gray-300 transition-all flex items-center justify-center gap-3 border-4 border-white uppercase tracking-widest"
-            >
-            {isLoading ? <><Loader2 className="animate-spin" /> GENERATING...</> : <><Wand2 /> CREATE MAGIC</>}
-            </Button>
-            <button onClick={onClose} className="w-full py-2 text-slate-400 uppercase text-[10px] font-black tracking-widest hover:text-slate-600 transition-colors text-center block">Close Drawer</button>
-        </div>
-        </div>
-    </div>
-);
-
-type LifeSkillTab = 'emotions' | 'routine-songs' | 'modeling' | 'practical-life' | 'communication' | 'social' | 'puppet-theater' | 'cognitive' | 'physical-health';
-
-const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [songs, setSongs] = useState(constants.LIFE_SKILLS_DATA.music);
-  const [index, setIndex] = useState(0);
-  const [singing, setSinging] = useState(false);
-  const current = songs[index];
-
-  const handleSing = async () => {
-    setSinging(true);
-    const result = await generateRhyme({ topic: current.theme, schoolId });
-    if (result.success) {
-      await onSound(`Let's sing about ${current.theme}! ${result.rhyme}`);
-    }
-    setSinging(false);
-  };
-
-  return (
-    <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center animate-in zoom-in font-black">
-      <h3 className="text-4xl font-black text-pink-500 mb-10 uppercase tracking-tighter">Skill Songs! 🎵</h3>
-      <div className="w-32 h-32 bg-pink-100 text-pink-600 rounded-3xl flex items-center justify-center text-6xl mb-8 shadow-md border-4 border-white animate-bounce">
-        <IconRenderer iconName={current.icon} />
-      </div>
-      <h4 className="text-4xl font-black text-slate-800 mb-8 uppercase">{current.title}</h4>
-      <Button 
-        onClick={handleSing} 
-        disabled={singing}
-        className="px-16 py-6 bg-pink-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl hover:scale-105 transition-all border-4 border-white"
-      >
-        {singing ? <Loader2 className="animate-spin" /> : <><Music className="mr-4"/> Start Song</>}
-      </Button>
-      <div className="flex gap-4 mt-12">
-        <Button onClick={() => setIndex(i => (i === 0 ? songs.length - 1 : i - 1))} variant="ghost" className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center"><ArrowLeft/></Button>
-        <Button onClick={() => setIndex(i => (i + 1) % songs.length)} variant="ghost" className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center"><ArrowRight/></Button>
-      </div>
-    </div>
-  );
-};
-
-const ModelingModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-  const [data, setData] = useState(constants.LIFE_SKILLS_DATA.practicalLife.pretendPlay);
-  const [index, setIndex] = useState(0);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [isStarted, setIsStarted] = useState(false);
-  const current = data[index];
-
-  const fetchVisual = useCallback(async () => {
-    if (!current?.prompt || !schoolId || !isStarted) return;
-    setLoading(true);
-    const result = await generateLessonImageAction({ prompt: current.prompt, schoolId });
-    if(result.success) setImageUrl(result.data || null);
-    setLoading(false);
-  }, [current, schoolId, isStarted]);
-
-  useEffect(() => {
-    if(isStarted) fetchVisual();
-  }, [index, isStarted, fetchVisual]);
-
-  const handleWatch = () => {
-    onSound(`${current.scenario} ${current.modeling}`);
-    onComplete();
-  };
-
-  return (
-    <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center animate-in zoom-in font-black">
-      <h3 className="text-4xl font-black text-indigo-500 mb-10 uppercase tracking-tighter">I Can Do It! 🎥</h3>
-      { !isStarted ? (
-         <Button onClick={() => setIsStarted(true)} className="px-16 py-6 bg-indigo-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">Start Activity</Button>
-      ) : (
-        <>
-            <div onClick={handleWatch} className="w-full max-w-xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
-                {loading ? <Loader2 className="w-16 h-16 text-indigo-400 animate-spin" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt={current.title} />}
-            </div>
-            <h4 className="text-4xl font-black text-slate-800 mb-4 uppercase">{current.title}</h4>
-            <p className="text-xl font-black text-slate-500 italic mb-10 text-center leading-relaxed">"{current.scenario}"</p>
-            <Button onClick={handleWatch} className="px-16 py-6 bg-indigo-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">Watch & Learn!</Button>
-        </>
-      )}
-    </div>
-  );
-};
-
-const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    // ... same as before, but pass schoolId to any AI calls inside
-    return <div className="text-center p-8">Practical Life Module</div>
-};
-const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    // ... same as before, but pass schoolId to any AI calls inside
-    return <div className="text-center p-8">Communication Module</div>
-};
-const PuppetTheater: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    // ... same as before, but pass schoolId to any AI calls inside
-    return <div className="text-center p-8">Puppet Theater Module</div>
-};
-const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    // ... same as before, but pass schoolId to any AI calls inside
-    return <div className="text-center p-8">Cognitive Skills Module</div>
-};
-const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    // ... same as before, but pass schoolId to any AI calls inside
-    return <div className="text-center p-8">Social Scenarios Module</div>
-};
-const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    // ... same as before, but pass schoolId to any AI calls inside
-    return <div className="text-center p-8">Physical Health Module</div>
-};
-const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    // ... same as before, but pass schoolId to any AI calls inside
-    return <div className="text-center p-8">Emotions Module</div>
-};
-
 // --- Singing Dictionary ---
 const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     const [selectedLetter, setSelectedLetter] = useState('A');
@@ -518,7 +367,7 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
     const [imageUrl, setImageUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
   
-    const handleLetterClick = async (letter: string) => {
+    const handleLetterClick = useCallback(async (letter: string) => {
         setSelectedLetter(letter);
         setIsLoading(true);
         const wordInfo = constants.VOCABULARY_DATA.find(w => w.word.startsWith(letter)) || constants.VOCABULARY_DATA[0];
@@ -526,18 +375,18 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
         const details = await generateWordDetails({ word: wordInfo.word, schoolId });
         if (details.success) setWordData(details.data);
 
-        const imageRes = await generateLessonImageAction({ prompt: wordInfo.imagePrompt, schoolId });
+        const imageRes = await generateLessonImageAction({ prompt: `3D claymation style of ${wordInfo.imagePrompt}, centered, simple, nursery aesthetic, soft lighting`, schoolId });
         if (imageRes.success && imageRes.data) setImageUrl(imageRes.data);
 
         setIsLoading(false);
-    };
+    }, [schoolId]);
 
     useEffect(() => {
         handleLetterClick('A');
-    }, []);
+    }, [handleLetterClick]);
   
     const handleSing = async () => {
-      if (!wordData) return;
+      if (!wordData || !schoolId) return;
       await generateTTSAction({ text: `Let's spell ${wordData.word}! ${wordData.word.split('').join(', ')}. ${wordData.word}! Now, let's use it in a sentence. ${wordData.sentence}`, voice: 'Enif', schoolId });
     };
   
@@ -690,60 +539,7 @@ const WritingCanvas = ({ onSound, schoolId }: { onSound: (text: string) => void,
     );
 };
 
-// --- MAIN PAGE ---
-export default function JuniorCampusPage() {
-    const { role } = useRole();
-    const { schoolId } = useCurrentSchool();
-    const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
-    
-    return (
-        <div className="min-h-screen bg-[#FFFBEB] p-4 md:p-8 font-sans">
-            <div className="max-w-7xl mx-auto space-y-8">
-                <header className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-8 rounded-[45px] shadow-xl border-b-[12px] border-yellow-200">
-                    <div className="flex items-center gap-4">
-                        <div className="bg-yellow-400 p-5 rounded-[30px] shadow-inner rotate-3"><Rabbit className="h-12 w-12 text-white" /></div>
-                        <div>
-                            <h1 className="text-5xl font-black text-slate-800 tracking-tighter">Junior Campus</h1>
-                            <p className="text-xl font-bold text-pink-500 uppercase tracking-widest italic">The Magic of Learning! ✨</p>
-                        </div>
-                    </div>
-                    {schoolId && <div className="flex items-center gap-2 bg-slate-50 px-6 py-3 rounded-[20px] border-2 border-slate-100">
-                        <Badge variant="outline" className="text-indigo-500 border-indigo-200">SaaS Node</Badge>
-                        <span className="text-xs font-black text-slate-400">{schoolId}</span>
-                    </div>}
-                </header>
-
-                <Tabs defaultValue="stories" className="w-full">
-                    <TabsList className="grid w-full grid-cols-9 h-24 bg-white p-2 rounded-[30px] shadow-xl border-2 border-yellow-100 mb-10 overflow-x-auto no-scrollbar">
-                        <TabsTrigger value="lifeskills" className="rounded-2xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-black flex flex-col items-center gap-1"><Heart className="w-5 h-5"/> Life Skills</TabsTrigger>
-                        <TabsTrigger value="writing" className="rounded-2xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-black flex flex-col items-center gap-1"><Pencil className="w-5 h-5"/> Writing</TabsTrigger>
-                        <TabsTrigger value="stories" className="rounded-2xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-black flex flex-col items-center gap-1"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
-                        <TabsTrigger value="phonics" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><Ear className="w-5 h-5"/> Phonics</TabsTrigger>
-                        <TabsTrigger value="dictionary" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><Languages className="w-5 h-5"/> Dictionary</TabsTrigger>
-                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center gap-1"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
-                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center gap-1"><Atom className="w-5 h-5"/> Science</TabsTrigger>
-                        <TabsTrigger value="art" className="rounded-2xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-black flex flex-col items-center gap-1"><Palette className="w-5 h-5"/> Art</TabsTrigger>
-                        <TabsTrigger value="rewards" className="rounded-2xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-black flex flex-col items-center gap-1"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
-                    </TabsList>
-
-                    <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
-                        <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone /></TabsContent>
-                        <TabsContent value="writing" className="mt-0"><WritingCanvas onSound={() => {}} schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="phonics" className="mt-0"><PhonicsWorld schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="dictionary" className="mt-0"><SingingDictionary schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="science" className="mt-0"><JuniorScienceWorld schoolId={schoolId!} /></TabsContent>
-                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio schoolId={schoolId!} /></div></TabsContent>
-                        <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId!} /></TabsContent>
-                    </div>
-                </Tabs>
-            </div>
-        </div>
-    );
-}
-
-const LifeSkillsZone = () => {
+const LifeSkillsZone: React.FC = () => {
     const { schoolId } = useCurrentSchool();
     const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
     const [playing, setPlaying] = useState(false);
@@ -758,12 +554,9 @@ const LifeSkillsZone = () => {
       setPlaying(true);
       const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
       if (result.success && result.data && typeof window !== 'undefined') {
-        // Assume playRawPcm exists and works as intended
-        // const source = await playRawPcm(result.data);
-        // if (source) {
-        //   currentSourceRef.current = source;
-        //   source.onended = () => { setPlaying(false); currentSourceRef.current = null; };
-        // } else { setPlaying(false); }
+        const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+        audio.play();
+        audio.onended = () => setPlaying(false);
       } else { setPlaying(false); }
     };
   
@@ -834,3 +627,247 @@ const LifeSkillsZone = () => {
       </div>
     );
 };
+
+const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
+    const [data, setData] = useState(constants.LIFE_SKILLS_DATA.emotions);
+    const [index, setIndex] = useState(0);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [aiTopic, setAiTopic] = useState('');
+    const [isAiLoading, setIsAiLoading] = useState(false);
+    const [mode, setMode] = useState<'learn' | 'mirror'>('learn');
+    const [isStarted, setIsStarted] = useState(false);
+  
+    const current = data[index];
+  
+    const fetchVisual = useCallback(async () => {
+      if (!current?.prompt || !schoolId || !isStarted) return;
+      setLoading(true);
+      const result = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+      if(result.success) setImageUrl(result.data || null);
+      setLoading(false);
+    }, [current, schoolId, isStarted]);
+  
+    useEffect(() => {
+        if(isStarted) fetchVisual();
+    }, [index, data, fetchVisual, isStarted]);
+  
+    const handleLearn = () => {
+      onSound(`This is feeling ${current.name.toLowerCase()}. ${current.technique}`);
+      if (mode === 'mirror') onComplete();
+    };
+  
+    const generateWithAi = async () => {
+      if (!aiTopic || !schoolId) return;
+      setIsAiLoading(true);
+      try {
+        const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'emotions', schoolId });
+        if(result.success && result.data) {
+          setData(prev => [...prev, result.data]);
+          setIsDrawerOpen(false); 
+          setIndex(data.length); 
+          setAiTopic('');
+        }
+      } catch (e) { console.error(e); } 
+      finally { setIsAiLoading(false); }
+    };
+  
+    return (
+      <div className="relative font-black">
+        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-yellow-200 text-yellow-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-yellow-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline"/> AI Feeling Maker</button>
+        <div className="w-full flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-yellow-100 animate-in zoom-in duration-500 min-h-[550px]">
+          {!isStarted ? (
+              <div className="flex flex-col items-center justify-center h-full">
+                  <Smile className="w-24 h-24 text-yellow-300 mb-4" />
+                  <h3 className="text-4xl font-black text-yellow-600 mb-8 uppercase tracking-tighter text-center">Feelings Explorer</h3>
+                  <Button onClick={() => setIsStarted(true)} className="px-16 py-6 bg-yellow-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">Start Activity</Button>
+              </div>
+          ) : (
+            <>
+              <div className="flex gap-4 mb-8">
+                 <button onClick={() => setMode('learn')} className={`px-6 py-2 rounded-full font-black text-xs uppercase transition-all ${mode === 'learn' ? 'bg-yellow-400 text-white shadow-md' : 'bg-slate-100 text-slate-800'}`}>Learning Mode</button>
+                 <button onClick={() => setMode('mirror')} className={`px-6 py-2 rounded-full font-black text-xs uppercase transition-all ${mode === 'mirror' ? 'bg-yellow-400 text-white shadow-md' : 'bg-slate-100 text-slate-800'}`}>Mirror Game</button>
+              </div>
+              <h3 className="text-4xl font-black text-yellow-600 mb-8 uppercase tracking-tighter text-center">{mode === 'learn' ? 'How I Feel ✨' : 'Copy My Face! 🪞'}</h3>
+              <div className="flex flex-wrap justify-center gap-4 mb-10">
+                {data.map((e, i) => (
+                  <button key={i} onClick={() => setIndex(i)} className={`w-20 h-20 rounded-3xl flex items-center justify-center border-4 transition-all shadow-lg ${index === i ? `${e.color} text-white border-white scale-110 shadow-yellow-200` : 'bg-slate-50 text-slate-800 border-slate-100 hover:bg-yellow-50'}`}>
+                    <IconRenderer iconName={e.icon} className="text-3xl" />
+                  </button>
+                ))}
+              </div>
+              <div onClick={handleLearn} className={`w-full max-w-lg aspect-square rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-10 overflow-hidden cursor-pointer group ${mode === 'mirror' ? 'ring-8 ring-yellow-400 animate-pulse' : ''}`}>
+                {loading ? <Loader2 className="w-16 h-16 animate-spin text-yellow-300" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 transition-transform group-hover:scale-110" alt={current.name} />}
+              </div>
+              <h4 className="text-6xl font-black text-yellow-600 uppercase mb-4 tracking-tighter">{current.name}</h4>
+              <Button onClick={handleLearn} className="px-16 py-6 bg-yellow-400 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">
+                {mode === 'learn' ? 'Tell Me More!' : 'I Did It! 🌟'}
+              </Button>
+            </>
+          )}
+        </div>
+        {isDrawerOpen && <TeacherModal title="AI Feeling Maker" topicLabel="New Feeling" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
+      </div>
+    );
+};
+
+// --- MAIN PAGE ---
+export default function JuniorCampusPage() {
+    const { role } = useRole();
+    const { schoolId } = useCurrentSchool();
+    const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
+    
+    return (
+        <div className="min-h-screen bg-[#FFFBEB] p-4 md:p-8 font-sans">
+            <div className="max-w-7xl mx-auto space-y-8">
+                <header className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-8 rounded-[45px] shadow-xl border-b-[12px] border-yellow-200">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-yellow-400 p-5 rounded-[30px] shadow-inner rotate-3"><Rabbit className="h-12 w-12 text-white" /></div>
+                        <div>
+                            <h1 className="text-5xl font-black text-slate-800 tracking-tighter">Junior Campus</h1>
+                            <p className="text-xl font-bold text-pink-500 uppercase tracking-widest italic">The Magic of Learning! ✨</p>
+                        </div>
+                    </div>
+                    {schoolId && <div className="flex items-center gap-2 bg-slate-50 px-6 py-3 rounded-[20px] border-2 border-slate-100">
+                        <Badge variant="outline" className="text-indigo-500 border-indigo-200">SaaS Node</Badge>
+                        <span className="text-xs font-black text-slate-400">{schoolId}</span>
+                    </div>}
+                </header>
+
+                <Tabs defaultValue="stories" className="w-full">
+                    <TabsList className="grid w-full grid-cols-9 h-24 bg-white p-2 rounded-[30px] shadow-xl border-2 border-yellow-100 mb-10 overflow-x-auto no-scrollbar">
+                        <TabsTrigger value="lifeskills" className="rounded-2xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-black flex flex-col items-center gap-1"><Heart className="w-5 h-5"/> Life Skills</TabsTrigger>
+                        <TabsTrigger value="writing" className="rounded-2xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-black flex flex-col items-center gap-1"><Pencil className="w-5 h-5"/> Writing</TabsTrigger>
+                        <TabsTrigger value="stories" className="rounded-2xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-black flex flex-col items-center gap-1"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
+                        <TabsTrigger value="phonics" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><Ear className="w-5 h-5"/> Phonics</TabsTrigger>
+                        <TabsTrigger value="dictionary" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><Languages className="w-5 h-5"/> Dictionary</TabsTrigger>
+                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center gap-1"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
+                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center gap-1"><Atom className="w-5 h-5"/> Science</TabsTrigger>
+                        <TabsTrigger value="art" className="rounded-2xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-black flex flex-col items-center gap-1"><Palette className="w-5 h-5"/> Art</TabsTrigger>
+                        <TabsTrigger value="rewards" className="rounded-2xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-black flex flex-col items-center gap-1"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
+                    </TabsList>
+
+                    <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
+                        <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone /></TabsContent>
+                        <TabsContent value="writing" className="mt-0"><WritingCanvas onSound={() => {}} schoolId={schoolId!} /></TabsContent>
+                        <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId!} /></TabsContent>
+                        <TabsContent value="phonics" className="mt-0"><PhonicsWorld schoolId={schoolId!} /></TabsContent>
+                        <TabsContent value="dictionary" className="mt-0"><SingingDictionary schoolId={schoolId!} /></TabsContent>
+                        <TabsContent value="math" className="mt-0"><MathPlayground schoolId={schoolId!} /></TabsContent>
+                        <TabsContent value="science" className="mt-0"><JuniorScienceWorld schoolId={schoolId!} /></TabsContent>
+                        <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio schoolId={schoolId!} /></div></TabsContent>
+                        <TabsContent value="rewards" className="mt-0"><StickerBook schoolId={schoolId!} /></TabsContent>
+                    </div>
+                </Tabs>
+            </div>
+        </div>
+    );
+}
+
+// All sub-modules for LifeSkillsZone, now defined within the same file.
+
+// PhysicalHealthModule
+const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
+  const [subTab, setSubTab] = useState<'gross-motor' | 'fine-motor' | 'hygiene' | 'nutrition'>('gross-motor');
+  const [index, setIndex] = useState(0);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [aiTopic, setAiTopic] = useState('');
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isStarted, setIsStarted] = useState(false);
+
+  const [grossMotor, setGrossMotor] = useState(constants.LIFE_SKILLS_DATA.health);
+  const [fineMotor, setFineMotor] = useState<{ title: string, action: string, icon: string, prompt: string }[]>([]); // Placeholder
+  const [hygiene, setHygiene] = useState<{ title: string, action: string, icon: string, prompt: string }[]>([]); // Placeholder
+  const [nutrition, setNutrition] = useState<{ title: string, action: string, icon: string, prompt: string }[]>([]); // Placeholder
+
+  const getCurrentData = () => {
+    if (subTab === 'gross-motor') return grossMotor;
+    if (subTab === 'fine-motor') return fineMotor;
+    if (subTab === 'hygiene') return hygiene;
+    return nutrition;
+  };
+
+  const data = getCurrentData();
+  const current = data[index] || data[0];
+
+  const fetchVisual = useCallback(async () => {
+    if (!current?.prompt || !schoolId || !isStarted) return;
+    setLoading(true);
+    const result = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(result.success) setImageUrl(result.data || null);
+    setLoading(false);
+  }, [current, schoolId, isStarted]);
+
+  useEffect(() => {
+    if(isStarted) fetchVisual();
+  }, [index, data, fetchVisual, isStarted]);
+
+  const handleAction = () => {
+    onSound(`Great job! ${current.action} You are getting so strong and healthy!`);
+    onComplete();
+  };
+
+  const generateWithAi = async () => {
+    if (!aiTopic || !schoolId) return;
+    setIsAiLoading(true);
+    try {
+      const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'health', schoolId });
+      if(result.success && result.data) {
+        const newItem = { title: aiTopic, action: result.data.action, icon: result.data.icon, prompt: result.data.prompt };
+        if (subTab === 'gross-motor') setGrossMotor(prev => [...prev, newItem]);
+        else if (subTab === 'fine-motor') setFineMotor(prev => [...prev, newItem]);
+        else if (subTab === 'hygiene') setHygiene(prev => [...prev, newItem]);
+        else setNutrition(prev => [...prev, newItem]);
+        setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
+      }
+    } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
+  };
+  
+    if (!isStarted) {
+        return (
+            <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center animate-in zoom-in font-black text-center">
+                <HeartPulse className="w-20 h-20 text-green-300 mb-4" />
+                <h3 className="text-4xl font-black text-green-600 mb-8 uppercase tracking-tighter">Healthy Habits</h3>
+                <Button onClick={() => setIsStarted(true)} className="px-16 py-6 bg-green-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">Start Activity</Button>
+            </div>
+        );
+    }
+
+
+  return (
+    <div className="relative font-black">
+      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline"/> AI Health Helper</button>
+      <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center animate-in zoom-in font-black">
+        <h3 className="text-4xl font-black text-green-600 mb-8 uppercase tracking-tighter text-center">Physical & Health Hub 🏃‍♂️</h3>
+        <div className="flex flex-wrap justify-center gap-2 mb-10 p-2 bg-green-50 rounded-2xl font-black">
+          {['gross-motor', 'fine-motor', 'hygiene', 'nutrition'].map(t => (
+            <button key={t} onClick={() => {setSubTab(t as any); setIndex(0);}} className={`px-6 py-2 rounded-xl font-black text-[10px] uppercase transition-all ${subTab === t ? 'bg-green-500 text-white shadow-md' : 'text-green-700'}`}>{t.replace('-', ' ')}</button>
+          ))}
+        </div>
+        <div className="flex flex-col items-center animate-in zoom-in w-full max-w-2xl">
+            <div className="w-24 h-24 bg-green-100 text-green-600 rounded-3xl flex items-center justify-center text-5xl mb-6 shadow-md border-4 border-white animate-bounce">
+               <IconRenderer iconName={current.icon} />
+            </div>
+            <h4 className="text-3xl font-black text-slate-800 uppercase mb-4">{current.title}</h4>
+            <div onClick={handleAction} className="relative w-full aspect-video bg-green-50 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden mb-10 cursor-pointer group">
+               {loading ? <div className="absolute inset-0 flex items-center justify-center animate-spin"><Atom className="text-4xl text-green-200"/></div> : imageUrl && <img src={imageUrl} className={`w-full h-full object-cover transition-all duration-700`} alt={current.title} />}
+               <div className="absolute inset-0 bg-green-500/0 group-hover:bg-green-500/5 transition-colors flex items-center justify-center"><Play className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" /></div>
+            </div>
+            <div className="bg-green-50 p-8 rounded-3xl border-4 border-dashed border-green-200 text-center w-full mb-10">
+               <p className="text-2xl font-black text-slate-700 italic leading-relaxed">"{current.action}"</p>
+            </div>
+            <div className="flex gap-4 items-center">
+               <button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200"><ArrowLeft/></button>
+               <button onClick={handleAction} className="px-12 py-5 bg-green-500 text-white font-black rounded-3xl shadow-xl border-4 border-white uppercase tracking-widest text-xl">I Did It! 🏆</button>
+               <button onClick={() => setIndex(i => (i + 1) % data.length)} className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200"><ArrowRight/></button>
+            </div>
+        </div>
+      </div>
+      {isDrawerOpen && <TeacherModal title={`Add ${subTab.replace('-', ' ')}`} topicLabel="Task or Habit" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
+    </div>
+  );
+};
+    
