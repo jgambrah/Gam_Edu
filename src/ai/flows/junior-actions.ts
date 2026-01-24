@@ -174,24 +174,22 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
 
 
 // --- IMAGE GENERATION ACTION ---
-export const generateLessonImageAction = async (input: { prompt: string; schoolId: string; }): Promise<{ success: boolean; data?: string | null, error?: string }> => {
+export async function generateLessonImageAction(input: { prompt: string; schoolId: string; }): Promise<string | null> {
     try {
       const creditResult = await checkAndSpendCredits(input.schoolId, 5);
       if (!creditResult.success) {
-        return { success: false, error: creditResult.error || "Insufficient AI credits." };
+        console.error("Credit check failed:", creditResult.error);
+        return null;
       }
       const { media } = await ai.generate({
         model: 'googleai/imagen-4.0-fast-generate-001',
-        prompt: input.prompt,
+        prompt: `Award winning 3D Pixar-style illustration, nursery theme, centered subject: ${input.prompt}`,
       });
   
-      if (media && media.url) {
-        return { success: true, data: media.url };
-      }
-      return { success: true, data: null };
+      return media?.url || null;
     } catch (error) {
       console.error("Image generation error:", error);
-      return { success: false, error: "Image generation failed." };
+      return null;
     }
 };
 
@@ -240,10 +238,10 @@ export async function generateLifeSkillEntry(input: { topic: string; category: s
   let prompt = '';
   switch (category) {
     case 'feelings':
-      prompt = `Create a nursery lesson for the feeling: ${topic}. Return JSON: { "name": string, "color": "bg-yellow-400" | "bg-blue-400" | "bg-red-400", "icon": emoji, "prompt": string, "technique": string }`;
+      prompt = `Create a nursery lesson for the feeling: ${topic}. Return JSON: { "name": string, "color": "bg-yellow-400" | "bg-blue-400" | "bg-red-400", "icon": string, "prompt": string, "technique": string }`;
       break;
     case 'health':
-      prompt = `Create a physical activity or hygiene habit for children about: ${topic}. Return JSON: { "title": string, "action": string, "icon": emoji, "prompt": string }`;
+      prompt = `Create a physical activity or hygiene habit for children about: ${topic}. Return JSON: { "title": string, "action": string, "icon": string, "prompt": string }`;
       break;
     case 'kindness':
       prompt = `Create a kindness or community helper scenario for: ${topic}. Return JSON: { "title": string, "q": string, "options": [string, string, string], "correct": number (index 0-2), "prompt": string }`;
@@ -288,7 +286,7 @@ export async function generateLifeSkillEntry(input: { topic: string; category: s
 }
 
 // --- RHYME GENERATOR ---
-export async function generateRhyme(input: { topic: string; schoolId: string }): Promise<{ success: boolean; error?: string; rhyme: string; }> {
+export async function generateRhyme(input: { topic: string; schoolId: string; }): Promise<{ success: boolean; error?: string; rhyme: string; }> {
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {
@@ -307,16 +305,35 @@ export async function generateRhyme(input: { topic: string; schoolId: string }):
   }
 }
 
-export async function generateSkillDetails(input: { skill: string; schoolId: string }) {
-  // In a real implementation, call Genkit AI here
-  return {
-    success: true,
-    data: {
-      title: input.skill,
-      description: `This is a placeholder description for the '${input.skill}' life skill.`,
-      imagePrompt: `3d illustration of a child learning about ${input.skill}`,
-    },
-  };
+const SkillDetailSchema = z.object({
+  title: z.string(),
+  description: z.string().describe("A simple one-sentence explanation of the skill for a 5-year-old."),
+  imagePrompt: z.string().describe("A simple, fun DALL-E prompt for an image representing this skill.")
+});
+
+export async function generateSkillDetails(input: { skill: string; schoolId: string }): Promise<{ success: boolean; data?: any; error?: string }> {
+  try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 1);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient credits." };
+    }
+
+    const prompt = `Generate details for a life skill for a 5-year old. The skill is: '${input.skill}'.`;
+
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
+      prompt,
+      output: { schema: SkillDetailSchema }
+    });
+
+    if (!output) {
+      throw new Error("AI did not return valid skill details.");
+    }
+
+    return { success: true, data: output };
+  } catch(e: any) {
+    return { success: false, error: e.message };
+  }
 }
 
 // PHONICS WORLD ENTRY GENERATOR

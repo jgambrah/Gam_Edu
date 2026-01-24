@@ -33,9 +33,9 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { getAuth } from 'firebase/auth';
 
 
-// --- ICON MAPPER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const map: Record<string, keyof typeof LucideIcons> = {
       'fa-spell-check': 'Languages', 'fa-ear-listen': 'Ear', 'fa-pen-nib': 'PenNib',
@@ -47,14 +47,14 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-chalkboard-user': 'User', 'fa-rabbit': 'Rabbit', 'fa-carrot': 'Carrot', 'fa-apple-whole': 'Apple',
       'fa-cookie': 'Cookie', 'fa-star': 'Star', 'fa-tv': 'Tv', 'fa-bed': 'Bed', 'fa-eye': 'Eye',
       'fa-cloud-showers-heavy': 'CloudRain', 'fa-guitar': 'Guitar', 'fa-plane': 'Plane', 'fa-car': 'Car',
-      'fa-frog': 'Rabbit', // No frog, using rabbit
+      'fa-frog': 'Rabbit', 
       'fa-bolt': 'Zap',
       'fa-circle-dot': 'CircleDot',
-      'fa-soap': 'Sparkles', // No soap, using sparkles
-      'fa-broccoli': 'Carrot', // No broccoli
+      'fa-soap': 'Sparkles', 
+      'fa-broccoli': 'Carrot', 
       'fa-display': 'Monitor',
       'fa-graduation-cap': 'GraduationCap',
-      'fa-comments': 'MessageCircle',
+      'fa-comments': 'MessageSquare',
       'fa-people-group': 'Users',
       'fa-masks-theater': 'Drama',
       'fa-brain': 'BrainCircuit',
@@ -94,7 +94,6 @@ const juniorStyles = {
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
-// ... StorySpark, VoiceCoach components from previous turns ...
 function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string }) {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -357,8 +356,82 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
-// --- SUB-COMPONENT: MAGIC PEN (TRACING & AI EVALUATION) ---
-const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
+    const [index, setIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [rhyme, setRhyme] = useState('');
+    
+    const words = constants.DICTIONARY_WORDS; 
+    const current = words[index];
+
+    const loadPage = useCallback(async () => {
+        if (!current || !schoolId) return;
+        setLoading(true);
+        setRhyme('');
+        const result = await generateLessonImageAction({ prompt: current.imagePrompt, schoolId });
+        if(result.success) setImageUrl(result.data || null);
+        setLoading(false);
+    }, [current, schoolId]);
+    
+    useEffect(() => { 
+        if (current) {
+            loadPage();
+        }
+    }, [index, current, loadPage]);
+
+    const playSong = async () => {
+        setLoading(true);
+        const rhymeResult = await generateRhyme({ topic: current.word, schoolId });
+        if(rhymeResult.success) {
+            setRhyme(rhymeResult.rhyme);
+            const ttsResult = await generateTTSAction({ text: rhymeResult.rhyme, schoolId, voice: 'Algenib' });
+            if (ttsResult.success && ttsResult.data) {
+                const audio = new Audio(`data:audio/wav;base64,${ttsResult.data}`);
+                audio.play();
+            }
+        }
+        setLoading(false);
+    };
+
+    if (!current) return <div>Loading dictionary...</div>;
+
+    return (
+        <div className="flex flex-col items-center space-y-8 animate-in fade-in">
+            <div className="grid grid-cols-6 md:grid-cols-13 gap-2 overflow-x-auto p-4 bg-white rounded-3xl shadow-lg border-4 border-red-50">
+                {words.map((w, i) => (
+                    <button key={i} onClick={() => setIndex(i)} className={`w-10 h-10 rounded-lg font-black ${index === i ? 'bg-red-500 text-white' : 'bg-red-50 text-red-400'}`}>
+                        {w.word[0]}
+                    </button>
+                ))}
+            </div>
+
+            <Card className={juniorStyles.card}>
+                <div className="bg-gradient-to-r from-red-400 to-pink-400 p-8 text-white text-center">
+                    <h2 className="text-7xl font-black">{current.word[0]}{current.word[0].toLowerCase()}</h2>
+                    <p className="text-2xl font-bold uppercase tracking-widest">{current.word}</p>
+                </div>
+                <CardContent className="p-10 flex flex-col items-center space-y-8">
+                    <div className="w-80 h-80 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden bg-red-50">
+                        {loading ? <div className="flex h-full items-center justify-center animate-spin text-red-200"><Loader2 size={48}/></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover" />}
+                    </div>
+                    
+                    {rhyme && (
+                        <div className="bg-red-50 p-6 rounded-3xl border-4 border-dashed border-red-200 text-center animate-in zoom-in">
+                            <p className="text-xl font-bold text-red-700 whitespace-pre-wrap">{rhyme}</p>
+                        </div>
+                    )}
+
+                    <Button onClick={playSong} disabled={loading} className="h-20 px-12 bg-red-500 hover:bg-red-600 text-white text-2xl font-black rounded-full shadow-[0_10px_0_#991b1b]">
+                        <Music className="mr-3" /> SING ALONG!
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+const WritingCanvas = ({ onSound, schoolId }: { onSound: (t: string) => void, schoolId: string }) => {
     const traceCanvasRef = useRef<HTMLCanvasElement>(null);
     const freeCanvasRef = useRef<HTMLCanvasElement>(null);
     const [selectedItem, setSelectedItem] = useState('1');
@@ -406,13 +479,11 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
 
     useEffect(() => {
         setupCanvases();
-        // Add resize listener
         window.addEventListener('resize', setupCanvases);
         return () => window.removeEventListener('resize', setupCanvases);
     }, [setupCanvases]);
 
     useEffect(() => {
-      // When mode changes, select the first item of the new mode
       if (items && items.length > 0) {
         setSelectedItem(items[0]);
       }
@@ -552,13 +623,122 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
     );
 };
 
+const LifeSkillsZone = ({ schoolId }: { schoolId: string }) => {
+    const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
+    const [stars, setStars] = useState(0);
+    const { toast } = useToast();
+
+    const addStar = () => {
+        setStars(prev => prev + 1);
+        confetti({ particleCount: 50, spread: 30, origin: { x: 0.9, y: 0.1 } });
+    };
+
+    const playSound = async (text: string) => {
+        if (!text) return;
+        try {
+            const result = await generateTTSAction({ text, schoolId: schoolId, voice: 'Kore' });
+            if (result.success && result.data && typeof window !== 'undefined') {
+                const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+                audio.play();
+            }
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Audio Error' });
+        }
+    };
+    
+    const tabs = [
+        { id: 'physical-health', label: 'Physical & Health', icon: 'fa-child-reaching', color: 'bg-green-500' },
+        { id: 'emotions', label: 'Feelings', icon: 'fa-face-smile-wink', color: 'bg-yellow-500' },
+        { id: 'routine-songs', label: 'Skill Songs', icon: 'fa-music', color: 'bg-pink-500' },
+        { id: 'modeling', label: 'Modeling', icon: 'fa-display', color: 'bg-indigo-500' },
+        { id: 'practical-life', label: 'Play & Routines', icon: 'fa-graduation-cap', color: 'bg-blue-500' },
+        { id: 'communication', label: 'Talk & Listen', icon: 'fa-comments', color: 'bg-orange-500' },
+        { id: 'social', label: 'Social & Kind', icon: 'fa-people-group', color: 'bg-rose-500' },
+        { id: 'puppet-theater', label: 'Puppet Show', icon: 'fa-masks-theater', color: 'bg-purple-500' },
+        { id: 'cognitive', label: 'Super Solver', icon: 'fa-brain', color: 'bg-emerald-500' }
+    ];
+
+    const renderModule = () => {
+        switch (activeTab) {
+            case 'emotions': return <EmotionsModule onSound={playSound} onComplete={addStar} />;
+            case 'routine-songs': return <RoutineSongsModule onSound={playSound} />;
+            case 'modeling': return <ModelingModule onSound={playSound} onComplete={addStar} />;
+            case 'practical-life': return <PracticalLifeModule onSound={playSound} onComplete={addStar} />;
+            case 'communication': return <CommunicationModule onSound={playSound} onComplete={addStar} />;
+            case 'social': return <SocialScenarios onSound={playSound} onComplete={addStar} />;
+            case 'puppet-theater': return <PuppetTheater onSound={playSound} onComplete={addStar} />;
+            case 'cognitive': return <CognitiveSkills onSound={playSound} onComplete={addStar} />;
+            case 'physical-health': return <PhysicalHealthModule onSound={playSound} onComplete={addStar} />;
+            default: return <div>Select a module</div>;
+        }
+    };
+
+    return (
+        <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 animate-in fade-in duration-500 font-black">
+            <div className="w-full flex justify-between items-center px-6">
+                <div className="text-left">
+                    <h2 className="text-5xl font-black text-teal-600 uppercase tracking-tighter">Life Skills Hub 🌱</h2>
+                    <p className="text-slate-800 font-black italic">Social, Emotional & Independence!</p>
+                </div>
+                <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-3xl shadow-xl border-4 border-yellow-100">
+                   <Star className="h-8 w-8 text-yellow-400 fill-yellow-400" />
+                   <span className="text-3xl font-black text-slate-800">{stars}</span>
+                </div>
+            </div>
+            <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
+                <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-teal-50 min-w-max">
+                    {tabs.map((tab) => (
+                        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                            className={`min-w-[120px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${activeTab === tab.id ? `${tab.color} text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-800 hover:bg-teal-50'}`}>
+                            <IconRenderer iconName={tab.icon} className="text-lg" />
+                            <span>{tab.label}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+            <div className="w-full px-4">{renderModule()}</div>
+        </div>
+    );
+};
+
+// ... Sub-Modules (EmotionsModule, etc.)
+const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void }> = ({ onSound, onComplete }) => {
+    // This is just a placeholder, implement the full logic as needed
+    return <div>Emotions Module Placeholder</div>;
+};
+const RoutineSongsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
+    return <div>Routine Songs Module Placeholder</div>;
+};
+const ModelingModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void }> = ({ onSound, onComplete }) => {
+    return <div>Modeling Module Placeholder</div>;
+};
+const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void }> = ({ onSound, onComplete }) => {
+    return <div>Practical Life Module Placeholder</div>;
+};
+const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void }> = ({ onSound, onComplete }) => {
+    return <div>Communication Module Placeholder</div>;
+};
+const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () => void }> = ({ onSound, onComplete }) => {
+    return <div>Social Scenarios Module Placeholder</div>;
+};
+const PuppetTheater: React.FC<{ onSound: (t: string) => void; onComplete: () => void }> = ({ onSound, onComplete }) => {
+    return <div>Puppet Theater Module Placeholder</div>;
+};
+const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () => void }> = ({ onSound, onComplete }) => {
+    return <div>Cognitive Skills Module Placeholder</div>;
+};
+const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void }> = ({ onSound, onComplete }) => {
+    return <div>Physical Health Module Placeholder</div>;
+};
+
+
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
     const { role } = useRole();
     const { user } = useUser();
     
     const { schoolId } = useCurrentSchool();
-    const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
+    const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
     
     return (
         <div className="min-h-screen bg-[#FFFBEB] p-4 md:p-8 font-sans">
@@ -591,7 +771,7 @@ export default function JuniorCampusPage() {
                     </TabsList>
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
-                        <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone /></TabsContent>
+                        <TabsContent value="lifeskills" className="mt-0"><LifeSkillsZone schoolId={schoolId!} /></TabsContent>
                         <TabsContent value="writing" className="mt-0"><WritingCanvas onSound={() => {}} schoolId={schoolId!} /></TabsContent>
                         <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} schoolId={schoolId!} /></TabsContent>
                         <TabsContent value="phonics" className="mt-0"><PhonicsWorld schoolId={schoolId!} /></TabsContent>
@@ -606,76 +786,3 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
-    const [index, setIndex] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [rhyme, setRhyme] = useState('');
-    
-    const words = constants.DICTIONARY_WORDS; 
-    const current = words[index];
-
-    const loadPage = useCallback(async () => {
-        if (!current || !schoolId) return;
-        setLoading(true);
-        setRhyme('');
-        const result = await generateLessonImageAction({ prompt: current.imagePrompt, schoolId });
-        if(result.success) setImageUrl(result.data || null);
-        setLoading(false);
-    }, [current, schoolId]);
-    
-    useEffect(() => { 
-      loadPage();
-    }, [index, loadPage]);
-
-    const playSong = async () => {
-        setLoading(true);
-        const rhymeResult = await generateRhyme({ topic: current.word, schoolId });
-        if(rhymeResult.success) {
-            setRhyme(rhymeResult.rhyme);
-            const ttsResult = await generateTTSAction({ text: rhymeResult.rhyme, schoolId, voice: 'Algenib' });
-            if (ttsResult.success && ttsResult.data) {
-                const audio = new Audio(`data:audio/wav;base64,${ttsResult.data}`);
-                audio.play();
-            }
-        }
-        setLoading(false);
-    };
-
-    return (
-        <div className="flex flex-col items-center space-y-8 animate-in fade-in">
-            <div className="grid grid-cols-6 md:grid-cols-13 gap-2 overflow-x-auto p-4 bg-white rounded-3xl shadow-lg border-4 border-red-50">
-                {words.map((w, i) => (
-                    <button key={i} onClick={() => setIndex(i)} className={`w-10 h-10 rounded-lg font-black ${index === i ? 'bg-red-500 text-white' : 'bg-red-50 text-red-400'}`}>
-                        {w.word[0]}
-                    </button>
-                ))}
-            </div>
-
-            <Card className={juniorStyles.card}>
-                <div className="bg-gradient-to-r from-red-400 to-pink-400 p-8 text-white text-center">
-                    <h2 className="text-7xl font-black">{current.word[0]}{current.word[0].toLowerCase()}</h2>
-                    <p className="text-2xl font-bold uppercase tracking-widest">{current.word}</p>
-                </div>
-                <CardContent className="p-10 flex flex-col items-center space-y-8">
-                    <div className="w-80 h-80 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden bg-red-50">
-                        {loading ? <div className="flex h-full items-center justify-center animate-spin text-red-200"><Loader2 size={48}/></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover" />}
-                    </div>
-                    
-                    {rhyme && (
-                        <div className="bg-red-50 p-6 rounded-3xl border-4 border-dashed border-red-200 text-center animate-in zoom-in">
-                            <p className="text-xl font-bold text-red-700 whitespace-pre-wrap">{rhyme}</p>
-                        </div>
-                    )}
-
-                    <Button onClick={playSong} disabled={loading} className="h-20 px-12 bg-red-500 hover:bg-red-600 text-white text-2xl font-black rounded-full shadow-[0_10px_0_#991b1b]">
-                        <Music className="mr-3" /> SING ALONG!
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
-    );
-};
-
-const LifeSkillsZone = () => <div>Life Skills Module Placeholder</div>;
