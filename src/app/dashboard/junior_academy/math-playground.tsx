@@ -1,19 +1,13 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import * as constants from '@/lib/constants';
-import { 
-    generateLessonImageAction, 
-    generateTTSAction, 
-    generateMathWorldEntry 
-} from '@/ai/flows/junior-actions';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import * as LucideIcons from 'lucide-react';
+import { generateTTSAction } from '@/ai/flows/junior-actions';
 
-// Import components from the new module files
+// Import the module components from their new files
 import {
     IconRenderer,
     ModuleContainer,
@@ -41,25 +35,21 @@ import {
     NumberMagicPen
 } from '@/components/dashboard/junior-academy/math-modules-b';
 
-
 type MathTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'grouping' | 'time' | 'money' | 'measurement' | 'shapes' | 'spatial' | 'comparison' | 'patterns' | 'one-to-one' | 'tracing';
 
 const NumeracyZone: React.FC = () => {
     const [activeTab, setActiveTab] = useState<MathTab>('numbers');
     const { schoolId } = useCurrentSchool();
     const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-  
+
     const playFeedbackSound = useCallback(async (text: string) => {
       if (!text || !schoolId) return;
-      if (currentSourceRef.current) {
-          try { currentSourceRef.current.pause(); } catch (e) {}
-      }
+      if (currentSourceRef.current) try { currentSourceRef.current.pause(); } catch (e) {}
       const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-      if (result.success && result.data && typeof window !== 'undefined') {
+      if (result.success && result.data) {
           const audio = new Audio(`data:audio/wav;base64,${result.data}`);
           currentSourceRef.current = audio;
           audio.play();
-          audio.onended = () => { currentSourceRef.current = null; };
       }
     }, [schoolId]);
   
@@ -76,29 +66,28 @@ const NumeracyZone: React.FC = () => {
     const renderModule = () => {
       if(!schoolId) return <div className="text-center p-8"><LucideIcons.Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>;
       const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
-      
-      switch(activeTab) {
-          case 'numbers': return <ModuleContainer title="Number Recognition" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>;
-          case 'counting': return <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>;
-          case 'sequence': return <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>;
-          case 'comparing': return <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>;
-          case 'number-words': return <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>;
-          case 'bonds': return <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule onSound={playFeedbackSound} /></ModuleContainer>;
-          case 'addition': return <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>;
-          case 'subtraction': return <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>;
-          case 'tens-units': return <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>;
-          case 'grouping': return <ModuleContainer title="Grouping" icon="fa-object-group"><GroupingModule {...commonProps} /></ModuleContainer>;
-          case 'time': return <ModuleContainer title="Telling Time" icon="fa-clock"><TellingTimeModule onSound={playFeedbackSound} /></ModuleContainer>;
-          case 'money': return <ModuleContainer title="Counting Money" icon="fa-coins"><MoneyCountingModule {...commonProps} /></ModuleContainer>;
-          case 'measurement': return <ModuleContainer title="Measurement" icon="fa-ruler-vertical"><MeasurementModule {...commonProps} /></ModuleContainer>;
-          case 'shapes': return <ModuleContainer title="Shapes" icon="fa-shapes"><ShapesModule {...commonProps} /></ModuleContainer>;
-          case 'spatial': return <ModuleContainer title="Spatial Reasoning" icon="fa-arrows-up-down-left-right"><SpatialModule {...commonProps} /></ModuleContainer>;
-          case 'comparison': return <ModuleContainer title="Comparison Game" icon="fa-scale-balanced"><ComparisonGame {...commonProps} /></ModuleContainer>;
-          case 'patterns': return <ModuleContainer title="Patterns" icon="fa-square-check"><PatternGame onSound={playFeedbackSound} /></ModuleContainer>;
-          case 'one-to-one': return <ModuleContainer title="One-to-One Matching" icon="fa-arrows-left-right"><OneToOneGame onSound={playFeedbackSound} /></ModuleContainer>;
-          case 'tracing': return <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>;
-          default: return <p>Coming Soon</p>;
-      }
+      const modules: Record<MathTab, React.ReactNode> = {
+          'numbers': <ModuleContainer title="Number Recognition" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>,
+          'counting': <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>,
+          'sequence': <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>,
+          'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>,
+          'number-words': <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>,
+          'bonds': <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule onSound={playFeedbackSound} /></ModuleContainer>,
+          'addition': <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>,
+          'subtraction': <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>,
+          'tens-units': <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>,
+          'grouping': <ModuleContainer title="Grouping" icon="fa-object-group"><GroupingModule {...commonProps} /></ModuleContainer>,
+          'time': <ModuleContainer title="Telling Time" icon="fa-clock"><TellingTimeModule onSound={playFeedbackSound} /></ModuleContainer>,
+          'money': <ModuleContainer title="Counting Money" icon="fa-coins"><MoneyCountingModule {...commonProps} /></ModuleContainer>,
+          'measurement': <ModuleContainer title="Measurement" icon="fa-ruler-vertical"><MeasurementModule {...commonProps} /></ModuleContainer>,
+          'shapes': <ModuleContainer title="Shapes" icon="fa-shapes"><ShapesModule {...commonProps} /></ModuleContainer>,
+          'spatial': <ModuleContainer title="Spatial Reasoning" icon="fa-arrows-up-down-left-right"><SpatialModule {...commonProps} /></ModuleContainer>,
+          'comparison': <ModuleContainer title="Comparison Game" icon="fa-scale-balanced"><ComparisonGame {...commonProps} /></ModuleContainer>,
+          'patterns': <ModuleContainer title="Patterns" icon="fa-square-check"><PatternGame onSound={playFeedbackSound} /></ModuleContainer>,
+          'one-to-one': <ModuleContainer title="One-to-One Matching" icon="fa-arrows-left-right"><OneToOneGame onSound={playFeedbackSound} /></ModuleContainer>,
+          'tracing': <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>,
+      };
+      return modules[activeTab];
     };
   
     return (
@@ -106,11 +95,7 @@ const NumeracyZone: React.FC = () => {
         <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
           <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max">
             {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black')}
-              >
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black')}>
                 <IconRenderer iconName={tab.icon} className="text-lg" /><span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
               </button>
             ))}
