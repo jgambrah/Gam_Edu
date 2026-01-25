@@ -21,30 +21,30 @@ import {
 import * as LucideIcons from 'lucide-react';
 
 
-// --- ROBUST ICON RENDERER ---
-const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-      'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': CaseSensitive, 
-      'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
-      'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
-      'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
-      'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
-      'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
-      'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
-      'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
-      'fa-check-double': CheckCheck,
-      'fa-puzzle-piece': Puzzle,
-      'fa-cube': Box,
-    };
-    const IconComponent = iconMap[iconName] || HelpCircle;
-    return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
-};
-
 type MathWorldTab = 'grouping' | 'time' | 'money' | 'measurement' | 'shapes' | 'spatial' | 'comparison' | 'patterns' | 'one-to-one';
 
 // --- SHARED COMPONENTS ---
 const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string }> = ({ title, children, icon }) => {
     const [started, setStarted] = useState(false);
+
+    const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
+        const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+          'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': CaseSensitive, 
+          'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
+          'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
+          'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
+          'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
+          'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
+          'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
+          'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
+          'fa-check-double': CheckCheck,
+          'fa-puzzle-piece': Puzzle,
+          'fa-cube': Box,
+        };
+        const IconComponent = iconMap[iconName] || HelpCircle;
+        return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
+    };
+    
     if (!started) return (
         <div className="text-center p-12 bg-white rounded-[3rem] shadow-xl border-8 border-sky-50 animate-in fade-in zoom-in">
             <IconRenderer iconName={icon} className="h-20 w-20 mx-auto text-sky-300 mb-6" />
@@ -111,8 +111,8 @@ const TellingTimeModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
     const [index, setIndex] = useState(0);
     const [answered, setAnswered] = useState(false);
     const current = data[index];
-    useEffect(() => { setAnswered(false); }, [index]);
     const options = useMemo(() => current ? [current.hour, (current.hour + 3) % 12 || 12, (current.hour + 6) % 12 || 12].sort(() => Math.random() - 0.5) : [], [current]);
+    useEffect(() => { setAnswered(false); }, [index]);
     if (!current) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[600px]">
@@ -150,7 +150,7 @@ const MoneyCountingModule: React.FC<{ onSound: (t: string) => void, schoolId: st
             <h3 className="text-4xl font-black text-yellow-600 mb-8 uppercase">Counting Money! 💰</h3>
             <p className="text-2xl font-black text-slate-500 mb-10 italic">How many shiny coins can you see?</p>
             <div className="w-full max-w-2xl aspect-video bg-yellow-50 rounded-[3rem] border-8 border-white mb-10 overflow-hidden">
-                {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-6" /> : <Loader2 className="animate-spin m-auto"/>}
+                {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-6" alt="coins" /> : <Loader2 className="animate-spin m-auto"/>}
             </div>
             <div className="flex gap-6">
                {options.map(opt => (
@@ -193,9 +193,12 @@ const ShapesModule: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const current = data[index];
-    useEffect(() => {
-        generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-    }, [index, schoolId, current?.prompt]);
+    const fetchVisual = useCallback(async () => {
+        if (!current || !schoolId) return;
+        const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+        if(res.success) setImageUrl(res.data || null);
+    }, [current, schoolId]);
+    useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
     if (!current) return null;
     return (
         <div className="w-full flex flex-col items-center bg-white p-10 rounded-[4rem] shadow-2xl border-8 border-cyan-100">
@@ -218,10 +221,12 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [answered, setAnswered] = useState(false);
     const current = data[index];
-    useEffect(() => {
-        generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-        setAnswered(false);
-    }, [index, schoolId, current?.prompt]);
+    const fetchVisual = useCallback(async () => {
+        if (!current || !schoolId) return;
+        const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+        if(res.success) setImageUrl(res.data || null);
+    }, [current, schoolId]);
+    useEffect(() => { fetchVisual(); setAnswered(false); }, [index, data, fetchVisual]);
     if (!current) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[550px]">
@@ -308,57 +313,6 @@ const OneToOneGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =
     );
 };
 
-const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [selectedItem, setSelectedItem] = useState('1');
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const clearCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    if(!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if(!ctx) return;
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0,0,400,400);
-    ctx.font = '900 300px Nunito, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.strokeStyle = '#F1F5F9';
-    ctx.setLineDash([10, 10]);
-    ctx.strokeText(selectedItem, 200, 220);
-  }, [selectedItem]);
-  useEffect(() => { clearCanvas(); }, [selectedItem, clearCanvas]);
-  const handleCheck = async () => {
-    setIsEvaluating(true);
-    setTimeout(() => { onSound("Superstar!"); setIsEvaluating(false); }, 1500);
-  };
-  return (
-    <div className="flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100">
-        <div className="flex gap-2 mb-8 overflow-x-auto w-full no-scrollbar">
-            {Array.from({length: 10}).map((_, i) => (<Button key={i} variant={selectedItem === String(i) ? "default" : "outline"} onClick={() => setSelectedItem(String(i))} className="flex-shrink-0 w-12 h-12 rounded-xl font-black">{i}</Button>))}
-        </div>
-        <div className="relative w-full max-w-[400px] aspect-square bg-white border-8 border-purple-50 rounded-[3rem] shadow-inner mb-8">
-            <canvas ref={canvasRef} width={400} height={400} className="w-full h-full cursor-crosshair" onMouseMove={(e) => {
-                if(e.buttons !== 1) return;
-                const ctx = canvasRef.current?.getContext('2d');
-                if(!ctx) return;
-                ctx.setLineDash([]);
-                ctx.lineWidth = 15;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = '#8B5CF6';
-                ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-            }} />
-        </div>
-        <div className="flex gap-4">
-            <Button variant="outline" onClick={clearCanvas} className="h-14 px-8 rounded-2xl">CLEAR</Button>
-            <Button onClick={handleCheck} disabled={isEvaluating} className="h-14 px-12 bg-purple-600 text-white rounded-2xl font-black">{isEvaluating ? "CHECKING..." : "CHECK WORK"}</Button>
-        </div>
-    </div>
-  );
-};
-
 // --- MAIN WRAPPER ---
 const MathWorld: React.FC = () => {
     const [activeTab, setActiveTab] = useState<MathWorldTab>('grouping');
@@ -417,3 +371,5 @@ const MathWorld: React.FC = () => {
 };
   
 export default MathWorld;
+
+    
