@@ -313,7 +313,7 @@ const SkillDetailSchema = z.object({
   imagePrompt: z.string().describe("A simple, fun DALL-E prompt for an image representing this skill.")
 });
 
-export async function generateSkillDetails(input: { skill: string; schoolId: string }): Promise<{ success: boolean; data?: any; error?: string }> {
+export async function generateSkillDetails(input: { skill: string; schoolId: string }) {
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {
@@ -471,3 +471,5 @@ export async function generateScienceWorldEntry(topic: string, category: string,
         return { success: false, error: (error as Error).message };
     }
 }
+
+    
