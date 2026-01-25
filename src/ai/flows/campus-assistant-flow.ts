@@ -6,9 +6,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-// REMOVED: Firebase client-side imports that were causing the error.
-// import { getFirestore, collection, query, where, getDocs, limit } from 'firebase/firestore';
-// import { initializeFirebase } from '@/firebase';
 
 // Define History Schema
 const HistoryMessageSchema = z.object({
@@ -33,27 +30,35 @@ const CampusAssistantOutputSchema = z.object({
 
 export type CampusAssistantOutput = z.infer<typeof CampusAssistantOutputSchema>;
 
-// --- 2. DEFINE THE FLOW (REMOVED FIRESTORE LOGIC) ---
-const campusAssistantFlow = ai.defineFlow(
+// ✅ FIX: Define the prompt first
+const campusAssistantPrompt = ai.definePrompt(
   {
-    name: 'campusAssistantFlow',
-    inputSchema: CampusAssistantInputSchema,
-    outputSchema: CampusAssistantOutputSchema,
+    name: 'campusAssistantPrompt',
+    model: 'googleai/gemini-3-flash-preview',
+    input: {
+      schema: z.object({
+        prompt: z.string(),
+        role: z.string(),
+        historyText: z.string(),
+      }),
+    },
+    output: {
+      schema: z.string(),
+    },
+    config: {
+      temperature: 0.7,
+    },
   },
-  async (input) => {
-    // The Firestore logic to fetch a context document has been removed 
-    // to fix the server/client boundary error.
-    const contextDocument = '';
-    const isStudent = input.role === 'Student';
+  async ({ prompt, role, historyText }) => {
+    const isStudent = role === 'Student';
     
-    const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
-    const prompt = `
+    return `
       You are **GAM Edu Assistant**, the intelligent AI assistant for the **GAM Edu** school management platform.
       Your goal is to be helpful, polite, and efficient. You must adapt your personality based on the user's request.
   
       ---
       ### CONTEXT: USER ROLE
-      The current user is identified as: ${input.role || 'Unknown'}
+      The current user is identified as: ${role || 'Unknown'}
   
       ---
       ### YOUR CAPABILITIES & INSTRUCTIONS
@@ -84,30 +89,38 @@ const campusAssistantFlow = ai.defineFlow(
       
       ---
       ### CURRENT REQUEST
-      User: ${input.prompt}
+      User: ${prompt}
       
       GAM Edu Assistant Response:
     `;
-
-    const response = await ai.generate({
-        model: 'googleai/gemini-3-flash-preview',
-        prompt: prompt,
-        config: {
-            temperature: 0.7
-        }
-    });
-
-    const responseText = response.text;
-    
-    if (!responseText) {
-      throw new Error("Failed to generate response");
-    }
-
-    return { response: responseText };
   }
 );
 
-// --- 3. EXPORT THE ACTION ---
+// ✅ FIX: Define the flow using the prompt
+const campusAssistantFlow = ai.defineFlow(
+  {
+    name: 'campusAssistantFlow',
+    inputSchema: CampusAssistantInputSchema,
+    outputSchema: CampusAssistantOutputSchema,
+  },
+  async (input) => {
+    const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
+    
+    const { output } = await campusAssistantPrompt({
+      prompt: input.prompt,
+      role: input.role || 'Unknown',
+      historyText: historyText,
+    });
+    
+    if (!output) {
+      throw new Error("Failed to generate response");
+    }
+
+    return { response: output };
+  }
+);
+
+// --- EXPORT THE ACTION ---
 export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
   return campusAssistantFlow(input);
 }
