@@ -5,18 +5,6 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs } from 'firebase/firestore';
-import { 
-  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, 
-  Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, 
-  Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
-  Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
-  CloudRain, Guitar, Plane, MousePointer2, Box, Carrot, Cookie, School, Home, 
-  Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User as UserIcon, 
-  Beaker, Bed, Eye, FlaskConical
-} from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 import confetti from 'canvas-confetti';
@@ -105,7 +93,6 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     };
   
     const lucideIconName = iconMap[iconName] || 'HelpCircle';
-    
     const IconComponent = (LucideIcons as any)[lucideIconName];
   
     if (!IconComponent || typeof IconComponent !== 'function') {
@@ -263,7 +250,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                         disabled={loading || !topic} 
                         className="md:mt-6 h-14 bg-purple-600 hover:bg-purple-500 text-white font-black rounded-2xl px-8 shadow-lg shadow-purple-900/20"
                     >
-                        {loading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2 h-5 w-5" /> MAGIC WRITE</>}
+                        {loading ? <LucideIcons.Loader2 className="animate-spin" /> : <><LucideIcons.Wand2 className="mr-2 h-5 w-5" /> MAGIC WRITE</>}
                     </Button>
                 </div>
             )}
@@ -276,9 +263,9 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                             <CardTitle className="text-4xl font-black uppercase tracking-tighter">{story.title}</CardTitle>
                         </div>
                         <div className="flex gap-2">
-                             <Button variant="ghost" onClick={() => speak(story.content)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><Volume2 /></Button>
-                             {canEdit && <Button onClick={handleSave} variant="ghost" className="text-white hover:bg-white/20 rounded-full h-12 w-12"><Save /></Button>}
-                             <Button variant="ghost" onClick={() => setStory(null)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><XCircle /></Button>
+                             <Button variant="ghost" onClick={() => speak(story.content)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><LucideIcons.Volume2 /></Button>
+                             {canEdit && <Button onClick={handleSave} variant="ghost" className="text-white hover:bg-white/20 rounded-full h-12 w-12"><LucideIcons.Save /></Button>}
+                             <Button variant="ghost" onClick={() => setStory(null)} className="text-white hover:bg-white/20 rounded-full h-12 w-12"><LucideIcons.XCircle /></Button>
                         </div>
                     </div>
 
@@ -328,7 +315,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                                 <div className="space-y-6 animate-in zoom-in duration-300">
                                     <div className={`p-8 rounded-[40px] border-4 flex items-center gap-6 ${quizStatus === 'correct' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-rose-50 border-rose-200 text-rose-800'}`}>
                                         <div className={`h-20 w-20 rounded-full flex items-center justify-center text-4xl shadow-lg ${quizStatus === 'correct' ? 'bg-green-500 text-white' : 'bg-rose-500 text-white'}`}>
-                                            {quizStatus === 'correct' ? <CheckCircle2 className="h-10 w-10" /> : <XCircle className="h-10 w-10" />}
+                                            {quizStatus === 'correct' ? <LucideIcons.CheckCircle2 className="h-10 w-10" /> : <LucideIcons.XCircle className="h-10 w-10" />}
                                         </div>
                                         <div>
                                             <p className="text-3xl font-black uppercase tracking-tight">{quizStatus === 'correct' ? "Amazing Thinking!" : "Almost There!"}</p>
@@ -355,14 +342,14 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-2xl font-black text-slate-700 flex items-center gap-2">
-                            <Library className="text-purple-500" /> School Story Library
+                            <LucideIcons.Library className="text-purple-500" /> School Story Library
                         </h3>
                         <Badge variant="outline" className="text-slate-400 font-bold">{savedStories?.length || 0} Stories</Badge>
                     </div>
 
                     {!savedStories || savedStories.length === 0 ? (
                         <div className="py-20 text-center bg-white rounded-[50px] border-8 border-dashed border-slate-50">
-                            <BookOpen className="h-16 w-16 text-slate-100 mx-auto mb-4" />
+                            <LucideIcons.BookOpen className="h-16 w-16 text-slate-100 mx-auto mb-4" />
                             <p className="text-slate-300 font-bold uppercase tracking-widest">Library is quiet today...</p>
                         </div>
                     ) : (
@@ -392,7 +379,7 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
                                                 onClick={(e) => { e.stopPropagation(); deleteDoc(doc(firestore!, 'junior_stories', s.id)); }}
                                                 className="opacity-0 group-hover:opacity-100 p-2 text-rose-300 hover:text-rose-600 transition-opacity"
                                             >
-                                                <Trash2 className="h-5 w-5" />
+                                                <LucideIcons.Trash2 className="h-5 w-5" />
                                             </button>
                                         )}
                                     </div>
@@ -452,11 +439,11 @@ const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
             </div>
             
             {isLoading || !wordData ? (
-                <div className="h-96 flex items-center justify-center"><Loader2 className="w-16 h-16 animate-spin text-red-200" /></div>
+                <div className="h-96 flex items-center justify-center"><LucideIcons.Loader2 className="w-16 h-16 animate-spin text-red-200" /></div>
             ) : (
                 <div className="flex flex-col items-center gap-6 animate-in zoom-in">
                     <div className="w-80 h-80 bg-red-50 rounded-[4rem] border-8 border-white shadow-2xl flex items-center justify-center overflow-hidden">
-                        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-8" alt={wordData.word}/> : <Loader2 className="w-12 h-12 animate-spin text-red-300"/>}
+                        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-8" alt={wordData.word}/> : <LucideIcons.Loader2 className="w-12 h-12 animate-spin text-red-300"/>}
                     </div>
                     <h4 className="text-8xl font-black text-slate-800">{wordData.word}</h4>
                     <Button onClick={handleSing} className="h-20 px-16 bg-red-500 text-white rounded-full font-black text-3xl shadow-xl border-4 border-white">Sing with me! 🎤</Button>
@@ -479,7 +466,7 @@ export default function JuniorCampusPage() {
             <div className="max-w-7xl mx-auto space-y-8">
                 <header className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-8 rounded-[45px] shadow-xl border-b-[12px] border-yellow-200">
                     <div className="flex items-center gap-4">
-                        <div className="bg-yellow-400 p-5 rounded-[30px] shadow-inner rotate-3"><Rabbit className="h-12 w-12 text-white" /></div>
+                        <div className="bg-yellow-400 p-5 rounded-[30px] shadow-inner rotate-3"><LucideIcons.Rabbit className="h-12 w-12 text-white" /></div>
                         <div>
                             <h1 className="text-5xl font-black text-slate-800 tracking-tighter">Junior Campus</h1>
                             <p className="text-xl font-bold text-pink-500 uppercase tracking-widest italic">The Magic of Learning! ✨</p>
@@ -493,15 +480,15 @@ export default function JuniorCampusPage() {
 
                 <Tabs defaultValue="stories" className="w-full">
                     <TabsList className="grid w-full grid-cols-9 h-24 bg-white p-2 rounded-[30px] shadow-xl border-2 border-yellow-100 mb-10 overflow-x-auto no-scrollbar">
-                        <TabsTrigger value="lifeskills" className="rounded-2xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-black flex flex-col items-center gap-1"><Heart className="w-5 h-5"/> Life Skills</TabsTrigger>
-                        <TabsTrigger value="writing" className="rounded-2xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-black flex flex-col items-center gap-1"><Pencil className="w-5 h-5"/> Writing</TabsTrigger>
-                        <TabsTrigger value="stories" className="rounded-2xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-black flex flex-col items-center gap-1"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
-                        <TabsTrigger value="phonics" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><Ear className="w-5 h-5"/> Phonics</TabsTrigger>
-                        <TabsTrigger value="dictionary" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><Languages className="w-5 h-5"/> Dictionary</TabsTrigger>
-                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center gap-1"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
-                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center gap-1"><Atom className="w-5 h-5"/> Science</TabsTrigger>
-                        <TabsTrigger value="art" className="rounded-2xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-black flex flex-col items-center gap-1"><Palette className="w-5 h-5"/> Art</TabsTrigger>
-                        <TabsTrigger value="rewards" className="rounded-2xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-black flex flex-col items-center gap-1"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
+                        <TabsTrigger value="lifeskills" className="rounded-2xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-black flex flex-col items-center gap-1"><LucideIcons.Heart className="w-5 h-5"/> Life Skills</TabsTrigger>
+                        <TabsTrigger value="writing" className="rounded-2xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-black flex flex-col items-center gap-1"><LucideIcons.Pencil className="w-5 h-5"/> Writing</TabsTrigger>
+                        <TabsTrigger value="stories" className="rounded-2xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-black flex flex-col items-center gap-1"><LucideIcons.BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
+                        <TabsTrigger value="phonics" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><LucideIcons.Ear className="w-5 h-5"/> Phonics</TabsTrigger>
+                        <TabsTrigger value="dictionary" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><LucideIcons.Languages className="w-5 h-5"/> Dictionary</TabsTrigger>
+                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center gap-1"><LucideIcons.Calculator className="w-5 h-5"/> Math</TabsTrigger>
+                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center gap-1"><LucideIcons.Atom className="w-5 h-5"/> Science</TabsTrigger>
+                        <TabsTrigger value="art" className="rounded-2xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-black flex flex-col items-center gap-1"><LucideIcons.Palette className="w-5 h-5"/> Art</TabsTrigger>
+                        <TabsTrigger value="rewards" className="rounded-2xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-black flex flex-col items-center gap-1"><LucideIcons.Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
                     </TabsList>
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">

@@ -675,93 +675,6 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
     );
 };
 
-const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    const [data, setData] = useState(constants.LIFE_SKILLS_DATA.emotions);
-    const [index, setIndex] = useState(0);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [aiTopic, setAiTopic] = useState('');
-    const [isAiLoading, setIsAiLoading] = useState(false);
-    const [mode, setMode] = useState<'learn' | 'mirror'>('learn');
-    const [started, setStarted] = useState(false);
-  
-    const current = data[index];
-  
-    const fetchVisual = useCallback(async () => {
-      if (!current || !schoolId) return;
-      setLoading(true);
-      const result = await generateLessonImageAction({ prompt: current.prompt, schoolId });
-      if (result.success) setImageUrl(result.data || null);
-      setLoading(false);
-    }, [current, schoolId]);
-  
-    useEffect(() => {
-        if (started) {
-            fetchVisual();
-        }
-    }, [index, data, started, fetchVisual]);
-  
-    const handleLearn = () => {
-      onSound(`This is feeling ${current.name.toLowerCase()}. ${current.technique}`);
-      if (mode === 'mirror') onComplete();
-    };
-  
-    const generateWithAi = async () => {
-      if (!aiTopic || !schoolId) return; setIsAiLoading(true);
-      try {
-        const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'emotions', schoolId });
-        if(result.success && result.data){
-            setData(prev => [...prev, result.data]);
-            setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
-        }
-      } catch (e) { console.error(e); } 
-      finally { setIsAiLoading(false); }
-    };
-  
-    if (!started) {
-        return (
-             <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <LucideIcons.Smile className="h-16 w-16 mx-auto text-yellow-300 mb-4"/>
-                <h3 className="text-2xl font-bold text-yellow-600 mb-2">My Big Feelings</h3>
-                <p className="text-slate-500 mb-4">Let's learn about all the different feelings we can have!</p>
-                <Button onClick={() => setStarted(true)} className="bg-yellow-500 hover:bg-yellow-600">Start Feeling</Button>
-            </div>
-        )
-    }
-
-    return (
-      <div className="relative font-black">
-        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-yellow-200 text-yellow-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-yellow-50 transition-colors font-black"><LucideIcons.Wand2 className="w-3 h-3 inline-block mr-1"/> AI Feeling Maker</button>
-        <div className="w-full flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-yellow-100 animate-in zoom-in duration-500 min-h-[550px] font-black">
-          <div className="flex gap-4 mb-8 font-black">
-             <button onClick={() => setMode('learn')} className={`px-6 py-2 rounded-full font-black text-xs uppercase transition-all ${mode === 'learn' ? 'bg-yellow-400 text-white shadow-md' : 'bg-slate-100 text-slate-800 font-black'}`}>Learning Mode</button>
-             <button onClick={() => setMode('mirror')} className={`px-6 py-2 rounded-full font-black text-xs uppercase transition-all ${mode === 'mirror' ? 'bg-yellow-400 text-white shadow-md' : 'bg-slate-100 text-slate-800 font-black'}`}>Mirror Game</button>
-          </div>
-          
-          <h3 className="text-4xl font-black text-yellow-600 mb-8 uppercase tracking-tighter text-center font-black">{mode === 'learn' ? 'How I Feel ✨' : 'Copy My Face! 🪞'}</h3>
-          
-          <div className="flex flex-wrap justify-center gap-4 mb-10 font-black">
-            {data.map((e, i) => (
-              <button key={i} onClick={() => setIndex(i)} className={`w-20 h-20 rounded-3xl flex items-center justify-center border-4 transition-all shadow-lg font-black ${index === i ? `${e.color} text-white border-white scale-110 shadow-yellow-200` : 'bg-slate-50 text-slate-800 border-slate-100 hover:bg-yellow-50 font-black'}`}>
-                <IconRenderer iconName={e.icon} className="text-3xl" />
-              </button>
-            ))}
-          </div>
-  
-          <div onClick={handleLearn} className={`w-full max-lg aspect-square rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-10 overflow-hidden cursor-pointer group font-black ${mode === 'mirror' ? 'ring-8 ring-yellow-400 animate-pulse' : ''}`}>
-            {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-yellow-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 transition-transform group-hover:scale-110" alt={current.name} />}
-          </div>
-          <h4 className="text-6xl font-black text-yellow-600 uppercase mb-4 tracking-tighter">{current.name}</h4>
-          <button onClick={handleLearn} className="px-16 py-6 bg-yellow-400 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">
-            {mode === 'learn' ? 'Tell Me More!' : 'I Did It! 🌟'}
-          </button>
-        </div>
-        {isDrawerOpen && <TeacherModal title="AI Feeling Maker" topicLabel="New Feeling" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
-      </div>
-    );
-};
-
 const LifeSkillsZone: React.FC = () => {
   const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
   const { schoolId } = useCurrentSchool();
@@ -814,7 +727,7 @@ const LifeSkillsZone: React.FC = () => {
   };
 
   const renderModule = () => {
-    if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin" /></div>;
+    if (!schoolId) return <div className="text-center p-8"><LucideIcons.Loader2 className="animate-spin" /></div>;
     const commonProps = { onSound: playFeedbackSound, onComplete, schoolId };
     
     switch(activeTab) {
