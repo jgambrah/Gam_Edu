@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { 
   Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, CaseSensitive, 
@@ -41,6 +41,21 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
 };
 
 type MathTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'grouping' | 'time' | 'money' | 'measurement' | 'shapes' | 'spatial' | 'comparison' | 'patterns' | 'one-to-one' | 'tracing';
+
+const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string; }> = ({ title, children, icon }) => {
+    const [started, setStarted] = useState(false);
+    if (!started) {
+        return (
+            <div className="text-center p-12 bg-white rounded-3xl shadow-lg animate-in fade-in">
+                <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-purple-300 mb-4" />
+                <h3 className="text-2xl font-bold text-purple-600 mb-2">{title}</h3>
+                <p className="text-slate-500 mb-4">Ready to start this activity?</p>
+                <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Activity</Button>
+            </div>
+        );
+    }
+    return <>{children}</>;
+};
 
 const TeacherModal: React.FC<{
   title: string; topicLabel: string; topicValue: string; 
@@ -74,21 +89,6 @@ const TeacherModal: React.FC<{
   </Dialog>
 );
 
-const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string; }> = ({ title, children, icon }) => {
-    const [started, setStarted] = useState(false);
-    if (!started) {
-        return (
-            <div className="text-center p-12 bg-white rounded-3xl shadow-lg animate-in fade-in">
-                <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-purple-300 mb-4" />
-                <h3 className="text-2xl font-bold text-purple-600 mb-2">{title}</h3>
-                <p className="text-slate-500 mb-4">Ready to start this activity?</p>
-                <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Activity</Button>
-            </div>
-        );
-    }
-    return <>{children}</>;
-};
-
 const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const [data, setData] = useState(constants.NUMERACY_DATA.numbers);
     const [index, setIndex] = useState(0);
@@ -106,9 +106,9 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     const generateWithAi = async () => {
       if (!aiTopic || !schoolId) return; setIsAiLoading(true);
       try {
-        const result = await generateMathWorldEntry({topic: aiTopic, category: 'numbers', schoolId});
+        const result = await generateMathWorldEntry({ topic: aiTopic, category: 'numbers', schoolId });
         if(result.success && result.data) {
-          setData(prev => prev.map((item, i) => i === index ? { ...item, ...result.data } : item));
+          setData(prev => prev.map((item, i) => i === index ? { ...item, ...result.data } as any : item));
           setIsDrawerOpen(false); setAiTopic('');
         }
       } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
@@ -143,7 +143,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     const current = data[index];
     const options = [current.count, current.count + 1, current.count - 1].filter(o => o > 0).sort(() => Math.random() - 0.5);
   
-    const fetchVisual = useCallback(async () => { setLoading(true); const url = await generateLessonImageAction({prompt: current.prompt, schoolId}); setImageUrl(url.data || null); setLoading(false); }, [current, schoolId]);
+    const fetchVisual = useCallback(async () => { if(!schoolId) return; setLoading(true); const url = await generateLessonImageAction({prompt: current.prompt, schoolId}); setImageUrl(url.data || null); setLoading(false); }, [current, schoolId]);
     useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
     
     const handleAnswer = (val: number) => {
@@ -153,10 +153,10 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     };
   
     const generateWithAi = async () => {
-      if (!aiTopic) return; setIsAiLoading(true);
+      if (!aiTopic || !schoolId) return; setIsAiLoading(true);
       try {
         const result = await generateMathWorldEntry({ topic: aiTopic, category: 'counting', schoolId });
-        if (result.success && result.data) {
+        if(result.success && result.data) {
           setData(prev => [...prev, result.data as any]);
           setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
         }
@@ -165,12 +165,12 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
   
     return (
       <div className="relative font-black">
-        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-emerald-200 text-emerald-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-emerald-50 transition-colors font-black"><Wand2 className="mr-2 h-3 w-3 inline-block" />AI Counting</button>
+        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-emerald-200 text-emerald-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-emerald-50 transition-colors font-black"><Wand2 className="mr-1 h-3 w-3 inline-block" /> AI Counting</button>
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-emerald-100 flex flex-col items-center min-h-[550px]">
           <h3 className="text-4xl font-black text-emerald-600 mb-10 uppercase tracking-tighter text-center">How Many? 🧮</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center w-full font-black">
              <div onClick={() => onSound(`How many ${current.theme.toLowerCase()} can you see?`)} className="relative aspect-square bg-emerald-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center overflow-hidden cursor-pointer group">
-                {loading ? <Loader2 className="w-16 h-16 animate-spin text-emerald-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt={current.theme} />}
+                {loading ? <Loader2 className="w-16 h-16 animate-spin text-emerald-400"/> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt={current.theme} />}
              </div>
              <div className="flex flex-col items-center font-black">
                 <p className="text-2xl font-black text-slate-500 mb-8 uppercase tracking-widest text-center font-black">Count the {current.theme}!</p>
@@ -209,29 +209,29 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: s
     const generateWithAi = async () => {
       if (!aiTopic || !schoolId) return; setIsAiLoading(true);
       try {
-        const result = await generateMathWorldEntry({ topic: aiTopic, category: 'sequence', schoolId });
+        const result = await generateMathWorldEntry(aiTopic, 'sequence', schoolId);
         if(result.success && result.data){
-            setData(prev => [...prev, result.data as any]);
-            setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
+          setData(prev => [...prev, result.data as any]);
+          setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
         }
       } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
     };
   
     return (
       <div className="relative font-black">
-        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-purple-200 text-purple-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-purple-50 transition-colors"><Wand2 className="mr-1 h-3 w-3 inline-block" />AI Sequence</button>
+        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-purple-200 text-purple-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-purple-50 transition-colors"><Wand2 className="mr-1 h-3 w-3 inline-block" /> AI Sequence</button>
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[550px]">
           <h3 className="text-4xl font-black text-purple-600 mb-10 uppercase tracking-tighter text-center">{current.question}</h3>
-          <div className="flex gap-4 mb-16 items-center">
+          <div className="flex gap-4 mb-16 items-center font-black">
              {current.sequence.map((n, i) => (
-               <div key={i} className={`w-24 h-32 rounded-3xl flex items-center justify-center border-4 text-5xl font-black ${n === null ? 'bg-purple-50 border-purple-100 text-purple-200 border-dashed' : 'bg-white border-purple-50 text-slate-800 shadow-md'}`}>
+               <div key={i} className={`w-24 h-32 rounded-3xl flex items-center justify-center border-4 text-5xl font-black ${n === null ? 'bg-purple-50 border-purple-100 text-purple-200 border-dashed font-black' : 'bg-white border-purple-50 text-slate-800 shadow-md font-black'}`}>
                  {n === null ? (userAnswer === current.answer ? userAnswer : '?') : n}
                </div>
              ))}
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 font-black">
              {current.options.map(opt => (
-               <button key={opt} onClick={() => handleAnswer(opt)} className={`w-20 h-20 rounded-2xl font-black text-3xl transition-all border-2 ${userAnswer === opt ? (opt === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-purple-50 text-slate-700 border-purple-100 hover:bg-purple-100'}`}>{opt}</button>
+               <button key={opt} onClick={() => handleAnswer(opt)} className={`w-20 h-20 rounded-2xl font-black text-3xl transition-all border-2 ${userAnswer === opt ? (opt === current.answer ? 'bg-green-500 text-white font-black' : 'bg-red-500 text-white font-black') : 'bg-purple-50 text-slate-700 border-purple-100 hover:bg-purple-100 font-black'}`}>{opt}</button>
              ))}
           </div>
         </div>
@@ -239,9 +239,8 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: s
       </div>
     );
 };
-
 const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  return <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
+    return <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
 };
 const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     return <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
@@ -264,16 +263,10 @@ const GroupingModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
 const TellingTimeModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     return <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
 };
-const MoneyCountingModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
-};
 const MeasurementModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     return <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
 };
 const ShapesModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    return <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
-};
-const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     return <Card><CardContent className="p-8 text-center">Coming Soon</CardContent></Card>;
 };
 const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
@@ -294,7 +287,7 @@ const NumeracyZone: React.FC = () => {
     const [playing, setPlaying] = useState(false);
     const currentSourceRef = useRef<HTMLAudioElement | null>(null);
     const { schoolId } = useCurrentSchool();
-
+  
     const playFeedbackSound = useCallback(async (text: string) => {
       if (!text || !schoolId) return;
       if (currentSourceRef.current) {
@@ -313,27 +306,27 @@ const NumeracyZone: React.FC = () => {
           setPlaying(false);
       }
     }, [schoolId]);
-
+  
     const tabs: {id: MathTab, icon: string}[] = [
-        { id: 'numbers', icon: 'fa-1' },
-        { id: 'counting', icon: 'fa-list-ol' },
-        { id: 'sequence', icon: 'fa-arrow-right-long' },
-        { id: 'comparing', icon: 'fa-scale-unbalanced' },
-        { id: 'number-words', icon: 'fa-font' },
-        { id: 'bonds', icon: 'fa-handshake' },
-        { id: 'addition', icon: 'fa-plus' },
-        { id: 'subtraction', icon: 'fa-minus' },
-        { id: 'tens-units', icon: 'fa-layer-group' },
-        { id: 'grouping', icon: 'fa-object-group' },
-        { id: 'time', icon: 'fa-clock' },
-        { id: 'money', icon: 'fa-coins' },
-        { id: 'measurement', icon: 'fa-ruler-vertical' },
-        { id: 'shapes', icon: 'fa-shapes' },
-        { id: 'spatial', icon: 'fa-arrows-up-down-left-right' },
-        { id: 'comparison', icon: 'fa-scale-balanced' },
-        { id: 'patterns', icon: 'fa-square-check' },
-        { id: 'one-to-one', icon: 'fa-arrows-left-right' },
-        { id: 'tracing', icon: 'fa-pen-clip' }
+      { id: 'numbers', icon: 'fa-1' },
+      { id: 'counting', icon: 'fa-list-ol' },
+      { id: 'sequence', icon: 'fa-arrow-right-long' },
+      { id: 'comparing', icon: 'fa-scale-unbalanced' },
+      { id: 'number-words', icon: 'fa-font' },
+      { id: 'bonds', icon: 'fa-handshake' },
+      { id: 'addition', icon: 'fa-plus' },
+      { id: 'subtraction', icon: 'fa-minus' },
+      { id: 'tens-units', icon: 'fa-layer-group' },
+      { id: 'grouping', icon: 'fa-object-group' },
+      { id: 'time', icon: 'fa-clock' },
+      { id: 'money', icon: 'fa-coins' },
+      { id: 'measurement', icon: 'fa-ruler-vertical' },
+      { id: 'shapes', icon: 'fa-shapes' },
+      { id: 'spatial', icon: 'fa-arrows-up-down-left-right' },
+      { id: 'comparison', icon: 'fa-scale-balanced' },
+      { id: 'patterns', icon: 'fa-square-check' },
+      { id: 'one-to-one', icon: 'fa-arrows-left-right' },
+      { id: 'tracing', icon: 'fa-pen-clip' }
     ];
     
     const renderModule = () => {
@@ -361,34 +354,34 @@ const NumeracyZone: React.FC = () => {
             'one-to-one': <ModuleContainer title="One-to-One Correspondence" icon="fa-arrows-left-right"><OneToOneGame {...commonProps} /></ModuleContainer>,
             'tracing': <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>,
         };
-
+  
         return modules[activeTab] || <p>Coming Soon</p>;
     };
-
+  
     return (
-        <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
-            <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
-                <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max font-black">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${
-                                activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
-                            }`}
-                        >
-                            <IconRenderer iconName={tab.icon} className="text-lg" />
-                            <span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            <div className="w-full px-4">
-                {renderModule()}
-            </div>
+      <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
+        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
+          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max font-black">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${
+                  activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
+                }`}
+              >
+                <IconRenderer iconName={tab.icon} className="text-lg" />
+                <span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
+              </button>
+            ))}
+          </div>
         </div>
+  
+        <div className="w-full px-4">
+          {renderModule()}
+        </div>
+      </div>
     );
 };
-
+  
 export default NumeracyZone;
