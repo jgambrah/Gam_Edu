@@ -34,6 +34,7 @@ import LifeSkillsZone from './life-skills-zone';
 import WritingCanvas from './writing-canvas'; 
 import * as constants from '@/lib/constants';
 
+// Bring in StorySpark, but not VoiceCoach
 import { StorySpark } from './voice-coach';
 
 const {
@@ -45,7 +46,7 @@ const {
     Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
     CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
     Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-    Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User
+    Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, Globe
 } = LucideIcons;
 
 
@@ -120,6 +121,21 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
   }
 
   return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
+};
+
+const juniorStyles = {
+    storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
+    storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
+    
+    questCard: "bg-gradient-to-b from-sky-400 to-blue-500 border-b-[12px] border-blue-700 rounded-[50px] text-white",
+    stepBubble: "w-16 h-16 rounded-full bg-white text-blue-600 flex items-center justify-center text-3xl shadow-lg border-4 border-blue-200",
+    
+    card: "rounded-[60px] border-8 border-yellow-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100",
+    header: "p-10 text-center",
+    mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
+    
+    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
+    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
 // --- MAIN PAGE ---
