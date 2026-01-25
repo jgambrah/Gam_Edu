@@ -19,12 +19,11 @@ import confetti from 'canvas-confetti';
 
 const {
     Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, 
-    Ear, Layers, Sparkles, HelpCircle, 
-    Hash, ListOrdered, Scale, 
-    Handshake, Plus, Minus, PenTool, 
-    Clock, ObjectGroup, 
-    Type, 
-    Calculator,
+    Ear, Layers, Image: ImageIcon, Sparkles, HelpCircle, 
+    Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
+    Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
+    Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
+    Type, FontAwesome, Palette, Utensils, Trash2, Calculator, Shapes
 } = LucideIcons;
 
 // --- ROBUST ICON RENDERER ---
@@ -32,8 +31,14 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     const iconMap: Record<string, keyof typeof LucideIcons> = {
       'fa-1': 'Hash', 'fa-list-ol': 'ListOrdered', 'fa-arrow-right-long': 'ArrowRight', 'fa-scale-unbalanced': 'Scale', 'fa-font': 'Type', 
       'fa-handshake': 'Handshake', 'fa-plus': 'Plus', 'fa-minus': 'Minus', 'fa-layer-group': 'Layers', 'fa-object-group': 'ObjectGroup', 
-      'fa-clock': 'Clock', 'fa-pen-clip': 'PenTool',
-      'fa-magic': 'Wand2', 'fa-spinner': 'Loader2', 'fa-volume-high': 'Volume2', 'fa-play': 'Play', 'fa-face-smile': 'Smile', 'fa-brain': 'BrainCircuit'
+      'fa-clock': 'Clock', 'fa-coins': 'Coins', 'fa-ruler-vertical': 'Ruler', 'fa-shapes': 'Shapes', 'fa-arrows-up-down-left-right': 'Move', 
+      'fa-scale-balanced': 'Scale', 'fa-square-check': 'CheckSquare', 'fa-arrows-left-right': 'ArrowLeftRight', 'fa-pen-clip': 'PenTool',
+      'fa-magic': 'Wand2', 'fa-spinner': 'Loader2', 'fa-volume-high': 'Volume2', 'fa-play': 'Play', 'fa-face-smile': 'Smile', 'fa-brain': 'BrainCircuit',
+      'fa-rabbit': 'Rabbit',
+      'fa-carrot': 'Carrot',
+      'fa-apple-whole': 'Apple',
+      'fa-cookie': 'Cookie',
+      'fa-star': 'Star'
     };
     const LucideName = iconMap[iconName] || 'HelpCircle';
     const IconComponent = (LucideIcons as any)[LucideName] || HelpCircle;
@@ -111,9 +116,9 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
             {loading ? <Loader2 className="w-16 h-16 animate-spin text-purple-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover group-hover:scale-110 transition-all" alt={`Number ${current.value}`} />}
           </div>
           <div className="flex gap-6">
-            <Button size="icon" onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="w-16 h-16 bg-slate-100 rounded-full"><ArrowLeft/></Button>
-            <Button onClick={() => onSound(`Let's count to ${current.value}`)} className="px-16 h-16 bg-purple-500 text-white font-black rounded-2xl shadow-xl uppercase">Learn</Button>
-            <Button size="icon" onClick={() => setIndex(p => (p + 1) % data.length)} className="w-16 h-16 bg-slate-100 rounded-full"><ArrowRight/></Button>
+            <Button size="icon" onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="w-16 h-16 bg-slate-100 text-slate-700 rounded-full flex items-center justify-center hover:bg-slate-200 active:scale-90 shadow-md font-black"><ArrowLeft className="text-2xl" /></Button>
+            <Button onClick={() => onSound(`Let's count to ${current.value}`)} className="px-16 h-16 bg-purple-500 text-white font-black rounded-2xl shadow-xl uppercase border-4 border-white hover:scale-105 transition-all font-black">Learn</Button>
+            <Button size="icon" onClick={() => setIndex(p => (p + 1) % data.length)} className="w-16 h-16 bg-slate-100 text-slate-700 rounded-full flex items-center justify-center hover:bg-slate-200 active:scale-90 shadow-md font-black"><ArrowRight className="text-2xl" /></Button>
           </div>
         </div>
         {isDrawerOpen && <TeacherModal title="Change Number Theme" topicLabel="New Topic" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
@@ -142,7 +147,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
             <h3 className="text-4xl font-black text-emerald-600 mb-10 uppercase">How Many? 🧮</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center w-full">
                 <div className="aspect-square bg-emerald-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center overflow-hidden">
-                    {loading ? <Loader2 className="animate-spin text-emerald-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover" />}
+                    {loading ? <Loader2 className="animate-spin text-emerald-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={current.theme} />}
                 </div>
                 <div className="flex flex-col items-center">
                     <p className="text-2xl font-black text-slate-500 mb-8 uppercase">Count the {current.theme}!</p>
@@ -160,7 +165,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
 
 /* --- 3. NUMBER SEQUENCE --- */
 const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data, setData] = useState(constants.SEQUENCE_DATA || []);
+    const [data, setData] = useState(constants.NUMERACY_DATA.sequence || []);
     const [index, setIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
@@ -188,7 +193,7 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: s
 
 /* --- 4. NUMBER COMPARISON (Greater/Less) --- */
 const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [data, setData] = useState(constants.NUM_COMPARISON_DATA || []);
+  const [data, setData] = useState(constants.NUMERACY_DATA.numComparison || []);
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<any>(null);
   const current = data[index];
@@ -209,13 +214,16 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId:
 
 /* --- 5. NUMBER WORDS --- */
 const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [items] = useState(constants.NUMBER_WORDS_DATA || []);
+  const [items] = useState(constants.NUMERACY_DATA.numberWords || []);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = items[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-  }, [index, schoolId, current?.prompt]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); }, [index, items, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center">
@@ -238,7 +246,7 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
 
 /* --- 6. NUMBER BONDS --- */
 const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-  const [data] = useState(constants.NUMBER_BONDS_DATA || []);
+  const [data] = useState(constants.NUMERACY_DATA.numberBonds || []);
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const current = data[index];
@@ -266,15 +274,17 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
 
 /* --- 7. ADDITION --- */
 const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data] = useState(constants.ADDITION_DATA || []);
+    const [data] = useState(constants.NUMERACY_DATA.addition || []);
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
-    useEffect(() => {
-      generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-      setUserAnswer(null);
-    }, [index, schoolId, current]);
+    const fetchVisual = useCallback(async () => {
+        if (!current || !schoolId) return;
+        const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+        if(res.success) setImageUrl(res.data || null);
+    }, [current, schoolId]);
+    useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
     if (!current) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[600px]">
@@ -290,7 +300,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
                     </div>
                 </div>
                 <div className="w-48 h-48 bg-white border-4 border-orange-50 rounded-[2.5rem] shadow-xl overflow-hidden relative">
-                    {imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-2" />}
+                    {imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-2" alt={current.theme} />}
                 </div>
             </div>
             <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} + {current.val2} = ?</p>
@@ -305,15 +315,17 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
 
 /* --- 8. SUBTRACTION --- */
 const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [data] = useState(constants.SUBTRACTION_DATA || []);
+  const [data] = useState(constants.NUMERACY_DATA.subtraction || []);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const current = data[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-    setUserAnswer(null);
-  }, [index, schoolId, current]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
   if (!current) return null;
   const correct = current.val1 - current.val2;
   return (
@@ -338,13 +350,16 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
 
 /* --- 9. TENS AND UNITS --- */
 const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [data] = useState(constants.TENS_UNITS_DATA || []);
+  const [data] = useState(constants.NUMERACY_DATA.tensUnits || []);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-  }, [index, schoolId, current]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center min-h-[550px]">
@@ -358,7 +373,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
          </div>
       </div>
       <div className="w-full max-w-2xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10 cursor-pointer" onClick={() => onSound(`${current.number} has ${current.tens} ten and ${current.units} units`)}>
-        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" />}
+        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={`${current.number}`} />}
       </div>
       <div className="flex gap-4">
         <Button size="icon" onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
@@ -420,8 +435,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
   );
 };
 
-
-// --- MAIN WRAPPER FOR NUMERACY ---
+// --- MAIN WRAPPER ---
 const NumeracyZone: React.FC = () => {
     const [activeTab, setActiveTab] = useState<NumeracyTab>('numbers');
     const { schoolId } = useCurrentSchool();
@@ -465,7 +479,7 @@ const NumeracyZone: React.FC = () => {
           'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>,
           'number-words': <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>,
           'tens-units': <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>,
-          // The rest are placeholders which will be moved
+          // Placeholders for the other modules which will go into math-world
           'grouping': <p>Coming Soon</p>,
           'time': <p>Coming Soon</p>,
           'money': <p>Coming Soon</p>,
