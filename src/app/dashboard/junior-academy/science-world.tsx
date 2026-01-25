@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -20,7 +19,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
+import { generateScienceLessonAction, GeneratedLesson } from '@/ai/flows/generate-science-lesson';
 
 const SCIENCE_DATA = {
     bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child's head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
@@ -58,7 +57,7 @@ const IconRenderer = ({ iconName, className }: { iconName?: string; className?: 
       'fa-eye': 'Eye',
       'fa-apple-whole': 'Apple',
       'fa-leaf': 'Leaf',
-      'fa-tree': 'Sprout',
+      'fa-tree': 'Tree',
       'fa-cloud-sun': 'CloudSun',
       'fa-cloud-showers-heavy': 'CloudRain',
       'fa-paw': 'PawPrint',
@@ -75,7 +74,7 @@ const IconRenderer = ({ iconName, className }: { iconName?: string; className?: 
       'fa-sun': 'Sun',
       'fa-hand': 'Hand',
       'fa-carrot': 'Carrot',
-      'fa-cube': 'Box',
+      'fa-cube': 'Cube',
     };
     if (!iconName) return <LucideIcons.HelpCircle className={cn(className)} />;
     const LucideName = iconMap[iconName] || 'HelpCircle';
@@ -83,7 +82,8 @@ const IconRenderer = ({ iconName, className }: { iconName?: string; className?: 
     
     if (!IconComponent || typeof IconComponent !== 'function') {
       console.error(`Icon "${LucideName}" not found for key "${iconName}"`);
-      return <LucideIcons.HelpCircle className={cn(className)} />;
+      const FallbackIcon = (LucideIcons as any)['HelpCircle'];
+      return <FallbackIcon className={cn(className)} />;
     }
     
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -365,7 +365,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
       const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'living', schoolId });
       if(result.success && result.data){
         const isLivingResult = (result.data as any).isLiving;
-        const newItem = { name: (result.data as any).name, icon: (result.data as any).icon || 'fa-leaf' };
+        const newItem = { name: (result.data as any).name, icon: (result.data as any).icon || 'fa-leaf', prompt: 'a photo of ' + (result.data as any).name };
         if (isLivingResult) setLivingList(prev => [...prev, newItem]);
         else setNonLivingList(prev => [...prev, newItem]);
         setIsDrawerOpen(false); setAiTopic('');
@@ -406,3 +406,4 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
 };
 
 export default ScienceExploration;
+
