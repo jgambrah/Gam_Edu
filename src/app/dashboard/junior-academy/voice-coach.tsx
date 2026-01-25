@@ -1,23 +1,24 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs } from 'firebase/firestore';
 import { 
   Loader2, Wand2, ArrowRight,
   Save, Trash2, Library, BookOpen, Volume2, XCircle, CheckCircle2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
-import { generateJuniorStory, generateWordDetails, generateTTSAction } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateTTSAction } from '@/ai/flows/junior-actions';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 const juniorStyles = {
     storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
@@ -26,102 +27,12 @@ const juniorStyles = {
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
-// --- SUB-COMPONENT: VOICE COACH ---
-export function VoiceCoach({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [word, setWord] = useState('Apple');
-    const [details, setDetails] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const { schoolId } = useCurrentSchool();
-
-    const { data: dbWords, forceRefetch } = useCollection<any>(useMemoFirebase(() =>
-        (firestore && schoolId) ? query(collection(firestore, 'junior_phonics'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null,
-    [firestore, schoolId]));
-
-    const fetchDetails = useCallback(async (w: string) => {
-        if (!schoolId) return;
-        setIsLoading(true);
-        setDetails(null);
-        const result = await generateWordDetails({ word: w, schoolId });
-        if (result.success) setDetails(result.data);
-        else toast({ title: "AI Error", description: result.error || "Could not get word details." });
-        setIsLoading(false);
-    }, [toast, schoolId]);
-
-    const speak = async (text: string) => {
-        if (!text || !schoolId) return;
-        try {
-            const result = await generateTTSAction({ text, voice: 'Achernar', schoolId });
-            if (result.success && result.data && typeof window !== 'undefined') {
-                const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-                audio.play();
-            }
-        } catch (e) {
-            console.error("Audio error", e);
-        }
-    };
-
-    useEffect(() => {
-        if (schoolId) {
-            fetchDetails('Apple');
-        }
-    }, [fetchDetails, schoolId]);
-
-    const handleSaveWord = async () => {
-        if(!firestore || !schoolId) return;
-        await addDoc(collection(firestore, 'junior_phonics'), {
-            word: word,
-            schoolId: schoolId,
-            createdAt: serverTimestamp()
-        });
-        toast({title: "Word Saved!"});
-        forceRefetch();
-    };
-
-    return (
-        <div className="text-center">
-            <h2 className="text-5xl font-black text-pink-500 uppercase tracking-tighter">Voice & Diction Coach</h2>
-            <p className="text-slate-400 font-bold italic text-xl mt-2 mb-12">Learn to pronounce words clearly!</p>
-
-            <div className="grid md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
-                <div className="p-10 bg-pink-50 rounded-[4rem] border-8 border-white shadow-xl">
-                    <p className="text-[10px] uppercase font-black text-pink-300 mb-2">Word of the Day</p>
-                    {details ? (
-                        <div className="space-y-4 text-center animate-in fade-in">
-                            <p className="text-8xl font-black text-slate-800">{details.word}</p>
-                            <p className="text-2xl font-bold text-pink-400 italic">{details.phonetic}</p>
-                            <div className="text-6xl">{details.emoji}</div>
-                            <Button onClick={() => speak(details.sentence)} className={juniorStyles.button + " text-2xl"}>Hear Sentence 🔊</Button>
-                        </div>
-                    ) : <Loader2 className="w-12 h-12 mx-auto animate-spin text-pink-400"/>}
-                </div>
-
-                <div className="space-y-4">
-                    <p className="font-bold text-slate-500">Practice other words:</p>
-                    <div className="flex flex-wrap gap-3 justify-center">
-                        {dbWords?.map((w: any) => (
-                            <button key={w.id} onClick={() => fetchDetails(w.word)} className="px-6 py-3 bg-white border-2 border-slate-100 rounded-full font-bold text-slate-600 hover:bg-pink-50 hover:border-pink-200 transition-all">{w.word}</button>
-                        ))}
-                    </div>
-                    {canEdit && (
-                        <div className="pt-4 border-t flex gap-2">
-                            <Input value={word} onChange={e => setWord(e.target.value)} placeholder="Add new word..."/>
-                            <Button onClick={handleSaveWord}>+</Button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-}
 
 // --- SUB-COMPONENT: STORY SPARK (Dr. Gam Version) ---
-export function StorySpark({ canEdit }: { canEdit: boolean }) {
+export function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
-    const { schoolId } = useCurrentSchool();
     
     // Generation State
     const [topic, setTopic] = useState('');
@@ -253,7 +164,6 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
-            {/* 2. ACTIVE STORY WORKSTATION (MAGIC STORYBOOK) */}
             {story ? (
                 <Card className="rounded-[60px] border-8 border-orange-100 overflow-hidden shadow-2xl bg-[#FFFDE7] animate-in zoom-in duration-500">
                     <div className="bg-orange-400 p-8 text-white flex justify-between items-center border-b-8 border-orange-500/20">
@@ -391,3 +301,6 @@ export function StorySpark({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
+
+// NOTE: The VoiceCoach component has been removed as requested.
+
