@@ -118,7 +118,7 @@ const TeacherModal: React.FC<{
           disabled={isLoading || !topicValue} 
           className="w-full"
         >
-          {isLoading ? <LucideIcons.Loader2 className="animate-spin mr-2"/> : <LucideIcons.Sparkles className="mr-2 h-4 w-4"/>} CREATE MAGIC
+          {isLoading ? <><LucideIcons.Loader2 className="animate-spin mr-2"/> GENERATING...</> : <><LucideIcons.Sparkles className="mr-2 h-4 w-4"/> CREATE MAGIC</>}
         </Button>
       </div>
     </DialogContent>
@@ -244,7 +244,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(false); // NEW STATE
 
   const current = data?.[index];
 
@@ -301,7 +301,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase tracking-tighter text-center">{title}</h3>
         <div className="flex flex-col md:flex-row gap-10 w-full items-center">
            <div onClick={() => onSound(getDescription())} className="relative aspect-square w-full max-w-sm bg-green-50 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group">
-              {loading ? <div className="w-12 h-12 border-4 border-green-400 border-t-transparent rounded-full animate-spin m-auto absolute inset-0"></div> : imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-6 transition-transform group-hover:scale-110" alt={getLabel()}/> : <div className="w-full h-full flex items-center justify-center"><IconRenderer iconName={current.icon} className="text-9xl text-green-200 animate-pulse" /></div>}
+              {loading ? <div className="w-12 h-12 border-4 border-green-400 border-t-transparent rounded-full animate-spin m-auto absolute inset-0"></div> : imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-6 transition-transform group-hover:scale-110" /> : <div className="w-full h-full flex items-center justify-center"><IconRenderer iconName={current.icon} className="text-9xl text-green-200 animate-pulse" /></div>}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
                  <LucideIcons.Volume2 className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" />
               </div>
@@ -390,7 +390,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-200 flex flex-col items-center">
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase text-center">Is it Living? 🌱</h3>
         <div className="w-80 h-80 bg-green-50 rounded-[4rem] border-8 border-white shadow-2xl mb-12 flex items-center justify-center overflow-hidden">
-          {loading ? <div className="w-16 h-16 border-8 border-green-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10" alt={current.name} />}
+          {loading ? <div className="w-16 h-16 border-8 border-green-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10" />}
         </div>
         <h4 className="text-5xl font-black mb-12 uppercase tracking-tighter">{current.name}</h4>
         <div className="grid grid-cols-2 gap-8 w-full max-w-xl">
