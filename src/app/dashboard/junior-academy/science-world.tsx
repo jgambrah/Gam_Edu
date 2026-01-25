@@ -5,16 +5,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useUser, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs } from 'firebase/firestore';
-import { 
-    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, CaseSensitive, 
-    BookOpen, Ear, Layers, Repeat, Mic, Underline, Signpost, Image as ImageIcon, 
-    Hand, Gamepad2, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Car, 
-    HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
-    CloudRain, Guitar, Plane, MousePointer2, Box, Carrot, Cookie, School, Home, 
-    Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon,
-    Flag, GraduationCap, Monitor, Zap, CircleDot,
-    User as UserIcon, Beaker, Bed, Eye, TrendingUp, Leaf, Sprout
-} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 import confetti from 'canvas-confetti';
 import { generateLessonImageAction, generateTTSAction, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
@@ -54,43 +45,46 @@ const SCIENCE_DATA = {
     }
   };
 
+const iconMap: Record<string, keyof typeof LucideIcons> = {
+  'fa-earth-africa': 'Globe',
+  'fa-user': 'User',
+  'fa-child-reaching': 'User',
+  'fa-heart-pulse': 'HeartPulse',
+  'fa-lungs': 'Atom',
+  'fa-arrow-up-right-dots': 'TrendingUp',
+  'fa-ear-listen': 'Ear',
+  'fa-eye': 'Eye',
+  'fa-apple-whole': 'Apple',
+  'fa-leaf': 'Leaf',
+  'fa-tree': 'Sprout',
+  'fa-cloud-sun': 'CloudSun',
+  'fa-cloud-showers-heavy': 'CloudRain',
+  'fa-paw': 'PawPrint',
+  'fa-car': 'Car',
+  'fa-plane': 'Plane',
+  'fa-shapes': 'Shapes',
+  'fa-recycle': 'Recycle',
+  'fa-water': 'Droplets',
+  'fa-magic': 'Wand2',
+  'fa-spinner': 'Loader2',
+  'fa-arrow-left': 'ArrowLeft',
+  'fa-arrow-right': 'ArrowRight',
+  'fa-volume-high': 'Volume2',
+  'fa-sun': 'Sun',
+  'fa-hand': 'Hand',
+  'fa-carrot': 'Carrot',
+  'fa-cube': 'Box',
+};
+
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
-    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-      'fa-earth-africa': Globe,
-      'fa-user': UserIcon,
-      'fa-child-reaching': UserIcon,
-      'fa-heart-pulse': HeartPulse,
-      'fa-lungs': Atom,
-      'fa-arrow-up-right-dots': TrendingUp,
-      'fa-ear-listen': Ear,
-      'fa-eye': Eye,
-      'fa-apple-whole': Apple,
-      'fa-leaf': Leaf,
-      'fa-tree': Sprout,
-      'fa-cloud-sun': CloudSun,
-      'fa-cloud-showers-heavy': CloudRain,
-      'fa-paw': PawPrint,
-      'fa-car': Car,
-      'fa-plane': Plane,
-      'fa-shapes': Shapes,
-      'fa-recycle': Recycle,
-      'fa-water': Droplets,
-      'fa-magic': Wand2,
-      'fa-spinner': Loader2,
-      'fa-arrow-left': ArrowLeftIcon,
-      'fa-arrow-right': ArrowRightIcon,
-      'fa-volume-high': Volume2,
-      'fa-sun': Sun,
-      'fa-hand': Hand,
-      'fa-carrot': Carrot,
-      'fa-cube': Box,
-    };
-    if (!iconName) return <HelpCircle className={cn(className)} />;
-    const IconComponent = iconMap[iconName] || HelpCircle;
+    if (!iconName) return <LucideIcons.HelpCircle className={cn(className)} />;
+    const LucideName = iconMap[iconName] || 'HelpCircle';
+    const IconComponent = (LucideIcons as any)[LucideName];
     
-    if (!IconComponent) {
-      console.error(`Icon for key "${iconName}" not found.`);
-      return <HelpCircle className={cn(className)} />;
+    if (!IconComponent || typeof IconComponent !== 'function') {
+      console.error(`Icon "${LucideName}" not found for key "${iconName}"`);
+      const FallbackIcon = (LucideIcons as any)['HelpCircle'];
+      return <FallbackIcon className={cn(className)} />;
     }
     
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -125,7 +119,7 @@ const TeacherModal: React.FC<{
           disabled={isLoading || !topicValue} 
           className="w-full"
         >
-          {isLoading ? <><Loader2 className="animate-spin mr-2"/> GENERATING...</> : <><Sparkles className="mr-2 h-4 w-4"/> CREATE MAGIC</>}
+          {isLoading ? <><LucideIcons.Loader2 className="animate-spin mr-2"/> GENERATING...</> : <><LucideIcons.Sparkles className="mr-2 h-4 w-4"/> CREATE MAGIC</>}
         </Button>
       </div>
     </DialogContent>
@@ -173,18 +167,18 @@ const ScienceExploration: React.FC = () => {
   ];
     
     const renderActiveTab = () => {
-        if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
+        if (!schoolId) return <div className="text-center p-8"><LucideIcons.Loader2 className="animate-spin"/></div>;
         if (!started) return (
             <Card className="rounded-[60px] border-8 border-blue-100 shadow-xl overflow-hidden bg-white">
                 <CardHeader className="bg-blue-500 p-10 text-white text-center">
                     <CardTitle className="text-4xl font-black uppercase tracking-tighter flex items-center justify-center gap-4">
-                        <Atom className="h-12 w-12" />
+                        <LucideIcons.Atom className="h-12 w-12" />
                         Science World
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-12 text-center">
                     <div className="flex flex-col items-center gap-8 py-20">
-                        <Sparkles className="h-24 w-24 text-blue-300 animate-pulse" />
+                        <LucideIcons.Sparkles className="h-24 w-24 text-blue-300 animate-pulse" />
                         <h3 className="text-3xl font-black text-blue-600">Start Your Adventure!</h3>
                         <p className="text-xl text-slate-600 max-w-md">
                            Click the button below to begin exploring the amazing world of science.
@@ -303,14 +297,14 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
 
   return (
     <div className="relative font-black">
-      <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Item</Button>
+      <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><LucideIcons.Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Item</Button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center animate-in slide-in-from-bottom">
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase tracking-tighter text-center">{title}</h3>
         <div className="flex flex-col md:flex-row gap-10 w-full items-center">
            <div onClick={() => onSound(getDescription())} className="relative aspect-square w-full max-w-sm bg-green-50 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group">
               {loading ? <div className="w-12 h-12 border-4 border-green-400 border-t-transparent rounded-full animate-spin m-auto absolute inset-0"></div> : imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-6 transition-transform group-hover:scale-110" alt={getLabel()}/> : <div className="w-full h-full flex items-center justify-center"><IconRenderer iconName={current.icon} className="text-9xl text-green-200 animate-pulse" /></div>}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
-                 <Volume2 className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" />
+                 <LucideIcons.Volume2 className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" />
               </div>
            </div>
            <div className="flex-1 text-center md:text-left space-y-6">
@@ -322,8 +316,8 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
            </div>
         </div>
         <div className="flex gap-4 mt-12">
-          <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full shadow-md"><ArrowLeft/></Button>
-          <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full shadow-md"><ArrowRight/></Button>
+          <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full shadow-md"><LucideIcons.ArrowLeft/></Button>
+          <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full shadow-md"><LucideIcons.ArrowRight/></Button>
         </div>
       </div>
       {isDrawerOpen && <TeacherModal title={`New ${title}`} topicLabel="Item Name" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
@@ -383,7 +377,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   if (!started) {
     return (
         <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-            <Leaf className="h-16 w-16 mx-auto text-green-300 mb-4"/>
+            <LucideIcons.Leaf className="h-16 w-16 mx-auto text-green-300 mb-4"/>
             <h3 className="text-2xl font-bold text-green-600 mb-2">Living or Not?</h3>
             <p className="text-slate-500 mb-4">Let's sort things into living and non-living groups!</p>
             <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Sorting</Button>
@@ -393,11 +387,11 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
 
   return (
     <div className="relative font-black">
-      <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Thing</Button>
+      <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><LucideIcons.Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Thing</Button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-200 flex flex-col items-center">
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase text-center">Is it Living? 🌱</h3>
         <div className="w-80 h-80 bg-green-50 rounded-[4rem] border-8 border-white shadow-2xl mb-12 flex items-center justify-center overflow-hidden">
-          {loading ? <div className="w-16 h-16 border-8 border-green-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10" alt={current.name} />}
+          {loading ? <div className="w-16 h-16 border-8 border-green-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10" />}
         </div>
         <h4 className="text-5xl font-black mb-12 uppercase tracking-tighter">{current.name}</h4>
         <div className="grid grid-cols-2 gap-8 w-full max-w-xl">
@@ -414,118 +408,4 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
 
 export default ScienceExploration;
 
-```
-- src/hooks/use-onclick-outside.tsx:
-```tsx
-
-// This file is intentionally left blank to resolve module import conflicts.
-// The code has been removed as it was unused and could cause potential build errors.
-
-```
-- src/hooks/use-window-event.tsx:
-```tsx
-
-// This file is intentionally left blank to resolve module import conflicts.
-// The code has been removed as it was unused and could cause potential build errors.
-
-```
-- src/lib/analytics.ts:
-```ts
-/**
- * Processes attendance data to generate a report.
- * In a real app, this would be a complex backend operation.
- */
-export const generateAttendanceReport = (records: any[]) => {
-  if (!records || records.length === 0) {
-    return {
-      total: 0,
-      present: 0,
-      absent: 0,
-      late: 0,
-      excused: 0,
-      presenteeism: 0,
-    };
-  }
-
-  const summary = records.reduce(
-    (acc, record) => {
-      acc[record.status.toLowerCase()] = (acc[record.status.toLowerCase()] || 0) + 1;
-      return acc;
-    },
-    { present: 0, absent: 0, late: 0, excused: 0 }
-  );
-
-  const total = records.length;
-  const presenteeism = ((summary.present + summary.late) / total) * 100;
-
-  return {
-    total,
-    ...summary,
-    presenteeism: isNaN(presenteeism) ? 0 : parseFloat(presenteeism.toFixed(1)),
-  };
-};
-
-```
-- public/manifest.json:
-```json
-{
-  "theme_color": "#2563eb",
-  "background_color": "#ffffff",
-  "display": "standalone",
-  "scope": "/",
-  "start_url": "/dashboard",
-  "name": "GAM Edu - School Management System",
-  "short_name": "GAM Edu",
-  "description": "AI-Powered School Management & Learning Platform",
-  "icons": [
-      {
-          "src": "/icon-192x192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-      },
-      {
-          "src": "/icon-256x256.png",
-          "sizes": "256x256",
-          "type": "image/png"
-      },
-      {
-          "src": "/icon-384x384.png",
-          "sizes": "384x384",
-          "type": "image/png"
-      },
-      {
-          "src": "/icon-512x512.png",
-          "sizes": "512x512",
-          "type": "image/png"
-      }
-  ]
-}
-```
-- next-env.d.ts:
-```ts
-/// <reference types="next" />
-/// <reference types="next/image-types/global" />
-
-// NOTE: This file should not be edited
-// see https://nextjs.org/docs/basic-features/typescript for more information.
-
-```
-- next.config.js:
-```js
-const withPWA = require("next-pwa")({
-  dest: "public",
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === "development",
-});
-
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  // Your other Next.js config options...
-};
-
-module.exports = withPWA(nextConfig);
-
-```
+    
