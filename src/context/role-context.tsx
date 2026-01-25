@@ -29,24 +29,6 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   const refreshRole = useCallback(() => setRefreshTrigger(prev => prev + 1), []);
 
   useEffect(() => {
-    const checkUserRole = async () => {
-      if (!user || !firestore) return;
-      
-      // Check staff collection
-      const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
-      console.log('Staff doc exists:', staffDoc.exists());
-      console.log('Staff data:', staffDoc.data());
-      
-      // Check users collection
-      const userDoc = await getDoc(doc(firestore, 'users', user.uid));
-      console.log('User doc exists:', userDoc.exists());
-      console.log('User data:', userDoc.data());
-    };
-    
-    checkUserRole();
-  }, [user, firestore]);
-
-  useEffect(() => {
     async function fetchRole(currentUser: User) {
       if (!firestore) return;
 
