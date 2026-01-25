@@ -1,12 +1,10 @@
 
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment } from 'firebase/firestore';
-import * as LucideIcons from 'lucide-react';
 
 import confetti from 'canvas-confetti';
 import { generateLessonImageAction, generateTTSAction, generateRhyme, generateSkillDetails, generateLifeSkillEntry } from '@/ai/flows/junior-actions';
@@ -21,52 +19,97 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import * as constants from '@/lib/constants';
+import { 
+  HelpCircle, 
+  Smile, 
+  Music, 
+  Tv, 
+  User, 
+  MessageSquare, 
+  Users, 
+  Drama, 
+  BrainCircuit, 
+  HeartPulse,
+  Loader2,
+  Wand2,
+  ArrowLeft,
+  ArrowRight,
+  Volume2,
+  Play,
+  CheckCircle2,
+  XCircle,
+  PlusCircle,
+  Sparkles,
+  Info
+} from 'lucide-react';
+
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const map: Record<string, keyof typeof LucideIcons> = {
-      'fa-spell-check': 'Languages', 'fa-ear-listen': 'Ear', 'fa-pen-nib': 'Pen',
-      'fa-arrow-1-9': 'Calculator', 'fa-hand-holding-heart': 'Handshake', 'fa-flask-vial': 'FlaskConical',
-      'fa-palette': 'Palette', 'fa-robot': 'Bot', 'fa-face-smile': 'Smile', 'fa-tooth': 'Sparkles',
-      'fa-heart-pulse': 'HeartPulse', 'fa-vest': 'User', 'fa-sun': 'Sun', 'fa-utensils': 'Utensils',
-      'fa-school': 'School', 'fa-house': 'Home', 'fa-recycle': 'Recycle', 'fa-water': 'Droplets',
-      'fa-broom': 'Trash2', 'fa-flag': 'Flag', 'fa-hand-pointer': 'MousePointer2', 'fa-cube': 'Box',
-      'fa-chalkboard-user': 'User', 'fa-rabbit': 'Rabbit', 'fa-carrot': 'Carrot', 'fa-apple-whole': 'Apple',
-      'fa-cookie': 'Cookie', 'fa-star': 'Star', 'fa-tv': 'Tv', 'fa-bed': 'Bed', 'fa-eye': 'Eye',
-      'fa-cloud-showers-heavy': 'CloudRain', 'fa-guitar': 'Guitar', 'fa-plane': 'Plane', 'fa-car': 'Car',
-      'fa-frog': 'Rabbit', 
-      'fa-bolt': 'Zap',
-      'fa-circle-dot': 'CircleDot',
-      'fa-soap': 'Sparkles', 
-      'fa-broccoli': 'Carrot', 
-      'fa-display': 'Monitor',
-      'fa-graduation-cap': 'GraduationCap',
-      'fa-comments': 'MessageSquare',
-      'fa-people-group': 'Users',
-      'fa-masks-theater': 'Drama',
-      'fa-brain': 'BrainCircuit',
-      'fa-child-reaching': 'User',
-      'fa-music': 'Music',
-      'fa-magic': 'Wand2',
-      'fa-arrow-left': 'ArrowLeft',
-      'fa-arrow-right': 'ArrowRight',
-      'fa-spinner': 'Loader2',
-      'fa-volume-high': 'Volume2',
-      'fa-dna': 'Atom',
-      'fa-play': 'Play',
-      'fa-heart': 'Heart',
-      'fa-face-smile-wink': 'Smile'
-    };
-  
-    const LucideName = map[iconName] || 'HelpCircle';
-    const IconComponent = (LucideIcons as any)[LucideName];
-  
-    if (!IconComponent || typeof IconComponent !== 'function') {
-      console.error('❌ Missing or invalid icon:', LucideName, 'for FA icon:', iconName);
-      const FallbackIcon = (LucideIcons as any)['HelpCircle'];
-      return <FallbackIcon className={className} />;
+  // 1. Manually map FontAwesome keys to the static Lucide components we imported
+  const iconMap: Record<string, any> = {
+    'fa-face-smile': Smile,
+    'fa-music': Music,
+    'fa-tv': Tv,
+    'fa-child-reaching': User,
+    'fa-comments': MessageSquare,
+    'fa-people-group': Users,
+    'fa-masks-theater': Drama,
+    'fa-brain': BrainCircuit,
+    'fa-heart-pulse': HeartPulse,
+    'fa-magic': Wand2,
+    'fa-wand-magic-sparkles': Wand2,
+    'fa-spinner': Loader2,
+    'fa-arrow-left': ArrowLeft,
+    'fa-arrow-right': ArrowRight,
+    'fa-volume-high': Volume2,
+    'fa-play': Play,
+    'fa-circle-check': CheckCircle2,
+    'fa-circle-xmark': XCircle,
+    'fa-circle-plus': PlusCircle,
+    'fa-sparkles': Sparkles,
+    'fa-info-circle': Info,
+    'fa-puzzle-piece': 'Puzzle',
+    'fa-broom': 'Trash2',
+    'fa-flag': 'Flag',
+    'fa-hand-pointer': 'MousePointer2',
+    'fa-cube': 'Box',
+    'fa-rabbit': 'Rabbit',
+    'fa-carrot': 'Carrot',
+    'fa-apple-whole': 'Apple',
+    'fa-cookie': 'Cookie',
+    'fa-star': 'Star',
+    'fa-bed': 'Bed',
+    'fa-eye': 'Eye',
+    'fa-cloud-showers-heavy': 'CloudRain',
+    'fa-guitar': 'Guitar',
+    'fa-plane': 'Plane',
+    'fa-car': 'Car',
+    'fa-frog': 'Rabbit',
+    'fa-bolt': 'Zap',
+    'fa-circle-dot': 'CircleDot',
+    'fa-soap': 'Sparkles',
+    'fa-broccoli': 'Carrot',
+    'fa-display': 'Monitor',
+    'fa-graduation-cap': 'GraduationCap',
+  };
+
+  // 2. Identify the component from the map
+  const IconComponent = iconMap[iconName];
+
+  // 3. Render logic
+  if (!IconComponent) {
+    // Log only once in development if an icon is truly missing from our map
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`⚠️ Icon mapping missing for: ${iconName}`);
     }
-  
-    return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
+    return <HelpCircle className={className} />;
+  }
+
+  return (
+    <IconComponent 
+      className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} 
+    />
+  );
 };
 
 
@@ -102,7 +145,7 @@ const TeacherModal: React.FC<TeacherModalProps> = ({ title, topicLabel, topicVal
           disabled={isLoading || !topicValue} 
           className="w-full py-5 rounded-2xl font-black text-white bg-teal-500 shadow-xl hover:bg-teal-600 disabled:bg-gray-300 transition-all flex items-center justify-center gap-3 border-4 border-white uppercase tracking-widest"
         >
-          {isLoading ? <><LucideIcons.Loader2 className="animate-spin"/> GENERATING...</> : <><LucideIcons.Sparkles /> CREATE SHOW</>}
+          {isLoading ? <><Loader2 className="animate-spin"/> GENERATING...</> : <><Sparkles /> CREATE SHOW</>}
         </Button>
         <button onClick={onClose} className="w-full py-2 text-slate-400 uppercase text-[10px] font-black tracking-widest hover:text-slate-600 block text-center transition-colors font-black">Close</button>
       </div>
@@ -170,11 +213,11 @@ const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () =>
   
     return (
         <div className="relative font-black">
-          <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-yellow-200 text-yellow-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-yellow-50 transition-colors font-black"><LucideIcons.Wand2 className="w-3 h-3 inline-block mr-1"/> AI Feelings</button>
+          <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-yellow-200 text-yellow-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-yellow-50 transition-colors font-black"><Wand2 className="w-3 h-3 inline-block mr-1"/> AI Feelings</button>
           <div className={`w-full p-12 rounded-[4rem] shadow-2xl border-8 flex flex-col items-center min-h-[600px] animate-in zoom-in duration-500 transition-colors ${current.color} border-white`}>
             <h3 className="text-4xl font-black text-white mb-8 uppercase tracking-tighter text-center shadow-text-md font-black">How do I feel?</h3>
             <div onClick={handleAction} className={`relative w-full max-w-sm aspect-square bg-white/30 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-8 overflow-hidden cursor-pointer group font-black`}>
-               {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-white/50" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 group-hover:scale-105 transition-transform" alt={current.name} />}
+               {loading ? <Loader2 className="w-16 h-16 animate-spin text-white/50" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 group-hover:scale-105 transition-transform" alt={current.name} />}
             </div>
             <div className="flex gap-4 mb-8 font-black">
                 {data.map((item, i) => (
@@ -213,11 +256,11 @@ const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: str
         disabled={singing}
         className="px-16 py-6 bg-pink-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl hover:scale-105 transition-all border-4 border-white"
       >
-        {singing ? <LucideIcons.Loader2 className="animate-spin" /> : <><LucideIcons.Music className="mr-4 h-6 w-6"/> Start Song</>}
+        {singing ? <Loader2 className="animate-spin" /> : <><Music className="mr-4 h-6 w-6"/> Start Song</>}
       </Button>
       <div className="flex gap-4 mt-12">
-        <Button onClick={() => setIndex(i => (i === 0 ? songs.length - 1 : i - 1))} variant="outline" size="icon" className="w-14 h-14 rounded-full"><LucideIcons.ArrowLeft/></Button>
-        <Button onClick={() => setIndex(i => (i + 1) % songs.length)} variant="outline" size="icon" className="w-14 h-14 rounded-full"><LucideIcons.ArrowRight/></Button>
+        <Button onClick={() => setIndex(i => (i === 0 ? songs.length - 1 : i - 1))} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowLeft/></Button>
+        <Button onClick={() => setIndex(i => (i + 1) % songs.length)} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowRight/></Button>
       </div>
     </div>
   );
@@ -254,7 +297,7 @@ useEffect(() => {
   if (!started) {
     return (
          <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-            <LucideIcons.Tv className="h-16 w-16 mx-auto text-indigo-300 mb-4"/>
+            <Tv className="h-16 w-16 mx-auto text-indigo-300 mb-4"/>
             <h3 className="text-2xl font-bold text-indigo-600 mb-2">Watch & Learn</h3>
             <p className="text-slate-500 mb-4">See how to do new things by watching fun animations!</p>
             <Button onClick={() => setStarted(true)} className="bg-indigo-500 hover:bg-indigo-600">Start Watching</Button>
@@ -266,7 +309,7 @@ useEffect(() => {
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center animate-in zoom-in font-black">
       <h3 className="text-4xl font-black text-indigo-500 mb-10 uppercase tracking-tighter">I Can Do It! 🎥</h3>
       <div onClick={handleWatch} className="w-full max-w-xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
-        {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-indigo-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt={current.title} />}
+        {loading ? <Loader2 className="w-16 h-16 animate-spin text-indigo-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt={current.title} />}
       </div>
       <h4 className="text-4xl font-black text-slate-800 mb-4 uppercase">{current.title}</h4>
       <p className="text-xl font-black text-slate-500 italic mb-10 text-center leading-relaxed">"{current.scenario}"</p>
@@ -316,12 +359,12 @@ const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: 
         </div>
         <h3 className="text-4xl font-black text-blue-500 mb-10 uppercase tracking-tighter">My Day ☀️</h3>
         <div onClick={() => { onSound(subTab === 'dressing' ? `I need my ${(current as any).item} because ${(current as any).need}.` : `Let's follow our routine!`); onComplete(); }} className="w-full max-w-sm aspect-square bg-blue-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
-          {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-blue-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt="practical life" />}
+          {loading ? <Loader2 className="w-16 h-16 animate-spin text-blue-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt="practical life" />}
         </div>
         <h4 className="text-4xl font-black text-slate-800 uppercase mb-8">{(current as any).item || (current as any).name}</h4>
         <div className="flex gap-4">
-          <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-14 h-14 rounded-full"><LucideIcons.ArrowLeft/></Button>
-          <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-14 h-14 rounded-full"><LucideIcons.ArrowRight/></Button>
+          <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowLeft/></Button>
+          <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowRight/></Button>
         </div>
       </div>
     );
@@ -359,7 +402,7 @@ const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: 
      if (!started) {
         return (
              <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <LucideIcons.MessageSquare className="h-16 w-16 mx-auto text-orange-300 mb-4"/>
+                <MessageSquare className="h-16 w-16 mx-auto text-orange-300 mb-4"/>
                 <h3 className="text-2xl font-bold text-orange-600 mb-2">Let's Talk!</h3>
                 <p className="text-slate-500 mb-4">Practice talking and listening with fun activities.</p>
                 <Button onClick={() => setStarted(true)} className="bg-orange-500 hover:bg-orange-600">Start Talking</Button>
@@ -377,7 +420,7 @@ const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: 
         <h3 className="text-3xl font-black text-orange-500 mb-8 uppercase">Let's Talk! 💬</h3>
         {subTab === 'pictureTalk' ? (
           <div onClick={handleAction} className="w-full max-w-2xl aspect-video bg-orange-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
-            {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt="talk" />}
+            {loading ? <Loader2 className="w-16 h-16 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt="talk" />}
           </div>
         ) : (
           <div className="w-24 h-24 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center text-5xl mb-8 border-4 border-white animate-bounce">
@@ -444,18 +487,17 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
             } else {
                 setSocialData(prev => [...prev, result.data]);
             }
-            setIsDrawerOpen(false); 
-            setIndex(data.length); 
+            setIsDrawerOpen(false);
+            setIndex(data.length);
             setAiTopic('');
         }
-      } catch (e) { console.error(e); } 
-      finally { setIsAiLoading(false); }
+      } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
     };
   
      if (!started) {
         return (
              <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <LucideIcons.Users className="h-16 w-16 mx-auto text-rose-300 mb-4"/>
+                <Users className="h-16 w-16 mx-auto text-rose-300 mb-4"/>
                 <h3 className="text-2xl font-bold text-rose-600 mb-2">Social & Kindness</h3>
                 <p className="text-slate-500 mb-4">Learn about friends, family, and our community helpers.</p>
                 <Button onClick={() => setStarted(true)} className="bg-rose-500 hover:bg-rose-600">Start Exploring</Button>
@@ -465,7 +507,7 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
 
     return (
       <div className="relative font-black">
-        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-pink-200 text-pink-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-pink-50 transition-colors font-black"><LucideIcons.Wand2 className="w-3 h-3 inline-block mr-1"/> AI Social Assistant</button>
+        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-pink-200 text-pink-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-pink-50 transition-colors font-black"><Wand2 className="w-3 h-3 inline-block mr-1"/> AI Social Assistant</button>
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center min-h-[600px] animate-in slide-in-from-right duration-500 font-black">
           <h3 className="text-4xl font-black text-pink-500 mb-8 uppercase tracking-tighter text-center font-black">Social & Emotional Hub 🤝</h3>
           
@@ -479,7 +521,7 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
               <h4 className="text-3xl font-black text-pink-600 mb-4 uppercase tracking-tighter">{(current as any).scenario}</h4>
               <p className="text-xl font-black text-slate-800 mb-10 italic text-center max-w-lg leading-relaxed">"{(current as any).q}"</p>
               <div className="w-full max-w-lg aspect-video rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden bg-pink-50 font-black">
-                {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-pink-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-4 animate-in zoom-in" />}
+                {loading ? <Loader2 className="w-16 h-16 animate-spin text-pink-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-4 animate-in zoom-in" />}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl font-black">
                  {(current as any).options.map((opt: string, i: number) => (
@@ -498,9 +540,9 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
                <h4 className="text-4xl font-black text-pink-600 uppercase mb-4 tracking-tighter">{(current as any).role}</h4>
                
                <div onClick={() => onSound((current as any).fact)} className="relative w-full max-w-lg aspect-square bg-pink-50 rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden mb-10 cursor-pointer group font-black">
-                 {loading ? <div className="absolute inset-0 flex items-center justify-center animate-spin font-black"><LucideIcons.Heart className="h-4 w-4 text-pink-200"/></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 transition-transform group-hover:scale-110" alt={(current as any).role} />}
+                 {loading ? <div className="absolute inset-0 flex items-center justify-center animate-spin font-black"><Heart className="h-4 w-4 text-pink-200"/></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 transition-transform group-hover:scale-110" alt={(current as any).role} />}
                  <div className="absolute inset-0 bg-pink-500/0 group-hover:bg-pink-500/5 transition-colors flex items-center justify-center font-black">
-                    <LucideIcons.Volume2 className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg font-black" />
+                    <Volume2 className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg font-black" />
                  </div>
               </div>
   
@@ -509,9 +551,9 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
               </div>
   
               <div className="flex gap-4 items-center font-black">
-                 <Button onClick={() => setIndex(i => (i === 0 ? communityData.length - 1 : i - 1))} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><LucideIcons.ArrowLeft/></Button>
+                 <Button onClick={() => setIndex(i => (i === 0 ? communityData.length - 1 : i - 1))} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><ArrowLeft/></Button>
                  <Button onClick={() => { onSound((current as any).fact); onComplete(); }} className="px-12 py-5 bg-pink-500 text-white font-black rounded-3xl shadow-xl border-4 border-white uppercase tracking-widest text-xl font-black">Learn Role! 🌟</Button>
-                 <Button onClick={() => setIndex(i => (i + 1) % communityData.length)} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><LucideIcons.ArrowRight/></Button>
+                 <Button onClick={() => setIndex(i => (i + 1) % communityData.length)} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><ArrowRight/></Button>
               </div>
           </div>
           )}
@@ -539,7 +581,7 @@ const PuppetTheater: React.FC<{ onSound: (t: string) => void; onComplete: () => 
      if (!started) {
         return (
              <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <LucideIcons.Drama className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
+                <Drama className="h-16 w-16 mx-auto text-purple-300 mb-4"/>
                 <h3 className="text-2xl font-bold text-purple-600 mb-2">Puppet Show</h3>
                 <p className="text-slate-500 mb-4">Let's put on a fun show with puppets!</p>
                 <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Show</Button>
@@ -551,10 +593,10 @@ const PuppetTheater: React.FC<{ onSound: (t: string) => void; onComplete: () => 
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center animate-in zoom-in font-black">
         <h3 className="text-4xl font-black text-purple-600 mb-10 uppercase tracking-tighter">Puppet Theater 🎭</h3>
         <div className="w-80 h-80 bg-purple-50 rounded-full border-8 border-white shadow-2xl flex items-center justify-center mb-10 relative overflow-hidden group">
-           <LucideIcons.Drama className="text-8xl text-purple-200 group-hover:scale-110 transition-transform"/>
+           <Drama className="text-8xl text-purple-200 group-hover:scale-110 transition-transform"/>
         </div>
         <Button onClick={generateStory} disabled={loading} className="px-16 py-6 bg-purple-600 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">
-          {loading ? <LucideIcons.Loader2 className="animate-spin" /> : "Start Show!"}
+          {loading ? <Loader2 className="animate-spin" /> : "Start Show!"}
         </Button>
         {story && <p className="mt-10 text-xl font-black text-slate-700 italic text-center max-w-lg">"{story}"</p>}
       </div>
@@ -582,7 +624,7 @@ const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () =
     if (!started) {
         return (
              <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <LucideIcons.BrainCircuit className="h-16 w-16 mx-auto text-emerald-300 mb-4"/>
+                <BrainCircuit className="h-16 w-16 mx-auto text-emerald-300 mb-4"/>
                 <h3 className="text-2xl font-bold text-emerald-600 mb-2">Super Solvers</h3>
                 <p className="text-slate-500 mb-4">Let's solve puzzles and think about big ideas!</p>
                 <Button onClick={() => setStarted(true)} className="bg-emerald-500 hover:bg-emerald-600">Start Thinking</Button>
@@ -615,8 +657,8 @@ const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () =
         )}
   
         <div className="flex gap-4 mt-12 font-black">
-          <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-14 h-14 rounded-full"><LucideIcons.ArrowLeft/></Button>
-          <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-14 h-14 rounded-full"><LucideIcons.ArrowRight/></Button>
+          <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowLeft/></Button>
+          <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-14 h-14 rounded-full"><ArrowRight/></Button>
         </div>
       </div>
     );
@@ -688,7 +730,7 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
      if (!started) {
         return (
              <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <LucideIcons.HeartPulse className="h-16 w-16 mx-auto text-green-300 mb-4"/>
+                <HeartPulse className="h-16 w-16 mx-auto text-green-300 mb-4"/>
                 <h3 className="text-2xl font-bold text-green-600 mb-2">My Healthy Body</h3>
                 <p className="text-slate-500 mb-4">Learn about eating well, moving our bodies, and staying clean!</p>
                 <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Learning</Button>
@@ -698,7 +740,7 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
 
     return (
       <div className="relative font-black">
-        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors font-black"><LucideIcons.Wand2 className="w-3 h-3 inline-block mr-1"/> AI Health Assistant</button>
+        <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors font-black"><Wand2 className="w-3 h-3 inline-block mr-1"/> AI Health Assistant</button>
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center min-h-[600px] animate-in zoom-in font-black">
           <h3 className="text-4xl font-black text-green-600 mb-8 uppercase tracking-tighter text-center font-black">Physical & Health Hub 🏃‍♂️</h3>
           
@@ -716,9 +758,9 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
               <h4 className="text-3xl font-black text-slate-800 uppercase mb-4">{current.title}</h4>
               
               <div onClick={handleAction} className="relative w-full aspect-video bg-green-50 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden mb-10 cursor-pointer group font-black">
-                 {loading ? <div className="absolute inset-0 flex items-center justify-center animate-spin font-black"><LucideIcons.HeartPulse className="h-4 w-4 text-green-200"/></div> : imageUrl && <img src={imageUrl} className={`w-full h-full object-cover transition-all duration-700 font-black`} alt={current.title} />}
+                 {loading ? <div className="absolute inset-0 flex items-center justify-center animate-spin font-black"><HeartPulse className="h-4 w-4 text-green-200"/></div> : imageUrl && <img src={imageUrl} className={`w-full h-full object-cover transition-all duration-700 font-black`} alt={current.title} />}
                  <div className="absolute inset-0 bg-green-500/0 group-hover:bg-green-500/5 transition-colors flex items-center justify-center font-black">
-                    <LucideIcons.Play className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg font-black" />
+                    <Play className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg font-black" />
                  </div>
               </div>
   
@@ -727,9 +769,9 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
               </div>
   
               <div className="flex gap-4 items-center font-black">
-                 <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><LucideIcons.ArrowLeft/></Button>
+                 <Button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><ArrowLeft/></Button>
                  <Button onClick={handleAction} className="px-12 py-5 bg-green-500 text-white font-black rounded-3xl shadow-xl border-4 border-white uppercase tracking-widest text-xl font-black">I Did It! 🏆</Button>
-                 <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><LucideIcons.ArrowRight/></Button>
+                 <Button onClick={() => setIndex(i => (i + 1) % data.length)} variant="outline" size="icon" className="w-16 h-16 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all hover:bg-slate-200 font-black"><ArrowRight/></Button>
               </div>
           </div>
         </div>
@@ -790,7 +832,7 @@ const LifeSkillsZone: React.FC = () => {
   };
 
   const renderModule = () => {
-    if (!schoolId) return <div className="text-center p-8"><LucideIcons.Loader2 className="animate-spin" /></div>;
+    if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin" /></div>;
     const commonProps = { onSound: playFeedbackSound, onComplete, schoolId };
     
     switch(activeTab) {
@@ -833,3 +875,5 @@ const LifeSkillsZone: React.FC = () => {
 };
 
 export default LifeSkillsZone;
+
+    
