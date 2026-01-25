@@ -10,7 +10,7 @@ import {
     Mic, MicOff, Video, VideoOff, Monitor, PhoneOff, User, Wifi, RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import Whiteboard from './whiteboard';
+import Whiteboard from '@/components/dashboard/live-classroom/whiteboard';
 
 // Expanded STUN servers list for better connectivity
 const servers = {
