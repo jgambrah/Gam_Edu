@@ -32,9 +32,7 @@ export function useCurrentSchool() {
             const docSnap = await getDoc(docRef);
             if (docSnap.exists() && docSnap.data().schoolId) {
                 const fetchedId = docSnap.data().schoolId;
-                if (fetchedId !== schoolId) {
-                    setSchoolId(fetchedId);
-                }
+                setSchoolId(fetchedId);
                 setLoading(false);
                 return; // Found it, exit the loop and function
             }
@@ -42,9 +40,7 @@ export function useCurrentSchool() {
 
         // If loop finishes and nothing is found
         console.warn("No School ID found for this user across all collections.");
-        if (schoolId !== null) {
-            setSchoolId(null);
-        }
+        setSchoolId(null);
 
       } catch (error) {
         console.error("Failed to fetch school ID", error);
@@ -59,7 +55,7 @@ export function useCurrentSchool() {
         fetchSchool();
     }
 
-  }, [user, isUserLoading, firestore, schoolId]); // ✅ FIX: Added schoolId to the dependency array
+  }, [user, isUserLoading, firestore]);
 
   return { schoolId, loading };
 }
