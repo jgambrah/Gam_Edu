@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -15,8 +16,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { cn } from '@/lib/utils';
 import { 
     Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, Sparkles, HelpCircle, Hash, ListOrdered, Scale, 
-    CaseSensitive, Handshake, Plus, Minus, Layers, ObjectGroup, Clock, Coins, Ruler, Shapes, Move, CheckSquare, ArrowLeftRight, PenTool, BrainCircuit, Calculator, Apple, Star, Heart, Car, Zap, Cookie, Rabbit, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, Trash2, ThumbsUp, CheckCheck
+    CaseSensitive, Handshake, Plus, Minus, Layers, ObjectGroup, Clock, Coins, Ruler, Shapes, Move, CheckSquare, ArrowLeftRight, PenTool, BrainCircuit, Calculator, Apple, Star, Heart, Car, Zap, Cookie, Rabbit, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, Trash2, ThumbsUp, CheckCheck, Puzzle, Box
 } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 
 // --- ROBUST ICON RENDERER ---
@@ -31,6 +33,8 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
       'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
       'fa-check-double': CheckCheck,
+      'fa-puzzle-piece': Puzzle,
+      'fa-cube': Box,
     };
     const IconComponent = iconMap[iconName] || HelpCircle;
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -252,9 +256,9 @@ const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string 
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center">
           <h3 className="text-4xl font-black text-red-400 mb-12 uppercase text-center">{currentLevel.q}</h3>
           <div className="flex gap-12 items-end">
-            {currentLevel.items.map((item: any, idx: number) => (<Button key={idx} variant="ghost" onClick={() => { if(idx === currentLevel.correct) setAnswered(true); onSound(idx === currentLevel.correct ? "Yes" : "No"); }} className={cn("flex flex-col h-auto p-4 rounded-3xl border-4", answered && idx === currentLevel.correct ? 'border-green-400' : 'border-transparent')}><div className={cn("bg-orange-50 rounded-[3rem] border-8 overflow-hidden", item.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28', answered && idx === currentLevel.correct ? 'border-green-400' : 'border-white')}>{imageUrls[idx] && <img src={imageUrls[idx]!} className="w-full h-full object-cover" />}</div><span className="mt-4 text-slate-700 font-black">{item.label}</span></Button>))}
+            {currentLevel.items.map((item: any, idx: number) => (<Button key={idx} variant="ghost" onClick={() => { if(idx === currentLevel.correct) setAnswered(true); onSound(idx === currentLevel.correct ? "Yes" : "No"); }} className={cn("flex flex-col h-auto p-4 rounded-3xl border-4", answered && idx === currentLevel.correct ? 'border-green-400' : 'border-transparent')}><div className={cn("bg-orange-50 rounded-[3rem] border-8 overflow-hidden", item.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28', answered && idx === currentLevel.correct ? 'border-green-400' : 'border-white')}>{imageUrls[idx] && <img src={imageUrls[idx]!} className="w-full h-full object-cover" />}</div><span className="mt-4 text-xl font-black">{item.label}</span></Button>))}
           </div>
-          {answered && <Button onClick={() => {setLevel((level + 1) % data.length); setAnswered(false);}} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
+          {answered && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
         </div>
     );
 };
@@ -275,7 +279,7 @@ const PatternGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =>
           <div className="flex gap-8">
             {currentPattern.options.map((opt: string, idx: number) => (<Button key={idx} onClick={() => { if(opt === currentPattern.next) setAnswered(true); onSound(opt === currentPattern.next ? "Success" : "Try again"); }} className={cn("w-32 h-32 bg-white rounded-[2rem] border-8 shadow-xl", answered && opt === currentPattern.next ? 'border-green-400 scale-110' : 'border-slate-100')}><IconRenderer iconName={`fa-${opt}`} className="text-6xl text-blue-500" /></Button>))}
           </div>
-          {answered && <Button onClick={() => {setLevel((level + 1) % data.length); setAnswered(false);}} className="mt-10 bg-green-500 text-white rounded-xl px-10 h-14">CONTINUE</Button>}
+          {answered && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-10 bg-green-500 text-white rounded-xl px-10 h-14">CONTINUE</Button>}
         </div>
     );
 };
@@ -302,6 +306,57 @@ const OneToOneGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =
           {givenCount === current.count && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-12 bg-green-500 text-white rounded-xl px-10 h-14">NEXT PUZZLE</Button>}
         </div>
     );
+};
+
+const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+  const [selectedItem, setSelectedItem] = useState('1');
+  const [isEvaluating, setIsEvaluating] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const clearCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if(!ctx) return;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0,0,400,400);
+    ctx.font = '900 300px Nunito, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.strokeStyle = '#F1F5F9';
+    ctx.setLineDash([10, 10]);
+    ctx.strokeText(selectedItem, 200, 220);
+  }, [selectedItem]);
+  useEffect(() => { clearCanvas(); }, [selectedItem, clearCanvas]);
+  const handleCheck = async () => {
+    setIsEvaluating(true);
+    setTimeout(() => { onSound("Superstar!"); setIsEvaluating(false); }, 1500);
+  };
+  return (
+    <div className="flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100">
+        <div className="flex gap-2 mb-8 overflow-x-auto w-full no-scrollbar">
+            {Array.from({length: 10}).map((_, i) => (<Button key={i} variant={selectedItem === String(i) ? "default" : "outline"} onClick={() => setSelectedItem(String(i))} className="flex-shrink-0 w-12 h-12 rounded-xl font-black">{i}</Button>))}
+        </div>
+        <div className="relative w-full max-w-[400px] aspect-square bg-white border-8 border-purple-50 rounded-[3rem] shadow-inner mb-8">
+            <canvas ref={canvasRef} width={400} height={400} className="w-full h-full cursor-crosshair" onMouseMove={(e) => {
+                if(e.buttons !== 1) return;
+                const ctx = canvasRef.current?.getContext('2d');
+                if(!ctx) return;
+                ctx.setLineDash([]);
+                ctx.lineWidth = 15;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#8B5CF6';
+                ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+            }} />
+        </div>
+        <div className="flex gap-4">
+            <Button variant="outline" onClick={clearCanvas} className="h-14 px-8 rounded-2xl">CLEAR</Button>
+            <Button onClick={handleCheck} disabled={isEvaluating} className="h-14 px-12 bg-purple-600 text-white rounded-2xl font-black">{isEvaluating ? "CHECKING..." : "CHECK WORK"}</Button>
+        </div>
+    </div>
+  );
 };
 
 // --- MAIN WRAPPER ---

@@ -16,14 +16,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { cn } from '@/lib/utils';
 import { 
     Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, Sparkles, HelpCircle, Hash, ListOrdered, Scale, 
-    CaseSensitive as CaseSensitiveIcon, Handshake, Plus, Minus, Layers, ObjectGroup, Clock, Coins, Ruler, Shapes, Move, CheckSquare, ArrowLeftRight, PenTool, BrainCircuit, Calculator, Apple, Star, Heart, Car, Zap, Cookie, Rabbit, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, Trash2, ThumbsUp, CheckCheck
+    CaseSensitive, Handshake, Plus, Minus, Layers, ObjectGroup, Clock, Coins, Ruler, Shapes, Move, CheckSquare, ArrowLeftRight, PenTool, BrainCircuit, Calculator, Apple, Star, Heart, Car, Zap, Cookie, Rabbit, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, Trash2, ThumbsUp, CheckCheck, Bed, Eye, CloudRain, Guitar, Plane, Mic, Ear, BookOpen, Puzzle, Box
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-      'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': CaseSensitiveIcon, 
+      'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': CaseSensitive, 
       'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
       'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
       'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
@@ -32,6 +32,16 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
       'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
       'fa-check-double': CheckCheck,
+      'fa-puzzle-piece': Puzzle,
+      'fa-cube': Box,
+      'fa-bed': Bed,
+      'fa-eye': Eye,
+      'fa-cloud-showers-heavy': CloudRain,
+      'fa-guitar': Guitar,
+      'fa-plane': Plane,
+      'fa-microphone-lines': Mic,
+      'fa-ear-listen': Ear,
+      'fa-book-open': BookOpen,
     };
     const IconComponent = iconMap[iconName] || HelpCircle;
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -159,11 +169,12 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
 };
 
 /* --- 3. NUMBER SEQUENCE --- */
-const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
     const [data] = useState(constants.NUMERACY_DATA.sequence || []);
     const [index, setIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
+    useEffect(() => { setUserAnswer(null); }, [index]);
     if (!current) return null;
     return (
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[550px]">
@@ -186,7 +197,7 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: s
 };
 
 /* --- 4. NUMBER COMPARISON (Greater/Less) --- */
-const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
   const [data] = useState(constants.NUMERACY_DATA.numComparison || []);
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<any>(null);
@@ -211,9 +222,12 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = items[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-  }, [index, schoolId, current?.prompt]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual() }, [index, items, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center">
@@ -257,7 +271,7 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
              <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === current.part2 ? "Correct!" : "Try again"); }} className={cn("w-14 h-14 rounded-xl text-xl", userAnswer === i ? 'bg-green-500' : 'bg-pink-50 text-pink-600')}>{i}</Button>
            ))}
         </div>
-        {userAnswer === current.part2 && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-pink-500 text-white rounded-2xl px-10 h-14">NEXT BOND</Button>}
+        {userAnswer === current.part2 && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT BOND</Button>}
     </div>
   );
 };
@@ -269,10 +283,12 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
-    useEffect(() => {
-      generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-      setUserAnswer(null);
-    }, [index, schoolId, current]);
+    const fetchVisual = useCallback(async () => {
+        if (!current || !schoolId) return;
+        const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+        if(res.success) setImageUrl(res.data || null);
+    }, [current, schoolId]);
+    useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
     if (!current) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[600px]">
@@ -308,10 +324,12 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const current = data[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-    setUserAnswer(null);
-  }, [index, schoolId, current]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
   if (!current) return null;
   const correct = current.val1 - current.val2;
   return (
@@ -340,9 +358,12 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-  }, [index, schoolId, current]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center min-h-[550px]">
@@ -378,7 +399,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
     if(!ctx) return;
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0,0,400,400);
-    ctx.font = '900 300px Nunito';
+    ctx.font = '900 300px Nunito, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.strokeStyle = '#F1F5F9';
@@ -417,3 +438,67 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
     </div>
   );
 };
+
+// --- MAIN WRAPPER ---
+const NumeracyZone: React.FC = () => {
+    const [activeTab, setActiveTab] = useState<NumeracyTab>('numbers');
+    const { schoolId } = useCurrentSchool();
+    const currentSourceRef = useRef<HTMLAudioElement | null>(null);
+
+    const playFeedbackSound = useCallback(async (text: string) => {
+      if (!text || !schoolId) return;
+      if (currentSourceRef.current) try { currentSourceRef.current.pause(); } catch (e) {}
+      const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
+      if (result.success && result.data) {
+          const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+          currentSourceRef.current = audio;
+          audio.play();
+      }
+    }, [schoolId]);
+  
+    const tabs: {id: NumeracyTab, icon: string}[] = [
+      { id: 'numbers', icon: 'fa-1' }, { id: 'counting', icon: 'fa-list-ol' }, { id: 'sequence', icon: 'fa-arrow-right-long' },
+      { id: 'comparing', icon: 'fa-scale-unbalanced' }, { id: 'number-words', icon: 'fa-font' }, { id: 'bonds', icon: 'fa-handshake' },
+      { id: 'addition', icon: 'fa-plus' }, { id: 'subtraction', icon: 'fa-minus' }, { id: 'tens-units', icon: 'fa-layer-group' },
+      { id: 'tracing', icon: 'fa-pen-clip' },
+    ];
+    
+    const renderModule = () => {
+      if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>;
+      const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
+      const modules: Record<NumeracyTab, React.ReactNode> = {
+          'numbers': <ModuleContainer title="Learn Numbers" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>,
+          'counting': <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>,
+          'sequence': <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule onSound={playFeedbackSound} /></ModuleContainer>,
+          'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule onSound={playFeedbackSound} /></ModuleContainer>,
+          'number-words': <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>,
+          'bonds': <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule onSound={playFeedbackSound} /></ModuleContainer>,
+          'addition': <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>,
+          'subtraction': <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>,
+          'tens-units': <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>,
+          'tracing': <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>,
+      };
+      return modules[activeTab] || <p>Coming Soon</p>;
+    };
+  
+    return (
+      <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
+        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
+          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
+              )}>
+                <IconRenderer iconName={tab.icon} className="text-lg" /><span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="w-full px-4">{renderModule()}</div>
+      </div>
+    );
+};
+
+export default NumeracyZone;
