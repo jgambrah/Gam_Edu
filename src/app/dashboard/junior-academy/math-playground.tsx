@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import * as constants from '@/lib/constants';
 import { generateLessonImageAction, generateTTSAction, generateMathWorldEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -23,7 +23,7 @@ import {
   Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, Bot
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const iconMap: Record<string, keyof typeof LucideIcons> = {
@@ -88,8 +88,6 @@ const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon
     }
     return <>{children}</>;
 };
-
-// --- START OF SUBMODULES ---
 
 const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const [data, setData] = useState(constants.NUMERACY_DATA.numbers);
@@ -161,17 +159,9 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
   const [answered, setAnswered] = useState(false);
 
   const current = data[index];
+  const fetchVisual = useCallback(async () => { if (!schoolId) return; setLoading(true); const url = await generateLessonImageAction({prompt: current.prompt, schoolId}); setImageUrl(url.data || null); setLoading(false); }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); setAnswered(false); }, [index, data, fetchVisual]);
 
-  const fetchVisual = useCallback(async () => { 
-    if (!schoolId) return;
-    setLoading(true); 
-    const url = await generateLessonImageAction({prompt: current.prompt, schoolId}); 
-    setImageUrl(url.data || null); 
-    setLoading(false); 
-  }, [current, schoolId]);
-
-  useEffect(() => { setAnswered(false); fetchVisual(); }, [index, data, fetchVisual]);
-  
   const handleChoice = (pos: string) => {
     if (pos === current.position) {
       setAnswered(true);
@@ -198,7 +188,7 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[550px] animate-in zoom-in duration-500">
         <h3 className="text-4xl font-black text-blue-600 mb-8 uppercase tracking-tighter text-center">Where is it? 🕵️‍♀️</h3>
         <p className="text-2xl font-black text-slate-500 mb-10 italic">Where is the <span className="text-blue-600">{current.target}</span>?</p>
-        <div className="w-full max-w-2xl aspect-video bg-blue-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
+        <div className="w-full max-w-2xl aspect-video bg-blue-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden group">
           {loading ? <Loader2 className="w-16 h-16 animate-spin text-blue-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt="Spatial Scene" />}
         </div>
         <div className="flex flex-wrap justify-center gap-4">
@@ -214,7 +204,6 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
 };
 
 
-// --- MAIN COMPONENT ---
 const NumeracyZone: React.FC = () => {
     const [activeTab, setActiveTab] = useState<MathTab>('numbers');
     const [playing, setPlaying] = useState(false);
