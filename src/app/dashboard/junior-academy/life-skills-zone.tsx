@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -124,6 +125,68 @@ const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon
     return <>{children}</>;
 };
 
+const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
+    const [data, setData] = useState(constants.LIFE_SKILLS_DATA.emotions);
+    const [index, setIndex] = useState(0);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [aiTopic, setAiTopic] = useState('');
+    const [isAiLoading, setIsAiLoading] = useState(false);
+  
+    const current = data[index];
+    
+    const fetchVisual = useCallback(async () => {
+        if (!current || !schoolId) return;
+        setLoading(true);
+        const result = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+        if (result.success) setImageUrl(result.data || null);
+        setLoading(false);
+    }, [current, schoolId]);
+
+    useEffect(() => { 
+        fetchVisual();
+    }, [index, data, fetchVisual]);
+  
+    const handleAction = () => {
+      onSound(`I feel ${current.name}. When I feel ${current.name}, I can ${current.technique}.`);
+      onComplete();
+    };
+
+    const generateWithAi = async () => {
+        if (!aiTopic || !schoolId) return;
+        setIsAiLoading(true);
+        try {
+          const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'feelings', schoolId });
+          if(result.success && result.data){
+              setData(prev => [...prev, result.data]);
+              setIsDrawerOpen(false); 
+              setIndex(data.length); 
+              setAiTopic('');
+          }
+        } catch (e) { console.error(e); } 
+        finally { setIsAiLoading(false); }
+    };
+  
+    return (
+        <div className="relative font-black">
+          <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-yellow-200 text-yellow-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-yellow-50 transition-colors font-black"><LucideIcons.Wand2 className="w-3 h-3 inline-block mr-1"/> AI Feelings</button>
+          <div className={`w-full p-12 rounded-[4rem] shadow-2xl border-8 flex flex-col items-center min-h-[600px] animate-in zoom-in duration-500 transition-colors ${current.color} border-white`}>
+            <h3 className="text-4xl font-black text-white mb-8 uppercase tracking-tighter text-center shadow-text-md font-black">How do I feel?</h3>
+            <div onClick={handleAction} className={`relative w-full max-w-sm aspect-square bg-white/30 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-8 overflow-hidden cursor-pointer group font-black`}>
+               {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-white/50" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 group-hover:scale-105 transition-transform" alt={current.name} />}
+            </div>
+            <div className="flex gap-4 mb-8 font-black">
+                {data.map((item, i) => (
+                    <button key={item.name} onClick={() => setIndex(i)} className={`w-16 h-16 rounded-full text-4xl border-4 flex items-center justify-center shadow-lg transition-all ${index === i ? 'border-white scale-125' : 'border-transparent opacity-50 hover:opacity-100'}`}><IconRenderer iconName={item.icon} /></button>
+                ))}
+            </div>
+            <p className="text-2xl font-black text-white/80 italic text-center max-w-md font-black">"{current.technique}"</p>
+          </div>
+          {isDrawerOpen && <TeacherModal title="AI Feelings Maker" topicLabel="Feeling or Emotion" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
+        </div>
+    );
+};
 const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const [songs, setSongs] = useState(constants.LIFE_SKILLS_DATA.music);
   const [index, setIndex] = useState(0);
@@ -636,7 +699,7 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
     return (
       <div className="relative font-black">
         <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors font-black"><LucideIcons.Wand2 className="w-3 h-3 inline-block mr-1"/> AI Health Assistant</button>
-        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center min-h-[600px] animate-in slide-in-from-top font-black">
+        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center min-h-[600px] animate-in zoom-in font-black">
           <h3 className="text-4xl font-black text-green-600 mb-8 uppercase tracking-tighter text-center font-black">Physical & Health Hub 🏃‍♂️</h3>
           
           <div className="flex flex-wrap justify-center gap-2 mb-10 p-2 bg-green-50 rounded-2xl font-black">
@@ -770,5 +833,3 @@ const LifeSkillsZone: React.FC = () => {
 };
 
 export default LifeSkillsZone;
-
-    

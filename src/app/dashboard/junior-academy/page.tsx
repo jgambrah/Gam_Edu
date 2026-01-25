@@ -43,7 +43,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-hand-holding-heart': 'Handshake',
       'fa-flask-vial': 'Beaker',
       'fa-palette': 'Palette',
-      'fa-robot': 'BotMessageSquare',
+      'fa-robot': 'Bot',
       'fa-face-smile': 'Smile',
       'fa-tooth': 'Sparkles',
       'fa-heart-pulse': 'HeartPulse',
