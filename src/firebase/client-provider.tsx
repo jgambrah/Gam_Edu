@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, type ReactNode } from 'react';
@@ -26,7 +25,6 @@ function initializeFirebaseOnClient() {
     });
     try {
       firestore = initializeFirestore(firebaseApp, {
-        experimentalForceLongPolling: true,
         localCache: persistentLocalCache({}),
       });
     } catch (e) {
