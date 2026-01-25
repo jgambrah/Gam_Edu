@@ -18,10 +18,10 @@ import { Label } from '@/components/ui/label';
 import NumeracyZone from './numeracy-zone';
 import MathWorld from './math-world';
 
-import JuniorScienceWorld from './science-world';
+import ScienceExploration from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
-import PhonicsWorld from './phonics-world';
+import PhonicsZone from './phonics-world';
 import type { DictionaryWord, LessonCard } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -178,10 +178,10 @@ export default function JuniorCampusPage() {
                         <TabsContent value="lifeskills" className="mt-0">{schoolId && <LifeSkillsZone />}</TabsContent>
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
-                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsZone />}</TabsContent>
                         <TabsContent value="numeracy" className="mt-0">{schoolId && <NumeracyZone />}</TabsContent>
                         <TabsContent value="mathworld" className="mt-0">{schoolId && <MathWorld />}</TabsContent>
-                        <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld />}</TabsContent>
+                        <TabsContent value="science" className="mt-0">{schoolId && <ScienceExploration />}</TabsContent>
                         <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
                         <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
                     </div>
@@ -190,3 +190,5 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
+
+    
