@@ -9,7 +9,7 @@ import {
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Box, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
-  BotMessageSquare as Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Sprout, User as UserIcon, Hand
+  BotMessageSquare as Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Tree, User as UserIcon, Hand
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
@@ -25,69 +25,48 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
+import { SCIENCE_DATA } from '@/lib/constants';
 
-const SCIENCE_DATA = {
-    bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child's head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
-    innerOrgans: [{ name: "Heart", icon: 'fa-heart-pulse', fact: 'Your heart pumps blood to your body.', prompt: 'A simple cartoon heart with a smiley face' }, { name: "Lungs", icon: 'fa-lungs', fact: 'Your lungs help you breathe air.', prompt: 'Two friendly cartoon lungs' }],
-    growth: [{ stage: "Baby", icon: 'fa-child-reaching', action: "I crawl and say goo-goo!", prompt: 'A happy baby crawling' }, { stage: "Child", icon: 'fa-user', action: "I run and play with my friends!", prompt: 'A child running in a park' }],
-    senses: [{ sense: "See", icon: 'fa-eye', action: 'I see with my eyes!' }, { sense: "Hear", icon: 'fa-ear-listen', action: 'I hear with my ears!' }],
-    diet: [{ name: 'Apple', type: 'Fruit', icon: 'fa-apple-whole', prompt: 'A shiny red apple' }, { name: 'Carrot', type: 'Vegetable', icon: 'fa-carrot', prompt: 'A crunchy orange carrot' }],
-    living: [{ name: 'Tree', icon: 'fa-tree', isLiving: true, prompt: 'a tall green tree' }, { name: 'Dog', icon: 'fa-paw', isLiving: true, prompt: 'a friendly puppy dog' }],
-    nonLiving: [{ name: 'Rock', icon: 'fa-cube', isLiving: false, prompt: 'a grey stone rock' }, { name: 'Car', icon: 'fa-car', isLiving: false, prompt: 'a red toy car' }],
-    weather: [{ type: 'Sunny', icon: 'fa-sun', prompt: 'A bright yellow sun smiling' }, { type: 'Rainy', icon: 'fa-cloud-showers-heavy', prompt: 'A gray cloud with rain falling' }],
-    animals: [{ name: 'Lion', sound: 'Roar!', fact: 'The lion is the king of the jungle.', icon: 'fa-paw', prompt: 'A friendly cartoon lion' }, { name: 'Monkey', sound: 'Ooh-ooh-aah-aah!', fact: 'Monkeys love to eat bananas.', icon: 'fa-paw', prompt: 'A cheeky cartoon monkey' }],
-    transport: [{ name: 'Car', type: 'Road', icon: 'fa-car', prompt: 'A red toy car' }, { name: 'Airplane', type: 'Air', icon: 'fa-plane', prompt: 'A white airplane in the sky' }],
-    properties: {
-      colors: [{ name: 'Red', explanation: 'Like a juicy apple!', icon: 'fa-circle', prompt: 'A big shiny red apple' }],
-      shapes: [{ name: 'Square', explanation: 'A shape with four equal sides.', icon: 'fa-shapes', prompt: 'A blue square' }],
-      sizes: [{ pair: 'Big/Small', icon: 'fa-shapes', prompt: 'A big elephant next to a small mouse' }],
-      feelings: [{ name: 'Happy', explanation: 'When you feel smiley!', icon: 'fa-face-smile', prompt: 'A very happy smiling sun' }],
-    },
-    environment: {
-      surroundings: [{ name: 'The Forest', icon: 'fa-tree', fact: 'Forests are home to many animals.', prompt: 'A dense green forest with tall trees' }],
-      greenHabits: [{ name: 'Recycling', icon: 'fa-recycle', fact: 'Recycling helps keep our Earth clean.', prompt: 'A child putting a plastic bottle in a recycling bin' }],
-      cleanWorld: [{ name: 'Clean Beach', icon: 'fa-water', fact: 'We should never leave trash on the beach.', prompt: 'A clean sandy beach with blue water' }],
-    }
-  };
-
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  'fa-earth-africa': Earth,
-  'fa-user': UserIcon,
-  'fa-child-reaching': UserIcon,
-  'fa-heart-pulse': HeartPulse,
-  'fa-lungs': Atom,
-  'fa-arrow-up-right-dots': TrendingUp,
-  'fa-ear-listen': Ear,
-  'fa-eye': Eye,
-  'fa-apple-whole': Apple,
-  'fa-leaf': Leaf,
-  'fa-tree': Sprout,
-  'fa-cloud-sun': CloudSun,
-  'fa-cloud-showers-heavy': CloudRain,
-  'fa-paw': PawPrint,
-  'fa-car': Car,
-  'fa-plane': Plane,
-  'fa-shapes': Shapes,
-  'fa-recycle': Recycle,
-  'fa-water': Droplets,
-  'fa-magic': Wand2,
-  'fa-spinner': Loader2,
-  'fa-arrow-left': ArrowLeft,
-  'fa-arrow-right': ArrowRight,
-  'fa-volume-high': Volume2,
-  'fa-sun': Sun,
-  'fa-hand': Hand,
-  'fa-carrot': Carrot,
-  'fa-cube': Box,
+const iconMap: Record<string, keyof typeof LucideIcons> = {
+  'fa-earth-africa': 'Earth',
+  'fa-user': 'User',
+  'fa-child-reaching': 'User',
+  'fa-heart-pulse': 'HeartPulse',
+  'fa-lungs': 'Atom',
+  'fa-arrow-up-right-dots': 'TrendingUp',
+  'fa-ear-listen': 'Ear',
+  'fa-eye': 'Eye',
+  'fa-apple-whole': 'Apple',
+  'fa-leaf': 'Leaf',
+  'fa-tree': 'Sprout',
+  'fa-cloud-sun': 'CloudSun',
+  'fa-cloud-showers-heavy': 'CloudRain',
+  'fa-paw': 'PawPrint',
+  'fa-car': 'Car',
+  'fa-plane': 'Plane',
+  'fa-shapes': 'Shapes',
+  'fa-recycle': 'Recycle',
+  'fa-water': 'Droplets',
+  'fa-magic': 'Wand2',
+  'fa-spinner': 'Loader2',
+  'fa-arrow-left': 'ArrowLeft',
+  'fa-arrow-right': 'ArrowRight',
+  'fa-volume-high': 'Volume2',
+  'fa-sun': 'Sun',
+  'fa-hand': 'Hand',
+  'fa-carrot': 'Carrot',
+  'fa-cube': 'Box',
 };
 
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
-    if (!iconName) return <HelpCircle className={cn(className)} />;
-    const IconComponent = iconMap[iconName] || HelpCircle;
+    if (!iconName) return <LucideIcons.HelpCircle className={cn(className)} />;
+    const LucideName = iconMap[iconName] || 'HelpCircle';
+    const IconComponent = (LucideIcons as any)[LucideName];
     
-    if (!IconComponent) {
-      console.error(`Icon "${iconMap[iconName] || 'HelpCircle'}" not found for key "${iconName}"`);
-      return <HelpCircle className={cn(className)} />;
+    if (!IconComponent || typeof IconComponent !== 'function') {
+      console.error(`Icon "${LucideName}" not found for key "${iconName}"`);
+      return <LucideIcons.HelpCircle className={cn(className)} />;
     }
     
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
