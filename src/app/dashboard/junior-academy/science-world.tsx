@@ -8,8 +8,8 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
-  BotMessageSquare, User as UserIcon, Beaker, Bed, Eye, TrendingUp, Leaf, Tree, Hand
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Box, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
+  BotMessageSquare as Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Sprout, User as UserIcon, Hand
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
@@ -61,7 +61,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   'fa-eye': Eye,
   'fa-apple-whole': Apple,
   'fa-leaf': Leaf,
-  'fa-tree': Tree,
+  'fa-tree': Sprout,
   'fa-cloud-sun': CloudSun,
   'fa-cloud-showers-heavy': CloudRain,
   'fa-paw': PawPrint,
@@ -78,7 +78,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   'fa-sun': Sun,
   'fa-hand': Hand,
   'fa-carrot': Carrot,
-  'fa-cube': Cube,
+  'fa-cube': Box,
 };
 
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
@@ -134,6 +134,7 @@ const ScienceExploration: React.FC = () => {
     const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
     const [playing, setPlaying] = useState(false);
     const currentSourceRef = useRef<HTMLAudioElement | null>(null);
+    const [started, setStarted] = useState(false);
   
     const playFeedbackSound = useCallback(async (text: string) => {
       if (!text || !schoolId) return;
@@ -170,7 +171,27 @@ const ScienceExploration: React.FC = () => {
       
       const renderActiveTab = () => {
           if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
-          
+          if (!started) return (
+              <Card className="rounded-[60px] border-8 border-blue-100 shadow-xl overflow-hidden bg-white">
+                  <CardHeader className="bg-blue-500 p-10 text-white text-center">
+                      <CardTitle className="text-4xl font-black uppercase tracking-tighter flex items-center justify-center gap-4">
+                          <Atom className="h-12 w-12" />
+                          Science World
+                      </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-12 text-center">
+                      <div className="flex flex-col items-center gap-8 py-20">
+                          <Sparkles className="h-24 w-24 text-blue-300 animate-pulse" />
+                          <h3 className="text-3xl font-black text-blue-600">Start Your Adventure!</h3>
+                          <p className="text-xl text-slate-600 max-w-md">
+                             Click the button below to begin exploring the amazing world of science.
+                          </p>
+                          <Button onClick={() => setStarted(true)} className="h-16 px-12 text-xl bg-blue-600 hover:bg-blue-700">Start Exploring</Button>
+                      </div>
+                  </CardContent>
+              </Card>
+          );
+  
           const props = { onSound: playFeedbackSound, schoolId: schoolId };
           switch(activeTab) {
               case 'environment': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.environment.surroundings} title="Environment" type="environment" />;
@@ -227,7 +248,7 @@ const ScienceExploration: React.FC = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
-    const [started, setStarted] = useState(false);
+    const [started, setStarted] = useState(false); // NEW STATE
   
     const current = data?.[index];
   
@@ -348,7 +369,7 @@ const ScienceExploration: React.FC = () => {
         const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'living', schoolId });
         if(result.success && result.data){
           const isLivingResult = (result.data as any).isLiving;
-          const newItem = { name: (result.data as any).name, icon: (result.data as any).icon || 'fa-leaf', prompt: (result.data as any).prompt || `A nursery illustration of ${aiTopic}` };
+          const newItem = { name: (result.data as any).name, icon: (result.data as any).icon || 'fa-leaf', prompt: '' };
           if (isLivingResult) setLivingList(prev => [...prev, newItem]);
           else setNonLivingList(prev => [...prev, newItem]);
           setIsDrawerOpen(false); setAiTopic('');
@@ -389,6 +410,5 @@ const ScienceExploration: React.FC = () => {
   };
 
   export default ScienceExploration;
-
 
     
