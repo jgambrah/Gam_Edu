@@ -109,8 +109,23 @@ const TeacherModal: React.FC<TeacherModalProps> = ({ title, topicLabel, topicVal
   </div>
 );
 
+const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string; }> = ({ title, children, icon }) => {
+    const [started, setStarted] = useState(false);
+    if (!started) {
+        return (
+             <div className="text-center p-12 bg-white rounded-3xl shadow-lg animate-in fade-in">
+                <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-purple-300 mb-4" />
+                <h3 className="text-2xl font-bold text-purple-600 mb-2">{title}</h3>
+                <p className="text-slate-500 mb-4">Ready to start this activity?</p>
+                <Button onClick={() => setStarted(true)} className="bg-purple-500 hover:bg-purple-600">Start Activity</Button>
+            </div>
+        );
+    }
+    return <>{children}</>;
+};
+
 const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [songs, setSongs] = useState(LIFE_SKILLS_DATA.music);
+  const [songs, setSongs] = useState(constants.LIFE_SKILLS_DATA.music);
   const [index, setIndex] = useState(0);
   const [singing, setSinging] = useState(false);
   const current = songs[index];
@@ -146,7 +161,7 @@ const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: str
 };
 
 const ModelingModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-  const [data, setData] = useState(LIFE_SKILLS_DATA.practicalLife.pretendPlay);
+  const [data, setData] = useState(constants.LIFE_SKILLS_DATA.practicalLife.pretendPlay);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -202,7 +217,7 @@ const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [started, setStarted] = useState(false);
-    const data = subTab === 'dressing' ? LIFE_SKILLS_DATA.practicalLife.dressing : LIFE_SKILLS_DATA.practicalLife.schedules;
+    const data = subTab === 'dressing' ? constants.LIFE_SKILLS_DATA.practicalLife.dressing : constants.LIFE_SKILLS_DATA.practicalLife.schedules;
     const current = data[index] || data[0];
   
     const fetchVisual = useCallback(async () => {
@@ -255,7 +270,7 @@ const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [started, setStarted] = useState(false);
-    const data = LIFE_SKILLS_DATA.communication[subTab];
+    const data = constants.LIFE_SKILLS_DATA.communication[subTab];
     const current = data[index] || data[0];
   
     const fetchVisual = useCallback(async () => {
@@ -323,8 +338,8 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
     const [isAiLoading, setIsAiLoading] = useState(false);
     const [started, setStarted] = useState(false);
 
-    const [socialData, setSocialData] = useState(LIFE_SKILLS_DATA.social);
-    const [communityData, setCommunityData] = useState(LIFE_SKILLS_DATA.community);
+    const [socialData, setSocialData] = useState(constants.LIFE_SKILLS_DATA.social);
+    const [communityData, setCommunityData] = useState(constants.LIFE_SKILLS_DATA.community);
   
     const isCommunity = subTab === 'community';
     const data = isCommunity ? communityData : socialData;
@@ -340,7 +355,7 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
 
     useEffect(() => { 
         if (started) {
-            fetchVisual(); 
+            fetchVisual();
         }
         setUserAnswer(null); 
     }, [subTab, index, data, started, fetchVisual]);
@@ -488,7 +503,7 @@ const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () =
     const [index, setIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const [started, setStarted] = useState(false);
-    const data = LIFE_SKILLS_DATA.cognitive[subTab];
+    const data = constants.LIFE_SKILLS_DATA.cognitive[subTab];
     const current = data[index] || data[0];
   
     useEffect(() => { setUserAnswer(null); }, [subTab, index]);
@@ -554,10 +569,10 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
     const [isAiLoading, setIsAiLoading] = useState(false);
     const [started, setStarted] = useState(false);
 
-    const [grossMotor, setGrossMotor] = useState(LIFE_SKILLS_DATA.physicalHealth.grossMotor);
-    const [fineMotor, setFineMotor] = useState(LIFE_SKILLS_DATA.physicalHealth.fineMotor);
-    const [hygiene, setHygiene] = useState(LIFE_SKILLS_DATA.physicalHealth.hygiene);
-    const [nutrition, setNutrition] = useState(LIFE_SKILLS_DATA.physicalHealth.nutrition);
+    const [grossMotor, setGrossMotor] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.grossMotor);
+    const [fineMotor, setFineMotor] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.fineMotor);
+    const [hygiene, setHygiene] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.hygiene);
+    const [nutrition, setNutrition] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.nutrition);
   
     const getCurrentData = () => {
       if (subTab === 'grossMotor') return grossMotor;
@@ -661,7 +676,7 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
 };
 
 const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    const [data, setData] = useState(LIFE_SKILLS_DATA.emotions);
+    const [data, setData] = useState(constants.LIFE_SKILLS_DATA.emotions);
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -693,15 +708,12 @@ const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () =>
     };
   
     const generateWithAi = async () => {
-      if (!aiTopic || !schoolId) return;
-      setIsAiLoading(true);
+      if (!aiTopic || !schoolId) return; setIsAiLoading(true);
       try {
         const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'emotions', schoolId });
         if(result.success && result.data){
             setData(prev => [...prev, result.data]);
-            setIsDrawerOpen(false); 
-            setIndex(data.length); 
-            setAiTopic('');
+            setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
         }
       } catch (e) { console.error(e); } 
       finally { setIsAiLoading(false); }
@@ -750,8 +762,100 @@ const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () =>
     );
 };
 
-export default LifeSkillsZone;
+const LifeSkillsZone: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<LifeSkillTab>('emotions');
+  const { schoolId } = useCurrentSchool();
+  const currentSourceRef = useRef<HTMLAudioElement | null>(null);
 
+  const playFeedbackSound = useCallback(async (text: string) => {
+    if (!text || !schoolId) return;
+    if (currentSourceRef.current) {
+        try { currentSourceRef.current.pause(); } catch (e) {}
+    }
+    try {
+        const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
+        if (result.success && result.data && typeof window !== 'undefined') {
+            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+            currentSourceRef.current = audio;
+            audio.play();
+            audio.onended = () => { currentSourceRef.current = null; };
+        }
+    } catch (err) {
+        console.error("Audio playback error:", err);
+    }
+  }, [schoolId]);
+
+  const onComplete = () => {
+    confetti({ particleCount: 80, spread: 60, origin: { y: 0.8 } });
+  };
+
+  const tabs: { id: LifeSkillTab; label: string; icon: string }[] = [
+    { id: 'emotions', label: 'My Feelings', icon: 'fa-face-smile' },
+    { id: 'routine-songs', label: 'Routine Songs', icon: 'fa-music' },
+    { id: 'modeling', label: 'Watch & Learn', icon: 'fa-tv' },
+    { id: 'practical-life', label: 'My Day', icon: 'fa-child-reaching' },
+    { id: 'communication', label: 'Let\'s Talk', icon: 'fa-comments' },
+    { id: 'social', label: 'Kindness', icon: 'fa-people-group' },
+    { id: 'puppet-theater', label: 'Puppet Show', icon: 'fa-masks-theater' },
+    { id: 'cognitive', label: 'Super Solvers', icon: 'fa-brain' },
+    { id: 'physical-health', label: 'Healthy Body', icon: 'fa-heart-pulse' },
+  ];
+
+  const colors: Record<LifeSkillTab, string> = {
+    'emotions': 'bg-yellow-500',
+    'routine-songs': 'bg-pink-500',
+    'modeling': 'bg-indigo-500',
+    'practical-life': 'bg-blue-500',
+    'communication': 'bg-orange-500',
+    'social': 'bg-rose-500',
+    'puppet-theater': 'bg-purple-500',
+    'cognitive': 'bg-emerald-500',
+    'physical-health': 'bg-green-500',
+  };
+
+  const renderModule = () => {
+    if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin" /></div>;
+    const commonProps = { onSound: playFeedbackSound, onComplete, schoolId };
     
+    switch(activeTab) {
+        case 'emotions': return <ModuleContainer title="My Big Feelings" icon="fa-face-smile"><EmotionsModule {...commonProps} /></ModuleContainer>;
+        case 'routine-songs': return <ModuleContainer title="Routine Songs" icon="fa-music"><RoutineSongsModule {...commonProps} /></ModuleContainer>;
+        case 'modeling': return <ModuleContainer title="Watch & Learn" icon="fa-tv"><ModelingModule {...commonProps} /></ModuleContainer>;
+        case 'practical-life': return <ModuleContainer title="My Day" icon="fa-child-reaching"><PracticalLifeModule {...commonProps} /></ModuleContainer>;
+        case 'communication': return <ModuleContainer title="Let's Talk" icon="fa-comments"><CommunicationModule {...commonProps} /></ModuleContainer>;
+        case 'social': return <ModuleContainer title="Social & Kindness" icon="fa-people-group"><SocialScenarios {...commonProps} /></ModuleContainer>;
+        case 'puppet-theater': return <ModuleContainer title="Puppet Theater" icon="fa-masks-theater"><PuppetTheater {...commonProps} /></ModuleContainer>;
+        case 'cognitive': return <ModuleContainer title="Super Solvers" icon="fa-brain"><CognitiveSkills {...commonProps} /></ModuleContainer>;
+        case 'physical-health': return <ModuleContainer title="My Healthy Body" icon="fa-heart-pulse"><PhysicalHealthModule {...commonProps} /></ModuleContainer>;
+        default: return null;
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
+      <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
+        <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-teal-50 min-w-max font-black">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${
+                activeTab === tab.id ? `${colors[tab.id]} text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
+              }`}
+            >
+              <IconRenderer iconName={tab.icon} className="text-lg" />
+              <span className="whitespace-nowrap">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="w-full px-4">
+        {renderModule()}
+      </div>
+    </div>
+  );
+};
+
+export default LifeSkillsZone;
 
     
