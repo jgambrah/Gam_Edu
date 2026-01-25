@@ -15,22 +15,44 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { 
-    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, Sparkles, HelpCircle, Hash, ListOrdered, Scale, 
-    CaseSensitive, Handshake, Plus, Minus, Layers, ObjectGroup, Clock, Coins, Ruler, Shapes, Move, CheckSquare, ArrowLeftRight, PenTool, BrainCircuit, Calculator, Apple, Star, Heart, Car, Zap, Cookie, Rabbit, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, Trash2, ThumbsUp, CheckCheck, Puzzle, Box
+    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, 
+    Ear, Layers, Image as ImageIcon, Sparkles, HelpCircle, 
+    Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
+    Handshake, Plus, Minus, Coins, Ruler, Shapes, Move, CheckSquare, ArrowLeftRight, PenTool, 
+    Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
+    Type, Palette, Utensils, Trash2, Calculator, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, BookOpen, GraduationCap
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+
 type NumeracyTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'tracing';
 
-// --- SHARED COMPONENTS ---
+const NumeracyZone: React.FC = () => {
+    const { schoolId } = useCurrentSchool();
+    const currentSourceRef = useRef<HTMLAudioElement | null>(null);
+    const { toast } = useToast();
 
-const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string }> = ({ title, children, icon }) => {
-    const [started, setStarted] = useState(false);
+    const playFeedbackSound = useCallback(async (text: string) => {
+      if (!text || !schoolId) return;
+      if (currentSourceRef.current) {
+          try { currentSourceRef.current.pause(); } catch (e) {}
+      }
+      try {
+          const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
+          if (result.success && result.data && typeof window !== 'undefined') {
+              const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+              currentSourceRef.current = audio;
+              audio.play();
+          }
+      } catch (err: any) {
+          console.error("Audio playback error:", err);
+      }
+    }, [schoolId]);
 
     const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
         const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-          'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': CaseSensitive, 
+          'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': Type, 
           'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
           'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
           'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
@@ -45,39 +67,87 @@ const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon
         const IconComponent = iconMap[iconName] || HelpCircle;
         return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
     };
-
-    if (!started) return (
-        <div className="text-center p-12 bg-white rounded-[3rem] shadow-xl border-8 border-purple-50 animate-in fade-in zoom-in">
-            <IconRenderer iconName={icon} className="h-20 w-20 mx-auto text-purple-300 mb-6" />
-            <h3 className="text-4xl font-black text-purple-600 mb-4 uppercase tracking-tighter">{title}</h3>
-            <p className="text-slate-500 mb-8 font-bold">Are you ready to learn and play?</p>
-            <Button onClick={() => setStarted(true)} size="lg" className="bg-purple-500 hover:bg-purple-600 text-white font-black px-12 py-8 rounded-2xl text-2xl shadow-2xl hover:scale-105 transition-all">START ACTIVITY</Button>
-        </div>
+  
+  
+    const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string }> = ({ title, children, icon }) => {
+        const [started, setStarted] = useState(false);
+        if (!started) return (
+            <div className="text-center p-12 bg-white rounded-[3rem] shadow-xl border-8 border-purple-50 animate-in fade-in zoom-in">
+                <IconRenderer iconName={icon} className="h-20 w-20 mx-auto text-purple-300 mb-6" />
+                <h3 className="text-4xl font-black text-purple-600 mb-4 uppercase tracking-tighter">{title}</h3>
+                <p className="text-slate-500 mb-8 font-bold">Are you ready to learn and play?</p>
+                <Button onClick={() => setStarted(true)} size="lg" className="bg-purple-500 hover:bg-purple-600 text-white font-black px-12 py-8 rounded-2xl text-2xl shadow-2xl hover:scale-105 transition-all">START ACTIVITY</Button>
+            </div>
+        );
+        return (
+            <div className="relative">
+                <Button variant="ghost" onClick={() => setStarted(false)} className="absolute -top-16 left-0 text-slate-400 hover:text-purple-500 font-black uppercase text-xs tracking-widest"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
+                {children}
+            </div>
+        );
+    };
+    
+    const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: string; onTopicChange: (v: string) => void; onGenerate: () => void; isLoading: boolean; onClose: () => void; }> = ({ title, topicLabel, topicValue, onTopicChange, onGenerate, isLoading, onClose }) => (
+        <Dialog open={true} onOpenChange={onClose}>
+            <DialogContent className="rounded-[3rem] border-8 border-purple-100">
+                <DialogHeader><DialogTitle className="text-3xl font-black uppercase tracking-tighter">{title}</DialogTitle></DialogHeader>
+                <div className="space-y-6 py-4">
+                    <div>
+                        <Label className="text-xs font-black text-slate-400 uppercase tracking-widest">{topicLabel}</Label>
+                        <Input type="text" value={topicValue} onChange={(e) => onTopicChange(e.target.value)} placeholder="Type here..." className="mt-2 h-14 rounded-2xl border-4 border-slate-50 font-black" />
+                    </div>
+                    <Button onClick={onGenerate} disabled={isLoading || !topicValue} className="w-full h-16 rounded-2xl bg-purple-500 hover:bg-purple-600 font-black text-xl shadow-xl">
+                        {isLoading ? <><Loader2 className="animate-spin mr-2"/> GENERATING...</> : <><Sparkles className="mr-2 h-6 w-6"/> CREATE MAGIC</>}
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
+
+    const [activeTab, setActiveTab] = useState<NumeracyTab>('numbers');
+
+  
+    const tabs: {id: NumeracyTab, icon: string}[] = [
+      { id: 'numbers', icon: 'fa-1' }, { id: 'counting', icon: 'fa-list-ol' }, { id: 'sequence', icon: 'fa-arrow-right-long' }, 
+      { id: 'comparing', icon: 'fa-scale-unbalanced' }, { id: 'number-words', icon: 'fa-font' }, { id: 'bonds', icon: 'fa-handshake' }, 
+      { id: 'addition', icon: 'fa-plus' }, { id: 'subtraction', icon: 'fa-minus' }, { id: 'tens-units', icon: 'fa-layer-group' }, 
+      { id: 'tracing', icon: 'fa-pen-clip' }
+    ];
+    
+    const renderModule = () => {
+      if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>;
+      const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
+      const modules: Record<NumeracyTab, React.ReactNode> = {
+          'numbers': <ModuleContainer title="Learn Numbers" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>,
+          'counting': <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>,
+          'sequence': <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>,
+          'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>,
+          'number-words': <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>,
+          'bonds': <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule {...commonProps} /></ModuleContainer>,
+          'addition': <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>,
+          'subtraction': <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>,
+          'tens-units': <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>,
+          'tracing': <ModuleContainer title="Magic Pen" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>,
+      };
+      return modules[activeTab] || <p>Coming Soon</p>;
+    };
+  
     return (
-        <div className="relative">
-            <Button variant="ghost" onClick={() => setStarted(false)} className="absolute -top-16 left-0 text-slate-400 hover:text-purple-500 font-black uppercase text-xs tracking-widest"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
-            {children}
+      <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
+        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
+          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max">
+            {tabs.map((tab) => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
+              )}>
+                <IconRenderer iconName={tab.icon} className="text-lg" /><span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
+              </button>
+            ))}
+          </div>
         </div>
+        <div className="w-full px-4">{renderModule()}</div>
+      </div>
     );
 };
-
-const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: string; onTopicChange: (v: string) => void; onGenerate: () => void; isLoading: boolean; onClose: () => void; }> = ({ title, topicLabel, topicValue, onTopicChange, onGenerate, isLoading, onClose }) => (
-    <Dialog open={true} onOpenChange={onClose}>
-        <DialogContent className="rounded-[3rem] border-8 border-purple-100">
-            <DialogHeader><DialogTitle className="text-3xl font-black uppercase tracking-tighter">{title}</DialogTitle></DialogHeader>
-            <div className="space-y-6 py-4">
-                <div>
-                    <Label className="text-xs font-black text-slate-400 uppercase tracking-widest">{topicLabel}</Label>
-                    <Input type="text" value={topicValue} onChange={(e) => onTopicChange(e.target.value)} placeholder="Type here..." className="mt-2 h-14 rounded-2xl border-4 border-slate-50 font-black" />
-                </div>
-                <Button onClick={onGenerate} disabled={isLoading || !topicValue} className="w-full h-16 rounded-2xl bg-purple-500 hover:bg-purple-600 font-black text-xl shadow-xl">
-                    {isLoading ? <><Loader2 className="animate-spin mr-2"/> GENERATING...</> : <><Sparkles className="mr-2 h-6 w-6"/> CREATE MAGIC</>}
-                </Button>
-            </div>
-        </DialogContent>
-    </Dialog>
-);
 
 /* --- 1. NUMBERS (Recognition) --- */
 const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
@@ -195,6 +265,7 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ on
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<any>(null);
   const current = data[index];
+  useEffect(() => { setUserAnswer(null); }, [index]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[550px]">
@@ -220,7 +291,7 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
     if(res.success) setImageUrl(res.data || null);
   }, [current, schoolId]);
-  useEffect(() => { fetchVisual() }, [index, items, fetchVisual]);
+  useEffect(() => { fetchVisual(); }, [index, items, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center">
@@ -230,7 +301,7 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
         <span className="text-6xl font-black text-purple-600 uppercase tracking-tighter">{current.word}</span>
       </div>
       <div className="w-80 h-80 bg-purple-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10">
-        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={current.word}/> : <Loader2 className="animate-spin m-auto"/>}
+        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={current.word} /> : <Loader2 className="animate-spin m-auto"/>}
       </div>
       <div className="flex gap-6">
         <Button size="icon" onClick={() => setIndex(p => (p === 0 ? items.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
@@ -276,10 +347,12 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
-    useEffect(() => {
-      generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-      setUserAnswer(null);
-    }, [index, schoolId, current]);
+    const fetchVisual = useCallback(async () => {
+        if (!current || !schoolId) return;
+        const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+        if(res.success) setImageUrl(res.data || null);
+    }, [current, schoolId]);
+    useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
     if (!current) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[600px]">
@@ -301,7 +374,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
             <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} + {current.val2} = ?</p>
             <div className="flex flex-wrap justify-center gap-3">
                 {Array.from({length: 11}).map((_, i) => (
-                    <Button key={i} onClick={()={() => { setUserAnswer(i); onSound(i === (current.val1+current.val2) ? "Perfect!" : "Keep counting"); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === (current.val1+current.val2) ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-slate-800')}>{i}</Button>
+                    <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === (current.val1+current.val2) ? "Perfect!" : "Keep counting"); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === (current.val1+current.val2) ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-slate-800')}>{i}</Button>
                 ))}
             </div>
         </div>
@@ -315,10 +388,12 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const current = data[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-    setUserAnswer(null);
-  }, [index, schoolId, current]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
   if (!current) return null;
   const correct = current.val1 - current.val2;
   return (
@@ -334,7 +409,7 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
         <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} - {current.val2} = ?</p>
         <div className="flex flex-wrap justify-center gap-3">
             {Array.from({length: 11}).map((_, i) => (
-                <Button key={i} onClick={()={() => { setUserAnswer(i); onSound(i === correct ? "Yes!" : "Try again"); }} className={cn("w-14 h-14 rounded-2xl", userAnswer === i ? (i === correct ? 'bg-green-500' : 'bg-red-500') : 'bg-red-50 text-slate-800')}>{i}</Button>
+                <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Yes!" : "Try again"); }} className={cn("w-14 h-14 rounded-2xl", userAnswer === i ? (i === correct ? 'bg-green-500' : 'bg-red-500') : 'bg-red-50 text-slate-800')}>{i}</Button>
             ))}
         </div>
     </div>
@@ -347,9 +422,12 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-  }, [index, schoolId, current]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center min-h-[550px]">
@@ -363,7 +441,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
          </div>
       </div>
       <div className="w-full max-w-2xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10 cursor-pointer" onClick={() => onSound(`${current.number} has ${current.tens} ten and ${current.units} units`)}>
-        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={`${current.number} explained`} />}
+        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={`${current.number} explained`}/>}
       </div>
       <div className="flex gap-4">
         <Button size="icon" onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
@@ -425,77 +503,4 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
   );
 };
 
-// --- MAIN WRAPPER ---
-const NumeracyZone: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<NumeracyTab>('numbers');
-    const { schoolId } = useCurrentSchool();
-    const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-    const { toast } = useToast();
-
-    // Moved from IconRenderer to main component to be passed down
-    const playFeedbackSound = useCallback(async (text: string) => {
-      if (!text || !schoolId) return;
-      if (currentSourceRef.current) try { currentSourceRef.current.pause(); } catch (e) {}
-      
-      try {
-        const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-        if (result.success && result.data && typeof window !== 'undefined') {
-            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-            currentSourceRef.current = audio;
-            audio.play();
-        } else {
-            throw new Error(result.error || "Audio generation failed.");
-        }
-      } catch(e: any) {
-          toast({ variant: 'destructive', title: "Audio Error", description: e.message });
-      }
-    }, [schoolId, toast]);
-  
-    const tabs: {id: NumeracyTab, icon: string}[] = [
-      { id: 'numbers', icon: 'fa-1' }, { id: 'counting', icon: 'fa-list-ol' }, { id: 'sequence', icon: 'fa-arrow-right-long' },
-      { id: 'comparing', icon: 'fa-scale-unbalanced' }, { id: 'number-words', icon: 'fa-font' }, { id: 'bonds', icon: 'fa-handshake' },
-      { id: 'addition', icon: 'fa-plus' }, { id: 'subtraction', icon: 'fa-minus' }, { id: 'tens-units', icon: 'fa-layer-group' },
-      { id: 'tracing', icon: 'fa-pen-clip' },
-    ];
-    
-    const renderModule = () => {
-      if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>;
-      const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
-      const modules: Record<NumeracyTab, React.ReactNode> = {
-          'numbers': <ModuleContainer title="Learn Numbers" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>,
-          'counting': <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>,
-          'sequence': <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>,
-          'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>,
-          'number-words': <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>,
-          'bonds': <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule {...commonProps} /></ModuleContainer>,
-          'addition': <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>,
-          'subtraction': <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>,
-          'tens-units': <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>,
-          'tracing': <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>,
-      };
-      return modules[activeTab] || <p>Coming Soon</p>;
-    };
-  
-    return (
-      <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
-        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
-          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
-              )}>
-                <IconRenderer iconName={tab.icon} className="text-lg" /><span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="w-full px-4">{renderModule()}</div>
-      </div>
-    );
-};
-
 export default NumeracyZone;
-
-    
