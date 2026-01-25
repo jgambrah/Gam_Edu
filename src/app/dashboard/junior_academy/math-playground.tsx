@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -76,28 +77,28 @@ const NumeracyZone: React.FC = () => {
       if(!schoolId) return <div className="text-center p-8"><LucideIcons.Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>;
       const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
       
-      const modules: Record<MathTab, React.ReactNode> = {
-          'numbers': <ModuleContainer title="Number Recognition" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>,
-          'counting': <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>,
-          'sequence': <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>,
-          'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>,
-          'number-words': <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>,
-          'bonds': <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule onSound={playFeedbackSound} /></ModuleContainer>,
-          'addition': <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>,
-          'subtraction': <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>,
-          'tens-units': <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>,
-          'grouping': <ModuleContainer title="Grouping" icon="fa-object-group"><GroupingModule {...commonProps} /></ModuleContainer>,
-          'time': <ModuleContainer title="Telling Time" icon="fa-clock"><TellingTimeModule onSound={playFeedbackSound} /></ModuleContainer>,
-          'money': <ModuleContainer title="Counting Money" icon="fa-coins"><MoneyCountingModule {...commonProps} /></ModuleContainer>,
-          'measurement': <ModuleContainer title="Measurement" icon="fa-ruler-vertical"><MeasurementModule {...commonProps} /></ModuleContainer>,
-          'shapes': <ModuleContainer title="Shapes" icon="fa-shapes"><ShapesModule {...commonProps} /></ModuleContainer>,
-          'spatial': <ModuleContainer title="Spatial Reasoning" icon="fa-arrows-up-down-left-right"><SpatialModule {...commonProps} /></ModuleContainer>,
-          'comparison': <ModuleContainer title="Comparison Game" icon="fa-scale-balanced"><ComparisonGame {...commonProps} /></ModuleContainer>,
-          'patterns': <ModuleContainer title="Patterns" icon="fa-square-check"><PatternGame onSound={playFeedbackSound} /></ModuleContainer>,
-          'one-to-one': <ModuleContainer title="One-to-One Matching" icon="fa-arrows-left-right"><OneToOneGame onSound={playFeedbackSound} /></ModuleContainer>,
-          'tracing': <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>,
-      };
-      return modules[activeTab] || <p>Coming Soon</p>;
+      switch(activeTab) {
+          case 'numbers': return <ModuleContainer title="Number Recognition" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>;
+          case 'counting': return <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>;
+          case 'sequence': return <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>;
+          case 'comparing': return <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>;
+          case 'number-words': return <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>;
+          case 'bonds': return <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule onSound={playFeedbackSound} /></ModuleContainer>;
+          case 'addition': return <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>;
+          case 'subtraction': return <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>;
+          case 'tens-units': return <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>;
+          case 'grouping': return <ModuleContainer title="Grouping" icon="fa-object-group"><GroupingModule {...commonProps} /></ModuleContainer>;
+          case 'time': return <ModuleContainer title="Telling Time" icon="fa-clock"><TellingTimeModule onSound={playFeedbackSound} /></ModuleContainer>;
+          case 'money': return <ModuleContainer title="Counting Money" icon="fa-coins"><MoneyCountingModule {...commonProps} /></ModuleContainer>;
+          case 'measurement': return <ModuleContainer title="Measurement" icon="fa-ruler-vertical"><MeasurementModule {...commonProps} /></ModuleContainer>;
+          case 'shapes': return <ModuleContainer title="Shapes" icon="fa-shapes"><ShapesModule {...commonProps} /></ModuleContainer>;
+          case 'spatial': return <ModuleContainer title="Spatial Reasoning" icon="fa-arrows-up-down-left-right"><SpatialModule {...commonProps} /></ModuleContainer>;
+          case 'comparison': return <ModuleContainer title="Comparison Game" icon="fa-scale-balanced"><ComparisonGame {...commonProps} /></ModuleContainer>;
+          case 'patterns': return <ModuleContainer title="Patterns" icon="fa-square-check"><PatternGame onSound={playFeedbackSound} /></ModuleContainer>;
+          case 'one-to-one': return <ModuleContainer title="One-to-One Matching" icon="fa-arrows-left-right"><OneToOneGame onSound={playFeedbackSound} /></ModuleContainer>;
+          case 'tracing': return <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>;
+          default: return <p>Coming Soon</p>;
+      }
     };
   
     return (
