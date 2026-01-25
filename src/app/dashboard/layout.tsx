@@ -4,12 +4,21 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import Header from '@/components/navigation/header';
-import { AiChat } from '@/components/ai-chat';
 import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import AppSidebar from '@/components/navigation/sidebar';
 import SchoolSetupWizard from '@/components/onboarding/SchoolSetupWizard'; 
 import TrialBanner from '@/components/TrialBanner';
+import dynamic from 'next/dynamic';
+
+const AiChat = dynamic(
+  () => import('@/components/ai-chat').then((mod) => mod.AiChat),
+  { 
+    ssr: false,
+    loading: () => null // The button doesn't need a loading spinner
+  }
+);
+
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
