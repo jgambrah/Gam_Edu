@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
@@ -33,7 +32,8 @@ export const FirebaseProvider: React.FC<{ children: ReactNode, firebaseApp: Fire
   // Subscribe to Firebase auth state changes.
   useEffect(() => {
     if (!auth) {
-        setIsUserLoading(false);
+        // If auth is not ready, we are technically still loading the user state.
+        // Don't set loading to false here.
         return;
     }
     const unsubscribe = onAuthStateChanged(
