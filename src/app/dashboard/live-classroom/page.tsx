@@ -2,16 +2,23 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useUser } from '@/firebase';
+import { Send, Bot, User as UserIcon, Loader2, Sparkles, Image as ImageIcon, Volume2, Mic, MicOff } from 'lucide-react';
+import { useUser } from '@/firebase'; 
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { generateDrGamResponse } from '@/ai/flows/dr-gam-tutor-flow';
+import { generateLessonImageAction, generateTTSAction } from '@/ai/flows/junior-actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, User as UserIcon, Loader2, Sparkles, Send, Volume2, Image as ImageIcon } from 'lucide-react';
-import { generateDrGamResponse } from '@/ai/flows/dr-gam-tutor-flow';
-import { generateLessonImageAction, generateTTSAction } from '@/ai/flows/junior-actions';
-import { useCurrentSchool } from '@/hooks/use-current-school';
-import confetti from 'canvas-confetti';
+
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 
 interface Message {
   role: 'user' | 'model';
@@ -29,36 +36,56 @@ export default function DrGamTutorPage() {
   const { user } = useUser();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
-
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [activeVisual, setActiveVisual] = useState<VisualState | null>(null);
   const [isVisualLoading, setIsVisualLoading] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const initialized = useRef(false);
   const requestIdRef = useRef(0);
-  const hasStarted = useRef(false);
 
-  // Initial greeting
+  // Initialize Speech Recognition
   useEffect(() => {
-    if (user && !hasStarted.current) {
-      hasStarted.current = true;
-      const initialMessage = `Hello ${user.displayName?.split(' ')[0] || 'Scholar'}. I am Dr. Gam, your personal AI tutor. What academic subject shall we explore today?`;
-      setMessages([{ role: 'model', content: initialMessage }]);
-      playAudio(initialMessage);
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = false;
+        recognitionRef.current.lang = 'en-US';
+
+        recognitionRef.current.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setInput(transcript);
+          // Automatically send after successful recognition
+          handleSendMessage(null, transcript); 
+        };
+
+        recognitionRef.current.onerror = (event: any) => {
+          console.error('Speech recognition error', event.error);
+          toast({ variant: 'destructive', title: 'Mic Error', description: `Could not understand audio. Please try again. (${event.error})` });
+          setIsListening(false);
+        };
+
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+        };
+      } else {
+        toast({ variant: 'destructive', title: "Unsupported Browser", description: "Speech recognition is not supported by your browser."})
+      }
     }
-  }, [user]);
+  }, []);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(scrollToBottom, [messages]);
-  
-  const playAudio = async (text: string) => {
+  const playAudio = useCallback(async (text: string) => {
     if (!text || !schoolId) return;
+    setIsSpeaking(true);
     try {
         if (audioRef.current) {
             audioRef.current.pause();
@@ -68,12 +95,30 @@ export default function DrGamTutorPage() {
             const audio = new Audio(`data:audio/wav;base64,${result.data}`);
             audioRef.current = audio;
             audio.play();
-        }
+            audio.onended = () => { setIsSpeaking(false); audioRef.current = null; };
+        } else { setIsSpeaking(false); }
     } catch (e) {
         console.error("Audio playback error:", e);
+        setIsSpeaking(false);
     }
+  }, [schoolId]);
+  
+  // Initial greeting
+  useEffect(() => {
+    if (user && !initialized.current) {
+      initialized.current = true;
+      const initialMessage = `Hello ${user.displayName?.split(' ')[0] || 'Scholar'}. I am Dr. Gam, your personal AI tutor. What academic subject shall we explore today?`;
+      setMessages([{ role: 'model', content: initialMessage }]);
+      playAudio(initialMessage);
+    }
+  }, [user, playAudio]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  useEffect(scrollToBottom, [messages]);
+  
   const updateVisualsFromText = async (fullText: string) => {
     const commandMatch = fullText.match(/SHOW BOARD:\s*\[([^\]]+)\]/i);
     if (!commandMatch || !commandMatch[1]) return;
@@ -85,48 +130,40 @@ export default function DrGamTutorPage() {
     setActiveVisual({ type: 'concept', value: commandValue, id: newId });
   
     try {
-      if (!schoolId) {
-        throw new Error("School ID is not available for image generation.");
-      }
+      if (!schoolId) throw new Error("School ID not found.");
       const url = await generateLessonImageAction({ 
         prompt: `A vibrant, clear, educational illustration for a classroom whiteboard about: ${commandValue}. Clean, simple, 3D nursery style, white background.`, 
         schoolId: schoolId
       });
-      if (newId === requestIdRef.current) { // Ensure we're updating the right visual
-        setActiveVisual(prev => prev ? { ...prev, url: url.data || undefined } : null);
-      }
-    } catch (e) {
-      console.error("Image generation failed", e);
+      if (newId === requestIdRef.current) setActiveVisual(prev => prev ? { ...prev, url: url.data || undefined } : null);
+    } catch (e) { console.error("Image generation failed", e);
     } finally {
-      if (newId === requestIdRef.current) {
-        setIsVisualLoading(false);
-      }
+      if (newId === requestIdRef.current) setIsVisualLoading(false);
     }
   };
 
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading || !user || !schoolId) return;
+  const handleSendMessage = async (e: React.FormEvent | null, text?: string) => {
+    e?.preventDefault();
+    const messageText = text || input;
+    if (!messageText.trim() || isLoading || !user || !schoolId) return;
 
-    const userMessage: Message = { role: 'user', content: input };
+    const userMessage: Message = { role: 'user', content: messageText };
     const currentMessages = [...messages, userMessage];
     setMessages(currentMessages);
-    const messageHistory = currentMessages.slice(-10); // Keep context reasonable
+    const messageHistory = currentMessages.slice(-10);
     setInput('');
     setIsLoading(true);
 
     try {
       const response = await generateDrGamResponse({
           history: messageHistory,
-          message: input,
+          message: messageText,
           userId: user.uid,
           schoolId: schoolId,
       });
 
-      if (!response.success) {
-        throw new Error(response.text || "The AI tutor encountered an error.");
-      }
+      if (!response.success) throw new Error(response.text || "The AI tutor encountered an error.");
 
       const aiMessage: Message = { role: 'model', content: response.text };
       setMessages(prev => [...prev, aiMessage]);
@@ -134,15 +171,20 @@ export default function DrGamTutorPage() {
       await updateVisualsFromText(response.text);
 
     } catch (error: any) {
-        toast({
-            variant: "destructive",
-            title: "AI Error",
-            description: error.message,
-        });
-        setMessages(prev => prev.slice(0, -1)); // Remove the user message that failed
+        toast({ variant: "destructive", title: "AI Error", description: error.message });
+        setMessages(prev => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+    } else {
+      recognitionRef.current?.start();
+    }
+    setIsListening(!isListening);
   };
 
   return (
@@ -156,7 +198,7 @@ export default function DrGamTutorPage() {
                 <h2 className="font-bold text-lg flex items-center gap-2">
                     Dr. Gam Audio Tutor <Sparkles className="h-4 w-4 text-yellow-300"/>
                 </h2>
-                <p className="text-slate-300 text-xs">Your Personal AI Teacher</p>
+                <p className="text-slate-300 text-xs">Your Personal AI Teacher with Voice</p>
             </div>
         </div>
       </div>
@@ -188,33 +230,42 @@ export default function DrGamTutorPage() {
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-6">
               {messages.map((msg, idx) => (
-                <div key={idx} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
-                  {msg.role === 'model' && <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0"><Bot className="w-4 w-4 text-slate-600"/></div>}
-                  <div className={`rounded-lg p-3 max-w-[80%] text-sm leading-relaxed shadow-sm prose prose-sm ${msg.role === 'user' ? 'bg-indigo-600 text-white' : 'bg-white text-slate-800 border'}`}>
+                <div key={idx} className={`flex items-start gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  {msg.role === 'model' && <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0"><Bot className="w-5 h-5 text-slate-600"/></div>}
+                  <div className={cn('rounded-lg p-4 max-w-[80%] text-sm leading-relaxed shadow-sm prose prose-sm', msg.role === 'user' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-slate-800 border rounded-bl-none')}>
                     <p>{msg.content}</p>
                   </div>
-                  {msg.role === 'user' && <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0"><UserIcon className="w-4 w-4 text-blue-600"/></div>}
+                  {msg.role === 'user' && <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0"><UserIcon className="w-5 h-5 text-blue-600"/></div>}
                 </div>
               ))}
               {isLoading && (
-                <div className="flex items-center gap-3 text-slate-400 text-sm ml-12">
+                <div className="flex items-center gap-4 text-slate-400 text-sm ml-14">
                   <Loader2 className="w-5 h-5 animate-spin"/>
                   <span>Dr. Gam is thinking...</span>
+                </div>
+              )}
+               {isSpeaking && (
+                <div className="flex items-center gap-4 text-slate-400 text-sm ml-14">
+                  <Volume2 className="w-5 h-5 animate-pulse text-indigo-500"/>
+                  <span>Dr. Gam is speaking...</span>
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
           <form onSubmit={handleSendMessage} className="p-4 bg-white border-t flex gap-3">
+            <Button type="button" onClick={toggleListening} variant={isListening ? "destructive" : "outline"} className="h-12 w-12 p-0 rounded-full flex-shrink-0">
+              {isListening ? <MicOff className="w-5 h-5"/> : <Mic className="w-5 h-5"/>}
+            </Button>
             <Input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your question or response..."
-              className="flex-1 h-12 text-base rounded-full"
-              disabled={isLoading}
+              placeholder="Type or click the mic to speak..."
+              className="flex-1 h-12 text-base rounded-full border-slate-300 bg-slate-50 focus:bg-white focus-visible:ring-indigo-500"
+              disabled={isLoading || isListening}
             />
-            <Button type="submit" disabled={isLoading || !input.trim()} className="rounded-full h-12 w-12 p-0 bg-indigo-600 hover:bg-indigo-700">
+            <Button type="submit" disabled={isLoading || isListening || !input.trim()} className="rounded-full h-12 w-12 p-0 bg-indigo-600 hover:bg-indigo-700">
               <Send className="w-5 h-5" />
             </Button>
           </form>
@@ -223,3 +274,5 @@ export default function DrGamTutorPage() {
     </div>
   );
 }
+
+    

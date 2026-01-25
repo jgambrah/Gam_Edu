@@ -1,6 +1,7 @@
-// This component is deprecated and no longer in use.
-// It was part of the old video conferencing feature.
+// This component is deprecated. The visual board feature is now integrated into the Dr. Gam AI Tutor.
 // This file can be safely removed.
 export default function Whiteboard() {
   return null;
 }
+
+    
