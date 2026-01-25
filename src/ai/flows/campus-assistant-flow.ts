@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI assistant for the GAM Edu platform.
@@ -30,35 +29,18 @@ const CampusAssistantOutputSchema = z.object({
 
 export type CampusAssistantOutput = z.infer<typeof CampusAssistantOutputSchema>;
 
-// ✅ FIX: Define the prompt first
-const campusAssistantPrompt = ai.definePrompt(
-  {
-    name: 'campusAssistantPrompt',
-    model: 'googleai/gemini-3-flash-preview',
-    input: {
-      schema: z.object({
-        prompt: z.string(),
-        role: z.string(),
-        historyText: z.string(),
-      }),
-    },
-    output: {
-      schema: z.string(),
-    },
-    config: {
-      temperature: 0.7,
-    },
-  },
-  async ({ prompt, role, historyText }) => {
-    const isStudent = role === 'Student';
+// --- EXPORT THE ACTION ---
+export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
+    const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
+    const isStudent = input.role === 'Student';
     
-    return `
+    const prompt = `
       You are **GAM Edu Assistant**, the intelligent AI assistant for the **GAM Edu** school management platform.
       Your goal is to be helpful, polite, and efficient. You must adapt your personality based on the user's request.
   
       ---
       ### CONTEXT: USER ROLE
-      The current user is identified as: ${role || 'Unknown'}
+      The current user is identified as: ${input.role || 'Unknown'}
   
       ---
       ### YOUR CAPABILITIES & INSTRUCTIONS
@@ -89,38 +71,31 @@ const campusAssistantPrompt = ai.definePrompt(
       
       ---
       ### CURRENT REQUEST
-      User: ${prompt}
+      User: ${input.prompt}
       
       GAM Edu Assistant Response:
     `;
-  }
-);
 
-// ✅ FIX: Define the flow using the prompt
-const campusAssistantFlow = ai.defineFlow(
-  {
-    name: 'campusAssistantFlow',
-    inputSchema: CampusAssistantInputSchema,
-    outputSchema: CampusAssistantOutputSchema,
-  },
-  async (input) => {
-    const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
-    
-    const { output } = await campusAssistantPrompt({
-      prompt: input.prompt,
-      role: input.role || 'Unknown',
-      historyText: historyText,
-    });
-    
-    if (!output) {
-      throw new Error("Failed to generate response");
+    try {
+        const response = await ai.generate({
+            model: 'googleai/gemini-3-flash-preview',
+            prompt: prompt,
+            config: {
+                temperature: 0.7
+            }
+        });
+
+        const responseText = response.text;
+        
+        if (!responseText) {
+            throw new Error("Failed to generate response");
+        }
+
+        return { response: responseText };
+
+    } catch (error: any) {
+        console.error("Campus Assistant Flow Error:", error);
+        // Provide a user-friendly error message in the response
+        return { response: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment." };
     }
-
-    return { response: output };
-  }
-);
-
-// --- EXPORT THE ACTION ---
-export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
-  return campusAssistantFlow(input);
 }
