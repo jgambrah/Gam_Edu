@@ -9,18 +9,18 @@ import {
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
   Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, 
-  Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, 
+  Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, 
   Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
   Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
-  CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
+  CloudRain, Guitar, Plane, MousePointer2, Box, Carrot, Cookie, School, Home, 
   Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, 
+  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User as UserIcon, 
   Beaker, Bed, Eye, FlaskConical
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction, generateLifeSkillEntry, generateLessonImageAction, generateRhyme, generateSkillDetails } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -66,7 +66,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-broom': 'Trash2',
       'fa-flag': 'Flag',
       'fa-hand-pointer': 'MousePointer2',
-      'fa-cube': 'Cube',
+      'fa-cube': 'Box',
       'fa-chalkboard-user': 'User',
       'fa-rabbit': 'Rabbit',
       'fa-carrot': 'Carrot',
@@ -106,10 +106,8 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
   
     const lucideIconName = iconMap[iconName] || 'HelpCircle';
     
-    // ✅ SAFE: Get the icon component and validate it exists
     const IconComponent = (LucideIcons as any)[lucideIconName];
   
-    // ✅ CRITICAL: Check if it's actually a valid React component
     if (!IconComponent || typeof IconComponent !== 'function') {
       console.error('❌ Missing or invalid icon:', lucideIconName, 'for FA icon:', iconName);
       const FallbackIcon = (LucideIcons as any)['HelpCircle'];

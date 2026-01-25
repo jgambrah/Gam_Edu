@@ -8,8 +8,12 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, wh
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, CloudRain, Guitar, Plane, MousePointer2, Box, Carrot, Cookie, School, Home, Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, Flag, GraduationCap, Monitor, Zap, CircleDot,
-  BotMessageSquare as Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Sprout, User as UserIcon, Hand
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, BrainCircuit, Handshake, Milestone, Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
+  HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
+  CloudRain, Guitar, Plane, MousePointer2, Box, Sprout, Carrot, Cookie, School, Home, 
+  Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
+  Flag, GraduationCap, Monitor, Zap, CircleDot,
+  BotMessageSquare as Bot, FlaskConical, Bed, Eye, TrendingUp, Leaf, User as UserIcon, Hand
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
@@ -51,44 +55,43 @@ const SCIENCE_DATA = {
     }
   };
 
-const iconMap: Record<string, keyof typeof LucideIcons> = {
-  'fa-earth-africa': 'Earth',
-  'fa-user': 'UserIcon',
-  'fa-child-reaching': 'UserIcon',
-  'fa-heart-pulse': 'HeartPulse',
-  'fa-lungs': 'Atom',
-  'fa-arrow-up-right-dots': 'TrendingUp',
-  'fa-ear-listen': 'Ear',
-  'fa-eye': 'Eye',
-  'fa-apple-whole': 'Apple',
-  'fa-leaf': 'Leaf',
-  'fa-tree': 'Sprout',
-  'fa-cloud-sun': 'CloudSun',
-  'fa-cloud-showers-heavy': 'CloudRain',
-  'fa-paw': 'PawPrint',
-  'fa-car': 'Car',
-  'fa-plane': 'Plane',
-  'fa-shapes': 'Shapes',
-  'fa-recycle': 'Recycle',
-  'fa-water': 'Droplets',
-  'fa-magic': 'Wand2',
-  'fa-spinner': 'Loader2',
-  'fa-arrow-left': 'ArrowLeft',
-  'fa-arrow-right': 'ArrowRight',
-  'fa-volume-high': 'Volume2',
-  'fa-sun': 'Sun',
-  'fa-hand': 'Hand',
-  'fa-carrot': 'Carrot',
-  'fa-cube': 'Box',
-};
-
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
+    const iconMap: Record<string, keyof typeof LucideIcons> = {
+      'fa-earth-africa': 'Earth',
+      'fa-user': 'UserIcon',
+      'fa-child-reaching': 'UserIcon',
+      'fa-heart-pulse': 'HeartPulse',
+      'fa-lungs': 'Atom',
+      'fa-arrow-up-right-dots': 'TrendingUp',
+      'fa-ear-listen': 'Ear',
+      'fa-eye': 'Eye',
+      'fa-apple-whole': 'Apple',
+      'fa-leaf': 'Leaf',
+      'fa-tree': 'Sprout',
+      'fa-cloud-sun': 'CloudSun',
+      'fa-cloud-showers-heavy': 'CloudRain',
+      'fa-paw': 'PawPrint',
+      'fa-car': 'Car',
+      'fa-plane': 'Plane',
+      'fa-shapes': 'Shapes',
+      'fa-recycle': 'Recycle',
+      'fa-water': 'Droplets',
+      'fa-magic': 'Wand2',
+      'fa-spinner': 'Loader2',
+      'fa-arrow-left': 'ArrowLeft',
+      'fa-arrow-right': 'ArrowRight',
+      'fa-volume-high': 'Volume2',
+      'fa-sun': 'Sun',
+      'fa-hand': 'Hand',
+      'fa-carrot': 'Carrot',
+      'fa-cube': 'Box',
+    };
     if (!iconName) return <LucideIcons.HelpCircle className={cn(className)} />;
     const LucideName = iconMap[iconName] || 'HelpCircle';
     const IconComponent = (LucideIcons as any)[LucideName];
     
     if (!IconComponent || typeof IconComponent !== 'function') {
-      console.error(`Icon "${iconMap[iconName] || 'HelpCircle'}" not found for key "${iconName}"`);
+      console.error(`Icon "${LucideName}" not found for key "${iconName}"`);
       return <LucideIcons.HelpCircle className={cn(className)} />;
     }
     
@@ -413,3 +416,4 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
 
 export default ScienceExploration;
 
+    
