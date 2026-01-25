@@ -15,24 +15,29 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { cn } from '@/lib/utils';
 import { 
     Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, 
-    Ear, Layers, Sparkles, HelpCircle, 
-    Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
+    Ear, Layers, Sparkles, HelpCircle, Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
     Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
     Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
-    CaseSensitive as Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Car, Carrot
+    CaseSensitive, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Car, Carrot
 } from 'lucide-react';
 
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-      'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': Type, 
+      'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': CaseSensitive, 
       'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
       'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
       'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
       'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
-      'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie,
-      'fa-rabbit': Rabbit, 'fa-carrot': Carrot
+      'fa-apple-whole': Apple,
+      'fa-star': Star,
+      'fa-heart': Heart,
+      'fa-car': Car,
+      'fa-bolt': Zap,
+      'fa-cookie': Cookie,
+      'fa-rabbit': Rabbit,
+      'fa-carrot': Carrot
     };
     const IconComponent = iconMap[iconName] || HelpCircle;
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -121,7 +126,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   
 /* --- 2. COUNTING GAME --- */
 const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data, setData] = useState(constants.COUNTING_TASK_DATA || []);
+    const [data, setData] = useState(constants.NUMERACY_DATA.countingTasks || []);
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -157,13 +162,13 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
 };
 
 /* --- 3. NUMBER SEQUENCE --- */
-const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    const [data] = useState(constants.NUMERACY_DATA.sequence || []);
+const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+    const [data, setData] = useState(constants.NUMERACY_DATA.sequence || []);
     const [index, setIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
+    useEffect(() => {setUserAnswer(null)}, [index]);
     if (!current) return null;
-    useEffect(() => { setUserAnswer(null); }, [index, data]);
     return (
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[550px]">
         <h3 className="text-4xl font-black text-purple-600 mb-10 uppercase">{current.question}</h3>
@@ -185,12 +190,12 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSo
 };
 
 /* --- 4. NUMBER COMPARISON (Greater/Less) --- */
-const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-  const [data] = useState(constants.NUMERACY_DATA.numComparison || []);
+const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+  const [data, setData] = useState(constants.NUMERACY_DATA.numComparison || []);
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<any>(null);
   const current = data[index];
-  useEffect(() => { setUserAnswer(null); }, [index, data]);
+  useEffect(() => {setUserAnswer(null)}, [index]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[550px]">
@@ -211,9 +216,12 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = items[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-  }, [index, schoolId, current?.prompt]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual() }, [index, items, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center">
@@ -223,7 +231,7 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
         <span className="text-6xl font-black text-purple-600 uppercase tracking-tighter">{current.word}</span>
       </div>
       <div className="w-80 h-80 bg-purple-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10">
-        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" /> : <Loader2 className="animate-spin m-auto"/>}
+        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={current.word} /> : <Loader2 className="animate-spin m-auto"/>}
       </div>
       <div className="flex gap-6">
         <Button size="icon" onClick={() => setIndex(p => (p === 0 ? items.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
@@ -240,7 +248,7 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const current = data[index];
-  useEffect(() => {setUserAnswer(null);}, [index]);
+  useEffect(() => {setUserAnswer(null)}, [index]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center min-h-[550px]">
@@ -290,7 +298,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
                     </div>
                 </div>
                 <div className="w-48 h-48 bg-white border-4 border-orange-50 rounded-[2.5rem] shadow-xl overflow-hidden relative">
-                    {imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-2" alt={current.theme} />}
+                    {imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-2" alt={current.theme}/>}
                 </div>
             </div>
             <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} + {current.val2} = ?</p>
@@ -363,7 +371,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
          </div>
       </div>
       <div className="w-full max-w-2xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10 cursor-pointer" onClick={() => onSound(`${current.number} has ${current.tens} ten and ${current.units} units`)}>
-        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" />}
+        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={`${current.number} explained`}/>}
       </div>
       <div className="flex gap-4">
         <Button size="icon" onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
@@ -395,7 +403,7 @@ const GroupingModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
          <div className="text-center"><p className="text-xs font-black text-slate-500 uppercase mb-1">Total {current.theme}</p><div className="w-20 h-20 bg-white border-4 border-emerald-200 text-emerald-600 rounded-2xl flex items-center justify-center text-4xl font-black">{current.totalItems}</div></div>
       </div>
       <div className="w-full max-w-2xl aspect-video bg-emerald-50 rounded-[3rem] overflow-hidden mb-10">
-        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" /> : <Loader2 className="animate-spin m-auto"/>}
+        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={`Grouping ${current.theme}`} /> : <Loader2 className="animate-spin m-auto"/>}
       </div>
       <Button onClick={() => setIndex((index + 1) % data.length)} className="bg-emerald-500 text-white rounded-xl h-12 px-10">NEXT TASK</Button>
     </div>
@@ -408,8 +416,8 @@ const TellingTimeModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
   const [index, setIndex] = useState(0);
   const [answered, setAnswered] = useState(false);
   const current = data[index];
-  const options = useMemo(() => current ? [current.hour, (current.hour + 3) % 12 || 12, (current.hour + 6) % 12 || 12].sort(() => Math.random() - 0.5) : [], [current]);
   useEffect(() => { setAnswered(false); }, [index]);
+  const options = useMemo(() => current ? [current.hour, (current.hour + 3) % 12 || 12, (current.hour + 6) % 12 || 12].sort(() => Math.random() - 0.5) : [], [current]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[600px]">
@@ -423,7 +431,7 @@ const TellingTimeModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
             <Button key={opt} onClick={() => { if(opt === current.hour) setAnswered(true); onSound(opt === current.hour ? "Yes!" : "No"); }} className={cn("px-10 py-5 rounded-3xl text-3xl", answered && opt === current.hour ? 'bg-green-500 text-white' : 'bg-blue-50 text-blue-600')}>{opt}:00</Button>
           ))}
         </div>
-        {answered && <Button onClick={() => {setIndex((index + 1) % data.length); setAnswered(false);}} className="mt-8 bg-blue-500 text-white px-10 h-14 rounded-2xl">NEXT TIME</Button>}
+        {answered && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-blue-500 text-white px-10 h-14 rounded-2xl">NEXT TIME</Button>}
     </div>
   );
 };
@@ -448,7 +456,7 @@ const MoneyCountingModule: React.FC<{ onSound: (t: string) => void, schoolId: st
         <h3 className="text-4xl font-black text-yellow-600 mb-8 uppercase">Counting Money! 💰</h3>
         <p className="text-2xl font-black text-slate-500 mb-10 italic">How many shiny coins can you see?</p>
         <div className="w-full max-w-2xl aspect-video bg-yellow-50 rounded-[3rem] border-8 border-white mb-10 overflow-hidden">
-          {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-6" /> : <Loader2 className="animate-spin m-auto"/>}
+          {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-6" alt="coins" /> : <Loader2 className="animate-spin m-auto"/>}
         </div>
         <div className="flex gap-6">
            {options.map(opt => (
@@ -493,12 +501,9 @@ const ShapesModule: React.FC<{ onSound: (t: string) => void, schoolId: string }>
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
-  const fetchVisual = useCallback(async () => {
-    if (!current || !schoolId) return;
-    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
-    if(res.success) setImageUrl(res.data || null);
-  }, [current, schoolId]);
-  useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
+  useEffect(() => {
+    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+  }, [index, schoolId]);
   if (!current) return null;
   return (
     <div className="w-full flex flex-col items-center bg-white p-10 rounded-[4rem] shadow-2xl border-8 border-cyan-100">
@@ -522,12 +527,9 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
   const current = data[index];
-  const fetchVisual = useCallback(async () => {
-    if (!current || !schoolId) return;
-    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
-    if(res.success) setImageUrl(res.data || null);
-  }, [current, schoolId]);
-  useEffect(() => { fetchVisual(); setAnswered(false); }, [index, data, fetchVisual]);
+  useEffect(() => {
+    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+  }, [index, schoolId]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[550px]">
@@ -553,18 +555,16 @@ const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string 
   const [answered, setAnswered] = useState(false);
   const [imageUrls, setImageUrls] = useState<(string | null)[]>([]);
   const currentLevel = data[level];
-  const fetchVisuals = useCallback(async () => {
+  useEffect(() => {
     if (!currentLevel) return;
-    const results = await Promise.all(currentLevel.items.map((i: any) => generateLessonImageAction({ prompt: i.prompt, schoolId })));
-    setImageUrls(results.map(r => r.data || null));
-  }, [currentLevel, schoolId]);
-  useEffect(() => { setAnswered(false); fetchVisuals(); }, [level, data, fetchVisuals]);
+    Promise.all(currentLevel.options.map((opt: any) => generateLessonImageAction({ prompt: opt.prompt, schoolId }))).then(res => setImageUrls(res.map(r => r.data || null)));
+  }, [level, schoolId]);
   if (!currentLevel) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center">
       <h3 className="text-4xl font-black text-red-400 mb-12 uppercase text-center">{currentLevel.q}</h3>
       <div className="flex gap-12 items-end">
-        {currentLevel.items.map((item: any, idx: number) => (<Button key={idx} variant="ghost" onClick={() => { if(idx === currentLevel.correct) setAnswered(true); onSound(idx === currentLevel.correct ? "Yes" : "No"); }} className={cn("flex flex-col h-auto p-4 rounded-3xl border-4", answered && idx === currentLevel.correct ? 'border-green-400' : 'border-transparent')}><div className={cn("bg-orange-50 rounded-[3rem] border-8 overflow-hidden", item.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28', answered && idx === currentLevel.correct ? 'border-green-400' : 'border-white')}>{imageUrls[idx] && <img src={imageUrls[idx]!} className="w-full h-full object-cover" />}</div><span className="mt-4 text-xl font-black">{item.label}</span></Button>))}
+        {currentLevel.options.map((opt: any, idx: number) => (<Button key={idx} variant="ghost" onClick={() => { if(idx === currentLevel.correct) setAnswered(true); onSound(idx === currentLevel.correct ? "Yes" : "No"); }} className={cn("flex flex-col h-auto p-4 rounded-3xl", answered && idx === currentLevel.correct ? 'scale-110' : '')}><div className={cn("bg-orange-50 rounded-[3rem] border-8 overflow-hidden", opt.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28', answered && idx === currentLevel.correct ? 'border-green-400' : 'border-white')}>{imageUrls[idx] && <img src={imageUrls[idx]!} className="w-full h-full object-cover" />}</div><span className="mt-4 text-slate-700 font-black">{opt.label}</span></Button>))}
       </div>
       {answered && <Button onClick={() => {setLevel((level + 1) % data.length); setAnswered(false);}} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
     </div>
@@ -577,7 +577,6 @@ const PatternGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =>
   const [level, setLevel] = useState(0);
   const [answered, setAnswered] = useState(false);
   const currentPattern = data[level];
-  useEffect(() => { setAnswered(false); }, [level]);
   if (!currentPattern) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center">
