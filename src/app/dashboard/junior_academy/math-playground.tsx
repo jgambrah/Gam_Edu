@@ -2,12 +2,17 @@
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import * as constants from '@/lib/constants';
-import { generateTTSAction } from '@/ai/flows/junior-actions';
+import { 
+    generateLessonImageAction, 
+    generateTTSAction, 
+    generateMathWorldEntry 
+} from '@/ai/flows/junior-actions';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import * as LucideIcons from 'lucide-react';
 
+// Import components from the new module files
 import {
     IconRenderer,
     ModuleContainer,
@@ -53,6 +58,7 @@ const NumeracyZone: React.FC = () => {
           const audio = new Audio(`data:audio/wav;base64,${result.data}`);
           currentSourceRef.current = audio;
           audio.play();
+          audio.onended = () => { currentSourceRef.current = null; };
       }
     }, [schoolId]);
   
@@ -88,7 +94,7 @@ const NumeracyZone: React.FC = () => {
           'spatial': <ModuleContainer title="Spatial Reasoning" icon="fa-arrows-up-down-left-right"><SpatialModule {...commonProps} /></ModuleContainer>,
           'comparison': <ModuleContainer title="Comparison Game" icon="fa-scale-balanced"><ComparisonGame {...commonProps} /></ModuleContainer>,
           'patterns': <ModuleContainer title="Patterns" icon="fa-square-check"><PatternGame onSound={playFeedbackSound} /></ModuleContainer>,
-          'one-to-one': <ModuleContainer title="One-to-One Correspondence" icon="fa-arrows-left-right"><OneToOneGame onSound={playFeedbackSound} /></ModuleContainer>,
+          'one-to-one': <ModuleContainer title="One-to-One Matching" icon="fa-arrows-left-right"><OneToOneGame onSound={playFeedbackSound} /></ModuleContainer>,
           'tracing': <ModuleContainer title="Number Tracing" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>,
       };
       return modules[activeTab] || <p>Coming Soon</p>;
@@ -104,8 +110,7 @@ const NumeracyZone: React.FC = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black')}
               >
-                <IconRenderer iconName={tab.icon} className="text-lg" />
-                <span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
+                <IconRenderer iconName={tab.icon} className="text-lg" /><span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
               </button>
             ))}
           </div>
