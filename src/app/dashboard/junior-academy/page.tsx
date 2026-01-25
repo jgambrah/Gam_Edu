@@ -15,12 +15,12 @@ import {
   CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
   Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
   Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, 
-  Beaker, Bed, Eye
+  Beaker, Bed, Eye, FlaskConical
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateTTSAction, assessHandwritingAction } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateWordDetails, generateTTSAction, assessHandwritingAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -41,21 +41,22 @@ import { cn } from '@/lib/utils';
 import { getAuth } from 'firebase/auth';
 import LifeSkillsZone from './life-skills-zone';
 import WritingCanvas from './writing-canvas'; 
+import * as constants from '@/lib/constants';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, string> = {
+    const iconMap: Record<string, keyof typeof LucideIcons> = {
       'fa-spell-check': 'Languages',
       'fa-ear-listen': 'Ear',
       'fa-pen-nib': 'Pen',
       'fa-arrow-1-9': 'Calculator',
       'fa-hand-holding-heart': 'Handshake',
-      'fa-flask-vial': 'Beaker', // Changed from FlaskConical
+      'fa-flask-vial': 'Beaker',
       'fa-palette': 'Palette',
-      'fa-robot': 'BotMessageSquare', // Changed from Bot
+      'fa-robot': 'BotMessageSquare',
       'fa-face-smile': 'Smile',
       'fa-tooth': 'Sparkles',
       'fa-heart-pulse': 'HeartPulse',
-      'fa-vest': 'User', // Changed from Shirt (doesn't exist)
+      'fa-vest': 'User',
       'fa-sun': 'Sun',
       'fa-utensils': 'Utensils',
       'fa-school': 'School',
@@ -89,7 +90,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-comments': 'MessageSquare',
       'fa-people-group': 'Users',
       'fa-masks-theater': 'Drama',
-      'fa-brain': 'Brain', // Changed from BrainCircuit
+      'fa-brain': 'Brain',
       'fa-child-reaching': 'User',
       'fa-music': 'Music',
       'fa-magic': 'Wand2',
@@ -407,6 +408,68 @@ function StorySpark({ canEdit, schoolId }: { canEdit: boolean, schoolId: string 
     );
 }
 
+// --- Singing Dictionary ---
+const SingingDictionary = ({ schoolId }: { schoolId: string }) => {
+    const [selectedLetter, setSelectedLetter] = useState('A');
+    const [wordData, setWordData] = useState<any>(null);
+    const [imageUrl, setImageUrl] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+  
+    const handleLetterClick = useCallback(async (letter: string) => {
+        if (!schoolId) return;
+        setSelectedLetter(letter);
+        setIsLoading(true);
+        const wordInfo = constants.VOCABULARY_DATA.find(w => w.word.startsWith(letter)) || constants.VOCABULARY_DATA[0];
+        
+        const details = await generateWordDetails({ word: wordInfo.word, schoolId });
+        if (details.success) setWordData(details.data);
+
+        const imageRes = await generateLessonImageAction({ prompt: `3D claymation style of ${wordInfo.imagePrompt}, centered, simple, nursery aesthetic, soft lighting`, schoolId });
+        if (imageRes.success && imageRes.data) setImageUrl(imageRes.data);
+
+        setIsLoading(false);
+    }, [schoolId]);
+
+    useEffect(() => {
+        if (schoolId) {
+            handleLetterClick('A');
+        }
+    }, [handleLetterClick, schoolId]);
+  
+    const handleSing = async () => {
+      if (!wordData || !schoolId) return;
+      await generateTTSAction({ text: `Let's spell ${wordData.word}! ${wordData.word.split('').join(', ')}. ${wordData.word}! Now, let's use it in a sentence. ${wordData.sentence}`, voice: 'Enif', schoolId });
+    };
+  
+    return (
+      <Card className="rounded-[60px] border-8 border-red-100 shadow-xl overflow-hidden bg-white">
+        <CardHeader className="bg-red-500 p-10 text-white text-center">
+            <h3 className="text-4xl font-black uppercase tracking-tighter">Singing Dictionary</h3>
+        </CardHeader>
+        <CardContent className="p-12 space-y-10 flex flex-col items-center">
+            <div className="flex flex-wrap gap-2 justify-center max-w-2xl">
+                {constants.LETTERS.map(l => (
+                    <button key={l} onClick={() => handleLetterClick(l)} className={`w-12 h-12 rounded-2xl font-black text-2xl border-4 transition-all ${selectedLetter === l ? 'bg-red-500 text-white border-white scale-110 shadow-lg' : 'bg-slate-50 text-slate-400 border-transparent'}`}>{l}</button>
+                ))}
+            </div>
+            
+            {isLoading || !wordData ? (
+                <div className="h-96 flex items-center justify-center"><Loader2 className="w-16 h-16 animate-spin text-red-200" /></div>
+            ) : (
+                <div className="flex flex-col items-center gap-6 animate-in zoom-in">
+                    <div className="w-80 h-80 bg-red-50 rounded-[4rem] border-8 border-white shadow-2xl flex items-center justify-center overflow-hidden">
+                        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover p-8" alt={wordData.word}/> : <Loader2 className="w-12 h-12 animate-spin text-red-300"/>}
+                    </div>
+                    <h4 className="text-8xl font-black text-slate-800">{wordData.word}</h4>
+                    <Button onClick={handleSing} className="h-20 px-16 bg-red-500 text-white rounded-full font-black text-3xl shadow-xl border-4 border-white">Sing with me! 🎤</Button>
+                </div>
+            )}
+        </CardContent>
+      </Card>
+    );
+};
+
+
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
     const { role } = useRole();
@@ -431,11 +494,12 @@ export default function JuniorCampusPage() {
                 </header>
 
                 <Tabs defaultValue="stories" className="w-full">
-                    <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-[30px] shadow-xl border-2 border-yellow-100 mb-10 overflow-x-auto no-scrollbar">
+                    <TabsList className="grid w-full grid-cols-9 h-24 bg-white p-2 rounded-[30px] shadow-xl border-2 border-yellow-100 mb-10 overflow-x-auto no-scrollbar">
                         <TabsTrigger value="lifeskills" className="rounded-2xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-black flex flex-col items-center gap-1"><Heart className="w-5 h-5"/> Life Skills</TabsTrigger>
                         <TabsTrigger value="writing" className="rounded-2xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-black flex flex-col items-center gap-1"><Pencil className="w-5 h-5"/> Writing</TabsTrigger>
                         <TabsTrigger value="stories" className="rounded-2xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-black flex flex-col items-center gap-1"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
                         <TabsTrigger value="phonics" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><Ear className="w-5 h-5"/> Phonics</TabsTrigger>
+                        <TabsTrigger value="dictionary" className="rounded-2xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-black flex flex-col items-center gap-1"><Languages className="w-5 h-5"/> Dictionary</TabsTrigger>
                         <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center gap-1"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                         <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center gap-1"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                         <TabsTrigger value="art" className="rounded-2xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-black flex flex-col items-center gap-1"><Palette className="w-5 h-5"/> Art</TabsTrigger>
@@ -447,6 +511,7 @@ export default function JuniorCampusPage() {
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="dictionary" className="mt-0">{schoolId && <SingingDictionary schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="math" className="mt-0">{schoolId && <MathPlayground schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
@@ -457,7 +522,5 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-    
 
     
