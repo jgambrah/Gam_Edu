@@ -875,12 +875,12 @@ export const LIFE_SKILLS_DATA = {
   ],
   practicalLife: {
     dressing: [
-      { item: 'Jacket', need: 'it is cold', prompt: 'A child putting on a warm jacket' },
-      { item: 'Shoes', need: 'we are going outside', prompt: 'A child tying their shoes' },
+      { item: 'Jacket', need: 'it is cold', prompt: 'A child putting on a warm jacket', icon: 'fa-vest' },
+      { item: 'Shoes', need: 'we are going outside', prompt: 'A child tying their shoes', icon: 'fa-shoe-prints' },
     ],
     schedules: [
-      { name: 'Morning Routine', prompt: 'A child brushing their teeth in the morning' },
-      { name: 'Bedtime Routine', prompt: 'A child reading a book in bed' },
+      { name: 'Breakfast Time', icon: 'fa-utensils', prompt: 'A family eating breakfast together' },
+      { name: 'Bed Time', icon: 'fa-bed', prompt: 'A child reading a book in bed' },
     ],
     pretendPlay: [
         { title: 'Doctor', scenario: 'Your teddy bear is sick!', modeling: 'Let\'s check its heartbeat with a toy stethoscope.', prompt: 'A child using a toy stethoscope on a teddy bear' },
@@ -888,9 +888,17 @@ export const LIFE_SKILLS_DATA = {
     ]
   },
   communication: {
-    pictureTalk: [{ title: 'What is this?', description: 'This is a red ball.', prompt: 'A red bouncy ball' }],
-    instructions: [{ task: 'Get the blue block', prompt: 'A blue block next to a red block' }],
-    circleTime: [{ q: 'What is your favorite color?', prompt: 'A rainbow with many colors' }]
+    pictureTalk: [
+        { title: "Ball", description: "This is a red bouncy ball.", prompt: "A 3D Pixar-style illustration of a red ball", icon: "⚽" },
+        { title: "Dog", description: "The dog says woof woof!", prompt: "A friendly 3D cartoon puppy wagging its tail", icon: "🐶" }
+    ],
+    instructions: [
+        { task: "Point to the big bear", spoken: "Point to the BIG bear.", prompt: "A big brown bear next to a small teddy bear", icon: "fa-hand-pointer" },
+        { task: "Find the apple", spoken: "Where is the apple?", prompt: "An apple, a banana, and a grape on a table", icon: "fa-search" }
+    ],
+    circleTime: [
+        { q: "What is your favorite animal?", a: "My favorite is a lion!", prompt: "A circle of diverse children sitting on a colorful rug", icon: "fa-people-group" }
+    ]
   },
   social: [
     { scenario: 'Your friend is crying.', q: 'What do you do?', options: ['Give a hug', 'Walk away'], correct: 0, prompt: 'A child crying and another child looking concerned' }

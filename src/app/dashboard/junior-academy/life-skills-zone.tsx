@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -7,6 +8,7 @@ import {
   generateLessonImageAction,
   generateTTSAction,
   generateLifeSkillEntry,
+  generateRhyme,
 } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -61,7 +63,7 @@ import {
   GraduationCap,
 } from 'lucide-react';
 
-const IconRenderer = ({ iconName, className }: { iconName: string; className?: string }) => {
+const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     'fa-face-smile': Smile, 'fa-music': Music, 'fa-tv': Tv, 'fa-child-reaching': User, 'fa-comments': MessageSquare,
     'fa-people-group': Users, 'fa-masks-theater': Drama, 'fa-brain': BrainCircuit, 'fa-heart-pulse': HeartPulse,
@@ -74,6 +76,11 @@ const IconRenderer = ({ iconName, className }: { iconName: string; className?: s
     'fa-frog': Rabbit, 'fa-bolt': Zap, 'fa-circle-dot': CircleDot, 'fa-soap': Sparkles, 'fa-broccoli': Carrot,
     'fa-display': Monitor, 'fa-graduation-cap': GraduationCap,
   };
+  
+  if (!iconName) {
+    return <HelpCircle className={cn(className)} />;
+  }
+
   const IconComponent = iconMap[iconName] || HelpCircle;
   return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
@@ -200,8 +207,7 @@ const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: str
   };
   
   const generateWithAi = async () => {
-    if (!aiTopic || !schoolId) return;
-    setIsAiLoading(true);
+    if (!aiTopic || !schoolId) return; setIsAiLoading(true);
     try {
         const result = await generateLifeSkillEntry({ topic: aiTopic, category: 'songs', schoolId });
         if(result.success && result.data){
@@ -710,6 +716,7 @@ const LifeSkillsZone: React.FC = () => {
         const audio = new Audio(`data:audio/wav;base64,${result.data}`);
         currentSourceRef.current = audio;
         audio.play();
+        audio.onended = () => { currentSourceRef.current = null; };
     }
   }, [schoolId]);
 
