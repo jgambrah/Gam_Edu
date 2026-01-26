@@ -21,7 +21,8 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { generateScienceLessonAction, GeneratedLesson } from '@/ai/flows/generate-science-lesson';
+import * as LucideIcons from 'lucide-react';
+
 
 const SCIENCE_DATA = {
     bodyParts: [{ name: "Head", icon: 'fa-user', prompt: "A child's head with hair" }, { name: "Arms", icon: 'fa-hand', prompt: 'Cartoon arms waving' }],
@@ -47,47 +48,47 @@ const SCIENCE_DATA = {
     }
   };
 
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  'fa-earth-africa': Globe,
+  'fa-user': UserIcon,
+  'fa-child-reaching': UserIcon,
+  'fa-heart-pulse': HeartPulse,
+  'fa-lungs': Atom,
+  'fa-arrow-up-right-dots': TrendingUp,
+  'fa-ear-listen': Ear,
+  'fa-eye': Eye,
+  'fa-apple-whole': Apple,
+  'fa-leaf': Leaf,
+  'fa-tree': Tree,
+  'fa-cloud-sun': CloudSun,
+  'fa-cloud-showers-heavy': CloudRain,
+  'fa-paw': PawPrint,
+  'fa-car': Car,
+  'fa-plane': Plane,
+  'fa-shapes': Shapes,
+  'fa-recycle': Recycle,
+  'fa-water': Droplets,
+  'fa-magic': Wand2,
+  'fa-spinner': Loader2,
+  'fa-arrow-left': ArrowLeft,
+  'fa-arrow-right': ArrowRight,
+  'fa-volume-high': Volume2,
+  'fa-sun': Sun,
+  'fa-hand': Hand,
+  'fa-carrot': Carrot,
+  'fa-cube': Box,
+};
+
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
     if (!iconName) return <HelpCircle className={cn(className)} />;
-
-    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-        'fa-earth-africa': Globe,
-        'fa-user': UserIcon,
-        'fa-child-reaching': UserIcon,
-        'fa-heart-pulse': HeartPulse,
-        'fa-lungs': Atom,
-        'fa-arrow-up-right-dots': TrendingUp,
-        'fa-ear-listen': Ear,
-        'fa-eye': Eye,
-        'fa-apple-whole': Apple,
-        'fa-leaf': Leaf,
-        'fa-tree': Tree,
-        'fa-cloud-sun': CloudSun,
-        'fa-cloud-showers-heavy': CloudRain,
-        'fa-paw': PawPrint,
-        'fa-car': Car,
-        'fa-plane': Plane,
-        'fa-shapes': Shapes,
-        'fa-recycle': Recycle,
-        'fa-water': Droplets,
-        'fa-magic': Wand2,
-        'fa-spinner': Loader2,
-        'fa-arrow-left': ArrowLeft,
-        'fa-arrow-right': ArrowRight,
-        'fa-volume-high': Volume2,
-        'fa-sun': Sun,
-        'fa-hand': Hand,
-        'fa-carrot': Carrot,
-        'fa-cube': Box,
-    };
-
-    const IconComponent = iconMap[iconName];
+    const IconComponent = iconMap[iconName] || HelpCircle;
     
-    if (IconComponent) {
-        return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
+    if (!IconComponent) {
+      console.error(`Icon "${iconMap[iconName] || 'HelpCircle'}" not found for key "${iconName}"`);
+      return <HelpCircle className={cn(className)} />;
     }
-
-    return <HelpCircle className={className} />;
+    
+    return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
 
 type ScienceTab = 'body' | 'organs' | 'growth' | 'senses' | 'diet' | 'living' | 'weather' | 'animals' | 'transport' | 'concepts' | 'environment';
@@ -126,118 +127,33 @@ const TeacherModal: React.FC<{
   </Dialog>
 );
 
-const ScienceExploration: React.FC = () => {
-  const { schoolId } = useCurrentSchool();
-  const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
-  const [playing, setPlaying] = useState(false);
-  const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-  const [started, setStarted] = useState(false);
-
-  const playFeedbackSound = useCallback(async (text: string) => {
-    if (!text || !schoolId) return;
-    if (currentSourceRef.current) {
-        try { currentSourceRef.current.pause(); } catch (e) {}
-    }
-    setPlaying(true);
-    try {
-        const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-        if (result.success && result.data && typeof window !== 'undefined') {
-            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-            currentSourceRef.current = audio;
-            audio.play();
-            audio.onended = () => { setPlaying(false); currentSourceRef.current = null; };
-        } else { setPlaying(false); }
-    } catch (err: any) {
-        setPlaying(false);
-    }
-  }, [schoolId]);
-
-  const tabs: {id: ScienceTab, label: string, icon: string}[] = [
-    { id: 'environment', label: 'EVS Hub', icon: 'fa-earth-africa' },
-    { id: 'body', label: 'My Body', icon: 'fa-user' },
-    { id: 'organs', label: 'Inside Me', icon: 'fa-heart-pulse' },
-    { id: 'growth', label: 'Growing Up', icon: 'fa-arrow-up-right-dots' },
-    { id: 'senses', label: 'My Senses', icon: 'fa-ear-listen' },
-    { id: 'diet', label: 'Healthy Food', icon: 'fa-apple-whole' },
-    { id: 'living', label: 'Nature Sorting', icon: 'fa-leaf' },
-    { id: 'weather', label: 'Weather Window', icon: 'fa-cloud-sun' },
-    { id: 'animals', label: 'Animal World', icon: 'fa-paw' },
-    { id: 'transport', label: 'Travel', icon: 'fa-car' },
-    { id: 'concepts', label: 'Concepts', icon: 'fa-shapes' },
-  ];
-    
-    const renderActiveTab = () => {
-        if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
-        if (!started) return (
-            <Card className="rounded-[60px] border-8 border-blue-100 shadow-xl overflow-hidden bg-white">
-                <CardHeader className="bg-blue-500 p-10 text-white text-center">
-                    <CardTitle className="text-4xl font-black uppercase tracking-tighter flex items-center justify-center gap-4">
-                        <Atom className="h-12 w-12" />
-                        Science World
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-12 text-center">
-                    <div className="flex flex-col items-center gap-8 py-20">
-                        <Sparkles className="h-24 w-24 text-blue-300 animate-pulse" />
-                        <h3 className="text-3xl font-black text-blue-600">Start Your Adventure!</h3>
-                        <p className="text-xl text-slate-600 max-w-md">
-                           Click the button below to begin exploring the amazing world of science.
-                        </p>
-                        <Button onClick={() => setStarted(true)} className="h-16 px-12 text-xl bg-blue-600 hover:bg-blue-700">Start Exploring</Button>
-                    </div>
-                </CardContent>
-            </Card>
-        );
-
-        const props = { onSound: playFeedbackSound, schoolId: schoolId };
-        switch(activeTab) {
-            case 'environment': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.environment.surroundings} title="Environment" type="environment" />;
-            case 'body': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.bodyParts} title="My Body Parts" type="body" />;
-            case 'organs': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.innerOrgans} title="Inside My Body" type="organ" />;
-            case 'growth': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.growth} title="Stages of Growth" type="growth" categoryKey="stage" />;
-            case 'senses': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.senses} title="The 5 Senses" type="sense" categoryKey="sense" />;
-            case 'diet': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.diet} title="Healthy Foods" type="diet" />;
-            case 'living': return <LivingSorting onSound={playFeedbackSound} schoolId={schoolId}/>;
-            case 'weather': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.weather} title="Weather Window" type="weather" categoryKey="type"/>;
-            case 'animals': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.animals} title="Animal Kingdom" type="animal" />;
-            case 'transport': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.transport} title="Transport Explorer" type="transport" />;
-            case 'concepts': return <SimpleScienceModule {...props} initialData={SCIENCE_DATA.properties.colors} title="World Concepts" type="concept"/>;
-            default: return null;
-        }
-    };
-
-  return (
-    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 font-black selection:bg-green-100">
-      <div className="text-center mb-4">
-        <h2 className="text-6xl font-black text-green-700 uppercase tracking-tighter drop-shadow-sm">Science Lab 🔬</h2>
-        <p className="text-slate-500 font-black italic text-xl">Let's discover our wonderful world!</p>
-      </div>
-
-      <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
-        <div className="flex justify-start md:justify-center gap-4 bg-white p-5 rounded-[4rem] shadow-2xl border-4 border-green-200 min-w-max">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`min-w-[130px] px-6 py-4 rounded-3xl font-black text-[13px] uppercase tracking-wider transition-all flex flex-col items-center gap-2 border-4 ${
-                activeTab === tab.id 
-                ? 'bg-black text-white border-black shadow-2xl scale-110 -translate-y-2' 
-                : 'bg-white text-black border-slate-100 hover:bg-green-50 hover:border-green-300'
-              }`}
-            >
-              <IconRenderer iconName={tab.icon} className={`text-2xl ${activeTab === tab.id ? 'text-green-400' : 'text-green-600'}`} />
-              <span className="leading-tight">{tab.label}</span>
-            </button>
-          ))}
+const ModuleContainerWithState: React.FC<{ 
+  title: string; 
+  children: React.ReactNode; 
+  icon: string;
+  started: boolean;
+  onStart: () => void;
+  onClose: () => void;
+}> = ({ title, children, icon, started, onStart, onClose }) => {
+    if (!started) return (
+        <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+            <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-green-300 mb-4"/>
+            <h3 className="text-2xl font-bold text-green-600 mb-2">{title}</h3>
+            <p className="text-slate-500 mb-4">Ready to explore the world of {title.toLowerCase()}?</p>
+            <Button onClick={onStart} className="bg-green-500 hover:bg-green-600">Start Exploring</Button>
         </div>
-      </div>
-
-      <div className="w-full px-4">{renderActiveTab()}</div>
-    </div>
-  );
+    );
+    return (
+        <div className="relative">
+            <Button variant="ghost" onClick={onClose} className="absolute -top-12 left-0 text-slate-400 hover:text-green-500 font-bold text-xs"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
+            {children}
+        </div>
+    );
 };
 
 const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound: (t: string) => void, categoryKey?: string, type: string, schoolId: string }> = ({ initialData, title, onSound, categoryKey = 'name', type, schoolId }) => {
+  const { role } = useRole();
+  const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
   const [data, setData] = useState(initialData);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -245,7 +161,6 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [started, setStarted] = useState(false);
 
   const current = data?.[index];
 
@@ -258,7 +173,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
     setLoading(false);
   }, [current, categoryKey, schoolId]);
   
-  useEffect(() => { if (started) fetchVisual(); }, [index, data, fetchVisual, started]);
+  useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
   
   const generateWithAi = async () => {
     if (!aiTopic || !schoolId) return;
@@ -271,17 +186,6 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
-  
-  if (!started) {
-    return (
-        <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-            <IconRenderer iconName={initialData[0].icon} className="h-16 w-16 mx-auto text-green-300 mb-4"/>
-            <h3 className="text-2xl font-bold text-green-600 mb-2">{title}</h3>
-            <p className="text-slate-500 mb-4">Ready to explore the world of {title.toLowerCase()}?</p>
-            <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Learning</Button>
-        </div>
-    );
-  }
   
   if (!current) {
     return (
@@ -297,7 +201,7 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
 
   return (
     <div className="relative font-black">
-      <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Item</Button>
+      {canEdit && <Button onClick={() => setIsDrawerOpen(true)} variant="outline" className="absolute -top-12 right-0 rounded-full border-2 border-green-200 text-green-600 px-4 py-2 text-[10px] shadow-sm uppercase z-10 hover:bg-green-50"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Item</Button>}
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-100 flex flex-col items-center animate-in slide-in-from-bottom">
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase tracking-tighter text-center">{title}</h3>
         <div className="flex flex-col md:flex-row gap-10 w-full items-center">
@@ -326,6 +230,8 @@ const SimpleScienceModule: React.FC<{ initialData: any[], title: string, onSound
 };
 
 const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+  const { role } = useRole();
+  const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -334,7 +240,6 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [started, setStarted] = useState(false);
 
   const [livingList, setLivingList] = useState(SCIENCE_DATA.living);
   const [nonLivingList, setNonLivingList] = useState(SCIENCE_DATA.nonLiving);
@@ -352,7 +257,7 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
     setFeedback(null);
   }, [current, schoolId]);
 
-  useEffect(() => { if (started) fetchImage(); }, [index, isLiving, livingList, nonLivingList, started, fetchImage]);
+  useEffect(() => { fetchImage(); }, [index, isLiving, livingList, nonLivingList, fetchImage]);
 
   const handleSort = (choice: boolean) => {
     if (choice === isLiving) { setFeedback('YES! Correct! 🌟'); onSound(`That's right! A ${current.name} is a ${isLiving ? 'living' : 'non-living'} thing!`); }
@@ -374,20 +279,9 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   
-  if (!started) {
-    return (
-        <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-            <Leaf className="h-16 w-16 mx-auto text-green-300 mb-4"/>
-            <h3 className="text-2xl font-bold text-green-600 mb-2">Living or Not?</h3>
-            <p className="text-slate-500 mb-4">Let's sort things into living and non-living groups!</p>
-            <Button onClick={() => setStarted(true)} className="bg-green-500 hover:bg-green-600">Start Sorting</Button>
-        </div>
-    );
-  }
-
   return (
     <div className="relative font-black">
-      <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Thing</Button>
+      {canEdit && <Button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-green-200 text-green-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-green-50 transition-colors"><Wand2 className="h-3 w-3 mr-1 inline-block"/> AI Add Thing</Button>}
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-green-200 flex flex-col items-center">
         <h3 className="text-4xl font-black text-green-600 mb-10 uppercase text-center">Is it Living? 🌱</h3>
         <div className="w-80 h-80 bg-green-50 rounded-[4rem] border-8 border-white shadow-2xl mb-12 flex items-center justify-center overflow-hidden">
@@ -406,6 +300,112 @@ const LivingSorting: React.FC<{ onSound: (t: string) => void, schoolId: string }
   );
 };
 
-export default ScienceExploration;
+// --- MAIN PAGE ---
+const JuniorScienceWorld: React.FC = () => {
+  const { schoolId } = useCurrentSchool();
+  const [activeTab, setActiveTab] = useState<ScienceTab>('environment');
+  const currentSourceRef = useRef<HTMLAudioElement | null>(null);
 
+  const playFeedbackSound = useCallback(async (text: string) => {
+    if (!text || !schoolId) return;
+    if (currentSourceRef.current) {
+        try { currentSourceRef.current.pause(); } catch (e) {}
+    }
+    try {
+        const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
+        if (result.success && result.data && typeof window !== 'undefined') {
+            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+            currentSourceRef.current = audio;
+            audio.play();
+            audio.onended = () => { currentSourceRef.current = null; };
+        }
+    } catch (err: any) {
+        console.error("Audio playback error:", err);
+    }
+  }, [schoolId]);
+
+  const tabs: {id: ScienceTab, label: string, icon: string}[] = [
+    { id: 'environment', label: 'EVS Hub', icon: 'fa-earth-africa' },
+    { id: 'body', label: 'My Body', icon: 'fa-user' },
+    { id: 'organs', label: 'Inside Me', icon: 'fa-heart-pulse' },
+    { id: 'growth', label: 'Growing Up', icon: 'fa-arrow-up-right-dots' },
+    { id: 'senses', label: 'My Senses', icon: 'fa-ear-listen' },
+    { id: 'diet', label: 'Healthy Food', icon: 'fa-apple-whole' },
+    { id: 'living', label: 'Nature Sorting', icon: 'fa-leaf' },
+    { id: 'weather', label: 'Weather Window', icon: 'fa-cloud-sun' },
+    { id: 'animals', label: 'Animal World', icon: 'fa-paw' },
+    { id: 'transport', label: 'Travel', icon: 'fa-car' },
+    { id: 'concepts', label: 'Concepts', icon: 'fa-shapes' },
+  ];
+  
+  const [startedModules, setStartedModules] = useState<Record<ScienceTab, boolean>>({
+    environment: false, body: false, organs: false, growth: false, senses: false,
+    diet: false, living: false, weather: false, animals: false, transport: false, concepts: false
+  });
+  
+  const handleStartModule = (moduleId: ScienceTab) => setStartedModules(prev => ({ ...prev, [moduleId]: true }));
+  const handleCloseModule = (moduleId: ScienceTab) => setStartedModules(prev => ({ ...prev, [moduleId]: false }));
+
+  const renderModule = () => {
+    if (!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
+    const commonProps = { onSound: playFeedbackSound, schoolId };
     
+    return (
+      <ModuleContainerWithState
+        title={activeTab.replace('-', ' ')}
+        icon={tabs.find(t => t.id === activeTab)?.icon || 'fa-atom'}
+        started={startedModules[activeTab]}
+        onStart={() => handleStartModule(activeTab)}
+        onClose={() => handleCloseModule(activeTab)}
+      >
+        {startedModules[activeTab] && (
+          <>
+            {activeTab === 'environment' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.environment.surroundings} title="Environment" type="environment" />}
+            {activeTab === 'body' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.bodyParts} title="My Body Parts" type="body" />}
+            {activeTab === 'organs' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.innerOrgans} title="Inside My Body" type="organ" />}
+            {activeTab === 'growth' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.growth} title="Stages of Growth" type="growth" categoryKey="stage" />}
+            {activeTab === 'senses' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.senses} title="The 5 Senses" type="sense" categoryKey="sense" />}
+            {activeTab === 'diet' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.diet} title="Healthy Foods" type="diet" />}
+            {activeTab === 'living' && <LivingSorting {...commonProps}/>}
+            {activeTab === 'weather' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.weather} title="Weather Window" type="weather" categoryKey="type"/>}
+            {activeTab === 'animals' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.animals} title="Animal Kingdom" type="animal" />}
+            {activeTab === 'transport' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.transport} title="Transport Explorer" type="transport" />}
+            {activeTab === 'concepts' && <SimpleScienceModule {...commonProps} initialData={SCIENCE_DATA.properties.colors} title="World Concepts" type="concept"/>}
+          </>
+        )}
+      </ModuleContainerWithState>
+    );
+  };
+
+  return (
+    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 font-black selection:bg-green-100">
+      <div className="text-center mb-4">
+        <h2 className="text-6xl font-black text-green-700 uppercase tracking-tighter drop-shadow-sm">Science Lab 🔬</h2>
+        <p className="text-slate-500 font-black italic text-xl">Let's discover our wonderful world!</p>
+      </div>
+
+      <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
+        <div className="flex justify-start md:justify-center gap-4 bg-white p-5 rounded-[4rem] shadow-2xl border-4 border-green-200 min-w-max">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`min-w-[130px] px-6 py-4 rounded-3xl font-black text-[13px] uppercase tracking-wider transition-all flex flex-col items-center gap-2 border-4 ${
+                activeTab === tab.id 
+                ? 'bg-black text-white border-black shadow-2xl scale-110 -translate-y-2' 
+                : 'bg-white text-black border-slate-100 hover:bg-green-50 hover:border-green-300'
+              }`}
+            >
+              <IconRenderer iconName={tab.icon} className={`text-2xl ${activeTab === tab.id ? 'text-green-400' : 'text-green-600'}`} />
+              <span className="leading-tight">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="w-full px-4">{renderModule()}</div>
+    </div>
+  );
+};
+
+export default JuniorScienceWorld;
