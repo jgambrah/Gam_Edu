@@ -2,7 +2,21 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import * as constants from '@/lib/constants';
+// Importing specific constants as per your file structure
+import { 
+    NUMERACY_DATA, 
+    ADDITION_DATA, 
+    SUBTRACTION_DATA, 
+    NUMBER_WORDS_DATA, 
+    SEQUENCE_DATA, 
+    NUM_COMPARISON_DATA, 
+    COUNTING_TASK_DATA, 
+    NUMBER_BONDS_DATA, 
+    TENS_UNITS_DATA,
+    STROKES,
+    LETTERS,
+    NUMBERS
+} from '@/lib/constants';
 import { 
     generateLessonImageAction, 
     generateTTSAction, 
@@ -16,6 +30,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { cn } from '@/lib/utils';
 import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useToast } from '@/hooks/use-toast';
 import { useRole } from '@/context/role-context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -47,8 +62,12 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     };
     const LucideName = iconMap[iconName] || 'HelpCircle';
     const IconComponent = (LucideIcons as any)[LucideName];
+    if (!IconComponent) {
+        return <HelpCircle className={className} />;
+    }
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
+
 
 type PracticeMode = 'letters' | 'strokes' | 'numbers';
 type NumeracyTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'tracing';
@@ -99,7 +118,7 @@ const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: st
 const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
-    const [data, setData] = useState(constants.NUMERACY_DATA.numbers);
+    const [data, setData] = useState(NUMERACY_DATA.numbers);
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -153,7 +172,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
 const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
-    const [data, setData] = useState(constants.COUNTING_TASK_DATA || []);
+    const [data, setData] = useState(COUNTING_TASK_DATA || []);
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -348,7 +367,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
             <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} + {current.val2} = ?</p>
             <div className="flex flex-wrap justify-center gap-3">
                 {Array.from({length: 11}).map((_, i) => (
-                    <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Perfect!" : "Keep counting"); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === correct ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-slate-800')}>{i}</Button>
+                    <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Perfect!" : "Keep counting"); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === correct ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-slate-800')}>{i}</Button>
                 ))}
             </div>
         </div>
@@ -400,13 +419,13 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center min-h-[550px]">
-      <h3 className="text-4xl font-black text-indigo-500 mb-8 uppercase font-black">Tens and Units 📦</h3>
-      <div className="flex items-center gap-12 mb-10 font-black">
-         <div className="text-center font-black"><p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Number</p><div className="w-24 h-24 bg-indigo-500 text-white rounded-2xl flex items-center justify-center text-5xl font-black shadow-xl">{current.number}</div></div>
+      <h3 className="text-4xl font-black text-indigo-500 mb-8 uppercase">Tens and Units 📦</h3>
+      <div className="flex items-center gap-12 mb-10">
+         <div className="text-center"><p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Number</p><div className="w-24 h-24 bg-indigo-500 text-white rounded-2xl flex items-center justify-center text-5xl font-black shadow-xl">{current.number}</div></div>
          <span className="text-4xl text-slate-300">=</span>
          <div className="flex gap-4">
-            <div className="text-center"><p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1 font-black">Tens</p><div className="w-16 h-16 border-4 border-indigo-200 text-indigo-600 rounded-xl flex items-center justify-center text-3xl font-black">{current.tens}</div></div>
-            <div className="text-center"><p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1 font-black">Units</p><div className="w-16 h-16 border-4 border-indigo-200 text-indigo-600 rounded-xl flex items-center justify-center text-3xl font-black">{current.units}</div></div>
+            <div className="text-center"><p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1">Tens</p><div className="w-16 h-16 border-4 border-indigo-200 text-indigo-600 rounded-xl flex items-center justify-center text-3xl font-black">{current.tens}</div></div>
+            <div className="text-center"><p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1">Units</p><div className="w-16 h-16 border-4 border-indigo-200 text-indigo-600 rounded-xl flex items-center justify-center text-3xl font-black">{current.units}</div></div>
          </div>
       </div>
       <div className="w-full max-w-2xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10 cursor-pointer" onClick={() => onSound(`${current.number} has ${current.tens} ten and ${current.units} units`)}>
@@ -474,14 +493,16 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
                 if(!rect) return;
                 const ctx = canvas?.getContext('2d');
                 if(!ctx) return;
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
                 ctx.setLineDash([]);
                 ctx.lineWidth = 15;
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = '#8B5CF6';
-                ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                ctx.lineTo(x * (400 / rect.width), y * (400 / rect.height));
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                ctx.moveTo(x * (400 / rect.width), y * (400 / rect.height));
             }} />
         </div>
         <div className="flex gap-4">
@@ -491,11 +512,5 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
     </div>
   );
 };
-```
-- src/firebase/auth/use-user.tsx:
-```tsx
 
-// This file is now empty because its functionality was moved into src/firebase/provider.tsx
-// to consolidate user state management and prevent circular dependencies.
-
-```
+    
