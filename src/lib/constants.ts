@@ -1,4 +1,5 @@
 
+
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -574,6 +575,64 @@ export const MOCK_STUDENTS_FOR_TRANSPORT = [
     { uid: 'student-06', firstName: 'Frank', lastName: 'White', classId: 'g7', transportStopId: undefined },
 ];
 
+export const mockAttendanceRecords = [
+  { id: '1', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Present', notes: '' },
+  { id: '2', studentId: 'student-02', studentName: 'Bob Johnson', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Absent', notes: 'Feeling unwell' },
+  { id: '3', studentId: 'student-03', studentName: 'Charlie Brown', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Late', notes: 'Traffic' },
+  { id: '4', studentId: 'student-04', studentName: 'grade-10-b', date: new Date('2024-05-20'), status: 'Present', notes: '' },
+  { id: '5', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Present', notes: '' },
+  { id: '6', studentId: 'student-02', studentName: 'Bob Johnson', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Present', notes: '' },
+  { id: '7', studentId: 'student-03', studentName: 'Charlie Brown', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Excused', notes: "Doctor's appointment" },
+  { id: '8', studentId: 'student-04', studentName: 'Diana Prince', classId: 'grade-10-b', date: new Date('2024-05-21'), status: 'Absent', notes: '' },
+  { id: '9', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-19'), status: 'Late', notes: 'Missed bus' },
+];
+
+export type MathProblem = {
+    id: string;
+    topic: string;
+    difficulty: 'Easy' | 'Medium' | 'Hard';
+    question_text: string;
+    correct_answer: number | string;
+    options: (number | string)[];
+    classId: string;
+};
+
+export const MOCK_MATH_PROBLEMS: MathProblem[] = [
+    { id: 'alg-e-01', topic: 'Algebra', difficulty: 'Easy', question_text: 'If x + 5 = 12, what is x?', correct_answer: 7, options: [5, 6, 7, 8], classId: 'class-1' },
+    { id: 'alg-e-02', topic: 'Algebra', difficulty: 'Easy', question_text: 'Solve for y: 3y = 21', correct_answer: 7, options: [3, 6, 7, 9], classId: 'class-1' },
+    { id: 'geo-m-01', topic: 'Geometry', difficulty: 'Medium', question_text: 'What is the area of a circle with a radius of 5?', correct_answer: '78.54', options: ['31.42', '50.00', '78.54', '100.00'], classId: 'class-2' },
+];
+
+export type GlobalLeaderboardEntry = {
+    userId: string;
+    userName: string;
+    profilePictureUrl?: string;
+    total_correct_answers: number;
+    total_quizzes_completed: number;
+};
+
+export const MOCK_LEADERBOARD: GlobalLeaderboardEntry[] = [
+    { userId: 'student-01', userName: 'Alice', total_correct_answers: 150, total_quizzes_completed: 20, profilePictureUrl: 'https://i.pravatar.cc/150?u=student-01' },
+    { userId: 'student-02', userName: 'Bob', total_correct_answers: 135, total_quizzes_completed: 18, profilePictureUrl: 'https://i.pravatar.cc/150?u=student-02' },
+    { userId: 'student-03', userName: 'Charlie', total_correct_answers: 120, total_quizzes_completed: 22, profilePictureUrl: 'https://i.pravatar.cc/150?u=student-03' },
+];
+
+export type ElaGrammarDrill = {
+    id: string;
+    topic: string;
+    type: 'MCQ' | 'Drag and Drop';
+    question_prompt: string;
+    options?: string[];
+    correct_answer: string | string[];
+    classId: string;
+};
+
+export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
+    { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
+    { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
+];
+
+
 export const MOCK_CROSSWORD_PUZZLES = [
   {
     id: "puzzle1",
@@ -699,12 +758,65 @@ export const NUMERACY_DATA = {
      { q: 'Which is bigger?', val1: 5, val2: 2, answer: 5, prompt: 'A big elephant and a small mouse' },
      { q: 'Which is smaller?', val1: 8, val2: 10, answer: 8, prompt: 'A large ship and a small boat' }
   ],
+  numComparison: [
+    { q: 'Which is greater?', val1: 7, val2: 3, answer: 7 },
+    { q: 'Which is smaller?', val1: 9, val2: 12, answer: 9 },
+  ],
   patterns: [
     { sequence: ['apple-whole', 'carrot', 'apple-whole'], next: 'carrot', options: ['apple-whole', 'carrot'] },
     { sequence: ['square', 'circle', 'square'], next: 'circle', options: ['square', 'circle'] }
   ],
   oneToOne: [
     { count: 3, name: 'Rabbit', itemName: 'Carrot', character: 'fa-rabbit', item: 'fa-carrot' }
+  ],
+  sequence: [
+    { type: 'before', question: 'What comes before 5?', sequence: [null, 5, 6], answer: 4, options: [3, 4, 7] },
+    { type: 'after', question: 'What comes after 8?', sequence: [7, 8, null], answer: 9, options: [7, 9, 10] },
+    { type: 'between', question: 'What comes between 2 and 4?', sequence: [2, null, 4], answer: 3, options: [1, 3, 5] },
+  ],
+  numberWords: [
+    { digit: 1, word: 'One', prompt: 'One red ball' },
+    { digit: 2, word: 'Two', prompt: 'Two blue cars' },
+  ],
+  numberBonds: [
+    { target: 5, part1: 3, part2: 2, theme: 'Apples', prompt: 'A group of 3 red apples and a group of 2 green apples' },
+    { target: 10, part1: 6, part2: 4, theme: 'Stars', prompt: 'A group of 6 yellow stars and 4 blue stars' },
+  ],
+  addition: [
+    { val1: 2, val2: 3, icon: 'fa-star', theme: 'Stars', prompt: 'Two stars plus three stars' },
+    { val1: 4, val2: 1, icon: 'fa-heart', theme: 'Hearts', prompt: 'Four hearts plus one heart' },
+  ],
+  subtraction: [
+    { val1: 5, val2: 2, icon: 'fa-cookie', theme: 'Cookies', prompt: 'Five cookies, with two being eaten' },
+    { val1: 7, val2: 4, icon: 'fa-bolt', theme: 'Lightning bolts', prompt: 'Seven lightning bolts, four fade away' },
+  ],
+  tensUnits: [
+    { number: 23, tens: 2, units: 3, prompt: 'Two groups of ten blocks and three single blocks' },
+    { number: 45, tens: 4, units: 5, prompt: 'Four groups of ten pencils and five single pencils' },
+  ],
+  grouping: [
+    { groupSize: 2, totalItems: 6, theme: 'Pencils', prompt: 'Six pencils arranged in groups of two' },
+    { groupSize: 3, totalItems: 9, theme: 'Balls', prompt: 'Nine balls arranged in groups of three' },
+  ],
+  time: [
+    { hour: 3, minute: 0, phrase: "Three o'clock", prompt: 'An analog clock showing 3:00' },
+    { hour: 9, minute: 0, phrase: "Nine o'clock", prompt: 'An analog clock showing 9:00' },
+  ],
+  money: [
+    { amount: 4, coins: 4, label: 'Four Pesewas', prompt: 'Four Ghana pesewas coins' },
+    { amount: 6, coins: 6, label: 'Six Pesewas', prompt: 'Six Ghana pesewas coins' },
+  ],
+  measurement: {
+    weight: [
+        { q: 'Which is heavier?', correct: 0, items: [{ label: 'Elephant', prompt: 'An elephant' }, { label: 'Feather', prompt: 'A bird feather' }] }
+    ],
+    height: [
+        { q: 'Which is taller?', correct: 0, items: [{ label: 'Giraffe', prompt: 'A tall giraffe' }, { label: 'Mouse', prompt: 'A small mouse' }] }
+    ]
+  },
+  spatial: [
+    { target: 'Ball', position: 'above', refObject: 'Box', prompt: 'A red ball on top of a brown box' },
+    { target: 'Cat', position: 'below', refObject: 'Table', prompt: 'A cat sleeping under a wooden table' },
   ]
 };
 
@@ -750,31 +862,58 @@ export const TENS_UNITS_DATA = [
     { number: 45, tens: 4, units: 5, prompt: 'Four groups of ten pencils and five single pencils' },
 ];
 
-export const GROUPING_DATA = [
-    { groupSize: 2, totalItems: 6, theme: 'Pencils', prompt: 'Six pencils arranged in groups of two' },
-    { groupSize: 3, totalItems: 9, theme: 'Balls', prompt: 'Nine balls arranged in groups of three' },
-];
-
-export const TIME_DATA = [
-    { hour: 3, minute: 0, phrase: "Three o'clock", prompt: 'An analog clock showing 3:00' },
-    { hour: 9, minute: 0, phrase: "Nine o'clock", prompt: 'An analog clock showing 9:00' },
-];
-
-export const MONEY_DATA = [
-    { amount: 4, coins: 4, label: 'Four Pesewas', prompt: 'Four Ghana pesewas coins' },
-    { amount: 6, coins: 6, label: 'Six Pesewas', prompt: 'Six Ghana pesewas coins' },
-];
-
-export const MEASUREMENT_DATA = {
-    weight: [
-        { q: 'Which is heavier?', correct: 0, items: [{ label: 'Elephant', prompt: 'An elephant' }, { label: 'Feather', prompt: 'A bird feather' }] }
+export const LIFE_SKILLS_DATA = {
+  emotions: [
+    { name: 'Happy', color: 'bg-yellow-400', icon: 'fa-face-smile', prompt: 'A happy, smiling sun', technique: 'smile back at the sun!' },
+    { name: 'Sad', color: 'bg-blue-400', icon: 'fa-face-sad-tear', prompt: 'A sad cloud crying rain', technique: 'give a friend a big hug.' },
+    { name: 'Angry', color: 'bg-red-500', icon: 'fa-face-angry', prompt: 'An angry volcano erupting', technique: 'take a deep breath and count to three.' },
+  ],
+  music: [
+    { title: 'Clean Up Song', theme: 'cleaning up', icon: 'fa-broom' },
+    { title: 'Good Morning', theme: 'greetings', icon: 'fa-sun' },
+    { title: 'Goodbye Song', theme: 'saying goodbye', icon: 'fa-hand-wave' },
+  ],
+  practicalLife: {
+    dressing: [
+      { item: 'Jacket', need: 'it is cold', prompt: 'A child putting on a warm jacket' },
+      { item: 'Shoes', need: 'we are going outside', prompt: 'A child tying their shoes' },
     ],
-    height: [
-        { q: 'Which is taller?', correct: 0, items: [{ label: 'Giraffe', prompt: 'A tall giraffe' }, { label: 'Mouse', prompt: 'A small mouse' }] }
+    schedules: [
+      { name: 'Morning Routine', prompt: 'A child brushing their teeth in the morning' },
+      { name: 'Bedtime Routine', prompt: 'A child reading a book in bed' },
+    ],
+    pretendPlay: [
+        { title: 'Doctor', scenario: 'Your teddy bear is sick!', modeling: 'Let\'s check its heartbeat with a toy stethoscope.', prompt: 'A child using a toy stethoscope on a teddy bear' },
+        { title: 'Chef', scenario: 'It\'s time to cook dinner!', modeling: 'Let\'s stir the soup in a big pot.', prompt: 'A child wearing a chef hat stirring a toy pot' }
     ]
+  },
+  communication: {
+    pictureTalk: [{ title: 'What is this?', description: 'This is a red ball.', prompt: 'A red bouncy ball' }],
+    instructions: [{ task: 'Get the blue block', prompt: 'A blue block next to a red block' }],
+    circleTime: [{ q: 'What is your favorite color?', prompt: 'A rainbow with many colors' }]
+  },
+  social: [
+    { scenario: 'Your friend is crying.', q: 'What do you do?', options: ['Give a hug', 'Walk away'], correct: 0, prompt: 'A child crying and another child looking concerned' }
+  ],
+  community: [
+    { role: 'Firefighter', fact: 'Firefighters help put out fires and keep us safe.', icon: 'fa-fire-extinguisher', prompt: 'A friendly firefighter in front of a fire truck' },
+    { role: 'Doctor', fact: 'Doctors help us feel better when we are sick.', icon: 'fa-user-doctor', prompt: 'A kind doctor with a stethoscope' }
+  ],
+  cognitive: {
+    scenarios: [
+        { q: 'It is raining outside. What should you bring?', options: ['Umbrella', 'Sunglasses'], correct: 0, prompt: 'A rainy day with clouds' }
+    ],
+    patterns: [
+        { sequence: ['apple-whole', 'carrot', 'apple-whole'], next: 'carrot', options: ['apple-whole', 'carrot'] },
+    ],
+    whatIf: [
+        { q: "What if you could fly?", a: "You could visit the birds in the trees!", prompt: 'A child flying with birds in the sky' }
+    ]
+  },
+  physicalHealth: {
+      grossMotor: [{ title: 'Jumping Jacks', action: 'Jump and spread your arms and legs!', icon: 'fa-child-reaching', prompt: 'A child doing a jumping jack' }],
+      fineMotor: [{ title: 'Drawing', action: 'Hold the crayon and draw a circle.', icon: 'fa-pen-nib', prompt: 'A childs hand drawing a circle with a crayon' }],
+      hygiene: [{ title: 'Wash Hands', action: 'Use soap and water to make bubbles!', icon: 'fa-soap', prompt: 'Hands being washed with soap and water' }],
+      nutrition: [{ title: 'Eat Vegetables', action: 'Broccoli makes you strong!', icon: 'fa-broccoli', prompt: 'A happy child eating a piece of broccoli' }],
+  }
 };
-
-export const SPATIAL_DATA = [
-    { target: 'Ball', position: 'above', refObject: 'Box', prompt: 'A red ball on top of a brown box' },
-    { target: 'Cat', position: 'below', refObject: 'Table', prompt: 'A cat sleeping under a wooden table' },
-];

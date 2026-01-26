@@ -18,7 +18,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import * as constants from '@/lib/constants';
+import { LIFE_SKILLS_DATA } from '@/lib/constants';
 import { 
   HelpCircle, 
   Smile, 
@@ -169,7 +169,7 @@ const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon
 };
 
 const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-    const [data, setData] = useState(constants.LIFE_SKILLS_DATA.emotions);
+    const [data, setData] = useState(LIFE_SKILLS_DATA.emotions);
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -231,7 +231,7 @@ const EmotionsModule: React.FC<{ onSound: (t: string) => void; onComplete: () =>
     );
 };
 const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [songs, setSongs] = useState(constants.LIFE_SKILLS_DATA.music);
+  const [songs, setSongs] = useState(LIFE_SKILLS_DATA.music);
   const [index, setIndex] = useState(0);
   const [singing, setSinging] = useState(false);
   const current = songs[index];
@@ -267,7 +267,7 @@ const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: str
 };
 
 const ModelingModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-  const [data, setData] = useState(constants.LIFE_SKILLS_DATA.practicalLife.pretendPlay);
+  const [data, setData] = useState(LIFE_SKILLS_DATA.practicalLife.pretendPlay);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -323,7 +323,7 @@ const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [started, setStarted] = useState(false);
-    const data = subTab === 'dressing' ? constants.LIFE_SKILLS_DATA.practicalLife.dressing : constants.LIFE_SKILLS_DATA.practicalLife.schedules;
+    const data = subTab === 'dressing' ? LIFE_SKILLS_DATA.practicalLife.dressing : LIFE_SKILLS_DATA.practicalLife.schedules;
     const current = data[index] || data[0];
   
     const fetchVisual = useCallback(async () => {
@@ -376,7 +376,7 @@ const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [started, setStarted] = useState(false);
-    const data = constants.LIFE_SKILLS_DATA.communication[subTab];
+    const data = LIFE_SKILLS_DATA.communication[subTab];
     const current = data[index] || data[0];
   
     const fetchVisual = useCallback(async () => {
@@ -444,8 +444,8 @@ const SocialScenarios: React.FC<{ onSound: (t: string) => void; onComplete: () =
     const [isAiLoading, setIsAiLoading] = useState(false);
     const [started, setStarted] = useState(false);
 
-    const [socialData, setSocialData] = useState(constants.LIFE_SKILLS_DATA.social);
-    const [communityData, setCommunityData] = useState(constants.LIFE_SKILLS_DATA.community);
+    const [socialData, setSocialData] = useState(LIFE_SKILLS_DATA.social);
+    const [communityData, setCommunityData] = useState(LIFE_SKILLS_DATA.community);
   
     const isCommunity = subTab === 'community';
     const data = isCommunity ? communityData : socialData;
@@ -608,7 +608,7 @@ const CognitiveSkills: React.FC<{ onSound: (t: string) => void; onComplete: () =
     const [index, setIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const [started, setStarted] = useState(false);
-    const data = constants.LIFE_SKILLS_DATA.cognitive[subTab];
+    const data = LIFE_SKILLS_DATA.cognitive[subTab];
     const current = data[index] || data[0];
   
     useEffect(() => { setUserAnswer(null); }, [subTab, index]);
@@ -674,10 +674,10 @@ const PhysicalHealthModule: React.FC<{ onSound: (t: string) => void; onComplete:
     const [isAiLoading, setIsAiLoading] = useState(false);
     const [started, setStarted] = useState(false);
 
-    const [grossMotor, setGrossMotor] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.grossMotor);
-    const [fineMotor, setFineMotor] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.fineMotor);
-    const [hygiene, setHygiene] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.hygiene);
-    const [nutrition, setNutrition] = useState(constants.LIFE_SKILLS_DATA.physicalHealth.nutrition);
+    const [grossMotor, setGrossMotor] = useState(LIFE_SKILLS_DATA.physicalHealth.grossMotor);
+    const [fineMotor, setFineMotor] = useState(LIFE_SKILLS_DATA.physicalHealth.fineMotor);
+    const [hygiene, setHygiene] = useState(LIFE_SKILLS_DATA.physicalHealth.hygiene);
+    const [nutrition, setNutrition] = useState(LIFE_SKILLS_DATA.physicalHealth.nutrition);
   
     const getCurrentData = () => {
       if (subTab === 'grossMotor') return grossMotor;
@@ -876,4 +876,3 @@ const LifeSkillsZone: React.FC = () => {
 
 export default LifeSkillsZone;
 
-    
