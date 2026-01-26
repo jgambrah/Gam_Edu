@@ -15,21 +15,22 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { 
-    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, HelpCircle, 
-    Plus, Minus, ArrowLeftRight, CheckSquare, Hash, ListOrdered, Type, Handshake, Layers, PenTool, Clock,
-    Apple, Star, Heart, Car, Zap, Cookie, Rabbit, Carrot, PenLine, GripVertical, GripHorizontal, 
-    ChevronUp, ChevronDown, Circle, Trash2, ThumbsUp, CheckCheck, Puzzle, Box, Shapes, Move, ObjectGroup, BrainCircuit, Smile, Sparkles
+    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Smile, 
+    Ear, Layers, Image as ImageIcon, Sparkles, HelpCircle, 
+    Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
+    Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
+    Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
+    Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { useToast } from '@/hooks/use-toast';
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, any> = {
+    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
       'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Shapes, 'fa-font': Type, 
       'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
       'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
-      'fa-scale-balanced': Shapes, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
+      'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
       'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
       'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
       'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
@@ -44,9 +45,6 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
 
 // Fake components for missing logic to avoid crash, replace with actual logic if available
 const Play = ({className}:any) => <Volume2 className={className}/>;
-const Coins = ({className}:any) => <Star className={className}/>;
-const Ruler = ({className}:any) => <PenTool className={className}/>;
-
 
 type MathWorldTab = 'grouping' | 'time' | 'money' | 'measurement' | 'shapes' | 'spatial' | 'comparison' | 'patterns' | 'one-to-one';
 
@@ -262,14 +260,11 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
 const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const [data] = useState(constants.NUMERACY_DATA.comparisons || []);
     const [level, setLevel] = useState(0);
-    const [answered, setAnswered] = useState(false);
-    const [userAnswer, setUserAnswer] = useState<number | null>(null);
-
+    const [answered, setAnswered] = useState<number|null>(null);
     const currentLevel = data[level];
     
     useEffect(() => {
-        setAnswered(false);
-        setUserAnswer(null);
+        setAnswered(null);
     }, [level]);
 
     if (!currentLevel) {
@@ -277,16 +272,11 @@ const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string 
     }
 
     const handleChoice = (val: number) => {
-        setUserAnswer(val);
+        setAnswered(val);
         const isCorrect = val === currentLevel.answer;
         if (isCorrect) {
-            setAnswered(true);
             onSound("Perfect!");
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
         } else {
             onSound("Check again");
         }
@@ -296,17 +286,62 @@ const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string 
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center">
           <h3 className="text-4xl font-black text-red-400 mb-12 uppercase text-center">{currentLevel.q}</h3>
           <div className="flex gap-12 items-center">
-            <Button onClick={() => handleChoice(currentLevel.val1)} className={cn("w-32 h-40 rounded-3xl text-6xl font-black", userAnswer === currentLevel.val1 ? (currentLevel.val1 === currentLevel.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600 hover:bg-orange-100')}>
+            <Button onClick={() => handleChoice(currentLevel.val1)} className={cn("w-32 h-40 rounded-3xl text-6xl font-black", answered === currentLevel.val1 ? (currentLevel.val1 === currentLevel.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600 hover:bg-orange-100')}>
                 {currentLevel.val1}
             </Button>
             <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
-            <Button onClick={() => handleChoice(currentLevel.val2)} className={cn("w-32 h-40 rounded-3xl text-6xl font-black", userAnswer === currentLevel.val2 ? (currentLevel.val2 === currentLevel.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600 hover:bg-orange-100')}>
+            <Button onClick={() => handleChoice(currentLevel.val2)} className={cn("w-32 h-40 rounded-3xl text-6xl font-black", answered === currentLevel.val2 ? (currentLevel.val2 === currentLevel.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600 hover:bg-orange-100')}>
                 {currentLevel.val2}
             </Button>
           </div>
-          {answered && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
+          {answered === currentLevel.answer && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
         </div>
     );
+};
+
+const PatternGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
+    const [data] = useState(constants.NUMERACY_DATA.patterns || []);
+    const [level, setLevel] = useState(0);
+    const [answered, setAnswered] = useState(false);
+    const currentPattern = data[level];
+    useEffect(() => { setAnswered(false); }, [level]);
+    if (!currentPattern) return null;
+    return (
+        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center">
+          <h3 className="text-3xl font-black text-blue-500 mb-12 uppercase">What comes next?</h3>
+          <div className="flex gap-4 mb-16 bg-blue-50 p-8 rounded-[3rem] border-4 border-dashed border-blue-200">
+            {currentPattern.sequence.map((item: string, idx: number) => (<div key={idx} className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-md"><IconRenderer iconName={`fa-${item}`} className="text-4xl text-blue-500" /></div>))}
+          </div>
+          <div className="flex gap-8">
+            {currentPattern.options.map((opt: string, idx: number) => (<Button key={idx} onClick={() => { if(opt === currentPattern.next) setAnswered(true); onSound(opt === currentPattern.next ? "Success" : "Try again"); }} className={cn("w-32 h-32 bg-white rounded-[2rem] border-8 shadow-xl", answered && opt === currentPattern.next ? 'border-green-400 scale-110' : 'border-slate-100')}><IconRenderer iconName={`fa-${opt}`} className="text-6xl text-blue-500" /></Button>))}
+          </div>
+          {answered && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-10 bg-green-500 text-white rounded-xl px-10 h-14">CONTINUE</Button>}
+        </div>
+    );
+};
+
+const OneToOneGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
+  const [data] = useState(constants.NUMERACY_DATA.oneToOne || []);
+  const [level, setLevel] = useState(0);
+  const [givenCount, setGivenCount] = useState(0);
+  const current = data[level];
+  useEffect(() => { setGivenCount(0); }, [level]);
+  if (!current) return null;
+  return (
+    <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-cyan-100 flex flex-col items-center min-h-[550px]">
+      <h3 className="text-3xl font-black text-cyan-600 mb-8 uppercase">One for You, One for Me!</h3>
+      <p className="text-slate-500 mb-10 italic">Give each {current.name} one {current.itemName}!</p>
+      <div className="flex flex-col gap-16 items-center">
+        <div className="flex gap-8 flex-wrap">
+          {Array.from({ length: current.count }).map((_, i) => (<div key={i} className="relative"><IconRenderer iconName={`fa-${current.character}`} className={cn("h-16 w-16", i < givenCount ? 'text-cyan-500 scale-110' : 'text-cyan-200')} />{i < givenCount && (<div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-bounce"><IconRenderer iconName={`fa-${current.item}`} className="text-orange-500 h-10 w-10" /></div>)}</div>))}
+        </div>
+        <div className="flex gap-6">
+          {Array.from({ length: current.count }).map((_, i) => (<Button key={i} onClick={() => { setGivenCount(prev => prev + 1); onSound("Here you go"); }} disabled={i < givenCount} className={cn("w-20 h-20 bg-cyan-50 rounded-2xl border-4", i < givenCount ? 'opacity-0 scale-0' : 'border-white shadow-md')}><IconRenderer iconName={`fa-${current.item}`} className="h-10 w-10 text-cyan-600" /></Button>))}
+        </div>
+      </div>
+      {givenCount === current.count && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-12 bg-green-500 text-white rounded-xl px-10 h-14">NEXT PUZZLE</Button>}
+    </div>
+  );
 };
 
 
@@ -346,38 +381,22 @@ const MathWorld: React.FC = () => {
       { id: 'comparison', icon: 'fa-scale-balanced' }, { id: 'patterns', icon: 'fa-square-check' }, { id: 'one-to-one', icon: 'fa-arrows-left-right' },
     ];
     
-    const renderModule = () => {
-        if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin h-10 w-10 mx-auto text-sky-400"/></div>;
-        const commonProps = { onSound: playFeedbackSound, schoolId };
+    const renderModuleContent = () => {
+        if(!schoolId) return null;
+        const commonProps = { onSound: playFeedbackSound, schoolId: schoolId! };
         
-        const isStarted = startedModules[activeTab];
-
-        const renderModuleContent = () => {
-            switch(activeTab) {
-                case 'grouping': return <GroupingModule {...commonProps} />;
-                case 'time': return <TellingTimeModule onSound={playFeedbackSound} />;
-                case 'money': return <MoneyCountingModule {...commonProps} />;
-                case 'measurement': return <MeasurementModule {...commonProps} />;
-                case 'shapes': return <ShapesModule {...commonProps} />;
-                case 'spatial': return <SpatialModule {...commonProps} />;
-                case 'comparison': return <ComparisonGame {...commonProps} />;
-                case 'patterns': return <PatternGame onSound={playFeedbackSound} />;
-                case 'one-to-one': return <OneToOneGame onSound={playFeedbackSound} />;
-                default: return <p>Coming Soon</p>;
-            }
-        };
-
-        return (
-            <ModuleContainerWithState 
-                title={activeTab.replace('-', ' ')} 
-                icon={tabs.find(t => t.id === activeTab)?.icon || 'fa-1'}
-                started={isStarted}
-                onStart={() => handleStartModule(activeTab)}
-                onClose={() => handleCloseModule(activeTab)}
-            >
-                {isStarted ? renderModuleContent() : null}
-            </ModuleContainerWithState>
-        );
+        switch (activeTab) {
+            case 'grouping': return <GroupingModule {...commonProps} />;
+            case 'time': return <TellingTimeModule onSound={playFeedbackSound} />;
+            case 'money': return <MoneyCountingModule {...commonProps} />;
+            case 'measurement': return <MeasurementModule {...commonProps} />;
+            case 'shapes': return <ShapesModule {...commonProps} />;
+            case 'spatial': return <SpatialModule {...commonProps} />;
+            case 'comparison': return <ComparisonGame {...commonProps} />;
+            case 'patterns': return <PatternGame onSound={playFeedbackSound} />;
+            case 'one-to-one': return <OneToOneGame onSound={playFeedbackSound} />;
+            default: return <p>Activity Coming Soon</p>;
+        }
     };
   
     return (
@@ -392,12 +411,23 @@ const MathWorld: React.FC = () => {
             ))}
           </div>
         </div>
-        <div className="w-full px-4">{renderModule()}</div>
+        <div className="w-full px-4">
+            {schoolId ? (
+                <ModuleContainerWithState 
+                    title={activeTab.replace('-', ' ')} 
+                    icon={tabs.find(t => t.id === activeTab)?.icon || 'fa-1'}
+                    started={startedModules[activeTab]}
+                    onStart={() => handleStartModule(activeTab)}
+                    onClose={() => handleCloseModule(activeTab)}
+                >
+                    {startedModules[activeTab] && renderModuleContent()}
+                </ModuleContainerWithState>
+            ) : (
+                <div className="text-center p-20"><Loader2 className="animate-spin h-10 w-10 mx-auto text-sky-400"/></div>
+            )}
+        </div>
       </div>
     );
 };
   
 export default MathWorld;
-
-
-    
