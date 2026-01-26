@@ -14,17 +14,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import * as LucideIcons from 'lucide-react';
-import confetti from 'canvas-confetti';
-
-const {
+import { 
     Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, 
-    Ear, Layers, Image: ImageIcon, Sparkles, HelpCircle, 
+    Ear, Layers, Image as ImageIcon, Sparkles, HelpCircle, 
     Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
     Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
     Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
-    Type, FontAwesome, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
-} = LucideIcons;
+    Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { useToast } from '@/hooks/use-toast';
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
@@ -35,11 +34,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
       'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
       'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
-      'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
-      'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
-      'fa-check-double': CheckCheck,
-      'fa-puzzle-piece': Puzzle,
-      'fa-cube': Box,
+      'fa-carrot': Carrot
     };
     const IconComponent = iconMap[iconName] || HelpCircle;
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -54,18 +49,19 @@ const ModuleContainerWithState: React.FC<{
   icon: string;
   started: boolean;
   onStart: () => void;
-}> = ({ title, children, icon, started, onStart }) => {
+  onClose: () => void;
+}> = ({ title, children, icon, started, onStart, onClose }) => {
     if (!started) return (
         <div className="text-center p-12 bg-white rounded-[3rem] shadow-xl border-8 border-sky-50 animate-in fade-in zoom-in">
             <IconRenderer iconName={icon} className="h-20 w-20 mx-auto text-sky-300 mb-6" />
             <h3 className="text-4xl font-black text-sky-600 mb-4 uppercase tracking-tighter">{title}</h3>
             <p className="text-slate-500 mb-8 font-bold">Ready to explore and solve puzzles?</p>
-            <Button onClick={onStart} size="lg" className="bg-sky-500 hover:bg-sky-600 text-white font-black px-12 py-8 rounded-2xl text-2xl shadow-2xl hover:scale-105 transition-all">LET'S GO!</Button>
+            <Button onClick={onStart} size="lg" className="bg-sky-500 hover:bg-sky-600 text-white font-black px-12 py-8 rounded-2xl text-2xl shadow-2xl hover:scale-105 transition-all">START ACTIVITY</Button>
         </div>
     );
     return (
         <div className="relative">
-            <Button variant="ghost" onClick={onStart} className="absolute -top-16 left-0 text-slate-400 hover:text-sky-500 font-black uppercase text-xs tracking-widest"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
+            <Button variant="ghost" onClick={onClose} className="absolute -top-16 left-0 text-slate-400 hover:text-sky-500 font-black uppercase text-xs tracking-widest"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
             {children}
         </div>
     );
@@ -121,8 +117,8 @@ const TellingTimeModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
     const [index, setIndex] = useState(0);
     const [answered, setAnswered] = useState(false);
     const current = data[index];
-    const options = useMemo(() => current ? [current.hour, (current.hour + 3) % 12 || 12, (current.hour + 6) % 12 || 12].sort(() => Math.random() - 0.5) : [], [current]);
     useEffect(() => { setAnswered(false); }, [index]);
+    const options = useMemo(() => current ? [current.hour, (current.hour + 3) % 12 || 12, (current.hour + 6) % 12 || 12].sort(() => Math.random() - 0.5) : [], [current]);
     if (!current) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[600px]">
@@ -272,7 +268,7 @@ const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string 
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center">
           <h3 className="text-4xl font-black text-red-400 mb-12 uppercase text-center">{currentLevel.q}</h3>
           <div className="flex gap-12 items-end">
-            {currentLevel.items.map((item: any, idx: number) => (<Button key={idx} variant="ghost" onClick={() => { if(idx === currentLevel.correct) setAnswered(true); onSound(idx === currentLevel.correct ? "Yes" : "No"); }} className={cn("flex flex-col h-auto p-4 rounded-3xl border-4", answered && idx === currentLevel.correct ? 'border-green-400 scale-110' : 'border-transparent')}><div className={cn("bg-orange-50 rounded-[3rem] border-8 overflow-hidden", item.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28', answered && idx === currentLevel.correct ? 'border-green-400' : 'border-white')}>{imageUrls[idx] && <img src={imageUrls[idx]!} className="w-full h-full object-cover" />}</div><span className="mt-4 text-slate-700 font-black">{item.label}</span></Button>))}
+            {currentLevel.items.map((item: any, idx: number) => (<Button key={idx} variant="ghost" onClick={() => { if(idx === currentLevel.correct) setAnswered(true); onSound(idx === currentLevel.correct ? "Yes" : "No"); }} className={cn("flex flex-col h-auto p-4 rounded-3xl border-4", answered && idx === currentLevel.correct ? 'border-green-400 scale-110' : 'border-transparent')}><div className={cn("bg-orange-50 rounded-[3rem] border-8 overflow-hidden", item.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28', answered && idx === currentLevel.correct ? 'border-green-400' : 'border-white')}>{imageUrls[idx] && <img src={imageUrls[idx]!} className="w-full h-full object-cover" />}</div><span className="mt-4 text-xl font-black">{item.label}</span></Button>))}
           </div>
           {answered && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
         </div>
@@ -327,7 +323,11 @@ const OneToOneGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =
 // --- MAIN WRAPPER ---
 const MathWorld: React.FC = () => {
     const [activeTab, setActiveTab] = useState<MathWorldTab>('grouping');
-    const [startedModules, setStartedModules] = useState<Set<MathWorldTab>>(new Set(['grouping']));
+    const [startedModules, setStartedModules] = useState<Record<MathWorldTab, boolean>>({
+        grouping: false, time: false, money: false, measurement: false, shapes: false, 
+        spatial: false, comparison: false, patterns: false, 'one-to-one': false
+    });
+    
     const { schoolId } = useCurrentSchool();
     const currentSourceRef = useRef<HTMLAudioElement | null>(null);
 
@@ -341,6 +341,14 @@ const MathWorld: React.FC = () => {
           audio.play();
       }
     }, [schoolId]);
+
+    const handleStartModule = (moduleId: MathWorldTab) => {
+        setStartedModules(prev => ({ ...prev, [moduleId]: true }));
+    };
+
+    const handleCloseModule = (moduleId: MathWorldTab) => {
+        setStartedModules(prev => ({ ...prev, [moduleId]: false }));
+    };
   
     const tabs: {id: MathWorldTab, icon: string}[] = [
       { id: 'grouping', icon: 'fa-object-group' }, { id: 'time', icon: 'fa-clock' }, { id: 'money', icon: 'fa-coins' },
@@ -351,22 +359,20 @@ const MathWorld: React.FC = () => {
     const renderModule = () => {
       if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin h-10 w-10 mx-auto text-sky-400"/></div>;
       const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
+      const isStarted = startedModules[activeTab];
+      const onStart = () => handleStartModule(activeTab);
+      const onClose = () => handleCloseModule(activeTab);
       
-      const isStarted = startedModules.has(activeTab);
-      const handleStart = () => {
-        setStartedModules(prev => new Set([...prev, activeTab]));
-      };
-
       const modules: Record<MathWorldTab, React.ReactNode> = {
-          'grouping': <ModuleContainerWithState title="Grouping" icon="fa-object-group" started={isStarted} onStart={handleStart}><GroupingModule {...commonProps} /></ModuleContainerWithState>,
-          'time': <ModuleContainerWithState title="Telling Time" icon="fa-clock" started={isStarted} onStart={handleStart}><TellingTimeModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
-          'money': <ModuleContainerWithState title="Counting Money" icon="fa-coins" started={isStarted} onStart={handleStart}><MoneyCountingModule {...commonProps} /></ModuleContainerWithState>,
-          'measurement': <ModuleContainerWithState title="Measurement" icon="fa-ruler-vertical" started={isStarted} onStart={handleStart}><MeasurementModule {...commonProps} /></ModuleContainerWithState>,
-          'shapes': <ModuleContainerWithState title="Shapes" icon="fa-shapes" started={isStarted} onStart={handleStart}><ShapesModule {...commonProps} /></ModuleContainerWithState>,
-          'spatial': <ModuleContainerWithState title="Spatial Reasoning" icon="fa-arrows-up-down-left-right" started={isStarted} onStart={handleStart}><SpatialModule {...commonProps} /></ModuleContainerWithState>,
-          'comparison': <ModuleContainerWithState title="Comparison Game" icon="fa-scale-balanced" started={isStarted} onStart={handleStart}><ComparisonGame {...commonProps} /></ModuleContainerWithState>,
-          'patterns': <ModuleContainerWithState title="Patterns" icon="fa-square-check" started={isStarted} onStart={handleStart}><PatternGame onSound={playFeedbackSound} /></ModuleContainerWithState>,
-          'one-to-one': <ModuleContainerWithState title="One-to-One Matching" icon="fa-arrows-left-right" started={isStarted} onStart={handleStart}><OneToOneGame onSound={playFeedbackSound} /></ModuleContainerWithState>,
+          'grouping': <ModuleContainerWithState title="Grouping" icon="fa-object-group" started={isStarted} onStart={onStart} onClose={onClose}><GroupingModule {...commonProps} /></ModuleContainerWithState>,
+          'time': <ModuleContainerWithState title="Telling Time" icon="fa-clock" started={isStarted} onStart={onStart} onClose={onClose}><TellingTimeModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
+          'money': <ModuleContainerWithState title="Counting Money" icon="fa-coins" started={isStarted} onStart={onStart} onClose={onClose}><MoneyCountingModule {...commonProps} /></ModuleContainerWithState>,
+          'measurement': <ModuleContainerWithState title="Measurement" icon="fa-ruler-vertical" started={isStarted} onStart={onStart} onClose={onClose}><MeasurementModule {...commonProps} /></ModuleContainerWithState>,
+          'shapes': <ModuleContainerWithState title="Shapes" icon="fa-shapes" started={isStarted} onStart={onStart} onClose={onClose}><ShapesModule {...commonProps} /></ModuleContainerWithState>,
+          'spatial': <ModuleContainerWithState title="Spatial Reasoning" icon="fa-arrows-up-down-left-right" started={isStarted} onStart={onStart} onClose={onClose}><SpatialModule {...commonProps} /></ModuleContainerWithState>,
+          'comparison': <ModuleContainerWithState title="Comparison Game" icon="fa-scale-balanced" started={isStarted} onStart={onStart} onClose={onClose}><ComparisonGame {...commonProps} /></ModuleContainerWithState>,
+          'patterns': <ModuleContainerWithState title="Patterns" icon="fa-square-check" started={isStarted} onStart={onStart} onClose={onClose}><PatternGame onSound={playFeedbackSound} /></ModuleContainerWithState>,
+          'one-to-one': <ModuleContainerWithState title="One-to-One Matching" icon="fa-arrows-left-right" started={isStarted} onStart={onStart} onClose={onClose}><OneToOneGame onSound={playFeedbackSound} /></ModuleContainerWithState>,
       };
       return modules[activeTab] || <p>Coming Soon</p>;
     };
@@ -389,5 +395,3 @@ const MathWorld: React.FC = () => {
 };
   
 export default MathWorld;
-
-    
