@@ -93,7 +93,7 @@ const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: st
                     <Label className="text-xs font-black text-slate-400 uppercase tracking-widest">{topicLabel}</Label>
                     <Input type="text" value={topicValue} onChange={(e) => onTopicChange(e.target.value)} placeholder="Type here..." className="mt-2 h-14 rounded-2xl border-4 border-slate-50 font-black" />
                 </div>
-                <Button onClick={onGenerate} disabled={isLoading || !topicValue} className="w-full h-16 rounded-2xl bg-purple-500 hover:bg-purple-600 font-black text-xl shadow-xl">
+                <Button onClick={onGenerate} disabled={isLoading || !topicValue} className="w-full h-16 rounded-2xl bg-purple-500 hover:bg-purple-600 font-black text-xl shadow-xl text-white">
                     {isLoading ? <><Loader2 className="animate-spin mr-2"/> GENERATING...</> : <><Sparkles className="mr-2 h-6 w-6"/> CREATE MAGIC</>}
                 </Button>
             </div>
@@ -121,7 +121,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   
     const generateWithAi = async () => {
       if (!aiTopic || !schoolId) return; setIsAiLoading(true);
-      const result = await generateMathWorldEntry({ topic: aiTopic, category: 'numbers', schoolId });
+      const result = await generateMathWorldEntry(aiTopic, 'numbers', schoolId);
       if(result.success && result.data) { setData(prev => prev.map((item, i) => i === index ? { ...item, ...result.data } : item)); setIsDrawerOpen(false); setAiTopic(''); }
       setIsAiLoading(false);
     };
@@ -173,7 +173,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
                     <p className="text-2xl font-black text-slate-500 mb-8 uppercase text-center">Count the {current.theme}!</p>
                     <div className="grid grid-cols-3 gap-4">
                         {options.map(opt => (
-                            <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.count ? "Great job!" : "Try again!"); if(opt === current.count) confetti(); }} className={cn("w-20 h-20 rounded-3xl font-black text-4xl shadow-xl", userAnswer === opt ? (opt === current.count ? 'bg-green-500' : 'bg-red-500') : 'bg-emerald-50 text-emerald-600')}>{opt}</Button>
+                            <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.count ? "Great job!" : "Try again!"); }} className={cn("w-20 h-20 rounded-3xl font-black text-4xl shadow-xl", userAnswer === opt ? (opt === current.count ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-emerald-50 text-emerald-600')}>{opt}</Button>
                         ))}
                     </div>
                 </div>
@@ -189,7 +189,7 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSo
     const [index, setIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
-    useEffect(() => { setUserAnswer(null); }, [index, data]);
+    useEffect(() => { setUserAnswer(null); }, [index]);
     if (!current) return null;
     return (
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[550px]">
@@ -203,7 +203,7 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSo
         </div>
         <div className="flex gap-4">
            {current.options.map((opt: number) => (
-             <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.answer ? "Yes!" : "No"); if (opt === current.answer) confetti(); }} className={cn("w-20 h-20 rounded-2xl text-3xl", userAnswer === opt ? (opt === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-purple-50 text-slate-700')}>{opt}</Button>
+             <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.answer ? "Yes!" : "No"); if (opt === current.answer) confetti(); }} className={cn("w-20 h-20 rounded-2xl text-3xl", userAnswer === opt ? (opt === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-purple-50 text-slate-700')}>{opt}</Button>
            ))}
         </div>
         {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT SEQUENCE</Button>}
@@ -211,7 +211,7 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSo
     );
 };
 
-/* --- 4. NUMBER COMPARISON --- */
+/* --- 4. NUMBER COMPARISON (Greater/Less) --- */
 const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
   const [data] = useState(NUM_COMPARISON_DATA || []);
   const [index, setIndex] = useState(0);
@@ -429,7 +429,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
   return (
     <div className="flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100">
         <div className="flex gap-2 mb-8 overflow-x-auto w-full no-scrollbar font-black">
-            {Array.from({length: 11}).map((_, i) => (<Button key={i} variant={selectedItem === String(i) ? "default" : "outline"} onClick={() => setSelectedItem(String(i))} className="flex-shrink-0 w-12 h-12 rounded-xl font-black">{i}</Button>))}
+            {Array.from({length: 10}).map((_, i) => (<Button key={i} variant={selectedItem === String(i + 1) ? "default" : "outline"} onClick={() => setSelectedItem(String(i + 1))} className="flex-shrink-0 w-12 h-12 rounded-xl font-black">{i + 1}</Button>))}
         </div>
         <div className="relative w-full max-w-[400px] aspect-square bg-white border-8 border-purple-50 rounded-[3rem] shadow-inner mb-8">
             <canvas ref={canvasRef} width={400} height={400} className="w-full h-full cursor-crosshair" onMouseMove={(e) => {
@@ -504,23 +504,34 @@ const NumeracyZone: React.FC = () => {
       { id: 'tracing', icon: 'fa-pen-clip' }
     ];
     
-    const renderModuleContent = () => {
-        if(!schoolId) return null;
-        const commonProps = { onSound: playFeedbackSound, schoolId };
-        
-        switch (activeTab) {
-            case 'numbers': return <NumbersMainModule {...commonProps} />;
-            case 'counting': return <CountingGame {...commonProps} />;
-            case 'sequence': return <NumberSequenceModule onSound={playFeedbackSound} />;
-            case 'comparing': return <NumberComparisonModule onSound={playFeedbackSound} />;
-            case 'number-words': return <NumberWordsModule {...commonProps} />;
-            case 'bonds': return <NumberBondsModule onSound={playFeedbackSound} />;
-            case 'addition': return <AdditionModule {...commonProps} />;
-            case 'subtraction': return <SubtractionModule {...commonProps} />;
-            case 'tens-units': return <TensUnitsModule {...commonProps} />;
-            case 'tracing': return <NumberMagicPen {...commonProps} />;
-            default: return null;
-        }
+    const renderModule = () => {
+      if(!schoolId) return null;
+      const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
+      
+      const modules: Record<NumeracyTab, React.ReactNode> = {
+          'numbers': <NumbersMainModule {...commonProps} />,
+          'counting': <CountingGame {...commonProps} />,
+          'sequence': <NumberSequenceModule onSound={playFeedbackSound} />,
+          'comparing': <NumberComparisonModule onSound={playFeedbackSound} />,
+          'number-words': <NumberWordsModule {...commonProps} />,
+          'bonds': <NumberBondsModule onSound={playFeedbackSound} />,
+          'addition': <AdditionModule {...commonProps} />,
+          'subtraction': <SubtractionModule {...commonProps} />,
+          'tens-units': <TensUnitsModule {...commonProps} />,
+          'tracing': <NumberMagicPen {...commonProps} />,
+      };
+      
+      return (
+        <ModuleContainerWithState 
+            title={activeTab.replace('-', ' ')} 
+            icon={tabs.find(t => t.id === activeTab)?.icon || 'fa-1'}
+            started={startedModules[activeTab]}
+            onStart={() => handleStartModule(activeTab)}
+            onClose={() => handleCloseModule(activeTab)}
+        >
+            {startedModules[activeTab] ? modules[activeTab] : null}
+        </ModuleContainerWithState>
+      );
     };
   
     return (
@@ -538,23 +549,11 @@ const NumeracyZone: React.FC = () => {
         </div>
 
         {/* Content Area */}
-        <div className="w-full px-4 font-black">
-            {schoolId ? (
-                <ModuleContainer
-                    title={activeTab.replace('-', ' ')} 
-                    icon={tabs.find(t => t.id === activeTab)?.icon || 'fa-1'}
-                    started={startedModules[activeTab]}
-                    onStart={() => handleStartModule(activeTab)}
-                    onClose={() => handleCloseModule(activeTab)}
-                >
-                    {startedModules[activeTab] ? renderModuleContent() : null}
-                </ModuleContainer>
-            ) : (
-                <div className="text-center p-20"><Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>
-            )}
-        </div>
+        <div className="w-full px-4">{renderModule()}</div>
       </div>
     );
 };
   
 export default NumeracyZone;
+
+    
