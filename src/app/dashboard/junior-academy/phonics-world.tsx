@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -13,99 +12,77 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import { 
-    Languages, Ear, Pen, Calculator, Handshake, FlaskConical, Palette, Bot, Smile, Sparkles, HeartPulse, User, Sun, Utensils, School, Home,
-    Recycle, Water, Droplets, Trash2, Flag, MousePointer2, Box, Rabbit, Carrot, Apple, Cookie, Star, Tv, Bed, Eye, CloudRain, Guitar, Plane, Car,
-    Zap, CircleDot, Monitor, GraduationCap, MessageSquare, Users, Drama, BrainCircuit, Music, Wand2, ArrowLeft, ArrowRight, Loader2, Volume2, Atom,
-    Play, Heart, Image as ImageIcon, Hand, Gamepad2, Layers, Repeat, Mic, Underline, Signpost, BookOpen, HelpCircle, PenLine, GripVertical, GripHorizontal,
-    ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, CheckCircle2, XCircle, PlusCircle
+  HelpCircle, 
+  Smile, 
+  Type, 
+  Image as ImageIcon, 
+  Hand, 
+  Ear, 
+  Gamepad2, 
+  Layers, 
+  Repeat, 
+  Mic, 
+  Underline, 
+  Signpost, 
+  BookOpen,
+  Loader2,
+  Wand2,
+  ArrowLeft,
+  ArrowRight,
+  Volume2,
+  Play,
+  Sparkles,
+  CheckCircle2,
+  XCircle,
+  PlusCircle
 } from 'lucide-react';
 import { useRole } from '@/context/role-context';
-import * as LucideIcons from 'lucide-react';
+import { getAuth } from 'firebase/auth';
+import { useFirestore } from '@/firebase';
 
 
-// --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, keyof typeof LucideIcons> = {
-      'fa-spell-check': 'Languages',
-      'fa-ear-listen': 'Ear',
-      'fa-pen-nib': 'Pen',
-      'fa-arrow-1-9': 'Calculator',
-      'fa-hand-holding-heart': 'Handshake',
-      'fa-flask-vial': 'FlaskConical',
-      'fa-palette': 'Palette',
-      'fa-robot': 'Bot',
-      'fa-face-smile': 'Smile',
-      'fa-tooth': 'Sparkles',
-      'fa-heart-pulse': 'HeartPulse',
-      'fa-vest': 'User',
-      'fa-sun': 'Sun',
-      'fa-utensils': 'Utensils',
-      'fa-school': 'School',
-      'fa-house': 'Home',
-      'fa-recycle': 'Recycle',
-      'fa-water': 'Droplets',
-      'fa-broom': 'Trash2',
-      'fa-flag': 'Flag',
-      'fa-hand-pointer': 'MousePointer2',
-      'fa-cube': 'Box',
-      'fa-chalkboard-user': 'User',
-      'fa-rabbit': 'Rabbit',
-      'fa-carrot': 'Carrot',
-      'fa-apple-whole': 'Apple',
-      'fa-cookie': 'Cookie',
-      'fa-star': 'Star',
-      'fa-tv': 'Tv',
-      'fa-bed': 'Bed',
-      'fa-eye': 'Eye',
-      'fa-cloud-showers-heavy': 'CloudRain',
-      'fa-guitar': 'Guitar',
-      'fa-plane': 'Plane',
-      'fa-car': 'Car',
-      'fa-frog': 'Rabbit', 
-      'fa-bolt': 'Zap',
-      'fa-circle-dot': 'CircleDot',
-      'fa-soap': 'Sparkles', 
-      'fa-broccoli': 'Carrot', 
-      'fa-display': 'Monitor',
-      'fa-graduation-cap': 'GraduationCap',
-      'fa-comments': 'MessageSquare',
-      'fa-people-group': 'Users',
-      'fa-masks-theater': 'Drama',
-      'fa-brain': 'BrainCircuit',
-      'fa-child-reaching': 'User',
-      'fa-music': 'Music',
-      'fa-magic': 'Wand2',
-      'fa-arrow-left': 'ArrowLeft',
-      'fa-arrow-right': 'ArrowRight',
-      'fa-spinner': 'Loader2',
-      'fa-volume-high': 'Volume2',
-      'fa-dna': 'Atom',
-      'fa-play': 'Play',
-      'fa-heart': 'Heart',
-      'fa-images': 'ImageIcon',
-      'fa-hands-clapping': 'Hand',
-      'fa-gamepad': 'Gamepad2',
-      'fa-layer-group': 'Layers',
-      'fa-repeat': 'Repeat',
-      'fa-microphone-lines': 'Mic',
-      'fa-underline': 'Underline',
-      'fa-road-sign': 'Signpost',
-      'fa-book-open': 'BookOpen',
-      'fa-face-smile-wink': 'Smile',
-      'fa-font': 'Type'
-    };
-  
-    const LucideName = iconMap[iconName];
-    const IconComponent = (LucideIcons as any)[LucideName];
-  
-    if (!IconComponent || typeof IconComponent !== 'function') {
-      console.error('❌ Missing or invalid icon:', LucideName, 'for FA icon:', iconName);
-      const FallbackIcon = (LucideIcons as any)['HelpCircle'];
-      return <FallbackIcon className={className} />;
+  // 1. Manually map FontAwesome keys to the static components we imported above
+  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    'fa-face-smile-wink': Smile,
+    'fa-font': Type,
+    'fa-images': ImageIcon,
+    'fa-hands-clapping': Hand,
+    'fa-ear-listen': Ear,
+    'fa-gamepad': Gamepad2,
+    'fa-layer-group': Layers,
+    'fa-repeat': Repeat,
+    'fa-microphone-lines': Mic,
+    'fa-underline': Underline,
+    'fa-road-sign': Signpost,
+    'fa-book-open': BookOpen,
+    'fa-magic': Wand2,
+    'fa-spinner': Loader2,
+    'fa-arrow-left': ArrowLeft,
+    'fa-arrow-right': ArrowRight,
+    'fa-volume-high': Volume2,
+    'fa-play': Play,
+    'fa-sparkles': Sparkles,
+  };
+
+  // 2. Get the component from the map
+  const IconComponent = iconMap[iconName];
+
+  // 3. Logic for missing or valid icons
+  if (!IconComponent) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`⚠️ Icon mapping missing for: ${iconName}`);
     }
-  
-    return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
+    return <HelpCircle className={className} />;
+  }
+
+  return (
+    <IconComponent 
+      className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} 
+    />
+  );
 };
+
 
 type PhonicsTab = 'jolly-phonics' | 'alphabet' | 'picture-reading' | 'syllables' | 'alliteration' | 'sound-games' | 'blends' | 'rhymes' | 'diction' | 'environmental-print' | 'book-handling' | 'missing-letters';
 
@@ -143,30 +120,48 @@ const TeacherModal: React.FC<{
   </Dialog>
 );
 
-const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string; }> = ({ title, children, icon }) => {
-    const [started, setStarted] = useState(false);
-    if (!started) {
-        return (
-            <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-pink-300 mb-4" />
-                <h3 className="text-2xl font-bold text-pink-600 mb-2">{title}</h3>
-                <p className="text-slate-500 mb-4">Ready to start this activity?</p>
-                <Button onClick={() => setStarted(true)} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
-            </div>
-        );
-    }
-    return <>{children}</>;
+const ModuleContainerWithState: React.FC<{ 
+  title: string; 
+  children: React.ReactNode; 
+  icon: string;
+  started: boolean;
+  onStart: () => void;
+  onClose: () => void;
+}> = ({ title, children, icon, started, onStart, onClose }) => {
+    if (!started) return (
+        <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+            <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-pink-300 mb-4" />
+            <h3 className="text-2xl font-bold text-pink-600 mb-2">{title}</h3>
+            <p className="text-slate-500 mb-4">Ready to start this activity?</p>
+            <Button onClick={onStart} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
+        </div>
+    );
+    return (
+        <div className="relative">
+            <Button variant="ghost" onClick={onClose} className="absolute -top-12 left-0 text-slate-400 hover:text-pink-500 font-bold text-xs"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
+            {children}
+        </div>
+    );
 };
 
 const PhonicsZone: React.FC = () => {
   const [activeTab, setActiveTab] = useState<PhonicsTab>('jolly-phonics');
+  const { schoolId } = useCurrentSchool();
+  const currentSourceRef = useRef<HTMLAudioElement | null>(null);
+
   const [startedModules, setStartedModules] = useState<Record<PhonicsTab, boolean>>({
     'jolly-phonics': false, 'alphabet': false, 'picture-reading': false, 'syllables': false,
     'alliteration': false, 'sound-games': false, 'blends': false, 'rhymes': false, 'diction': false,
     'environmental-print': false, 'book-handling': false, 'missing-letters': false
   });
-  const { schoolId } = useCurrentSchool();
-  const currentSourceRef = useRef<HTMLAudioElement | null>(null);
+  
+  const handleStartModule = (moduleId: PhonicsTab) => {
+    setStartedModules(prev => ({ ...prev, [moduleId]: true }));
+  };
+
+  const handleCloseModule = (moduleId: PhonicsTab) => {
+    setStartedModules(prev => ({ ...prev, [moduleId]: false }));
+  };
 
   const playFeedbackSound = useCallback(async (text: string) => {
     if (!text || !schoolId) return;
@@ -185,14 +180,6 @@ const PhonicsZone: React.FC = () => {
         console.error("Audio playback error:", err);
     }
   }, [schoolId]);
-
-  const handleStartModule = (moduleId: PhonicsTab) => {
-    setStartedModules(prev => ({ ...prev, [moduleId]: true }));
-  };
-
-  const handleCloseModule = (moduleId: PhonicsTab) => {
-    setStartedModules(prev => ({ ...prev, [moduleId]: false }));
-  };
 
   const tabIcons: Record<PhonicsTab, string> = {
     'jolly-phonics': 'fa-face-smile-wink',
@@ -225,7 +212,7 @@ const PhonicsZone: React.FC = () => {
   };
   
   const renderModule = () => {
-    if(!schoolId) return <div className="text-center p-8"><LucideIcons.Loader2 className="animate-spin"/></div>;
+    if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
     const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
     
     return (
@@ -268,8 +255,7 @@ const PhonicsZone: React.FC = () => {
                 activeTab === tab ? `${colors[tab]} text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
               }`}
             >
-              <IconRenderer iconName={tabIcons[tab]} className="text-lg" />
-              <span className="whitespace-nowrap">{tab.replace('-', ' ')}</span>
+              <IconRenderer iconName={tabIcons[tab]} className="text-lg" /><span className="whitespace-nowrap">{tab.replace('-', ' ')}</span>
             </button>
           ))}
         </div>
@@ -350,13 +336,14 @@ const JollyPhonicsModule: React.FC<{onSound: (text:string) => void, schoolId: st
 const AlphabetModule: React.FC<{onSound: (text:string) => void, schoolId: string}> = ({onSound, schoolId}) => {
   const { toast } = useToast();
   const sortedData = useMemo(() => [...constants.PHONICS_DATA].sort((a, b) => a.upper.localeCompare(b.upper)), []);
+  const [data, setData] = useState(sortedData);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const current = sortedData[index];
+  const current = data[index];
 
   const fetchImage = useCallback(async () => { if (!schoolId) return; setLoading(true); const url = await generateLessonImageAction({prompt: current.imagePrompt, schoolId}); setImageUrl(url.data || null); setLoading(false); }, [current, schoolId]);
   useEffect(() => { setImageUrl(null); fetchImage(); }, [index, fetchImage]);
@@ -365,9 +352,13 @@ const AlphabetModule: React.FC<{onSound: (text:string) => void, schoolId: string
   const generateWithAi = async () => {
     if (!aiTopic || !schoolId) return; setIsAiLoading(true);
     try {
-      await generatePhonicsWorldEntry(aiTopic, 'alphabet', schoolId);
-      toast({ title: 'Success', description: 'New alphabet entry created!' });
-      setIsDrawerOpen(false); setAiTopic('');
+      const result = await generatePhonicsWorldEntry(aiTopic, 'alphabet', schoolId);
+      if(result.success && result.data) {
+        const newEntry = { upper: aiTopic.toUpperCase(), lower: aiTopic.toLowerCase(), word: result.data.title, imagePrompt: result.data.imagePrompt };
+        setData(prev => [...prev, newEntry].sort((a,b) => a.upper.localeCompare(b.upper)));
+        setIsDrawerOpen(false); setAiTopic('');
+        toast({ title: 'Success', description: 'New alphabet entry created!' });
+      }
     } catch (e) { console.error(e); toast({ title: 'Error', description: 'Failed to create AI entry.' }); } finally { setIsAiLoading(false); }
   };
 
@@ -376,7 +367,7 @@ const AlphabetModule: React.FC<{onSound: (text:string) => void, schoolId: string
       <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-pink-200 text-pink-600 px-4 py-2 rounded-full text-[10px] shadow-sm uppercase z-10 hover:bg-pink-50 transition-colors"><IconRenderer iconName="fa-magic" /></button>
       <div className="p-8 md:p-12 bg-white rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center relative overflow-hidden animate-in zoom-in">
         <div className="w-full flex overflow-x-auto gap-2 pb-6 mb-8 no-scrollbar border-b-4 border-pink-50 px-4">
-           {sortedData.map((item, i) => (
+           {data.map((item, i) => (
              <button key={item.upper} onClick={() => setIndex(i)} className={`flex-shrink-0 w-12 h-12 rounded-xl font-black text-2xl border-4 transition-all ${index === i ? 'bg-pink-500 text-white border-white scale-110 shadow-lg' : 'bg-pink-50 text-pink-300 border-transparent hover:bg-pink-100'}`}>{item.upper}</button>
            ))}
         </div>
@@ -395,9 +386,9 @@ const AlphabetModule: React.FC<{onSound: (text:string) => void, schoolId: string
         </div>
         <div className="bg-pink-500 text-white px-10 py-4 rounded-3xl border-4 border-white shadow-xl mb-12"><p className="text-2xl font-black uppercase tracking-widest">{current.word}!</p></div>
         <div className="flex gap-6 items-center">
-          <button onClick={() => setIndex(prev => (prev - 1 + sortedData.length) % sortedData.length)} className="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 shadow-md active:scale-90 transition-all"><IconRenderer iconName="fa-arrow-left" className="text-2xl" /></button>
+          <button onClick={() => setIndex(prev => (prev - 1 + data.length) % data.length)} className="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 shadow-md active:scale-90 transition-all"><IconRenderer iconName="fa-arrow-left" className="text-2xl" /></button>
           <button onClick={playSound} className="w-24 h-24 rounded-full bg-pink-500 text-white flex items-center justify-center shadow-xl border-4 border-white active:scale-95 transition-all"><IconRenderer iconName="fa-volume-high" className="text-4xl" /></button>
-          <button onClick={() => setIndex(prev => (prev + 1) % sortedData.length)} className="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 shadow-md active:scale-90 transition-all"><IconRenderer iconName="fa-arrow-right" className="text-2xl" /></button>
+          <button onClick={() => setIndex(prev => (prev + 1) % data.length)} className="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 shadow-md active:scale-90 transition-all"><IconRenderer iconName="fa-arrow-right" className="text-2xl" /></button>
         </div>
       </div>
       {isDrawerOpen && <TeacherModal title="AI Alphabet Assistant" topicLabel="Letter Idea" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
@@ -774,8 +765,8 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
 
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === '_' && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === '_' && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
-                {char === '_' ? (answered || '?') : char}
+              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === current.missing && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === current.missing && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
+                {char === current.missing ? (answered || '?') : char}
               </div>
           ))}
         </div>
@@ -836,6 +827,7 @@ const EnvironmentalPrintModule: React.FC<{onSound: (text:string) => void, school
 };
 
 const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: string}> = ({onSound, schoolId}) => {
+  const [data, setData] = useState(constants.BOOK_HANDLING_DATA);
   const [index, setIndex] = useState(0);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -844,7 +836,7 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   
-  const currentBook = constants.BOOK_HANDLING_DATA[index];
+  const currentBook = data[index];
   const currentPage = currentBook.pages[page];
 
   const fetchVisual = useCallback(async () => { if (!schoolId) return; setLoading(true); const url = await generateLessonImageAction({prompt: currentPage.prompt, schoolId}); setImageUrl(url.data || null); setLoading(false); }, [currentPage, schoolId]);
@@ -853,9 +845,11 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
   const generateWithAi = async () => {
     if (!aiTopic || !schoolId) return; setIsAiLoading(true);
     try {
-      await generatePhonicsWorldEntry(aiTopic, 'book-handling', schoolId);
-      onSound("Great! New book instruction added magically!");
-      setIsDrawerOpen(false); setAiTopic('');
+      const result = await generatePhonicsWorldEntry(aiTopic, 'book-handling', schoolId);
+      if(result.success && result.data){
+        setData(prev => [...prev, result.data]);
+        setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
@@ -882,4 +876,3 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
 
 
 export default PhonicsZone;
-
