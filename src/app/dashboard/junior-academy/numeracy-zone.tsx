@@ -20,25 +20,13 @@ import {
     Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
     Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
     Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
-    Type, FontAwesome, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
+    Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
 } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const {
-        Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, 
-        Ear, Layers, Image: ImageIcon, Sparkles, HelpCircle, 
-        Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
-        Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
-        Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
-        Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, 
-        GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, 
-        Puzzle, Box, Car
-    } = LucideIcons;
-
     const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
       'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': Type, 
       'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
@@ -178,30 +166,30 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
 
 /* --- 3. NUMBER SEQUENCE --- */
 const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-  const [data] = useState(constants.NUMERACY_DATA.sequence || []);
-  const [index, setIndex] = useState(0);
-  const [userAnswer, setUserAnswer] = useState<number | null>(null);
-  const current = data[index];
-  useEffect(() => { setUserAnswer(null); }, [index]);
-  if (!current) return null;
-  return (
-    <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[550px]">
-      <h3 className="text-4xl font-black text-purple-600 mb-10 uppercase">{current.question}</h3>
-      <div className="flex gap-4 mb-16 items-center">
-         {current.sequence.map((n: any, i: number) => (
-           <div key={i} className={cn("w-24 h-32 rounded-3xl flex items-center justify-center border-4 text-5xl font-black", n === null ? 'bg-purple-50 border-dashed text-purple-200' : 'bg-white shadow-md text-slate-800')}>
-             {n === null ? (userAnswer === current.answer ? userAnswer : '?') : n}
-           </div>
-         ))}
+    const [data] = useState(constants.NUMERACY_DATA.sequence || []);
+    const [index, setIndex] = useState(0);
+    const [userAnswer, setUserAnswer] = useState<number | null>(null);
+    const current = data[index];
+    useEffect(() => { setUserAnswer(null); }, [index]);
+    if (!current) return null;
+    return (
+      <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[550px]">
+        <h3 className="text-4xl font-black text-purple-600 mb-10 uppercase">{current.question}</h3>
+        <div className="flex gap-4 mb-16 items-center">
+           {current.sequence.map((n: any, i: number) => (
+             <div key={i} className={cn("w-24 h-32 rounded-3xl flex items-center justify-center border-4 text-5xl font-black", n === null ? 'bg-purple-50 border-dashed text-purple-200' : 'bg-white shadow-md text-slate-800')}>
+               {n === null ? (userAnswer === current.answer ? userAnswer : '?') : n}
+             </div>
+           ))}
+        </div>
+        <div className="flex gap-4">
+           {current.options.map((opt: number) => (
+             <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.answer ? "Yes!" : "No"); }} className={cn("w-20 h-20 rounded-2xl text-3xl", userAnswer === opt ? (opt === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-purple-50 text-slate-700')}>{opt}</Button>
+           ))}
+        </div>
+        {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT SEQUENCE</Button>}
       </div>
-      <div className="flex gap-4">
-         {current.options.map((opt: number) => (
-           <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.answer ? "Yes!" : "No"); }} className={cn("w-20 h-20 rounded-2xl text-3xl", userAnswer === opt ? (opt === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-purple-50 text-slate-700')}>{opt}</Button>
-         ))}
-      </div>
-      {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT SEQUENCE</Button>}
-    </div>
-  );
+    );
 };
 
 /* --- 4. NUMBER COMPARISON (Greater/Less) --- */
@@ -227,59 +215,59 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ on
 
 /* --- 5. NUMBER WORDS --- */
 const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [items] = useState(constants.NUMERACY_DATA.numberWords || []);
-    const [index, setIndex] = useState(0);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const current = items[index];
-    useEffect(() => {
-        generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-    }, [index, schoolId, current?.prompt]);
-    if (!current) return null;
-    return (
-        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center">
-            <div className="flex items-center gap-6 mb-10">
-                <div className="w-24 h-24 bg-purple-500 text-white rounded-2xl flex items-center justify-center text-6xl font-black">{current.digit}</div>
-                <ArrowRight className="text-purple-300 h-10 w-10" />
-                <span className="text-6xl font-black text-purple-600 uppercase tracking-tighter">{current.word}</span>
-            </div>
-            <div className="w-80 h-80 bg-purple-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10">
-                {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={current.word}/> : <Loader2 className="animate-spin m-auto"/>}
-            </div>
-            <div className="flex gap-6">
-                <Button size="icon" onClick={() => setIndex(p => (p === 0 ? items.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
-                <Button onClick={() => onSound(current.word)} className="bg-purple-500 text-white px-10 rounded-2xl">LISTEN</Button>
-                <Button size="icon" onClick={() => setIndex(p => (p + 1) % items.length)} className="bg-slate-100 rounded-full"><ArrowRight/></Button>
-            </div>
-        </div>
-    );
+  const [items] = useState(constants.NUMERACY_DATA.numberWords || []);
+  const [index, setIndex] = useState(0);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const current = items[index];
+  useEffect(() => {
+    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+  }, [index, schoolId, current?.prompt]);
+  if (!current) return null;
+  return (
+    <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center">
+      <div className="flex items-center gap-6 mb-10">
+        <div className="w-24 h-24 bg-purple-500 text-white rounded-2xl flex items-center justify-center text-6xl font-black">{current.digit}</div>
+        <ArrowRight className="text-purple-300 h-10 w-10" />
+        <span className="text-6xl font-black text-purple-600 uppercase tracking-tighter">{current.word}</span>
+      </div>
+      <div className="w-80 h-80 bg-purple-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10">
+        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt={current.word} /> : <Loader2 className="animate-spin m-auto"/>}
+      </div>
+      <div className="flex gap-6">
+        <Button size="icon" onClick={() => setIndex(p => (p === 0 ? items.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
+        <Button onClick={() => onSound(current.word)} className="bg-purple-500 text-white px-10 rounded-2xl">LISTEN</Button>
+        <Button size="icon" onClick={() => setIndex(p => (p + 1) % items.length)} className="bg-slate-100 rounded-full"><ArrowRight/></Button>
+      </div>
+    </div>
+  );
 };
 
 /* --- 6. NUMBER BONDS --- */
 const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    const [data] = useState(constants.NUMERACY_DATA.numberBonds || []);
-    const [index, setIndex] = useState(0);
-    const [userAnswer, setUserAnswer] = useState<number | null>(null);
-    const current = data[index];
-    useEffect(() => { setUserAnswer(null); }, [index]);
-    if (!current) return null;
-    return (
-        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center min-h-[550px]">
-            <h3 className="text-4xl font-black text-pink-600 mb-8 uppercase">Friends of {current.target}!</h3>
-            <div className="flex items-center gap-6 mb-10">
-               <div className="w-20 h-20 bg-pink-500 text-white rounded-2xl flex items-center justify-center text-4xl font-black">{current.part1}</div>
-               <Plus className="text-slate-400"/>
-               <div className={cn("w-20 h-20 rounded-2xl flex items-center justify-center border-4 border-dashed text-4xl font-black", userAnswer === current.part2 ? 'bg-green-500 text-white' : 'bg-pink-50 text-pink-200')}>{userAnswer === current.part2 ? userAnswer : '?'}</div>
-               <span className="text-4xl text-slate-400">=</span>
-               <div className="w-20 h-20 bg-purple-600 text-white rounded-2xl flex items-center justify-center text-4xl font-black">{current.target}</div>
-            </div>
-            <div className="flex flex-wrap justify-center gap-2">
-               {Array.from({length: current.target + 1}).map((_, i) => (
-                 <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === current.part2 ? "Correct!" : "Try again"); }} className={cn("w-14 h-14 rounded-xl text-xl", userAnswer === i ? 'bg-green-500' : 'bg-pink-50 text-pink-600')}>{i}</Button>
-               ))}
-            </div>
-            {userAnswer === current.part2 && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT BOND</Button>}
+  const [data] = useState(constants.NUMERACY_DATA.numberBonds || []);
+  const [index, setIndex] = useState(0);
+  const [userAnswer, setUserAnswer] = useState<number | null>(null);
+  const current = data[index];
+  useEffect(() => { setUserAnswer(null); }, [index]);
+  if (!current) return null;
+  return (
+    <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center min-h-[550px]">
+        <h3 className="text-4xl font-black text-pink-600 mb-8 uppercase">Friends of {current.target}!</h3>
+        <div className="flex items-center gap-6 mb-10">
+           <div className="w-20 h-20 bg-pink-500 text-white rounded-2xl flex items-center justify-center text-4xl font-black">{current.part1}</div>
+           <Plus className="text-slate-400"/>
+           <div className={cn("w-20 h-20 rounded-2xl flex items-center justify-center border-4 border-dashed text-4xl font-black", userAnswer === current.part2 ? 'bg-green-500 text-white' : 'bg-pink-50 text-pink-200')}>{userAnswer === current.part2 ? userAnswer : '?'}</div>
+           <span className="text-4xl text-slate-400">=</span>
+           <div className="w-20 h-20 bg-purple-600 text-white rounded-2xl flex items-center justify-center text-4xl font-black">{current.target}</div>
         </div>
-    );
+        <div className="flex flex-wrap justify-center gap-2">
+           {Array.from({length: current.target + 1}).map((_, i) => (
+             <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === current.part2 ? "Correct!" : "Try again"); }} className={cn("w-14 h-14 rounded-xl text-xl", userAnswer === i ? 'bg-green-500' : 'bg-pink-50 text-pink-600')}>{i}</Button>
+           ))}
+        </div>
+        {userAnswer === current.part2 && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT BOND</Button>}
+    </div>
+  );
 };
 
 /* --- 7. ADDITION --- */
@@ -289,10 +277,12 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
-    useEffect(() => {
-      generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-      setUserAnswer(null);
-    }, [index, schoolId, current]);
+    const fetchVisual = useCallback(async () => {
+        if (!current || !schoolId) return;
+        const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+        if(res.success) setImageUrl(res.data || null);
+    }, [current, schoolId]);
+    useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
     if (!current) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[600px]">
@@ -314,7 +304,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
             <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} + {current.val2} = ?</p>
             <div className="flex flex-wrap justify-center gap-3">
                 {Array.from({length: 11}).map((_, i) => (
-                    <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === (current.val1 + current.val2) ? "Perfect!" : "Keep counting"); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === (current.val1+current.val2) ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-slate-800')}>{i}</Button>
+                    <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === (current.val1+current.val2) ? "Perfect!" : "Keep counting"); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === (current.val1+current.val2) ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-slate-800')}>{i}</Button>
                 ))}
             </div>
         </div>
@@ -328,10 +318,12 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const current = data[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-    setUserAnswer(null);
-  }, [index, schoolId, current]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
   if (!current) return null;
   const correct = current.val1 - current.val2;
   return (
@@ -360,9 +352,12 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-  }, [index, schoolId, current]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center min-h-[550px]">
@@ -376,7 +371,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
          </div>
       </div>
       <div className="w-full max-w-2xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10 cursor-pointer" onClick={() => onSound(`${current.number} has ${current.tens} ten and ${current.units} units`)}>
-        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={`${current.number} explained`} />}
+        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={`${current.number} explained`}/>}
       </div>
       <div className="flex gap-4">
         <Button size="icon" onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
@@ -438,6 +433,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
   );
 };
 
+// --- MAIN WRAPPER ---
 const NumeracyZone: React.FC = () => {
     const [activeTab, setActiveTab] = useState<NumeracyTab>('numbers');
     const { schoolId } = useCurrentSchool();
@@ -474,10 +470,10 @@ const NumeracyZone: React.FC = () => {
       const modules: Record<NumeracyTab, React.ReactNode> = {
           'numbers': <ModuleContainer title="Learn Numbers" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>,
           'counting': <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>,
-          'sequence': <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule onSound={playFeedbackSound} /></ModuleContainer>,
-          'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule onSound={playFeedbackSound} /></ModuleContainer>,
+          'sequence': <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>,
+          'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>,
           'number-words': <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>,
-          'bonds': <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule onSound={playFeedbackSound} /></ModuleContainer>,
+          'bonds': <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule {...commonProps} /></ModuleContainer>,
           'addition': <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>,
           'subtraction': <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>,
           'tens-units': <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>,
@@ -502,7 +498,7 @@ const NumeracyZone: React.FC = () => {
       </div>
     );
 };
-
+  
 export default NumeracyZone;
 
     
