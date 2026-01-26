@@ -34,7 +34,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useRole } from '@/context/role-context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-
 const {
     Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Smile, 
     Ear, Layers, Image: ImageIcon, Sparkles, HelpCircle, 
@@ -67,7 +66,6 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     }
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
-
 
 type PracticeMode = 'letters' | 'strokes' | 'numbers';
 type NumeracyTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'tracing';
@@ -493,16 +491,14 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
                 if(!rect) return;
                 const ctx = canvas?.getContext('2d');
                 if(!ctx) return;
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
                 ctx.setLineDash([]);
                 ctx.lineWidth = 15;
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = '#8B5CF6';
-                ctx.lineTo(x * (400 / rect.width), y * (400 / rect.height));
+                ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(x * (400 / rect.width), y * (400 / rect.height));
+                ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
             }} />
         </div>
         <div className="flex gap-4">
@@ -512,5 +508,3 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
     </div>
   );
 };
-
-    
