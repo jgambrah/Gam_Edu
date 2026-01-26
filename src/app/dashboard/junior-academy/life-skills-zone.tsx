@@ -40,7 +40,27 @@ import {
   XCircle,
   PlusCircle,
   Sparkles,
-  Info
+  Info,
+  Puzzle,
+  Trash2,
+  Flag,
+  MousePointer2,
+  Box,
+  Rabbit,
+  Carrot,
+  Apple,
+  Cookie,
+  Star,
+  Bed,
+  Eye,
+  CloudRain,
+  Guitar,
+  Plane,
+  Car,
+  Zap,
+  CircleDot,
+  Monitor,
+  GraduationCap
 } from 'lucide-react';
 
 
@@ -68,29 +88,29 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     'fa-circle-plus': PlusCircle,
     'fa-sparkles': Sparkles,
     'fa-info-circle': Info,
-    'fa-puzzle-piece': 'Puzzle',
-    'fa-broom': 'Trash2',
-    'fa-flag': 'Flag',
-    'fa-hand-pointer': 'MousePointer2',
-    'fa-cube': 'Box',
-    'fa-rabbit': 'Rabbit',
-    'fa-carrot': 'Carrot',
-    'fa-apple-whole': 'Apple',
-    'fa-cookie': 'Cookie',
-    'fa-star': 'Star',
-    'fa-bed': 'Bed',
-    'fa-eye': 'Eye',
-    'fa-cloud-showers-heavy': 'CloudRain',
-    'fa-guitar': 'Guitar',
-    'fa-plane': 'Plane',
-    'fa-car': 'Car',
-    'fa-frog': 'Rabbit',
-    'fa-bolt': 'Zap',
-    'fa-circle-dot': 'CircleDot',
-    'fa-soap': 'Sparkles',
-    'fa-broccoli': 'Carrot',
-    'fa-display': 'Monitor',
-    'fa-graduation-cap': 'GraduationCap',
+    'fa-puzzle-piece': Puzzle,
+    'fa-broom': Trash2,
+    'fa-flag': Flag,
+    'fa-hand-pointer': MousePointer2,
+    'fa-cube': Box,
+    'fa-rabbit': Rabbit,
+    'fa-carrot': Carrot,
+    'fa-apple-whole': Apple,
+    'fa-cookie': Cookie,
+    'fa-star': Star,
+    'fa-bed': Bed,
+    'fa-eye': Eye,
+    'fa-cloud-showers-heavy': CloudRain,
+    'fa-guitar': Guitar,
+    'fa-plane': Plane,
+    'fa-car': Car,
+    'fa-frog': Rabbit,
+    'fa-bolt': Zap,
+    'fa-circle-dot': CircleDot,
+    'fa-soap': Sparkles,
+    'fa-broccoli': Carrot,
+    'fa-display': Monitor,
+    'fa-graduation-cap': GraduationCap,
   };
 
   // 2. Identify the component from the map
@@ -267,55 +287,55 @@ const RoutineSongsModule: React.FC<{ onSound: (t: string) => void, schoolId: str
 };
 
 const ModelingModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void, schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
-  const [data, setData] = useState(LIFE_SKILLS_DATA.practicalLife.pretendPlay);
-  const [index, setIndex] = useState(0);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [started, setStarted] = useState(false);
-  const current = data[index];
+    const [data, setData] = useState(LIFE_SKILLS_DATA.practicalLife.pretendPlay);
+    const [index, setIndex] = useState(0);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [started, setStarted] = useState(false);
+    const current = data[index];
 
-  const fetchVisual = useCallback(async () => { 
-    if(!current || !schoolId) return;
-    setLoading(true); 
-    const result = await generateLessonImageAction({prompt: current.prompt, schoolId}); 
-    if (result.success) setImageUrl(result.data || null); 
-    setLoading(false); 
-}, [current, schoolId]);
+    const fetchVisual = useCallback(async () => { 
+        if(!current || !schoolId) return;
+        setLoading(true); 
+        const result = await generateLessonImageAction({prompt: current.prompt, schoolId}); 
+        if (result.success) setImageUrl(result.data || null); 
+        setLoading(false); 
+    }, [current, schoolId]);
 
-useEffect(() => { 
-    if (started) {
-        fetchVisual();
+    useEffect(() => { 
+        if (started) {
+            fetchVisual();
+        }
+    }, [index, data, started, fetchVisual]);
+
+
+    const handleWatch = () => {
+        onSound(`${current.scenario} ${current.modeling}`);
+        onComplete();
+    };
+
+    if (!started) {
+        return (
+            <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+                <Tv className="h-16 w-16 mx-auto text-indigo-300 mb-4"/>
+                <h3 className="text-2xl font-bold text-indigo-600 mb-2">Watch & Learn</h3>
+                <p className="text-slate-500 mb-4">See how to do new things by watching fun animations!</p>
+                <Button onClick={() => setStarted(true)} className="bg-indigo-500 hover:bg-indigo-600">Start Watching</Button>
+            </div>
+        )
     }
-}, [index, data, started, fetchVisual]);
 
-
-  const handleWatch = () => {
-    onSound(`${current.scenario} ${current.modeling}`);
-    onComplete();
-  };
-
-  if (!started) {
     return (
-         <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-            <Tv className="h-16 w-16 mx-auto text-indigo-300 mb-4"/>
-            <h3 className="text-2xl font-bold text-indigo-600 mb-2">Watch & Learn</h3>
-            <p className="text-slate-500 mb-4">See how to do new things by watching fun animations!</p>
-            <Button onClick={() => setStarted(true)} className="bg-indigo-500 hover:bg-indigo-600">Start Watching</Button>
+        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center animate-in zoom-in font-black">
+        <h3 className="text-4xl font-black text-indigo-500 mb-10 uppercase tracking-tighter">I Can Do It! 🎥</h3>
+        <div onClick={handleWatch} className="w-full max-w-xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
+            {loading ? <Loader2 className="w-16 h-16 animate-spin text-indigo-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt={current.title} />}
         </div>
-    )
-}
-
-  return (
-    <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center animate-in zoom-in font-black">
-      <h3 className="text-4xl font-black text-indigo-500 mb-10 uppercase tracking-tighter">I Can Do It! 🎥</h3>
-      <div onClick={handleWatch} className="w-full max-w-xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
-        {loading ? <Loader2 className="w-16 h-16 animate-spin text-indigo-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt={current.title} />}
-      </div>
-      <h4 className="text-4xl font-black text-slate-800 mb-4 uppercase">{current.title}</h4>
-      <p className="text-xl font-black text-slate-500 italic mb-10 text-center leading-relaxed">"{current.scenario}"</p>
-      <Button onClick={handleWatch} className="px-16 py-6 bg-indigo-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">Watch & Learn!</Button>
-    </div>
-  );
+        <h4 className="text-4xl font-black text-slate-800 mb-4 uppercase">{current.title}</h4>
+        <p className="text-xl font-black text-slate-500 italic mb-10 text-center leading-relaxed">"{current.scenario}"</p>
+        <Button onClick={handleWatch} className="px-16 py-6 bg-indigo-500 text-white rounded-[3rem] font-black uppercase text-2xl shadow-xl border-4 border-white">Watch & Learn!</Button>
+        </div>
+    );
 };
 const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: () => void; schoolId: string }> = ({ onSound, onComplete, schoolId }) => {
     const [subTab, setSubTab] = useState<'dressing' | 'schedules'>('dressing');
@@ -343,7 +363,7 @@ const PracticalLifeModule: React.FC<{ onSound: (t: string) => void; onComplete: 
     if (!started) {
         return (
              <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
-                <LucideIcons.GraduationCap className="h-16 w-16 mx-auto text-blue-300 mb-4"/>
+                <GraduationCap className="h-16 w-16 mx-auto text-blue-300 mb-4"/>
                 <h3 className="text-2xl font-bold text-blue-600 mb-2">My Day</h3>
                 <p className="text-slate-500 mb-4">Learn about daily routines and how to get ready!</p>
                 <Button onClick={() => setStarted(true)} className="bg-blue-500 hover:bg-blue-600">Start My Day</Button>
@@ -875,4 +895,3 @@ const LifeSkillsZone: React.FC = () => {
 };
 
 export default LifeSkillsZone;
-
