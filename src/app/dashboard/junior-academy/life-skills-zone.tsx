@@ -61,6 +61,7 @@ import {
   CircleDot,
   Monitor,
   GraduationCap,
+  Heart,
 } from 'lucide-react';
 
 const IconRenderer = ({ iconName, className }: { iconName?: string; className?: string }) => {
@@ -257,8 +258,7 @@ const ModelingModule: React.FC<{ onSound: (t: string) => void; onComplete: () =>
     const fetchVisual = useCallback(async () => { 
         if(!current || !schoolId) return; setLoading(true); 
         const result = await generateLessonImageAction({prompt: current.prompt, schoolId}); 
-        if (result.success) setImageUrl(result.data || null); 
-        setLoading(false); 
+        if (result.success) setImageUrl(result.data || null); setLoading(false); 
     }, [current, schoolId]);
 
     useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
@@ -282,7 +282,7 @@ const ModelingModule: React.FC<{ onSound: (t: string) => void; onComplete: () =>
 
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center animate-in zoom-in font-black relative">
-            {canEdit && <button onClick={() => setIsDrawerOpen(true)} className="absolute top-4 right-4 bg-white border-2 border-indigo-200 text-indigo-600 px-3 py-1 rounded-full font-black text-[10px] shadow-sm uppercase z-10 hover:bg-indigo-50"><Wand2 className="w-3 h-3 inline-block mr-1"/> AI Scene</button>}
+            {canEdit && <button onClick={() => setIsDrawerOpen(true)} className="absolute top-4 right-4 bg-white border-2 border-indigo-200 text-indigo-600 px-3 py-1 rounded-full text-[10px] shadow-sm uppercase z-10 hover:bg-indigo-50"><Wand2 className="w-3 h-3 inline-block mr-1"/> AI Scene</button>}
             <h3 className="text-4xl font-black text-indigo-500 mb-10 uppercase tracking-tighter">I Can Do It! 🎥</h3>
             <div onClick={handleWatch} className="w-full max-w-xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
                 {loading ? <Loader2 className="w-16 h-16 animate-spin text-indigo-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt={current.title} />}
@@ -401,7 +401,7 @@ const CommunicationModule: React.FC<{ onSound: (t: string) => void; onComplete: 
           </div>
         )}
         <p className="text-2xl font-black text-slate-800 mb-10 text-center italic max-w-lg">"{(current as any).title || (current as any).task || (current as any).q}"</p>
-        <button onClick={() => {onSound((current as any).description || (current as any).spoken || (current as any).q); onComplete(); }} className="px-16 py-6 bg-orange-500 text-white rounded-[3rem] font-black uppercase text-xl shadow-xl border-4 border-white">Start Talking!</button>
+        <button onClick={() => { onSound((current as any).description || (current as any).spoken || (current as any).q); onComplete(); }} className="px-16 py-6 bg-orange-500 text-white rounded-[3rem] font-black uppercase text-xl shadow-xl border-4 border-white">Start Talking!</button>
         {isDrawerOpen && <TeacherModal title="AI Conversation Maker" topicLabel="Conversation Topic" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
       </div>
     );
