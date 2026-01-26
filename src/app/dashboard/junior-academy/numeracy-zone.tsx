@@ -7,7 +7,7 @@ import {
     generateLessonImageAction, 
     generateTTSAction, 
     generateMathWorldEntry 
-} from '@/ai/flows/junior-actions';
+} from '@/app/dashboard/junior-actions';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +22,7 @@ import {
     Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
     Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
 } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 
@@ -133,7 +134,6 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     );
 };
   
-/* --- 2. COUNTING GAME --- */
 const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const [data] = useState(constants.COUNTING_TASK_DATA || []);
     const [index, setIndex] = useState(0);
@@ -160,7 +160,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
                     <p className="text-2xl font-black text-slate-500 mb-8 uppercase">Count the {current.theme}!</p>
                     <div className="grid grid-cols-3 gap-4">
                         {options.map(opt => (
-                            <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.count ? "Great job!" : "Try again!"); }} className={cn("w-20 h-20 rounded-3xl font-black text-4xl shadow-xl", userAnswer === opt ? (opt === current.count ? 'bg-green-500' : 'bg-red-500') : 'bg-emerald-50 text-emerald-600')}>{opt}</Button>
+                            <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.count ? "Great job!" : "Try again!"); if(opt === current.count) confetti(); }} className={cn("w-20 h-20 rounded-3xl font-black text-4xl shadow-xl", userAnswer === opt ? (opt === current.count ? 'bg-green-500' : 'bg-red-500') : 'bg-emerald-50 text-emerald-600')}>{opt}</Button>
                         ))}
                     </div>
                 </div>
@@ -170,7 +170,6 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     );
 };
 
-/* --- 3. NUMBER SEQUENCE --- */
 const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
     const [data] = useState(constants.NUMERACY_DATA.sequence || []);
     const [index, setIndex] = useState(0);
@@ -190,7 +189,7 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSo
         </div>
         <div className="flex gap-4">
            {current.options.map((opt: number) => (
-             <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.answer ? "Yes!" : "No"); }} className={cn("w-20 h-20 rounded-2xl text-3xl", userAnswer === opt ? (opt === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-purple-50 text-slate-700')}>{opt}</Button>
+             <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.answer ? "Yes!" : "No"); if(opt === current.answer) confetti(); }} className={cn("w-20 h-20 rounded-2xl text-3xl", userAnswer === opt ? (opt === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-purple-50 text-slate-700')}>{opt}</Button>
            ))}
         </div>
         {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT SEQUENCE</Button>}
@@ -198,7 +197,6 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSo
     );
 };
 
-/* --- 4. NUMBER COMPARISON (Greater/Less) --- */
 const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
   const [data] = useState(constants.NUMERACY_DATA.numComparison || []);
   const [index, setIndex] = useState(0);
@@ -210,16 +208,15 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ on
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[550px]">
         <h3 className="text-4xl font-black text-orange-600 mb-10 uppercase text-center">{current.q}</h3>
         <div className="flex gap-12 items-center">
-          <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
+          <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); if(current.val1 === current.answer) confetti(); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
           <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
-          <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
+          <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); if(current.val2 === current.answer) confetti(); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
         </div>
         {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-12 bg-green-500 text-white rounded-2xl px-10 h-14">CONTINUE</Button>}
     </div>
   );
 };
 
-/* --- 5. NUMBER WORDS --- */
 const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const [items] = useState(constants.NUMERACY_DATA.numberWords || []);
   const [index, setIndex] = useState(0);
@@ -248,7 +245,6 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   );
 };
 
-/* --- 6. NUMBER BONDS --- */
 const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
   const [data] = useState(constants.NUMERACY_DATA.numberBonds || []);
   const [index, setIndex] = useState(0);
@@ -268,7 +264,7 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
         </div>
         <div className="flex flex-wrap justify-center gap-2">
            {Array.from({length: current.target + 1}).map((_, i) => (
-             <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === current.part2 ? "Correct!" : "Try again"); }} className={cn("w-14 h-14 rounded-xl text-xl", userAnswer === i ? 'bg-green-500' : 'bg-pink-50 text-pink-600')}>{i}</Button>
+             <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === current.part2 ? "Correct!" : "Try again"); if(i === current.part2) confetti(); }} className={cn("w-14 h-14 rounded-xl text-xl", userAnswer === i ? 'bg-green-500' : 'bg-pink-50 text-pink-600')}>{i}</Button>
            ))}
         </div>
         {userAnswer === current.part2 && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT BOND</Button>}
@@ -276,7 +272,6 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
   );
 };
 
-/* --- 7. ADDITION --- */
 const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const [data] = useState(constants.NUMERACY_DATA.addition || []);
     const [index, setIndex] = useState(0);
@@ -310,14 +305,13 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
             <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} + {current.val2} = ?</p>
             <div className="flex flex-wrap justify-center gap-3">
                 {Array.from({length: 11}).map((_, i) => (
-                    <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === (current.val1+current.val2) ? "Perfect!" : "Keep counting"); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === (current.val1+current.val2) ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-slate-800')}>{i}</Button>
+                    <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === (current.val1+current.val2) ? "Perfect!" : "Keep counting"); if(i === (current.val1+current.val2)) confetti(); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === (current.val1+current.val2) ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-slate-800')}>{i}</Button>
                 ))}
             </div>
         </div>
     );
 };
 
-/* --- 8. SUBTRACTION --- */
 const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const [data] = useState(constants.NUMERACY_DATA.subtraction || []);
   const [index, setIndex] = useState(0);
@@ -345,14 +339,13 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
         <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} - {current.val2} = ?</p>
         <div className="flex flex-wrap justify-center gap-3">
             {Array.from({length: 11}).map((_, i) => (
-                <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Yes!" : "Try again"); }} className={cn("w-14 h-14 rounded-2xl", userAnswer === i ? (i === correct ? 'bg-green-500' : 'bg-red-500') : 'bg-red-50 text-slate-800')}>{i}</Button>
+                <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Yes!" : "Try again"); if(i === correct) confetti(); }} className={cn("w-14 h-14 rounded-2xl", userAnswer === i ? (i === correct ? 'bg-green-500' : 'bg-red-500') : 'bg-red-50 text-slate-800')}>{i}</Button>
             ))}
         </div>
     </div>
   );
 };
 
-/* --- 9. TENS AND UNITS --- */
 const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const [data] = useState(constants.NUMERACY_DATA.tensUnits || []);
   const [index, setIndex] = useState(0);
@@ -387,7 +380,6 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   );
 };
 
-/* --- 10. NUMBER TRACING (Magic Pen) --- */
 const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const [selectedItem, setSelectedItem] = useState('1');
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -443,8 +435,9 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
 const NumeracyZone: React.FC = () => {
     const [activeTab, setActiveTab] = useState<NumeracyTab>('numbers');
     const [startedModules, setStartedModules] = useState<Record<NumeracyTab, boolean>>({
-        numbers: false, counting: false, sequence: false, comparing: false, 'number-words': false, bonds: false,
-        addition: false, subtraction: false, 'tens-units': false, tracing: false,
+        numbers: false, counting: false, sequence: false, comparing: false, 
+        'number-words': false, bonds: false, addition: false, subtraction: false, 
+        'tens-units': false, tracing: false,
     });
     
     const { schoolId } = useCurrentSchool();
@@ -477,27 +470,36 @@ const NumeracyZone: React.FC = () => {
     };
   
     const tabs: {id: NumeracyTab, icon: string}[] = [
-      { id: 'numbers', icon: 'fa-1' }, { id: 'counting', icon: 'fa-list-ol' }, { id: 'sequence', icon: 'fa-arrow-right-long' }, 
-      { id: 'comparing', icon: 'fa-scale-unbalanced' }, { id: 'number-words', icon: 'fa-font' }, { id: 'bonds', icon: 'fa-handshake' }, 
-      { id: 'addition', icon: 'fa-plus' }, { id: 'subtraction', icon: 'fa-minus' }, { id: 'tens-units', icon: 'fa-layer-group' }, 
+      { id: 'numbers', icon: 'fa-1' }, 
+      { id: 'counting', icon: 'fa-list-ol' }, 
+      { id: 'sequence', icon: 'fa-arrow-right-long' }, 
+      { id: 'comparing', icon: 'fa-scale-unbalanced' }, 
+      { id: 'number-words', icon: 'fa-font' }, 
+      { id: 'bonds', icon: 'fa-handshake' }, 
+      { id: 'addition', icon: 'fa-plus' }, 
+      { id: 'subtraction', icon: 'fa-minus' }, 
+      { id: 'tens-units', icon: 'fa-layer-group' }, 
       { id: 'tracing', icon: 'fa-pen-clip' }
     ];
     
     const renderModule = () => {
       if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>;
       const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
+      const isStarted = startedModules[activeTab];
+      const onStart = () => handleStartModule(activeTab);
+      const onClose = () => handleCloseModule(activeTab);
       
       const modules: Record<NumeracyTab, React.ReactNode> = {
-          'numbers': <ModuleContainerWithState title="Learn Numbers" icon="fa-1" started={startedModules.numbers} onStart={() => handleStartModule('numbers')} onClose={() => handleCloseModule('numbers')}><NumbersMainModule {...commonProps} /></ModuleContainerWithState>,
-          'counting': <ModuleContainerWithState title="Counting Game" icon="fa-list-ol" started={startedModules.counting} onStart={() => handleStartModule('counting')} onClose={() => handleCloseModule('counting')}><CountingGame {...commonProps} /></ModuleContainerWithState>,
-          'sequence': <ModuleContainerWithState title="Number Sequence" icon="fa-arrow-right-long" started={startedModules.sequence} onStart={() => handleStartModule('sequence')} onClose={() => handleCloseModule('sequence')}><NumberSequenceModule {...commonProps} /></ModuleContainerWithState>,
-          'comparing': <ModuleContainerWithState title="Number Comparison" icon="fa-scale-unbalanced" started={startedModules.comparing} onStart={() => handleStartModule('comparing')} onClose={() => handleCloseModule('comparing')}><NumberComparisonModule {...commonProps} /></ModuleContainerWithState>,
-          'number-words': <ModuleContainerWithState title="Number Words" icon="fa-font" started={startedModules['number-words']} onStart={() => handleStartModule('number-words')} onClose={() => handleCloseModule('number-words')}><NumberWordsModule {...commonProps} /></ModuleContainerWithState>,
-          'bonds': <ModuleContainerWithState title="Number Bonds" icon="fa-handshake" started={startedModules.bonds} onStart={() => handleStartModule('bonds')} onClose={() => handleCloseModule('bonds')}><NumberBondsModule {...commonProps} /></ModuleContainerWithState>,
-          'addition': <ModuleContainerWithState title="Addition" icon="fa-plus" started={startedModules.addition} onStart={() => handleStartModule('addition')} onClose={() => handleCloseModule('addition')}><AdditionModule {...commonProps} /></ModuleContainerWithState>,
-          'subtraction': <ModuleContainerWithState title="Subtraction" icon="fa-minus" started={startedModules.subtraction} onStart={() => handleStartModule('subtraction')} onClose={() => handleCloseModule('subtraction')}><SubtractionModule {...commonProps} /></ModuleContainerWithState>,
-          'tens-units': <ModuleContainerWithState title="Tens and Units" icon="fa-layer-group" started={startedModules['tens-units']} onStart={() => handleStartModule('tens-units')} onClose={() => handleCloseModule('tens-units')}><TensUnitsModule {...commonProps} /></ModuleContainerWithState>,
-          'tracing': <ModuleContainerWithState title="Magic Pen" icon="fa-pen-clip" started={startedModules.tracing} onStart={() => handleStartModule('tracing')} onClose={() => handleCloseModule('tracing')}><NumberMagicPen {...commonProps} /></ModuleContainerWithState>,
+          'numbers': <ModuleContainerWithState title="Learn Numbers" icon="fa-1" started={isStarted} onStart={onStart} onClose={onClose}><NumbersMainModule {...commonProps} /></ModuleContainerWithState>,
+          'counting': <ModuleContainerWithState title="Counting Game" icon="fa-list-ol" started={isStarted} onStart={onStart} onClose={onClose}><CountingGame {...commonProps} /></ModuleContainerWithState>,
+          'sequence': <ModuleContainerWithState title="Number Sequence" icon="fa-arrow-right-long" started={isStarted} onStart={onStart} onClose={onClose}><NumberSequenceModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
+          'comparing': <ModuleContainerWithState title="Number Comparison" icon="fa-scale-unbalanced" started={isStarted} onStart={onStart} onClose={onClose}><NumberComparisonModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
+          'number-words': <ModuleContainerWithState title="Number Words" icon="fa-font" started={isStarted} onStart={onStart} onClose={onClose}><NumberWordsModule {...commonProps} /></ModuleContainerWithState>,
+          'bonds': <ModuleContainerWithState title="Number Bonds" icon="fa-handshake" started={isStarted} onStart={onStart} onClose={onClose}><NumberBondsModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
+          'addition': <ModuleContainerWithState title="Addition" icon="fa-plus" started={isStarted} onStart={onStart} onClose={onClose}><AdditionModule {...commonProps} /></ModuleContainerWithState>,
+          'subtraction': <ModuleContainerWithState title="Subtraction" icon="fa-minus" started={isStarted} onStart={onStart} onClose={onClose}><SubtractionModule {...commonProps} /></ModuleContainerWithState>,
+          'tens-units': <ModuleContainerWithState title="Tens and Units" icon="fa-layer-group" started={isStarted} onStart={onStart} onClose={onClose}><TensUnitsModule {...commonProps} /></ModuleContainerWithState>,
+          'tracing': <ModuleContainerWithState title="Magic Pen" icon="fa-pen-clip" started={isStarted} onStart={onStart} onClose={onClose}><NumberMagicPen {...commonProps} /></ModuleContainerWithState>,
       };
       return modules[activeTab] || <p>Coming Soon</p>;
     };
