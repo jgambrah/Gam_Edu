@@ -1,5 +1,4 @@
 
-
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -661,6 +660,8 @@ export const MOCK_CROSSWORD_PUZZLES = [
 
 export const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
+export const NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+
 export const STROKES = [
   { id: 'standing', label: 'Standing Line', icon: 'fa-grip-lines-vertical' },
   { id: 'sleeping', label: 'Sleeping Line', icon: 'fa-grip-lines' },
@@ -925,3 +926,5 @@ export const LIFE_SKILLS_DATA = {
       nutrition: [{ title: 'Eat Vegetables', action: 'Broccoli makes you strong!', icon: 'fa-broccoli', prompt: 'A happy child eating a piece of broccoli' }],
   }
 };
+
+    

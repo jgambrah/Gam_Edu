@@ -8,10 +8,12 @@ import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenTool, Pen } from 'lucide-react';
+import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenTool, Pen, ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LETTERS, NUMBERS, STROKES } from '@/lib/constants';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const props = { className };
@@ -36,20 +38,6 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     }
 };
 
-const STROKES = [
-  { id: 'standing', label: 'Standing Line', icon: 'fa-grip-lines-vertical' },
-  { id: 'sleeping', label: 'Sleeping Line', icon: 'fa-grip-lines' },
-  { id: 'slanting', label: 'Slanting Line', icon: 'fa-slash' },
-  { id: 'curve-up', label: 'Curve Up', icon: 'fa-chevron-up' },
-  { id: 'curve-down', label: 'Curve Down', icon: 'fa-chevron-down' },
-  { id: 'curve-left', label: 'Curve Left', icon: 'fa-chevron-left' },
-  { id: 'curve-right', label: 'Curve Right', icon: 'fa-chevron-right' },
-  { id: 'circle', label: 'Circle', icon: 'fa-circle' },
-];
-
-const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-
 type PracticeMode = 'letters' | 'strokes' | 'numbers';
 
 const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
@@ -59,9 +47,7 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
   
   const [started, setStarted] = useState(false);
   const [mode, setMode] = useState<PracticeMode>('numbers');
-  const [selectedLetter, setSelectedLetter] = useState('A');
-  const [selectedNumber, setSelectedNumber] = useState('1');
-  const [selectedStroke, setSelectedStroke] = useState(STROKES[0].id);
+  const [selectedItem, setSelectedItem] = useState('1');
   const [isDrawingTrace, setIsDrawingTrace] = useState(false);
   const [isDrawingFree, setIsDrawingFree] = useState(false);
   const [brushColor, setBrushColor] = useState('#FF9F43');
@@ -69,12 +55,16 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
   const [showSuccess, setShowSuccess] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
 
+  const selectedStroke = useMemo(() => STROKES.find(s => s.id === selectedItem), [selectedItem]);
+  const selectedLetter = useMemo(() => LETTERS.find(l => l === selectedItem), [selectedItem]);
+  const selectedNumber = useMemo(() => NUMBERS.find(n => n === selectedItem), [selectedItem]);
+
   const initCanvases = useCallback(() => {
     setupCanvas(traceCanvasRef.current, true);
     setupCanvas(freeCanvasRef.current, false);
     setShowSuccess(false);
     setFeedbackMessage('');
-  }, [selectedLetter, selectedNumber, selectedStroke, mode]);
+  }, [selectedItem, mode]);
 
   useEffect(() => {
     if (started) {
@@ -133,25 +123,27 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
         ctx.font = '900 350px Fredoka, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.strokeText(selectedLetter, midX, midY + 20);
+        ctx.strokeText(selectedItem, midX, midY + 20);
       } else if (mode === 'numbers') {
-        const fontSize = selectedNumber === '10' ? 280 : 350;
+        const fontSize = selectedItem === '10' ? 280 : 350;
         ctx.font = `900 ${fontSize}px Fredoka, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.strokeText(selectedNumber, midX, midY + 20);
+        ctx.strokeText(selectedItem, midX, midY + 20);
       } else {
         ctx.beginPath();
         const padding = 100;
-        switch (selectedStroke) {
-          case 'standing': ctx.moveTo(midX, midY - padding); ctx.lineTo(midX, midY + padding); break;
-          case 'sleeping': ctx.moveTo(midX - padding, midY); ctx.lineTo(midX + padding, midY); break;
-          case 'slanting': ctx.moveTo(midX - padding, midY - padding); ctx.lineTo(midX + padding, midY + padding); break;
-          case 'curve-up': ctx.arc(midX, midY + padding/2, padding, Math.PI, 0); break;
-          case 'curve-down': ctx.arc(midX, midY - padding/2, padding, 0, Math.PI); break;
-          case 'curve-left': ctx.arc(midX + padding/2, midY, padding, 0.5 * Math.PI, 1.5 * Math.PI); break;
-          case 'curve-right': ctx.arc(midX - padding/2, midY, padding, 1.5 * Math.PI, 0.5 * Math.PI); break;
-          case 'circle': ctx.arc(midX, midY, padding, 0, Math.PI * 2); break;
+        if(selectedStroke){
+            switch (selectedStroke.id) {
+            case 'standing': ctx.moveTo(midX, midY - padding); ctx.lineTo(midX, midY + padding); break;
+            case 'sleeping': ctx.moveTo(midX - padding, midY); ctx.lineTo(midX + padding, midY); break;
+            case 'slanting': ctx.moveTo(midX - padding, midY - padding); ctx.lineTo(midX + padding, midY + padding); break;
+            case 'curve-up': ctx.arc(midX, midY + padding/2, padding, Math.PI, 0); break;
+            case 'curve-down': ctx.arc(midX, midY - padding/2, padding, 0, Math.PI); break;
+            case 'curve-left': ctx.arc(midX + padding/2, midY, padding, 0.5 * Math.PI, 1.5 * Math.PI); break;
+            case 'curve-right': ctx.arc(midX - padding/2, midY, padding, 1.5 * Math.PI, 0.5 * Math.PI); break;
+            case 'circle': ctx.arc(midX, midY, padding, 0, Math.PI * 2); break;
+            }
         }
         ctx.stroke();
       }
@@ -228,7 +220,7 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
       let target = '';
       if (mode === 'letters') target = `letter ${selectedLetter}`;
       else if (mode === 'numbers') target = `number ${selectedNumber}`;
-      else target = STROKES.find(s => s.id === selectedStroke)?.label || 'stroke';
+      else target = STROKES.find(s => s.id === selectedStroke?.id)?.label || 'stroke';
 
       const result = await assessHandwritingAction({ imageDataUri: dataUrl, targetCharacter: target, schoolId: schoolId });
 
@@ -275,38 +267,37 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
         </div>
       )}
 
-      <div className="flex bg-white p-2 rounded-3xl shadow-xl border-4 border-gray-50 flex-wrap justify-center gap-2">
-          <button onClick={() => setMode('numbers')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'numbers' ? 'bg-orange-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-orange-50'}`}>
-            <Hash className="mr-2 h-4 w-4 inline-block"/> Numbers 1-10
-          </button>
-          <button onClick={() => setMode('letters')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'letters' ? 'bg-pink-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-pink-50'}`}>
-            <CaseSensitive className="mr-2 h-4 w-4 inline-block"/> Letters A-Z
-          </button>
-          <button onClick={() => setMode('strokes')} className={`px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${mode === 'strokes' ? 'bg-blue-500 text-white shadow-lg scale-105' : 'text-slate-900 hover:bg-blue-50'}`}>
-            <PenLine className="mr-2 h-4 w-4 inline-block"/> Strokes
-          </button>
-      </div>
-
-      <div className={`w-full bg-white p-4 rounded-[2.5rem] shadow-xl border-4 transition-colors duration-500 ${mode === 'letters' ? 'border-pink-100' : mode === 'numbers' ? 'border-orange-100' : 'border-blue-100'}`}>
-        <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar px-4">
-          {mode === 'letters' ? (
-            LETTERS.map(l => <button key={l} onClick={() => setSelectedLetter(l)} className={`flex-shrink-0 w-16 h-16 rounded-2xl font-black text-2xl flex items-center justify-center transition-all ${selectedLetter === l ? 'bg-pink-500 text-white scale-110 shadow-lg' : 'bg-pink-50 text-pink-300 hover:bg-pink-100'}`}>{l}</button>)
-          ) : mode === 'numbers' ? (
-            NUMBERS.map(n => <button key={n} onClick={() => setSelectedNumber(n)} className={`flex-shrink-0 w-16 h-16 rounded-2xl font-black text-2xl flex items-center justify-center transition-all ${selectedNumber === n ? 'bg-orange-500 text-white scale-110 shadow-lg' : 'bg-orange-50 text-orange-400 hover:bg-orange-100'}`}>{n}</button>)
-          ) : (
-            STROKES.map(s => <button key={s.id} onClick={() => setSelectedStroke(s.id)} className={`flex-shrink-0 px-6 h-16 rounded-2xl font-black flex items-center gap-3 transition-all ${selectedStroke === s.id ? 'bg-blue-500 text-white scale-105 shadow-lg' : 'bg-blue-50 text-blue-300 hover:bg-blue-100'}`}><IconRenderer iconName={s.icon} className="text-2xl" /><span className="whitespace-nowrap uppercase text-[10px] tracking-widest">{s.label}</span></button>)
-          )}
-        </div>
+      <div className={cn(
+          "w-full bg-white p-4 rounded-[2.5rem] shadow-xl border-4 transition-colors duration-500",
+          mode === 'letters' ? 'border-pink-100' : 
+          mode === 'numbers' ? 'border-orange-100' : 
+          'border-blue-100'
+      )}>
+        <Tabs defaultValue="numbers" onValueChange={(v) => setMode(v as any)} className="w-full">
+                <TabsList className="grid w-full grid-cols-3 mb-8">
+                    <TabsTrigger value="numbers">Numbers</TabsTrigger>
+                    <TabsTrigger value="letters">Letters</TabsTrigger>
+                    <TabsTrigger value="strokes">Strokes</TabsTrigger>
+                </TabsList>
+                <div className="flex gap-2 mb-4 overflow-x-auto w-full no-scrollbar font-black">
+                    {mode === 'letters' ? 
+                        (LETTERS.map(l => (<Button key={l} variant={selectedItem === l ? "default" : "outline"} onClick={() => setSelectedItem(l)} className="flex-shrink-0 w-12 h-12 rounded-xl font-black">{l}</Button>))) : 
+                    mode === 'numbers' ? 
+                        (NUMBERS.map(n => (<Button key={n} variant={selectedItem === n ? "default" : "outline"} onClick={() => setSelectedItem(n)} className="flex-shrink-0 w-12 h-12 rounded-xl font-black">{n}</Button>))) :
+                        (STROKES.map(s => (<Button key={s.id} variant={selectedItem === s.id ? "default" : "outline"} onClick={() => setSelectedItem(s.id)} className="flex-shrink-0 w-16 h-12 rounded-xl font-black"><IconRenderer iconName={s.icon} /></Button>)))
+                    }
+                </div>
+            </Tabs>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
         <div className="flex flex-col gap-4 group">
-          <div className="flex items-center justify-between px-6"><h3 className={`text-2xl font-black flex items-center gap-3 uppercase tracking-tighter transition-colors ${mode === 'letters' ? 'text-pink-600' : mode === 'numbers' ? 'text-orange-600' : 'text-blue-600'}`}><span className={`w-10 h-10 ${mode === 'letters' ? 'bg-pink-600' : mode === 'numbers' ? 'bg-orange-600' : 'bg-blue-600'} text-white rounded-full flex items-center justify-center text-lg shadow-md`}>1</span>Trace the Guide</h3></div>
-          <div className={`relative bg-white border-8 ${mode === 'letters' ? 'border-pink-50' : mode === 'numbers' ? 'border-orange-50' : 'border-blue-50'} rounded-[3.5rem] shadow-2xl overflow-hidden cursor-crosshair h-[400px] transition-all group-hover:border-white`}><canvas ref={traceCanvasRef} onMouseDown={(e) => startDrawing(e, traceCanvasRef, setIsDrawingTrace)} onMouseMove={(e) => draw(e, traceCanvasRef, isDrawingTrace)} onMouseUp={() => setIsDrawingTrace(false)} onMouseLeave={() => setIsDrawingTrace(false)} onTouchStart={(e) => startDrawing(e, traceCanvasRef, setIsDrawingTrace)} onTouchMove={(e) => draw(e, traceCanvasRef, isDrawingTrace)} onTouchEnd={() => setIsDrawingTrace(false)} className="w-full h-full"/></div>
+          <div className="flex items-center justify-between px-6"><h3 className={cn(`text-2xl font-black flex items-center gap-3 uppercase tracking-tighter transition-colors`, mode === 'letters' ? 'text-pink-600' : mode === 'numbers' ? 'text-orange-600' : 'text-blue-600')}><span className={cn(`w-10 h-10 text-white rounded-full flex items-center justify-center text-lg shadow-md`, mode === 'letters' ? 'bg-pink-600' : mode === 'numbers' ? 'bg-orange-600' : 'bg-blue-600')}>1</span>Trace the Guide</h3></div>
+          <div className={cn(`relative bg-white border-8 rounded-[3.5rem] shadow-2xl overflow-hidden cursor-crosshair h-[400px] transition-all group-hover:border-white`, mode === 'letters' ? 'border-pink-50' : mode === 'numbers' ? 'border-orange-50' : 'border-blue-50')}><canvas ref={traceCanvasRef} onMouseDown={(e) => startDrawing(e, traceCanvasRef, setIsDrawingTrace)} onMouseMove={(e) => draw(e, traceCanvasRef, isDrawingTrace)} onMouseUp={() => setIsDrawingTrace(false)} onMouseLeave={() => setIsDrawingTrace(false)} onTouchStart={(e) => startDrawing(e, traceCanvasRef, setIsDrawingTrace)} onTouchMove={(e) => draw(e, traceCanvasRef, isDrawingTrace)} onTouchEnd={() => setIsDrawingTrace(false)} className="w-full h-full"/></div>
         </div>
         <div className="flex flex-col gap-4 relative group">
-          <div className="flex items-center justify-between px-6"><h3 className={`text-2xl font-black flex items-center gap-3 uppercase tracking-tighter transition-colors ${mode === 'letters' ? 'text-blue-600' : mode === 'numbers' ? 'text-pink-600' : 'text-orange-600'}`}><span className={`w-10 h-10 ${mode === 'letters' ? 'bg-blue-600' : mode === 'numbers' ? 'bg-pink-600' : 'bg-orange-600'} text-white rounded-full flex items-center justify-center text-lg shadow-md`}>2</span>Draw Your Own!</h3></div>
-          <div className={`relative bg-white border-8 ${mode === 'letters' ? 'border-blue-50' : mode === 'numbers' ? 'border-pink-50' : 'border-orange-50'} rounded-[3.5rem] shadow-2xl overflow-hidden cursor-crosshair h-[400px] transition-all group-hover:border-white`}>
+          <div className="flex items-center justify-between px-6"><h3 className={cn(`text-2xl font-black flex items-center gap-3 uppercase tracking-tighter transition-colors`, mode === 'letters' ? 'text-blue-600' : mode === 'numbers' ? 'text-pink-600' : 'text-orange-600')}><span className={cn(`w-10 h-10 text-white rounded-full flex items-center justify-center text-lg shadow-md`, mode === 'letters' ? 'bg-blue-600' : mode === 'numbers' ? 'bg-pink-600' : 'bg-orange-600')}>2</span>Draw Your Own!</h3></div>
+          <div className={cn(`relative bg-white border-8 rounded-[3.5rem] shadow-2xl overflow-hidden cursor-crosshair h-[400px] transition-all group-hover:border-white`, mode === 'letters' ? 'border-blue-50' : mode === 'numbers' ? 'border-pink-50' : 'border-orange-50')}>
             <canvas ref={freeCanvasRef} onMouseDown={(e) => startDrawing(e, freeCanvasRef, setIsDrawingFree)} onMouseMove={(e) => draw(e, freeCanvasRef, isDrawingFree)} onMouseUp={() => setIsDrawingFree(false)} onMouseLeave={() => setIsDrawingFree(false)} onTouchStart={(e) => startDrawing(e, freeCanvasRef, setIsDrawingFree)} onTouchMove={(e) => draw(e, freeCanvasRef, isDrawingFree)} onTouchEnd={() => setIsDrawingFree(false)} className="w-full h-full"/>
             {isEvaluating && (<div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center rounded-[3rem] animate-pulse"><Loader2 className="w-12 h-12 animate-spin text-purple-600"/></div>)}
           </div>
