@@ -423,7 +423,8 @@ export async function generateMathWorldEntry(topic: string, category: string, sc
                 prompt = `Create a "what comes next" number sequence puzzle with a theme of "${topic}". The sequence should have 3 numbers, one of them null. Provide 3 options. Return JSON: { question: string, sequence: [number|null, number|null, number|null], answer: number, options: [number, number, number] }`;
                 break;
             case 'comparing':
-                prompt = `Create a number comparison game for "${topic}". Return JSON: { q: string, val1: number, val2: number, answer: number }`;
+            case 'comparison':
+                prompt = `Create a number comparison game for "${topic}". Which is bigger/smaller? Return JSON: { q: string, val1: number, val2: number, answer: number }`;
                 break;
             case 'number-words':
                 prompt = `Create a number-word matching card for the theme "${topic}". The number should be between 1-10. Return JSON: { digit: number, word: string, prompt: string }`;
@@ -432,13 +433,37 @@ export async function generateMathWorldEntry(topic: string, category: string, sc
                  prompt = `Create a number bonds puzzle up to 10 for "${topic}". Return JSON: { target: number, part1: number, part2: number, theme: string, prompt: string }`;
                 break;
             case 'addition':
-                 prompt = `Create a simple addition problem for "${topic}" (sum <= 10). Return JSON: { val1: number, val2: number, icon: string (FontAwesome key), theme: string, prompt: string }`;
+                 prompt = `Create a simple addition problem for "${topic}" (sum <= 10). Return JSON: { val1: number, val2: number, icon: string (e.g., 'fa-apple-whole'), theme: string, prompt: string }`;
                 break;
             case 'subtraction':
-                 prompt = `Create a simple subtraction problem for "${topic}" (result >= 0). Return JSON: { val1: number, val2: number, icon: string (FontAwesome key), theme: string, prompt: string }`;
+                 prompt = `Create a simple subtraction problem for "${topic}" (result >= 0). Return JSON: { val1: number, val2: number, icon: string (e.g., 'fa-cookie'), theme: string, prompt: string }`;
                 break;
             case 'tens-units':
                  prompt = `Create a tens and units example for a number between 11-50 related to "${topic}". Return JSON: { number: number, tens: number, units: number, prompt: string }`;
+                break;
+            case 'grouping':
+                prompt = `Create a number grouping game for the theme "${topic}". Return JSON: { groupSize: number (1-5), totalItems: number (use groupSize * random integer between 2 and 5), theme: string, prompt: string }`;
+                break;
+            case 'time':
+                prompt = `Create a telling time game for the theme "${topic}". The time should be on the hour. Return JSON: { hour: number (1-12), minute: 0, phrase: string, prompt: string }`;
+                break;
+            case 'money':
+                prompt = `Create a coin counting game for the theme "${topic}". The count should be between 1 and 10. Return JSON: { amount: number, coins: number, label: string, prompt: string }`;
+                break;
+            case 'measurement':
+                prompt = `Create a size/weight comparison game for "${topic}". It should have two items to compare. Return JSON: { q: string, correct: number (0 or 1), items: [{label: string, prompt: string, size: "lg" | "sm" }, {label: string, prompt: string, size: "lg" | "sm" }] }`;
+                break;
+            case 'shapes':
+                prompt = `Create a shape card for "${topic}". Return JSON: { name: string, type: "2D", prompt: string }`;
+                break;
+            case 'spatial':
+                prompt = `Create a spatial reasoning puzzle with the theme "${topic}". The target object should be above, below, or beside another. Return JSON: { target: string, position: "above" | "below" | "beside", refObject: string, prompt: string }`;
+                break;
+            case 'patterns':
+                prompt = `Create a 'what comes next' pattern puzzle with FontAwesome 5 icon keys related to "${topic}". The sequence should have 3 icons, and 2 options. Return JSON: { sequence: [string, string, string], next: string, options: [string, string] }`;
+                break;
+            case 'one-to-one':
+                prompt = `Create a one-to-one correspondence game for "${topic}". Return JSON: { count: number (2-5), name: string (plural), itemName: string, character: "fa-rabbit" | "fa-child-reaching", item: "fa-carrot" | "fa-apple-whole" }`;
                 break;
             default:
                 prompt = `Create a simple nursery math activity about ${topic} in the category ${category}. Return JSON: { "title": string, "question": string, "icon": "✨" }`;
@@ -491,5 +516,3 @@ export async function generateScienceWorldEntry(topic: string, category: string,
         return { success: false, error: (error as Error).message };
     }
 }
-
-    
