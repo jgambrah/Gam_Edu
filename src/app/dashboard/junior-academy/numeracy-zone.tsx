@@ -14,55 +14,56 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { 
-    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, 
-    Ear, Layers, Image as ImageIcon, Sparkles, HelpCircle, 
-    Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
-    Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
-    Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
-    Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
-} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 
+const {
+    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, 
+    Ear, Layers, Image: ImageIcon, Sparkles, HelpCircle, 
+    Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
+    Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
+    Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
+    Type, FontAwesome, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
+} = LucideIcons;
+
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-      'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': Type, 
-      'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
-      'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
-      'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
-      'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
-      'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
-      'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
-      'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
-      'fa-check-double': CheckCheck,
-      'fa-puzzle-piece': Puzzle,
-      'fa-cube': Box,
-    };
-    const IconComponent = iconMap[iconName] || HelpCircle;
-    return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
+  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': Type, 
+    'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
+    'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
+    'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
+    'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
+    'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
+    'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
+    'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
+    'fa-check-double': CheckCheck,
+    'fa-puzzle-piece': Puzzle,
+    'fa-cube': Box,
+  };
+  const IconComponent = iconMap[iconName] || HelpCircle;
+  return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
 
 type NumeracyTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'tracing';
 
-// --- SHARED COMPONENTS ---
-const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string }> = ({ title, children, icon }) => {
-    const [started, setStarted] = useState(false);
+const ModuleContainerWithState: React.FC<{ 
+  title: string; 
+  children: React.ReactNode; 
+  icon: string;
+  started: boolean;
+  onStart: () => void;
+}> = ({ title, children, icon, started, onStart }) => {
     if (!started) return (
         <div className="text-center p-12 bg-white rounded-[3rem] shadow-xl border-8 border-purple-50 animate-in fade-in zoom-in">
             <IconRenderer iconName={icon} className="h-20 w-20 mx-auto text-purple-300 mb-6" />
             <h3 className="text-4xl font-black text-purple-600 mb-4 uppercase tracking-tighter">{title}</h3>
             <p className="text-slate-500 mb-8 font-bold">Are you ready to learn and play?</p>
-            <Button onClick={() => setStarted(true)} size="lg" className="bg-purple-500 hover:bg-purple-600 text-white font-black px-12 py-8 rounded-2xl text-2xl shadow-2xl hover:scale-105 transition-all">START ACTIVITY</Button>
+            <Button onClick={onStart} size="lg" className="bg-purple-500 hover:bg-purple-600 text-white font-black px-12 py-8 rounded-2xl text-2xl shadow-2xl hover:scale-105 transition-all">START ACTIVITY</Button>
         </div>
     );
-    return (
-        <div className="relative">
-            <Button variant="ghost" onClick={() => setStarted(false)} className="absolute -top-16 left-0 text-slate-400 hover:text-purple-500 font-black uppercase text-xs tracking-widest"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
-            {children}
-        </div>
-    );
+    return <div className="relative">{children}</div>;
 };
 
 const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: string; onTopicChange: (v: string) => void; onGenerate: () => void; isLoading: boolean; onClose: () => void; }> = ({ title, topicLabel, topicValue, onTopicChange, onGenerate, isLoading, onClose }) => (
@@ -102,7 +103,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   
     const generateWithAi = async () => {
       if (!aiTopic || !schoolId) return; setIsAiLoading(true);
-      const result = await generateMathWorldEntry(aiTopic, 'numbers', schoolId);
+      const result = await generateMathWorldEntry({ topic: aiTopic, category: 'numbers', schoolId });
       if(result.success && result.data) { setData(prev => prev.map((item, i) => i === index ? { ...item, ...result.data } : item)); setIsDrawerOpen(false); setAiTopic(''); }
       setIsAiLoading(false);
     };
@@ -219,9 +220,12 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = items[index];
-  useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-  }, [index, schoolId, current?.prompt]);
+  const fetchVisual = useCallback(async () => {
+    if (!current || !schoolId) return;
+    const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+    if(res.success) setImageUrl(res.data || null);
+  }, [current, schoolId]);
+  useEffect(() => { fetchVisual(); }, [index, items, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center">
@@ -436,6 +440,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
 // --- MAIN WRAPPER ---
 const NumeracyZone: React.FC = () => {
     const [activeTab, setActiveTab] = useState<NumeracyTab>('numbers');
+    const [startedModules, setStartedModules] = useState<Set<NumeracyTab>>(new Set(['numbers']));
     const { schoolId } = useCurrentSchool();
     const currentSourceRef = useRef<HTMLAudioElement | null>(null);
     const { toast } = useToast();
@@ -467,17 +472,23 @@ const NumeracyZone: React.FC = () => {
     const renderModule = () => {
       if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>;
       const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
+      
+      const isStarted = startedModules.has(activeTab);
+      const handleStart = () => {
+        setStartedModules(prev => new Set([...prev, activeTab]));
+      };
+      
       const modules: Record<NumeracyTab, React.ReactNode> = {
-          'numbers': <ModuleContainer title="Learn Numbers" icon="fa-1"><NumbersMainModule {...commonProps} /></ModuleContainer>,
-          'counting': <ModuleContainer title="Counting Game" icon="fa-list-ol"><CountingGame {...commonProps} /></ModuleContainer>,
-          'sequence': <ModuleContainer title="Number Sequence" icon="fa-arrow-right-long"><NumberSequenceModule {...commonProps} /></ModuleContainer>,
-          'comparing': <ModuleContainer title="Number Comparison" icon="fa-scale-unbalanced"><NumberComparisonModule {...commonProps} /></ModuleContainer>,
-          'number-words': <ModuleContainer title="Number Words" icon="fa-font"><NumberWordsModule {...commonProps} /></ModuleContainer>,
-          'bonds': <ModuleContainer title="Number Bonds" icon="fa-handshake"><NumberBondsModule {...commonProps} /></ModuleContainer>,
-          'addition': <ModuleContainer title="Addition" icon="fa-plus"><AdditionModule {...commonProps} /></ModuleContainer>,
-          'subtraction': <ModuleContainer title="Subtraction" icon="fa-minus"><SubtractionModule {...commonProps} /></ModuleContainer>,
-          'tens-units': <ModuleContainer title="Tens and Units" icon="fa-layer-group"><TensUnitsModule {...commonProps} /></ModuleContainer>,
-          'tracing': <ModuleContainer title="Magic Pen" icon="fa-pen-clip"><NumberMagicPen {...commonProps} /></ModuleContainer>,
+          'numbers': <ModuleContainerWithState title="Learn Numbers" icon="fa-1" started={isStarted} onStart={handleStart}><NumbersMainModule {...commonProps} /></ModuleContainerWithState>,
+          'counting': <ModuleContainerWithState title="Counting Game" icon="fa-list-ol" started={isStarted} onStart={handleStart}><CountingGame {...commonProps} /></ModuleContainerWithState>,
+          'sequence': <ModuleContainerWithState title="Number Sequence" icon="fa-arrow-right-long" started={isStarted} onStart={handleStart}><NumberSequenceModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
+          'comparing': <ModuleContainerWithState title="Number Comparison" icon="fa-scale-unbalanced" started={isStarted} onStart={handleStart}><NumberComparisonModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
+          'number-words': <ModuleContainerWithState title="Number Words" icon="fa-font" started={isStarted} onStart={handleStart}><NumberWordsModule {...commonProps} /></ModuleContainerWithState>,
+          'bonds': <ModuleContainerWithState title="Number Bonds" icon="fa-handshake" started={isStarted} onStart={handleStart}><NumberBondsModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
+          'addition': <ModuleContainerWithState title="Addition" icon="fa-plus" started={isStarted} onStart={handleStart}><AdditionModule {...commonProps} /></ModuleContainerWithState>,
+          'subtraction': <ModuleContainerWithState title="Subtraction" icon="fa-minus" started={isStarted} onStart={handleStart}><SubtractionModule {...commonProps} /></ModuleContainerWithState>,
+          'tens-units': <ModuleContainerWithState title="Tens and Units" icon="fa-layer-group" started={isStarted} onStart={handleStart}><TensUnitsModule {...commonProps} /></ModuleContainerWithState>,
+          'tracing': <ModuleContainerWithState title="Magic Pen" icon="fa-pen-clip" started={isStarted} onStart={handleStart}><NumberMagicPen {...commonProps} /></ModuleContainerWithState>,
       };
       return modules[activeTab] || <p>Coming Soon</p>;
     };
@@ -500,5 +511,3 @@ const NumeracyZone: React.FC = () => {
 };
   
 export default NumeracyZone;
-
-    
