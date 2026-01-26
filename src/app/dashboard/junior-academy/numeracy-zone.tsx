@@ -27,11 +27,12 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { 
-    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, HelpCircle, 
-    Plus, Minus, ArrowLeftRight, CheckSquare, Hash, ListOrdered, Type, Handshake, Layers, PenTool, Clock,
-    Apple, Star, Heart, Car, Zap, Cookie, Rabbit, Carrot, PenLine, GripVertical, GripHorizontal, 
-    ChevronUp, ChevronDown, Circle, Trash2, ThumbsUp, CheckCheck, Puzzle, Box, Shapes, Move, ObjectGroup, BrainCircuit, Smile,
-    Scale, Play, Coins, Ruler
+    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, 
+    Ear, Layers, Image as ImageIcon, Sparkles, HelpCircle, 
+    Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
+    Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
+    Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
+    Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -101,7 +102,7 @@ const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: st
 
 /* --- 1. NUMBERS (Recognition) --- */
 const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data, setData] = useState(constants.NUMERACY_DATA.numbers);
+    const [data, setData] = useState(NUMERACY_DATA.numbers);
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -221,9 +222,9 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ on
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[550px]">
         <h3 className="text-4xl font-black text-orange-600 mb-10 uppercase text-center">{current.q}</h3>
         <div className="flex gap-12 items-center">
-          <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
+          <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
           <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
-          <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
+          <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
         </div>
         {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-12 bg-green-500 text-white rounded-2xl px-10 h-14">CONTINUE</Button>}
     </div>
@@ -237,7 +238,8 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = items[index];
   useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+    if(!current || !schoolId) return;
+    generateLessonImageAction({ prompt: current.prompt, schoolId }).then(res => setImageUrl(res.data || null));
   }, [index, schoolId, current?.prompt]);
   if (!current) return null;
   return (
@@ -301,7 +303,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
     if (!current) return null;
     const correct = current.val1 + current.val2;
     return (
-        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[600px]">
+        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center">
             <h3 className="text-4xl font-black text-orange-500 mb-10 uppercase font-black">Addition! ➕</h3>
             <div className="flex flex-col md:flex-row items-center gap-10 mb-12">
                 <div className="flex items-center gap-4">
@@ -353,7 +355,7 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
         <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} - {current.val2} = ?</p>
         <div className="flex flex-wrap justify-center gap-3">
             {Array.from({length: 11}).map((_, i) => (
-                <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Yes!" : "Try again"); }} className={cn("w-14 h-14 rounded-2xl", userAnswer === i ? (i === correct ? 'bg-green-500' : 'bg-red-500') : 'bg-red-50 text-slate-800')}>{i}</Button>
+                <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Yes!" : "Try again"); }} className={cn("w-14 h-14 rounded-2xl", userAnswer === i ? (i === correct ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-red-50 text-slate-800')}>{i}</Button>
             ))}
         </div>
     </div>
@@ -367,7 +369,8 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
   useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+    if(!current || !schoolId) return;
+    generateLessonImageAction({ prompt: current.prompt, schoolId }).then(res => setImageUrl(res.data || null));
   }, [index, schoolId, current]);
   if (!current) return null;
   return (
@@ -391,6 +394,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
 /* --- 10. MAGIC PEN (Tracing) --- */
 const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const [selectedItem, setSelectedItem] = useState('1');
+  const [isEvaluating, setIsEvaluating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const clearCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -429,7 +433,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
         </div>
         <div className="flex gap-4">
             <Button variant="outline" onClick={clearCanvas} className="h-14 px-8 rounded-2xl font-black">CLEAR</Button>
-            <Button onClick={() => onSound("You are a writing superstar!")} className="h-14 px-12 bg-purple-600 text-white rounded-2xl font-black">CHECK WORK</Button>
+            <Button onClick={() => onSound("You are a writing superstar!")} disabled={isEvaluating} className="h-14 px-12 bg-purple-600 text-white rounded-2xl font-black">{isEvaluating ? "CHECKING..." : "CHECK WORK"}</Button>
         </div>
     </div>
   );
@@ -494,8 +498,8 @@ const NumeracyZone: React.FC = () => {
     return (
       <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
         {/* Navigation Tabs */}
-        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
-          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max">
+        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4 font-black">
+          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max font-black">
             {tabs.map((tab) => (
               <button key={tab.id} onClick={() => { setActiveTab(tab.id); }} className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
               )}>
