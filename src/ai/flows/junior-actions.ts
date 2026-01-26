@@ -402,27 +402,47 @@ export async function generatePhonicsWorldEntry(topic: string, category: string,
     }
 }
 
-// --- MATH WORLD ENTRY GENERATOR (NEW) ---
-const MathWorldEntrySchema = z.object({
-    title: z.string(),
-    question: z.string(),
-    imagePrompt: z.string(),
-    options: z.array(z.string()).length(4),
-    correctAnswer: z.string(),
-    icon: z.string(),
-});
+// --- MATH WORLD ENTRY GENERATOR (IMPROVED) ---
+const MathWorldEntrySchema = z.any(); // More flexible
 export async function generateMathWorldEntry(topic: string, category: string, schoolId: string) {
     try {
         const creditResult = await checkAndSpendCredits(schoolId, 2);
         if (!creditResult.success) {
             return { success: false, error: creditResult.error || "Insufficient AI credits." };
         }
-        const prompt = `
-            Create a nursery math activity for a child.
-            The topic is "${topic}" and it should fit within the category "${category}".
-            Provide a simple question, 4 options (one must be correct), the correct answer, an emoji icon, and a creative DALL-E style prompt to generate an image for the question.
-            Output strictly JSON.
-        `;
+        
+        let prompt = '';
+        switch(category) {
+            case 'numbers':
+                prompt = `Create a number card for the theme "${topic}". Return JSON: { value: number (1-10), word: string, prompt: string (for image generation) }`;
+                break;
+            case 'counting':
+                prompt = `Create a counting game for "${topic}". The count should be between 1 and 10. Return JSON: { count: number, theme: string, prompt: string }`;
+                break;
+            case 'sequence':
+                prompt = `Create a "what comes next" number sequence puzzle with a theme of "${topic}". The sequence should have 3 numbers, one of them null. Provide 3 options. Return JSON: { question: string, sequence: [number|null, number|null, number|null], answer: number, options: [number, number, number] }`;
+                break;
+            case 'comparing':
+                prompt = `Create a number comparison game for "${topic}". Return JSON: { q: string, val1: number, val2: number, answer: number }`;
+                break;
+            case 'number-words':
+                prompt = `Create a number-word matching card for the theme "${topic}". The number should be between 1-10. Return JSON: { digit: number, word: string, prompt: string }`;
+                break;
+            case 'bonds':
+                 prompt = `Create a number bonds puzzle up to 10 for "${topic}". Return JSON: { target: number, part1: number, part2: number, theme: string, prompt: string }`;
+                break;
+            case 'addition':
+                 prompt = `Create a simple addition problem for "${topic}" (sum <= 10). Return JSON: { val1: number, val2: number, icon: string (FontAwesome key), theme: string, prompt: string }`;
+                break;
+            case 'subtraction':
+                 prompt = `Create a simple subtraction problem for "${topic}" (result >= 0). Return JSON: { val1: number, val2: number, icon: string (FontAwesome key), theme: string, prompt: string }`;
+                break;
+            case 'tens-units':
+                 prompt = `Create a tens and units example for a number between 11-50 related to "${topic}". Return JSON: { number: number, tens: number, units: number, prompt: string }`;
+                break;
+            default:
+                prompt = `Create a simple nursery math activity about ${topic} in the category ${category}. Return JSON: { "title": string, "question": string, "icon": "✨" }`;
+        }
 
         const { output } = await ai.generate({
             model: 'googleai/gemini-1.5-flash',
