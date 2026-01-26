@@ -2,12 +2,25 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import * as constants from '@/lib/constants';
+// Importing specific constants as per your file structure
+import { 
+    NUMERACY_DATA, 
+    ADDITION_DATA, 
+    SUBTRACTION_DATA, 
+    NUMBER_WORDS_DATA, 
+    SEQUENCE_DATA, 
+    NUM_COMPARISON_DATA, 
+    COUNTING_TASK_DATA, 
+    NUMBER_BONDS_DATA, 
+    TENS_UNITS_DATA,
+    STROKES 
+} from '@/lib/constants';
+
 import { 
     generateLessonImageAction, 
     generateTTSAction, 
     generateMathWorldEntry 
-} from '@/app/dashboard/junior-actions';
+} from '@/ai/flows/junior-actions';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +35,6 @@ import {
     Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
     Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
 } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 
@@ -91,7 +103,7 @@ const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: st
 
 /* --- 1. NUMBERS (Recognition) --- */
 const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data, setData] = useState(constants.NUMERACY_DATA.numbers);
+    const [data, setData] = useState(NUMERACY_DATA.numbers);
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -134,8 +146,9 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     );
 };
   
+/* --- 2. COUNTING GAME --- */
 const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data] = useState(constants.COUNTING_TASK_DATA || []);
+    const [data] = useState(COUNTING_TASK_DATA || []);
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -148,7 +161,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     }, [current, schoolId]);
     useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
     const options = useMemo(() => current ? [current.count, current.count + 1, current.count - 1].filter(o => o > 0).sort(() => Math.random() - 0.5) : [], [current]);
-    if (!current) return null;
+    if (!current) return <div className="p-20 text-center">No Data Loaded</div>;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-emerald-100 flex flex-col items-center min-h-[550px]">
             <h3 className="text-4xl font-black text-emerald-600 mb-10 uppercase">How Many? 🧮</h3>
@@ -157,7 +170,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
                     {loading ? <Loader2 className="animate-spin text-emerald-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={current.theme} />}
                 </div>
                 <div className="flex flex-col items-center">
-                    <p className="text-2xl font-black text-slate-500 mb-8 uppercase">Count the {current.theme}!</p>
+                    <p className="text-2xl font-black text-slate-500 mb-8 uppercase text-center">Count the {current.theme}!</p>
                     <div className="grid grid-cols-3 gap-4">
                         {options.map(opt => (
                             <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.count ? "Great job!" : "Try again!"); if(opt === current.count) confetti(); }} className={cn("w-20 h-20 rounded-3xl font-black text-4xl shadow-xl", userAnswer === opt ? (opt === current.count ? 'bg-green-500' : 'bg-red-500') : 'bg-emerald-50 text-emerald-600')}>{opt}</Button>
@@ -170,12 +183,13 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     );
 };
 
+/* --- 3. NUMBER SEQUENCE --- */
 const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    const [data] = useState(constants.NUMERACY_DATA.sequence || []);
+    const [data] = useState(SEQUENCE_DATA || []);
     const [index, setIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
-    useEffect(() => { setUserAnswer(null); }, [index]);
+    useEffect(() => { setUserAnswer(null); }, [index, data]);
     if (!current) return null;
     return (
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[550px]">
@@ -189,7 +203,7 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSo
         </div>
         <div className="flex gap-4">
            {current.options.map((opt: number) => (
-             <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.answer ? "Yes!" : "No"); if(opt === current.answer) confetti(); }} className={cn("w-20 h-20 rounded-2xl text-3xl", userAnswer === opt ? (opt === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-purple-50 text-slate-700')}>{opt}</Button>
+             <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.answer ? "Yes!" : "No"); if (opt === current.answer) confetti(); }} className={cn("w-20 h-20 rounded-2xl text-3xl", userAnswer === opt ? (opt === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-purple-50 text-slate-700')}>{opt}</Button>
            ))}
         </div>
         {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT SEQUENCE</Button>}
@@ -197,8 +211,9 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSo
     );
 };
 
+/* --- 4. NUMBER COMPARISON --- */
 const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-  const [data] = useState(constants.NUMERACY_DATA.numComparison || []);
+  const [data] = useState(NUM_COMPARISON_DATA || []);
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<any>(null);
   const current = data[index];
@@ -217,18 +232,20 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ on
   );
 };
 
+/* --- 5. NUMBER WORDS --- */
 const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [items] = useState(constants.NUMERACY_DATA.numberWords || []);
+  const [items] = useState(NUMBER_WORDS_DATA || []);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = items[index];
   useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+    if(!current || !schoolId) return;
+    generateLessonImageAction({ prompt: current.prompt, schoolId }).then(res => setImageUrl(res.data || null));
   }, [index, schoolId, current?.prompt]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center">
-      <div className="flex items-center gap-6 mb-10">
+      <div className="flex items-center gap-6 mb-10 font-black">
         <div className="w-24 h-24 bg-purple-500 text-white rounded-2xl flex items-center justify-center text-6xl font-black">{current.digit}</div>
         <ArrowRight className="text-purple-300 h-10 w-10" />
         <span className="text-6xl font-black text-purple-600 uppercase tracking-tighter">{current.word}</span>
@@ -238,24 +255,25 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
       </div>
       <div className="flex gap-6">
         <Button size="icon" onClick={() => setIndex(p => (p === 0 ? items.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
-        <Button onClick={() => onSound(current.word)} className="bg-purple-500 text-white px-10 rounded-2xl">LISTEN</Button>
+        <Button onClick={() => onSound(current.word)} className="bg-purple-500 text-white px-10 rounded-2xl h-14">LISTEN</Button>
         <Button size="icon" onClick={() => setIndex(p => (p + 1) % items.length)} className="bg-slate-100 rounded-full"><ArrowRight/></Button>
       </div>
     </div>
   );
 };
 
+/* --- 6. NUMBER BONDS --- */
 const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-  const [data] = useState(constants.NUMERACY_DATA.numberBonds || []);
+  const [data] = useState(NUMBER_BONDS_DATA || []);
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const current = data[index];
-  useEffect(() => { setUserAnswer(null); }, [index]);
+  useEffect(() => { setUserAnswer(null) }, [index]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center min-h-[550px]">
         <h3 className="text-4xl font-black text-pink-600 mb-8 uppercase">Friends of {current.target}!</h3>
-        <div className="flex items-center gap-6 mb-10">
+        <div className="flex items-center gap-6 mb-10 font-black">
            <div className="w-20 h-20 bg-pink-500 text-white rounded-2xl flex items-center justify-center text-4xl font-black">{current.part1}</div>
            <Plus className="text-slate-400"/>
            <div className={cn("w-20 h-20 rounded-2xl flex items-center justify-center border-4 border-dashed text-4xl font-black", userAnswer === current.part2 ? 'bg-green-500 text-white' : 'bg-pink-50 text-pink-200')}>{userAnswer === current.part2 ? userAnswer : '?'}</div>
@@ -264,7 +282,7 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
         </div>
         <div className="flex flex-wrap justify-center gap-2">
            {Array.from({length: current.target + 1}).map((_, i) => (
-             <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === current.part2 ? "Correct!" : "Try again"); if(i === current.part2) confetti(); }} className={cn("w-14 h-14 rounded-xl text-xl", userAnswer === i ? 'bg-green-500' : 'bg-pink-50 text-pink-600')}>{i}</Button>
+             <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === current.part2 ? "Correct!" : "Try again"); if(i === current.part2) confetti(); }} className={cn("w-14 h-14 rounded-xl text-xl", userAnswer === i ? 'bg-green-500 text-white' : 'bg-pink-50 text-pink-600')}>{i}</Button>
            ))}
         </div>
         {userAnswer === current.part2 && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT BOND</Button>}
@@ -272,8 +290,9 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
   );
 };
 
+/* --- 7. ADDITION --- */
 const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data] = useState(constants.NUMERACY_DATA.addition || []);
+    const [data] = useState(ADDITION_DATA || []);
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
@@ -283,11 +302,12 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
         const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
         if(res.success) setImageUrl(res.data || null);
     }, [current, schoolId]);
-    useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
+    useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, fetchVisual]);
     if (!current) return null;
+    const correct = current.val1 + current.val2;
     return (
-        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[600px]">
-            <h3 className="text-4xl font-black text-orange-500 mb-10 uppercase">Addition! ➕</h3>
+        <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center">
+            <h3 className="text-4xl font-black text-orange-500 mb-10 uppercase font-black">Addition! ➕</h3>
             <div className="flex flex-col md:flex-row items-center gap-10 mb-12">
                 <div className="flex items-center gap-4">
                     <div className="flex gap-2 p-4 bg-orange-50 rounded-2xl border-2 border-orange-100">
@@ -305,15 +325,16 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
             <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} + {current.val2} = ?</p>
             <div className="flex flex-wrap justify-center gap-3">
                 {Array.from({length: 11}).map((_, i) => (
-                    <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === (current.val1+current.val2) ? "Perfect!" : "Keep counting"); if(i === (current.val1+current.val2)) confetti(); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === (current.val1+current.val2) ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-slate-800')}>{i}</Button>
+                    <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Perfect!" : "Keep counting"); if(i === correct) confetti(); }} className={cn("w-16 h-16 rounded-2xl font-black text-2xl", userAnswer === i ? (i === correct ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-slate-800')}>{i}</Button>
                 ))}
             </div>
         </div>
     );
 };
 
+/* --- 8. SUBTRACTION --- */
 const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [data] = useState(constants.NUMERACY_DATA.subtraction || []);
+  const [data] = useState(SUBTRACTION_DATA || []);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
@@ -323,7 +344,7 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
     if(res.success) setImageUrl(res.data || null);
   }, [current, schoolId]);
-  useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
+  useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, fetchVisual]);
   if (!current) return null;
   const correct = current.val1 - current.val2;
   return (
@@ -339,15 +360,16 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
         <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} - {current.val2} = ?</p>
         <div className="flex flex-wrap justify-center gap-3">
             {Array.from({length: 11}).map((_, i) => (
-                <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Yes!" : "Try again"); if(i === correct) confetti(); }} className={cn("w-14 h-14 rounded-2xl", userAnswer === i ? (i === correct ? 'bg-green-500' : 'bg-red-500') : 'bg-red-50 text-slate-800')}>{i}</Button>
+                <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Yes!" : "Try again"); if(i === correct) confetti(); }} className={cn("w-14 h-14 rounded-2xl", userAnswer === i ? (i === correct ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-red-50 text-slate-800')}>{i}</Button>
             ))}
         </div>
     </div>
   );
 };
 
+/* --- 9. TENS AND UNITS --- */
 const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [data] = useState(constants.NUMERACY_DATA.tensUnits || []);
+  const [data] = useState(TENS_UNITS_DATA || []);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
@@ -356,17 +378,17 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
     const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
     if(res.success) setImageUrl(res.data || null);
   }, [current, schoolId]);
-  useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
+  useEffect(() => { fetchVisual(); }, [index, fetchVisual]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center min-h-[550px]">
-      <h3 className="text-4xl font-black text-indigo-500 mb-8 uppercase">Tens and Units 📦</h3>
-      <div className="flex items-center gap-12 mb-10">
-         <div className="text-center"><p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Number</p><div className="w-24 h-24 bg-indigo-500 text-white rounded-2xl flex items-center justify-center text-5xl font-black shadow-xl">{current.number}</div></div>
+      <h3 className="text-4xl font-black text-indigo-500 mb-8 uppercase font-black">Tens and Units 📦</h3>
+      <div className="flex items-center gap-12 mb-10 font-black">
+         <div className="text-center font-black"><p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Number</p><div className="w-24 h-24 bg-indigo-500 text-white rounded-2xl flex items-center justify-center text-5xl font-black shadow-xl">{current.number}</div></div>
          <span className="text-4xl text-slate-300">=</span>
          <div className="flex gap-4">
-            <div className="text-center"><p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1">Tens</p><div className="w-16 h-16 border-4 border-indigo-200 text-indigo-600 rounded-xl flex items-center justify-center text-3xl font-black">{current.tens}</div></div>
-            <div className="text-center"><p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1">Units</p><div className="w-16 h-16 border-4 border-indigo-200 text-indigo-600 rounded-xl flex items-center justify-center text-3xl font-black">{current.units}</div></div>
+            <div className="text-center"><p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1 font-black">Tens</p><div className="w-16 h-16 border-4 border-indigo-200 text-indigo-600 rounded-xl flex items-center justify-center text-3xl font-black">{current.tens}</div></div>
+            <div className="text-center"><p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1 font-black">Units</p><div className="w-16 h-16 border-4 border-indigo-200 text-indigo-600 rounded-xl flex items-center justify-center text-3xl font-black">{current.units}</div></div>
          </div>
       </div>
       <div className="w-full max-w-2xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10 cursor-pointer" onClick={() => onSound(`${current.number} has ${current.tens} ten and ${current.units} units`)}>
@@ -380,6 +402,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   );
 };
 
+/* --- 10. MAGIC PEN (Tracing) --- */
 const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const [selectedItem, setSelectedItem] = useState('1');
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -405,26 +428,31 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
   };
   return (
     <div className="flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100">
-        <div className="flex gap-2 mb-8 overflow-x-auto w-full no-scrollbar">
-            {Array.from({length: 10}).map((_, i) => (<Button key={i} variant={selectedItem === String(i) ? "default" : "outline"} onClick={() => setSelectedItem(String(i))} className="flex-shrink-0 w-12 h-12 rounded-xl font-black">{i}</Button>))}
+        <div className="flex gap-2 mb-8 overflow-x-auto w-full no-scrollbar font-black">
+            {Array.from({length: 11}).map((_, i) => (<Button key={i} variant={selectedItem === String(i) ? "default" : "outline"} onClick={() => setSelectedItem(String(i))} className="flex-shrink-0 w-12 h-12 rounded-xl font-black">{i}</Button>))}
         </div>
         <div className="relative w-full max-w-[400px] aspect-square bg-white border-8 border-purple-50 rounded-[3rem] shadow-inner mb-8">
             <canvas ref={canvasRef} width={400} height={400} className="w-full h-full cursor-crosshair" onMouseMove={(e) => {
                 if(e.buttons !== 1) return;
-                const ctx = canvasRef.current?.getContext('2d');
+                const canvas = canvasRef.current;
+                const rect = canvas?.getBoundingClientRect();
+                if(!rect) return;
+                const ctx = canvas?.getContext('2d');
                 if(!ctx) return;
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
                 ctx.setLineDash([]);
                 ctx.lineWidth = 15;
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = '#8B5CF6';
-                ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                ctx.lineTo(x * (400 / rect.width), y * (400 / rect.height));
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                ctx.moveTo(x * (400 / rect.width), y * (400 / rect.height));
             }} />
         </div>
         <div className="flex gap-4">
-            <Button variant="outline" onClick={clearCanvas} className="h-14 px-8 rounded-2xl">CLEAR</Button>
+            <Button variant="outline" onClick={clearCanvas} className="h-14 px-8 rounded-2xl font-black">CLEAR</Button>
             <Button onClick={handleCheck} disabled={isEvaluating} className="h-14 px-12 bg-purple-600 text-white rounded-2xl font-black">{isEvaluating ? "CHECKING..." : "CHECK WORK"}</Button>
         </div>
     </div>
@@ -435,29 +463,29 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
 const NumeracyZone: React.FC = () => {
     const [activeTab, setActiveTab] = useState<NumeracyTab>('numbers');
     const [startedModules, setStartedModules] = useState<Record<NumeracyTab, boolean>>({
-        numbers: false, counting: false, sequence: false, comparing: false, 
-        'number-words': false, bonds: false, addition: false, subtraction: false, 
-        'tens-units': false, tracing: false,
+        numbers: true, // Auto-start the first module
+        counting: false,
+        sequence: false,
+        comparing: false,
+        'number-words': false,
+        bonds: false,
+        addition: false,
+        subtraction: false,
+        'tens-units': false,
+        tracing: false,
     });
     
     const { schoolId } = useCurrentSchool();
     const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-    const { toast } = useToast();
 
     const playFeedbackSound = useCallback(async (text: string) => {
       if (!text || !schoolId) return;
-      if (currentSourceRef.current) {
-          try { currentSourceRef.current.pause(); } catch (e) {}
-      }
-      try {
-          const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-          if (result.success && result.data && typeof window !== 'undefined') {
-              const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-              currentSourceRef.current = audio;
-              audio.play();
-          }
-      } catch (err: any) {
-          console.error("Audio playback error:", err);
+      if (currentSourceRef.current) try { currentSourceRef.current.pause(); } catch (e) {}
+      const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
+      if (result.success && result.data) {
+          const audio = new Audio(`data:audio/wav;base64,${result.data}`);
+          currentSourceRef.current = audio;
+          audio.play();
       }
     }, [schoolId]);
 
@@ -470,44 +498,36 @@ const NumeracyZone: React.FC = () => {
     };
   
     const tabs: {id: NumeracyTab, icon: string}[] = [
-      { id: 'numbers', icon: 'fa-1' }, 
-      { id: 'counting', icon: 'fa-list-ol' }, 
-      { id: 'sequence', icon: 'fa-arrow-right-long' }, 
-      { id: 'comparing', icon: 'fa-scale-unbalanced' }, 
-      { id: 'number-words', icon: 'fa-font' }, 
-      { id: 'bonds', icon: 'fa-handshake' }, 
-      { id: 'addition', icon: 'fa-plus' }, 
-      { id: 'subtraction', icon: 'fa-minus' }, 
-      { id: 'tens-units', icon: 'fa-layer-group' }, 
+      { id: 'numbers', icon: 'fa-1' }, { id: 'counting', icon: 'fa-list-ol' }, { id: 'sequence', icon: 'fa-arrow-right-long' }, 
+      { id: 'comparing', icon: 'fa-scale-unbalanced' }, { id: 'number-words', icon: 'fa-font' }, { id: 'bonds', icon: 'fa-handshake' }, 
+      { id: 'addition', icon: 'fa-plus' }, { id: 'subtraction', icon: 'fa-minus' }, { id: 'tens-units', icon: 'fa-layer-group' }, 
       { id: 'tracing', icon: 'fa-pen-clip' }
     ];
     
-    const renderModule = () => {
-      if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>;
-      const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
-      const isStarted = startedModules[activeTab];
-      const onStart = () => handleStartModule(activeTab);
-      const onClose = () => handleCloseModule(activeTab);
-      
-      const modules: Record<NumeracyTab, React.ReactNode> = {
-          'numbers': <ModuleContainerWithState title="Learn Numbers" icon="fa-1" started={isStarted} onStart={onStart} onClose={onClose}><NumbersMainModule {...commonProps} /></ModuleContainerWithState>,
-          'counting': <ModuleContainerWithState title="Counting Game" icon="fa-list-ol" started={isStarted} onStart={onStart} onClose={onClose}><CountingGame {...commonProps} /></ModuleContainerWithState>,
-          'sequence': <ModuleContainerWithState title="Number Sequence" icon="fa-arrow-right-long" started={isStarted} onStart={onStart} onClose={onClose}><NumberSequenceModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
-          'comparing': <ModuleContainerWithState title="Number Comparison" icon="fa-scale-unbalanced" started={isStarted} onStart={onStart} onClose={onClose}><NumberComparisonModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
-          'number-words': <ModuleContainerWithState title="Number Words" icon="fa-font" started={isStarted} onStart={onStart} onClose={onClose}><NumberWordsModule {...commonProps} /></ModuleContainerWithState>,
-          'bonds': <ModuleContainerWithState title="Number Bonds" icon="fa-handshake" started={isStarted} onStart={onStart} onClose={onClose}><NumberBondsModule onSound={playFeedbackSound} /></ModuleContainerWithState>,
-          'addition': <ModuleContainerWithState title="Addition" icon="fa-plus" started={isStarted} onStart={onStart} onClose={onClose}><AdditionModule {...commonProps} /></ModuleContainerWithState>,
-          'subtraction': <ModuleContainerWithState title="Subtraction" icon="fa-minus" started={isStarted} onStart={onStart} onClose={onClose}><SubtractionModule {...commonProps} /></ModuleContainerWithState>,
-          'tens-units': <ModuleContainerWithState title="Tens and Units" icon="fa-layer-group" started={isStarted} onStart={onStart} onClose={onClose}><TensUnitsModule {...commonProps} /></ModuleContainerWithState>,
-          'tracing': <ModuleContainerWithState title="Magic Pen" icon="fa-pen-clip" started={isStarted} onStart={onStart} onClose={onClose}><NumberMagicPen {...commonProps} /></ModuleContainerWithState>,
-      };
-      return modules[activeTab] || <p>Coming Soon</p>;
+    const renderModuleContent = () => {
+        if(!schoolId) return null;
+        const commonProps = { onSound: playFeedbackSound, schoolId };
+        
+        switch (activeTab) {
+            case 'numbers': return <NumbersMainModule {...commonProps} />;
+            case 'counting': return <CountingGame {...commonProps} />;
+            case 'sequence': return <NumberSequenceModule onSound={playFeedbackSound} />;
+            case 'comparing': return <NumberComparisonModule onSound={playFeedbackSound} />;
+            case 'number-words': return <NumberWordsModule {...commonProps} />;
+            case 'bonds': return <NumberBondsModule onSound={playFeedbackSound} />;
+            case 'addition': return <AdditionModule {...commonProps} />;
+            case 'subtraction': return <SubtractionModule {...commonProps} />;
+            case 'tens-units': return <TensUnitsModule {...commonProps} />;
+            case 'tracing': return <NumberMagicPen {...commonProps} />;
+            default: return null;
+        }
     };
   
     return (
       <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
-        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
-          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max">
+        {/* Navigation Tabs */}
+        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4 font-black">
+          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max font-black">
             {tabs.map((tab) => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
               )}>
@@ -516,7 +536,23 @@ const NumeracyZone: React.FC = () => {
             ))}
           </div>
         </div>
-        <div className="w-full px-4">{renderModule()}</div>
+
+        {/* Content Area */}
+        <div className="w-full px-4 font-black">
+            {schoolId ? (
+                <ModuleContainer
+                    title={activeTab.replace('-', ' ')} 
+                    icon={tabs.find(t => t.id === activeTab)?.icon || 'fa-1'}
+                    started={startedModules[activeTab]}
+                    onStart={() => handleStartModule(activeTab)}
+                    onClose={() => handleCloseModule(activeTab)}
+                >
+                    {startedModules[activeTab] ? renderModuleContent() : null}
+                </ModuleContainer>
+            ) : (
+                <div className="text-center p-20"><Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>
+            )}
+        </div>
       </div>
     );
 };
