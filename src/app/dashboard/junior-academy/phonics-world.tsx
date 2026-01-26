@@ -122,32 +122,23 @@ const TeacherModal: React.FC<{
   </Dialog>
 );
 
-const ModuleContainerWithState: React.FC<{ title: string; children: React.ReactNode; icon: string; started: boolean; onStart: () => void; onClose: () => void }> = ({ title, children, icon, started, onStart, onClose }) => {
+const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string; }> = ({ title, children, icon }) => {
+    const [started, setStarted] = useState(false);
     if (!started) return (
         <div className="text-center p-12 bg-white rounded-3xl shadow-lg animate-in fade-in">
             <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-pink-300 mb-4" />
             <h3 className="text-2xl font-bold text-pink-600 mb-2">{title}</h3>
             <p className="text-slate-500 mb-4">Ready to start this activity?</p>
-            <Button onClick={onStart} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
+            <Button onClick={() => setStarted(true)} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
         </div>
     );
-    return (
-        <div className="relative">
-            <Button variant="ghost" onClick={onClose} className="absolute -top-12 left-0 text-slate-400 hover:text-pink-500 font-bold text-xs"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
-            {children}
-        </div>
-    );
+    return <>{children}</>;
 };
 
 const PhonicsZone: React.FC = () => {
   const [activeTab, setActiveTab] = useState<PhonicsTab>('jolly-phonics');
   const { schoolId } = useCurrentSchool();
   const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-  const [startedModules, setStartedModules] = useState<Record<PhonicsTab, boolean>>({
-    'jolly-phonics': false, 'alphabet': false, 'picture-reading': false, 'syllables': false,
-    'alliteration': false, 'sound-games': false, 'blends': false, 'rhymes': false,
-    'diction': false, 'environmental-print': false, 'book-handling': false, 'missing-letters': false
-  });
 
   const playFeedbackSound = useCallback(async (text: string) => {
     if (!text || !schoolId) return;
@@ -166,10 +157,6 @@ const PhonicsZone: React.FC = () => {
         console.error("Audio playback error:", err);
     }
   }, [schoolId]);
-
-  const handleStartModule = (moduleId: PhonicsTab) => setStartedModules(prev => ({ ...prev, [moduleId]: true }));
-  const handleCloseModule = (moduleId: PhonicsTab) => setStartedModules(prev => ({ ...prev, [moduleId]: false }));
-
 
   const tabIcons: Record<PhonicsTab, string> = {
     'jolly-phonics': 'fa-face-smile-wink',
@@ -205,32 +192,21 @@ const PhonicsZone: React.FC = () => {
     if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
     const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
     
-    return (
-        <ModuleContainerWithState
-            title={activeTab.replace('-', ' ')}
-            icon={tabIcons[activeTab]}
-            started={startedModules[activeTab]}
-            onStart={() => handleStartModule(activeTab)}
-            onClose={() => handleCloseModule(activeTab)}
-        >
-        {startedModules[activeTab] && (
-            <>
-                {activeTab === 'jolly-phonics' && <JollyPhonicsModule {...commonProps} />}
-                {activeTab === 'alphabet' && <AlphabetModule {...commonProps} />}
-                {activeTab === 'picture-reading' && <PictureReadingModule {...commonProps} />}
-                {activeTab === 'syllables' && <SyllablesModule {...commonProps} />}
-                {activeTab === 'alliteration' && <AlliterationModule {...commonProps} />}
-                {activeTab === 'sound-games' && <SoundGamesModule {...commonProps} />}
-                {activeTab === 'blends' && <BlendsModule {...commonProps} />}
-                {activeTab === 'rhymes' && <RhymesModule {...commonProps} />}
-                {activeTab === 'diction' && <DictionModule {...commonProps} />}
-                {activeTab === 'missing-letters' && <MissingLettersModule {...commonProps} />}
-                {activeTab === 'environmental-print' && <EnvironmentalPrintModule {...commonProps} />}
-                {activeTab === 'book-handling' && <BookHandlingModule {...commonProps} />}
-            </>
-        )}
-        </ModuleContainerWithState>
-    );
+    switch(activeTab) {
+      case 'jolly-phonics': return <ModuleContainer title="Jolly Phonics" icon="fa-face-smile-wink"><JollyPhonicsModule {...commonProps} /></ModuleContainer>;
+      case 'alphabet': return <ModuleContainer title="Alphabet" icon="fa-font"><AlphabetModule {...commonProps} /></ModuleContainer>;
+      case 'picture-reading': return <ModuleContainer title="Picture Reading" icon="fa-images"><PictureReadingModule {...commonProps} /></ModuleContainer>;
+      case 'syllables': return <ModuleContainer title="Syllable Clapping" icon="fa-hands-clapping"><SyllablesModule {...commonProps} /></ModuleContainer>;
+      case 'alliteration': return <ModuleContainer title="Matching Sounds" icon="fa-ear-listen"><AlliterationModule {...commonProps} /></ModuleContainer>;
+      case 'sound-games': return <ModuleContainer title="Sound Games" icon="fa-gamepad"><SoundGamesModule {...commonProps} /></ModuleContainer>;
+      case 'blends': return <ModuleContainer title="Blends & Digraphs" icon="fa-layer-group"><BlendsModule {...commonProps} /></ModuleContainer>;
+      case 'rhymes': return <ModuleContainer title="Rhyming Families" icon="fa-repeat"><RhymesModule {...commonProps} /></ModuleContainer>;
+      case 'diction': return <ModuleContainer title="Clear Speaking" icon="fa-microphone-lines"><DictionModule {...commonProps} /></ModuleContainer>;
+      case 'missing-letters': return <ModuleContainer title="Fill the Gap" icon="fa-underline"><MissingLettersModule {...commonProps} /></ModuleContainer>;
+      case 'environmental-print': return <ModuleContainer title="Reading the World" icon="fa-road-sign"><EnvironmentalPrintModule {...commonProps} /></ModuleContainer>;
+      case 'book-handling': return <ModuleContainer title="Book Handling" icon="fa-book-open"><BookHandlingModule {...commonProps} /></ModuleContainer>;
+      default: return <p>Coming Soon</p>;
+    }
   };
 
   return (
@@ -345,7 +321,7 @@ const AlphabetModule: React.FC<{onSound: (text:string) => void, schoolId: string
     if (!aiTopic || !schoolId) return; setIsAiLoading(true);
     try {
       const result = await generatePhonicsWorldEntry(aiTopic, 'alphabet', schoolId);
-      if(result.success && result.data) {
+      if(result.success && result.data){
         const newEntry = { upper: aiTopic.toUpperCase(), lower: aiTopic.toLowerCase(), word: result.data.title, imagePrompt: result.data.imagePrompt };
         setData(prev => [...prev, newEntry].sort((a,b) => a.upper.localeCompare(b.upper)));
         setIsDrawerOpen(false); setAiTopic('');
@@ -702,7 +678,7 @@ const DictionModule: React.FC<{onSound: (text:string) => void, schoolId: string}
           {loading ? <Loader2 className="w-16 h-16 animate-spin text-rose-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={current.word} />}
         </div>
 
-        <div className="bg-rose-50 p-8 rounded-3xl border-4 border-white shadow-inner mb-10 text-center w-full max-w-xl">
+        <div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-white shadow-inner mb-10 text-center w-full max-w-xl">
            <h4 className="text-8xl font-black text-rose-500 mb-4 uppercase tracking-widest leading-none">{current.word}</h4>
            <p className="text-4xl font-black text-slate-800 tracking-[0.5em] mb-4">{current.syllables}</p>
         </div>
