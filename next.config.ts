@@ -23,25 +23,6 @@ const nextConfig: NextConfig = {
         "@opentelemetry/sdk-node",
         "@opentelemetry/otlp-grpc-exporter-base"
     ],
-
-    // 2. Webpack Config (Standard Bundler)
-    webpack: (config, { isServer }) => {
-        if (!isServer) {
-        config.resolve.fallback = {
-            ...config.resolve.fallback,
-            "http2": false,
-            "dns": false,
-            "async_hooks": false,
-            "node:async_hooks": false,
-            "fs": false,
-            "net": false,
-            "tls": false,
-            "dgram": false,
-            "child_process": false,
-        };
-        }
-        return config;
-    },
 };
 
 export default nextConfig;
