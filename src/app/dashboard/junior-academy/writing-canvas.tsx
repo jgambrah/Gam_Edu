@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
@@ -8,7 +7,7 @@ import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenTool, Pen, ArrowLeft, ChevronLeft } from 'lucide-react';
+import { Loader2, Mic, StopCircle, Zap, ShieldCheck, MonitorPlay, Volume2, XCircle, Sparkles, Clock, RefreshCw, User, GripVertical, GripHorizontal, Minus, ChevronUp, ChevronDown, ChevronRight, Circle, Trash2, ThumbsUp, CheckCheck, Wand2, Heart, Hash, PenLine, CaseSensitive, HelpCircle, Grip, PenTool, Pen, ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Input } from '@/components/ui/input';
@@ -23,7 +22,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
         case 'fa-slash': return <Minus {...props} />;
         case 'fa-chevron-up': return <ChevronUp {...props} />;
         case 'fa-chevron-down': return <ChevronDown {...props} />;
-        case 'fa-chevron-left': return <ChevronLeft {...props} />;
+        case 'fa-chevron-left': return <ArrowLeft {...props} />;
         case 'fa-chevron-right': return <ChevronRight {...props} />;
         case 'fa-circle': return <Circle {...props} />;
         case 'fa-trash-can': return <Trash2 {...props} />;
@@ -273,8 +272,8 @@ const WritingCanvas: React.FC<{ onSound: (t: string) => void, schoolId: string }
           mode === 'numbers' ? 'border-orange-100' : 
           'border-blue-100'
       )}>
-        <Tabs defaultValue="numbers" onValueChange={(v) => setMode(v as any)} className="w-full">
-                <TabsList className="grid w-full grid-cols-3 mb-8">
+        <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="w-full">
+                <TabsList className="grid w-full grid-cols-3 mb-4">
                     <TabsTrigger value="numbers">Numbers</TabsTrigger>
                     <TabsTrigger value="letters">Letters</TabsTrigger>
                     <TabsTrigger value="strokes">Strokes</TabsTrigger>

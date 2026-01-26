@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -86,7 +85,7 @@ const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: st
                     <Label className="text-xs font-black text-slate-400 uppercase tracking-widest">{topicLabel}</Label>
                     <Input type="text" value={topicValue} onChange={(e) => onTopicChange(e.target.value)} placeholder="Type here..." className="mt-2 h-14 rounded-2xl border-4 border-slate-50 font-black" />
                 </div>
-                <Button onClick={onGenerate} disabled={isLoading || !topicValue} className="w-full h-16 rounded-2xl bg-sky-500 hover:bg-sky-600 font-black text-xl shadow-xl">
+                <Button onClick={onGenerate} disabled={isLoading || !topicValue} className="w-full h-16 rounded-2xl bg-sky-500 hover:bg-sky-600 font-black text-xl shadow-xl text-white">
                     {isLoading ? <><Loader2 className="animate-spin mr-2"/> GENERATING...</> : <><Sparkles className="mr-2 h-6 w-6"/> CREATE MAGIC</>}
                 </Button>
             </div>
@@ -162,7 +161,7 @@ const TellingTimeModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
             <h3 className="text-4xl font-black text-blue-500 mb-8 uppercase">Clock Time ⏰</h3>
             <div className="w-72 h-72 bg-blue-50 rounded-full border-8 border-white shadow-2xl flex items-center justify-center mb-12 relative cursor-pointer" onClick={() => onSound(current.phrase)}>
                 <Clock className="h-40 w-40 text-blue-300" />
-                <div className="absolute inset-0 flex items-center justify-center"><LucideIcons.Volume2 className="text-blue-500 h-10 w-10 opacity-50"/></div>
+                <div className="absolute inset-0 flex items-center justify-center"><Volume2 className="text-blue-500 h-10 w-10 opacity-50"/></div>
             </div>
             <div className="flex gap-6">
                 {options.map(opt => (
@@ -351,29 +350,20 @@ const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string 
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
     const currentLevel = data[level];
-    
     useEffect(() => { setAnswered(null); }, [level]);
-
     const generateWithAi = async () => {
         if (!aiTopic || !schoolId) return; setIsAiLoading(true);
         const result = await generateMathWorldEntry(aiTopic, 'comparison', schoolId);
         if(result.success && result.data) { setData(prev => [...prev, result.data]); setIsDrawerOpen(false); setLevel(data.length); setAiTopic(''); }
         setIsAiLoading(false);
     };
-
     if (!currentLevel) return null;
-
     const handleChoice = (val: number) => {
         setAnswered(val);
         const isCorrect = val === currentLevel.answer;
-        if (isCorrect) {
-            onSound("Perfect!");
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        } else {
-            onSound("Check again");
-        }
+        if (isCorrect) { onSound("Perfect!"); confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); } 
+        else { onSound("Check again"); }
     };
-    
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center relative">
             {canEdit && <Button onClick={() => setIsDrawerOpen(true)} variant="outline" className="absolute top-4 right-4 rounded-full border-2 border-orange-200 text-orange-600 uppercase text-[10px]"><Wand2 className="h-3 w-3 mr-1"/> AI Maker</Button>}

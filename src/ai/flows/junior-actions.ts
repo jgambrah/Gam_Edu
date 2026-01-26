@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -424,7 +423,7 @@ export async function generateMathWorldEntry(topic: string, category: string, sc
                 break;
             case 'comparing':
             case 'comparison':
-                prompt = `Create a number comparison game for "${topic}". Which is bigger/smaller? Return JSON: { q: string, val1: number, val2: number, answer: number }`;
+                 prompt = `Create a number comparison game for "${topic}". Which is bigger/smaller? Return JSON: { q: string, val1: number, val2: number, answer: number }`;
                 break;
             case 'number-words':
                 prompt = `Create a number-word matching card for the theme "${topic}". The number should be between 1-10. Return JSON: { digit: number, word: string, prompt: string }`;
