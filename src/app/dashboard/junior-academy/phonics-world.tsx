@@ -1,6 +1,7 @@
+
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import * as constants from '@/lib/constants';
 import { generateLessonImageAction, generateTTSAction, generatePhonicsWorldEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -16,107 +17,97 @@ import {
     Recycle, Water, Droplets, Trash2, Flag, MousePointer2, Box, Rabbit, Carrot, Apple, Cookie, Star, Tv, Bed, Eye, CloudRain, Guitar, Plane, Car,
     Zap, CircleDot, Monitor, GraduationCap, MessageSquare, Users, Drama, BrainCircuit, Music, Wand2, ArrowLeft, ArrowRight, Loader2, Volume2, Atom,
     Play, Heart, Image as ImageIcon, Hand, Gamepad2, Layers, Repeat, Mic, Underline, Signpost, BookOpen, HelpCircle, PenLine, GripVertical, GripHorizontal,
-    ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, CheckCircle2, XCircle, PlusCircle, Type
+    ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, CheckCircle2, XCircle, PlusCircle
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { useRole } from '@/context/role-context';
+import * as LucideIcons from 'lucide-react';
+
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-    'fa-spell-check': Languages,
-    'fa-ear-listen': Ear,
-    'fa-pen-nib': Pen,
-    'fa-arrow-1-9': Calculator,
-    'fa-hand-holding-heart': Handshake,
-    'fa-flask-vial': FlaskConical,
-    'fa-palette': Palette,
-    'fa-robot': Bot,
-    'fa-face-smile': Smile,
-    'fa-tooth': Sparkles,
-    'fa-heart-pulse': HeartPulse,
-    'fa-vest': User,
-    'fa-sun': Sun,
-    'fa-utensils': Utensils,
-    'fa-school': School,
-    'fa-house': Home,
-    'fa-recycle': Recycle,
-    'fa-water': Droplets,
-    'fa-broom': Trash2,
-    'fa-flag': Flag,
-    'fa-hand-pointer': MousePointer2,
-    'fa-cube': Box,
-    'fa-chalkboard-user': User,
-    'fa-rabbit': Rabbit,
-    'fa-carrot': Carrot,
-    'fa-apple-whole': Apple,
-    'fa-cookie': Cookie,
-    'fa-star': Star,
-    'fa-tv': Tv,
-    'fa-bed': Bed,
-    'fa-eye': Eye,
-    'fa-cloud-showers-heavy': CloudRain,
-    'fa-guitar': Guitar,
-    'fa-plane': Plane,
-    'fa-car': Car,
-    'fa-frog': Rabbit, 
-    'fa-bolt': Zap,
-    'fa-circle-dot': CircleDot,
-    'fa-soap': Sparkles, 
-    'fa-broccoli': Carrot, 
-    'fa-display': Monitor,
-    'fa-graduation-cap': GraduationCap,
-    'fa-comments': MessageSquare,
-    'fa-people-group': Users,
-    'fa-masks-theater': Drama,
-    'fa-brain': BrainCircuit,
-    'fa-child-reaching': User,
-    'fa-music': Music,
-    'fa-magic': Wand2,
-    'fa-arrow-left': ArrowLeft,
-    'fa-arrow-right': ArrowRight,
-    'fa-spinner': Loader2,
-    'fa-volume-high': Volume2,
-    'fa-dna': Atom,
-    'fa-play': Play,
-    'fa-heart': Heart,
-    'fa-images': ImageIcon,
-    'fa-hands-clapping': Hand,
-    'fa-gamepad': Gamepad2,
-    'fa-layer-group': Layers,
-    'fa-repeat': Repeat,
-    'fa-microphone-lines': Mic,
-    'fa-underline': Underline,
-    'fa-road-sign': Signpost,
-    'fa-book-open': BookOpen,
-    'fa-face-smile-wink': Smile,
-    'fa-font': Type,
-  };
-
-  const IconComponent = iconMap[iconName] || HelpCircle;
-  return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
+    const iconMap: Record<string, keyof typeof LucideIcons> = {
+      'fa-spell-check': 'Languages',
+      'fa-ear-listen': 'Ear',
+      'fa-pen-nib': 'Pen',
+      'fa-arrow-1-9': 'Calculator',
+      'fa-hand-holding-heart': 'Handshake',
+      'fa-flask-vial': 'FlaskConical',
+      'fa-palette': 'Palette',
+      'fa-robot': 'Bot',
+      'fa-face-smile': 'Smile',
+      'fa-tooth': 'Sparkles',
+      'fa-heart-pulse': 'HeartPulse',
+      'fa-vest': 'User',
+      'fa-sun': 'Sun',
+      'fa-utensils': 'Utensils',
+      'fa-school': 'School',
+      'fa-house': 'Home',
+      'fa-recycle': 'Recycle',
+      'fa-water': 'Droplets',
+      'fa-broom': 'Trash2',
+      'fa-flag': 'Flag',
+      'fa-hand-pointer': 'MousePointer2',
+      'fa-cube': 'Box',
+      'fa-chalkboard-user': 'User',
+      'fa-rabbit': 'Rabbit',
+      'fa-carrot': 'Carrot',
+      'fa-apple-whole': 'Apple',
+      'fa-cookie': 'Cookie',
+      'fa-star': 'Star',
+      'fa-tv': 'Tv',
+      'fa-bed': 'Bed',
+      'fa-eye': 'Eye',
+      'fa-cloud-showers-heavy': 'CloudRain',
+      'fa-guitar': 'Guitar',
+      'fa-plane': 'Plane',
+      'fa-car': 'Car',
+      'fa-frog': 'Rabbit', 
+      'fa-bolt': 'Zap',
+      'fa-circle-dot': 'CircleDot',
+      'fa-soap': 'Sparkles', 
+      'fa-broccoli': 'Carrot', 
+      'fa-display': 'Monitor',
+      'fa-graduation-cap': 'GraduationCap',
+      'fa-comments': 'MessageSquare',
+      'fa-people-group': 'Users',
+      'fa-masks-theater': 'Drama',
+      'fa-brain': 'BrainCircuit',
+      'fa-child-reaching': 'User',
+      'fa-music': 'Music',
+      'fa-magic': 'Wand2',
+      'fa-arrow-left': 'ArrowLeft',
+      'fa-arrow-right': 'ArrowRight',
+      'fa-spinner': 'Loader2',
+      'fa-volume-high': 'Volume2',
+      'fa-dna': 'Atom',
+      'fa-play': 'Play',
+      'fa-heart': 'Heart',
+      'fa-images': 'ImageIcon',
+      'fa-hands-clapping': 'Hand',
+      'fa-gamepad': 'Gamepad2',
+      'fa-layer-group': 'Layers',
+      'fa-repeat': 'Repeat',
+      'fa-microphone-lines': 'Mic',
+      'fa-underline': 'Underline',
+      'fa-road-sign': 'Signpost',
+      'fa-book-open': 'BookOpen',
+      'fa-face-smile-wink': 'Smile',
+      'fa-font': 'Type'
+    };
+  
+    const LucideName = iconMap[iconName];
+    const IconComponent = (LucideIcons as any)[LucideName];
+  
+    if (!IconComponent || typeof IconComponent !== 'function') {
+      console.error('❌ Missing or invalid icon:', LucideName, 'for FA icon:', iconName);
+      const FallbackIcon = (LucideIcons as any)['HelpCircle'];
+      return <FallbackIcon className={className} />;
+    }
+  
+    return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
 
 type PhonicsTab = 'jolly-phonics' | 'alphabet' | 'picture-reading' | 'syllables' | 'alliteration' | 'sound-games' | 'blends' | 'rhymes' | 'diction' | 'environmental-print' | 'book-handling' | 'missing-letters';
-
-const ModuleContainerWithState: React.FC<{ 
-  title: string; children: React.ReactNode; icon: string; started: boolean; onStart: () => void; onClose: () => void;
-}> = ({ title, children, icon, started, onStart, onClose }) => {
-    if (!started) return (
-        <div className="text-center p-12 bg-white rounded-[3rem] shadow-xl border-8 border-pink-50 animate-in fade-in zoom-in">
-            <IconRenderer iconName={icon} className="h-20 w-20 mx-auto text-pink-300 mb-6" />
-            <h3 className="text-4xl font-black text-pink-600 mb-4 uppercase tracking-tighter">{title}</h3>
-            <p className="text-slate-500 mb-8 font-bold">Are you ready to explore and play?</p>
-            <Button onClick={onStart} size="lg" className="bg-pink-500 hover:bg-pink-600 text-white font-black px-12 py-8 rounded-2xl text-2xl shadow-2xl hover:scale-105 transition-all">START ACTIVITY</Button>
-        </div>
-    );
-    return (
-        <div className="relative">
-            <Button variant="ghost" onClick={onClose} className="absolute -top-16 left-0 text-slate-400 hover:text-pink-500 font-black uppercase text-xs tracking-widest"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
-            {children}
-        </div>
-    );
-};
 
 const TeacherModal: React.FC<{
   title: string; topicLabel: string; topicValue: string; 
@@ -151,6 +142,21 @@ const TeacherModal: React.FC<{
     </DialogContent>
   </Dialog>
 );
+
+const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string; }> = ({ title, children, icon }) => {
+    const [started, setStarted] = useState(false);
+    if (!started) {
+        return (
+            <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
+                <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-pink-300 mb-4" />
+                <h3 className="text-2xl font-bold text-pink-600 mb-2">{title}</h3>
+                <p className="text-slate-500 mb-4">Ready to start this activity?</p>
+                <Button onClick={() => setStarted(true)} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
+            </div>
+        );
+    }
+    return <>{children}</>;
+};
 
 const PhonicsZone: React.FC = () => {
   const [activeTab, setActiveTab] = useState<PhonicsTab>('jolly-phonics');
@@ -219,19 +225,18 @@ const PhonicsZone: React.FC = () => {
   };
   
   const renderModule = () => {
-    if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
+    if(!schoolId) return <div className="text-center p-8"><LucideIcons.Loader2 className="animate-spin"/></div>;
     const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
-    const isStarted = startedModules[activeTab];
-
+    
     return (
       <ModuleContainerWithState
         title={activeTab.replace('-', ' ')}
         icon={tabIcons[activeTab]}
-        started={isStarted}
+        started={startedModules[activeTab]}
         onStart={() => handleStartModule(activeTab)}
         onClose={() => handleCloseModule(activeTab)}
       >
-        {isStarted && (
+        {startedModules[activeTab] && (
           <>
             {activeTab === 'jolly-phonics' && <JollyPhonicsModule {...commonProps} />}
             {activeTab === 'alphabet' && <AlphabetModule {...commonProps} />}
@@ -279,6 +284,7 @@ const PhonicsZone: React.FC = () => {
 
 
 const JollyPhonicsModule: React.FC<{onSound: (text:string) => void, schoolId: string}> = ({onSound, schoolId}) => {
+  const { role } = useRole();
   const [data, setData] = useState(constants.JOLLY_PHONICS_DATA);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -286,6 +292,7 @@ const JollyPhonicsModule: React.FC<{onSound: (text:string) => void, schoolId: st
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
 
   const current = data[index];
   const fetchVisual = useCallback(async () => { if (!schoolId) return; setLoading(true); const url = await generateLessonImageAction({prompt: current.imagePrompt, schoolId}); setImageUrl(url.data || null); setLoading(false); }, [current, schoolId]);
@@ -304,7 +311,7 @@ const JollyPhonicsModule: React.FC<{onSound: (text:string) => void, schoolId: st
 
   return (
     <div className="w-full relative font-black">
-      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-pink-200 text-pink-600 px-4 py-2 rounded-full text-[10px] shadow-sm uppercase z-10 hover:bg-pink-50 transition-colors"><IconRenderer iconName="fa-magic"/> AI Maker</button>
+      {canEdit && <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-pink-200 text-pink-600 px-4 py-2 rounded-full text-[10px] shadow-sm uppercase z-10 hover:bg-pink-50 transition-colors"><IconRenderer iconName="fa-magic"/> AI Maker</button>}
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center min-h-[600px] animate-in zoom-in">
         <div className="flex items-center gap-8 mb-10">
            <h2 className="text-9xl font-black text-pink-500 drop-shadow-xl">{current.letter}</h2>
@@ -767,8 +774,8 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
 
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === current.missing && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === current.missing && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
-                {char === current.missing ? (answered || '?') : char}
+              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === '_' && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === '_' && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
+                {char === '_' ? (answered || '?') : char}
               </div>
           ))}
         </div>
@@ -872,4 +879,7 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
     </div>
   );
 };
-```
+
+
+export default PhonicsZone;
+
