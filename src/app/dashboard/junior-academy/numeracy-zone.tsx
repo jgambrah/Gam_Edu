@@ -139,7 +139,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
 
 /* --- 2. COUNTING GAME --- */
 const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data] = useState(COUNTING_TASK_DATA || []);
+    const [data] = useState(constants.COUNTING_TASK_DATA || []);
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -176,10 +176,11 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
 
 /* --- 3. SEQUENCE --- */
 const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-    const [data] = useState(SEQUENCE_DATA || []);
+    const [data] = useState(constants.SEQUENCE_DATA || []);
     const [index, setIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
+    useEffect(() => { setUserAnswer(null); }, [index]);
     if (!current) return null;
     return (
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center">
@@ -203,10 +204,11 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void }> = ({ onSo
 
 /* --- 4. COMPARISON --- */
 const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-  const [data] = useState(NUM_COMPARISON_DATA || []);
+  const [data] = useState(constants.NUM_COMPARISON_DATA || []);
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<any>(null);
   const current = data[index];
+  useEffect(() => { setUserAnswer(null); }, [index]);
   if (!current) return null;
   return (
     <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[550px]">
@@ -222,7 +224,7 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void }> = ({ on
 
 /* --- 5. NUMBER WORDS --- */
 const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [items] = useState(NUMBER_WORDS_DATA || []);
+  const [items] = useState(constants.NUMBER_WORDS_DATA || []);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = items[index];
@@ -251,7 +253,7 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
 
 /* --- 6. BONDS --- */
 const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
-  const [data] = useState(NUMBER_BONDS_DATA || []);
+  const [data] = useState(constants.NUMBER_BONDS_DATA || []);
   const [index, setIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const current = data[index];
@@ -279,7 +281,7 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
 
 /* --- 7. ADDITION --- */
 const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-    const [data] = useState(ADDITION_DATA || []);
+    const [data] = useState(constants.ADDITION_DATA || []);
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
@@ -319,7 +321,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
 
 /* --- 8. SUBTRACTION --- */
 const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [data] = useState(SUBTRACTION_DATA || []);
+  const [data] = useState(constants.SUBTRACTION_DATA || []);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
@@ -352,7 +354,7 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
 
 /* --- 9. TENS AND UNITS --- */
 const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
-  const [data] = useState(TENS_UNITS_DATA || []);
+  const [data] = useState(constants.TENS_UNITS_DATA || []);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
@@ -378,7 +380,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   );
 };
 
-/* --- 10. MAGIC PEN (Tracing) --- */
+/* --- 10. MAGIC PEN --- */
 const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const [activeMode, setActiveMode] = useState<PracticeMode>('numbers');
   const [selectedItem, setSelectedItem] = useState('1');
@@ -413,7 +415,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
              STROKES.map(s => (<Button key={s.id} variant={selectedItem === s.id ? "default" : "outline"} onClick={() => setSelectedItem(s.id)} className="flex-shrink-0 w-16 h-12 rounded-xl"><IconRenderer iconName={s.icon} /></Button>))
             }
         </div>
-        <div className="relative w-full max-w-[400px] aspect-square bg-white border-8 border-purple-50 rounded-[3rem] shadow-inner mb-8">
+        <div className="relative w-full max-w-[400px] aspect-square bg-white border-8 border-purple-50 rounded-[3rem] shadow-inner mb-8 overflow-hidden">
             <canvas ref={canvasRef} width={400} height={400} className="w-full h-full cursor-crosshair" onMouseMove={(e) => {
                 if(e.buttons !== 1) return;
                 const canvas = canvasRef.current;
@@ -424,7 +426,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
                 const x = (e.clientX - rect.left) * (400/rect.width);
                 const y = (e.clientY - rect.top) * (400/rect.height);
                 ctx.setLineDash([]);
-                ctx.lineWidth = 15;
+                ctx.lineWidth = 18;
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = '#8B5CF6';
                 ctx.lineTo(x, y);
@@ -440,7 +442,6 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
     </div>
   );
 };
-
 
 // --- MAIN WRAPPER ---
 const NumeracyZone: React.FC = () => {
@@ -527,3 +528,5 @@ const NumeracyZone: React.FC = () => {
 };
   
 export default NumeracyZone;
+
+    
