@@ -12,77 +12,108 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
-import { 
-  HelpCircle, 
-  Smile, 
-  Type, 
-  Image as ImageIcon, 
-  Hand, 
-  Ear, 
-  Gamepad2, 
-  Layers, 
-  Repeat, 
-  Mic, 
-  Underline, 
-  Signpost, 
-  BookOpen,
-  Loader2,
-  Wand2,
-  ArrowLeft,
-  ArrowRight,
-  Volume2,
-  Play,
-  Sparkles,
-  CheckCircle2,
-  XCircle,
-  PlusCircle
-} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useRole } from '@/context/role-context';
 import { getAuth } from 'firebase/auth';
 import { useFirestore } from '@/firebase';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+const {
+    Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
+    Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
+    Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Pen,
+    Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, 
+    Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
+    Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Apple, Sun, 
+    CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
+    Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
+    Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, Signpost
+} = LucideIcons;
+
+
+// --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-  // 1. Manually map FontAwesome keys to the static components we imported above
-  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-    'fa-face-smile-wink': Smile,
-    'fa-font': Type,
-    'fa-images': ImageIcon,
-    'fa-hands-clapping': Hand,
-    'fa-ear-listen': Ear,
-    'fa-gamepad': Gamepad2,
-    'fa-layer-group': Layers,
-    'fa-repeat': Repeat,
-    'fa-microphone-lines': Mic,
-    'fa-underline': Underline,
-    'fa-road-sign': Signpost,
-    'fa-book-open': BookOpen,
-    'fa-magic': Wand2,
-    'fa-spinner': Loader2,
-    'fa-arrow-left': ArrowLeft,
-    'fa-arrow-right': ArrowRight,
-    'fa-volume-high': Volume2,
-    'fa-play': Play,
-    'fa-sparkles': Sparkles,
-  };
+    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+      'fa-spell-check': Languages,
+      'fa-ear-listen': Ear,
+      'fa-pen-nib': Pen,
+      'fa-arrow-1-9': Calculator,
+      'fa-hand-holding-heart': Handshake,
+      'fa-flask-vial': FlaskConical,
+      'fa-palette': Palette,
+      'fa-robot': BotMessageSquare,
+      'fa-face-smile': Smile,
+      'fa-tooth': Sparkles,
+      'fa-heart-pulse': HeartPulse,
+      'fa-vest': User,
+      'fa-sun': Sun,
+      'fa-utensils': Utensils,
+      'fa-school': School,
+      'fa-house': Home,
+      'fa-recycle': Recycle,
+      'fa-water': Droplets,
+      'fa-broom': Trash2,
+      'fa-flag': Flag,
+      'fa-hand-pointer': MousePointer2,
+      'fa-cube': Cube,
+      'fa-chalkboard-user': User,
+      'fa-rabbit': Rabbit,
+      'fa-carrot': Carrot,
+      'fa-apple-whole': Apple,
+      'fa-cookie': Cookie,
+      'fa-star': Star,
+      'fa-tv': Tv,
+      'fa-bed': Bed,
+      'fa-eye': Eye,
+      'fa-cloud-showers-heavy': CloudRain,
+      'fa-guitar': Guitar,
+      'fa-plane': Plane,
+      'fa-car': Car,
+      'fa-frog': Rabbit,
+      'fa-bolt': Zap,
+      'fa-circle-dot': CircleDot,
+      'fa-soap': Sparkles,
+      'fa-broccoli': Carrot,
+      'fa-display': Monitor,
+      'fa-graduation-cap': GraduationCap,
+      'fa-comments': MessageSquare,
+      'fa-people-group': Users,
+      'fa-masks-theater': Drama,
+      'fa-brain': BrainCircuit,
+      'fa-child-reaching': User,
+      'fa-music': Music,
+      'fa-magic': Wand2,
+      'fa-arrow-left': ArrowLeft,
+      'fa-arrow-right': ArrowRight,
+      'fa-spinner': Loader2,
+      'fa-volume-high': Volume2,
+      'fa-dna': Atom,
+      'fa-play': Play,
+      'fa-heart': Heart,
+      'fa-face-smile-wink': Smile,
+      'fa-images': ImageIcon,
+      'fa-hands-clapping': Hand,
+      'fa-gamepad': Gamepad2,
+      'fa-layer-group': Layers,
+      'fa-repeat': Repeat,
+      'fa-microphone-lines': Mic,
+      'fa-underline': Underline,
+      'fa-road-sign': Signpost,
+      'fa-book-open': BookOpen,
 
-  // 2. Get the component from the map
-  const IconComponent = iconMap[iconName];
-
-  // 3. Logic for missing or valid icons
-  if (!IconComponent) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`⚠️ Icon mapping missing for: ${iconName}`);
+    };
+  
+    const LucideName = iconMap[iconName];
+    const IconComponent = (LucideIcons as any)[LucideName as any] || HelpCircle;
+  
+    if (!IconComponent || typeof IconComponent !== 'function') {
+      console.error('❌ Missing or invalid icon:', LucideName, 'for FA icon:', iconName);
+      const FallbackIcon = (LucideIcons as any)['HelpCircle'];
+      return <FallbackIcon className={className} />;
     }
-    return <HelpCircle className={className} />;
-  }
-
-  return (
-    <IconComponent 
-      className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} 
-    />
-  );
+  
+    return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
 
 
@@ -122,23 +153,40 @@ const TeacherModal: React.FC<{
   </Dialog>
 );
 
-const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string; }> = ({ title, children, icon }) => {
-    const [started, setStarted] = useState(false);
+const ModuleContainer: React.FC<{ 
+  title: string; 
+  children: React.ReactNode; 
+  icon: string;
+  started: boolean;
+  onStart: () => void;
+  onClose: () => void;
+}> = ({ title, children, icon, started, onStart, onClose }) => {
     if (!started) return (
         <div className="text-center p-12 bg-white rounded-3xl shadow-lg animate-in fade-in">
             <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-pink-300 mb-4" />
             <h3 className="text-2xl font-bold text-pink-600 mb-2">{title}</h3>
             <p className="text-slate-500 mb-4">Ready to start this activity?</p>
-            <Button onClick={() => setStarted(true)} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
+            <Button onClick={onStart} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
         </div>
     );
-    return <>{children}</>;
+    return (
+        <div className="relative">
+            <Button variant="ghost" onClick={onClose} className="absolute -top-16 left-0 text-slate-400 hover:text-pink-500 font-bold text-xs"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
+            {children}
+        </div>
+    );
 };
 
 const PhonicsZone: React.FC = () => {
   const [activeTab, setActiveTab] = useState<PhonicsTab>('jolly-phonics');
   const { schoolId } = useCurrentSchool();
   const currentSourceRef = useRef<HTMLAudioElement | null>(null);
+
+  const [startedModules, setStartedModules] = useState<Record<PhonicsTab, boolean>>({
+    'jolly-phonics': false, 'alphabet': false, 'picture-reading': false, 'syllables': false,
+    'alliteration': false, 'sound-games': false, 'blends': false, 'rhymes': false,
+    'diction': false, 'missing-letters': false, 'environmental-print': false, 'book-handling': false,
+  });
 
   const playFeedbackSound = useCallback(async (text: string) => {
     if (!text || !schoolId) return;
@@ -157,6 +205,14 @@ const PhonicsZone: React.FC = () => {
         console.error("Audio playback error:", err);
     }
   }, [schoolId]);
+
+  const handleStartModule = (moduleId: PhonicsTab) => {
+    setStartedModules(prev => ({ ...prev, [moduleId]: true }));
+  };
+
+  const handleCloseModule = (moduleId: PhonicsTab) => {
+      setStartedModules(prev => ({ ...prev, [moduleId]: false }));
+  };
 
   const tabIcons: Record<PhonicsTab, string> = {
     'jolly-phonics': 'fa-face-smile-wink',
@@ -188,40 +244,56 @@ const PhonicsZone: React.FC = () => {
     'book-handling': 'bg-blue-500',
   };
   
+  const tabs = Object.keys(tabIcons).map(id => ({ id: id as PhonicsTab, label: id.replace('-', ' '), icon: tabIcons[id as PhonicsTab] }));
+
   const renderModule = () => {
-    if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
+    if(!schoolId) return <div className="text-center p-8"><LucideIcons.Loader2 className="animate-spin"/></div>;
     const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
     
-    switch(activeTab) {
-      case 'jolly-phonics': return <ModuleContainer title="Jolly Phonics" icon="fa-face-smile-wink"><JollyPhonicsModule {...commonProps} /></ModuleContainer>;
-      case 'alphabet': return <ModuleContainer title="Alphabet" icon="fa-font"><AlphabetModule {...commonProps} /></ModuleContainer>;
-      case 'picture-reading': return <ModuleContainer title="Picture Reading" icon="fa-images"><PictureReadingModule {...commonProps} /></ModuleContainer>;
-      case 'syllables': return <ModuleContainer title="Syllable Clapping" icon="fa-hands-clapping"><SyllablesModule {...commonProps} /></ModuleContainer>;
-      case 'alliteration': return <ModuleContainer title="Matching Sounds" icon="fa-ear-listen"><AlliterationModule {...commonProps} /></ModuleContainer>;
-      case 'sound-games': return <ModuleContainer title="Sound Games" icon="fa-gamepad"><SoundGamesModule {...commonProps} /></ModuleContainer>;
-      case 'blends': return <ModuleContainer title="Blends & Digraphs" icon="fa-layer-group"><BlendsModule {...commonProps} /></ModuleContainer>;
-      case 'rhymes': return <ModuleContainer title="Rhyming Families" icon="fa-repeat"><RhymesModule {...commonProps} /></ModuleContainer>;
-      case 'diction': return <ModuleContainer title="Clear Speaking" icon="fa-microphone-lines"><DictionModule {...commonProps} /></ModuleContainer>;
-      case 'missing-letters': return <ModuleContainer title="Fill the Gap" icon="fa-underline"><MissingLettersModule {...commonProps} /></ModuleContainer>;
-      case 'environmental-print': return <ModuleContainer title="Reading the World" icon="fa-road-sign"><EnvironmentalPrintModule {...commonProps} /></ModuleContainer>;
-      case 'book-handling': return <ModuleContainer title="Book Handling" icon="fa-book-open"><BookHandlingModule {...commonProps} /></ModuleContainer>;
-      default: return <p>Coming Soon</p>;
-    }
+    const currentTabInfo = tabs.find(t => t.id === activeTab);
+    if (!currentTabInfo) return null;
+
+    return (
+      <ModuleContainer
+        title={currentTabInfo.label}
+        icon={currentTabInfo.icon}
+        started={startedModules[activeTab]}
+        onStart={() => handleStartModule(activeTab)}
+        onClose={() => handleCloseModule(activeTab)}
+      >
+        {startedModules[activeTab] && (
+            <>
+                {activeTab === 'jolly-phonics' && <JollyPhonicsModule {...commonProps} />}
+                {activeTab === 'alphabet' && <AlphabetModule {...commonProps} />}
+                {activeTab === 'picture-reading' && <PictureReadingModule {...commonProps} />}
+                {activeTab === 'syllables' && <SyllablesModule {...commonProps} />}
+                {activeTab === 'alliteration' && <AlliterationModule {...commonProps} />}
+                {activeTab === 'sound-games' && <SoundGamesModule {...commonProps} />}
+                {activeTab === 'blends' && <BlendsModule {...commonProps} />}
+                {activeTab === 'rhymes' && <RhymesModule {...commonProps} />}
+                {activeTab === 'diction' && <DictionModule {...commonProps} />}
+                {activeTab === 'missing-letters' && <MissingLettersModule {...commonProps} />}
+                {activeTab === 'environmental-print' && <EnvironmentalPrintModule {...commonProps} />}
+                {activeTab === 'book-handling' && <BookHandlingModule {...commonProps} />}
+            </>
+        )}
+      </ModuleContainer>
+    );
   };
 
   return (
     <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
       <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
         <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-pink-50 min-w-max font-black">
-          {(Object.keys(tabIcons) as PhonicsTab[]).map((tab) => (
+          {tabs.map((tab) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
               className={`min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${
-                activeTab === tab ? `${colors[tab]} text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
+                activeTab === tab.id ? `${colors[tab.id]} text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
               }`}
             >
-              <IconRenderer iconName={tabIcons[tab]} className="text-lg" /><span className="whitespace-nowrap">{tab.replace('-', ' ')}</span>
+              <IconRenderer iconName={tab.icon} className="text-lg" /><span className="whitespace-nowrap">{tab.label}</span>
             </button>
           ))}
         </div>
@@ -365,8 +437,6 @@ const AlphabetModule: React.FC<{onSound: (text:string) => void, schoolId: string
 };
 
 const PictureReadingModule: React.FC<{onSound: (text:string) => void, schoolId: string}> = ({onSound, schoolId}) => {
-  const { role } = useRole();
-  const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
   const [data, setData] = useState(constants.PICTURE_READING_DATA);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -395,7 +465,7 @@ const PictureReadingModule: React.FC<{onSound: (text:string) => void, schoolId: 
 
   return (
     <div className="w-full relative font-black">
-      {canEdit && <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-indigo-200 text-indigo-600 px-4 py-2 rounded-full text-[10px] shadow-sm uppercase z-10 hover:bg-indigo-50 transition-colors"><IconRenderer iconName="fa-magic"/> AI Maker</button>}
+      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-indigo-200 text-indigo-600 px-4 py-2 rounded-full text-[10px] shadow-sm uppercase z-10 hover:bg-indigo-50 transition-colors"><IconRenderer iconName="fa-magic"/> AI Maker</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center min-h-[600px] animate-in slide-in-from-bottom">
         <h3 className="text-4xl font-black text-indigo-600 mb-8 uppercase tracking-tighter text-center">Picture Reading! 🖼️</h3>
         <p className="text-2xl text-slate-500 mb-10 italic">Which one starts with the sound <span className="text-indigo-600 text-4xl uppercase tracking-widest font-black">{current.sound}</span>?</p>
@@ -417,8 +487,6 @@ const PictureReadingModule: React.FC<{onSound: (text:string) => void, schoolId: 
 };
 
 const SyllablesModule: React.FC<{onSound: (text:string) => void, schoolId: string}> = ({onSound, schoolId}) => {
-  const { role } = useRole();
-  const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
   const [data, setData] = useState(constants.SYLLABLES_DATA);
   const [index, setIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -444,7 +512,7 @@ const SyllablesModule: React.FC<{onSound: (text:string) => void, schoolId: strin
 
   return (
     <div className="w-full relative font-black">
-      {canEdit && <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-purple-200 text-purple-600 px-4 py-2 rounded-full text-[10px] shadow-sm uppercase z-10 hover:bg-purple-50 transition-colors"><IconRenderer iconName="fa-magic"/> AI Maker</button>}
+      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-purple-200 text-purple-600 px-4 py-2 rounded-full text-[10px] shadow-sm uppercase z-10 hover:bg-purple-50 transition-colors"><IconRenderer iconName="fa-magic"/> AI Maker</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[600px] animate-in zoom-in">
         <h3 className="text-4xl font-black text-purple-600 mb-8 uppercase tracking-tighter text-center">Clap the word! 👏</h3>
         <div onClick={() => onSound(`${current.word}... ${current.syllables.join('... ')}`)} className="w-full max-w-lg aspect-square bg-purple-50 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-10 overflow-hidden cursor-pointer group relative">
@@ -737,8 +805,8 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
 
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === current.missing && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === current.missing && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
-                {char === current.missing ? (answered || '?') : char}
+              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === '_' && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === '_' && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
+                {char === '_' ? (answered || '?') : char}
               </div>
           ))}
         </div>
@@ -848,3 +916,5 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
 
 
 export default PhonicsZone;
+
+    
