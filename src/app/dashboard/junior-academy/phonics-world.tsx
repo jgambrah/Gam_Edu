@@ -29,7 +29,7 @@ const {
     CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
     Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
     Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, Signpost,
-    FlaskConical, Hand, Gamepad2, Image: ImageIcon, Bed
+    FlaskConical, Hand, Gamepad2, Image as ImageIcon, Bed, Eye
 } = LucideIcons;
 
 
@@ -71,11 +71,11 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-guitar': Guitar,
       'fa-plane': Plane,
       'fa-car': Car,
-      'fa-frog': Rabbit,
+      'fa-frog': Rabbit, 
       'fa-bolt': Zap,
       'fa-circle-dot': CircleDot,
-      'fa-soap': Sparkles,
-      'fa-broccoli': Carrot,
+      'fa-soap': Sparkles, 
+      'fa-broccoli': Carrot, 
       'fa-display': Monitor,
       'fa-graduation-cap': GraduationCap,
       'fa-comments': MessageSquare,
@@ -164,7 +164,7 @@ const ModuleContainer: React.FC<{
 }> = ({ title, children, icon, started, onStart, onClose }) => {
     if (!started) return (
         <div className="text-center p-12 bg-white rounded-3xl shadow-lg animate-in fade-in">
-            <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-pink-300 mb-4" />
+            <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-pink-300 mb-4"/>
             <h3 className="text-2xl font-bold text-pink-600 mb-2">{title}</h3>
             <p className="text-slate-500 mb-4">Ready to start this activity?</p>
             <Button onClick={onStart} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
@@ -806,8 +806,8 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
 
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === current.missing && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === current.missing && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
-                {char === current.missing ? (answered || '?') : char}
+              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === '_' && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === '_' && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
+                {char === '_' ? (answered || '?') : char}
               </div>
           ))}
         </div>
@@ -888,8 +888,8 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
     try {
       const result = await generatePhonicsWorldEntry(aiTopic, 'book-handling', schoolId);
       if(result.success && result.data){
-        setData(prev => [...prev, result.data]);
-        setIsDrawerOpen(false); setIndex(data.length); setAiTopic('');
+        setData(prev => [result.data, ...prev]);
+        setIsDrawerOpen(false); setIndex(0); setAiTopic('');
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
