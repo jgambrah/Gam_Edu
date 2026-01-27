@@ -29,83 +29,83 @@ const {
     CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
     Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
     Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, Signpost,
-    FlaskConical, Hand, Gamepad2, Image as ImageIcon, Bed, Eye
+    FlaskConical, Hand, Gamepad2, Image, Bed, Eye
 } = LucideIcons;
 
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-      'fa-spell-check': Languages,
-      'fa-ear-listen': Ear,
-      'fa-pen-nib': Pen,
-      'fa-arrow-1-9': Calculator,
-      'fa-hand-holding-heart': Handshake,
-      'fa-flask-vial': FlaskConical,
-      'fa-palette': Palette,
-      'fa-robot': BotMessageSquare,
-      'fa-face-smile': Smile,
-      'fa-tooth': Sparkles,
-      'fa-heart-pulse': HeartPulse,
-      'fa-vest': User,
-      'fa-sun': Sun,
-      'fa-utensils': Utensils,
-      'fa-school': School,
-      'fa-house': Home,
-      'fa-recycle': Recycle,
-      'fa-water': Droplets,
-      'fa-broom': Trash2,
-      'fa-flag': Flag,
-      'fa-hand-pointer': MousePointer2,
-      'fa-cube': Cube,
-      'fa-chalkboard-user': User,
-      'fa-rabbit': Rabbit,
-      'fa-carrot': Carrot,
-      'fa-apple-whole': Apple,
-      'fa-cookie': Cookie,
-      'fa-star': Star,
-      'fa-tv': Tv,
-      'fa-bed': Bed,
-      'fa-eye': Eye,
-      'fa-cloud-showers-heavy': CloudRain,
-      'fa-guitar': Guitar,
-      'fa-plane': Plane,
-      'fa-car': Car,
-      'fa-frog': Rabbit, 
-      'fa-bolt': Zap,
-      'fa-circle-dot': CircleDot,
-      'fa-soap': Sparkles, 
-      'fa-broccoli': Carrot, 
-      'fa-display': Monitor,
-      'fa-graduation-cap': GraduationCap,
-      'fa-comments': MessageSquare,
-      'fa-people-group': Users,
-      'fa-masks-theater': Drama,
-      'fa-brain': BrainCircuit,
-      'fa-child-reaching': User,
-      'fa-music': Music,
-      'fa-magic': Wand2,
-      'fa-arrow-left': ArrowLeft,
-      'fa-arrow-right': ArrowRight,
-      'fa-spinner': Loader2,
-      'fa-volume-high': Volume2,
-      'fa-dna': Atom,
-      'fa-play': Play,
-      'fa-heart': Heart,
-      'fa-face-smile-wink': Smile,
-      'fa-images': ImageIcon,
-      'fa-hands-clapping': Hand,
-      'fa-gamepad': Gamepad2,
-      'fa-layer-group': Layers,
-      'fa-repeat': Repeat,
-      'fa-microphone-lines': Mic,
-      'fa-underline': Underline,
-      'fa-road-sign': Signpost,
-      'fa-book-open': BookOpen,
+    const iconMap: Record<string, keyof typeof LucideIcons> = {
+      'fa-spell-check': 'Languages',
+      'fa-ear-listen': 'Ear',
+      'fa-pen-nib': 'Pen',
+      'fa-arrow-1-9': 'Calculator',
+      'fa-hand-holding-heart': 'Handshake',
+      'fa-flask-vial': 'FlaskConical',
+      'fa-palette': 'Palette',
+      'fa-robot': 'Bot',
+      'fa-face-smile': 'Smile',
+      'fa-tooth': 'Sparkles',
+      'fa-heart-pulse': 'HeartPulse',
+      'fa-vest': 'User',
+      'fa-sun': 'Sun',
+      'fa-utensils': 'Utensils',
+      'fa-school': 'School',
+      'fa-house': 'Home',
+      'fa-recycle': 'Recycle',
+      'fa-water': 'Droplets',
+      'fa-broom': 'Trash2',
+      'fa-flag': 'Flag',
+      'fa-hand-pointer': 'MousePointer2',
+      'fa-cube': 'Cube',
+      'fa-chalkboard-user': 'User',
+      'fa-rabbit': 'Rabbit',
+      'fa-carrot': 'Carrot',
+      'fa-apple-whole': 'Apple',
+      'fa-cookie': 'Cookie',
+      'fa-star': 'Star',
+      'fa-tv': 'Tv',
+      'fa-bed': 'Bed',
+      'fa-eye': 'Eye',
+      'fa-cloud-showers-heavy': 'CloudRain',
+      'fa-guitar': 'Guitar',
+      'fa-plane': 'Plane',
+      'fa-car': 'Car',
+      'fa-frog': 'Rabbit', 
+      'fa-bolt': 'Zap',
+      'fa-circle-dot': 'CircleDot',
+      'fa-soap': 'Sparkles', 
+      'fa-broccoli': 'Carrot', 
+      'fa-display': 'Monitor',
+      'fa-graduation-cap': 'GraduationCap',
+      'fa-comments': 'MessageSquare',
+      'fa-people-group': 'Users',
+      'fa-masks-theater': 'Drama',
+      'fa-brain': 'BrainCircuit',
+      'fa-child-reaching': 'User',
+      'fa-music': 'Music',
+      'fa-magic': 'Wand2',
+      'fa-arrow-left': 'ArrowLeft',
+      'fa-arrow-right': 'ArrowRight',
+      'fa-spinner': 'Loader2',
+      'fa-volume-high': 'Volume2',
+      'fa-dna': 'Atom',
+      'fa-play': 'Play',
+      'fa-heart': 'Heart',
+      'fa-face-smile-wink': 'Smile',
+      'fa-images': 'Image',
+      'fa-hands-clapping': 'Hand',
+      'fa-gamepad': 'Gamepad2',
+      'fa-layer-group': 'Layers',
+      'fa-repeat': 'Repeat',
+      'fa-microphone-lines': 'Mic',
+      'fa-underline': 'Underline',
+      'fa-road-sign': 'Signpost',
+      'fa-book-open': 'BookOpen',
 
     };
   
-    const LucideName = iconMap[iconName];
+    const LucideName = iconMap[iconName] || 'HelpCircle';
     const IconComponent = (LucideIcons as any)[LucideName as any] || HelpCircle;
   
     if (!IconComponent || typeof IconComponent !== 'function') {
@@ -154,25 +154,20 @@ const TeacherModal: React.FC<{
   </Dialog>
 );
 
-const ModuleContainer: React.FC<{ 
-  title: string; 
-  children: React.ReactNode; 
-  icon: string;
-  started: boolean;
-  onStart: () => void;
-  onClose: () => void;
-}> = ({ title, children, icon, started, onStart, onClose }) => {
-    if (!started) return (
-        <div className="text-center p-12 bg-white rounded-3xl shadow-lg animate-in fade-in">
-            <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-pink-300 mb-4"/>
-            <h3 className="text-2xl font-bold text-pink-600 mb-2">{title}</h3>
-            <p className="text-slate-500 mb-4">Ready to start this activity?</p>
-            <Button onClick={onStart} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
-        </div>
-    );
+const ModuleContainer: React.FC<{ title: string; children: React.ReactNode; icon: string; started: boolean; onStart: () => void; onClose: () => void; }> = ({ title, children, icon, started, onStart, onClose }) => {
+    if (!started) {
+        return (
+            <div className="text-center p-12 bg-white rounded-3xl shadow-lg animate-in fade-in">
+                <IconRenderer iconName={icon} className="h-16 w-16 mx-auto text-pink-300 mb-4"/>
+                <h3 className="text-2xl font-bold text-pink-600 mb-2">{title}</h3>
+                <p className="text-slate-500 mb-4">Ready to start this activity?</p>
+                <Button onClick={onStart} className="bg-pink-500 hover:bg-pink-600">Start Activity</Button>
+            </div>
+        );
+    }
     return (
         <div className="relative">
-            <Button variant="ghost" onClick={onClose} className="absolute -top-16 left-0 text-slate-400 hover:text-pink-500 font-bold text-xs"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
+            <Button variant="ghost" onClick={onClose} className="absolute -top-12 left-0 text-slate-400 hover:text-pink-500 font-bold text-xs"><ArrowLeft className="mr-2 h-4 w-4"/> Close Activity</Button>
             {children}
         </div>
     );
@@ -182,7 +177,7 @@ const PhonicsZone: React.FC = () => {
   const [activeTab, setActiveTab] = useState<PhonicsTab>('jolly-phonics');
   const { schoolId } = useCurrentSchool();
   const currentSourceRef = useRef<HTMLAudioElement | null>(null);
-
+  
   const [startedModules, setStartedModules] = useState<Record<PhonicsTab, boolean>>({
     'jolly-phonics': false, 'alphabet': false, 'picture-reading': false, 'syllables': false,
     'alliteration': false, 'sound-games': false, 'blends': false, 'rhymes': false,
@@ -427,9 +422,9 @@ const AlphabetModule: React.FC<{onSound: (text:string) => void, schoolId: string
         </div>
         <div className="bg-pink-500 text-white px-10 py-4 rounded-3xl border-4 border-white shadow-xl mb-12"><p className="text-2xl font-black uppercase tracking-widest">{current.word}!</p></div>
         <div className="flex gap-6 items-center">
-          <button onClick={() => setIndex(prev => (prev - 1 + data.length) % data.length)} className="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 shadow-md active:scale-90 transition-all"><IconRenderer iconName="fa-arrow-left" className="text-2xl" /></button>
+          <button onClick={() => setIndex(prev => (prev - 1 + sortedData.length) % sortedData.length)} className="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 shadow-md active:scale-90 transition-all"><IconRenderer iconName="fa-arrow-left" className="text-2xl" /></button>
           <button onClick={playSound} className="w-24 h-24 rounded-full bg-pink-500 text-white flex items-center justify-center shadow-xl border-4 border-white active:scale-95 transition-all"><IconRenderer iconName="fa-volume-high" className="text-4xl" /></button>
-          <button onClick={() => setIndex(prev => (prev + 1) % data.length)} className="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 shadow-md active:scale-90 transition-all"><IconRenderer iconName="fa-arrow-right" className="text-2xl" /></button>
+          <button onClick={() => setIndex(prev => (prev + 1) % sortedData.length)} className="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 shadow-md active:scale-90 transition-all"><IconRenderer iconName="fa-arrow-right" className="text-2xl" /></button>
         </div>
       </div>
       {isDrawerOpen && <TeacherModal title="AI Alphabet Assistant" topicLabel="Letter Idea" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
@@ -806,8 +801,8 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
 
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === '_' && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === '_' && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
-                {char === '_' ? (answered || '?') : char}
+              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === current.missing && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === current.missing && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
+                {char === current.missing ? (answered || '?') : char}
               </div>
           ))}
         </div>
@@ -868,7 +863,6 @@ const EnvironmentalPrintModule: React.FC<{onSound: (text:string) => void, school
 };
 
 const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: string}> = ({onSound, schoolId}) => {
-  const [data, setData] = useState(constants.BOOK_HANDLING_DATA);
   const [index, setIndex] = useState(0);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -877,7 +871,7 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   
-  const currentBook = data[index];
+  const currentBook = constants.BOOK_HANDLING_DATA[index];
   const currentPage = currentBook.pages[page];
 
   const fetchVisual = useCallback(async () => { if (!schoolId) return; setLoading(true); const url = await generateLessonImageAction({prompt: currentPage.prompt, schoolId}); setImageUrl(url.data || null); setLoading(false); }, [currentPage, schoolId]);
@@ -886,11 +880,9 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
   const generateWithAi = async () => {
     if (!aiTopic || !schoolId) return; setIsAiLoading(true);
     try {
-      const result = await generatePhonicsWorldEntry(aiTopic, 'book-handling', schoolId);
-      if(result.success && result.data){
-        setData(prev => [result.data, ...prev]);
-        setIsDrawerOpen(false); setIndex(0); setAiTopic('');
-      }
+      await generatePhonicsWorldEntry(aiTopic, 'book-handling', schoolId);
+      onSound("Great! New book instruction added magically!");
+      setIsDrawerOpen(false); setAiTopic('');
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
