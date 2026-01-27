@@ -29,7 +29,7 @@ const {
     CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
     Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
     Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, Signpost,
-    FlaskConical, Hand, Gamepad2, Image: ImageIcon // Added missing icons
+    FlaskConical, Hand, Gamepad2, Image: ImageIcon, Bed
 } = LucideIcons;
 
 
@@ -917,5 +917,3 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
 
 
 export default PhonicsZone;
-
-      
