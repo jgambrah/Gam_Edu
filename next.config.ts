@@ -21,7 +21,8 @@ const nextConfig: NextConfig = {
         "@grpc/grpc-js",
         "@opentelemetry/exporter-trace-otlp-grpc",
         "@opentelemetry/sdk-node",
-        "@opentelemetry/otlp-grpc-exporter-base"
+        "@opentelemetry/otlp-grpc-exporter-base",
+        "wav"
     ],
 };
 
