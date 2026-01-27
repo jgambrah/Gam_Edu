@@ -28,7 +28,8 @@ const {
     Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Apple, Sun, 
     CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
     Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-    Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, Signpost
+    Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, Signpost,
+    FlaskConical, Hand, Gamepad2, Image: ImageIcon // Added missing icons
 } = LucideIcons;
 
 
@@ -146,7 +147,7 @@ const TeacherModal: React.FC<{
           disabled={isLoading || !topicValue} 
           className="w-full"
         >
-          {isLoading ? <><Loader2 className="animate-spin mr-2"/> GENERATING...</> : <><Wand2 className="mr-2 h-4 w-4"/> CREATE MAGIC</>}
+          {isLoading ? <><LucideIcons.Loader2 className="animate-spin mr-2"/> GENERATING...</> : <><LucideIcons.Wand2 className="mr-2 h-4 w-4"/> CREATE MAGIC</>}
         </Button>
       </div>
     </DialogContent>
@@ -244,8 +245,6 @@ const PhonicsZone: React.FC = () => {
     'book-handling': 'bg-blue-500',
   };
   
-  const tabs = Object.keys(tabIcons).map(id => ({ id: id as PhonicsTab, label: id.replace('-', ' '), icon: tabIcons[id as PhonicsTab] }));
-
   const renderModule = () => {
     if(!schoolId) return <div className="text-center p-8"><LucideIcons.Loader2 className="animate-spin"/></div>;
     const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
@@ -280,6 +279,8 @@ const PhonicsZone: React.FC = () => {
       </ModuleContainer>
     );
   };
+  
+  const tabs = Object.keys(tabIcons).map(id => ({ id: id as PhonicsTab, label: id.replace('-', ' '), icon: tabIcons[id as PhonicsTab] }));
 
   return (
     <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
@@ -346,7 +347,7 @@ const JollyPhonicsModule: React.FC<{onSound: (text:string) => void, schoolId: st
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full mb-10">
             <div onClick={() => onSound(current.story)} className="relative aspect-square bg-pink-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center overflow-hidden cursor-pointer group">
-              {loading ? <Loader2 className="w-16 h-16 animate-spin text-pink-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={current.letter} />}
+              {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-pink-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={current.letter} />}
               <div className="absolute inset-0 bg-pink-500/0 group-hover:bg-pink-500/5 transition-colors flex items-center justify-center"><IconRenderer iconName="fa-play" className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" /></div>
             </div>
             <div className="flex flex-col justify-center gap-6">
@@ -422,7 +423,7 @@ const AlphabetModule: React.FC<{onSound: (text:string) => void, schoolId: string
           </div>
         </div>
         <div className="w-72 h-72 md:w-96 md:h-96 bg-pink-50 rounded-[3rem] overflow-hidden shadow-inner flex items-center justify-center relative mb-12 border-8 border-white group cursor-pointer" onClick={playSound}>
-          {loading ? <Loader2 className="w-16 h-16 animate-spin text-pink-400" /> : imageUrl && <img src={imageUrl} alt={current.word} className="w-full h-full object-cover p-10 group-hover:scale-110 transition-transform duration-500" />}
+          {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-pink-400" /> : imageUrl && <img src={imageUrl} alt={current.word} className="w-full h-full object-cover p-10 group-hover:scale-110 transition-transform duration-500" />}
         </div>
         <div className="bg-pink-500 text-white px-10 py-4 rounded-3xl border-4 border-white shadow-xl mb-12"><p className="text-2xl font-black uppercase tracking-widest">{current.word}!</p></div>
         <div className="flex gap-6 items-center">
@@ -473,7 +474,7 @@ const PictureReadingModule: React.FC<{onSound: (text:string) => void, schoolId: 
           {current.options.map((opt, i) => (
             <button key={i} onClick={() => handleChoice(i)} className={`p-4 rounded-[3rem] border-8 transition-all flex flex-col items-center gap-4 shadow-xl group overflow-hidden ${answered === i ? (i === current.correctIdx ? 'bg-green-500 text-white border-white scale-110 shadow-green-100' : 'bg-red-500 text-white border-white') : 'bg-indigo-50 border-white hover:border-indigo-200'}`}>
               <div className="w-full aspect-square bg-white rounded-[2.5rem] overflow-hidden flex items-center justify-center">
-                 {loading ? <Loader2 className="w-8 h-8 animate-spin text-indigo-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 transition-transform group-hover:scale-110" alt={opt.name} />}
+                 {loading ? <LucideIcons.Loader2 className="w-8 h-8 animate-spin text-indigo-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 transition-transform group-hover:scale-110" alt={opt.name} />}
               </div>
               <span className={`font-black uppercase text-sm tracking-widest ${answered === i ? 'text-white' : 'text-indigo-600'}`}>{opt.name}</span>
             </button>
@@ -516,7 +517,7 @@ const SyllablesModule: React.FC<{onSound: (text:string) => void, schoolId: strin
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[600px] animate-in zoom-in">
         <h3 className="text-4xl font-black text-purple-600 mb-8 uppercase tracking-tighter text-center">Clap the word! 👏</h3>
         <div onClick={() => onSound(`${current.word}... ${current.syllables.join('... ')}`)} className="w-full max-w-lg aspect-square bg-purple-50 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-10 overflow-hidden cursor-pointer group relative">
-          {loading ? <Loader2 className="w-16 h-16 animate-spin text-purple-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 transition-transform group-hover:scale-105" />}
+          {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-purple-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 transition-transform group-hover:scale-105" />}
           <div className="absolute inset-0 bg-purple-500/0 group-hover:bg-purple-500/5 transition-colors flex items-center justify-center"><IconRenderer iconName="fa-volume-high" className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" /></div>
         </div>
         <div className="flex gap-4 mb-10">
@@ -566,7 +567,7 @@ const AlliterationModule: React.FC<{onSound: (text:string) => void, schoolId: st
       <h3 className="text-4xl font-black text-orange-600 mb-8 uppercase tracking-tighter text-center">Matching Sounds! 👂</h3>
       <p className="text-2xl text-slate-500 mb-10 italic">Which word starts like <span className="text-orange-600 font-black">{current.target}</span>?</p>
       <div className="w-64 h-64 bg-orange-50 rounded-[3rem] border-8 border-white shadow-xl flex items-center justify-center mb-10 overflow-hidden">
-        {loading ? <Loader2 className="w-12 h-12 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" />}
+        {loading ? <LucideIcons.Loader2 className="w-12 h-12 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" />}
       </div>
       <div className="flex gap-6">
         {current.options.map((opt, i) => (
@@ -610,7 +611,7 @@ const SoundGamesModule: React.FC<{onSound: (text:string) => void, schoolId: stri
         {data[index].items.map((item, i) => (
           <button key={i} onClick={() => onSound(item.word)} className="p-4 bg-emerald-50 rounded-[3rem] border-8 border-white shadow-xl hover:border-emerald-200 transition-all flex flex-col items-center group overflow-hidden">
             <div className="w-full aspect-square bg-white rounded-[2.5rem] overflow-hidden flex items-center justify-center mb-4">
-               {loading ? <Loader2 className="w-8 h-8 animate-spin text-emerald-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 group-hover:scale-110 transition-transform" />}
+               {loading ? <LucideIcons.Loader2 className="w-8 h-8 animate-spin text-emerald-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 group-hover:scale-110 transition-transform" />}
             </div>
             <span className="font-black uppercase text-2xl text-emerald-600">{item.word}</span>
           </button>
@@ -656,7 +657,7 @@ const BlendsModule: React.FC<{onSound: (text:string) => void, schoolId: string}>
         {data[index].words.map((item, i) => (
           <button key={i} onClick={() => onSound(item.word)} className="p-6 bg-orange-50 rounded-[3rem] border-8 border-white shadow-xl hover:border-orange-200 transition-all flex flex-col items-center group overflow-hidden">
             <div className="w-full aspect-square bg-white rounded-[2.5rem] overflow-hidden flex items-center justify-center mb-4">
-               {loading ? <Loader2 className="w-8 h-8 animate-spin text-orange-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-6 group-hover:scale-110 transition-transform" />}
+               {loading ? <LucideIcons.Loader2 className="w-8 h-8 animate-spin text-orange-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-6 group-hover:scale-110 transition-transform" />}
             </div>
             <span className="font-black uppercase text-2xl text-orange-600">{item.word}</span>
           </button>
@@ -699,7 +700,7 @@ const RhymesModule: React.FC<{onSound: (text:string) => void, schoolId: string}>
         {data[index].words.map((item, i) => (
           <button key={i} onClick={() => onSound(item.word)} className="p-4 bg-cyan-50 rounded-[3rem] border-8 border-white shadow-xl hover:border-cyan-200 transition-all flex flex-col items-center group overflow-hidden">
             <div className="w-full aspect-square bg-white rounded-[2.5rem] overflow-hidden flex items-center justify-center mb-4">
-               {loading ? <Loader2 className="w-8 h-8 animate-spin text-cyan-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 group-hover:scale-110 transition-transform" />}
+               {loading ? <LucideIcons.Loader2 className="w-8 h-8 animate-spin text-cyan-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 group-hover:scale-110 transition-transform" />}
             </div>
             <span className="font-black uppercase text-2xl text-cyan-600">{item.word}</span>
           </button>
@@ -743,7 +744,7 @@ const DictionModule: React.FC<{onSound: (text:string) => void, schoolId: string}
         <p className="text-xl text-slate-500 mb-8 italic">Let's learn to say words clearly!</p>
         
         <div onClick={() => onSound(`${current.word}... ${current.syllables}`)} className="w-full max-w-sm aspect-square bg-rose-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-8 overflow-hidden cursor-pointer group">
-          {loading ? <Loader2 className="w-16 h-16 animate-spin text-rose-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={current.word} />}
+          {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-rose-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={current.word} />}
         </div>
 
         <div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-white shadow-inner mb-10 text-center w-full max-w-xl">
@@ -800,13 +801,13 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
         <h3 className="text-4xl font-black text-emerald-600 mb-8 uppercase tracking-tighter text-center">Fill the Gap! 🧩</h3>
         
         <div onClick={() => onSound(`This is a ${current.word.toLowerCase()}. Can you finish the word?`)} className="w-full max-w-sm aspect-square bg-emerald-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
-          {loading ? <Loader2 className="w-16 h-16 animate-spin text-emerald-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={current.word} />}
+          {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-emerald-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={current.word} />}
         </div>
 
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === '_' && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === '_' && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
-                {char === '_' ? (answered || '?') : char}
+              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === current.missing && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === current.missing && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
+                {char === current.missing ? (answered || '?') : char}
               </div>
           ))}
         </div>
@@ -852,7 +853,7 @@ const EnvironmentalPrintModule: React.FC<{onSound: (text:string) => void, school
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[600px] animate-in zoom-in">
         <h3 className="text-4xl font-black text-orange-500 mb-8 uppercase tracking-tighter text-center">Reading the World! 🚦</h3>
         <div onClick={() => onSound(`This sign says ${current.text}. We see it at the ${current.context.toLowerCase()}.`)} className="w-full max-w-lg aspect-video bg-orange-50 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-10 overflow-hidden cursor-pointer group relative">
-          {loading ? <Loader2 className="w-16 h-16 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" />}
+          {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" />}
           <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-colors flex items-center justify-center"><IconRenderer iconName="fa-volume-high" className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" /></div>
         </div>
         <div className="bg-orange-500 text-white px-10 py-6 rounded-[2rem] shadow-xl border-4 border-white mb-10"><h4 className="text-6xl font-black tracking-widest">{current.text}</h4></div>
@@ -899,7 +900,7 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[600px] animate-in zoom-in">
         <h3 className="text-4xl font-black text-blue-600 mb-8 uppercase tracking-tighter text-center">{currentBook.title} 📖</h3>
         <div onClick={() => onSound(currentPage.text)} className="w-full max-w-lg aspect-square bg-blue-50 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-10 overflow-hidden cursor-pointer group relative">
-          {loading ? <Loader2 className="w-16 h-16 animate-spin text-blue-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" />}
+          {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-blue-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" />}
           <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 transition-colors flex items-center justify-center"><IconRenderer iconName="fa-volume-high" className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" /></div>
         </div>
         <div className="bg-blue-50 p-8 rounded-3xl border-4 border-dashed border-blue-200 text-center w-full max-w-xl mb-10"><p className="text-2xl text-slate-800 leading-relaxed italic">"{currentPage.text}"</p></div>
@@ -917,4 +918,4 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
 
 export default PhonicsZone;
 
-    
+      
