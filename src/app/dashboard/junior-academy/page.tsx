@@ -8,45 +8,34 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
-  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Pen
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Pen,
+  Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, 
+  Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
+  Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Apple, Sun, 
+  CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
+  Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
+  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User,
+  Beaker, Bed, Eye, FlaskConical, Gamepad2, Image as ImageIcon, Signpost
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useCurrentSchool } from '@/hooks/use-current-school';
-import { Label } from '@/components/ui/label';
 
-// CRITICAL FIX: Corrected import names
+// Correct imports for sub-modules
 import NumeracyZone from './numeracy-zone';
 import MathWorld from './math-world';
-
 import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
 import PhonicsWorld from './phonics-world';
-import type { DictionaryWord, LessonCard } from '@/lib/types';
+import { StorySpark } from './voice-coach';
+import WritingCanvas from './writing-canvas'; 
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { getAuth } from 'firebase/auth';
-import LifeSkillsZone from './life-skills-zone';
-import WritingCanvas from './writing-canvas'; 
-import * as constants from '@/lib/constants';
-
-// Bring in StorySpark, but not VoiceCoach
-import { StorySpark } from './voice-coach';
-
-const {
-    Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, 
-    Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
-    Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Apple, Sun, 
-    CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
-    Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-    Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User
-} = LucideIcons;
-
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Label } from '@/components/ui/label';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -55,7 +44,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     'fa-pen-nib': Pen,
     'fa-arrow-1-9': Calculator,
     'fa-hand-holding-heart': Handshake,
-    'fa-flask-vial': Beaker,
+    'fa-flask-vial': FlaskConical,
     'fa-palette': Palette,
     'fa-robot': BotMessageSquare,
     'fa-face-smile': Smile,
@@ -109,11 +98,10 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     'fa-face-smile-wink': Smile
   };
 
-  const LucideName = iconMap[iconName];
-  const IconComponent = (LucideIcons as any)[LucideName as any] || HelpCircle;
+  const IconComponent = iconMap[iconName] || HelpCircle;
 
   if (!IconComponent || typeof IconComponent !== 'function') {
-    console.error('❌ Missing or invalid icon:', LucideName, 'for FA icon:', iconName);
+    console.error('❌ Missing or invalid icon:', iconMap[iconName] || 'HelpCircle', 'for FA icon:', iconName);
     const FallbackIcon = (LucideIcons as any)['HelpCircle'];
     return <FallbackIcon className={className} />;
   }
