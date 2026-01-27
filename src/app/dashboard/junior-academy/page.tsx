@@ -15,7 +15,8 @@ import {
   CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
   Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
   Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User,
-  Beaker, Bed, Eye, FlaskConical, Gamepad2, Image as ImageIcon, Signpost
+  Beaker, Bed, Eye, FlaskConical, Gamepad2, Image as ImageIcon, Signpost,
+  BookCopy, Code, BrainCircuit, Clapperboard, PenSquare, Sigma, Globe
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -27,15 +28,19 @@ import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
 import PhonicsWorld from './phonics-world';
-import { StorySpark } from './voice-coach';
-import WritingCanvas from './writing-canvas'; 
-
+import type { DictionaryWord, LessonCard } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Label } from '@/components/ui/label';
+import LifeSkillsZone from './life-skills-zone';
+import WritingCanvas from './writing-canvas'; 
+import * as constants from '@/lib/constants';
+
+// Bring in StorySpark, but not VoiceCoach
+import { StorySpark } from './voice-coach';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -44,7 +49,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     'fa-pen-nib': Pen,
     'fa-arrow-1-9': Calculator,
     'fa-hand-holding-heart': Handshake,
-    'fa-flask-vial': FlaskConical,
+    'fa-flask-vial': Beaker,
     'fa-palette': Palette,
     'fa-robot': BotMessageSquare,
     'fa-face-smile': Smile,
