@@ -2,15 +2,16 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { 
-    NUMERACY_DATA, 
-    ADDITION_DATA, 
-    SUBTRACTION_DATA, 
-    NUMBER_WORDS_DATA, 
-    SEQUENCE_DATA, 
-    NUM_COMPARISON_DATA, 
-    COUNTING_TASK_DATA, 
-    NUMBER_BONDS_DATA, 
+import * as constants from '@/lib/constants';
+import {
+    NUMERACY_DATA,
+    ADDITION_DATA,
+    SUBTRACTION_DATA,
+    NUMBER_WORDS_DATA,
+    SEQUENCE_DATA,
+    NUM_COMPARISON_DATA,
+    COUNTING_TASK_DATA,
+    NUMBER_BONDS_DATA,
     TENS_UNITS_DATA,
     STROKES,
     LETTERS,
@@ -50,13 +51,13 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
       'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
       'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
+      'fa-puzzle-piece': Puzzle, 'fa-cube': Box,
       'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
       'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
       'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
-      'fa-check-double': CheckCheck, 'fa-puzzle-piece': Puzzle, 'fa-cube': Box,
+      'fa-check-double': CheckCheck,
     };
-    const LucideName = iconMap[iconName] || HelpCircle;
-    const IconComponent = (LucideIcons as any)[LucideName as any] || HelpCircle;
+    const IconComponent = (iconMap as any)[iconName] || HelpCircle;
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
 
@@ -100,8 +101,7 @@ const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: st
     </Dialog>
 );
 
-// --- MODULES ---
-
+/* --- 1. NUMBERS --- */
 const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -120,7 +120,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
         if(res.success) setImageUrl(res.data || null); setLoading(false); 
     }, [current, schoolId]);
     useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
-
+  
     const generateWithAi = async () => {
       if (!aiTopic || !schoolId) return; setIsAiLoading(true);
       try {
@@ -153,6 +153,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     );
 };
 
+/* --- 2. COUNTING GAME --- */
 const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -166,11 +167,9 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     const [isAiLoading, setIsAiLoading] = useState(false);
     const current = data[index];
     const fetchVisual = useCallback(async () => {
-        if (!current || !schoolId) return; 
-        setLoading(true);
+        if (!current || !schoolId) return; setLoading(true);
         const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
-        if(res.success) setImageUrl(res.data || null); 
-        setLoading(false);
+        if(res.success) setImageUrl(res.data || null); setLoading(false);
     }, [current, schoolId]);
     useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
     
@@ -213,6 +212,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     );
 };
 
+/* --- 3. SEQUENCE --- */
 const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -263,6 +263,7 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: s
     );
 };
 
+/* --- 4. COMPARISON --- */
 const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -293,9 +294,9 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId:
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[550px]">
             <h3 className="text-4xl font-black text-orange-600 mb-10 uppercase text-center">{current.q}</h3>
             <div className="flex gap-12 items-center">
-            <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
-            <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
-            <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500' : 'bg-red-500') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
+                <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
+                <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
+                <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
             </div>
             {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
         </div>
@@ -304,6 +305,7 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId:
   );
 };
 
+/* --- 5. NUMBER WORDS --- */
 const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -324,7 +326,7 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     setIsAiLoading(false);
   };
   const current = items[index];
-  
+
   useEffect(() => {
     if (!current) return;
     generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
@@ -354,6 +356,7 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   );
 };
 
+/* --- 6. BONDS --- */
 const NumberBondsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -363,9 +366,6 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
-    const current = data[index];
-    
-    useEffect(() => { setUserAnswer(null); }, [index]);
 
     const generateWithAi = async () => {
         if (!aiTopic || !schoolId) return; setIsAiLoading(true);
@@ -373,7 +373,10 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
         if(result.success && result.data) { setData(prev => [...prev, result.data]); setIndex(data.length); setIsDrawerOpen(false); setAiTopic(''); }
         setIsAiLoading(false);
     };
+    const current = data[index];
     
+    useEffect(() => { setUserAnswer(null); }, [index]);
+
     if (!current) return null;
     return (
         <div className="relative font-black">
@@ -398,6 +401,7 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     );
 };
 
+/* --- 7. ADDITION --- */
 const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -411,12 +415,14 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
 
     const generateWithAi = async () => {
         if (!aiTopic || !schoolId) return; setIsAiLoading(true);
-        const result = await generateMathWorldEntry(aiTopic, 'addition', schoolId);
-        if(result.success && result.data) {
-            setData(prev => [...prev, result.data]);
-            setIndex(data.length); setIsDrawerOpen(false); setAiTopic('');
-        }
-        setIsAiLoading(false);
+        try {
+            const result = await generateMathWorldEntry(aiTopic, 'addition', schoolId);
+            if(result.success && result.data) {
+                setData(prev => [...prev, result.data]);
+                setIndex(data.length); setIsDrawerOpen(false); setAiTopic('');
+            }
+        } catch(e) { console.error(e); }
+        finally { setIsAiLoading(false); }
     };
     const current = data[index];
     useEffect(() => {
@@ -457,6 +463,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
     );
 };
 
+/* --- 8. SUBTRACTION --- */
 const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -470,12 +477,14 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
 
   const generateWithAi = async () => {
     if (!aiTopic || !schoolId) return; setIsAiLoading(true);
-    const result = await generateMathWorldEntry(aiTopic, 'subtraction', schoolId);
-    if(result.success && result.data) {
-        setData(prev => [...prev, result.data]);
-        setIndex(data.length); setIsDrawerOpen(false); setAiTopic('');
-    }
-    setIsAiLoading(false);
+    try {
+        const result = await generateMathWorldEntry(aiTopic, 'subtraction', schoolId);
+        if(result.success && result.data) {
+            setData(prev => [...prev, result.data]);
+            setIndex(data.length); setIsDrawerOpen(false); setAiTopic('');
+        }
+    } catch(e) { console.error(e) }
+    finally { setIsAiLoading(false); }
   };
   const current = data[index];
   useEffect(() => {
@@ -508,6 +517,7 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   );
 };
 
+/* --- 9. TENS AND UNITS --- */
 const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -528,6 +538,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
     }
     setIsAiLoading(false);
   };
+  
   useEffect(() => {
     generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
   }, [index, schoolId, current]);
@@ -554,6 +565,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   );
 };
 
+/* --- 10. MAGIC PEN --- */
 const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
   const [activeMode, setActiveMode] = useState<PracticeMode>('numbers');
   const [selectedItem, setSelectedItem] = useState('1');
