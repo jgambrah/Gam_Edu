@@ -4,29 +4,30 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs } from 'firebase/firestore';
-import * as LucideIcons from 'lucide-react';
-
-import confetti from 'canvas-confetti';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, Pen
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Label } from '@/components/ui/label';
 
-// Import the new, separated math components
+// CRITICAL FIX: Corrected import names
 import NumeracyZone from './numeracy-zone';
 import MathWorld from './math-world';
 
-import ScienceExploration from './science-world';
+import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
-import PhonicsZone from './phonics-world';
+import PhonicsWorld from './phonics-world';
 import type { DictionaryWord, LessonCard } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { getAuth } from 'firebase/auth';
@@ -38,15 +39,12 @@ import * as constants from '@/lib/constants';
 import { StorySpark } from './voice-coach';
 
 const {
-    Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
-    Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-    Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, 
     Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, 
     Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
-    Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
+    Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Apple, Sun, 
     CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
     Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-    Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User, Globe
+    Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User
 } = LucideIcons;
 
 
@@ -178,10 +176,10 @@ export default function JuniorCampusPage() {
                         <TabsContent value="lifeskills" className="mt-0">{schoolId && <LifeSkillsZone />}</TabsContent>
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
-                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsZone />}</TabsContent>
+                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld />}</TabsContent>
                         <TabsContent value="numeracy" className="mt-0">{schoolId && <NumeracyZone />}</TabsContent>
                         <TabsContent value="mathworld" className="mt-0">{schoolId && <MathWorld />}</TabsContent>
-                        <TabsContent value="science" className="mt-0">{schoolId && <ScienceExploration />}</TabsContent>
+                        <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld />}</TabsContent>
                         <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300">{schoolId && <ArtStudio schoolId={schoolId} />}</div></TabsContent>
                         <TabsContent value="rewards" className="mt-0">{schoolId && <StickerBook schoolId={schoolId} />}</TabsContent>
                     </div>
@@ -190,5 +188,3 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-    

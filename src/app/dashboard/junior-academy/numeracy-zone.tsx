@@ -34,6 +34,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRole } from '@/context/role-context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+// Corrected: Explicitly import all used icons
 const {
     Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Smile, 
     Ear, Layers, Image: ImageIcon, Sparkles, HelpCircle, 
@@ -46,26 +47,27 @@ const {
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, keyof typeof LucideIcons> = {
-      'fa-1': 'Hash', 'fa-list-ol': 'ListOrdered', 'fa-arrow-right-long': 'ArrowRight', 'fa-scale-unbalanced': 'Scale', 'fa-font': 'Type', 
-      'fa-handshake': 'Handshake', 'fa-plus': 'Plus', 'fa-minus': 'Minus', 'fa-layer-group': 'Layers', 'fa-object-group': 'ObjectGroup', 
-      'fa-clock': 'Clock', 'fa-coins': 'Coins', 'fa-ruler-vertical': 'Ruler', 'fa-shapes': 'Shapes', 'fa-arrows-up-down-left-right': 'Move', 
-      'fa-scale-balanced': 'Scale', 'fa-square-check': 'CheckSquare', 'fa-arrows-left-right': 'ArrowLeftRight', 'fa-pen-clip': 'PenTool',
-      'fa-magic': 'Wand2', 'fa-spinner': 'Loader2', 'fa-volume-high': 'Volume2', 'fa-play': 'Play', 'fa-face-smile': 'Smile', 'fa-brain': 'BrainCircuit',
-      'fa-apple-whole': 'Apple', 'fa-star': 'Star', 'fa-heart': 'Heart', 'fa-car': 'Car', 'fa-bolt': 'Zap', 'fa-cookie': 'Cookie', 'fa-rabbit': 'Rabbit',
-      'fa-carrot': 'Carrot', 'fa-lines-leaning': 'PenLine', 'fa-grip-lines-vertical': 'GripVertical', 'fa-grip-lines': 'GripHorizontal',
-      'fa-chevron-up': 'ChevronUp', 'fa-chevron-down': 'ChevronDown', 'fa-circle': 'Circle', 'fa-trash-can': 'Trash2', 'fa-thumbs-up': 'ThumbsUp',
-      'fa-check-double': 'CheckCheck',
-      'fa-puzzle-piece': 'Puzzle',
-      'fa-cube': 'Box',
+    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+      'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': Type, 
+      'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
+      'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
+      'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
+      'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
+      'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
+      'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
+      'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
+      'fa-check-double': CheckCheck,
+      'fa-puzzle-piece': Puzzle,
+      'fa-cube': Box,
     };
     const LucideName = iconMap[iconName] || 'HelpCircle';
-    const IconComponent = (LucideIcons as any)[LucideName];
+    const IconComponent = (LucideIcons as any)[LucideName] || HelpCircle;
     if (!IconComponent) {
         return <HelpCircle className={className} />;
     }
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
+
 
 type PracticeMode = 'letters' | 'strokes' | 'numbers';
 type NumeracyTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'tracing';
@@ -491,14 +493,16 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
                 if(!rect) return;
                 const ctx = canvas?.getContext('2d');
                 if(!ctx) return;
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
                 ctx.setLineDash([]);
                 ctx.lineWidth = 15;
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = '#8B5CF6';
-                ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                ctx.lineTo(x * (400 / rect.width), y * (400 / rect.height));
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                ctx.moveTo(x * (400 / rect.width), y * (400 / rect.height));
             }} />
         </div>
         <div className="flex gap-4">

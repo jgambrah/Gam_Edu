@@ -20,7 +20,7 @@ import {
   HelpCircle,
   Smile,
   Type,
-  Image as ImageIcon,
+  ImageIcon,
   Hand,
   Ear,
   Gamepad2,
@@ -39,6 +39,7 @@ import {
   Sparkles,
   CheckCircle2,
   XCircle,
+  FlaskConical
 } from 'lucide-react';
 
 
@@ -83,6 +84,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     />
   );
 };
+
 
 type PhonicsTab = 'jolly-phonics' | 'alphabet' | 'picture-reading' | 'syllables' | 'alliteration' | 'sound-games' | 'blends' | 'rhymes' | 'diction' | 'environmental-print' | 'book-handling' | 'missing-letters';
 
@@ -207,35 +209,34 @@ const PhonicsZone: React.FC = () => {
   const renderModule = () => {
     if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
     const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
-    
     const currentTabInfo = tabs.find(t => t.id === activeTab);
     if (!currentTabInfo) return null;
 
     return (
-      <ModuleContainer
-        title={currentTabInfo.label}
-        icon={currentTabInfo.icon}
-        started={startedModules[activeTab]}
-        onStart={() => handleStartModule(activeTab)}
-        onClose={() => handleCloseModule(activeTab)}
-      >
-        {startedModules[activeTab] && (
-            <>
-                {activeTab === 'jolly-phonics' && <JollyPhonicsModule {...commonProps} />}
-                {activeTab === 'alphabet' && <AlphabetModule {...commonProps} />}
-                {activeTab === 'picture-reading' && <PictureReadingModule {...commonProps} />}
-                {activeTab === 'syllables' && <SyllablesModule {...commonProps} />}
-                {activeTab === 'alliteration' && <AlliterationModule {...commonProps} />}
-                {activeTab === 'sound-games' && <SoundGamesModule {...commonProps} />}
-                {activeTab === 'blends' && <BlendsModule {...commonProps} />}
-                {activeTab === 'rhymes' && <RhymesModule {...commonProps} />}
-                {activeTab === 'diction' && <DictionModule {...commonProps} />}
-                {activeTab === 'missing-letters' && <MissingLettersModule {...commonProps} />}
-                {activeTab === 'environmental-print' && <EnvironmentalPrintModule {...commonProps} />}
-                {activeTab === 'book-handling' && <BookHandlingModule {...commonProps} />}
-            </>
-        )}
-      </ModuleContainer>
+        <ModuleContainer
+            title={currentTabInfo.label}
+            icon={currentTabInfo.icon}
+            started={startedModules[activeTab]}
+            onStart={() => handleStartModule(activeTab)}
+            onClose={() => handleCloseModule(activeTab)}
+        >
+            {startedModules[activeTab] && (
+                <>
+                    {activeTab === 'jolly-phonics' && <JollyPhonicsModule {...commonProps} />}
+                    {activeTab === 'alphabet' && <AlphabetModule {...commonProps} />}
+                    {activeTab === 'picture-reading' && <PictureReadingModule {...commonProps} />}
+                    {activeTab === 'syllables' && <SyllablesModule {...commonProps} />}
+                    {activeTab === 'alliteration' && <AlliterationModule {...commonProps} />}
+                    {activeTab === 'sound-games' && <SoundGamesModule {...commonProps} />}
+                    {activeTab === 'blends' && <BlendsModule {...commonProps} />}
+                    {activeTab === 'rhymes' && <RhymesModule {...commonProps} />}
+                    {activeTab === 'diction' && <DictionModule {...commonProps} />}
+                    {activeTab === 'missing-letters' && <MissingLettersModule {...commonProps} />}
+                    {activeTab === 'environmental-print' && <EnvironmentalPrintModule {...commonProps} />}
+                    {activeTab === 'book-handling' && <BookHandlingModule {...commonProps} />}
+                </>
+            )}
+        </ModuleContainer>
     );
   };
   
@@ -873,5 +874,3 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
 
 
 export default PhonicsZone;
-
-    
