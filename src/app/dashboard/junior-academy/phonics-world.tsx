@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -18,92 +19,39 @@ import {
     Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
     Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
     Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car, Play, 
-    Languages, Pen, Hand, Gamepad2, Repeat, Mic, Underline, Signpost, BookOpen, CheckCircle2, XCircle, ShieldCheck
+    Languages, Pen, Hand, Gamepad2, Repeat, Mic, Underline, Signpost, BookOpen, CheckCircle2, XCircle, ShieldCheck,
+    BotMessageSquare, GraduationCap, MessageSquare, Building2, UserCog as StaffIcon, FlaskConical, Bed, TrendingUp, Leaf, Tree, User as UserIcon, FireExtinguisher, Search, ChefHat, Ship, Shell, Bug,
+    CloudRain, Guitar, Plane, MousePointer2, Cube
 } from 'lucide-react';
 import { useRole } from '@/context/role-context';
-import * as LucideIcons from 'lucide-react';
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, keyof typeof LucideIcons> = {
-      'fa-spell-check': 'Languages',
-      'fa-ear-listen': 'Ear',
-      'fa-pen-nib': 'Pen',
-      'fa-arrow-1-9': 'Calculator',
-      'fa-hand-holding-heart': 'Handshake',
-      'fa-flask-vial': 'FlaskConical',
-      'fa-palette': 'Palette',
-      'fa-robot': 'Bot',
-      'fa-face-smile': 'Smile',
-      'fa-tooth': 'Sparkles',
-      'fa-heart-pulse': 'HeartPulse',
-      'fa-vest': 'User',
-      'fa-sun': 'Sun',
-      'fa-utensils': 'Utensils',
-      'fa-school': 'School',
-      'fa-house': 'Home',
-      'fa-recycle': 'Recycle',
-      'fa-water': 'Droplets',
-      'fa-broom': 'Trash2',
-      'fa-flag': 'Flag',
-      'fa-hand-pointer': 'MousePointer2',
-      'fa-cube': 'Cube',
-      'fa-chalkboard-user': 'User',
-      'fa-rabbit': 'Rabbit',
-      'fa-carrot': 'Carrot',
-      'fa-apple-whole': 'Apple',
-      'fa-cookie': 'Cookie',
-      'fa-star': 'Star',
-      'fa-tv': 'Tv',
-      'fa-bed': 'Bed',
-      'fa-eye': 'Eye',
-      'fa-cloud-showers-heavy': 'CloudRain',
-      'fa-guitar': 'Guitar',
-      'fa-plane': 'Plane',
-      'fa-car': 'Car',
-      'fa-frog': 'Rabbit', 
-      'fa-bolt': 'Zap',
-      'fa-circle-dot': 'CircleDot',
-      'fa-soap': 'Sparkles', 
-      'fa-broccoli': 'Carrot', 
-      'fa-display': 'Monitor',
-      'fa-graduation-cap': 'GraduationCap',
-      'fa-comments': 'MessageSquare',
-      'fa-people-group': 'Users',
-      'fa-masks-theater': 'Drama',
-      'fa-brain': 'BrainCircuit',
-      'fa-child-reaching': 'User',
-      'fa-music': 'Music',
-      'fa-magic': 'Wand2',
-      'fa-arrow-left': 'ArrowLeft',
-      'fa-arrow-right': 'ArrowRight',
-      'fa-spinner': 'Loader2',
-      'fa-volume-high': 'Volume2',
-      'fa-dna': 'Atom',
-      'fa-play': 'Play',
-      'fa-heart': 'Heart',
-      'fa-face-smile-wink': 'Smile',
-      'fa-images': 'ImageIcon',
-      'fa-hands-clapping': 'Hand',
-      'fa-gamepad': 'Gamepad2',
-      'fa-layer-group': 'Layers',
-      'fa-repeat': 'Repeat',
-      'fa-microphone-lines': 'Mic',
-      'fa-underline': 'Underline',
-      'fa-road-sign': 'Signpost',
-      'fa-book-open': 'BookOpen',
-      'fa-check-double': 'CheckCheck',
-      'fa-puzzle-piece': 'Puzzle',
-      'fa-box': 'Box',
+    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+        'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Shapes, 'fa-font': Type, 
+        'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
+        'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
+        'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
+        'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
+        'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
+        'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
+        'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
+        'fa-check-double': CheckCheck, 'fa-puzzle-piece': Puzzle, 'fa-box': Box, 'fa-spell-check': Languages, 'fa-ear-listen': Ear, 'fa-pen-nib': Pen,
+        'fa-arrow-1-9': Calculator, 'fa-hand-holding-heart': Handshake, 'fa-flask-vial': FlaskConical, 'fa-palette': Palette, 'fa-robot': BotMessageSquare,
+        'fa-tooth': Sparkles, 'fa-heart-pulse': HeartPulse, 'fa-vest': Shirt, 'fa-sun': Sun, 'fa-utensils': Utensils, 'fa-school': School, 'fa-house': Home, 'fa-recycle': Recycle, 'fa-water': Droplets,
+        'fa-broom': Trash2, 'fa-flag': Flag, 'fa-hand-pointer': MousePointer2, 'fa-chalkboard-user': User, 'fa-tv': Tv, 'fa-bed': Bed, 'fa-eye': Eye,
+        'fa-cloud-showers-heavy': CloudRain, 'fa-guitar': Guitar, 'fa-plane': Plane, 'fa-frog': Rabbit, 'fa-circle-dot': CircleDot, 'fa-soap': Sparkles, 'fa-broccoli': Carrot,
+        'fa-display': Monitor, 'fa-graduation-cap': GraduationCap, 'fa-comments': MessageSquare, 'fa-people-group': Users, 'fa-masks-theater': Drama, 'fa-child-reaching': User,
+        'fa-music': Music, 'fa-dna': Atom, 'fa-face-smile-wink': Smile, 'fa-images': ImageIcon, 'fa-hands-clapping': Hand, 'fa-gamepad': Gamepad2, 'fa-repeat': Repeat,
+        'fa-microphone-lines': Mic, 'fa-underline': Underline, 'fa-road-sign': Signpost, 'fa-book-open': BookOpen, 'fa-fire-extinguisher': FireExtinguisher, 'fa-user-doctor': User,
+        'fa-search': Search, 'fa-chef-hat': ChefHat, 'fa-ship': Ship, 'fa-shell': Shell, 'fa-bug': Bug
     };
   
-    const LucideName = iconMap[iconName] || 'HelpCircle';
-    const IconComponent = (LucideIcons as any)[LucideName];
+    const IconComponent = iconMap[iconName] || HelpCircle;
   
-    if (!IconComponent || typeof IconComponent !== 'function') {
-      console.error('❌ Missing or invalid icon:', LucideName, 'for FA icon:', iconName);
-      const FallbackIcon = (LucideIcons as any)['HelpCircle'];
-      return <FallbackIcon className={className} />;
+    if (!IconComponent) {
+      console.error('❌ Missing icon:', iconName);
+      return <HelpCircle className={className} />;
     }
   
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -235,8 +183,8 @@ const PhonicsZone: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black selection:bg-green-100">
-      <div className="w-full overflow-x-auto no-scrollbar pb-6 px-4">
+    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
+      <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
         <div className="flex justify-start md:justify-center gap-3 bg-white p-5 rounded-[4rem] shadow-2xl border-4 border-pink-50 min-w-max font-black">
           {(Object.keys(tabIcons) as PhonicsTab[]).map((tab) => (
             <button
@@ -462,7 +410,7 @@ const SyllablesModule: React.FC<{onSound: (text:string) => void, schoolId: strin
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100 flex flex-col items-center min-h-[600px] animate-in zoom-in">
         <h3 className="text-4xl font-black text-purple-600 mb-8 uppercase tracking-tighter text-center">Clap the word! 👏</h3>
         <div onClick={() => onSound(`${current.word}... ${current.syllables.join('... ')}`)} className="w-full max-w-lg aspect-square bg-purple-50 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-10 overflow-hidden cursor-pointer group relative">
-          {loading ? <Loader2 className="w-16 h-16 animate-spin text-purple-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 transition-transform group-hover:scale-105" alt={current.word} />}
+          {loading ? <Loader2 className="w-16 h-16 animate-spin text-purple-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 transition-transform group-hover:scale-105" />}
           <div className="absolute inset-0 bg-purple-500/0 group-hover:bg-purple-500/5 transition-colors flex items-center justify-center"><IconRenderer iconName="fa-volume-high" className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" /></div>
         </div>
         <div className="flex gap-4 mb-10">
@@ -512,7 +460,7 @@ const AlliterationModule: React.FC<{onSound: (text:string) => void, schoolId: st
       <h3 className="text-4xl font-black text-orange-600 mb-8 uppercase tracking-tighter text-center">Matching Sounds! 👂</h3>
       <p className="text-2xl text-slate-500 mb-10 italic">Which word starts like <span className="text-orange-600 font-black">{current.target}</span>?</p>
       <div className="w-64 h-64 bg-orange-50 rounded-[3rem] border-8 border-white shadow-xl flex items-center justify-center mb-10 overflow-hidden">
-        {loading ? <Loader2 className="w-12 h-12 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt={current.target} />}
+        {loading ? <Loader2 className="w-12 h-12 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" />}
       </div>
       <div className="flex gap-6">
         {current.options.map((opt, i) => (
@@ -556,7 +504,7 @@ const SoundGamesModule: React.FC<{onSound: (text:string) => void, schoolId: stri
         {data[index].items.map((item, i) => (
           <button key={i} onClick={() => onSound(item.word)} className="p-4 bg-emerald-50 rounded-[3rem] border-8 border-white shadow-xl hover:border-emerald-200 transition-all flex flex-col items-center group overflow-hidden">
             <div className="w-full aspect-square bg-white rounded-[2.5rem] overflow-hidden flex items-center justify-center mb-4">
-               {loading ? <Loader2 className="w-8 h-8 animate-spin text-emerald-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 group-hover:scale-110 transition-transform" alt={item.word} />}
+               {loading ? <Loader2 className="w-8 h-8 animate-spin text-emerald-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 group-hover:scale-110 transition-transform" />}
             </div>
             <span className="font-black uppercase text-2xl text-emerald-600">{item.word}</span>
           </button>
@@ -602,7 +550,7 @@ const BlendsModule: React.FC<{onSound: (text:string) => void, schoolId: string}>
         {data[index].words.map((item, i) => (
           <button key={i} onClick={() => onSound(item.word)} className="p-6 bg-orange-50 rounded-[3rem] border-8 border-white shadow-xl hover:border-orange-200 transition-all flex flex-col items-center group overflow-hidden">
             <div className="w-full aspect-square bg-white rounded-[2.5rem] overflow-hidden flex items-center justify-center mb-4">
-               {loading ? <Loader2 className="w-8 h-8 animate-spin text-orange-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-6 group-hover:scale-110 transition-transform" alt={item.word} />}
+               {loading ? <Loader2 className="w-8 h-8 animate-spin text-orange-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-6 group-hover:scale-110 transition-transform" />}
             </div>
             <span className="font-black uppercase text-2xl text-orange-600">{item.word}</span>
           </button>
@@ -645,7 +593,7 @@ const RhymesModule: React.FC<{onSound: (text:string) => void, schoolId: string}>
         {data[index].words.map((item, i) => (
           <button key={i} onClick={() => onSound(item.word)} className="p-4 bg-cyan-50 rounded-[3rem] border-8 border-white shadow-xl hover:border-cyan-200 transition-all flex flex-col items-center group overflow-hidden">
             <div className="w-full aspect-square bg-white rounded-[2.5rem] overflow-hidden flex items-center justify-center mb-4">
-               {loading ? <Loader2 className="w-8 h-8 animate-spin text-cyan-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 group-hover:scale-110 transition-transform" alt={item.word} />}
+               {loading ? <Loader2 className="w-8 h-8 animate-spin text-cyan-200" /> : imageUrls[i] && <img src={imageUrls[i]} className="w-full h-full object-cover p-4 group-hover:scale-110 transition-transform" />}
             </div>
             <span className="font-black uppercase text-2xl text-cyan-600">{item.word}</span>
           </button>
@@ -732,7 +680,7 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
   const handleChoice = (opt: string) => {
     setAnswered(opt);
     if (opt === current.missing) {
-      onSound(`Yes! ${current.word.replace(current.missing, opt)}!`);
+      onSound(`Yes! ${current.word.replace('_', opt)}!`);
       confetti();
     } else {
       onSound(`Try again!`);
@@ -751,8 +699,8 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
 
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === current.missing && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === current.missing && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
-                {char === current.missing ? (answered || '?') : char}
+              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === '_' && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === '_' && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
+                {char === '_' ? (answered || '?') : char}
               </div>
           ))}
         </div>
@@ -842,7 +790,7 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[600px] animate-in zoom-in">
         <h3 className="text-4xl font-black text-blue-600 mb-8 uppercase tracking-tighter text-center">{currentBook.title} 📖</h3>
         <div onClick={() => onSound(currentPage.text)} className="w-full max-w-lg aspect-square bg-blue-50 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-10 overflow-hidden cursor-pointer group relative">
-          {loading ? <Loader2 className="w-16 h-16 animate-spin text-blue-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={currentBook.title} />}
+          {loading ? <Loader2 className="w-16 h-16 animate-spin text-blue-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" />}
           <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 transition-colors flex items-center justify-center"><IconRenderer iconName="fa-volume-high" className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" /></div>
         </div>
         <div className="bg-blue-50 p-8 rounded-3xl border-4 border-dashed border-blue-200 text-center w-full max-w-xl mb-10"><p className="text-2xl text-slate-800 leading-relaxed italic">"{currentPage.text}"</p></div>
@@ -859,5 +807,3 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
 
 
 export default PhonicsZone;
-
-    
