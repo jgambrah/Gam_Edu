@@ -44,17 +44,17 @@ const {
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-      'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Scale, 'fa-font': Type, 
-      'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
-      'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
-      'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
-      'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
-      'fa-puzzle-piece': Puzzle, 'fa-cube': Box,
-      'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
-      'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
-      'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
-      'fa-check-double': CheckCheck,
+    const iconMap: Record<string, keyof typeof LucideIcons> = {
+      'fa-1': 'Hash', 'fa-list-ol': 'ListOrdered', 'fa-arrow-right-long': 'ArrowRight', 'fa-scale-unbalanced': 'Scale', 'fa-font': 'Type', 
+      'fa-handshake': 'Handshake', 'fa-plus': 'Plus', 'fa-minus': 'Minus', 'fa-layer-group': 'Layers', 'fa-object-group': 'ObjectGroup', 
+      'fa-clock': 'Clock', 'fa-coins': 'Coins', 'fa-ruler-vertical': 'Ruler', 'fa-shapes': 'Shapes', 'fa-arrows-up-down-left-right': 'Move', 
+      'fa-scale-balanced': 'Scale', 'fa-square-check': 'CheckSquare', 'fa-arrows-left-right': 'ArrowLeftRight', 'fa-pen-clip': 'PenTool',
+      'fa-magic': 'Wand2', 'fa-spinner': 'Loader2', 'fa-volume-high': 'Volume2', 'fa-play': 'Play', 'fa-face-smile': 'Smile', 'fa-brain': 'BrainCircuit',
+      'fa-puzzle-piece': 'Puzzle', 'fa-cube': 'Box',
+      'fa-apple-whole': 'Apple', 'fa-star': 'Star', 'fa-heart': 'Heart', 'fa-car': 'Car', 'fa-bolt': 'Zap', 'fa-cookie': 'Cookie', 'fa-rabbit': 'Rabbit',
+      'fa-carrot': 'Carrot', 'fa-lines-leaning': 'PenLine', 'fa-grip-lines-vertical': 'GripVertical', 'fa-grip-lines': 'GripHorizontal',
+      'fa-chevron-up': 'ChevronUp', 'fa-chevron-down': 'ChevronDown', 'fa-circle': 'Circle', 'fa-trash-can': 'Trash2', 'fa-thumbs-up': 'ThumbsUp',
+      'fa-check-double': 'CheckCheck',
     };
     const IconComponent = iconMap[iconName] || HelpCircle;
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -100,7 +100,7 @@ const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: st
     </Dialog>
 );
 
-// --- 1. NUMBERS (Recognition) ---
+// --- 1. NUMBERS ---
 const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -111,7 +111,6 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
-    
     const current = data[index];
     
     const fetchVisual = useCallback(async () => {
@@ -123,7 +122,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     }, [current, schoolId]);
     
     useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
-
+  
     const generateWithAi = async () => {
       if (!aiTopic || !schoolId) return; 
       setIsAiLoading(true);
@@ -149,7 +148,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
           <h2 className="text-9xl font-black text-purple-600 mb-2 drop-shadow-xl">{current.value}</h2>
           <p className="text-3xl font-black text-slate-500 italic mb-10">{current.word || current.value}</p>
           <div onClick={() => onSound(`This is number ${current.value}`)} className="w-80 h-80 bg-purple-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
-            {loading ? <Loader2 className="w-16 h-16 animate-spin text-purple-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover group-hover:scale-110 transition-all" alt={`Number ${current.value}`} />}
+            {loading ? <Loader2 className="w-16 h-16 animate-spin text-purple-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover group-hover:scale-110 transition-all" alt={`An illustration for the number ${current.value}`} />}
           </div>
           <div className="flex gap-6">
             <Button size="icon" onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="w-16 h-16 bg-slate-100 text-slate-700 rounded-full flex items-center justify-center hover:bg-slate-200 active:scale-90 shadow-md font-black"><ArrowLeft className="text-2xl" /></Button>
@@ -174,7 +173,9 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
+    
     const current = data[index];
+    
     const fetchVisual = useCallback(async () => {
         if (!current || !schoolId) return; 
         setLoading(true);
@@ -182,6 +183,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
         if(res.success) setImageUrl(res.data || null); 
         setLoading(false);
     }, [current, schoolId]);
+
     useEffect(() => { fetchVisual(); setUserAnswer(null); }, [index, data, fetchVisual]);
     
     const options = useMemo(() => current ? [current.count, current.count + 1, current.count - 1].filter(o => o > 0).sort(() => Math.random() - 0.5) : [], [current]);
@@ -234,9 +236,8 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: s
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
-    
     const current = data[index];
-
+    
     useEffect(() => { setUserAnswer(null) }, [index]);
 
     const generateWithAi = async () => {
@@ -312,13 +313,13 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId:
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[550px]">
             <h3 className="text-4xl font-black text-orange-600 mb-10 uppercase text-center">{current.q}</h3>
             <div className="flex gap-12 items-center">
-                <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
-                <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
-                <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
+            <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
+            <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
+            <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
             </div>
             {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
         </div>
-        {isDrawerOpen && <TeacherModal title="AI Comparison Game" topicLabel="Theme (e.g. big/small)" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
+        {isDrawerOpen && <TeacherModal title="AI Comparison Game" topicLabel="Theme" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
     </div>
   );
 };
@@ -333,7 +334,13 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  
   const current = items[index];
+
+  useEffect(() => {
+    if (!current || !schoolId) return;
+    generateLessonImageAction({ prompt: current.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+  }, [index, schoolId, current]);
 
   const generateWithAi = async () => {
     if (!aiTopic || !schoolId) return; 
@@ -344,11 +351,6 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     } catch (e) { console.error(e); }
     finally { setIsAiLoading(false); }
   };
-  
-  useEffect(() => {
-    if (!current || !schoolId) return;
-    generateLessonImageAction({ prompt: current.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-  }, [index, schoolId, current]);
   
   if (!current) return null;
   return (
@@ -453,7 +455,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
         } catch(e) { console.error(e); }
         finally { setIsAiLoading(false); }
     };
-
+    
     if (!current) return null;
     const correct = current.val1 + current.val2;
     return (
@@ -500,7 +502,6 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
   const [isAiLoading, setIsAiLoading] = useState(false);
 
   const current = data[index];
-  
   useEffect(() => {
     if (!current || !schoolId) return;
     generateLessonImageAction({ prompt: current.prompt, schoolId }).then(res => setImageUrl(res.data || null));
@@ -555,7 +556,6 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
-  
   const current = data[index];
   
   const generateWithAi = async () => {
@@ -575,7 +575,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
     if (!current || !schoolId) return;
     generateLessonImageAction({ prompt: current.prompt, schoolId }).then(res => setImageUrl(res.data || null));
   }, [index, schoolId, current]);
-  
+
   if (!current) return null;
   return (
     <div className="relative font-black">
@@ -591,7 +591,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
          </div>
       </div>
       <div className="w-full max-w-2xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10 cursor-pointer" onClick={() => onSound(`${current.number} has ${current.tens} tens and ${current.units} units`)}>
-        {imageUrl && <img src={imageUrl} alt={`${current.number} explained`} className="w-full h-full object-cover" />}
+        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={`${current.number} explained`} />}
       </div>
       </div>
       {isDrawerOpen && <TeacherModal title="AI Tens & Units Game" topicLabel="Theme" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
@@ -604,6 +604,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
   const [activeMode, setActiveMode] = useState<PracticeMode>('numbers');
   const [selectedItem, setSelectedItem] = useState('1');
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const clearCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if(!canvas) return;
@@ -618,7 +619,9 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
     ctx.setLineDash([10, 10]);
     ctx.strokeText(selectedItem, 200, 220);
   }, [selectedItem]);
+
   useEffect(() => { clearCanvas(); }, [selectedItem, clearCanvas]);
+
   return (
     <div className="flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100">
         <Tabs value={activeMode} onValueChange={(v:any) => setActiveMode(v)} className="w-full">
@@ -654,7 +657,7 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
         </div>
         <div className="flex gap-4">
             <Button variant="outline" onClick={clearCanvas} className="h-14 px-8 rounded-2xl">CLEAR</Button>
-            <Button onClick={() => { onSound("Superstar!"); confetti(); }} className="h-14 px-12 bg-purple-600 text-white rounded-2xl">CHECK WORK</Button>
+            <Button onClick={() => { onSound("Superstar!"); confetti(); }} className="h-14 px-12 bg-purple-600 text-white rounded-2xl font-black">CHECK WORK</Button>
         </div>
     </div>
   );
@@ -679,6 +682,7 @@ const NumeracyZone: React.FC = () => {
           const audio = new Audio(`data:audio/wav;base64,${result.data}`);
           currentSourceRef.current = audio;
           audio.play();
+          audio.onended = () => { currentSourceRef.current = null; };
       }
     }, [schoolId]);
 
