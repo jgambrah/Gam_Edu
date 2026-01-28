@@ -4,20 +4,24 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs } from 'firebase/firestore';
-import * as LucideIcons from 'lucide-react';
-
-import confetti from 'canvas-confetti';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
+  Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, 
+  Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, 
+  Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
+  Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
+  CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
+  Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
+  Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useCurrentSchool } from '@/hooks/use-current-school';
-import { Label } from '@/components/ui/label';
 
-// Import the new, separated math components
+// Correct imports for sub-modules
 import NumeracyZone from './numeracy-zone';
 import MathWorld from './math-world';
-
 import JuniorScienceWorld from './science-world';
 import ArtStudio from './art-studio';
 import StickerBook from './sticker-book';
@@ -26,29 +30,15 @@ import type { DictionaryWord, LessonCard } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { getAuth } from 'firebase/auth';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Label } from '@/components/ui/label';
 import LifeSkillsZone from './life-skills-zone';
 import WritingCanvas from './writing-canvas'; 
 import * as constants from '@/lib/constants';
 
 // Bring in StorySpark, but not VoiceCoach
 import { StorySpark } from './voice-coach';
-
-const {
-    Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight,
-    Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette,
-    Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, 
-    Heart, Utensils, Smile, Tv, Users, Activity, CheckSquare, Handshake, Milestone, 
-    Ear, Layers, AudioLines, Repeat, Underline, BookCheck, FolderOpen, Car, Earth, 
-    Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
-    CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
-    Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-    Flag, GraduationCap, Monitor, Zap, CircleDot, BotMessageSquare, User
-} = LucideIcons;
-
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -97,7 +87,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     'fa-comments': MessageSquare,
     'fa-people-group': Users,
     'fa-masks-theater': Drama,
-    'fa-brain': Brain,
+    'fa-brain': BrainCircuit,
     'fa-child-reaching': User,
     'fa-music': Music,
     'fa-magic': Wand2,
@@ -111,11 +101,10 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     'fa-face-smile-wink': Smile
   };
 
-  const LucideName = iconMap[iconName];
-  const IconComponent = (LucideIcons as any)[LucideName as any] || HelpCircle;
+  const IconComponent = (LucideIcons as any)[iconMap[iconName] as any] || HelpCircle;
 
   if (!IconComponent || typeof IconComponent !== 'function') {
-    console.error('❌ Missing or invalid icon:', LucideName, 'for FA icon:', iconName);
+    console.error('❌ Missing or invalid icon:', iconMap[iconName] || 'HelpCircle', 'for FA icon:', iconName);
     const FallbackIcon = (LucideIcons as any)['HelpCircle'];
     return <FallbackIcon className={className} />;
   }
@@ -178,7 +167,7 @@ export default function JuniorCampusPage() {
                         <TabsContent value="lifeskills" className="mt-0">{schoolId && <LifeSkillsZone />}</TabsContent>
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
-                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld schoolId={schoolId} />}</TabsContent>
+                        <TabsContent value="phonics" className="mt-0">{schoolId && <PhonicsWorld />}</TabsContent>
                         <TabsContent value="numeracy" className="mt-0">{schoolId && <NumeracyZone />}</TabsContent>
                         <TabsContent value="mathworld" className="mt-0">{schoolId && <MathWorld />}</TabsContent>
                         <TabsContent value="science" className="mt-0">{schoolId && <JuniorScienceWorld />}</TabsContent>
