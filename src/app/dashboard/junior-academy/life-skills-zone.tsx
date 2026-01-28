@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -18,5 +17,3 @@ const LifeSkillsZone = () => {
 };
 
 export default LifeSkillsZone;
-
-    

@@ -20,12 +20,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
 // Correct imports for sub-modules
-import NumeracyZone from './numeracy-zone';
-import MathWorld from './math-world';
-import JuniorScienceWorld from './science-world';
-import ArtStudio from './art-studio';
-import StickerBook from './sticker-book';
-import PhonicsWorld from './phonics-world';
+import NumeracyZone from '../junior_academy/numeracy-zone';
+import MathWorld from '../junior_academy/math-world';
+import JuniorScienceWorld from '../junior_academy/science-world';
+import ArtStudio from '../junior_academy/art-studio';
+import StickerBook from '../junior_academy/sticker-book';
+import PhonicsWorld from '../junior_academy/phonics-world';
 import type { DictionaryWord, LessonCard } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,72 +33,72 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Label } from '@/components/ui/label';
-import LifeSkillsZone from './life-skills-zone';
-import WritingCanvas from './writing-canvas'; 
+import LifeSkillsZone from '../junior_academy/life-skills-zone';
+import WritingCanvas from '../junior_academy/writing-canvas'; 
 import * as constants from '@/lib/constants';
 
 // Bring in StorySpark, but not VoiceCoach
-import { StorySpark } from './voice-coach';
+import { StorySpark } from '../junior_academy/voice-coach';
 
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-    'fa-spell-check': Languages,
-    'fa-ear-listen': Ear,
-    'fa-pen-nib': Pen,
-    'fa-arrow-1-9': Calculator,
-    'fa-hand-holding-heart': Handshake,
-    'fa-flask-vial': Beaker,
-    'fa-palette': Palette,
-    'fa-robot': BotMessageSquare,
-    'fa-face-smile': Smile,
-    'fa-tooth': Sparkles,
-    'fa-heart-pulse': HeartPulse,
-    'fa-vest': User,
-    'fa-sun': Sun,
-    'fa-utensils': Utensils,
-    'fa-school': School,
-    'fa-house': Home,
-    'fa-recycle': Recycle,
-    'fa-water': Droplets,
-    'fa-broom': Trash2,
-    'fa-flag': Flag,
-    'fa-hand-pointer': MousePointer2,
-    'fa-cube': Cube,
-    'fa-chalkboard-user': User,
-    'fa-rabbit': Rabbit,
-    'fa-carrot': Carrot,
-    'fa-apple-whole': Apple,
-    'fa-cookie': Cookie,
-    'fa-star': Star,
-    'fa-tv': Tv,
-    'fa-bed': Bed,
-    'fa-eye': Eye,
-    'fa-cloud-showers-heavy': CloudRain,
-    'fa-guitar': Guitar,
-    'fa-plane': Plane,
-    'fa-car': Car,
-    'fa-frog': Rabbit,
-    'fa-bolt': Zap,
-    'fa-circle-dot': CircleDot,
-    'fa-soap': Sparkles,
-    'fa-broccoli': Carrot,
-    'fa-display': Monitor,
-    'fa-graduation-cap': GraduationCap,
-    'fa-comments': MessageSquare,
-    'fa-people-group': Users,
-    'fa-masks-theater': Drama,
-    'fa-brain': BrainCircuit,
-    'fa-child-reaching': User,
-    'fa-music': Music,
-    'fa-magic': Wand2,
-    'fa-arrow-left': ArrowLeft,
-    'fa-arrow-right': ArrowRight,
-    'fa-spinner': Loader2,
-    'fa-volume-high': Volume2,
-    'fa-dna': Atom,
-    'fa-play': Play,
-    'fa-heart': Heart,
-    'fa-face-smile-wink': Smile
+  const iconMap: Record<string, keyof typeof LucideIcons> = {
+    'fa-spell-check': 'Languages',
+    'fa-ear-listen': 'Ear',
+    'fa-pen-nib': 'Pen',
+    'fa-arrow-1-9': 'Calculator',
+    'fa-hand-holding-heart': 'Handshake',
+    'fa-flask-vial': 'Beaker',
+    'fa-palette': 'Palette',
+    'fa-robot': 'BotMessageSquare',
+    'fa-face-smile': 'Smile',
+    'fa-tooth': 'Sparkles',
+    'fa-heart-pulse': 'HeartPulse',
+    'fa-vest': 'User',
+    'fa-sun': 'Sun',
+    'fa-utensils': 'Utensils',
+    'fa-school': 'School',
+    'fa-house': 'Home',
+    'fa-recycle': 'Recycle',
+    'fa-water': 'Droplets',
+    'fa-broom': 'Trash2',
+    'fa-flag': 'Flag',
+    'fa-hand-pointer': 'MousePointer2',
+    'fa-cube': 'Cube',
+    'fa-chalkboard-user': 'User',
+    'fa-rabbit': 'Rabbit',
+    'fa-carrot': 'Carrot',
+    'fa-apple-whole': 'Apple',
+    'fa-cookie': 'Cookie',
+    'fa-star': 'Star',
+    'fa-tv': 'Tv',
+    'fa-bed': 'Bed',
+    'fa-eye': 'Eye',
+    'fa-cloud-showers-heavy': 'CloudRain',
+    'fa-guitar': 'Guitar',
+    'fa-plane': 'Plane',
+    'fa-car': 'Car',
+    'fa-frog': 'Rabbit',
+    'fa-bolt': 'Zap',
+    'fa-circle-dot': 'CircleDot',
+    'fa-soap': 'Sparkles',
+    'fa-broccoli': 'Carrot',
+    'fa-display': 'Monitor',
+    'fa-graduation-cap': 'GraduationCap',
+    'fa-comments': 'MessageSquare',
+    'fa-people-group': 'Users',
+    'fa-masks-theater': 'Drama',
+    'fa-brain': 'BrainCircuit',
+    'fa-child-reaching': 'User',
+    'fa-music': 'Music',
+    'fa-magic': 'Wand2',
+    'fa-arrow-left': 'ArrowLeft',
+    'fa-arrow-right': 'ArrowRight',
+    'fa-spinner': 'Loader2',
+    'fa-volume-high': 'Volume2',
+    'fa-dna': 'Atom',
+    'fa-play': 'Play',
+    'fa-heart': 'Heart',
+    'fa-face-smile-wink': 'Smile'
   };
 
   const IconComponent = (LucideIcons as any)[iconMap[iconName] as any] || HelpCircle;
