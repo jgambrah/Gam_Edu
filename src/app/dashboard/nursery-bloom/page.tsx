@@ -1,19 +1,11 @@
-
 'use client';
 
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import NurseryBloomLauncher from '@/components/dashboard/junior-academy/NurseryBloomLauncher';
 
 export default function NurseryBloomPage() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Nursery Bloom</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p>This is the Nursery Bloom page. Content will be added here.</p>
-      </CardContent>
-    </Card>
+    <div className="p-10 bg-slate-50 min-h-screen flex items-center justify-center">
+        <NurseryBloomLauncher />
+    </div>
   );
 }
-
-    
