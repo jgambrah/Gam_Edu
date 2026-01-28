@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import * as constants from '@/lib/constants';
 import { generateLessonImageAction, generateTTSAction, generatePhonicsWorldEntry } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
@@ -13,83 +13,37 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import { 
-    Languages, Ear, Pen, Calculator, Handshake, FlaskConical, Palette, Bot, Smile, Sparkles, HeartPulse, User as UserIcon, Sun, 
-    Utensils, School, Home, Recycle, Droplets, Trash2, Flag, MousePointer2, Box, Rabbit, Carrot, Apple, Cookie, 
-    Star, Tv, Bed, Eye, CloudRain, Guitar, Plane, Car, Zap, CircleDot, Monitor, GraduationCap, MessageSquare, 
-    Users, Drama, BrainCircuit, Music, Wand2, ArrowLeft, ArrowRight, Loader2, Volume2, Atom, Play, Heart, Image, 
-    Hand, Gamepad2, Layers, Repeat, Mic, Underline, Signpost, BookOpen, HelpCircle, CheckCircle2, XCircle, ShieldCheck
+    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Smile, 
+    Ear, Layers, Image as ImageIcon, Sparkles, HelpCircle, 
+    Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
+    Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
+    Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
+    Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car, Play, 
+    Languages, Pen, Hand, Gamepad2, Repeat, Mic, Underline, Signpost, BookOpen, CheckCircle2, XCircle, ShieldCheck
 } from 'lucide-react';
+import { useRole } from '@/context/role-context';
 
-
-// Icon Renderer (robust version)
+// --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-      'fa-spell-check': Languages,
-      'fa-ear-listen': Ear,
-      'fa-pen-nib': Pen,
-      'fa-arrow-1-9': Calculator,
-      'fa-hand-holding-heart': Handshake,
-      'fa-flask-vial': FlaskConical,
-      'fa-palette': Palette,
-      'fa-robot': Bot,
-      'fa-face-smile': Smile,
-      'fa-tooth': Sparkles,
-      'fa-heart-pulse': HeartPulse,
-      'fa-vest': UserIcon,
-      'fa-sun': Sun,
-      'fa-utensils': Utensils,
-      'fa-school': School,
-      'fa-house': Home,
-      'fa-recycle': Recycle,
-      'fa-water': Droplets,
-      'fa-broom': Trash2,
-      'fa-flag': Flag,
-      'fa-hand-pointer': MousePointer2,
-      'fa-cube': Box,
-      'fa-chalkboard-user': UserIcon,
-      'fa-rabbit': Rabbit,
-      'fa-carrot': Carrot,
-      'fa-apple-whole': Apple,
-      'fa-cookie': Cookie,
-      'fa-star': Star,
-      'fa-tv': Tv,
-      'fa-bed': Bed,
-      'fa-eye': Eye,
-      'fa-cloud-showers-heavy': CloudRain,
-      'fa-guitar': Guitar,
-      'fa-plane': Plane,
-      'fa-car': Car,
-      'fa-frog': Rabbit, 
-      'fa-bolt': Zap,
-      'fa-circle-dot': CircleDot,
-      'fa-soap': Sparkles, 
-      'fa-broccoli': Carrot, 
-      'fa-display': Monitor,
-      'fa-graduation-cap': GraduationCap,
-      'fa-comments': MessageSquare,
-      'fa-people-group': Users,
-      'fa-masks-theater': Drama,
-      'fa-brain': BrainCircuit,
-      'fa-child-reaching': UserIcon,
-      'fa-music': Music,
-      'fa-magic': Wand2,
-      'fa-arrow-left': ArrowLeft,
-      'fa-arrow-right': ArrowRight,
-      'fa-spinner': Loader2,
-      'fa-volume-high': Volume2,
-      'fa-dna': Atom,
-      'fa-play': Play,
-      'fa-heart': Heart,
-      'fa-face-smile-wink': Smile,
-      'fa-images': Image,
-      'fa-hands-clapping': Hand,
-      'fa-gamepad': Gamepad2,
-      'fa-layer-group': Layers,
-      'fa-repeat': Repeat,
-      'fa-microphone-lines': Mic,
-      'fa-underline': Underline,
-      'fa-road-sign': Signpost,
-      'fa-book-open': BookOpen,
+      'fa-spell-check': Languages, 'fa-ear-listen': Ear, 'fa-pen-nib': Pen, 'fa-arrow-1-9': Calculator, 
+      'fa-hand-holding-heart': Handshake, 'fa-flask-vial': FlaskConical, 'fa-palette': Palette, 'fa-robot': Bot, 
+      'fa-face-smile': Smile, 'fa-tooth': Sparkles, 'fa-heart-pulse': HeartPulse, 'fa-vest': Shirt, 
+      'fa-sun': Sun, 'fa-utensils': Utensils, 'fa-school': School, 'fa-house': Home, 
+      'fa-recycle': Recycle, 'fa-water': Droplets, 'fa-broom': Trash2, 'fa-flag': Flag, 
+      'fa-hand-pointer': MousePointer2, 'fa-cube': Cube, 'fa-chalkboard-user': User, 
+      'fa-rabbit': Rabbit, 'fa-carrot': Carrot, 'fa-apple-whole': Apple, 'fa-cookie': Cookie, 
+      'fa-star': Star, 'fa-tv': Tv, 'fa-bed': Bed, 'fa-eye': Eye, 
+      'fa-cloud-showers-heavy': CloudRain, 'fa-guitar': Guitar, 'fa-plane': Plane, 'fa-car': Car, 
+      'fa-frog': Rabbit, 'fa-bolt': Zap, 'fa-circle-dot': CircleDot, 'fa-soap': Sparkles, 
+      'fa-broccoli': Carrot, 'fa-display': Monitor, 'fa-graduation-cap': GraduationCap, 'fa-comments': MessageSquare, 
+      'fa-people-group': Users, 'fa-masks-theater': Drama, 'fa-brain': BrainCircuit, 'fa-child-reaching': User, 
+      'fa-music': Music, 'fa-magic': Wand2, 'fa-arrow-left': ArrowLeft, 'fa-arrow-right': ArrowRight, 
+      'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-dna': Atom, 'fa-play': Play, 
+      'fa-heart': Heart, 'fa-face-smile-wink': Smile, 'fa-images': ImageIcon, 'fa-hands-clapping': Hand, 
+      'fa-gamepad': Gamepad2, 'fa-layer-group': Layers, 'fa-repeat': Repeat, 'fa-microphone-lines': Mic, 
+      'fa-underline': Underline, 'fa-road-sign': Signpost, 'fa-book-open': BookOpen,
+      'fa-check-double': CheckCheck, 'fa-puzzle-piece': Puzzle, 'fa-box': Box,
     };
   
     const IconComponent = iconMap[iconName] || HelpCircle;
@@ -165,7 +119,7 @@ const PhonicsZone: React.FC = () => {
     }
     try {
         const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-        if (result.success && result.data) {
+        if (result.success && result.data && typeof window !== 'undefined') {
             const audio = new Audio(`data:audio/wav;base64,${result.data}`);
             currentSourceRef.current = audio;
             audio.play();
@@ -228,7 +182,7 @@ const PhonicsZone: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 pb-20 font-black selection:bg-green-100">
+    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black selection:bg-green-100">
       <div className="text-center mb-4">
         <h2 className="text-6xl font-black text-pink-700 uppercase tracking-tighter drop-shadow-sm">Phonics World 🔡</h2>
         <p className="text-slate-500 font-black italic text-xl">Let's learn to read together!</p>
@@ -690,7 +644,7 @@ const DictionModule: React.FC<{onSound: (text:string) => void, schoolId: string}
           {loading ? <Loader2 className="w-16 h-16 animate-spin text-rose-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={current.word} />}
         </div>
 
-        <div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-white shadow-inner mb-10 text-center w-full max-w-xl">
+        <div className="bg-rose-50 p-8 rounded-[3rem] border-4 border-dashed border-rose-200 text-center w-full max-w-xl mb-10">
            <h4 className="text-8xl font-black text-rose-500 mb-4 uppercase tracking-widest leading-none">{current.word}</h4>
            <p className="text-4xl font-black text-slate-800 tracking-[0.5em] mb-4">{current.syllables}</p>
         </div>
@@ -854,4 +808,8 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
     </div>
   );
 };
+
+
+export default PhonicsZone;
+
 ```
