@@ -1,8 +1,7 @@
-
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -14,13 +13,14 @@ import {
   Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
   CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
   Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-  Flag, GraduationCap, Monitor, Zap, CircleDot, BrainCircuit,
+  Flag, GraduationCap, Monitor, Zap, CircleDot,
   BotMessageSquare as Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Tree, User as UserIcon, Hand
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
 // Correct imports for sub-modules
+import NurseryBloomIframe from '@/components/dashboard/junior-academy/NurseryBloomIframe';
 import NumeracyZone from './numeracy-zone';
 import MathWorld from './math-world';
 import JuniorScienceWorld from './science-world';
@@ -40,101 +40,61 @@ import * as constants from '@/lib/constants';
 
 // Bring in StorySpark, but not VoiceCoach
 import { StorySpark } from './voice-coach';
+import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { getApp, getApps, initializeApp } from 'firebase/app';
+import { firebaseConfig } from '@/firebase/config';
 
-const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-  const iconMap: Record<string, keyof typeof LucideIcons> = {
-    'fa-spell-check': 'Languages',
-    'fa-ear-listen': 'Ear',
-    'fa-pen-nib': 'Pen',
-    'fa-arrow-1-9': 'Calculator',
-    'fa-hand-holding-heart': 'Handshake',
-    'fa-flask-vial': 'FlaskConical',
-    'fa-palette': 'Palette',
-    'fa-robot': 'Bot',
-    'fa-face-smile': 'Smile',
-    'fa-tooth': 'Sparkles',
-    'fa-heart-pulse': 'HeartPulse',
-    'fa-vest': 'User',
-    'fa-sun': 'Sun',
-    'fa-utensils': 'Utensils',
-    'fa-school': 'School',
-    'fa-house': 'Home',
-    'fa-recycle': 'Recycle',
-    'fa-water': 'Droplets',
-    'fa-broom': 'Trash2',
-    'fa-flag': 'Flag',
-    'fa-hand-pointer': 'MousePointer2',
-    'fa-cube': 'Cube',
-    'fa-chalkboard-user': 'User',
-    'fa-rabbit': 'Rabbit',
-    'fa-carrot': 'Carrot',
-    'fa-apple-whole': 'Apple',
-    'fa-cookie': 'Cookie',
-    'fa-star': 'Star',
-    'fa-tv': 'Tv',
-    'fa-bed': 'Bed',
-    'fa-eye': 'Eye',
-    'fa-cloud-showers-heavy': 'CloudRain',
-    'fa-guitar': 'Guitar',
-    'fa-plane': 'Plane',
-    'fa-car': 'Car',
-    'fa-frog': 'Rabbit',
-    'fa-bolt': 'Zap',
-    'fa-circle-dot': 'CircleDot',
-    'fa-soap': 'Sparkles',
-    'fa-broccoli': 'Carrot',
-    'fa-display': 'Monitor',
-    'fa-graduation-cap': 'GraduationCap',
-    'fa-comments': 'MessageSquare',
-    'fa-people-group': 'Users',
-    'fa-masks-theater': 'Drama',
-    'fa-brain': 'BrainCircuit',
-    'fa-child-reaching': 'User',
-    'fa-music': 'Music',
-    'fa-magic': 'Wand2',
-    'fa-arrow-left': 'ArrowLeft',
-    'fa-arrow-right': 'ArrowRight',
-    'fa-spinner': 'Loader2',
-    'fa-volume-high': 'Volume2',
-    'fa-dna': 'Atom',
-    'fa-play': 'Play',
-    'fa-heart': 'Heart',
-    'fa-face-smile-wink': 'Smile'
-  };
 
-  const LucideName = iconMap[iconName] as keyof typeof LucideIcons;
-  const IconComponent = (LucideIcons as any)[LucideName] || HelpCircle;
-
-  if (!IconComponent || typeof IconComponent !== 'function') {
-    console.error('❌ Missing or invalid icon:', LucideName, 'for FA icon:', iconName);
-    const FallbackIcon = (LucideIcons as any)['HelpCircle'];
-    return <FallbackIcon className={className} />;
-  }
-
-  return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
-};
-
-const juniorStyles = {
-    storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
-    storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
-    
-    questCard: "bg-gradient-to-b from-sky-400 to-blue-500 border-b-[12px] border-blue-700 rounded-[50px] text-white",
-    stepBubble: "w-16 h-16 rounded-full bg-white text-blue-600 flex items-center justify-center text-3xl shadow-lg border-4 border-blue-200",
-    
-    card: "rounded-[60px] border-8 border-yellow-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100",
-    header: "p-10 text-center",
-    mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
-    
-    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
-    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
-};
+// Helper to get client app
+function getClientApp() {
+    if (getApps().length) return getApp();
+    return initializeApp(firebaseConfig);
+}
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
     const { role } = useRole();
     const { schoolId } = useCurrentSchool();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
-    
+    const { toast } = useToast();
+
+    // --- ADDED: PostMessage Event Listener ---
+    useEffect(() => {
+        const handleMessage = async (event: MessageEvent) => {
+            // IMPORTANT: Check the origin of the message for security
+            if (event.origin !== "https://nursery-bloom-825774943692.us-west1.run.app") {
+                return;
+            }
+
+            const { type, payload } = event.data;
+
+            if (type === 'saveToStorage' && payload.path && payload.dataUrl) {
+                toast({ title: "Saving...", description: "Uploading your creation to the cloud." });
+                try {
+                    const app = getClientApp();
+                    const storage = getStorage(app);
+                    const storageRef = ref(storage, payload.path);
+                    
+                    const uploadResult = await uploadString(storageRef, payload.dataUrl, 'data_url');
+                    const downloadURL = await getDownloadURL(uploadResult.ref);
+                    
+                    toast({ title: "Saved!", description: "Your work is saved securely." });
+
+                    // Optionally send a confirmation back to the iframe
+                    // event.source?.postMessage({ type: 'saveSuccess', payload: { downloadURL } }, event.origin);
+                } catch (error: any) {
+                    console.error("Storage Save Error:", error);
+                    toast({ variant: 'destructive', title: 'Save Failed', description: error.message });
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, [toast]);
+
     return (
         <div className="min-h-screen bg-[#FFFBEB] p-4 md:p-8 font-sans">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -152,8 +112,9 @@ export default function JuniorCampusPage() {
                     </div>}
                 </header>
 
-                <Tabs defaultValue="stories" className="w-full">
+                <Tabs defaultValue="bloom" className="w-full">
                     <TabsList className="grid w-full grid-cols-10 h-24 bg-white p-2 rounded-[30px] shadow-xl border-2 border-yellow-100 mb-10 overflow-x-auto no-scrollbar">
+                        <TabsTrigger value="bloom" className="rounded-2xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-black flex flex-col items-center gap-1"><Sparkles className="w-5 h-5"/>Nursery Bloom</TabsTrigger>
                         <TabsTrigger value="lifeskills" className="rounded-2xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-black flex flex-col items-center gap-1"><Heart className="w-5 h-5"/> Life Skills</TabsTrigger>
                         <TabsTrigger value="writing" className="rounded-2xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-black flex flex-col items-center gap-1"><Pencil className="w-5 h-5"/> Writing</TabsTrigger>
                         <TabsTrigger value="stories" className="rounded-2xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-black flex flex-col items-center gap-1"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
@@ -166,6 +127,7 @@ export default function JuniorCampusPage() {
                     </TabsList>
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
+                        <TabsContent value="bloom" className="mt-0"><NurseryBloomIframe /></TabsContent>
                         <TabsContent value="lifeskills" className="mt-0">{schoolId && <LifeSkillsZone />}</TabsContent>
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>

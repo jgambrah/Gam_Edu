@@ -1,30 +1,43 @@
-
 'use client';
 
-import React, { useState } from 'react';
-
-/**
- * CAMPUSCONNECT -> NURSERY BLOOM (EMBEDDED)
- * This component handles the secure handshake and runs the app
- * inside an Iframe to keep the user within CampusConnect.
- */
+import React, { useState, useEffect } from 'react';
+import { useUser } from '@/firebase';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { useRole } from '@/context/role-context';
+import { generateSecureToken } from '@/app/actions/generate-secure-token';
 
 const NurseryBloomIframe: React.FC = () => {
   const [isLaunched, setIsLaunched] = useState(false);
   const [sessionUrl, setSessionUrl] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
+  // --- ADDED: Get user context ---
+  const { user } = useUser();
+  const { schoolId } = useCurrentSchool();
+  const { profile } = useRole();
+
   // The official URL of your Nursery Bloom deployment
   const APP_BASE_URL = "https://nursery-bloom-825774943692.us-west1.run.app";
 
-  const handleLaunch = () => {
-    // 1. Generate the secure token (> 10 chars)
-    const salt = Math.random().toString(36).substring(2, 12);
-    const timestamp = Date.now().toString(36);
-    const secureToken = `${salt}${timestamp}`;
+  const handleLaunch = async () => {
+    if (!user || !schoolId || !profile) {
+        alert("User session not ready. Please wait a moment and try again.");
+        return;
+    }
 
-    // 2. Set the URL and flip the state to "Launched"
-    setSessionUrl(`${APP_BASE_URL}?token=${secureToken}`);
+    // --- ADDED: Generate JWT ---
+    const secureToken = await generateSecureToken(user.uid);
+
+    // --- UPDATED: Build URL with all required params ---
+    const params = new URLSearchParams({
+        schoolId: schoolId,
+        userId: user.uid,
+        userName: profile.firstName || user.displayName || 'Learner',
+        licenseType: profile.plan || 'Trial',
+        token: secureToken,
+    });
+    
+    setSessionUrl(`${APP_BASE_URL}?${params.toString()}`);
     setIsLaunched(true);
     setIsLoading(true);
   };
@@ -77,10 +90,6 @@ const NurseryBloomIframe: React.FC = () => {
             className="w-full h-full border-none"
             title="Nursery Bloom Session"
             onLoad={() => setIsLoading(false)}
-            /* 
-               CRITICAL: These permissions allow the AI Buddy 
-               to work correctly inside the Iframe.
-            */
             allow="microphone; camera; display-capture; autoplay"
           />
         </div>
@@ -102,7 +111,7 @@ const NurseryBloomIframe: React.FC = () => {
           Nursery <span className="text-pink-500">Bloom</span>
         </h3>
         <p className="text-slate-400 text-sm font-bold leading-relaxed mb-8">
-          Interactive AI learning suite. Click to launch the experience inside this window.
+          Interactive AI learning suite including Phonics, Numeracy, and the AI Buddy Tutor.
         </p>
 
         <button 
