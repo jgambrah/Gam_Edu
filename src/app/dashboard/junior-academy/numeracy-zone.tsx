@@ -50,10 +50,11 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
       'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
       'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
+      'fa-puzzle-piece': Puzzle, 'fa-cube': Box,
       'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
       'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
       'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
-      'fa-check-double': CheckCheck, 'fa-puzzle-piece': Puzzle, 'fa-cube': Box,
+      'fa-check-double': CheckCheck,
     };
     const IconComponent = iconMap[iconName] || HelpCircle;
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -99,7 +100,7 @@ const TeacherModal: React.FC<{ title: string; topicLabel: string; topicValue: st
     </Dialog>
 );
 
-// --- 1. NUMBERS ---
+// --- 1. NUMBERS (Recognition) ---
 const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Teacher', 'Director'].includes(role || '');
@@ -122,7 +123,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     }, [current, schoolId]);
     
     useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
-  
+
     const generateWithAi = async () => {
       if (!aiTopic || !schoolId) return; 
       setIsAiLoading(true);
@@ -140,7 +141,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
         setIsAiLoading(false);
       }
     };
-  
+
     return (
       <div className="relative font-black">
         {canEdit && <Button onClick={() => setIsDrawerOpen(true)} variant="outline" className="absolute -top-12 right-0 rounded-full border-2 border-purple-200 text-purple-500 font-black uppercase text-[10px] tracking-widest z-10"><Wand2 className="h-3 w-3 mr-1"/> AI Maker</Button>}
@@ -173,9 +174,7 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
-    
     const current = data[index];
-    
     const fetchVisual = useCallback(async () => {
         if (!current || !schoolId) return; 
         setLoading(true);
@@ -199,7 +198,6 @@ const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }>
         } catch(e) { console.error(e) }
         finally { setIsAiLoading(false); }
     };
-
     if (!current) return <div className="p-20 text-center">No Data</div>;
     return (
       <div className="relative font-black">
@@ -236,8 +234,9 @@ const NumberSequenceModule: React.FC<{ onSound: (t: string) => void, schoolId: s
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
-    const current = data[index];
     
+    const current = data[index];
+
     useEffect(() => { setUserAnswer(null) }, [index]);
 
     const generateWithAi = async () => {
@@ -313,13 +312,13 @@ const NumberComparisonModule: React.FC<{ onSound: (t: string) => void, schoolId:
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[550px]">
             <h3 className="text-4xl font-black text-orange-600 mb-10 uppercase text-center">{current.q}</h3>
             <div className="flex gap-12 items-center">
-            <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
-            <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
-            <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
+                <Button onClick={() => { setUserAnswer(current.val1); onSound(current.val1 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val1 ? (current.val1 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val1}</Button>
+                <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
+                <Button onClick={() => { setUserAnswer(current.val2); onSound(current.val2 === current.answer ? "Perfect" : "Check again"); }} className={cn("w-32 h-40 rounded-3xl text-6xl", userAnswer === current.val2 ? (current.val2 === current.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600')}>{current.val2}</Button>
             </div>
             {userAnswer === current.answer && <Button onClick={() => setIndex((index + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
         </div>
-        {isDrawerOpen && <TeacherModal title="AI Comparison Game" topicLabel="Theme" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
+        {isDrawerOpen && <TeacherModal title="AI Comparison Game" topicLabel="Theme (e.g. big/small)" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
     </div>
   );
 };
@@ -385,7 +384,6 @@ const NumberBondsModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
-    
     const current = data[index];
     
     useEffect(() => { setUserAnswer(null); }, [index]);
@@ -514,7 +512,7 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
     setIsAiLoading(true);
     try {
       const result = await generateMathWorldEntry(aiTopic, 'subtraction', schoolId);
-      if(result.success && result.data) {
+      if(result.success && result.data){
         setData(prev => [...prev, result.data]);
         setIndex(data.length); setIsDrawerOpen(false); setAiTopic('');
       }
@@ -536,7 +534,7 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolId: stri
             <div className="w-12 h-12 flex items-center justify-center bg-red-50 text-red-600 rounded-xl text-3xl font-black">{current.val2}</div>
         </div>
         <p className="text-6xl font-black text-slate-800 mb-10">{current.val1} - {current.val2} = ?</p>
-        <div className="flex flex-wrap justify-center gap-3 font-black">
+        <div className="flex flex-wrap justify-center gap-3">
             {Array.from({length: 11}).map((_, i) => (
                 <Button key={i} onClick={() => { setUserAnswer(i); onSound(i === correct ? "Yes!" : "Try again"); }} className={cn("w-14 h-14 rounded-xl font-black", userAnswer === i ? (i === correct ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-red-50 text-slate-800')}>{i}</Button>
             ))}
@@ -557,6 +555,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  
   const current = data[index];
   
   const generateWithAi = async () => {
@@ -576,7 +575,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
     if (!current || !schoolId) return;
     generateLessonImageAction({ prompt: current.prompt, schoolId }).then(res => setImageUrl(res.data || null));
   }, [index, schoolId, current]);
-
+  
   if (!current) return null;
   return (
     <div className="relative font-black">
@@ -592,7 +591,7 @@ const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId: string
          </div>
       </div>
       <div className="w-full max-w-2xl aspect-video bg-indigo-50 rounded-[3rem] border-8 border-white overflow-hidden mb-10 cursor-pointer" onClick={() => onSound(`${current.number} has ${current.tens} tens and ${current.units} units`)}>
-        {imageUrl && <img src={imageUrl} className="w-full h-full object-cover" alt={`${current.number} explained`} />}
+        {imageUrl && <img src={imageUrl} alt={`${current.number} explained`} className="w-full h-full object-cover" />}
       </div>
       </div>
       {isDrawerOpen && <TeacherModal title="AI Tens & Units Game" topicLabel="Theme" topicValue={aiTopic} onTopicChange={setAiTopic} onGenerate={generateWithAi} isLoading={isAiLoading} onClose={() => setIsDrawerOpen(false)} />}
@@ -643,16 +642,14 @@ const NumberMagicPen: React.FC<{ onSound: (t: string) => void, schoolId: string 
                 if(!rect) return;
                 const ctx = canvas?.getContext('2d');
                 if(!ctx) return;
-                const x = (e.clientX - rect.left) * (400/rect.width);
-                const y = (e.clientY - rect.top) * (400/rect.height);
                 ctx.setLineDash([]);
                 ctx.lineWidth = 18;
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = '#8B5CF6';
-                ctx.lineTo(x, y);
+                ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(x, y);
+                ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
             }} />
         </div>
         <div className="flex gap-4">
@@ -747,3 +744,5 @@ const NumeracyZone: React.FC = () => {
 };
   
 export default NumeracyZone;
+
+    
