@@ -13,7 +13,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import * as LucideIcons from 'lucide-react';
-import { 
+import { useRole } from '@/context/role-context';
+import confetti from 'canvas-confetti';
+
+
+const {
     Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
     Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, 
     Trophy, Gift, Check, CheckCircle2, XCircle, PenTool, Eraser, Database, Pencil, 
@@ -23,11 +27,9 @@ import {
     CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
     Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
     Flag, GraduationCap, Monitor, Zap, CircleDot,
-    BotMessageSquare, User as UserIcon, Hand, FlaskConical, Bed, Eye, TrendingUp, Leaf, Tree, Signpost,
-    FireExtinguisher, Search, ChefHat, Ship, Shell, Bug, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown,
-    Circle, ThumbsUp, CheckCheck, Puzzle, Box, Shirt, Image as ImageIcon, Gamepad2
-} from 'lucide-react';
-import { useRole } from '@/context/role-context';
+    Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Tree, User as UserIcon, Hand, Signpost, FireExtinguisher, Search, ChefHat, Ship, Shell, Bug, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Image as ImageIcon, Gamepad2
+} = LucideIcons;
+
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
@@ -39,7 +41,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-hand-holding-heart': Handshake,
       'fa-flask-vial': FlaskConical,
       'fa-palette': Palette,
-      'fa-robot': BotMessageSquare,
+      'fa-robot': Bot,
       'fa-face-smile': Smile,
       'fa-tooth': Sparkles,
       'fa-heart-pulse': HeartPulse,
@@ -53,17 +55,25 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-broom': Trash2,
       'fa-flag': Flag,
       'fa-hand-pointer': MousePointer2,
+      'fa-cube': Box,
       'fa-chalkboard-user': UserIcon,
+      'fa-rabbit': Rabbit,
+      'fa-carrot': Carrot,
+      'fa-apple-whole': Apple,
+      'fa-cookie': Cookie,
+      'fa-star': Star,
       'fa-tv': Tv,
       'fa-bed': Bed,
       'fa-eye': Eye,
       'fa-cloud-showers-heavy': CloudRain,
       'fa-guitar': Guitar,
       'fa-plane': Plane,
-      'fa-frog': Rabbit,
+      'fa-car': Car,
+      'fa-frog': Rabbit, 
+      'fa-bolt': Zap,
       'fa-circle-dot': CircleDot,
       'fa-soap': Sparkles, 
-      'fa-broccoli': Carrot,
+      'fa-broccoli': Carrot, 
       'fa-display': Monitor,
       'fa-graduation-cap': GraduationCap,
       'fa-comments': MessageSquare,
@@ -71,7 +81,14 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-masks-theater': Drama,
       'fa-child-reaching': UserIcon,
       'fa-music': Music,
+      'fa-magic': Wand2,
+      'fa-arrow-left': ArrowLeft,
+      'fa-arrow-right': ArrowRight,
+      'fa-spinner': Loader2,
+      'fa-volume-high': Volume2,
       'fa-dna': Atom,
+      'fa-play': Play,
+      'fa-heart': Heart,
       'fa-face-smile-wink': Smile,
       'fa-images': ImageIcon,
       'fa-hands-clapping': Hand,
@@ -89,17 +106,7 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-ship': Ship,
       'fa-shell': Shell,
       'fa-bug': Bug,
-      'fa-magic': Wand2,
-      'fa-spinner': Loader2,
-      'fa-arrow-left': ArrowLeft,
-      'fa-arrow-right': ArrowRight,
-      'fa-volume-high': Volume2,
-      'fa-play': Play,
-      'fa-heart': Heart,
-      'fa-car': Car,
-      'fa-cookie': Cookie,
-      'fa-carrot': Carrot,
-      'fa-lines-leaning': PenLine,
+      'fa-pen-line': PenLine,
       'fa-grip-lines-vertical': GripVertical,
       'fa-grip-lines': GripHorizontal,
       'fa-chevron-up': ChevronUp,
@@ -107,14 +114,14 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
       'fa-circle': Circle,
       'fa-thumbs-up': ThumbsUp,
       'fa-check-double': CheckCheck,
-      'fa-puzzle-piece': Puzzle,
-      'fa-box': Box,
+      'fa-puzzle-piece': Puzzle
     };
   
-    const IconComponent = iconMap[iconName] || HelpCircle;
+    const LucideName = iconMap[iconName];
+    const IconComponent = (LucideIcons as any)[LucideName as any] || HelpCircle;
   
     if (!IconComponent || typeof IconComponent !== 'function') {
-      console.error('❌ Missing or invalid icon:', iconMap[iconName] || 'HelpCircle', 'for FA icon:', iconName);
+      console.error('❌ Missing or invalid icon:', LucideName, 'for FA icon:', iconName);
       const FallbackIcon = (LucideIcons as any)['HelpCircle'];
       return <FallbackIcon className={className} />;
     }
@@ -764,8 +771,8 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
 
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === current.missing && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === current.missing && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
-                {char === current.missing ? (answered || '?') : char}
+              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === '_' && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === '_' && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
+                {char === '_' ? (answered || '?') : char}
               </div>
           ))}
         </div>
@@ -811,7 +818,7 @@ const EnvironmentalPrintModule: React.FC<{onSound: (text:string) => void, school
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[600px] animate-in zoom-in">
         <h3 className="text-4xl font-black text-orange-500 mb-8 uppercase tracking-tighter text-center">Reading the World! 🚦</h3>
         <div onClick={() => onSound(`This sign says ${current.text}. We see it at the ${current.context.toLowerCase()}.`)} className="w-full max-w-lg aspect-video bg-orange-50 rounded-[3rem] border-8 border-white shadow-2xl flex items-center justify-center mb-10 overflow-hidden cursor-pointer group relative">
-          {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" alt={current.text} />}
+          {loading ? <LucideIcons.Loader2 className="w-16 h-16 animate-spin text-orange-400" /> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 group-hover:scale-105 transition-transform" />}
           <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-colors flex items-center justify-center"><IconRenderer iconName="fa-volume-high" className="text-white text-6xl opacity-0 group-hover:opacity-100 drop-shadow-lg" /></div>
         </div>
         <div className="bg-orange-500 text-white px-10 py-6 rounded-[2rem] shadow-xl border-4 border-white mb-10"><h4 className="text-6xl font-black tracking-widest">{current.text}</h4></div>
@@ -872,497 +879,3 @@ const BookHandlingModule: React.FC<{onSound: (text:string) => void, schoolId: st
 
 
 export default PhonicsZone;
-
-    
-```
-- src/app/dashboard/junior_academy/sticker-book.tsx:
-```tsx
-
-'use client';
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, Sparkles, Star } from 'lucide-react';
-
-export default function StickerBook({ schoolId }: { schoolId: string }) {
-  return (
-    <Card className="rounded-[60px] border-8 border-yellow-100 shadow-xl overflow-hidden bg-white">
-      <CardHeader className="bg-yellow-500 p-10 text-white text-center">
-        <CardTitle className="text-4xl font-black uppercase tracking-tighter flex items-center justify-center gap-4">
-          <Trophy className="h-12 w-12" />
-          Sticker Book & Rewards
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-12 text-center">
-        <div className="flex flex-col items-center gap-8 py-20">
-          <div className="flex gap-4">
-            <Star className="h-16 w-16 text-yellow-300 animate-bounce" style={{ animationDelay: '0s' }} />
-            <Sparkles className="h-24 w-24 text-yellow-400 animate-pulse" />
-            <Star className="h-16 w-16 text-yellow-300 animate-bounce" style={{ animationDelay: '0.3s' }} />
-          </div>
-          <h3 className="text-3xl font-black text-yellow-600">Coming Soon!</h3>
-          <p className="text-xl text-slate-600 max-w-md">
-            Collect stickers and earn rewards as you complete activities! 
-            Your reward collection is being prepared.
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-```
-- src/app/dashboard/junior_academy/voice-coach.tsx:
-```tsx
-
-'use client';
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-// ... other necessary imports
-
-export const StorySpark = ({ canEdit, schoolId }: { canEdit: boolean, schoolId: string }) => {
-  // ... Logic for StorySpark
-  return (
-    <div className="text-center p-8">
-      <h2 className="text-2xl font-bold">Story Spark</h2>
-      <p>Content for stories will go here.</p>
-    </div>
-  );
-};
-
-    
-```
-- src/app/dashboard/junior_academy/writing-canvas.tsx:
-```tsx
-
-'use client';
-
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2, Trash2, CheckCircle2 } from 'lucide-react';
-import { assessHandwritingAction } from '@/ai/flows/junior-actions';
-import { useCurrentSchool } from '@/hooks/use-current-school';
-import { cn } from '@/lib/utils';
-import { STROKES, LETTERS, NUMBERS } from '@/lib/constants';
-
-const IconRenderer = ({ iconName }: { iconName: string }) => {
-    // This needs to be a proper component from somewhere, or you define it here
-    return <span className="font-bold text-2xl">{iconName}</span>
-}
-
-const WritingCanvas = ({ onSound, schoolId }: { onSound: (text: string) => void, schoolId: string }) => {
-  const [activeMode, setActiveMode] = useState<'letters' | 'strokes' | 'numbers'>('numbers');
-  const [selectedItem, setSelectedItem] = useState('1');
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { toast } = useToast();
-
-  const clearCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, 400, 400);
-    ctx.font = '900 300px Nunito, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.strokeStyle = '#F1F5F9';
-    ctx.setLineDash([10, 10]);
-    ctx.strokeText(selectedItem, 200, 220);
-  }, [selectedItem]);
-
-  useEffect(() => {
-    clearCanvas();
-  }, [selectedItem, clearCanvas]);
-
-  const handleCheck = async () => {
-    if (!canvasRef.current || !schoolId) return;
-    setIsEvaluating(true);
-    
-    const dataUrl = canvasRef.current.toDataURL('image/png');
-    
-    try {
-        const result = await assessHandwritingAction({
-            imageDataUri: dataUrl,
-            targetCharacter: selectedItem,
-            schoolId: schoolId,
-        });
-
-        if (result.success) {
-            if (result.isCorrect) {
-                toast({ title: "Great Job!", description: "That looks correct." });
-                // confetti();
-            } else {
-                toast({ variant: 'destructive', title: "Not Quite", description: "Let's try that again. Trace the lines carefully." });
-            }
-        } else {
-            toast({ variant: 'destructive', title: "AI Error", description: result.error || "Could not assess the drawing." });
-        }
-    } catch(e) {
-        toast({ variant: 'destructive', title: 'Error', description: "An unexpected error occurred."})
-    } finally {
-        setIsEvaluating(false);
-    }
-  };
-
-  const confetti = () => {
-    // Confetti logic can be added here using a library like canvas-confetti
-  };
-
-  return (
-    <div className="flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-purple-100">
-      {/* Tab select, item select, canvas, buttons... same as in numeracy-zone */}
-    </div>
-  );
-};
-
-export default WritingCanvas;
-
-    
-```
-- src/app/dashboard/reports/page.tsx:
-```tsx
-
-'use client';
-
-import { useRole } from '@/context/role-context';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { BarChart2, Users, Calendar, Box, Landmark } from 'lucide-react';
-import Link from 'next/link';
-
-const reportModules = [
-  {
-    path: '/dashboard/reports/academics',
-    title: 'Academic Reports',
-    icon: BarChart2,
-    description: 'Analyze student performance by class, subject, and assessment type.',
-    roles: ['Administrator', 'Director', 'Teacher'],
-  },
-  {
-    path: '/dashboard/reports/enrollment',
-    title: 'Enrollment Reports',
-    icon: Users,
-    description: 'View student demographics and enrollment statistics over time.',
-    roles: ['Administrator', 'Director'],
-  },
-  {
-    path: '/dashboard/reports/attendance',
-    title: 'Attendance Reports',
-    icon: Calendar,
-    description: 'Track attendance trends, identify chronically absent students, and monitor punctuality.',
-    roles: ['Administrator', 'Director', 'Teacher'],
-  },
-  {
-    path: '/dashboard/reports/inventory',
-    title: 'Inventory Reports',
-    icon: Box,
-    description: 'Get an overview of school assets, their status, and value.',
-    roles: ['Administrator', 'Director', 'Accountant'],
-  },
-   {
-    path: '/dashboard/reports/payroll',
-    title: 'Payroll Reports',
-    icon: Landmark,
-    description: 'View historical payroll data, statutory payments, and salary summaries.',
-    roles: ['Administrator', 'Director', 'Accountant'],
-  },
-];
-
-export default function ReportsPage() {
-    const { role } = useRole();
-
-    const accessibleReports = reportModules.filter(mod => {
-        const effectiveRole = role === 'Administrator' || role === 'Director' ? 'Admin' : role;
-        return mod.roles.includes(role || '') || mod.roles.includes(effectiveRole || '');
-    });
-
-    return (
-        <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Reporting & Analytics</CardTitle>
-                    <CardDescription>Generate and view comprehensive reports for your school.</CardDescription>
-                </CardHeader>
-            </Card>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {accessibleReports.map(report => (
-                    <Link href={report.path} key={report.path}>
-                        <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                            <CardHeader className="flex flex-row items-center gap-4">
-                                <div className="bg-primary/10 p-3 rounded-lg">
-                                    <report.icon className="h-6 w-6 text-primary" />
-                                </div>
-                                <CardTitle>{report.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground">{report.description}</p>
-                            </CardContent>
-                        </Card>
-                    </Link>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-```
-- src/hooks/useClickOutside.ts:
-```ts
-import { useEffect, type RefObject } from "react"
-
-export const useClickOutside = (
-  ref: RefObject<HTMLDivElement>,
-  handler: (e: MouseEvent) => void
-) => {
-  useEffect(() => {
-    const listener = (event: MouseEvent) => {
-      if (!ref.current || ref.current.contains(event.target as Node)) return
-      handler(event)
-    }
-    document.addEventListener("mousedown", listener)
-    return () => document.removeEventListener("mousedown", listener)
-  }, [ref, handler])
-}
-
-```
-- src/hooks/use-local-storage.ts:
-```tsx
-import { useCallback, useEffect, useState } from "react"
-
-export const useLocalStorage = <T>(
-  key: string,
-  initialValue: T
-): [T, (value: T) => void] => {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === "undefined") {
-      return initialValue
-    }
-    try {
-      const item = window.localStorage.getItem(key)
-      return item ? JSON.parse(item) : initialValue
-    } catch (error) {
-      console.error("Error reading from local storage:", error)
-      return initialValue
-    }
-  })
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const item = window.localStorage.getItem(key)
-        const parsedItem = item ? JSON.parse(item) : initialValue
-        if (JSON.stringify(parsedItem) !== JSON.stringify(storedValue)) {
-          setStoredValue(parsedItem)
-        }
-      } catch (error) {
-        console.error("Error reading from local storage during effect:", error)
-      }
-    }
-  }, [key, initialValue, storedValue])
-
-  const setValue = useCallback(
-    (value: T) => {
-      if (typeof window !== "undefined") {
-        try {
-          const valueToStore =
-            value instanceof Function ? value(storedValue) : value
-          setStoredValue(valueToStore)
-          window.localStorage.setItem(key, JSON.stringify(valueToStore))
-        } catch (error) {
-          console.error("Error writing to local storage:", error)
-        }
-      }
-    },
-    [key, storedValue]
-  )
-
-  return [storedValue, setValue]
-}
-
-```
-- src/hooks/use-locked-body.ts:
-```tsx
-import * as React from "react"
-
-// @see https://usehooks.com/useLockBodyScroll.
-export function useLockedBody(
-  initialLocked = false,
-  rootId = "___gatsby" // Default to `___gatsby` to not introduce breaking change
-) {
-  const [locked, setLocked] = React.useState(initialLocked)
-
-  // Do the side effect before render
-  React.useLayoutEffect(() => {
-    if (!locked) {
-      return
-    }
-
-    // Save initial body style
-    const originalOverflow = document.body.style.overflow
-    const originalPaddingRight = document.body.style.paddingRight
-
-    // Lock body scroll
-    document.body.style.overflow = "hidden"
-
-    // Get the scrollbar width
-    const root = document.getElementById(rootId) // or root
-    const scrollBarWidth = root ? root.offsetWidth - root.scrollWidth : 0
-
-    // Avoid width reflow
-    if (scrollBarWidth) {
-      document.body.style.paddingRight = `${scrollBarWidth}px`
-    }
-
-    return () => {
-      document.body.style.overflow = originalOverflow
-
-      if (scrollBarWidth) {
-        document.body.style.paddingRight = originalPaddingRight
-      }
-    }
-  }, [locked, rootId])
-
-  // Update state if initialValue changes
-  React.useEffect(() => {
-    if (locked !== initialLocked) {
-      setLocked(initialLocked)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialLocked])
-
-  return [locked, setLocked]
-}
-
-```
-- src/lib/paystack.ts:
-```ts
-'use server';
-
-import crypto from 'crypto';
-
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
-
-export async function verifyPaystackTransaction(reference: string) {
-  if (!PAYSTACK_SECRET) {
-    throw new Error('Paystack secret key is not configured.');
-  }
-
-  try {
-    const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to verify transaction with Paystack.');
-    }
-
-    const data = await response.json();
-    return data.data; // The transaction object
-  } catch (error) {
-    console.error('Paystack verification error:', error);
-    throw error;
-  }
-}
-
-export function verifyPaystackWebhook(signature: string, body: string) {
-  if (!PAYSTACK_SECRET) {
-    return false;
-  }
-
-  const hash = crypto
-    .createHmac('sha512', PAYSTACK_SECRET)
-    .update(body)
-    .digest('hex');
-
-  return hash === signature;
-}
-
-```
-- tailwind.config.ts:
-```ts
-import type {Config} from 'tailwindcss';
-
-const config = {
-  darkMode: ['class'],
-  content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-  ],
-  prefix: '',
-  theme: {
-    container: {
-      center: true,
-      padding: '2rem',
-      screens: {
-        '2xl': '1400px',
-      },
-    },
-    extend: {
-      colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
-      },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-      },
-      keyframes: {
-        'accordion-down': {
-          from: { height: '0' },
-          to: { height: 'var(--radix-accordion-content-height)' },
-        },
-        'accordion-up': {
-          from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: '0' },
-        },
-      },
-      animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
-      },
-    },
-  },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
-} satisfies Config;
-
-export default config;
-```
