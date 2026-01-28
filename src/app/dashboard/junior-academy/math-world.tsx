@@ -14,17 +14,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import * as LucideIcons from 'lucide-react';
-import confetti from 'canvas-confetti';
-
-const {
+import { 
     Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Smile, 
-    Ear, Layers, Image: ImageIcon, Sparkles, HelpCircle, 
+    Ear, Layers, Image as ImageIcon, Sparkles, HelpCircle, 
     Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
     Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
     Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
-    Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
-} = LucideIcons;
+    Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car, Play
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
@@ -42,9 +40,6 @@ const IconRenderer = ({ iconName, className }: { iconName: string, className?: s
     const IconComponent = iconMap[iconName] || HelpCircle;
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
-
-// Fake components for missing logic to avoid crash, replace with actual logic if available
-const Play = ({className}:any) => <Volume2 className={className}/>;
 
 type MathWorldTab = 'grouping' | 'time' | 'money' | 'measurement' | 'shapes' | 'spatial' | 'comparison' | 'patterns' | 'one-to-one';
 
@@ -133,7 +128,7 @@ const TellingTimeModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
             <h3 className="text-4xl font-black text-blue-500 mb-8 uppercase">Clock Time ⏰</h3>
             <div className="w-72 h-72 bg-blue-50 rounded-full border-8 border-white shadow-2xl flex items-center justify-center mb-12 relative cursor-pointer" onClick={() => onSound(current.phrase)}>
                 <Clock className="h-40 w-40 text-blue-300" />
-                <div className="absolute inset-0 flex items-center justify-center"><LucideIcons.Volume2 className="text-blue-500 h-10 w-10 opacity-50"/></div>
+                <div className="absolute inset-0 flex items-center justify-center"><Volume2 className="text-blue-500 h-10 w-10 opacity-50"/></div>
             </div>
             <div className="flex gap-6">
                 {options.map(opt => (
@@ -262,41 +257,22 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
 const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const [data] = useState(constants.NUMERACY_DATA.comparisons || []);
     const [level, setLevel] = useState(0);
-    const [answered, setAnswered] = useState<number|null>(null);
+    const [answered, setAnswered] = useState(false);
+    const [imageUrls, setImageUrls] = useState<(string | null)[]>([]);
     const currentLevel = data[level];
-    
     useEffect(() => {
-        setAnswered(null);
-    }, [level]);
-
-    if (!currentLevel) {
-        return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
-    }
-
-    const handleChoice = (val: number) => {
-        setAnswered(val);
-        const isCorrect = val === currentLevel.answer;
-        if (isCorrect) {
-            onSound("Perfect!");
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        } else {
-            onSound("Check again");
-        }
-    };
-    
+        if (!currentLevel) return;
+        Promise.all(currentLevel.items.map((i: any) => generateLessonImageAction({ prompt: i.prompt, schoolId }))).then(res => setImageUrls(res.map(r => r.data || null)));
+        setAnswered(false);
+    }, [level, schoolId, currentLevel]);
+    if (!currentLevel) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center">
           <h3 className="text-4xl font-black text-red-400 mb-12 uppercase text-center">{currentLevel.q}</h3>
-          <div className="flex gap-12 items-center">
-            <Button onClick={() => handleChoice(currentLevel.val1)} className={cn("w-32 h-40 rounded-3xl text-6xl font-black", answered === currentLevel.val1 ? (currentLevel.val1 === currentLevel.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600 hover:bg-orange-100')}>
-                {currentLevel.val1}
-            </Button>
-            <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
-            <Button onClick={() => handleChoice(currentLevel.val2)} className={cn("w-32 h-40 rounded-3xl text-6xl font-black", answered === currentLevel.val2 ? (currentLevel.val2 === currentLevel.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600 hover:bg-orange-100')}>
-                {currentLevel.val2}
-            </Button>
+          <div className="flex gap-12 items-end">
+            {currentLevel.items.map((item: any, idx: number) => (<Button key={idx} variant="ghost" onClick={() => { if(idx === currentLevel.correct) setAnswered(true); onSound(idx === currentLevel.correct ? "Yes" : "No"); }} className={cn("flex flex-col h-auto p-4 rounded-3xl border-4", answered && idx === currentLevel.correct ? 'border-green-400 scale-110' : 'border-transparent')}><div className={cn("bg-orange-50 rounded-[3rem] border-8 overflow-hidden", item.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28', answered && idx === currentLevel.correct ? 'border-green-400' : 'border-white')}>{imageUrls[idx] && <img src={imageUrls[idx]!} className="w-full h-full object-cover" />}</div><span className="mt-4 text-slate-700 font-black">{item.label}</span></Button>))}
           </div>
-          {answered === currentLevel.answer && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
+          {answered && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
         </div>
     );
 };
@@ -361,10 +337,11 @@ const MathWorld: React.FC = () => {
       if (!text || !schoolId) return;
       if (currentSourceRef.current) try { currentSourceRef.current.pause(); } catch (e) {}
       const result = await generateTTSAction({ text, voice: 'Kore', schoolId });
-      if (result.success && result.data && typeof window !== 'undefined') {
+      if (result.success && result.data) {
           const audio = new Audio(`data:audio/wav;base64,${result.data}`);
           currentSourceRef.current = audio;
           audio.play();
+          audio.onended = () => { currentSourceRef.current = null; };
       }
     }, [schoolId]);
 
@@ -403,7 +380,7 @@ const MathWorld: React.FC = () => {
     return (
       <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
         <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
-          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-sky-50 min-w-max">
+          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-sky-50 min-w-max font-black">
             {tabs.map((tab) => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-sky-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
               )}>
