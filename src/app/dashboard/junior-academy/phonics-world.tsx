@@ -19,40 +19,81 @@ import {
     Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
     Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
     Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car, Play, 
-    Languages, Pen, Hand, Gamepad2, Repeat, Mic, Underline, Signpost, BookOpen, CheckCircle2, XCircle, ShieldCheck,
+    Languages, Pen, BookOpen, CheckCircle2, XCircle, ShieldCheck,
     BotMessageSquare, GraduationCap, MessageSquare, Building2, UserCog as StaffIcon, FlaskConical, Bed, TrendingUp, Leaf, Tree, User as UserIcon, FireExtinguisher, Search, ChefHat, Ship, Shell, Bug,
-    CloudRain, Guitar, Plane, MousePointer2, Cube
+    HeartPulse, School, Home, Signpost
 } from 'lucide-react';
 import { useRole } from '@/context/role-context';
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-        'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Shapes, 'fa-font': Type, 
-        'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
-        'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
-        'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
-        'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
-        'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
-        'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
-        'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
-        'fa-check-double': CheckCheck, 'fa-puzzle-piece': Puzzle, 'fa-box': Box, 'fa-spell-check': Languages, 'fa-ear-listen': Ear, 'fa-pen-nib': Pen,
-        'fa-arrow-1-9': Calculator, 'fa-hand-holding-heart': Handshake, 'fa-flask-vial': FlaskConical, 'fa-palette': Palette, 'fa-robot': BotMessageSquare,
-        'fa-tooth': Sparkles, 'fa-heart-pulse': HeartPulse, 'fa-vest': Shirt, 'fa-sun': Sun, 'fa-utensils': Utensils, 'fa-school': School, 'fa-house': Home, 'fa-recycle': Recycle, 'fa-water': Droplets,
-        'fa-broom': Trash2, 'fa-flag': Flag, 'fa-hand-pointer': MousePointer2, 'fa-chalkboard-user': User, 'fa-tv': Tv, 'fa-bed': Bed, 'fa-eye': Eye,
-        'fa-cloud-showers-heavy': CloudRain, 'fa-guitar': Guitar, 'fa-plane': Plane, 'fa-frog': Rabbit, 'fa-circle-dot': CircleDot, 'fa-soap': Sparkles, 'fa-broccoli': Carrot,
-        'fa-display': Monitor, 'fa-graduation-cap': GraduationCap, 'fa-comments': MessageSquare, 'fa-people-group': Users, 'fa-masks-theater': Drama, 'fa-child-reaching': User,
-        'fa-music': Music, 'fa-dna': Atom, 'fa-face-smile-wink': Smile, 'fa-images': ImageIcon, 'fa-hands-clapping': Hand, 'fa-gamepad': Gamepad2, 'fa-repeat': Repeat,
-        'fa-microphone-lines': Mic, 'fa-underline': Underline, 'fa-road-sign': Signpost, 'fa-book-open': BookOpen, 'fa-fire-extinguisher': FireExtinguisher, 'fa-user-doctor': User,
-        'fa-search': Search, 'fa-chef-hat': ChefHat, 'fa-ship': Ship, 'fa-shell': Shell, 'fa-bug': Bug
+      'fa-spell-check': Languages,
+      'fa-ear-listen': Ear,
+      'fa-pen-nib': Pen,
+      'fa-arrow-1-9': Calculator,
+      'fa-hand-holding-heart': Handshake,
+      'fa-flask-vial': FlaskConical,
+      'fa-palette': Palette,
+      'fa-robot': BotMessageSquare,
+      'fa-face-smile': Smile,
+      'fa-tooth': Sparkles,
+      'fa-heart-pulse': HeartPulse,
+      'fa-vest': Shirt,
+      'fa-sun': Sun,
+      'fa-utensils': Utensils,
+      'fa-school': School,
+      'fa-house': Home,
+      'fa-recycle': Recycle,
+      'fa-water': Droplets,
+      'fa-broom': Trash2,
+      'fa-flag': Flag,
+      'fa-hand-pointer': MousePointer2,
+      'fa-chalkboard-user': UserIcon,
+      'fa-tv': Tv,
+      'fa-bed': Bed,
+      'fa-eye': Eye,
+      'fa-cloud-showers-heavy': CloudRain,
+      'fa-guitar': Guitar,
+      'fa-plane': Plane,
+      'fa-frog': Rabbit,
+      'fa-circle-dot': CircleDot,
+      'fa-soap': Sparkles,
+      'fa-broccoli': Carrot,
+      'fa-display': Monitor,
+      'fa-graduation-cap': GraduationCap,
+      'fa-comments': MessageSquare,
+      'fa-people-group': Users,
+      'fa-masks-theater': Drama,
+      'fa-child-reaching': UserIcon,
+      'fa-music': Music,
+      'fa-dna': Atom,
+      'fa-face-smile-wink': Smile,
+      'fa-images': ImageIcon,
+      'fa-hands-clapping': Hand,
+      'fa-gamepad': Gamepad2,
+      'fa-layer-group': Layers,
+      'fa-repeat': Repeat,
+      'fa-microphone-lines': Mic,
+      'fa-underline': Underline,
+      'fa-road-sign': Signpost,
+      'fa-book-open': BookOpen,
+      'fa-fire-extinguisher': FireExtinguisher,
+      'fa-user-doctor': UserIcon,
+      'fa-search': Search,
+      'fa-chef-hat': ChefHat,
+      'fa-ship': Ship,
+      'fa-shell': Shell,
+      'fa-bug': Bug,
+      'fa-magic': Wand2,
+      'fa-spinner': Loader2,
+      'fa-arrow-left': ArrowLeft,
+      'fa-arrow-right': ArrowRight,
+      'fa-volume-high': Volume2,
+      'fa-play': Play
     };
   
     const IconComponent = iconMap[iconName] || HelpCircle;
-  
-    if (!IconComponent) {
-      console.error('❌ Missing icon:', iconName);
-      return <HelpCircle className={className} />;
-    }
   
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
 };
@@ -699,8 +740,8 @@ const MissingLettersModule: React.FC<{onSound: (text:string) => void, schoolId: 
 
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === '_' && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === '_' && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
-                {char === '_' ? (answered || '?') : char}
+              <div key={i} className={`w-20 h-24 rounded-2xl flex items-center justify-center text-6xl font-black border-4 ${char === current.missing && !answered ? 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed' : (char === current.missing && answered === current.missing ? 'bg-green-500 text-white border-white' : 'bg-white border-emerald-50 text-slate-800 shadow-md')}`}>
+                {char === current.missing ? (answered || '?') : char}
               </div>
           ))}
         </div>
