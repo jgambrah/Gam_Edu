@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -14,30 +13,30 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { 
+import * as LucideIcons from 'lucide-react';
+import confetti from 'canvas-confetti';
+
+const {
     Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Smile, 
-    Ear, Layers, Image as ImageIcon, Sparkles, HelpCircle, 
+    Ear, Layers, Image: ImageIcon, Sparkles, HelpCircle, 
     Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
     Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
     Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
     Type, Palette, Utensils, Trash2, Calculator, Shapes, Apple, Cookie, Carrot, PenLine, GripVertical, GripHorizontal, ChevronUp, ChevronDown, Circle, ThumbsUp, CheckCheck, Puzzle, Box, Car
-} from 'lucide-react';
-import confetti from 'canvas-confetti';
+} = LucideIcons;
 
 // --- ROBUST ICON RENDERER ---
 const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
-    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-      'fa-1': Hash, 'fa-list-ol': ListOrdered, 'fa-arrow-right-long': ArrowRight, 'fa-scale-unbalanced': Shapes, 'fa-font': Type, 
-      'fa-handshake': Handshake, 'fa-plus': Plus, 'fa-minus': Minus, 'fa-layer-group': Layers, 'fa-object-group': ObjectGroup, 
-      'fa-clock': Clock, 'fa-coins': Coins, 'fa-ruler-vertical': Ruler, 'fa-shapes': Shapes, 'fa-arrows-up-down-left-right': Move, 
-      'fa-scale-balanced': Scale, 'fa-square-check': CheckSquare, 'fa-arrows-left-right': ArrowLeftRight, 'fa-pen-clip': PenTool,
-      'fa-magic': Wand2, 'fa-spinner': Loader2, 'fa-volume-high': Volume2, 'fa-play': Play, 'fa-face-smile': Smile, 'fa-brain': BrainCircuit,
-      'fa-apple-whole': Apple, 'fa-star': Star, 'fa-heart': Heart, 'fa-car': Car, 'fa-bolt': Zap, 'fa-cookie': Cookie, 'fa-rabbit': Rabbit,
-      'fa-carrot': Carrot, 'fa-lines-leaning': PenLine, 'fa-grip-lines-vertical': GripVertical, 'fa-grip-lines': GripHorizontal,
-      'fa-chevron-up': ChevronUp, 'fa-chevron-down': ChevronDown, 'fa-circle': Circle, 'fa-trash-can': Trash2, 'fa-thumbs-up': ThumbsUp,
-      'fa-check-double': CheckCheck,
-      'fa-puzzle-piece': Puzzle,
-      'fa-cube': Box,
+    const iconMap: Record<string, keyof typeof LucideIcons> = {
+      'fa-1': 'Hash', 'fa-list-ol': 'ListOrdered', 'fa-arrow-right-long': 'ArrowRight', 'fa-scale-unbalanced': 'Shapes', 'fa-font': 'Type', 
+      'fa-handshake': 'Handshake', 'fa-plus': 'Plus', 'fa-minus': 'Minus', 'fa-layer-group': 'Layers', 'fa-object-group': 'ObjectGroup', 
+      'fa-clock': 'Clock', 'fa-coins': 'Coins', 'fa-ruler-vertical': 'Ruler', 'fa-shapes': 'Shapes', 'fa-arrows-up-down-left-right': 'Move', 
+      'fa-scale-balanced': 'Scale', 'fa-square-check': 'CheckSquare', 'fa-arrows-left-right': 'ArrowLeftRight', 'fa-pen-clip': 'PenTool',
+      'fa-magic': 'Wand2', 'fa-spinner': 'Loader2', 'fa-volume-high': 'Volume2', 'fa-play': 'Play', 'fa-face-smile': 'Smile', 'fa-brain': 'BrainCircuit',
+      'fa-apple-whole': 'Apple', 'fa-star': 'Star', 'fa-heart': 'Heart', 'fa-car': 'Car', 'fa-bolt': 'Zap', 'fa-cookie': 'Cookie', 'fa-rabbit': 'Rabbit',
+      'fa-carrot': 'Carrot', 'fa-lines-leaning': 'PenLine', 'fa-grip-lines-vertical': 'GripVertical', 'fa-grip-lines': 'GripHorizontal',
+      'fa-chevron-up': 'ChevronUp', 'fa-chevron-down': 'ChevronDown', 'fa-circle': 'Circle', 'fa-trash-can': 'Trash2', 'fa-thumbs-up': 'ThumbsUp',
+      'fa-check-double': 'CheckCheck', 'fa-puzzle-piece': 'Puzzle', 'fa-cube': 'Box',
     };
     const IconComponent = iconMap[iconName] || HelpCircle;
     return <IconComponent className={cn(className, iconName.includes('fa-spin') && 'animate-spin')} />;
@@ -97,10 +96,12 @@ const GroupingModule: React.FC<{ onSound: (t: string) => void, schoolId: string 
     const [index, setIndex] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const current = data[index];
-    useEffect(() => {
+    const fetchVisual = useCallback(async () => {
         if (!current || !schoolId) return;
-        generateLessonImageAction({ prompt: current.prompt, schoolId }).then(res => setImageUrl(res.data || null));
-    }, [index, schoolId, current]);
+        const res = await generateLessonImageAction({ prompt: current.prompt, schoolId });
+        if(res.success) setImageUrl(res.data || null);
+    }, [current, schoolId]);
+    useEffect(() => { fetchVisual(); }, [index, data, fetchVisual]);
     if (!current) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-emerald-100 flex flex-col items-center">
@@ -131,7 +132,7 @@ const TellingTimeModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
             <h3 className="text-4xl font-black text-blue-500 mb-8 uppercase">Clock Time ⏰</h3>
             <div className="w-72 h-72 bg-blue-50 rounded-full border-8 border-white shadow-2xl flex items-center justify-center mb-12 relative cursor-pointer" onClick={() => onSound(current.phrase)}>
                 <Clock className="h-40 w-40 text-blue-300" />
-                <div className="absolute inset-0 flex items-center justify-center"><Volume2 className="text-blue-500 h-10 w-10 opacity-50"/></div>
+                <div className="absolute inset-0 flex items-center justify-center"><LucideIcons.Volume2 className="text-blue-500 h-10 w-10 opacity-50"/></div>
             </div>
             <div className="flex gap-6">
                 {options.map(opt => (
@@ -260,41 +261,22 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: string }
 const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
     const [data] = useState(constants.NUMERACY_DATA.comparisons || []);
     const [level, setLevel] = useState(0);
-    const [answered, setAnswered] = useState<number|null>(null);
+    const [answered, setAnswered] = useState(false);
+    const [imageUrls, setImageUrls] = useState<(string | null)[]>([]);
     const currentLevel = data[level];
-    
     useEffect(() => {
-        setAnswered(null);
-    }, [level]);
-
-    if (!currentLevel) {
-        return <div className="text-center p-8"><Loader2 className="animate-spin"/></div>;
-    }
-
-    const handleChoice = (val: number) => {
-        setAnswered(val);
-        const isCorrect = val === currentLevel.answer;
-        if (isCorrect) {
-            onSound("Perfect!");
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        } else {
-            onSound("Check again");
-        }
-    };
-    
+        if (!currentLevel) return;
+        Promise.all(currentLevel.items.map((i: any) => generateLessonImageAction({ prompt: i.prompt, schoolId }))).then(res => setImageUrls(res.map(r => r.data || null)));
+        setAnswered(false);
+    }, [level, schoolId, currentLevel]);
+    if (!currentLevel) return null;
     return (
         <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center">
           <h3 className="text-4xl font-black text-red-400 mb-12 uppercase text-center">{currentLevel.q}</h3>
-          <div className="flex gap-12 items-center">
-            <Button onClick={() => handleChoice(currentLevel.val1)} className={cn("w-32 h-40 rounded-3xl text-6xl font-black", answered === currentLevel.val1 ? (currentLevel.val1 === currentLevel.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600 hover:bg-orange-100')}>
-                {currentLevel.val1}
-            </Button>
-            <ArrowLeftRight className="text-slate-300 h-12 w-12"/>
-            <Button onClick={() => handleChoice(currentLevel.val2)} className={cn("w-32 h-40 rounded-3xl text-6xl font-black", answered === currentLevel.val2 ? (currentLevel.val2 === currentLevel.answer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-orange-50 text-orange-600 hover:bg-orange-100')}>
-                {currentLevel.val2}
-            </Button>
+          <div className="flex gap-12 items-end">
+            {currentLevel.items.map((item: any, idx: number) => (<Button key={idx} variant="ghost" onClick={() => { if(idx === currentLevel.correct) setAnswered(true); onSound(idx === currentLevel.correct ? "Yes" : "No"); }} className={cn("flex flex-col h-auto p-4 rounded-3xl border-4", answered && idx === currentLevel.correct ? 'border-green-400 scale-110' : 'border-transparent')}><div className={cn("bg-orange-50 rounded-[3rem] border-8 overflow-hidden", item.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28', answered && idx === currentLevel.correct ? 'border-green-400' : 'border-white')}>{imageUrls[idx] && <img src={imageUrls[idx]!} className="w-full h-full object-cover" />}</div><span className="mt-4 text-slate-700 font-black">{item.label}</span></Button>))}
           </div>
-          {answered === currentLevel.answer && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
+          {answered && <Button onClick={() => setLevel((level + 1) % data.length)} className="mt-8 bg-green-500 text-white rounded-2xl px-10 h-14">NEXT LEVEL</Button>}
         </div>
     );
 };
@@ -344,13 +326,12 @@ const OneToOneGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =
   );
 };
 
-
 // --- MAIN WRAPPER ---
-const MathWorld: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<MathWorldTab>('grouping');
-    const [startedModules, setStartedModules] = useState<Record<MathWorldTab, boolean>>({
-        grouping: false, time: false, money: false, measurement: false, shapes: false, 
-        spatial: false, comparison: false, patterns: false, 'one-to-one': false
+const NumeracyZone: React.FC = () => {
+    const [activeTab, setActiveTab] = useState<NumeracyTab>('numbers');
+    const [startedModules, setStartedModules] = useState<Record<NumeracyTab, boolean>>({
+        numbers: false, counting: false, sequence: false, comparing: false, 'number-words': false, bonds: false,
+        addition: false, subtraction: false, 'tens-units': false, tracing: false,
     });
     
     const { schoolId } = useCurrentSchool();
@@ -364,70 +345,69 @@ const MathWorld: React.FC = () => {
           const audio = new Audio(`data:audio/wav;base64,${result.data}`);
           currentSourceRef.current = audio;
           audio.play();
+          audio.onended = () => { currentSourceRef.current = null; };
       }
     }, [schoolId]);
 
-    const handleStartModule = (moduleId: MathWorldTab) => {
+    const handleStartModule = (moduleId: NumeracyTab) => {
         setStartedModules(prev => ({ ...prev, [moduleId]: true }));
     };
 
-    const handleCloseModule = (moduleId: MathWorldTab) => {
+    const handleCloseModule = (moduleId: NumeracyTab) => {
         setStartedModules(prev => ({ ...prev, [moduleId]: false }));
     };
   
-    const tabs: {id: MathWorldTab, icon: string}[] = [
-      { id: 'grouping', icon: 'fa-object-group' }, { id: 'time', icon: 'fa-clock' }, { id: 'money', icon: 'fa-coins' },
-      { id: 'measurement', icon: 'fa-ruler-vertical' }, { id: 'shapes', icon: 'fa-shapes' }, { id: 'spatial', icon: 'fa-arrows-up-down-left-right' },
-      { id: 'comparison', icon: 'fa-scale-balanced' }, { id: 'patterns', icon: 'fa-square-check' }, { id: 'one-to-one', icon: 'fa-arrows-left-right' },
+    const tabs: {id: NumeracyTab, icon: string}[] = [
+      { id: 'numbers', icon: 'fa-1' }, { id: 'counting', icon: 'fa-list-ol' }, { id: 'sequence', icon: 'fa-arrow-right-long' }, 
+      { id: 'comparing', icon: 'fa-scale-unbalanced' }, { id: 'number-words', icon: 'fa-font' }, { id: 'bonds', icon: 'fa-handshake' }, 
+      { id: 'addition', icon: 'fa-plus' }, { id: 'subtraction', icon: 'fa-minus' }, { id: 'tens-units', icon: 'fa-layer-group' }, 
+      { id: 'tracing', icon: 'fa-pen-clip' }
     ];
     
-    const renderModuleContent = () => {
-        if(!schoolId) return null;
-        const commonProps = { onSound: playFeedbackSound, schoolId: schoolId! };
-        
-        switch (activeTab) {
-            case 'grouping': return <GroupingModule {...commonProps} />;
-            case 'time': return <TellingTimeModule onSound={playFeedbackSound} />;
-            case 'money': return <MoneyCountingModule {...commonProps} />;
-            case 'measurement': return <MeasurementModule {...commonProps} />;
-            case 'shapes': return <ShapesModule {...commonProps} />;
-            case 'spatial': return <SpatialModule {...commonProps} />;
-            case 'comparison': return <ComparisonGame {...commonProps} />;
-            case 'patterns': return <PatternGame onSound={playFeedbackSound} />;
-            case 'one-to-one': return <OneToOneGame onSound={playFeedbackSound} />;
-            default: return <p>Activity Coming Soon</p>;
-        }
+    const renderModule = () => {
+      if(!schoolId) return <div className="text-center p-8"><Loader2 className="animate-spin h-10 w-10 mx-auto text-purple-400"/></div>;
+      const commonProps = { onSound: playFeedbackSound, schoolId: schoolId };
+      
+      return (
+        <ModuleContainer 
+            title={activeTab.replace('-', ' ')} 
+            icon={tabs.find(t => t.id === activeTab)?.icon || 'fa-1'}
+            started={startedModules[activeTab]}
+            onStart={() => handleStartModule(activeTab)}
+            onClose={() => handleCloseModule(activeTab)}
+        >
+            {startedModules[activeTab] && (
+                <>
+                    {activeTab === 'numbers' && <NumbersMainModule {...commonProps} />}
+                    {activeTab === 'counting' && <CountingGame {...commonProps} />}
+                    {activeTab === 'sequence' && <NumberSequenceModule {...commonProps} />}
+                    {activeTab === 'comparing' && <NumberComparisonModule {...commonProps} />}
+                    {activeTab === 'number-words' && <NumberWordsModule {...commonProps} />}
+                    {activeTab === 'bonds' && <NumberBondsModule {...commonProps} />}
+                    {activeTab === 'addition' && <AdditionModule {...commonProps} />}
+                    {activeTab === 'subtraction' && <SubtractionModule {...commonProps} />}
+                    {activeTab === 'tens-units' && <TensUnitsModule {...commonProps} />}
+                    {activeTab === 'tracing' && <NumberMagicPen {...commonProps} />}
+                </>
+            )}
+        </ModuleContainer>
+      );
     };
   
     return (
       <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20 font-black">
-        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
-          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-sky-50 min-w-max">
+        <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4 font-black">
+          <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-purple-50 min-w-max font-black">
             {tabs.map((tab) => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-sky-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black'
-              )}>
+              <button key={tab.id} onClick={() => { setActiveTab(tab.id); }} className={cn("min-w-[110px] px-5 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1", activeTab === tab.id ? `bg-purple-500 text-white shadow-xl scale-110 -translate-y-1` : 'text-slate-700 hover:bg-slate-50 font-black')}>
                 <IconRenderer iconName={tab.icon} className="text-lg" /><span className="whitespace-nowrap">{tab.id.replace('-', ' ')}</span>
               </button>
             ))}
           </div>
         </div>
-        <div className="w-full px-4">
-            {schoolId ? (
-                <ModuleContainerWithState 
-                    title={activeTab.replace('-', ' ')} 
-                    icon={tabs.find(t => t.id === activeTab)?.icon || 'fa-1'}
-                    started={startedModules[activeTab]}
-                    onStart={() => handleStartModule(activeTab)}
-                    onClose={() => handleCloseModule(activeTab)}
-                >
-                    {startedModules[activeTab] && renderModuleContent()}
-                </ModuleContainerWithState>
-            ) : (
-                <div className="text-center p-20"><Loader2 className="animate-spin h-10 w-10 mx-auto text-sky-400"/></div>
-            )}
-        </div>
+        <div className="w-full px-4">{renderModule()}</div>
       </div>
     );
 };
   
-export default MathWorld;
+export default NumeracyZone;
