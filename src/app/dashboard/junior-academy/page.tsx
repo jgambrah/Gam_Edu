@@ -14,7 +14,7 @@ import {
   Sparkles, HeartPulse, CloudSun, PawPrint, Shapes, Languages, Pen, Apple, Sun, 
   CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
   Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
-  Flag, GraduationCap, Monitor, Zap, CircleDot,
+  Flag, GraduationCap, Monitor, Zap, CircleDot, BrainCircuit,
   BotMessageSquare as Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Tree, User as UserIcon, Hand
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -181,5 +181,3 @@ export default function JuniorCampusPage() {
         </div>
     );
 }
-
-    
