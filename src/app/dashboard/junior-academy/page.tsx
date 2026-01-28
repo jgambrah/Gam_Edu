@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -14,13 +15,13 @@ import {
   CloudRain, Guitar, Plane, MousePointer2, Cube, Carrot, Cookie, School, Home, 
   Recycle, Water, Droplets, HelpCircle, MessageSquare, Drama, ArrowLeft, Play, 
   Flag, GraduationCap, Monitor, Zap, CircleDot,
-  BotMessageSquare as Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Tree, User as UserIcon, Hand
+  BotMessageSquare as Bot, Shirt, FlaskConical, Bed, Eye, TrendingUp, Leaf, Tree, User as UserIcon, Hand, BrainCircuit
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 // Correct imports for sub-modules
-import NurseryBloomIframe from '@/components/dashboard/junior-academy/NurseryBloomIframe';
 import NumeracyZone from './numeracy-zone';
 import MathWorld from './math-world';
 import JuniorScienceWorld from './science-world';
@@ -43,7 +44,6 @@ import { StorySpark } from './voice-coach';
 import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { firebaseConfig } from '@/firebase/config';
-
 
 // Helper to get client app
 function getClientApp() {
@@ -127,7 +127,20 @@ export default function JuniorCampusPage() {
                     </TabsList>
 
                     <div className="min-h-[700px] animate-in slide-in-from-bottom-10 duration-1000">
-                        <TabsContent value="bloom" className="mt-0"><NurseryBloomIframe /></TabsContent>
+                        <TabsContent value="bloom" className="mt-0">
+                           <Card>
+                                <CardHeader>
+                                    <CardTitle>Nursery Bloom</CardTitle>
+                                    <CardDescription>A dedicated learning suite for early years.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p>This module has been moved to its own page for a better experience.</p>
+                                    <Button asChild className="mt-4">
+                                        <Link href="/dashboard/nursery-bloom">Go to Nursery Bloom</Link>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
                         <TabsContent value="lifeskills" className="mt-0">{schoolId && <LifeSkillsZone />}</TabsContent>
                         <TabsContent value="writing" className="mt-0">{schoolId && <WritingCanvas onSound={() => {}} schoolId={schoolId} />}</TabsContent>
                         <TabsContent value="stories" className="mt-0">{schoolId && <StorySpark canEdit={canEdit} schoolId={schoolId} />}</TabsContent>
