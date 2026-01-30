@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, setDoc, onSnapshot, where } from 'firebase/firestore';
 import { 
   Clapperboard, Mic, MicOff, Video, VideoOff, PhoneOff, Users, 
   Send, Maximize, Minimize, Hand, Pen, Eraser, Move, Palette, Circle, Square, MousePointer2, Settings, Loader2
