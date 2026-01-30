@@ -1,3 +1,4 @@
+
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -206,12 +207,6 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
     subItems: [
         {
-            path: '/dashboard/nursery-bloom',
-            title: 'Nursery Bloom',
-            icon: Sparkles,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
             path: '/dashboard/senior-academy',
             title: 'Senior Academy',
             icon: Rocket,
@@ -257,12 +252,6 @@ export const navItems: NavItem[] = [
             path: '/dashboard/game-zone',
             title: 'Game Zone',
             icon: Gamepad2,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
-            path: '/dashboard/live-classroom',
-            title: 'Live Classroom',
-            icon: Clapperboard,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
     ]
@@ -655,3 +644,5 @@ export const MOCK_CROSSWORD_PUZZLES = [
     },
   },
 ];
+
+    

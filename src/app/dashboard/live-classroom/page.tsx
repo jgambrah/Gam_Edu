@@ -1,318 +1,153 @@
 
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
+import { useRole } from '@/context/role-context';
+import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { 
-    Bot, User, Loader2, Sparkles, Image as ImageIcon, Volume2, 
-    Mic, MicOff, Zap, Clock, Shield, School, Wand2, XCircle, Info 
+  Clapperboard, Mic, MicOff, Video, VideoOff, PhoneOff, Users, 
+  Send, Maximize, Minimize, Hand, Pen, Eraser, Move, Palette, Circle, Square, MousePointer2, Settings, Loader2
 } from 'lucide-react';
-import { useUser } from '@/firebase'; 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Class } from '@/lib/types';
+import { generateLivePollAction, explainConceptAction } from '@/ai/flows/live-classroom';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { generateDrGamResponse } from '@/ai/flows/dr-gam-tutor-flow';
-import { generateLessonImageAction, generateTTSAction } from '@/ai/flows/junior-actions';
-import { Button } from '@/components/ui/button';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
-declare global {
-  interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-  }
-}
-
-interface VisualState {
-  type: 'letter' | 'word' | 'image' | 'number' | 'concept' | 'quiz';
-  value: string;
-  url?: string;
-  id: number;
-}
-
+// --- MAIN PAGE ---
 export default function LiveClassroomPage() {
   const { user } = useUser();
+  const { role } = useRole();
+  const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
+
+  const [activeClassId, setActiveClassId] = useState<string | null>(null);
   
-  // Session State
-  const [isActive, setIsActive] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [sessionSeconds, setSessionSeconds] = useState(0);
-
-  // AI & Media State
-  const [activeVisual, setActiveVisual] = useState<VisualState | null>(null);
-  const [isVisualLoading, setIsVisualLoading] = useState(false);
-  const [isAiThinking, setIsAiThinking] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [lastTranscript, setLastTranscript] = useState('');
+  const canHost = role === 'Teacher' || role === 'Administrator' || role === 'Director';
   
-  // Refs
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const recognitionRef = useRef<any>(null);
-  const timerIntervalRef = useRef<number | null>(null);
-  const requestIdRef = useRef(0);
-  const lastProcessedCommandRef = useRef<string>('');
-
-  // --- 1. INITIALIZATION ---
-
-  useEffect(() => {
-    // Initialize Speech Recognition
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = false;
-        recognitionRef.current.interimResults = false;
-        recognitionRef.current.lang = 'en-US';
-
-        recognitionRef.current.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          setLastTranscript(transcript);
-          handleStudentSpeech(transcript);
-        };
-        recognitionRef.current.onerror = (event: any) => {
-          toast({ variant: 'destructive', title: 'Mic Error', description: `Could not understand audio. (${event.error})` });
-          setIsListening(false);
-        };
-        recognitionRef.current.onend = () => setIsListening(false);
-      }
+  // Use a query that fetches classes the teacher is assigned to, or all if admin
+  const classesQuery = useMemoFirebase(() => {
+    if (!firestore || !user || !schoolId) return null;
+    if (canHost) {
+        if (role === 'Teacher') {
+            return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId));
+        }
+        return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
     }
-  }, [toast]);
-  
-  // Timer for session duration
-  useEffect(() => {
-    if (isActive) {
-      if (!timerIntervalRef.current) {
-        timerIntervalRef.current = window.setInterval(() => setSessionSeconds(prev => prev + 1), 1000);
-      }
-    } else {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-        timerIntervalRef.current = null;
-      }
-    }
-    return () => { if (timerIntervalRef.current) clearInterval(timerIntervalRef.current); };
-  }, [isActive]);
+    return null; 
+  }, [firestore, user, role, canHost, schoolId]);
 
+  const { data: classes } = useCollection<Class>(classesQuery);
 
-  // --- 2. CORE AI & MEDIA FUNCTIONS ---
-
-  const playAudio = useCallback(async (text: string) => {
-    if (!text || !schoolId) return;
-    setIsSpeaking(true);
-    try {
-        if (audioRef.current) audioRef.current.pause();
-        const result = await generateTTSAction({ text, voice: 'Puck', schoolId });
-        if (result.success && result.data) {
-            const audio = new Audio(`data:audio/wav;base64,${result.data}`);
-            audioRef.current = audio;
-            audio.play();
-            audio.onended = () => { setIsSpeaking(false); audioRef.current = null; };
-        } else { setIsSpeaking(false); }
-    } catch (e) {
-        console.error("Audio playback error:", e);
-        setIsSpeaking(false);
-    }
-  }, [schoolId]);
-
-  const updateVisualsFromText = useCallback(async (fullText: string) => {
-    const commandMatch = fullText.match(/SHOW BOARD:\s*\[([^\]]+)\]/i);
-    if (!commandMatch || !commandMatch[1]) return;
-
-    const commandValue = commandMatch[1].trim();
-    if (commandValue.toLowerCase() === lastProcessedCommandRef.current.toLowerCase()) return;
-    
-    lastProcessedCommandRef.current = commandValue;
-    const newId = ++requestIdRef.current;
-    setIsVisualLoading(true);
-
-    let detectedValue = commandValue;
-    let detectedType: VisualState['type'] = 'concept';
-    if (detectedValue.includes("QUIZ") || detectedValue.includes("QUESTION")) {
-      detectedValue = "QUIZ TIME!"; detectedType = 'quiz';
-    } else if (detectedValue.length === 1 && /[A-Z]/.test(detectedValue)) {
-      detectedType = 'letter';
-    } else if (/^\d+$/.test(detectedValue)) {
-      detectedType = 'number';
-    }
-
-    setActiveVisual({ type: detectedType, value: detectedValue, id: newId });
-    try {
-      if (!schoolId) throw new Error("School ID not found.");
-      const result = await generateLessonImageAction({ 
-        prompt: `A vibrant, clear, educational 3D illustration for a classroom whiteboard about: ${commandValue}. Clean, simple, nursery style, white background.`, 
-        schoolId
-      });
-      if (newId === requestIdRef.current) {
-          setActiveVisual(prev => prev ? { ...prev, url: result.data || undefined } : null);
-      }
-    } catch (e) { console.error("Image generation failed", e);
-    } finally {
-      if (newId === requestIdRef.current) setIsVisualLoading(false);
-    }
-  }, [schoolId]);
-
-  const handleStudentSpeech = async (transcript: string) => {
-    if (!transcript.trim() || isAiThinking || !user || !schoolId) return;
-
-    setIsAiThinking(true);
-    
-    // For simplicity, we manage a short history here
-    const history: Message[] = [{ role: 'user', content: transcript }];
-
-    try {
-      const response = await generateDrGamResponse({
-          history,
-          message: transcript,
-          userId: user.uid,
-          schoolId: schoolId,
-      });
-
-      if (!response.success) throw new Error(response.text || "Dr. Gam encountered an error.");
-
-      await playAudio(response.text);
-      await updateVisualsFromText(response.text);
-
-    } catch (error: any) {
-        toast({ variant: "destructive", title: "AI Error", description: error.message });
-    } finally {
-      setIsAiThinking(false);
-    }
-  };
-
-
-  // --- 3. SESSION MANAGEMENT ---
-
-  const startSession = async () => {
-    setIsConnecting(true);
-    setSessionSeconds(0);
-    lastProcessedCommandRef.current = "";
-    setActiveVisual(null);
-    
-    // Greet the user
-    const welcomeText = `Hello ${user?.displayName?.split(' ')[0] || 'Scholar'}. I am Dr. Gam. What amazing topic shall we explore today?`;
-    await playAudio(welcomeText);
-
-    setIsActive(true);
-    setIsConnecting(false);
+  const handleStartSession = (classId: string) => {
+    if (!firestore) return;
+    const classRef = doc(firestore, 'active_classes', classId);
+    setDoc(classRef, { status: 'live', teacherId: user?.uid, startedAt: serverTimestamp() }, { merge: true })
+      .then(() => setActiveClassId(classId))
+      .catch(e => toast({ variant: 'destructive', title: 'Error', description: 'Could not start session.'}));
   };
   
-  const endSession = () => {
-    setIsActive(false);
-    if (audioRef.current) audioRef.current.pause();
+  const handleEndSession = (classId: string) => {
+    if (!firestore) return;
+    updateDoc(doc(firestore, 'active_classes', classId), { status: 'ended' })
+      .then(() => setActiveClassId(null))
+      .catch(e => toast({ variant: 'destructive', title: 'Error' }));
   };
 
-  const toggleListening = () => {
-    if (isListening) {
-      recognitionRef.current?.stop();
-    } else {
-      if (audioRef.current) audioRef.current.pause();
-      recognitionRef.current?.start();
-    }
-    setIsListening(!isListening);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  // --- 4. RENDER LOGIC ---
+  if (activeClassId) {
+    return <ClassroomInterface classId={activeClassId} onEndSession={() => handleEndSession(activeClassId)} />;
+  }
 
   return (
-    <div className="flex flex-col items-center p-4 md:p-10 bg-white rounded-[3rem] shadow-2xl max-w-7xl mx-auto border-[10px] border-black relative overflow-hidden font-sans">
-      
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
-        {/* --- LEFT: TUTOR PROFILE --- */}
-        <div className="lg:col-span-3 flex flex-col items-center justify-center p-8 bg-slate-50 rounded-[4rem] border-4 border-black shadow-inner">
-            <div className={`relative w-40 h-40 rounded-full bg-white shadow-2xl flex items-center justify-center mb-8 border-8 transition-all duration-500 ${isActive ? 'border-green-400 scale-105 rotate-2' : 'border-slate-200'}`}>
-                <img src="https://picsum.photos/seed/drgam/400" alt="Dr. Gam" className="w-32 h-32 rounded-full object-cover" />
-                {isActive && (
-                  <div className="absolute -bottom-2 -right-2 w-14 h-14 bg-green-500 rounded-2xl flex items-center justify-center text-white border-4 border-white shadow-xl">
-                      {isSpeaking ? <Volume2 className="animate-pulse"/> : <Mic />}
-                  </div>
-                )}
-            </div>
-            <h2 className="text-4xl font-black text-black uppercase tracking-tighter text-center mb-6">Dr. Gam</h2>
-            
-            {isActive && (
-              <div className="mb-6 px-8 py-3 text-white rounded-full font-mono text-xl shadow-xl border-4 border-white bg-black">
-                <Clock className="mr-3 text-yellow-400 inline-block h-5 w-5"/> {formatTime(sessionSeconds)}
-              </div>
-            )}
-            
-            {isActive && (
-              <Button onClick={endSession} variant="destructive" className="w-full h-12 rounded-2xl font-black uppercase text-xs tracking-widest border-4 border-red-100">
-                  Stop Lesson
-              </Button>
-            )}
+    <div className="p-6">
+      <Card className="max-w-xl mx-auto">
+        <CardHeader>
+          <CardTitle>Live Classroom</CardTitle>
+          <CardDescription>Start a real-time session for one of your classes.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Select onValueChange={setActiveClassId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a class to start..." />
+            </SelectTrigger>
+            <SelectContent>
+              {classes?.map(c => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={() => activeClassId && handleStartSession(activeClassId)} disabled={!activeClassId} className="w-full">
+            Start Live Session
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+
+// --- CLASSROOM UI ---
+function ClassroomInterface({ classId, onEndSession }: { classId: string, onEndSession: () => void }) {
+  const [isMicOn, setIsMicOn] = useState(true);
+  const [isCamOn, setIsCamOn] = useState(true);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  
+  return (
+    <div className={cn("bg-slate-900", isFullScreen ? "fixed inset-0 z-50" : "relative rounded-xl overflow-hidden shadow-2xl border-4 border-slate-700")}>
+      <div className="grid grid-cols-4 gap-4 p-4 h-[calc(100vh-100px)]">
+        
+        {/* Main Video */}
+        <div className="col-span-3 bg-black rounded-lg relative overflow-hidden">
+            <video className="w-full h-full object-cover" autoPlay muted loop playsInline poster="https://placehold.co/1280x720/000000/FFF?text=Teacher's+Feed" />
+            <div className="absolute bottom-3 left-3 bg-black/50 text-white text-xs px-2 py-1 rounded">Teacher Cam</div>
         </div>
 
-        {/* --- RIGHT: VISUAL BOARD --- */}
-        <div className="lg:col-span-9">
-            <div className="w-full aspect-[4/3] bg-white rounded-[5rem] border-[12px] border-slate-100 shadow-2xl flex items-center justify-center relative overflow-hidden group">
-                {!activeVisual ? (
-                    <div className="text-center opacity-10 flex flex-col items-center gap-8 group-hover:opacity-20 transition-opacity">
-                        <Wand2 className="text-[15rem]"/>
-                        <p className="font-black text-4xl uppercase tracking-[0.5em]">Board Ready</p>
-                    </div>
-                ) : (
-                    <div className="w-full h-full p-12 animate-in zoom-in duration-500">
-                        <div className="w-full h-full rounded-[4rem] bg-slate-50 border-8 border-white shadow-inner flex items-center justify-center overflow-hidden">
-                           {isVisualLoading ? <Loader2 className="w-16 h-16 animate-spin text-slate-400" /> : activeVisual.url && <img src={activeVisual.url} className="w-full h-full object-contain p-10 animate-in fade-in duration-1000" alt="lesson visual" />}
+        {/* Sidebar */}
+        <div className="col-span-1 flex flex-col gap-4">
+            <div className="bg-black/30 rounded-lg flex-1 p-2">
+                 <div className="grid grid-cols-2 gap-2">
+                    {[1,2,3,4].map(i => (
+                        <div key={i} className="bg-slate-700 rounded aspect-video relative">
+                             <div className="absolute bottom-1 left-1 bg-black/50 text-white text-[10px] px-1 rounded">Student {i}</div>
                         </div>
-                    </div>
-                )}
+                    ))}
+                 </div>
+            </div>
+            <div className="bg-black/30 rounded-lg h-1/3">
+              {/* Chat goes here */}
             </div>
         </div>
       </div>
-
-      {/* --- BOTTOM: SESSION CONTROLS --- */}
-      {!isActive ? (
-        <div className="mt-12 flex flex-col items-center w-full">
-           <Button 
-             onClick={startSession} 
-             disabled={isConnecting}
-             className="px-24 py-10 bg-black text-white text-4xl md:text-6xl font-black rounded-[3rem] md:rounded-[4rem] shadow-[0_15px_0_0_rgba(0,0,0,0.2)] hover:translate-y-2 active:translate-y-4 active:shadow-none transition-all flex items-center gap-8 uppercase tracking-tighter border-8 border-white mb-16"
-           >
-             {isConnecting ? <Loader2 className="animate-spin h-12 w-12"/> : 'Start Class!'}
-           </Button>
-           
-           <div className="bg-amber-50 p-12 rounded-[4rem] border-8 border-black shadow-2xl max-w-2xl transform -rotate-1">
-              <div className="flex items-center justify-center gap-6 mb-8">
-                <Shield className="text-6xl text-amber-500"/>
-                <h3 className="text-4xl font-black text-black uppercase tracking-tighter">Learning Zone</h3>
-              </div>
-              <div className="space-y-6 text-center">
-                <p className="text-2xl font-black text-slate-800 leading-tight">
-                  Dr. Gam is ready to teach anything!
-                </p>
-                <div className="bg-white p-6 rounded-3xl border-4 border-amber-200 shadow-inner">
-                  <p className="text-xl font-bold text-slate-600 leading-relaxed">
-                    Say <span className="text-black underline">"Hello Dr. Gam"</span> to start our lesson. From ABCs and 123s to Science, History, Economics, and Accounting—tell me what you want to learn!
-                  </p>
-                </div>
-              </div>
-           </div>
+      
+      {/* Controls */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent flex justify-between items-center">
+        <span className="text-white font-bold text-sm">Classroom: {classId}</span>
+        <div className="flex items-center gap-2 bg-slate-800/80 p-2 rounded-full border border-slate-700 shadow-lg">
+            <Button variant="ghost" size="icon" className="rounded-full bg-white/10 text-white hover:bg-white/20" onClick={() => setIsMicOn(!isMicOn)}>{isMicOn ? <Mic/> : <MicOff/>}</Button>
+            <Button variant="ghost" size="icon" className="rounded-full bg-white/10 text-white hover:bg-white/20" onClick={() => setIsCamOn(!isCamOn)}>{isCamOn ? <Video/> : <VideoOff/>}</Button>
+            <Button variant="destructive" size="icon" className="rounded-full" onClick={onEndSession}><PhoneOff/></Button>
         </div>
-      ) : (
-        <div className="mt-12 w-full flex flex-col items-center gap-6">
-            <p className="text-slate-500 font-bold text-center text-sm max-w-lg">
-                Your last recognized words: <span className="text-indigo-600 italic">"{lastTranscript || '...'}"</span>
-            </p>
-            <Button 
-                onClick={toggleListening}
-                className={cn("w-32 h-32 rounded-full text-white shadow-2xl border-8 border-white transition-all duration-300 flex flex-col items-center justify-center",
-                isListening ? 'bg-red-500 animate-pulse' : 'bg-indigo-600 hover:scale-105',
-                isAiThinking || isSpeaking ? 'bg-slate-400 cursor-not-allowed' : '')}
-                disabled={isAiThinking || isSpeaking}
-            >
-                {isListening ? <MicOff className="h-10 w-10"/> : <Mic className="h-10 w-10"/>}
-                <span className="text-xs font-black uppercase mt-1">{isListening ? 'Listening...' : 'Speak'}</span>
+        <div>
+             <Button variant="ghost" size="icon" className="rounded-full text-white" onClick={() => setIsFullScreen(!isFullScreen)}>
+                {isFullScreen ? <Minimize/> : <Maximize/>}
             </Button>
         </div>
-      )}
+      </div>
     </div>
   );
-};
+}
