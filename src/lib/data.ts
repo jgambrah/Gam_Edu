@@ -207,6 +207,12 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
     subItems: [
         {
+            path: '/dashboard/nursery-bloom',
+            title: 'Nursery Bloom',
+            icon: Sparkles,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
             path: '/dashboard/senior-academy',
             title: 'Senior Academy',
             icon: Rocket,
@@ -651,5 +657,4 @@ export const MOCK_CROSSWORD_PUZZLES = [
   },
 ];
 
-    
     
