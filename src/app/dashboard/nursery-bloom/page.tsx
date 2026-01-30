@@ -1,12 +1,13 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useUser } from '@/firebase';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useUser, useFirestore, useDoc } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
 import { generateSecureToken } from '@/app/actions/generate-secure-token';
 import { useToast } from '@/hooks/use-toast';
+import { doc } from 'firebase/firestore';
 
 const NurseryBloomIframePage: React.FC = () => {
   const [isLaunched, setIsLaunched] = useState(false);
@@ -17,6 +18,14 @@ const NurseryBloomIframePage: React.FC = () => {
   const { user } = useUser();
   const { schoolId } = useCurrentSchool();
   const { profile } = useRole();
+  const firestore = useFirestore();
+
+  // 1. Fetch the school document to get the latest credit balance
+  const schoolRef = useMemo(() => {
+    if (!firestore || !schoolId) return null;
+    return doc(firestore, 'schools', schoolId);
+  }, [firestore, schoolId]);
+  const { data: school } = useDoc(schoolRef);
 
   const APP_BASE_URL = "https://nursery-bloom-825774943692.us-west1.run.app";
 
@@ -46,7 +55,7 @@ const NurseryBloomIframePage: React.FC = () => {
 
       setSessionUrl(`${APP_BASE_URL}?${params.toString()}`);
       setIsLaunched(true);
-      setIsLoading(true);
+      setIsLoading(true); // Set loading to true when iframe is launched
 
     } catch (error: any) {
       console.error("Launch Error:", error);
@@ -62,6 +71,52 @@ const NurseryBloomIframePage: React.FC = () => {
     setIsLaunched(false);
     setSessionUrl('');
   };
+  
+  // --- MESSAGE HANDLER: Listens for requests from the iframe ---
+  const handleIframeMessage = useCallback(async (event: MessageEvent) => {
+    // SECURITY: Ensure the message is from our trusted app origin
+    if (event.origin !== APP_BASE_URL) {
+      return;
+    }
+    
+    const { type, payload } = event.data;
+
+    // A. Handle requests for AI balance
+    if (type === 'GET_AI_BALANCE' || type === 'NURSERY_BLOOM_READY') {
+      if (school) { // school data is available from useDoc
+        const schoolCredits = school.aiCredits || 0;
+
+        // Post message back to the source (the iframe window)
+        (event.source as Window).postMessage({
+          type: 'AI_BALANCE_RESPONSE',
+          payload: {
+            aiCredits: schoolCredits,
+            schoolId: schoolId,
+          }
+        }, APP_BASE_URL); // Target origin for security
+        
+        console.log(`GAM EDU: Responded to Nursery Bloom. Sent ${schoolCredits} AI Credits.`);
+      } else {
+        console.warn("GAM EDU: Received balance request, but school data is not ready yet.");
+      }
+    }
+
+    // B. Handle save requests (existing logic)
+    if (type === 'saveToStorage' && payload.path && payload.dataUrl) {
+      toast({ title: "Saving...", description: "Uploading your creation to the cloud." });
+      console.log("Received save request from Iframe:", payload.path);
+      toast({ title: "Save Request Received!", description: "File upload logic would run here." });
+    }
+  }, [school, schoolId, toast]);
+
+  // Add and remove the event listener
+  useEffect(() => {
+    window.addEventListener('message', handleIframeMessage);
+    return () => {
+      window.removeEventListener('message', handleIframeMessage);
+    };
+  }, [handleIframeMessage]);
+
 
   if (isLaunched) {
     return (
@@ -111,32 +166,32 @@ const NurseryBloomIframePage: React.FC = () => {
   }
 
   return (
-    <div className="p-10 bg-slate-50 min-h-screen flex items-center justify-center">
-        <div className="group relative p-8 max-w-sm bg-white rounded-[2.5rem] border-2 border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden">
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-pink-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
-          
-          <div className="relative z-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-400 rounded-2xl flex items-center justify-center text-white text-3xl mb-6 shadow-lg rotate-3 group-hover:rotate-12 transition-transform border-4 border-white">
-              <i className="fas fa-magic"></i>
+      <div className="p-10 bg-slate-50 min-h-screen flex items-center justify-center">
+          <div className="group relative p-8 max-w-sm bg-white rounded-[2.5rem] border-2 border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden">
+            <div className="absolute -right-6 -top-6 w-32 h-32 bg-pink-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
+            
+            <div className="relative z-10">
+              <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-400 rounded-2xl flex items-center justify-center text-white text-3xl mb-6 shadow-lg rotate-3 group-hover:rotate-12 transition-transform border-4 border-white">
+                <i className="fas fa-magic"></i>
+              </div>
+  
+              <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tighter mb-2">
+                Nursery <span className="text-pink-500">Bloom</span>
+              </h3>
+              <p className="text-slate-400 text-sm font-bold leading-relaxed mb-8">
+                Interactive AI learning suite. Click to launch the experience inside this window.
+              </p>
+  
+              <button 
+                onClick={handleLaunch}
+                className="w-full py-4 bg-slate-900 text-white font-black rounded-2xl flex items-center justify-center gap-3 hover:bg-pink-600 transition-all uppercase text-xs tracking-[0.2em] shadow-lg active:scale-95"
+              >
+                <i className="fas fa-play text-xs"></i>
+                Launch Inside App
+              </button>
             </div>
-
-            <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tighter mb-2">
-              Nursery <span className="text-pink-500">Bloom</span>
-            </h3>
-            <p className="text-slate-400 text-sm font-bold leading-relaxed mb-8">
-              Interactive AI learning suite. Click to launch the experience inside this window.
-            </p>
-
-            <button 
-              onClick={handleLaunch}
-              className="w-full py-4 bg-slate-900 text-white font-black rounded-2xl flex items-center justify-center gap-3 hover:bg-pink-600 transition-all uppercase text-xs tracking-[0.2em] shadow-lg active:scale-95"
-            >
-              <i className="fas fa-play text-xs"></i>
-              Launch Inside App
-            </button>
           </div>
-        </div>
-    </div>
+      </div>
   );
 };
 
