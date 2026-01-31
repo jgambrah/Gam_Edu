@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
@@ -50,26 +51,28 @@ export async function createNewUser(
     const auth = getAuth(adminApp);
     const firestore = getFirestore(adminApp);
 
-    let userRecord;
-    
-    // 1. Auth Creation
+    // 1. Check if user already exists
     try {
-        userRecord = await auth.getUserByEmail(email);
-        console.log("User already exists, linking to new school...");
+      await auth.getUserByEmail(email);
+      // If the above line does not throw, the user exists.
+      throw new Error(`User with email ${email} already exists. Please try a different email address.`);
     } catch (error: any) {
-        if (error.code === 'auth/user-not-found') {
-            console.log("Creating new Auth User...");
-            userRecord = await auth.createUser({
-                email,
-                password,
-                displayName: `${details?.firstName} ${details?.lastName}`,
-            });
-        } else {
-            throw error; 
-        }
+      // We want to see 'auth/user-not-found'. If we get a different error, something else is wrong.
+      if (error.code !== 'auth/user-not-found') {
+        throw error; // Re-throw other auth errors (e.g., network error)
+      }
+      // If user is not found, we can proceed. The catch block is empty on purpose.
     }
     
-    // 2. Firestore Profile Creation
+    // 2. Auth Creation if they don't exist
+    console.log("Creating new Auth User...");
+    const userRecord = await auth.createUser({
+        email,
+        password,
+        displayName: `${details?.firstName} ${details?.lastName}`,
+    });
+    
+    // 3. Firestore Profile Creation
     let collectionName: string;
     switch (role) {
         case 'Student':
@@ -97,14 +100,14 @@ export async function createNewUser(
 
     await firestore.collection(collectionName).doc(userRecord.uid).set(profileData, { merge: true });
     
-    // 3. User Mapping
+    // 4. User Mapping
     await firestore.collection('users').doc(userRecord.uid).set({
         role: role || 'Parent',
         schoolId: schoolId,
         email
     }, { merge: true });
     
-    // 4. Send Credentials Email (Integrated Step)
+    // 5. Send Credentials Email (Integrated Step)
     if (details?.firstName && schoolId) {
         const schoolDoc = await firestore.collection('schools').doc(schoolId).get();
         const schoolName = schoolDoc.data()?.name || 'Your School';
