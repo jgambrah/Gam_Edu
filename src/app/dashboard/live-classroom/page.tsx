@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -16,7 +17,7 @@ const StartScreen: React.FC<{ title: string; icon: React.ElementType; color: str
     </div>
     <h2 className="text-5xl font-black text-black uppercase tracking-tighter mb-4">{title}</h2>
     <p className="text-xl text-slate-400 font-black uppercase tracking-widest mb-12">Talk to your AI Buddy Dr. GAM!</p>
-    <Button 
+    <Button
       onClick={onStart}
       className="px-16 py-8 bg-black text-white text-3xl font-black rounded-[3rem] shadow-[0_12px_0_0_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all uppercase tracking-widest border-4 border-white"
     >
@@ -26,7 +27,7 @@ const StartScreen: React.FC<{ title: string; icon: React.ElementType; color: str
 );
 
 const CloseButton: React.FC<{ onExit: () => void }> = ({ onExit }) => (
-  <Button 
+  <Button
     onClick={onExit}
     variant="ghost"
     size="icon"
@@ -116,7 +117,7 @@ const TutorSession: React.FC = () => {
     }
 
     setIsConnecting(true);
-    const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
+    const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
     
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
@@ -246,7 +247,7 @@ const TutorSession: React.FC = () => {
 
       {!isActive && !isConnecting && (
         <div className="mt-12 flex flex-col items-center w-full font-black">
-           <Button 
+           <Button
              onClick={startSession} 
              className="px-20 py-8 bg-black text-white text-3xl font-black rounded-[3rem] shadow-[0_12px_0_0_rgba(0,0,0,0.2)] hover:translate-y-2 active:translate-y-4 active:shadow-none transition-all uppercase tracking-tighter border-8 border-white flex flex-col items-center gap-1"
            >
@@ -268,4 +269,11 @@ const TutorSession: React.FC = () => {
   );
 };
 
-export default TutorSession;
+
+export default function LiveClassroomPage() {
+    return (
+        <div className="p-4 sm:p-6 md:p-8">
+            <TutorSession />
+        </div>
+    )
+}
