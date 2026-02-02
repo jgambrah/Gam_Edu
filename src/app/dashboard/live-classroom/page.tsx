@@ -12,6 +12,7 @@ import { Loader2, X, Bot, Sparkles, Play, ArrowLeft } from 'lucide-react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 const StartScreen: React.FC<{ title: string; icon: React.ElementType; color: string; onStart: () => void }> = ({ title, icon: Icon, color, onStart }) => (
   <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-black flex flex-col items-center justify-center min-h-[500px] animate-in zoom-in font-black text-center">
@@ -53,6 +54,7 @@ const TutorSession: React.FC = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [activeVisual, setActiveVisual] = useState<VisualState | null>(null);
   const [isVisualLoading, setIsVisualLoading] = useState(false);
+  const { toast } = useToast();
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const sessionRef = useRef<any>(null);
@@ -72,11 +74,12 @@ const TutorSession: React.FC = () => {
     () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
     [firestore, schoolId]
   );
-  const { data: schoolData } = useDoc(schoolRef);
+  const { data: schoolData, loading: isLoadingSchool } = useDoc(schoolRef);
 
   // Initialize SAAS service when school data is available
   useEffect(() => {
     if (schoolId && schoolData && typeof schoolData.aiCredits === 'number') {
+      console.log('✅ Initializing SAAS with credits:', schoolData.aiCredits);
       saasService.initialize(schoolId, schoolData.aiCredits);
     }
   }, [schoolId, schoolData]);
@@ -84,6 +87,7 @@ const TutorSession: React.FC = () => {
 
 
   const endSession = () => {
+    console.log('🛑 Ending session');
     setIsActive(false); 
     setIsConnecting(false);
     
@@ -127,18 +131,70 @@ const TutorSession: React.FC = () => {
           setActiveVisual(prev => prev ? { ...prev, url: url || undefined } : null);
           setIsVisualLoading(false);
       }
-    } catch (e) { setIsVisualLoading(false); }
+    } catch (e) { 
+      console.error('Error generating image:', e);
+      setIsVisualLoading(false); 
+    }
   };
 
   const startSession = async () => {
-    // STRICT PRE-FLIGHT CHECK
-    const currentCredits = saasService.getSession()?.credits || 0;
-    if (currentCredits < 5) {
+    console.log('🚀 Starting session...');
+    
+    // Check if API key exists
+    if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
+      toast({
+        variant: 'destructive',
+        title: 'Configuration Error',
+        description: 'Gemini API key is missing. Please contact support.'
+      });
+      console.error('❌ Missing GEMINI_API_KEY');
+      return;
+    }
+
+    // Check if school data is loaded
+    if (isLoadingSchool) {
+      toast({
+        title: 'Loading...',
+        description: 'Please wait while we load your school data.'
+      });
+      console.log('⏳ School data still loading');
+      return;
+    }
+
+    // Check if SAAS service is initialized
+    const session = saasService.getSession();
+    console.log('💰 Current credits:', session?.credits);
+    
+    if (!session) {
+      toast({
+        variant: 'destructive',
+        title: 'Not Initialized',
+        description: 'AI credits system not ready. Please refresh the page.'
+      });
+      console.error('❌ SAAS service not initialized');
+      return;
+    }
+
+    // CREDIT CHECK (with fallback)
+    const currentCredits = session.credits || 0;
+    const requiredCredits = 5; // Entry cost
+    
+    console.log(`💳 Checking credits: ${currentCredits} >= ${requiredCredits}`);
+    
+    if (currentCredits < requiredCredits) {
+      toast({
+        variant: 'destructive',
+        title: 'Insufficient Credits',
+        description: `You need ${requiredCredits} AI Sparks to start. You have ${currentCredits}.`
+      });
+      console.warn('⚠️ Insufficient credits');
       window.dispatchEvent(new CustomEvent('saas-insufficient-credits'));
       return;
     }
 
     setIsConnecting(true);
+    console.log('🔌 Connecting to Gemini...');
+    
     const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
     
     if (!audioContextRef.current) {
@@ -146,16 +202,25 @@ const TutorSession: React.FC = () => {
     }
     
     try {
+      console.log('🎤 Requesting microphone access...');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       micStreamRef.current = stream;
+      console.log('✅ Microphone access granted');
+      
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
           onopen: () => {
+            console.log('✅ Session opened');
             setIsConnecting(false);
             setIsActive(true);
+            
+            toast({
+              title: 'Connected!',
+              description: 'You can now talk to Dr. GAM!'
+            });
             
             const source = inputAudioContext.createMediaStreamSource(stream);
             const scriptProcessor = inputAudioContext.createScriptProcessor(4096, 1, 1);
@@ -168,8 +233,9 @@ const TutorSession: React.FC = () => {
               
               if (energy > 0.015 && !isUserSpeakingRef.current) {
                 isUserSpeakingRef.current = true;
-                const success = await saasService.deductCredits(AI_COSTS.AI_BUDDY_MSG, "NurseryBloom_DrGAMVoice");
+                const success = await saasService.deductCredits(AI_COSTS.AI_BUDDY_MSG || 1, "NurseryBloom_DrGAMVoice");
                 if (!success) {
+                  console.warn('⚠️ Failed to deduct credits');
                   window.dispatchEvent(new CustomEvent('saas-insufficient-credits'));
                   endSession();
                   return;
@@ -206,8 +272,19 @@ const TutorSession: React.FC = () => {
               updateVisualsFromText(transcriptBufferRef.current);
             }
           },
-          onerror: () => endSession(),
-          onclose: () => endSession(),
+          onerror: (error) => {
+            console.error('❌ Session error:', error);
+            toast({
+              variant: 'destructive',
+              title: 'Connection Error',
+              description: 'Lost connection to Dr. GAM. Please try again.'
+            });
+            endSession();
+          },
+          onclose: () => {
+            console.log('🔌 Session closed');
+            endSession();
+          },
         },
         config: {
           responseModalities: [Modality.AUDIO],
@@ -217,9 +294,29 @@ const TutorSession: React.FC = () => {
           systemInstruction: `You are Dr. GAM, a magical nursery teacher. Use very simple English for 3-year-olds. Your name is Dr. GAM. You are friendly and encouraging. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]". Always identify yourself as Dr. GAM.`,
         }
       });
+      
+      console.log('⏳ Waiting for session to establish...');
       sessionRef.current = await sessionPromise;
-    } catch (err) {
+      console.log('✅ Session established');
+      
+    } catch (err: any) {
+      console.error('❌ Error starting session:', err);
       setIsConnecting(false);
+      
+      let errorMessage = 'Failed to start session. Please try again.';
+      
+      if (err.name === 'NotAllowedError') {
+        errorMessage = 'Microphone access denied. Please allow microphone access.';
+      } else if (err.message?.includes('API key')) {
+        errorMessage = 'Invalid API key. Please contact support.';
+      }
+      
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage
+      });
+      
       endSession();
     }
   };
@@ -243,6 +340,16 @@ const TutorSession: React.FC = () => {
                  Class: {isActive ? 'Active' : isConnecting ? 'Connecting' : 'Inactive'}
                </span>
             </div>
+            
+            {/* Debug info */}
+            {!isActive && !isConnecting && (
+              <div className="mb-4 p-2 bg-white rounded text-xs text-slate-500 w-full">
+                <div>School ID: {schoolId ? '✅' : '❌'}</div>
+                <div>Credits: {schoolData?.aiCredits ?? 'Loading...'}</div>
+                <div>SAAS: {saasService.getSession() ? '✅' : '❌'}</div>
+              </div>
+            )}
+            
             {isActive && <Button onClick={endSession} variant="destructive" className="w-full py-4 text-white rounded-2xl font-black uppercase text-sm border-4 border-white shadow-lg transition-transform active:scale-95">End Class</Button>}
         </div>
 
@@ -271,9 +378,10 @@ const TutorSession: React.FC = () => {
         <div className="mt-12 flex flex-col items-center w-full font-black">
            <Button
              onClick={startSession} 
-             className="px-20 py-8 bg-black text-white text-3xl font-black rounded-[3rem] shadow-[0_12px_0_0_rgba(0,0,0,0.2)] hover:translate-y-2 active:translate-y-4 active:shadow-none transition-all uppercase tracking-tighter border-8 border-white flex flex-col items-center gap-1"
+             disabled={isLoadingSchool || !schoolId || !schoolData}
+             className="px-20 py-8 bg-black text-white text-3xl font-black rounded-[3rem] shadow-[0_12px_0_0_rgba(0,0,0,0.2)] hover:translate-y-2 active:translate-y-4 active:shadow-none transition-all uppercase tracking-tighter border-8 border-white flex flex-col items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
            >
-             <span>Start Session!</span>
+             <span>{isLoadingSchool ? 'Loading...' : 'Start Session!'}</span>
              <span className="text-xs opacity-40">Entry Cost: 5 Sparks</span>
            </Button>
         </div>
