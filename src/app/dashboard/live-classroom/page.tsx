@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 import { decode, decodeAudioData, createBlob } from './services/audio';
 import { generateLessonImage } from './services/gemini';
@@ -9,6 +9,9 @@ import { saasService } from './services/saas';
 import { AI_COSTS } from './types';
 import { Button } from '@/components/ui/button';
 import { Loader2, X, Bot, Sparkles, Play, ArrowLeft } from 'lucide-react';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 const StartScreen: React.FC<{ title: string; icon: React.ElementType; color: string; onStart: () => void }> = ({ title, icon: Icon, color, onStart }) => (
   <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-black flex flex-col items-center justify-center min-h-[500px] animate-in zoom-in font-black text-center">
@@ -60,6 +63,25 @@ const TutorSession: React.FC = () => {
   const requestIdRef = useRef(0);
   const lastProcessedCommandRef = useRef<string>('');
   const isUserSpeakingRef = useRef(false);
+
+  // --- SAAS & DATA HOOKS ---
+  const { schoolId } = useCurrentSchool();
+  const firestore = useFirestore();
+
+  const schoolRef = useMemoFirebase(
+    () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+    [firestore, schoolId]
+  );
+  const { data: schoolData } = useDoc(schoolRef);
+
+  // Initialize SAAS service when school data is available
+  useEffect(() => {
+    if (schoolId && schoolData && typeof schoolData.aiCredits === 'number') {
+      saasService.initialize(schoolId, schoolData.aiCredits);
+    }
+  }, [schoolId, schoolData]);
+  // --- END SAAS & DATA HOOKS ---
+
 
   const endSession = () => {
     setIsActive(false); 
