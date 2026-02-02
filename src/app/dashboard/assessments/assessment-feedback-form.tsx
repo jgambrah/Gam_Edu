@@ -54,8 +54,8 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
 
   // Fetch Students & Subjects
   const studentsQuery = useMemoFirebase(() => 
-    (firestore && classId) ? query(collection(firestore, 'students'), where('classId', '==', classId)) : null,
-  [firestore, classId]);
+    (firestore && classId && schoolId) ? query(collection(firestore, 'students'), where('classId', '==', classId), where('schoolId', '==', schoolId)) : null,
+  [firestore, classId, schoolId]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
   const subjectsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -249,4 +249,3 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
     </Card>
   );
 }
-    
