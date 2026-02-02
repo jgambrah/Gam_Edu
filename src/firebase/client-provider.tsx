@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, type ReactNode } from 'react';
@@ -8,38 +9,52 @@ import { initializeFirestore, getFirestore, Firestore, persistentLocalCache } fr
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
-// Global variables to hold instances
-let firebaseApp: FirebaseApp;
-let auth: Auth;
-let firestore: Firestore;
-let storage: FirebaseStorage;
+// Define a type for our services
+type FirebaseServices = {
+    firebaseApp: FirebaseApp;
+    auth: Auth;
+    firestore: Firestore;
+    storage: FirebaseStorage;
+};
 
-// The robust initializer from index.ts is now here.
-function initializeFirebaseOnClient() {
-  if (typeof window === 'undefined') return null;
+// Use a global variable to hold the initialized services, making it a singleton
+let services: FirebaseServices | null = null;
 
-  if (!getApps().length) {
-    firebaseApp = initializeApp({
-        ...firebaseConfig,
-        storageBucket: "studio-525105839-159e4.firebasestorage.app",
-    });
-    try {
-      firestore = initializeFirestore(firebaseApp, {
-        localCache: persistentLocalCache({}),
-      });
-    } catch (e) {
-        console.warn("Firestore persistence failed, falling back:", e);
-        firestore = getFirestore(firebaseApp);
-    }
-  } else {
-    firebaseApp = getApp();
-    firestore = getFirestore(firebaseApp);
+function initializeFirebaseOnClient(): FirebaseServices | null {
+  // This function should only run on the client
+  if (typeof window === 'undefined') {
+    return null;
   }
 
-  auth = getAuth(firebaseApp);
-  storage = getStorage(firebaseApp, "gs://studio-525105839-159e4.firebasestorage.app");
+  // If services are already initialized, return them to prevent re-initialization
+  if (services) {
+    return services;
+  }
 
-  return { firebaseApp, auth, firestore, storage };
+  // Otherwise, initialize them for the first time
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  
+  let firestoreInstance: Firestore;
+  try {
+    // This is the correct way to initialize with persistence. It's idempotent.
+    firestoreInstance = initializeFirestore(app, {
+      localCache: persistentLocalCache({})
+    });
+  } catch (e) {
+    // This might happen in some rare HMR cases if settings somehow differ. Fallback.
+    console.warn("Firestore persistence failed to initialize, falling back to in-memory:", e);
+    firestoreInstance = getFirestore(app);
+  }
+
+  // Store the initialized services in the global variable
+  services = {
+    firebaseApp: app,
+    auth: getAuth(app),
+    firestore: firestoreInstance,
+    storage: getStorage(app),
+  };
+
+  return services;
 }
 
 
@@ -49,7 +64,6 @@ interface FirebaseClientProviderProps {
 
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const firebaseServices = useMemo(() => {
-    // We call the robust client initializer here.
     return initializeFirebaseOnClient();
   }, []);
 
@@ -64,5 +78,5 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
   );
 }
 
-// Export the auth instance for direct use in client components like the login page
-export { auth };
+// Re-export auth if needed elsewhere, though using the hook is preferred.
+export const auth = services?.auth as Auth;

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense } from 'react';
@@ -5,7 +6,6 @@ import DashboardClient from './dashboard-client';
 import DashboardLoading from './loading';
 import { useRole } from '@/context/role-context';
 import { useUser } from '@/firebase'; // Corrected hook
-import SystemRepair from '@/components/SystemRepair'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShieldAlert } from 'lucide-react';
 
@@ -21,27 +21,7 @@ function DashboardPageContent() {
 
   // --- SAFETY CHECK ---
   if (!role) {
-    
-    // 1. If it is YOU (The CEO), show the Repair Tool
-    if (user?.email === 'jamesgambrah@gmail.com') {
-        return (
-            <div className="flex h-full w-full items-center justify-center p-8">
-                <Card className="max-w-md border-orange-500 border-2">
-                    <CardHeader>
-                        <CardTitle className="text-orange-600">CEO Diagnostics</CardTitle>
-                        <CardDescription>
-                            Your CEO account seems to have lost its role.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <SystemRepair onRepair={() => window.location.reload()} />
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    // 2. For EVERYONE ELSE (Security Block)
+    // If no role is found after loading, show an access restricted message.
     return (
         <div className="flex h-full w-full items-center justify-center p-8">
             <Card className="max-w-md text-center">
