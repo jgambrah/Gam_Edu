@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -13,11 +12,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Calculator } from 'lucide-react';
+import { Loader2, Save, Calculator, CalendarIcon } from 'lucide-react';
 import { Class, Student } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
-// --- SCHEMA (NO LONGER NEEDS YEAR/TERM) ---
+// --- SCHEMA (Updated with required fields) ---
 const assessmentSchema = z.object({
   subjectId: z.string().min(1, "Subject is required"),
   assessmentType: z.enum([
@@ -28,13 +32,15 @@ const assessmentSchema = z.object({
     'End of Term Exam (Exam)'
   ]),
   maxScore: z.coerce.number().min(1, "Max score must be at least 1"),
-  topic: z.string().optional(),
+  assessmentName: z.string().min(3, "Assessment Name/Topic is required."),
+  assessmentDate: z.date({ required_error: "A date for the assessment is required."}),
 });
 
 export function AssessmentFeedbackForm({ classId, classes, academicYear, term, onSuccess }: { classId: string, classes: Class[], academicYear: string, term: string, onSuccess: () => void }) {
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scores, setScores] = useState<Record<string, string>>({}); 
 
@@ -44,13 +50,15 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
   [firestore, classId]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
-  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
+  const subjectsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
   const form = useForm<z.infer<typeof assessmentSchema>>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
-      maxScore: 100 // Default max score
+      maxScore: 100,
+      assessmentDate: new Date(),
+      assessmentName: '',
     }
   });
 
@@ -62,7 +70,10 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
   };
 
   const onSubmit = async (values: z.infer<typeof assessmentSchema>) => {
-    if (!firestore || !user) return;
+    if (!firestore || !user || !schoolId) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Authentication or school context is missing.' });
+        return;
+    }
     
     const validScores = Object.entries(scores).filter(([_, score]) => score !== '' && !isNaN(Number(score)));
     if (validScores.length === 0) {
@@ -81,22 +92,23 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
         
         batch.set(ref, {
           ...values,
-          academicYear, // FROM PROPS
-          term,         // FROM PROPS
+          academicYear,
+          term,        
           studentId,
           score,
           subjectName, 
           teacherId: user.uid,
           classId: classId,
           createdAt: serverTimestamp(),
-          gradedAt: serverTimestamp()
+          gradedAt: serverTimestamp(),
+          schoolId: schoolId, // SAAS: Stamp with schoolId
         });
       });
 
       await batch.commit();
       toast({ title: "Success", description: `Saved ${validScores.length} grades successfully.` });
       setScores({}); 
-      form.reset({ maxScore: 100 });
+      form.reset({ maxScore: 100, assessmentName: '', assessmentDate: new Date() });
       onSuccess(); // Trigger refetch in parent
     } catch (e: any) {
       console.error(e);
@@ -114,38 +126,68 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
         </CardTitle>
       </CardHeader>
       <CardContent>
+         <Form {...form}>
          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg border">
-                <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700">Subject</label>
-                    <Select onValueChange={(val) => form.setValue('subjectId', val)}>
-                        <SelectTrigger className="bg-white border-slate-300"><SelectValue placeholder="Select Subject" /></SelectTrigger>
-                        <SelectContent>
-                            {subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                    {form.formState.errors.subjectId && <p className="text-xs text-red-500">Required</p>}
+            <div className="space-y-4 p-4 bg-slate-50 rounded-lg border">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="assessmentName" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Assessment Name/Topic *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., End of Term Exam" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="assessmentDate" render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Assessment Date *</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button variant={'outline'} className={cn('pl-3 text-left font-normal bg-white',!field.value && 'text-muted-foreground')}>
+                                {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                 </div>
-
-                <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700">Assessment Category</label>
-                    <Select onValueChange={(val: any) => form.setValue('assessmentType', val)}>
-                        <SelectTrigger className="bg-white border-slate-300"><SelectValue placeholder="Type" /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Class Exercise (CA)">Class Exercise (CA)</SelectItem>
-                            <SelectItem value="Homework (CA)">Homework (CA)</SelectItem>
-                            <SelectItem value="Project (CA)">Project (CA)</SelectItem>
-                            <SelectItem value="Mid-Term (CA)">Mid-Term (CA)</SelectItem>
-                            <Separator />
-                            <SelectItem value="End of Term Exam (Exam)">End of Term Exam (50%)</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700">Max Possible Score</label>
-                    <Input type="number" {...form.register('maxScore')} className="bg-white border-slate-300 font-bold" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField control={form.control} name="subjectId" render={({ field }) => (
+                        <FormItem><FormLabel>Subject *</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl><SelectTrigger className="bg-white border-slate-300"><SelectValue placeholder="Select Subject" /></SelectTrigger></FormControl>
+                                <SelectContent>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                            </Select><FormMessage/>
+                        </FormItem>
+                    )}/>
+                    <FormField control={form.control} name="assessmentType" render={({ field }) => (
+                        <FormItem><FormLabel>Category *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl><SelectTrigger className="bg-white border-slate-300"><SelectValue placeholder="Type" /></SelectTrigger></FormControl>
+                            <SelectContent>
+                                <SelectItem value="Class Exercise (CA)">Class Exercise (CA)</SelectItem>
+                                <SelectItem value="Homework (CA)">Homework (CA)</SelectItem>
+                                <SelectItem value="Project (CA)">Project (CA)</SelectItem>
+                                <SelectItem value="Mid-Term (CA)">Mid-Term (CA)</SelectItem>
+                                <Separator />
+                                <SelectItem value="End of Term Exam (Exam)">End of Term Exam (50%)</SelectItem>
+                            </SelectContent>
+                        </Select><FormMessage/>
+                        </FormItem>
+                    )}/>
+                    <FormField control={form.control} name="maxScore" render={({ field }) => (
+                        <FormItem><FormLabel>Max Possible Score *</FormLabel>
+                        <FormControl><Input type="number" {...field} className="bg-white border-slate-300 font-bold" /></FormControl><FormMessage/></FormItem>
+                    )}/>
                 </div>
             </div>
 
@@ -194,7 +236,9 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
             </Button>
 
          </form>
+         </Form>
       </CardContent>
     </Card>
   );
 }
+    
