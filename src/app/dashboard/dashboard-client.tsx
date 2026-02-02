@@ -19,6 +19,7 @@ import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { STAFF_ROLES } from '@/lib/types'; // Import STAFF_ROLES
 
 // --- Reusable Components ---
 
@@ -175,7 +176,7 @@ export default function DashboardClient() {
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: students, isLoading: studentsLoading } = useCollection(studentsQuery);
 
-  const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId]);
   const { data: staff, isLoading: staffLoading } = useCollection(staffQuery);
 
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
