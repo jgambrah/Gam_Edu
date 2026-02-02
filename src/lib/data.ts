@@ -27,7 +27,7 @@ import {
   BookCopy,
   BarChart,
   CalendarCheck,
-  UserCog as StaffIcon, // Using UserCog for Staff
+  UserCog as StaffIcon,  // Using UserCog  for  Staff
   Shield,
   Code,
   Sigma,
@@ -55,7 +55,7 @@ import {
   Rocket,
   FileQuestion,
   Sparkles
-} from 'lucide-react';
+} from 'lucide-react'
 
 export const navItems: NavItem[] = [
   {
