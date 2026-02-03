@@ -4,25 +4,6 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
-import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
-
-// Helper to get schoolId from user
-const formatPrivateKey = (key: string) => key.replace(/\\n/g, '\n').replace(/"/g, '');
-
-function getAdminApp(): App {
-  const existingApp = getApps().find(app => app.name === 'admin');
-  if (existingApp) return existingApp;
-  // ... rest of init logic
-    const projectId = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
-  if (!projectId || !clientEmail || !privateKeyRaw) throw new Error("Missing Admin credentials.");
-  const privateKey = formatPrivateKey(privateKeyRaw);
-  return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) }, 'admin');
-}
-
 
 const ChatInputSchema = z.object({
   history: z.array(z.object({
@@ -30,16 +11,13 @@ const ChatInputSchema = z.object({
     content: z.string()
   })),
   message: z.string(),
-  userId: z.string(), // Added to find the user's school
+  userId: z.string(),
+  schoolId: z.string(), // ADDED: Pass schoolId directly
 });
 
 export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
   try {
-    const adminApp = getAdminApp();
-    const userRecord = await getAuth(adminApp).getUser(input.userId);
-    const db = getFirestore(adminApp);
-    const userDoc = await db.collection('users').doc(input.userId).get();
-    const schoolId = userDoc.data()?.schoolId;
+    const schoolId = input.schoolId; // Use the schoolId from the input
 
     if (!schoolId) {
       return { success: false, text: "Error: School ID not found for your account." };
@@ -54,7 +32,6 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
       .map(m => `${m.role === 'user' ? 'Student' : 'Tutor'}: ${m.content}`)
       .join('\n');
     
-    // UPDATED PROMPT WITH "NARROW DOWN" RULE
     const prompt = `
       You are an expert, friendly AI Tutor for Junior High School students.
       
@@ -87,7 +64,7 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
     `;
 
     const response = await ai.generate({
-      model: 'googleai/gemini-3-flash-preview',
+      model: 'googleai/gemini-1.5-flash-preview',
       prompt: prompt,
       config: { 
         temperature: 0.3, 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -59,6 +60,7 @@ export default function DrGamTutorPage() {
           history: messages,
           message: input,
           userId: user.uid,
+          schoolId: schoolId, // Pass the schoolId from the hook
       });
 
       if (!response.success) {
