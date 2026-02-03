@@ -7,7 +7,7 @@ import { useUser } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { chatWithAiTutor } from '@/ai/flows/ai-tutor-flow';
+import { generateDrGamResponse } from '@/ai/flows/dr-gam-tutor-flow';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -17,7 +17,7 @@ type Message = {
   content: string;
 };
 
-export default function DrGamTutorPage() {
+export default function StudyClubPage() {
   const { user } = useUser();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
@@ -56,11 +56,11 @@ export default function DrGamTutorPage() {
     setIsLoading(true);
 
     try {
-      const response = await chatWithAiTutor({
+      const response = await generateDrGamResponse({
           history: messages,
           message: input,
           userId: user.uid,
-          schoolId: schoolId, // Pass the schoolId from the hook
+          schoolId: schoolId,
       });
 
       if (!response.success) {
