@@ -138,6 +138,7 @@ const TutorSession: React.FC = () => {
   };
 
   const startSession = async () => {
+    console.log('🔑 API KEY:', process.env.NEXT_PUBLIC_GEMINI_API_KEY ? '✅ EXISTS' : '❌ MISSING');
     console.log('🚀 Starting session...');
     
     // Check if API key exists
