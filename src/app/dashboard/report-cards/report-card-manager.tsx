@@ -2,9 +2,9 @@
 'use client';
 
 import { Suspense, useState, useMemo } from 'react';
-import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -24,14 +24,21 @@ import { useCurrentSchool } from '@/hooks/use-current-school'; // SAAS IMPORT
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
-function CommentForm({ student, reportCard, disabled }: { student: Student; reportCard: ReportCard | undefined; disabled: boolean; }) {
+function CommentForm({ student, reportCard, disabled, academicYear, term, schoolId, onCommentSaved }: { 
+    student: Student; 
+    reportCard: ReportCard | undefined; 
+    disabled: boolean; 
+    academicYear: string;
+    term: string;
+    schoolId: string | null;
+    onCommentSaved: () => void;
+}) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
-  const { schoolId } = useCurrentSchool();
-
+  
   const subjectsQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
     [firestore, schoolId]
@@ -57,24 +64,57 @@ function CommentForm({ student, reportCard, disabled }: { student: Student; repo
   };
 
   async function onSubmit(values: { subjectId: string, comment: string }) {
-    if (!user || !reportCard) return;
+    if (!user || !firestore || !student.uid || !student.classId || !schoolId) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Missing required data to save comment.' });
+        return;
+    };
     setIsSubmitting(true);
+
+    const reportCardId = `${student.uid}-${academicYear}-${term}`;
+    const reportCardRef = doc(firestore, 'report-cards', reportCardId);
+
     try {
-        const commentRef = doc(firestore, `report-cards/${reportCard.id}/comments`, `${values.subjectId}_${user.uid}`);
+        const docSnap = await getDoc(reportCardRef);
+        if (!docSnap.exists()) {
+            await setDoc(reportCardRef, {
+                id: reportCardId,
+                studentId: student.uid,
+                classId: student.classId,
+                academicYear,
+                term,
+                schoolId,
+                status: 'Draft',
+                createdAt: serverTimestamp(),
+            }, { merge: true });
+        }
+
+        const commentRef = doc(firestore, `report-cards/${reportCardId}/comments`, `${values.subjectId}_${user.uid}`);
+        
         await setDoc(commentRef, {
-            ...values,
             studentId: student.uid,
+            subjectId: values.subjectId,
+            comment: values.comment,
             teacherId: user.uid,
-            term: reportCard.term,
-            academicYear: reportCard.academicYear,
+            term: term,
+            academicYear: academicYear,
             updatedAt: serverTimestamp(),
             createdAt: serverTimestamp(),
         }, { merge: true });
 
         toast({ title: "Success", description: "Comment saved." });
-    } catch (error) {
+        onCommentSaved(); // This will trigger a refetch in the parent
+    } catch (error: any) {
       console.error(error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save comment.' });
+      const permissionError = new FirestorePermissionError({
+          path: `report-cards/${reportCardId}/comments/${values.subjectId}_${user.uid}`,
+          operation: 'write',
+          requestResourceData: values,
+      });
+      errorEmitter.emit('permission-error', permissionError);
+      
+      if (!error.message.includes('permission-denied')) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not save comment.' });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -141,12 +181,14 @@ export default function ReportCardManager() {
         where('term', '==', selectedTerm)
     );
   }, [firestore, selectedClassId, selectedYear, selectedTerm, schoolId]);
-  const { data: reportCards } = useCollection<ReportCard>(reportCardsQuery);
+  const { data: reportCards, forceRefetch } = useCollection<ReportCard>(reportCardsQuery);
 
   const getStudentReportCard = (studentId: string) => reportCards?.find(rc => rc.studentId === studentId);
 
   const handleStatusUpdate = async (student: Student, newStatus: ReportCardStatus) => {
     setProcessingStudentId(student.uid);
+    if (!firestore || !schoolId) return;
+
     const reportCardId = `${student.uid}-${selectedYear}-${selectedTerm}`;
     const reportCardRef = doc(firestore, 'report-cards', reportCardId);
 
@@ -171,6 +213,7 @@ export default function ReportCardManager() {
         await setDoc(reportCardRef, reportCardData, { merge: true });
 
         toast({ title: 'Success', description: `Report card for ${student.firstName} is now ${newStatus}.` });
+        forceRefetch(); // Refresh the list
     } catch(error) {
         console.error("Error updating status:", error);
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to update status.' });
@@ -234,7 +277,15 @@ export default function ReportCardManager() {
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="space-y-4 p-4 bg-muted/50 rounded-md">
-                                    <CommentForm student={student} reportCard={reportCard} disabled={isLocked && role === 'Teacher'} />
+                                    <CommentForm 
+                                      student={student} 
+                                      reportCard={reportCard} 
+                                      disabled={isLocked && role === 'Teacher'} 
+                                      academicYear={selectedYear}
+                                      term={selectedTerm}
+                                      schoolId={schoolId}
+                                      onCommentSaved={forceRefetch}
+                                    />
                                     <div className="flex justify-end gap-2 pt-4 border-t">
                                         <Dialog>
                                             <DialogTrigger asChild>
