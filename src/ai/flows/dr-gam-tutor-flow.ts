@@ -7,7 +7,7 @@ import { checkAndSpendCredits } from '@/app/actions/credits';
 const ChatInputSchema = z.object({
   history: z.array(z.object({
     role: z.enum(['user', 'model']),
-    content: z.string()
+    parts: z.array(z.object({ text: z.string() })) 
   })),
   message: z.string(),
   userId: z.string(),
@@ -21,11 +21,7 @@ export async function generateDrGamResponse(input: z.infer<typeof ChatInputSchem
       return { success: false, text: creditResult.error || "You are out of AI Credits." };
     }
 
-    const historyText = input.history
-      .map(m => `${m.role === 'user' ? 'Student' : 'Dr. Gam'}: ${m.content}`)
-      .join('\n');
-    
-    const prompt = `
+    const systemInstruction = `
       You are Dr. Gam, a magical, friendly AI teacher for students of all ages.
       
       ### YOUR CORE INSTRUCTIONS:
@@ -34,19 +30,18 @@ export async function generateDrGamResponse(input: z.infer<typeof ChatInputSchem
       3.  **VISUALS**: To display something on the whiteboard, end your response with the command "SHOW BOARD: [THING TO SHOW]". For example: "SHOW BOARD: [A diagram of a plant cell]". Be creative!
       4.  **TONE**: Always be friendly, patient, encouraging, and speak ONLY in English.
       5.  **CONTEXT**: Use the conversation history to understand the flow of the lesson.
-
-      ### CONVERSATION HISTORY:
-      ${historyText}
-
-      ### STUDENT'S NEW MESSAGE:
-      ${input.message}
-
-      ### YOUR RESPONSE (As Dr. Gam):
     `;
+
+    // Combine the existing history with the new user message for the prompt
+    const fullPrompt = [
+        ...input.history,
+        { role: 'user' as const, parts: [{ text: input.message }] }
+    ];
 
     const response = await ai.generate({
       model: 'googleai/gemini-1.5-flash-preview',
-      prompt: prompt,
+      system: systemInstruction, // Use the system instruction for persona
+      prompt: fullPrompt, // Pass the full conversation history
       config: { temperature: 0.5 }, 
     });
 

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -48,7 +47,12 @@ export default function StudyClubPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading || !user || !schoolId) return;
+    
+    // 1. Extra safety checks
+    if (!input.trim() || isLoading || !user || !schoolId) {
+      if (!schoolId) console.error("Missing SchoolID");
+      return;
+    }
 
     const userMessage: Message = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
@@ -56,29 +60,39 @@ export default function StudyClubPage() {
     setIsLoading(true);
 
     try {
+      // 2. Format history for Gemini (Gemini expects 'parts' inside each message)
+      // This ensures the flow receives exactly what it needs
+      const formattedHistory = messages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      }));
+
       const response = await generateDrGamResponse({
-          history: messages,
+          // @ts-ignore - The type will mismatch temporarily until the flow file is also updated
+          history: formattedHistory,
           message: input,
           userId: user.uid,
           schoolId: schoolId,
       });
 
-      if (!response.success) {
-        throw new Error(response.text || "The AI tutor encountered an error.");
+      if (!response || !response.success) {
+        throw new Error(response?.text || "The connection timed out. Please try a shorter question.");
       }
 
       const aiMessage: Message = { role: 'model', content: response.text };
       setMessages(prev => [...prev, aiMessage]);
       
     } catch (error: any) {
+        console.error("AI Tutor Error:", error);
         toast({
             variant: "destructive",
-            title: "AI Error",
-            description: error.message,
+            title: "Connection Lost",
+            description: error.message || "Dr. Gam is resting. Try again in a moment.",
         });
-        // If there's an error, add the user's message back to the input
+        
+        // Return the text to the input so the user doesn't lose it
         setInput(userMessage.content);
-        setMessages(prev => prev.slice(0, -1)); // Remove the user message that failed
+        setMessages(prev => prev.slice(0, -1)); 
     } finally {
       setIsLoading(false);
     }
