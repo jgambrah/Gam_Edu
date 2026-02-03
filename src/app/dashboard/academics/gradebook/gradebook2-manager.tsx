@@ -370,6 +370,13 @@ export default function GradebookManager() {
   }, [students, financialRecords]);
 
   const isLoading = isUserLoading || isRoleLoading || isLoadingSchool || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial || isLoadingSubjects));
+  
+  // FIX: New handler to explicitly close form after refetch is initiated
+  const handleGradeSubmissionSuccess = () => {
+    forceRefetch();
+    setActiveForm(null); 
+  };
+
 
   if (!isStaff && !isLoading) {
       return <div className="p-8 text-center text-red-500">Access Denied. Staff only.</div>;
@@ -432,7 +439,7 @@ export default function GradebookManager() {
                 classes={teacherClasses || []} 
                 academicYear={selectedYear}
                 term={selectedTerm}
-                onSuccess={forceRefetch}
+                onSuccess={handleGradeSubmissionSuccess}
               />
           </div>
       )}
@@ -523,4 +530,3 @@ export default function GradebookManager() {
     </div>
   );
 }
-
