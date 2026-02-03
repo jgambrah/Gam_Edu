@@ -68,7 +68,6 @@ export default function StudyClubPage() {
       }));
 
       const response = await generateDrGamResponse({
-          // @ts-ignore - The type will mismatch temporarily until the flow file is also updated
           history: formattedHistory,
           message: input,
           userId: user.uid,
@@ -76,7 +75,9 @@ export default function StudyClubPage() {
       });
 
       if (!response || !response.success) {
-        throw new Error(response?.text || "The connection timed out. Please try a shorter question.");
+        // THIS IS THE CHANGE: Show the detailed error if it exists
+        const detailedError = response?.error ? ` (Error: ${response.error})` : "";
+        throw new Error((response?.text || "Connection lost") + detailedError);
       }
 
       const aiMessage: Message = { role: 'model', content: response.text };
