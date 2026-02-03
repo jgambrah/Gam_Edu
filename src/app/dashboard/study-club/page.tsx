@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -64,7 +65,7 @@ export default function StudyClubPage() {
       // This ensures the flow receives exactly what it needs
       const formattedHistory = messages.map(msg => ({
         role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }]
+        parts: [{ text: msg.content || "" }] // Use "" as fallback to prevent undefined
       }));
 
       const response = await generateDrGamResponse({
