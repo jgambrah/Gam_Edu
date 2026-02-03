@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -1029,341 +1030,107 @@ function WritingSubmissionTab() {
     );
 }
 
-function ManageDrills() {
-    const firestore = useFirestore();
-    const { schoolId } = useCurrentSchool();
-    const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'ela_grammar_drills'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
-
-    return (
-        <Card>
-            <CardHeader className="flex flex-row justify-between items-center">
-                <div>
-                    <CardTitle>Grammar Drill Bank</CardTitle>
-                    <CardDescription>Manage grammar and mechanics questions.</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
-                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice grammar drills.</DialogDescription></DialogHeader><AiProblemGenerator subject="ELA Grammar" setOpen={setIsAiFormOpen} /></DialogContent>
-                    </Dialog>
-                    {/* Add manual creation form here if needed */}
-                </div>
-            </CardHeader>
-            <CardContent>
-                {isLoading ? <Skeleton className="h-40 w-full" /> : (
-                <Table>
-                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Type</TableHead><TableHead>Prompt</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {drills?.map(drill => (
-                            <TableRow key={drill.id}>
-                                <TableCell>{drill.topic}</TableCell>
-                                <TableCell>{drill.type}</TableCell>
-                                <TableCell className="max-w-md truncate">{drill.question_prompt}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                )}
-            </CardContent>
-        </Card>
-    );
-}
-
-function AiPassageGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean) => void; onSuccess: () => void; }) {
+function AiWritingChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean) => void; onSuccess: () => void; }) {
   const firestore = useFirestore();
   const { user: hookUser } = useAuth();
   const { toast } = useToast();
-  const { schoolId } = useCurrentSchool();
-  
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
-  const [generatedPassage, setGeneratedPassage] = useState<any | null>(null);
+  const [generatedChallenge, setGeneratedChallenge] = useState<any | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
 
-  const { data: classes } = useCollection<Class>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
+  const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
-  const form = useForm({
-    defaultValues: {
-      topic: '',
-      reading_level: 'Grade 9',
-      numQuestions: 3,
-    }
-  });
+  const form = useForm({ defaultValues: { topic: '', challengeType: 'Creative Writing' } });
 
-  async function onGenerate(values: { topic: string; reading_level: string; numQuestions: number }) {
-    if (!schoolId) {
-        toast({ variant: 'destructive', title: 'School ID not found' });
-        return;
-    }
+  async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay' }) {
+    if (!values.topic.trim()) return;
     setIsGenerating(true);
-    setGeneratedPassage(null);
-    toast({ title: 'Generating Passage...', description: 'Please wait while the AI writes.' });
+    setGeneratedChallenge(null);
     try {
-        const result = await generateReadingPassage(values);
-        setGeneratedPassage(result);
-        toast({ title: 'Passage Generated!', description: 'Review the passage and questions below.' });
-    } catch (e: any) {
-        toast({ variant: 'destructive', title: 'AI Error', description: e.message });
-    } finally {
-        setIsGenerating(false);
-    }
+        const result = await generateWritingChallenge(values);
+        setGeneratedChallenge(result);
+    } catch(e: any) { toast({ variant: 'destructive', title: 'AI Error' }); } finally { setIsGenerating(false); }
   }
-
+  
   async function onSave() {
     const auth = getAuth();
     const currentUser = auth.currentUser || hookUser;
-
-    if (!generatedPassage || !firestore || !selectedClassId || !currentUser || !schoolId) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Missing required data to save.' });
-        return;
-    }
+    if (!generatedChallenge || !firestore || !selectedClassId || !currentUser) return;
     setIsSaving(true);
     try {
-        const dataToSave = {
-            ...generatedPassage,
-            classId: selectedClassId,
-            schoolId: schoolId,
-            createdAt: serverTimestamp(),
-            createdBy: currentUser.uid,
-        };
-        await addDoc(collection(firestore, 'ela_reading_passages'), dataToSave);
-        toast({ title: 'Success', description: 'Reading passage saved successfully.' });
+        await addDoc(collection(firestore, 'ela_writing_challenges'), {
+            ...generatedChallenge, classId: selectedClassId, createdBy: currentUser.uid, createdAt: serverTimestamp()
+        });
+        toast({ title: 'Success', description: 'Writing challenge saved.' });
         onSuccess();
         setOpen(false);
-    } catch(e: any) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to save passage.' });
-    } finally {
-        setIsSaving(false);
-    }
+    } catch(e:any){ toast({ variant: 'destructive', title: 'Save Failed' }); } finally { setIsSaving(false); }
   }
 
   return (
-    <div className="space-y-4">
+      <div className="space-y-4">
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="topic" render={({ field }) => (
-                        <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g., The Amazon Rainforest" {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
-                    <FormField control={form.control} name="reading_level" render={({ field }) => (
-                        <FormItem><FormLabel>Reading Level</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
-                            {['Grade 7', 'Grade 8', 'Grade 9', 'Grade 10'].map(lvl => <SelectItem key={lvl} value={lvl}>{lvl}</SelectItem>)}
-                        </SelectContent></Select><FormMessage /></FormItem>
-                    )}/>
-                </div>
-                <FormField control={form.control} name="numQuestions" render={({ field }) => (
-                    <FormItem className="w-48"><FormLabel># of Questions</FormLabel><FormControl><Input type="number" min={1} max={5} {...field} /></FormControl><FormMessage /></FormItem>
+                <FormField control={form.control} name="topic" render={({ field }) => (
+                    <FormItem><FormLabel>Topic</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                )}/>
+                <FormField control={form.control} name="challengeType" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                        <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                        <SelectItem value="Summarization">Summarization</SelectItem>
+                        <SelectItem value="Essay">Essay</SelectItem>
+                    </SelectContent></Select></FormItem>
                 )}/>
                 <Button type="submit" disabled={isGenerating}>
-                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    Generate Passage
+                    {isGenerating ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2 h-4"/>} Generate Prompt
                 </Button>
             </form>
         </Form>
-
-        {generatedPassage && (
-            <Card className="bg-muted/50">
-                <CardHeader>
-                    <CardTitle>{generatedPassage.title}</CardTitle>
-                </CardHeader>
+        {generatedChallenge && (
+            <Card className="bg-muted/50"><CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
-                    <ScrollArea className="h-60 border p-4 rounded-md bg-white">
-                        <p className="whitespace-pre-wrap">{generatedPassage.passage_text}</p>
-                    </ScrollArea>
-                    <div className="space-y-2">
-                        <h4 className="font-semibold">Generated Questions</h4>
-                        <ul>
-                            {generatedPassage.question_set.map((q: any, i: number) => (
-                                <li key={i} className="text-sm p-2 border-b">{q.question} <span className="text-blue-600 font-medium">(Ans: {q.correct_answer_key})</span></li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Assign to Class *</Label>
-                        <Select onValueChange={setSelectedClassId} value={selectedClassId}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select a class" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <Button onClick={onSave} disabled={isSaving || !selectedClassId}>
-                        {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Passage
-                    </Button>
+                    <p className="italic">"{generatedChallenge.prompt}"</p>
+                    <Select onValueChange={setSelectedClassId} value={selectedClassId}><SelectTrigger><SelectValue placeholder="Select class to assign" /></SelectTrigger><SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select>
+                    <Button onClick={onSave} disabled={isSaving || !selectedClassId}>Save Challenge</Button>
                 </CardContent>
             </Card>
         )}
-    </div>
+      </div>
   );
 }
 
-
-function ManagePassages() {
+function ManageWritingChallenges() {
     const firestore = useFirestore();
-    const { data: passages, isLoading, forceRefetch } = useCollection<ElaReadingPassage>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_reading_passages')) : null, [firestore]));
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
-    const [editingPassage, setEditingPassage] = useState<ElaReadingPassage | undefined>(undefined);
-
-    const handleEdit = (passage: ElaReadingPassage) => {
-        setEditingPassage(passage);
-        setIsFormOpen(true);
-    };
-    
-    const handleCreate = () => {
-        setEditingPassage(undefined);
-        setIsFormOpen(true);
-    };
+    const { data: challenges, isLoading, forceRefetch } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_writing_challenges')) : null, [firestore]));
+    const [isAiOpen, setIsAiOpen] = useState(false);
 
     return (
         <Card>
             <CardHeader className="flex flex-row justify-between items-center">
-                <div>
-                    <CardTitle>Reading Passage Bank</CardTitle>
-                    <CardDescription>Manage reading passages and their comprehension questions.</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
-                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4" />Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                            <DialogHeader><DialogTitle>AI Passage Generator</DialogTitle><DialogDescription>Generate a complete reading passage with comprehension questions.</DialogDescription></DialogHeader>
-                            <AiPassageGenerator setOpen={setIsAiFormOpen} onSuccess={forceRefetch} />
-                        </DialogContent>
-                    </Dialog>
-                    <Button onClick={handleCreate}><PlusCircle className="mr-2 h-4" />New Passage</Button>
-                </div>
+                <div><CardTitle>Writing Challenge Bank</CardTitle><CardDescription>Manage creative and academic writing prompts.</CardDescription></div>
+                <Dialog open={isAiOpen} onOpenChange={setIsAiOpen}>
+                    <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                    <DialogContent><DialogHeader><DialogTitle>AI Writing Challenge Generator</DialogTitle></DialogHeader><AiWritingChallengeGenerator setOpen={setIsAiOpen} onSuccess={forceRefetch} /></DialogContent>
+                </Dialog>
             </CardHeader>
-            <CardContent>
-                 {isLoading ? <Skeleton className="h-40 w-full" /> : (
+             <CardContent>
+                {isLoading ? <Skeleton className="h-40 w-full" /> : (
                 <Table>
-                    <TableHeader><TableRow><TableHead>Title</TableHead><TableHead>Reading Level</TableHead><TableHead>Class</TableHead><TableHead># Qs</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+                    <TableHeader><TableRow><TableHead>Title</TableHead><TableHead>Type</TableHead><TableHead>Prompt</TableHead></TableRow></TableHeader>
                     <TableBody>
-                        {passages?.map(p => (
-                            <TableRow key={p.id}>
-                                <TableCell>{p.title}</TableCell>
-                                <TableCell>{p.reading_level}</TableCell>
-                                <TableCell>{classes?.find(c => c.id === p.classId)?.name || 'N/A'}</TableCell>
-                                <TableCell>{p.question_set.length}</TableCell>
-                                <TableCell>
-                                    <Button variant="ghost" size="sm" onClick={() => handleEdit(p)}>
-                                        <Edit className="h-4 w-4" />
-                                    </Button>
-                                </TableCell>
+                        {challenges?.map(c => (
+                            <TableRow key={c.id}>
+                                <TableCell>{c.title}</TableCell>
+                                <TableCell><Badge variant="secondary">{c.challengeType}</Badge></TableCell>
+                                <TableCell className="max-w-md truncate">{c.prompt}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
                 )}
             </CardContent>
-
-             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <DialogContent className="max-w-3xl">
-                    <DialogHeader><DialogTitle>{editingPassage ? 'Edit Passage' : 'Create New Passage'}</DialogTitle></DialogHeader>
-                    <PassageCreationForm setOpen={setIsFormOpen} initialData={editingPassage} classes={classes} onSuccess={forceRefetch}/>
-                </DialogContent>
-            </Dialog>
         </Card>
-    );
-}
-
-function PassageCreationForm({ setOpen, onSuccess, initialData, classes }: { setOpen: (open: boolean) => void; onSuccess: () => void; initialData?: ElaReadingPassage; classes?: Class[] }) {
-    const firestore = useFirestore();
-    const { user } = useAuth();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const form = useForm<z.infer<typeof elaReadingPassageSchema>>({
-        resolver: zodResolver(elaReadingPassageSchema),
-        defaultValues: initialData || {
-            title: '',
-            passage_text: '',
-            reading_level: 'Grade 9',
-            classId: '',
-            question_set: [{ question: '', type: 'Short Answer', correct_answer_key: '', options: [] }]
-        }
-    });
-
-    const { fields, append, remove } = useFieldArray({
-        control: form.control,
-        name: "question_set"
-    });
-
-    async function onSubmit(values: z.infer<typeof elaReadingPassageSchema>) {
-        if (!user || !firestore) return;
-        setIsSubmitting(true);
-        const action = initialData ? 
-            updateDocumentNonBlocking(doc(firestore, 'ela_reading_passages', initialData.id), values) : 
-            addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), { ...values, createdAt: serverTimestamp() });
-
-        action
-        .then(() => {
-            toast({ title: 'Success', description: `Passage ${initialData ? 'updated' : 'created'}.` });
-            onSuccess();
-            setOpen(false);
-        })
-        .catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-                path: initialData ? doc(firestore, 'ela_reading_passages', initialData.id).path : collection(firestore, 'ela_reading_passages').path,
-                operation: initialData ? 'update' : 'create',
-                requestResourceData: values,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-        })
-        .finally(() => setIsSubmitting(false));
-    }
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField control={form.control} name="title" render={({ field }) => (
-                    <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage/></FormItem>
-                )}/>
-                <FormField control={form.control} name="passage_text" render={({ field }) => (
-                    <FormItem><FormLabel>Passage Text</FormLabel><FormControl><Textarea {...field} rows={8} /></FormControl><FormMessage/></FormItem>
-                )}/>
-                 <div className="grid grid-cols-2 gap-4">
-                     <FormField control={form.control} name="reading_level" render={({ field }) => (
-                        <FormItem><FormLabel>Reading Level</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
-                            <SelectItem value="Grade 7">Grade 7</SelectItem>
-                            <SelectItem value="Grade 8">Grade 8</SelectItem>
-                            <SelectItem value="Grade 9">Grade 9</SelectItem>
-                        </SelectContent></Select>
-                        <FormMessage/></FormItem>
-                    )}/>
-                    <FormField control={form.control} name="classId" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Assign to Class</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
-                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                            </Select><FormMessage/>
-                        </FormItem>
-                    )}/>
-                </div>
-                <div className="space-y-4">
-                    <h4 className="font-semibold">Questions</h4>
-                    {fields.map((field, index) => (
-                        <div key={field.id} className="p-4 border rounded space-y-2 relative">
-                             <Button type="button" variant="ghost" size="sm" onClick={() => remove(index)} className="absolute top-2 right-2 text-red-500"><Trash2 className="h-4 w-4"/></Button>
-                            <FormField control={form.control} name={`question_set.${index}.question`} render={({ field }) => (
-                                <FormItem><FormLabel>Question {index + 1}</FormLabel><FormControl><Input {...field}/></FormControl></FormItem>
-                            )}/>
-                            <FormField control={form.control} name={`question_set.${index}.correct_answer_key`} render={({ field }) => (
-                                <FormItem><FormLabel>Correct Answer Key</FormLabel><FormControl><Input {...field}/></FormControl></FormItem>
-                            )}/>
-                        </div>
-                    ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => append({ question: '', type: 'Short Answer', correct_answer_key: '', options: []})}>Add Question</Button>
-                </div>
-                <Button type="submit" disabled={isSubmitting}>Save Passage</Button>
-            </form>
-        </Form>
     );
 }
 
@@ -1442,5 +1209,3 @@ export default function ElaClubPage() {
     </div>
   );
 }
-
-    
