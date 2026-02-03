@@ -337,6 +337,7 @@ function ReadingPracticeTab() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const { role } = useRole(); 
+  const { schoolId } = useCurrentSchool();
   
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
@@ -348,20 +349,26 @@ function ReadingPracticeTab() {
   // 1. Get Student Data
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => {
-      if (!user || !firestore || isStaff) return null;
-      return query(collection(firestore, 'students'), where('uid', '==', user.uid));
-    }, [firestore, user, isStaff])
+      if (!user || !firestore || isStaff || !schoolId) return null;
+      return query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId));
+    }, [firestore, user, isStaff, schoolId])
   );
   
   const studentClassId = studentData?.[0]?.classId;
 
   // 2. Fetch Passages
   const passagesQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    if (isStaff) return query(collection(firestore, 'ela_reading_passages'));
-    if (studentClassId) return query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId));
-    return null;
-  }, [firestore, studentClassId, isStaff]);
+    if (!firestore || !schoolId) return null;
+    let baseQuery = query(collection(firestore, 'ela_reading_passages'), where('schoolId', '==', schoolId));
+
+    if (isStaff) return baseQuery; // Staff see all
+    
+    if (studentClassId) { // Students see only their class's
+      return query(baseQuery, where('classId', '==', studentClassId));
+    }
+    
+    return null; // Return null if a student has no class yet
+  }, [firestore, studentClassId, isStaff, schoolId]);
 
   const { data: passages, isLoading: isLoadingPassages } = useCollection<ElaReadingPassage>(passagesQuery);
 
@@ -412,7 +419,7 @@ function ReadingPracticeTab() {
             (!isStaff && !studentClassId) ? (
                 <div className="text-center py-8">
                     <p className="text-muted-foreground">You are not assigned to a class.</p>
-                    <p className="text-xs text-red-400 mt-2">Debug: User ID: {user?.uid || 'Not Found'}</p>
+                    <p className="text-xs text-red-400 mt-1">Debug: UID {user?.uid}</p>
                 </div>
             ) :
             passages && passages.length > 0 ? (
@@ -891,6 +898,7 @@ function WritingSubmissionTab() {
     const firestore = useFirestore();
     const { user, isUserLoading } = useUser();
     const { role } = useRole();
+    const { schoolId } = useCurrentSchool();
     
     // UI State
     const [selectedType, setSelectedType] = useState<string>('');
@@ -901,18 +909,19 @@ function WritingSubmissionTab() {
 
     // 1. Fetch Student Data (to get Class ID)
     const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-        useMemoFirebase(() => (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
+        useMemoFirebase(() => (user && firestore && !isStaff && schoolId) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [firestore, user, isStaff, schoolId])
     );
     const studentClassId = studentData?.[0]?.classId;
 
     // 2. Fetch Challenges
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
         useMemoFirebase(() => {
-            if(!firestore) return null;
-            if (isStaff) return query(collection(firestore, 'ela_writing_challenges'));
-            if (studentClassId) return query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId));
+            if(!firestore || !schoolId) return null;
+            let baseQuery = query(collection(firestore, 'ela_writing_challenges'), where('schoolId', '==', schoolId));
+            if (isStaff) return baseQuery;
+            if (studentClassId) return query(baseQuery, where('classId', '==', studentClassId));
             return null;
-        }, [firestore, studentClassId, isStaff])
+        }, [firestore, studentClassId, isStaff, schoolId])
     );
 
     // 3. Fetch My Submissions (to see if I already did it)
@@ -1444,6 +1453,57 @@ function AiWritingChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: b
     </Form>
   )
 }
+
+function WritingChallengeCreationForm({ setOpen, onSuccess, classes, schoolId }: { setOpen: (open: boolean) => void; onSuccess: () => void; classes: Class[]; schoolId: string }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
+        resolver: zodResolver(elaWritingChallengeSchema),
+        defaultValues: { title: '', prompt: '', challengeType: 'Creative Writing', classId: '' }
+    });
+    
+    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
+        if (!schoolId) return;
+        setIsSubmitting(true);
+        try {
+            const auth = getAuth();
+            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
+                ...values,
+                schoolId,
+                createdBy: auth.currentUser?.uid || 'unknown',
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: 'Success', description: 'New writing challenge has been created.' });
+            onSuccess();
+            setOpen(false);
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the challenge.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="e.g., A Day in the Life of a Shoe" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="prompt" render={({ field }) => (<FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea rows={5} placeholder="Write a short story from the perspective of..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField control={form.control} name="challengeType" render={({ field }) => (
+                        <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Creative Writing">Creative Writing</SelectItem><SelectItem value="Summarization">Summarization</SelectItem><SelectItem value="Essay">Essay</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                    )}/>
+                    <FormField control={form.control} name="classId" render={({ field }) => (
+                        <FormItem><FormLabel>Assign to Class</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl><SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                    )}/>
+                </div>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Create Challenge</Button>
+            </form>
+        </Form>
+    );
+}
+
 
 function ManageWritingChallenges({ classes, schoolId }: { classes: Class[], schoolId: string }) {
     const firestore = useFirestore();
