@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for generating reading passages with questions.
@@ -59,7 +60,7 @@ const generateReadingPassageFlow = ai.defineFlow(
     outputSchema: GenerateReadingPassageOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
+    const { output } = await prompt(input, { model: 'googleai/gemini-2.5-flash' });
     return output!;
   }
 );
