@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -117,7 +118,7 @@ export const AITutor: React.FC = () => {
         </div>
         <div>
           <h2 className="font-bold text-lg flex items-center gap-2">
-            AI Personal Tutor <Sparkles className="h-4 w-4 text-yellow-300"/>
+            Dr. Gam AI Tutor <Sparkles className="h-4 w-4 text-yellow-300"/>
           </h2>
           <p className="text-indigo-100 text-xs">Math • Science • English • History</p>
         </div>
