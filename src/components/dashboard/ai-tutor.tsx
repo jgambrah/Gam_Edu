@@ -2,12 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
-import { useUser } from '@/firebase'; 
+import { useUser } from '@/firebase';
 import { chatWithAiTutor } from '@/ai/flows/ai-tutor-flow';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { cn } from '@/lib/utils';
-
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // Types
 type MessageRole = 'user' | 'model';
@@ -52,53 +51,58 @@ export const AITutor: React.FC = () => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // 1. Extra safety checks
     if (!inputText.trim() || isLoading || !user || !schoolId) {
-      if (!schoolId) console.error("Missing SchoolID");
-      return;
+        if (!schoolId) toast({ variant: "destructive", title: "Error", description: "School context is missing." });
+        return;
     }
 
-    const userMessage: ChatMessage = { role: 'user', content: inputText };
-    setMessages(prev => [...prev, userMessage]);
-    const currentInput = inputText;
+    const userText = inputText;
     setInputText('');
     setIsLoading(true);
 
+    const userMsg: ChatMessage = {
+      role: 'user',
+      content: userText,
+      timestamp: Date.now()
+    };
+    
+    const currentHistory = [...messages, userMsg];
+    setMessages(currentHistory);
+
     try {
-      // 2. Format history for Gemini (Gemini expects 'parts' inside each message)
-      const formattedHistory = messages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content || "" }] // Use "" as fallback to prevent undefined
+      const historyForApi = currentHistory.slice(-50).map(m => ({ 
+          role: m.role, 
+          content: m.content
       }));
 
+      const lastMessage = historyForApi.pop(); 
+      
       const response = await chatWithAiTutor({
-          history: formattedHistory,
-          message: currentInput,
-          userId: user.uid,
-          schoolId: schoolId,
+        history: historyForApi,
+        message: lastMessage?.content || userText,
+        userId: user.uid,
+        schoolId: schoolId,
       });
 
-      if (!response || !response.success) {
-        // THIS IS THE CHANGE: Show the detailed error if it exists
-        const detailedError = response?.error ? ` (Error: ${response.error})` : "";
-        throw new Error((response?.text || "Connection lost") + detailedError);
+      if (!response.success) {
+        throw new Error(response.error);
       }
 
-      const aiMessage: ChatMessage = { role: 'model', content: response.text };
-      setMessages(prev => [...prev, aiMessage]);
+      const aiMsg: ChatMessage = {
+        role: 'model',
+        content: response.text,
+        timestamp: Date.now()
+      };
+
+      setMessages(prev => [...prev, aiMsg]);
       
     } catch (error: any) {
-        console.error("AI Tutor Error:", error);
+        console.error("Chat error", error);
         toast({
             variant: "destructive",
-            title: "Connection Lost",
-            description: error.message || "Dr. Gam is resting. Try again in a moment.",
+            title: "AI Error",
+            description: "Could not get a response. Check your internet or API key."
         });
-        
-        // Return the text to the input so the user doesn't lose it
-        setInputText(currentInput);
-        setMessages(prev => prev.slice(0, -1)); 
     } finally {
       setIsLoading(false);
     }
