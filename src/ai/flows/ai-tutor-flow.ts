@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -57,7 +58,7 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
     `;
 
     const response = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-2.5-flash',
       prompt: prompt,
       config: { 
         temperature: 0.3, 
