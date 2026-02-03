@@ -11,7 +11,7 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb, Trophy, Microscope, Sparkles, Atom, Database, TrendingUp, AlertCircle } from 'lucide-react';
+import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb, Trophy, Microscope, Sparkles, Atom, Database, TrendingUp, AlertCircle, Trash2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
@@ -453,7 +453,7 @@ function ReadingPracticeTab() {
                     </Button>
                 </div>
             ) : (
-                <p className="text-center text-muted-foreground py-12">
+                 <p className="text-center text-muted-foreground py-12">
                     {isStaff ? "No passages found." : "No reading passages available for your class."}
                 </p>
             )}
@@ -1072,7 +1072,6 @@ function ManageDrills() {
     );
 }
 
-// THIS IS THE NEW COMPONENT
 function AiPassageGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean) => void; onSuccess: () => void; }) {
   const firestore = useFirestore();
   const { user: hookUser } = useAuth();
