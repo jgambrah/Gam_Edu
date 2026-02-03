@@ -7,11 +7,11 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { MOCK_SUBJECTS } from '@/lib/data';
-import { Assessment, ReportCardComment, ReportCard } from '@/lib/types';
+import { Assessment, ReportCardComment, ReportCard, Subject } from '@/lib/types';
 import { collection, query, where, doc } from 'firebase/firestore';
 import { useMemo } from 'react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
@@ -36,31 +36,42 @@ function calculateStudentGradeForSubject(studentId: string, subjectId: string, a
 
 export function StudentReportCard({ student, term, year }: { student: Student, term: string, year: string }) {
     const firestore = useFirestore();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
-    const { schoolId } = useCurrentSchool();
     const schoolProfileRef = useMemoFirebase(
       () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
       [firestore, schoolId]
     );
-    const { data: schoolProfile } = useDoc(schoolProfileRef);
-
-    // Fetch all assessments for the student
-    const assessmentsQuery = useMemoFirebase(
-      () => student ? query(collection(firestore, 'assessments'), where('studentId', '==', student.uid)) : null,
-      [firestore, student]
+    const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
+    
+    const subjectsQuery = useMemoFirebase(
+        () => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
+        [firestore, schoolId]
     );
-    const { data: assessments } = useCollection<Assessment>(assessmentsQuery);
+    const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
+
+    // Fetch all assessments for the student for the specific term and year
+    const assessmentsQuery = useMemoFirebase(
+      () => student ? query(
+          collection(firestore, 'assessments'), 
+          where('studentId', '==', student.uid),
+          where('academicYear', '==', year),
+          where('term', '==', term)
+        ) : null,
+      [firestore, student, year, term]
+    );
+    const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     const reportCardId = `${student.uid}-${year}-${term}`;
     const commentsQuery = useMemoFirebase(
       () => query(collection(firestore, `report-cards/${reportCardId}/comments`)),
       [firestore, reportCardId]
     );
-    const { data: comments } = useCollection<ReportCardComment>(commentsQuery);
+    const { data: comments, isLoading: isLoadingComments } = useCollection<ReportCardComment>(commentsQuery);
 
     const reportCardData = useMemo(() => {
-        if (!assessments) return [];
-        return MOCK_SUBJECTS.map(subject => {
+        if (!assessments || !subjects) return [];
+        return subjects.map(subject => {
             const { finalGrade, percentage } = calculateStudentGradeForSubject(student.uid, subject.id, assessments);
             const comment = comments?.find(c => c.subjectId === subject.id)?.comment || '';
             return {
@@ -70,7 +81,7 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
                 comment,
             }
         });
-    }, [assessments, comments, student.uid]);
+    }, [assessments, comments, student.uid, subjects]);
 
     const overall = useMemo(() => {
         const validGrades = reportCardData.filter(d => d.percentage > 0);
@@ -87,6 +98,18 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
 
         return { finalGrade, percentage: parseFloat(overallPercentage.toFixed(1)) };
     }, [reportCardData]);
+    
+    const isLoading = isLoadingSchool || isLoadingProfile || isLoadingSubjects || isLoadingAssessments || isLoadingComments;
+
+    if (isLoading) {
+        return (
+            <div className="space-y-4 p-6">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-64 w-full" />
+                <Skeleton className="h-32 w-full" />
+            </div>
+        );
+    }
   
     return (
       <Card className="w-full max-w-4xl mx-auto print:shadow-none print:border-none">
@@ -124,6 +147,11 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
                             <TableCell className="text-sm text-muted-foreground">{data.comment}</TableCell>
                         </TableRow>
                     ))}
+                    {reportCardData.length === 0 && (
+                        <TableRow>
+                            <TableCell colSpan={4} className="text-center text-muted-foreground py-4">No subjects or grades found for this term.</TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
             <Separator className="my-6" />

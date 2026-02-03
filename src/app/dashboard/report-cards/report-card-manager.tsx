@@ -13,9 +13,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { reportCardCommentSchema, ReportCard, ReportCardComment, ReportCardStatus, Class } from '@/lib/types';
+import { reportCardCommentSchema, ReportCard, ReportCardComment, ReportCardStatus, Class, Subject } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { MOCK_SUBJECTS, MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Loader2, Send, CheckCircle, ShieldCheck, Printer } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { StudentReportCard } from './student-report-card';
@@ -30,6 +30,13 @@ function CommentForm({ student, reportCard, disabled }: { student: Student; repo
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
+  const { schoolId } = useCurrentSchool();
+
+  const subjectsQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
+    [firestore, schoolId]
+  );
+  const { data: subjects } = useCollection<Subject>(subjectsQuery);
 
   const commentsQuery = useMemoFirebase(
     () => reportCard ? query(collection(firestore, `report-cards/${reportCard.id}/comments`)) : null,
@@ -80,7 +87,7 @@ function CommentForm({ student, reportCard, disabled }: { student: Student; repo
                 <label className='text-sm font-medium'>Subject</label>
                 <Select onValueChange={handleSubjectChange} disabled={disabled}>
                     <SelectTrigger><SelectValue placeholder="Select a subject"/></SelectTrigger>
-                    <SelectContent>{MOCK_SUBJECTS.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                    <SelectContent>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                 </Select>
             </div>
             <Button type="submit" disabled={isSubmitting || disabled || !selectedSubjectId}>
