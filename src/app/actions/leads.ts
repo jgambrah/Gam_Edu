@@ -3,26 +3,33 @@
 
 import { Resend } from 'resend';
 import { getFirestore } from 'firebase-admin/firestore';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
+
+// Helper function to format the private key from environment variables
+const formatPrivateKey = (key: string) => {
+  return key.replace(/\\n/g, '\n').replace(/"/g, '');
+};
 
 // 1. Initialize Admin SDK (Reuse this logic)
-function getAdminApp() {
+function getAdminApp(): App {
   const existingApp = getApps().find(app => app.name === 'admin');
   if (existingApp) return existingApp;
 
   const projectId = process.env.FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+  const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
 
-  if (!projectId || !clientEmail || !privateKey) {
+  if (!projectId || !clientEmail || !privateKeyRaw) {
     throw new Error("Missing Firebase Admin credentials.");
   }
+  
+  const privateKey = formatPrivateKey(privateKeyRaw);
 
   return initializeApp({
     credential: cert({
       projectId,
       clientEmail,
-      privateKey: privateKey.replace(/\\n/g, '\n'),
+      privateKey,
     }),
   }, 'admin');
 }
