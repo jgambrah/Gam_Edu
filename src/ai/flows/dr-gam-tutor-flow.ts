@@ -16,11 +16,13 @@ const ChatInputSchema = z.object({
 
 export async function generateDrGamResponse(input: z.infer<typeof ChatInputSchema>) {
   try {
+    /* COMMENT THIS OUT TEMPORARILY
     // 1. Credit Check
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {
       return { success: false, text: creditResult.error || "You are out of AI Sparks." };
     }
+    */
 
     // 2. Persona Setup
     const systemInstruction = `
