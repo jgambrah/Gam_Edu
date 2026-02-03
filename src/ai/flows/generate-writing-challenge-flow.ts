@@ -46,7 +46,7 @@ const generateWritingChallengeFlow = ai.defineFlow(
     outputSchema: GenerateWritingChallengeOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
+    const { output } = await prompt(input, { model: 'googleai/gemini-3-flash-preview' });
     return output!;
   }
 );
