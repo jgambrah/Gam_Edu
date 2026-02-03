@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -10,8 +11,8 @@ import {
   Sigma, Trophy, PencilRuler, Plus, Loader2, 
   Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database, PlusCircle, PenSquare
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { generateMathLessonAction, GeneratedMathLesson } from '@/ai/flows/generate-math-lesson';
+import { format, isSameDay } from 'date-fns';
+import { generateMathLessonAction, GeneratedLesson } from '@/ai/flows/generate-math-lesson';
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 import ReactMarkdown from 'react-markdown';
@@ -55,6 +56,7 @@ const cleanLatex = (formula: string = "") => {
 function SafeMath({ formula, block = true }: { formula: string, block?: boolean }) {
   const [mounted, setMounted] = useState(false);
 
+  // Prevent hydration errors by only rendering after mount
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -77,7 +79,7 @@ function SafeMath({ formula, block = true }: { formula: string, block?: boolean 
   }
 }
 
-interface LessonCard extends GeneratedMathLesson {
+interface LessonCard extends GeneratedLesson {
     id?: string;
     timestamp?: any;
 }
@@ -355,7 +357,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
                         <FormItem>
                             <FormLabel>Question Text</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Enter text or LaTeX (e.g. \frac{1}{2})" {...field}/>
+                                <Textarea placeholder="Enter text or LaTeX (e.g. \\frac{1}{2})" {...field}/>
                             </FormControl>
                             {field.value && (
                                 <div className="mt-2 p-4 bg-slate-900 rounded-xl text-emerald-400">
@@ -488,100 +490,92 @@ export default function MathsClubPage() {
   const isLoading = isAuthLoading || isRoleLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sigma />
-            Maths Club
-          </CardTitle>
-          <CardDescription>
-            Welcome to the Maths Club! Practice problems, track your progress,
-            and climb the leaderboard.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Tabs defaultValue="practice">
-        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-4" : "grid-cols-3")}>
-          <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
-          <TabsTrigger value="learn">Math Explorer</TabsTrigger>
-          <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
-          {isTeacherOrAdmin && <TabsTrigger value="manage">Manage Problems</TabsTrigger>}
-        </TabsList>
-        <TabsContent value="practice">
-          <Card>
-            <CardHeader>
-                <CardTitle>Start a New Practice Session</CardTitle>
-                <CardDescription>Select a topic and difficulty to begin.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {isLoading ? (
-                    <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
-                ) : 
-                (role === 'Student' && !studentClassId) ? (
-                    <div className="text-center space-y-2">
-                        <p className="text-muted-foreground">We could not find your class assignment.</p>
-                        <p className="text-xs text-red-500">Debug: User ID {user?.uid}</p>
-                    </div>
-                ) : 
-                (
-                    <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Select onValueChange={setSelectedTopic} value={selectedTopic}>
-                                <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
-                                <SelectContent>
-                                    {uniqueTopics.map(topic => (
-                                        <SelectItem key={topic} value={topic}>{topic}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Select onValueChange={setSelectedDifficulty} value={selectedDifficulty}>
-                                <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Easy">Easy</SelectItem>
-                                    <SelectItem value="Medium">Medium</SelectItem>
-                                    <SelectItem value="Hard">Hard</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <Button onClick={handleStartPractice} disabled={!selectedTopic || !selectedDifficulty} className="w-full">
-                            Start Practice
-                        </Button>
-                    </>
-                )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="learn" className="mt-6">
-            <MathExplorerTab />
-        </TabsContent>
-        <TabsContent value="leaderboard">
+    <>
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sigma />
+              Maths Club
+            </CardTitle>
+            <CardDescription>
+              Welcome to the Maths Club! Practice problems, track your progress,
+              and climb the leaderboard.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <Tabs defaultValue="practice">
+          <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-4" : "grid-cols-3")}>
+            <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
+            <TabsTrigger value="learn">Math Explorer</TabsTrigger>
+            <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
+            {isTeacherOrAdmin && <TabsTrigger value="manage">Manage Problems</TabsTrigger>}
+          </TabsList>
+          <TabsContent value="practice">
             <Card>
-                <CardHeader>
-                    <CardTitle>Global Leaderboard</CardTitle>
-                    <CardDescription>See how you rank against other students.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Leaderboard />
-                </CardContent>
+              <CardHeader>
+                  <CardTitle>Start a New Practice Session</CardTitle>
+                  <CardDescription>Select a topic and difficulty to begin.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                  {(isLoading) ? (
+                      <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
+                  ) : 
+                  (role === 'Student' && !studentClassId) ? (
+                      <div className="text-center space-y-2">
+                          <p className="text-muted-foreground">We could not find your class assignment.</p>
+                          <p className="text-xs text-red-500">Debug: User ID {user?.uid}</p>
+                      </div>
+                  ) : 
+                  (
+                      <>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <Select onValueChange={setSelectedTopic} value={selectedTopic}>
+                                  <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
+                                  <SelectContent>
+                                      {uniqueTopics.map(topic => (
+                                          <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                                      ))}
+                                  </SelectContent>
+                              </Select>
+                              <Select onValueChange={setSelectedDifficulty} value={selectedDifficulty}>
+                                  <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
+                                  <SelectContent>
+                                      <SelectItem value="Easy">Easy</SelectItem>
+                                      <SelectItem value="Medium">Medium</SelectItem>
+                                      <SelectItem value="Hard">Hard</SelectItem>
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                          <Button onClick={handleStartPractice} disabled={!selectedTopic || !selectedDifficulty} className="w-full">
+                              Start Practice
+                          </Button>
+                      </>
+                  )}
+              </CardContent>
             </Card>
-        </TabsContent>
-         {isTeacherOrAdmin && (
-            <TabsContent value="manage">
-                <ManageProblems />
-            </TabsContent>
-        )}
-      </Tabs>
-      <style jsx global>{\`
-          .math-container {
-            max-width: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
-          }
-          .katex-display {
-            margin: 0 !important;
-          }
-        \`}</style>
-    </div>
+          </TabsContent>
+          <TabsContent value="learn" className="mt-6">
+              <MathExplorerTab />
+          </TabsContent>
+          <TabsContent value="leaderboard">
+              <Card>
+                  <CardHeader>
+                      <CardTitle>Global Leaderboard</CardTitle>
+                      <CardDescription>See how you rank against other students.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <Leaderboard />
+                  </CardContent>
+              </Card>
+          </TabsContent>
+           {isTeacherOrAdmin && (
+              <TabsContent value="manage">
+                  <ManageProblems />
+              </TabsContent>
+          )}
+        </Tabs>
+      </div>
+    </>
   );
 }
