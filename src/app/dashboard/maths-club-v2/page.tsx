@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -86,6 +87,7 @@ function MathExplorerTab() {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
     const [topic, setTopic] = useState('');
     const [isLearning, setIsLearning] = useState(false);
     const [currentLesson, setCurrentLesson] = useState<LessonCard | null>(null);
@@ -98,13 +100,13 @@ function MathExplorerTab() {
     const { data: history, isLoading: historyLoading } = useCollection<LessonCard>(historyQuery);
 
     const handleLearn = async () => {
-        if (!topic.trim()) return;
+        if (!topic.trim() || !schoolId) return;
         setIsLearning(true);
         setShowAnswer(false);
         setCurrentLesson(null);
 
         try {
-            const result = await generateMathLessonAction({ topic, grade: 'JHS 1' });
+            const result = await generateMathLessonAction({ topic, grade: 'JHS 1', schoolId });
             
             if (result.success && result.data) {
                 setCurrentLesson(result.data);
@@ -116,10 +118,10 @@ function MathExplorerTab() {
                     });
                 }
             } else {
-                toast({ variant: 'destructive', title: "AI Error", description: "Could not generate lesson." });
+                toast({ variant: 'destructive', title: "AI Error", description: result.error || "Could not generate lesson." });
             }
-        } catch (e) {
-             toast({ variant: 'destructive', title: "Error", description: "Something went wrong." });
+        } catch (e: any) {
+             toast({ variant: 'destructive', title: "Error", description: e.message || "Something went wrong." });
         } finally {
             setIsLearning(false);
         }
@@ -570,7 +572,7 @@ export default function MathsClubPage() {
             </TabsContent>
         )}
       </Tabs>
-      <style jsx global>{`
+      <style jsx global>{\`
           .math-container {
             max-width: 100%;
             overflow-x: auto;
@@ -579,7 +581,7 @@ export default function MathsClubPage() {
           .katex-display {
             margin: 0 !important;
           }
-        `}</style>
+        \`}</style>
     </div>
   );
 }

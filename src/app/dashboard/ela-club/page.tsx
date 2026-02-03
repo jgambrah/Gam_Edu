@@ -49,6 +49,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { generateElaLessonAction, GeneratedElaLesson } from '@/ai/flows/generate-ela-lesson';
 import { evaluateReadingSubmissionAction } from '@/ai/flows/evaluate-reading-submission';
 import { evaluateWritingAction } from '@/ai/flows/evaluate-writing-submission';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 interface LessonCard extends GeneratedElaLesson {
@@ -60,6 +61,7 @@ function ElaExplorerTab() {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
     const [topic, setTopic] = useState('');
     const [isLearning, setIsLearning] = useState(false);
     const [currentLesson, setCurrentLesson] = useState<LessonCard | null>(null);
@@ -72,13 +74,13 @@ function ElaExplorerTab() {
     const { data: history, isLoading: historyLoading } = useCollection<LessonCard>(historyQuery);
 
     const handleLearn = async () => {
-        if (!topic.trim()) return;
+        if (!topic.trim() || !schoolId) return;
         setIsLearning(true);
         setShowAnswer(false);
         setCurrentLesson(null);
 
         try {
-            const result = await generateElaLessonAction({ topic, grade: 'JHS 1' });
+            const result = await generateElaLessonAction({ topic, grade: 'JHS 1', schoolId });
             
             if (result.success && result.data) {
                 setCurrentLesson(result.data);
@@ -90,10 +92,10 @@ function ElaExplorerTab() {
                     });
                 }
             } else {
-                toast({ variant: 'destructive', title: "AI Error", description: "Could not generate lesson." });
+                toast({ variant: 'destructive', title: "AI Error", description: result.error || "Could not generate lesson." });
             }
-        } catch (e) {
-             toast({ variant: 'destructive', title: "Error", description: "Something went wrong." });
+        } catch (e: any) {
+             toast({ variant: 'destructive', title: "Error", description: e.message || "Something went wrong." });
         } finally {
             setIsLearning(false);
         }
@@ -467,6 +469,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
     const [answers, setAnswers] = useState<Record<number, string>>({});
     const [isGrading, setIsGrading] = useState(false); // Loading state for AI
     const [gradingResult, setGradingResult] = useState<any>(null); // Store AI results
+    const { schoolId } = useCurrentSchool();
     
     const firestore = useFirestore();
     const { user } = useUser();
@@ -474,6 +477,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
     if (!passage) return null;
 
     const handleSubmit = async () => {
+        if (!schoolId) return;
         setIsGrading(true);
         
         try {
@@ -481,7 +485,8 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
             const result = await evaluateReadingSubmissionAction({
                 passageText: passage.passage_text,
                 questions: passage.question_set,
-                studentAnswers: answers
+                studentAnswers: answers,
+                schoolId: schoolId,
             });
 
             if (!result.success || !result.data) {
@@ -508,8 +513,6 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
             }
         } catch (e) {
             console.error("Error:", e);
-            // Fallback to simple local grading if AI fails? 
-            // For now, just alert.
             alert("Could not connect to AI Grader. Please try again.");
         } finally {
             setIsGrading(false);
@@ -732,6 +735,7 @@ function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingCh
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
     
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [aiResult, setAiResult] = useState<any>(null); // Store the report card
@@ -742,7 +746,7 @@ function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingCh
     });
 
     async function onSubmit(values: { submission_text: string }) {
-        if (!user || !firestore) return;
+        if (!user || !firestore || !schoolId) return;
         setIsSubmitting(true);
 
         try {
@@ -750,7 +754,8 @@ function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingCh
             const evaluation = await evaluateWritingAction({
                 prompt: challenge.prompt,
                 studentText: values.submission_text,
-                type: challenge.challengeType
+                type: challenge.challengeType,
+                schoolId: schoolId,
             });
 
             const feedbackData = evaluation.success && evaluation.data ? evaluation.data : null;
@@ -1016,213 +1021,6 @@ function WritingSubmissionTab() {
                 setOpen={setIsWorkspaceOpen} 
             />
         </>
-    );
-}
-
-// --- Teacher/Admin Management Components ---
-function AiPassageGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean) => void; onSuccess: () => void; }) {
-  const firestore = useFirestore();
-  const { toast } = useToast();
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  
-  const [topic, setTopic] = useState('');
-  const [readingLevel, setReadingLevel] = useState('Grade 9');
-  const [numQuestions, setNumQuestions] = useState(3);
-  const [selectedClassId, setSelectedClassId] = useState<string>(''); // New state for class selection
-
-  const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
-
-  const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
-
-  async function onGenerate() {
-    if (!topic) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Please enter a topic.' });
-        return;
-    }
-    setIsGenerating(true);
-    setGeneratedPassage(null);
-    toast({ title: 'Generating Passage...', description: 'Please wait while the AI writes your passage and questions.' });
-
-    try {
-      const result = await generateReadingPassage({
-        topic: topic,
-        reading_level: readingLevel,
-        numQuestions: numQuestions,
-      });
-      
-      const passageData = { ...result, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: [], type: 'Short Answer' as const})), classId: '' };
-      setGeneratedPassage(passageData);
-
-      toast({ title: 'Passage Generated!', description: 'Review the content and select a class to save.' });
-    } catch (error) {
-      console.error('Error generating passage:', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'An AI error occurred while creating the passage.' });
-    } finally {
-      setIsGenerating(false);
-    }
-  }
-
-  async function onSave() {
-    if (!generatedPassage || !selectedClassId || !firestore) { // Check for selected class
-      toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.' });
-      return;
-    }
-    setIsSaving(true);
-    const dataToSave = {
-        ...generatedPassage,
-        classId: selectedClassId, // Save with the selected classId
-      };
-
-    addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), dataToSave)
-    .then(() => {
-        toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
-        onSuccess();
-        setOpen(false);
-    })
-    .catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-            path: collection(firestore, 'ela_reading_passages').path,
-            operation: 'create',
-            requestResourceData: dataToSave,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-    })
-    .finally(() => setIsSaving(false));
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="space-y-4 p-4 border rounded-md">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label>Topic</Label>
-            <Input placeholder="e.g., The Amazon Rainforest" value={topic} onChange={(e) => setTopic(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label>Reading Level</Label>
-            <Input placeholder="e.g., Grade 9" value={readingLevel} onChange={(e) => setReadingLevel(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label># of Questions</Label>
-            <Input type="number" min={1} max={5} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} />
-          </div>
-        </div>
-        <Button type="button" onClick={onGenerate} disabled={isGenerating}>
-          {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-          Generate Passage
-        </Button>
-      </div>
-      {generatedPassage && (
-        <Card className="bg-muted/50">
-          <CardHeader><CardTitle>{generatedPassage.title}</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <ScrollArea className="h-60 w-full pr-4">
-              <div className="prose prose-sm max-w-none">
-                <p>{generatedPassage.passage_text}</p>
-                <h4>Comprehension Questions</h4>
-                <ol>
-                  {generatedPassage.question_set.map((q, i) => <li key={i}>{q.question} (Answer: {q.correct_answer_key})</li>)}
-                </ol>
-              </div>
-            </ScrollArea>
-            <div className="space-y-2">
-              <Label>Assign to Class</Label>
-              <Select onValueChange={setSelectedClassId} value={selectedClassId}>
-                <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <Button onClick={onSave} disabled={isSaving || !selectedClassId}>
-              {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Passage
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}
-
-function PassageCreationForm({ setOpen, initialData, classes, onSuccess }: { setOpen: (open: boolean) => void; initialData?: ElaReadingPassage; classes: Class[] | undefined; onSuccess: () => void; }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const form = useForm<z.infer<typeof elaReadingPassageSchema>>({
-        resolver: zodResolver(elaReadingPassageSchema),
-        defaultValues: initialData || { title: '', passage_text: '', reading_level: '', classId: '', question_set: [{ question: '', type: 'Short Answer', options: [], correct_answer_key: '' }] }
-    });
-
-    const { fields, append, remove } = useFieldArray({
-        control: form.control,
-        name: "question_set"
-    });
-
-    async function onSubmit(values: z.infer<typeof elaReadingPassageSchema>) {
-        if(!firestore) return;
-        setIsSubmitting(true);
-        const action = initialData ? updateDocumentNonBlocking(doc(firestore, 'ela_reading_passages', initialData.id), values) : addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), values);
-        
-        action
-        .then(() => {
-            toast({ title: 'Success', description: `Passage ${initialData ? 'updated' : 'added'}.` });
-            onSuccess();
-            setOpen(false);
-        })
-        .catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-                path: initialData ? doc(firestore, 'ela_reading_passages', initialData.id).path : collection(firestore, 'ela_reading_passages').path,
-                operation: initialData ? 'update' : 'create',
-                requestResourceData: values,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-        })
-        .finally(() => setIsSubmitting(false));
-    }
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                 <ScrollArea className="h-[60vh] w-full pr-4">
-                    <div className="space-y-4">
-                         <FormField control={form.control} name="classId" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Assign to Class</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
-                                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                                </Select><FormMessage/>
-                            </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="title" render={({ field }) => (
-                            <FormItem><FormLabel>Passage Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="reading_level" render={({ field }) => (
-                            <FormItem><FormLabel>Reading Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="passage_text" render={({ field }) => (
-                            <FormItem><FormLabel>Passage Text</FormLabel><FormControl><Textarea rows={8} {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-
-                        <div className="space-y-4">
-                            <h4 className="font-semibold">Comprehension Questions</h4>
-                            {fields.map((field, index) => (
-                                <div key={field.id} className="p-4 border rounded-md space-y-3 bg-muted/50">
-                                    <FormField control={form.control} name={`question_set.${index}.question`} render={({ field }) => (
-                                        <FormItem><FormLabel>Question {index + 1}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                                    )} />
-                                     <FormField control={form.control} name={`question_set.${index}.correct_answer_key`} render={({ field }) => (
-                                        <FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                                    )} />
-                                    <Button type="button" variant="destructive" size="sm" onClick={() => remove(index)}>Remove Question</Button>
-                                </div>
-                            ))}
-                        </div>
-                        <Button type="button" variant="outline" size="sm" onClick={() => append({ question: '', type: 'Short Answer', options: [], correct_answer_key: '' })}>Add Question</Button>
-                    </div>
-                </ScrollArea>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {initialData ? 'Save Changes' : 'Add Passage'}</Button>
-            </form>
-        </Form>
     );
 }
 
