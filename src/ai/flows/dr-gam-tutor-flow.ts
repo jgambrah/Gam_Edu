@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -16,45 +17,54 @@ const ChatInputSchema = z.object({
 
 export async function generateDrGamResponse(input: z.infer<typeof ChatInputSchema>) {
   try {
+    // 1. Credit Check
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {
-      return { success: false, text: creditResult.error || "You are out of AI Credits." };
+      return { success: false, text: creditResult.error || "You are out of AI Sparks." };
     }
 
+    // 2. Persona Setup
     const systemInstruction = `
       You are Dr. Gam, a magical, friendly AI teacher for students of all ages.
-      
-      ### YOUR CORE INSTRUCTIONS:
-      1.  **STARTING THE CLASS**: Your first message is always a warm greeting, asking the student what they want to learn.
-      2.  **ADAPTIVE TEACHING**: You can teach anything from simple ABCs and 123s to complex topics like Science, History, Economics, and Accounting. Adjust your language to be simple for young kids and more advanced for older students.
-      3.  **VISUALS**: To display something on the whiteboard, end your response with the command "SHOW BOARD: [THING TO SHOW]". For example: "SHOW BOARD: [A diagram of a plant cell]". Be creative!
-      4.  **TONE**: Always be friendly, patient, encouraging, and speak ONLY in English.
-      5.  **CONTEXT**: Use the conversation history to understand the flow of the lesson.
+      1. STARTING: Greet the student warmly.
+      2. ADAPTIVE: Simple English for kids, advanced for adults.
+      3. VISUALS: End with "SHOW BOARD: [Concept]" to draw on the board.
+      4. TONE: Encouraging, patient, and ONLY English.
     `;
 
-    // Combine the existing history with the new user message for the prompt
-    const fullPrompt = [
-        ...input.history,
-        { role: 'user' as const, parts: [{ text: input.message }] }
+    // 3. Proper Message Formatting for Genkit
+    // We combine history and the new message into the 'messages' array
+    const conversationMessages: any[] = [
+      ...input.history,
+      { role: 'user', parts: [{ text: input.message }] }
     ];
 
+    // 4. The AI Call (Updated Model Name)
     const response = await ai.generate({
-      model: 'googleai/gemini-1.5-flash-preview',
-      system: systemInstruction, // Use the system instruction for persona
-      prompt: fullPrompt, // Pass the full conversation history
-      config: { temperature: 0.5 }, 
+      model: 'googleai/gemini-1.5-flash', // Use stable model, NOT preview
+      system: systemInstruction,
+      messages: conversationMessages, // Use 'messages' for history, NOT 'prompt'
+      config: { 
+        temperature: 0.7,
+        maxOutputTokens: 1000, 
+      }, 
     });
 
-    const text = response.text;
-    
-    return { success: true, text: text };
+    if (!response || !response.text) {
+      throw new Error("AI returned an empty response.");
+    }
+
+    return { success: true, text: response.text };
 
   } catch (error: any) {
-    console.error("Dr. Gam Tutor Error:", error);
+    // This logs the ACTUAL error to your Vercel/Firebase logs
+    console.error("CRITICAL BRAIN ERROR:", error.message);
+    
+    // This returns the actual error to the UI so you can see it while debugging
     return { 
       success: false, 
-      text: "I seem to have lost my connection. Could you please ask that again?",
-      error: error.message 
+      text: "Dr. Gam is a bit tired. Let me try that again.",
+      error: error.message // This helps us see the real error in the toast
     };
   }
 }
