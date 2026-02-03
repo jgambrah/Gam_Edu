@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 import { decode, decodeAudioData, createBlob } from './services/audio';
 import { generateLessonImage } from './services/gemini';
@@ -141,7 +140,6 @@ const TutorSession: React.FC = () => {
     console.log('🔑 API KEY:', process.env.NEXT_PUBLIC_GEMINI_API_KEY ? '✅ EXISTS' : '❌ MISSING');
     console.log('🚀 Starting session...');
     
-    // Check if API key exists
     if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
       toast({
         variant: 'destructive',
@@ -152,7 +150,6 @@ const TutorSession: React.FC = () => {
       return;
     }
 
-    // Check if school data is loaded
     if (isLoadingSchool) {
       toast({
         title: 'Loading...',
@@ -161,36 +158,20 @@ const TutorSession: React.FC = () => {
       console.log('⏳ School data still loading');
       return;
     }
+    
+    // CREDIT CHECK & DEDUCTION
+    const requiredCredits = 5; // Entry cost for session
+    const hasSufficientCredits = await saasService.deductCredits(requiredCredits, "LiveClassroom_SessionStart");
 
-    // Check if SAAS service is initialized
-    const session = saasService.getSession();
-    console.log('💰 Current credits:', session?.credits);
-    
-    if (!session) {
-      toast({
-        variant: 'destructive',
-        title: 'Not Initialized',
-        description: 'AI credits system not ready. Please refresh the page.'
-      });
-      console.error('❌ SAAS service not initialized');
-      return;
-    }
-
-    // CREDIT CHECK (with fallback)
-    const currentCredits = session.credits || 0;
-    const requiredCredits = 5; // Entry cost
-    
-    console.log(`💳 Checking credits: ${currentCredits} >= ${requiredCredits}`);
-    
-    if (currentCredits < requiredCredits) {
-      toast({
-        variant: 'destructive',
-        title: 'Insufficient Credits',
-        description: `You need ${requiredCredits} AI Sparks to start. You have ${currentCredits}.`
-      });
-      console.warn('⚠️ Insufficient credits');
-      window.dispatchEvent(new CustomEvent('saas-insufficient-credits'));
-      return;
+    if (!hasSufficientCredits) {
+        toast({
+            variant: 'destructive',
+            title: 'Insufficient AI Sparks',
+            description: `You need ${requiredCredits} Sparks to start a live session.`
+        });
+        console.warn('⚠️ Insufficient credits for session start');
+        window.dispatchEvent(new CustomEvent('saas-insufficient-credits'));
+        return;
     }
 
     setIsConnecting(true);
