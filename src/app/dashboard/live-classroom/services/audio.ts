@@ -1,3 +1,4 @@
+
 'use client';
 
 // This is a simplified placeholder implementation for browser environments.
@@ -39,16 +40,17 @@ export const decodeAudioData = async (
   sampleRate: number,
   channels: number
 ): Promise<AudioBuffer> => {
-  try {
-    // For many simple formats, the browser's decodeAudioData can work if wrapped in a proper container.
-    // However, for raw PCM, you'd typically fill the buffer manually.
-    // This is a placeholder showing the structure.
-    return await context.decodeAudioData(bytes.buffer);
-  } catch (error) {
-     console.error("decodeAudioData failed, creating silent buffer as fallback:", error);
-     // Fallback to a silent buffer to prevent playback errors
-     return context.createBuffer(channels, 1, sampleRate);
+  // 16-bit PCM to Float32 conversion
+  const numSamples = bytes.length / 2;
+  const audioBuffer = context.createBuffer(channels, numSamples, sampleRate);
+  const channelData = audioBuffer.getChannelData(0);
+
+  for (let i = 0; i < numSamples; i++) {
+    const intSample = (bytes[i * 2 + 1] << 8) | bytes[i * 2];
+    const signedSample = intSample > 32767 ? intSample - 65536 : intSample;
+    channelData[i] = signedSample / 32768.0; // Normalize for speakers
   }
+  return audioBuffer;
 };
 
 /**
