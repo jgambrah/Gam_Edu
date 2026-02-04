@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useCallback } from 'react';
@@ -78,7 +79,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {children}
           </main>
         </div>
-        <AiChat />
+        {/* <AiChat /> */}
         <SchoolSetupWizard />
       </SidebarInset>
     </SidebarProvider>
