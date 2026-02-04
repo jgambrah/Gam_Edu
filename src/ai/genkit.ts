@@ -1,11 +1,12 @@
 import { genkit } from 'genkit';
-import { googleAI } from '@genkit-ai/google-genai';
-
-// We wrap the API key check to ensure it never returns "undefined" to the plugin
-const safeApiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "missing_key";
+import { googleAI, gemini15Flash } from '@genkit-ai/googleai';
 
 export const ai = genkit({
   plugins: [
-    googleAI({ apiKey: safeApiKey }),
+    googleAI({ 
+      // Manually map your key name here
+      apiKey: process.env.GEMINI_API_KEY 
+    })
   ],
+  model: gemini15Flash,
 });
