@@ -15,6 +15,7 @@
     "@blockly/field-multilineinput": "^5.0.0",
     "@genkit-ai/firebase": "^1.27.0",
     "@genkit-ai/google-genai": "^1.27.0",
+    "@genkit-ai/googleai": "^1.28.0",
     "@genkit-ai/next": "^1.20.0",
     "@google/genai": "^0.13.0",
     "@hookform/resolvers": "^4.1.3",
