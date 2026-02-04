@@ -1,10 +1,9 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for generating a personalized study plan.
  */
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 
 const EventSchema = z.object({
@@ -36,15 +35,12 @@ export type GenerateStudyPlanOutput = z.infer<typeof GenerateStudyPlanOutputSche
 
 
 export async function generateStudyPlan(input: GenerateStudyPlanInput): Promise<GenerateStudyPlanOutput> {
-  return generateStudyPlanFlow(input);
-}
-
-
-const prompt = ai.definePrompt({
-  name: 'generateStudyPlanPrompt',
-  input: { schema: GenerateStudyPlanInputSchema },
-  output: { schema: GenerateStudyPlanOutputSchema },
-  prompt: `You are an expert academic advisor. Your task is to create a study plan for a student based on their existing schedule.
+  const ai = getAi();
+  const prompt = ai.definePrompt({
+    name: 'generateStudyPlanPrompt',
+    input: { schema: GenerateStudyPlanInputSchema },
+    output: { schema: GenerateStudyPlanOutputSchema },
+    prompt: `You are an expert academic advisor. Your task is to create a study plan for a student based on their existing schedule.
 
 RULES:
 1.  Analyze the list of events provided: {{{json events}}}.
@@ -56,16 +52,8 @@ RULES:
 7.  Do not schedule study blocks on weekends if possible.
 8.  The title of the focus block should clearly state what to study, e.g., "Prepare for 'Biology Paper'".
 9.  Return a list of only the new "Focus Block" events.`,
-});
+  });
 
-const generateStudyPlanFlow = ai.defineFlow(
-  {
-    name: 'generateStudyPlanFlow',
-    inputSchema: GenerateStudyPlanInputSchema,
-    outputSchema: GenerateStudyPlanOutputSchema,
-  },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
-  }
-);
+  const { output } = await prompt(input);
+  return output!;
+}

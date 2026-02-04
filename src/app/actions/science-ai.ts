@@ -1,9 +1,10 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit'; 
+import { getAi } from '@/ai/genkit'; 
 
 export async function generateScienceFactAction(topic?: string) {
+  const ai = getAi();
   try {
     const promptText = topic 
       ? `Tell me a fascinating scientific fact about ${topic} for a curious student. Keep it under 50 words.`

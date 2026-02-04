@@ -1,7 +1,7 @@
 
 'use server';
 
-import { generate } from '@genkit-ai/ai';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits'; // Import the action
 
@@ -21,6 +21,7 @@ const TimetableSchema = z.object({
 
 export async function generateTimetable(input: any) {
   console.log("🚀 AI Timetable Generation Started...");
+  const ai = getAi();
 
   try {
     // The credit check is now done on the client-side *before* calling this.
@@ -57,7 +58,7 @@ export async function generateTimetable(input: any) {
     `;
 
     // 2. Call AI with Timeout Config
-    const response = await generate({
+    const response = await ai.generate({
       model: 'googleai/gemini-2.5-pro',
       prompt: prompt,
       output: {
@@ -75,7 +76,7 @@ export async function generateTimetable(input: any) {
     }
 
     // 3. Post-Process Data
-    const rawData = response.output();
+    const rawData = response.output;
     const fixedTimetable = rawData?.timetable.map((entry: any) => {
         const matchSlot = input.timeSlots.find((ts: any) => 
             ts.day === entry.day && ts.startTime === entry.startTime

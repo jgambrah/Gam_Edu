@@ -1,7 +1,7 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits'; // Import
 
@@ -22,6 +22,7 @@ const ReconciliationSchema = z.object({
 });
 
 export async function autoReconcileFlow(bankLines: BankTx[], ledgerLines: InternalTx[], schoolId: string) {
+  const ai = getAi();
   try {
     // We strictly verify the inputs aren't empty
     if (bankLines.length === 0 || ledgerLines.length === 0) {

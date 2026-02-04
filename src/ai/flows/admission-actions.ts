@@ -1,7 +1,7 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 
 const RecommendationSchema = z.object({
@@ -13,6 +13,7 @@ export async function recommendClassPlacementAction(
     student: { name: string; age: number; gender: string; desiredGrade: string },
     availableClasses: { id: string; name: string; capacity: number; currentStudents: number }[]
 ) {
+  const ai = getAi();
   try {
     const prompt = `
       You are a School Admission Administrator AI.

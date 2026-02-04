@@ -1,7 +1,7 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 
 // --- SHARED STUDENT CATEGORIES ---
@@ -32,6 +32,7 @@ const EnglishSchema = z.object({
 });
 
 export async function generateSeniorEnglish(context: z.infer<typeof AIContextSchema>) {
+  const ai = getAi();
   try {
     const prompt = `Generate a grade-appropriate literary passage for a student in ${context.gradeLevel}.
     Topic: "${context.topic}"
@@ -56,6 +57,7 @@ const MathSchema = z.object({
 });
 
 export async function generateSeniorMath(context: z.infer<typeof AIContextSchema>) {
+  const ai = getAi();
   try {
     const prompt = `Act as a Math Professor for ${context.gradeLevel} students.
     Generate a question about: ${context.topic}.
@@ -83,6 +85,7 @@ const LabSchema = z.object({
 });
 
 export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>) {
+  const ai = getAi();
   try {
     const prompt = `Design a science lab for ${context.gradeLevel} students.
     Topic: "${context.topic}"
@@ -108,6 +111,7 @@ export async function getPythonTutorHelp(context: {
   userCode: string, 
   question: string 
 }) {
+  const ai = getAi();
   try {
     const prompt = `You are a professional Python Tutor for a student in ${context.phase}.
     Current Lesson: ${context.lesson}

@@ -3,7 +3,7 @@
  * @fileOverview An AI assistant for the GAM Edu platform.
  */
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 
 // Define History Schema
@@ -31,6 +31,7 @@ export type CampusAssistantOutput = z.infer<typeof CampusAssistantOutputSchema>;
 
 // --- EXPORT THE ACTION ---
 export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
+    const ai = getAi();
     const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
     const isStudent = input.role === 'Student';
     

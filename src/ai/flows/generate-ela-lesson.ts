@@ -1,7 +1,7 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
@@ -17,6 +17,7 @@ const ElaLessonSchema = z.object({
 export type GeneratedElaLesson = z.infer<typeof ElaLessonSchema>;
 
 export async function generateElaLessonAction(input: { topic: string, grade: string, schoolId: string }): Promise<{ success: boolean; data?: GeneratedElaLesson, error?: string }> {
+  const ai = getAi();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 3);
     if (!creditResult.success) {

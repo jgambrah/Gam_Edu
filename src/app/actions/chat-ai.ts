@@ -1,10 +1,11 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { checkAndSpendCredits } from './credits';
 
 export async function chatAIAction(schoolId: string, message: string) {
+  const ai = getAi();
   if (schoolId) {
       const creditRes = await checkAndSpendCredits(schoolId, 1);
       if (!creditRes.success) return { success: false, text: "Not enough AI credits." };

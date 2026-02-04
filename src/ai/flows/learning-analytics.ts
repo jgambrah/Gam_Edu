@@ -1,7 +1,7 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
@@ -29,6 +29,7 @@ const AnalysisOutputSchema = z.object({
 });
 
 export async function generateLearningInsights(input: { classData: any[], schoolId: string }) {
+  const ai = getAi();
   try {
     // Note: The credit check is now done on the client-side *before* calling this.
     // However, keeping a server-side check is a good security practice.

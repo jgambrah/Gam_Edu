@@ -8,8 +8,8 @@
  * - SummarizeSchoolNoticesOutput - The return type for the summarizeSchoolNotices function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { getAi } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const SummarizeSchoolNoticesInputSchema = z.object({
   announcements: z
@@ -34,26 +34,16 @@ export type SummarizeSchoolNoticesOutput = z.infer<
 export async function summarizeSchoolNotices(
   input: SummarizeSchoolNoticesInput
 ): Promise<SummarizeSchoolNoticesOutput> {
-  return summarizeSchoolNoticesFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'summarizeSchoolNoticesPrompt',
-  input: {schema: SummarizeSchoolNoticesInputSchema},
-  output: {schema: SummarizeSchoolNoticesOutputSchema},
-  prompt: `You are an AI assistant tasked with summarizing school announcements for parents. Focus on extracting key information regarding upcoming events, important deadlines, and any actions required from parents. Exclude any information not directly relevant to parents. Keep the summary concise and easy to understand.
+  const ai = getAi();
+  const prompt = ai.definePrompt({
+    name: 'summarizeSchoolNoticesPrompt',
+    input: {schema: SummarizeSchoolNoticesInputSchema},
+    output: {schema: SummarizeSchoolNoticesOutputSchema},
+    prompt: `You are an AI assistant tasked with summarizing school announcements for parents. Focus on extracting key information regarding upcoming events, important deadlines, and any actions required from parents. Exclude any information not directly relevant to parents. Keep the summary concise and easy to understand.
 
 School Announcements: {{{announcements}}}`,
-});
+  });
 
-const summarizeSchoolNoticesFlow = ai.defineFlow(
-  {
-    name: 'summarizeSchoolNoticesFlow',
-    inputSchema: SummarizeSchoolNoticesInputSchema,
-    outputSchema: SummarizeSchoolNoticesOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);
+  const { output } = await prompt(input);
+  return output!;
+}

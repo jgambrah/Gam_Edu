@@ -1,7 +1,7 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 
 // --- 1. TEACHER TOOL: Generate Live Poll ---
@@ -12,6 +12,7 @@ const PollSchema = z.object({
 });
 
 export async function generateLivePollAction(topic: string) {
+  const ai = getAi();
   try {
     const prompt = `
       Create a quick, engaging multiple-choice poll question to check student understanding on the topic: "${topic}".
@@ -38,6 +39,7 @@ const ExplanationSchema = z.object({
 });
 
 export async function explainConceptAction(concept: string) {
+  const ai = getAi();
   try {
     const prompt = `
       A student is confused about the term "${concept}" during a live lecture.

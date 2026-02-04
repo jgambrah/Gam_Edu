@@ -1,6 +1,7 @@
+
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
@@ -19,6 +20,7 @@ const DebateInputSchema = z.object({
 });
 
 export async function generateDebateResponse(input: z.infer<typeof DebateInputSchema>) {
+  const ai = getAi();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 2);
     if (!creditResult.success) {
@@ -70,6 +72,7 @@ const EvaluationSchema = z.object({
 });
 
 export async function evaluateDebateAction(history: z.infer<typeof MessageSchema>[], schoolId: string) {
+  const ai = getAi();
   try {
     const creditResult = await checkAndSpendCredits(schoolId, 2);
     if (!creditResult.success) {

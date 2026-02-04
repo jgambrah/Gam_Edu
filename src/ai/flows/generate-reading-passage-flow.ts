@@ -1,10 +1,9 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for generating reading passages with questions.
  */
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'zod';
 
 const GenerateReadingPassageInputSchema = z.object({
@@ -31,15 +30,12 @@ export type GenerateReadingPassageOutput = z.infer<typeof GenerateReadingPassage
 
 
 export async function generateReadingPassage(input: GenerateReadingPassageInput): Promise<GenerateReadingPassageOutput> {
-  return generateReadingPassageFlow(input);
-}
-
-
-const prompt = ai.definePrompt({
-  name: 'generateReadingPassagePrompt',
-  input: { schema: GenerateReadingPassageInputSchema },
-  output: { schema: GenerateReadingPassageOutputSchema },
-  prompt: `You are an expert curriculum developer specializing in English Language Arts. Your task is to generate a reading passage and a set of comprehension questions based on the provided topic and reading level.
+  const ai = getAi();
+  const prompt = ai.definePrompt({
+    name: 'generateReadingPassagePrompt',
+    input: { schema: GenerateReadingPassageInputSchema },
+    output: { schema: GenerateReadingPassageOutputSchema },
+    prompt: `You are an expert curriculum developer specializing in English Language Arts. Your task is to generate a reading passage and a set of comprehension questions based on the provided topic and reading level.
 
 Topic: {{{topic}}}
 Reading Level: {{{reading_level}}}
@@ -51,16 +47,8 @@ Instructions:
 3.  Generate {{{numQuestions}}} short-answer comprehension questions that test understanding of the passage.
 4.  For each question, provide a concise, correct answer based directly on the text.
 5.  For each question, provide a brief explanation for why the answer is correct.`,
-});
+  });
 
-const generateReadingPassageFlow = ai.defineFlow(
-  {
-    name: 'generateReadingPassageFlow',
-    inputSchema: GenerateReadingPassageInputSchema,
-    outputSchema: GenerateReadingPassageOutputSchema,
-  },
-  async (input) => {
-    const { output } = await prompt(input, { model: 'googleai/gemini-2.5-flash' });
-    return output!;
-  }
-);
+  const { output } = await prompt(input, { model: 'googleai/gemini-2.5-flash' });
+  return output!;
+}
