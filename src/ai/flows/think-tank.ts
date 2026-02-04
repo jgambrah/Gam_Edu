@@ -1,12 +1,20 @@
 
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { MOCK_CROSSWORD_PUZZLES } from '@/lib/data';
 
-// --- EXISTING PARADOX CODE (Keep this) ---
+// --- HELPER FOR LOGGING ---
+const logError = (context: string, error: any) => {
+  console.error(`[Think Tank - ${context}]:`, error);
+  // This helps you see the actual Zod validation error in your server logs
+  if (error.name === 'ZodError') {
+    console.error('Validation Errors:', error.errors);
+  }
+};
+
+// --- EXISTING PARADOX CODE ---
 const ParadoxSchema = z.object({
   question: z.string(),
   answer: z.string(),
@@ -19,20 +27,26 @@ export async function generateDailyParadox(input: { targetGroup: string }) {
   try {
     let complexityInstruction = "";
     switch (input.targetGroup) {
-        case 'Novice (Basic 1-3)': complexityInstruction = "Target audience: Kids 6-8. Simple, fun logic. E.g. Patterns, animals."; break;
-        case 'Apprentice (Basic 4-6)': complexityInstruction = "Target audience: Kids 9-11. Wordplay, math logic."; break;
-        case 'Scholar (JHS)': complexityInstruction = "Target audience: Teens 12-15. Lateral thinking, detective riddles."; break;
-        case 'Master (SHS)': complexityInstruction = "Target audience: Young Adults 16+. Complex paradoxes, philosophy."; break;
-        default: complexityInstruction = "General audience.";
+        case 'Novice (Basic 1-3)': complexityInstruction = "Target: Kids 6-8. Use simple animals/colors logic."; break;
+        case 'Apprentice (Basic 4-6)': complexityInstruction = "Target: Kids 9-11. Use wordplay or basic math logic."; break;
+        case 'Scholar (JHS)': complexityInstruction = "Target: Teens 12-15. Use lateral thinking or detective riddles."; break;
+        case 'Master (SHS)': complexityInstruction = "Target: Young Adults 16+. Use philosophical or complex scientific paradoxes."; break;
+        default: complexityInstruction = "General audience logic.";
     }
 
     const { output } = await ai.generate({
-      prompt: `Generate a logic puzzle/riddle. ${complexityInstruction} Output JSON.`,
+      prompt: `Generate a logic puzzle. ${complexityInstruction}. 
+               IMPORTANT: Difficulty MUST be exactly one of: 'Easy', 'Medium', or 'Hard'. 
+               Output strictly JSON matching the requested schema.`,
       output: { schema: ParadoxSchema },
     });
+
     if (!output) throw new Error("AI returned no data.");
     return { ...output, targetGroup: input.targetGroup };
-  } catch (e: any) { throw new Error(e.message); }
+  } catch (e: any) { 
+    logError("Daily Paradox", e);
+    throw new Error("Failed to generate paradox. Please try again."); 
+  }
 }
 
 // --- DEBATE ACTION ---
@@ -45,106 +59,64 @@ export async function generateDebateTopic(input: { targetGroup: string }) {
   try {
     let instruction = "";
     switch (input.targetGroup) {
-        case 'Novice (Basic 1-3)':
-            instruction = "Target: Ages 6-8. Topics: Fun preferences (e.g., 'Is Summer better than Winter?', 'Cats vs Dogs'). Simple explanations.";
-            break;
-        case 'Apprentice (Basic 4-6)':
-            instruction = "Target: Ages 9-11. Topics: School/Home rules (e.g., 'Should homework be banned?', 'Uniforms').";
-            break;
-        case 'Scholar (JHS)':
-            instruction = "Target: Ages 12-15. Topics: Social issues, Technology (e.g., 'Social Media age limits', 'AI in schools').";
-            break;
-        case 'Master (SHS)':
-            instruction = "Target: Ages 16-19. Topics: Global policy, Ethics, Philosophy (e.g., 'Universal Basic Income', 'Genetic Engineering').";
-            break;
-        default:
-            instruction = "General topics.";
+        case 'Novice (Basic 1-3)': instruction = "Ages 6-8. Simple 'A vs B' topics."; break;
+        case 'Apprentice (Basic 4-6)': instruction = "Ages 9-11. School/Home rules."; break;
+        case 'Scholar (JHS)': instruction = "Ages 12-15. Tech/Social media issues."; break;
+        case 'Master (SHS)': instruction = "Ages 16-19. Ethics/Global policy."; break;
+        default: instruction = "General debate topic.";
     }
 
-    const prompt = `
-      Generate a debate topic.
-      ${instruction}
-      Output strictly JSON with 'topic' (the question) and 'context' (a 1-sentence background).
-    `;
-
     const { output } = await ai.generate({
-      prompt: prompt,
+      prompt: `Generate a debate topic for ${instruction}. Output strictly JSON with 'topic' and 'context'.`,
       output: { schema: DebateSchema },
     });
 
     if (!output) throw new Error("No data returned");
-    
     return { ...output, targetGroup: input.targetGroup };
-    
   } catch (error: any) {
-    console.error("AI Error:", error);
-    throw new Error(error.message);
+    logError("Debate Topic", error);
+    throw new Error("Failed to generate debate topic.");
   }
 }
 
 // --- DEBATE ARENA LOGIC ---
-
-const DebateHistorySchema = z.array(z.object({
-    role: z.enum(['user', 'ai']),
-    content: z.string(),
-}));
-
-const DebateTurnInputSchema = z.object({
-    topic: z.string(),
-    history: DebateHistorySchema,
-    userArgument: z.string(),
-});
-
 const DebateTurnOutputSchema = z.object({
-    rebuttal: z.string().describe("The AI's counter-argument. It should be polite, challenging, and directly address the user's point."),
-    critique: z.string().optional().describe("A brief, constructive critique of the user's argument, pointing out logical fallacies or suggesting improvements. Keep it encouraging."),
+    rebuttal: z.string(),
+    critique: z.string().optional(),
 });
 
-
-export async function runDebateTurn(input: z.infer<typeof DebateTurnInputSchema>): Promise<z.infer<typeof DebateTurnOutputSchema>> {
-    const prompt = `
-        You are a polite but skilled debater. 
-        The topic is: "${input.topic}".
-        
-        This is the conversation so far:
-        ${input.history.map(m => `${m.role}: ${m.content}`).join('\n')}
-        
-        The user has just argued: "${input.userArgument}"
-
-        Your task:
-        1. Acknowledge their point briefly.
-        2. Provide a thoughtful counter-argument or point out a potential logical fallacy in their reasoning to make them think deeper.
-        3. Keep your tone encouraging and educational, not confrontational.
-        4. Provide a short, constructive critique of their argument.
-        
-        IMPORTANT: Your response MUST be a direct rebuttal or counter-point to the user's last argument. Do not get stuck on one point. Move the conversation forward.
-
-        Output strictly JSON.
-    `;
-
+export async function runDebateTurn(input: any) {
     try {
+        const prompt = `
+            Topic: "${input.topic}".
+            History: ${input.history.map((m: any) => `${m.role}: ${m.content}`).join('\n')}
+            User says: "${input.userArgument}"
+            
+            Task: Provide a polite counter-argument (rebuttal) and a brief critique of their logic.
+            Output strictly JSON.
+        `;
+
         const { output } = await ai.generate({
             prompt,
             output: { schema: DebateTurnOutputSchema },
         });
 
-        if (!output) throw new Error("Debate AI returned no data.");
+        if (!output) throw new Error("AI returned no data.");
         return output;
-
     } catch (error: any) {
-        console.error("Debate AI Error:", error);
-        throw new Error(error.message);
+        logError("Debate Turn", error);
+        throw new Error("The AI debater is thinking too hard. Try again.");
     }
 }
 
 // --- DETECTIVE DESK ACTION ---
 const DetectiveSchema = z.object({
-  scenario: z.string().describe("The text, headline, or statement to analyze."),
-  question: z.string().describe("The specific question to ask the student."),
+  scenario: z.string(),
+  question: z.string(),
   caseType: z.enum(['Fact/Opinion', 'Bias Hunter', 'Fallacy Spotter', 'Fake News']),
-  options: z.array(z.string()).describe("Options for the student to choose from."),
+  options: z.array(z.string()),
   correctAnswer: z.string(),
-  explanation: z.string().describe("Why is this the correct answer?"),
+  explanation: z.string(),
 });
 
 export async function generateDetectiveCase(input: { targetGroup: string }) {
@@ -152,25 +124,29 @@ export async function generateDetectiveCase(input: { targetGroup: string }) {
     let instruction = "";
     switch (input.targetGroup) {
         case 'Novice (Basic 1-3)':
-            instruction = "Target: Ages 6-8. Activity: 'Fact vs Opinion'. Generate a simple statement about animals, food, or school. Options: ['Fact', 'Opinion'].";
+            instruction = "Target: Ages 6-8. Activity: 'Fact/Opinion'. Topic: Animals/Food. Options MUST be ['Fact', 'Opinion'].";
             break;
         case 'Apprentice (Basic 4-6)':
-            instruction = "Target: Ages 9-11. Activity: 'Bias Hunter'. Generate a sentence with emotional/loaded language. Ask which word shows bias. Options: [Word A, Word B, Word C].";
+            instruction = "Target: Ages 9-11. Activity: 'Bias Hunter'. Identify an emotional word in a sentence.";
             break;
         case 'Scholar (JHS)':
-            instruction = "Target: Ages 12-15. Activity: 'Fake News Spotter'. Generate a sensationalized headline. Ask if it is Reliable or Suspicious. Options: ['Reliable', 'Suspicious'].";
+            instruction = "Target: Ages 12-15. Activity: 'Fake News'. Headline analysis. Options: ['Reliable', 'Suspicious'].";
             break;
         case 'Master (SHS)':
-            instruction = "Target: Ages 16-19. Activity: 'Fallacy Spotter'. Generate a short argument containing a logical fallacy (Ad Hominem, Strawman, Slippery Slope). Ask to identify the fallacy.";
+            instruction = "Target: Ages 16-19. Activity: 'Fallacy Spotter'. Identify logical fallacies (Strawman, Ad Hominem).";
             break;
         default:
             instruction = "General critical thinking exercise.";
     }
 
     const prompt = `
-      Generate a Critical Thinking 'Detective Case'.
+      Generate a 'Critical Thinking Detective Case'.
       ${instruction}
-      Output strictly JSON.
+      
+      RULES:
+      1. 'caseType' MUST be exactly one of: 'Fact/Opinion', 'Bias Hunter', 'Fallacy Spotter', 'Fake News'.
+      2. 'correctAnswer' MUST be exactly one of the items in the 'options' array.
+      3. Output strictly JSON.
     `;
 
     const { output } = await ai.generate({
@@ -179,49 +155,27 @@ export async function generateDetectiveCase(input: { targetGroup: string }) {
     });
 
     if (!output) throw new Error("No data returned");
-    
     return { ...output, targetGroup: input.targetGroup };
     
   } catch (error: any) {
-    console.error("AI Error:", error);
-    throw new Error(error.message);
+    logError("Detective Case", error);
+    throw new Error("Detective desk is closed for investigation (AI Error).");
   }
 }
 
+// --- CROSSWORD ---
 export async function generateCrosswordAction(topic: string) {
     try {
-        // Return a random puzzle from the mock data
         const randomIndex = Math.floor(Math.random() * MOCK_CROSSWORD_PUZZLES.length);
         const puzzle = MOCK_CROSSWORD_PUZZLES[randomIndex];
-        
-        // Simulate a slight delay to feel like generation
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        // If a topic was provided, customize the title slightly
         if (topic && puzzle.topic.toLowerCase() !== 'general') {
-            return {
-                ...puzzle,
-                title: `${topic} & ${puzzle.title}`
-            };
+            return { ...puzzle, title: `${topic} & ${puzzle.title}` };
         }
-        
         return puzzle;
-
     } catch (error: any) {
-        console.error('Puzzle selection failed:', error);
-        throw new Error(`Could not load puzzle: ${error.message}.`);
+        logError("Crossword", error);
+        throw new Error("Could not load puzzle.");
     }
 }
-    
-
-    
-
-
-
-
-
-
-
-
-
-
