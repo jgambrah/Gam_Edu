@@ -1,9 +1,10 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for generating practice problems for various subjects.
  */
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 const GeneratePracticeProblemsInputSchema = z.object({
@@ -28,14 +29,11 @@ const GeneratePracticeProblemsOutputSchema = z.object({
 
 export type GeneratePracticeProblemsOutput = z.infer<typeof GeneratePracticeProblemsOutputSchema>;
 
-
-export async function generatePracticeProblems(input: GeneratePracticeProblemsInput): Promise<GeneratePracticeProblemsOutput> {
-  const ai = getAi();
-  const prompt = ai.definePrompt({
-    name: 'generatePracticeProblemsPrompt',
-    input: { schema: GeneratePracticeProblemsInputSchema },
-    output: { schema: GeneratePracticeProblemsOutputSchema },
-    prompt: `You are an expert educator creating practice questions for students. Generate a set of multiple-choice questions based on the provided details.
+const prompt = ai.definePrompt({
+  name: 'generatePracticeProblemsPrompt',
+  input: { schema: GeneratePracticeProblemsInputSchema },
+  output: { schema: GeneratePracticeProblemsOutputSchema },
+  prompt: `You are an expert educator creating practice questions for students. Generate a set of multiple-choice questions based on the provided details.
 
 Subject: {{{subject}}}
 Topic: {{{topic}}}
@@ -48,8 +46,10 @@ For each question, you must:
 3.  Identify the single correct answer.
 4.  Provide a brief explanation for why the answer is correct.
 5.  Ensure the question is appropriate for a student practice session, not a formal graded quiz.`,
-  });
+});
 
+
+export async function generatePracticeProblems(input: GeneratePracticeProblemsInput): Promise<GeneratePracticeProblemsOutput> {
   const { output } = await prompt(input, { model: 'googleai/gemini-2.5-flash' });
   return output!;
 }
