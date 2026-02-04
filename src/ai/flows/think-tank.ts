@@ -2,7 +2,7 @@
 
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { MOCK_CROSSWORD_PUZZLES } from '@/lib/data';
 
@@ -16,7 +16,6 @@ const ParadoxSchema = z.object({
 });
 
 export async function generateDailyParadox(input: { targetGroup: string }) {
-  const ai = getAi();
   try {
     let complexityInstruction = "";
     switch (input.targetGroup) {
@@ -43,7 +42,6 @@ const DebateSchema = z.object({
 });
 
 export async function generateDebateTopic(input: { targetGroup: string }) {
-  const ai = getAi();
   try {
     let instruction = "";
     switch (input.targetGroup) {
@@ -104,7 +102,6 @@ const DebateTurnOutputSchema = z.object({
 
 
 export async function runDebateTurn(input: z.infer<typeof DebateTurnInputSchema>): Promise<z.infer<typeof DebateTurnOutputSchema>> {
-    const ai = getAi();
     const prompt = `
         You are a polite but skilled debater. 
         The topic is: "${input.topic}".
@@ -151,7 +148,6 @@ const DetectiveSchema = z.object({
 });
 
 export async function generateDetectiveCase(input: { targetGroup: string }) {
-  const ai = getAi();
   try {
     let instruction = "";
     switch (input.targetGroup) {
@@ -219,6 +215,7 @@ export async function generateCrosswordAction(topic: string) {
     
 
     
+
 
 
 
