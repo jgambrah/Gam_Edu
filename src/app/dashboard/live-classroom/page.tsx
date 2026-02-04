@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
@@ -137,169 +138,96 @@ const TutorSession: React.FC = () => {
   };
 
   const startSession = async () => {
-    console.log('🔑 API KEY:', process.env.NEXT_PUBLIC_GEMINI_API_KEY ? '✅ EXISTS' : '❌ MISSING');
-    console.log('🚀 Starting session...');
-    
-    if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
-      toast({
-        variant: 'destructive',
-        title: 'Configuration Error',
-        description: 'Gemini API key is missing. Please contact support.'
-      });
-      console.error('❌ Missing GEMINI_API_KEY');
-      return;
-    }
+    console.log("--- WAKING UP DR. GAM ---");
 
-    if (isLoadingSchool) {
-      toast({
-        title: 'Loading...',
-        description: 'Please wait while we load your school data.'
-      });
-      console.log('⏳ School data still loading');
-      return;
-    }
-    
-    // CREDIT CHECK & DEDUCTION
-    const requiredCredits = 5; // Entry cost for session
-    const hasSufficientCredits = await saasService.deductCredits(requiredCredits, "LiveClassroom_SessionStart");
-
-    if (!hasSufficientCredits) {
-        toast({
-            variant: 'destructive',
-            title: 'Insufficient AI Sparks',
-            description: `You need ${requiredCredits} Sparks to start a live session.`
-        });
-        console.warn('⚠️ Insufficient credits for session start');
-        window.dispatchEvent(new CustomEvent('saas-insufficient-credits'));
-        return;
-    }
-
-    setIsConnecting(true);
-    console.log('🔌 Connecting to Gemini...');
-    
-    const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
-    
+    // 1. THE MAGIC KEY: Wake up the Audio Engine
+    // Browsers sleep until we do this!
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     }
     
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume();
+      console.log("Audio Engine: AWAKE AND LISTENING");
+    }
+
+    // 2. CHECK THE KEY
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (!apiKey) {
+      alert("Error: Dr. GAM can't find his API Key. Please check your .env file!");
+      return;
+    }
+
+    setIsConnecting(true);
+    
     try {
-      console.log('🎤 Requesting microphone access...');
+      const ai = new GoogleGenAI(apiKey);
+      
+      // 3. GET MICROPHONE
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       micStreamRef.current = stream;
-      console.log('✅ Microphone access granted');
-      
+
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
+      // 4. THE CONNECTION (Using the stable Live Model)
       const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+        model: 'gemini-2.0-flash-exp', 
         callbacks: {
           onopen: () => {
-            console.log('✅ Session opened');
+            console.log("DR. GAM IS LIVE!");
             setIsConnecting(false);
             setIsActive(true);
-            
-            toast({
-              title: 'Connected!',
-              description: 'You can now talk to Dr. GAM!'
-            });
             
             const source = inputAudioContext.createMediaStreamSource(stream);
             const scriptProcessor = inputAudioContext.createScriptProcessor(4096, 1, 1);
             scriptProcessorRef.current = scriptProcessor;
             
-            scriptProcessor.onaudioprocess = async (e) => {
+            scriptProcessor.onaudioprocess = (e) => {
               if (!sessionRef.current || !isActive) return;
               const inputData = e.inputBuffer.getChannelData(0);
-              const energy = inputData.reduce((sum, val) => sum + val * val, 0) / inputData.length;
               
-              if (energy > 0.015 && !isUserSpeakingRef.current) {
-                isUserSpeakingRef.current = true;
-                const success = await saasService.deductCredits(AI_COSTS.AI_BUDDY_MSG || 1, "NurseryBloom_DrGAMVoice");
-                if (!success) {
-                  console.warn('⚠️ Failed to deduct credits');
-                  window.dispatchEvent(new CustomEvent('saas-insufficient-credits'));
-                  endSession();
-                  return;
-                }
-              } else if (energy < 0.001) {
-                isUserSpeakingRef.current = false; 
-              }
-
-              if (isActive && sessionRef.current) {
-                const pcmBlob = createBlob(inputData);
-                sessionRef.current.sendRealtimeInput({ media: pcmBlob });
-              }
+              // Send your voice to Dr. GAM
+              const pcmBlob = createBlob(inputData);
+              sessionRef.current.sendRealtimeInput({ media: pcmBlob });
             };
             
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
           },
           onmessage: async (message: LiveServerMessage) => {
+            // WHEN DR. GAM TALKS BACK
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             if (base64 && audioContextRef.current) {
-              nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
+              console.log("DR. GAM IS SPEAKING...");
               const bytes = decode(base64);
               const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
+              
               const source = audioContextRef.current.createBufferSource();
               source.buffer = buffer;
               source.connect(audioContextRef.current.destination);
-              source.start(nextStartTimeRef.current);
-              nextStartTimeRef.current += buffer.duration;
-            }
-
-            if (message.serverContent?.outputTranscription) {
-              const text = message.serverContent.outputTranscription.text;
-              transcriptBufferRef.current = (transcriptBufferRef.current + text).slice(-2000);
-              updateVisualsFromText(transcriptBufferRef.current);
+              
+              // Sync the timing so he doesn't stutter
+              const startTime = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
+              source.start(startTime);
+              nextStartTimeRef.current = startTime + buffer.duration;
             }
           },
-          onerror: (error) => {
-            console.error('❌ Session error:', error);
-            toast({
-              variant: 'destructive',
-              title: 'Connection Error',
-              description: 'Lost connection to Dr. GAM. Please try again.'
-            });
-            endSession();
-          },
-          onclose: () => {
-            console.log('🔌 Session closed');
+          onerror: (err) => {
+            console.error("DR. GAM ERROR:", err);
             endSession();
           },
         },
         config: {
           responseModalities: [Modality.AUDIO],
-          outputAudioTranscription: {},
-          inputAudioTranscription: {}, 
           speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
-          systemInstruction: `You are Dr. GAM, a magical nursery teacher. Use very simple English for 3-year-olds. Your name is Dr. GAM. You are friendly and encouraging. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]". Always identify yourself as Dr. GAM.`,
+          systemInstruction: { parts: [{ text: "Your name is Dr. GAM. You are a magical nursery teacher. Talk in very simple, friendly English. Start by saying 'Hello! I am Dr. GAM, your AI buddy!'" }] }
         }
       });
-      
-      console.log('⏳ Waiting for session to establish...');
       sessionRef.current = await sessionPromise;
-      console.log('✅ Session established');
-      
-    } catch (err: any) {
-      console.error('❌ Error starting session:', err);
+    } catch (err) {
+      console.error("CRITICAL FAILURE:", err);
       setIsConnecting(false);
-      
-      let errorMessage = 'Failed to start session. Please try again.';
-      
-      if (err.name === 'NotAllowedError') {
-        errorMessage = 'Microphone access denied. Please allow microphone access.';
-      } else if (err.message?.includes('API key')) {
-        errorMessage = 'Invalid API key. Please contact support.';
-      }
-      
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: errorMessage
-      });
-      
-      endSession();
+      alert("Could not start session. Make sure you allowed Microphone access!");
     }
   };
 
