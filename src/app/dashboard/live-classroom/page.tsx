@@ -49,6 +49,12 @@ interface VisualState {
 }
 
 const TutorSession: React.FC = () => {
+  // ADD THIS RIGHT AT THE TOP - BEFORE ALL OTHER CODE
+  console.log('🔍 Component Load - Env Check:');
+  console.log('NEXT_PUBLIC_GEMINI_API_KEY exists:', !!process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+  console.log('NEXT_PUBLIC_GEMINI_API_KEY value:', process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+  console.log('First 15 chars:', process.env.NEXT_PUBLIC_GEMINI_API_KEY?.substring(0, 15));
+
   const [isModuleStarted, setIsModuleStarted] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -137,7 +143,7 @@ const TutorSession: React.FC = () => {
     }
   };
 
-  const startSession = async () => {
+const startSession = async () => {
     console.log("--- WAKING UP DR. GAM ---");
 
     // 1. Wake up the Audio Engine
@@ -156,7 +162,7 @@ const TutorSession: React.FC = () => {
       toast({
         variant: "destructive",
         title: "Live Classroom Disabled",
-        description: "The NEXT_PUBLIC_GEMINI_API_KEY is not configured. Please contact your administrator.",
+        description: "API Key not configured",
         duration: 10000,
       });
       setIsConnecting(false);
@@ -174,9 +180,92 @@ const TutorSession: React.FC = () => {
 
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // 4. Connect to Gemini - AWAIT the promise!
-      const session = await ai.live.connect({
+      // 4. Connect to Gemini - Use the promise-returning version
+      const sessionPromise = ai.live.connect({
         model: 'gemini-2.0-flash-exp',
+        callbacks: {
+          onopen: () => {
+            console.log("✅ DR. GAM IS LIVE!");
+            setIsConnecting(false);
+            setIsActive(true);
+            
+            const source = inputAudioContext.createMediaStreamSource(stream);
+            const scriptProcessor = inputAudioContext.createScriptProcessor(4096, 1, 1);
+            scriptProcessorRef.current = scriptProcessor;
+            
+            scriptProcessor.onaudioprocess = (e) => {
+              if (!sessionRef.current) {
+                console.warn('⚠️ Session ref is null, skipping audio send');
+                return;
+              }
+              const inputData = e.inputBuffer.getChannelData(0);
+              const pcmBlob = createBlob(inputData);
+              
+              try {
+                sessionRef.current.sendRealtimeInput({ media: pcmBlob });
+              } catch (err) {
+                console.error('❌ Error sending audio:', err);
+              }
+            };
+            
+            source.connect(scriptProcessor);
+            scriptProcessor.connect(inputAudioContext.destination);
+            console.log('🎤 Microphone connected and listening');
+          },
+          
+          onclose: (event: any) => {
+            console.log("🚪 WebSocket CLOSED");
+            console.log("  Code:", event?.code);
+            console.log("  Reason:", event?.reason);
+            console.log("  Was clean:", event?.wasClean);
+            
+            toast({
+              variant: "destructive",
+              title: "Connection Lost",
+              description: `Dr. GAM disconnected. Code: ${event?.code}`,
+            });
+          },
+
+          onmessage: async (message: LiveServerMessage) => {
+            console.log('📨 Message from Dr. GAM');
+            
+            const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
+            
+            if (base64 && audioContextRef.current) {
+              console.log("🎵 DR. GAM IS SPEAKING...");
+              
+              try {
+                const bytes = decode(base64);
+                const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
+                
+                const source = audioContextRef.current.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContextRef.current.destination);
+                
+                const startTime = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
+                source.start(startTime);
+                nextStartTimeRef.current = startTime + buffer.duration;
+                
+                console.log('✅ Audio playing!');
+              } catch (error) {
+                console.error('❌ Audio playback error:', error);
+              }
+            } else {
+              console.log('⚠️ No audio data in message');
+            }
+          },
+
+          onerror: (err: any) => {
+            console.error("🚨 DR. GAM ERROR:", err);
+            console.error("  Error details:", err);
+            
+            toast({
+              variant: "destructive",
+              title: "Connection Error",
+              description: err?.message || 'Unknown error occurred',
+            });
+          },
+        },
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: { 
@@ -192,90 +281,22 @@ const TutorSession: React.FC = () => {
         }
       });
       
-      // Store the session BEFORE setting up callbacks
-      sessionRef.current = session;
-      console.log("✅ Session created and stored");
-
-      // 5. Setup event listeners AFTER session is created
-      session.on('open', () => {
-        console.log("✅ DR. GAM IS LIVE!");
-        setIsConnecting(false);
-        setIsActive(true);
-        
-        const source = inputAudioContext.createMediaStreamSource(stream);
-        const scriptProcessor = inputAudioContext.createScriptProcessor(4096, 1, 1);
-        scriptProcessorRef.current = scriptProcessor;
-        
-        scriptProcessor.onaudioprocess = (e) => {
-          if (!sessionRef.current) return;
-          const inputData = e.inputBuffer.getChannelData(0);
-          const pcmBlob = createBlob(inputData);
-          
-          try {
-            sessionRef.current.sendRealtimeInput({ media: pcmBlob });
-          } catch (err) {
-            console.error('Error sending audio:', err);
-          }
-        };
-        
-        source.connect(scriptProcessor);
-        scriptProcessor.connect(inputAudioContext.destination);
-      });
-
-      session.on('close', (event: any) => {
-        console.log("🚪 WebSocket CLOSED");
-        console.log("Code:", event?.code);
-        console.log("Reason:", event?.reason);
-        toast({
-          variant: "destructive",
-          title: "Connection Lost",
-          description: `Dr. GAM disconnected: ${event?.reason || 'Unknown reason'}`,
-        });
-      });
-
-      session.on('message', async (message: LiveServerMessage) => {
-        console.log('📨 Message from Dr. GAM:', message);
-        
-        const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
-        
-        if (base64 && audioContextRef.current) {
-          console.log("🎵 DR. GAM IS SPEAKING...");
-          
-          try {
-            const bytes = decode(base64);
-            const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
-            
-            const source = audioContextRef.current.createBufferSource();
-            source.buffer = buffer;
-            source.connect(audioContextRef.current.destination);
-            
-            const startTime = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
-            source.start(startTime);
-            nextStartTimeRef.current = startTime + buffer.duration;
-            
-            console.log('✅ Playing audio!');
-          } catch (error) {
-            console.error('❌ Audio error:', error);
-          }
-        }
-      });
-
-      session.on('error', (err: any) => {
-        console.error("🚨 DR. GAM ERROR:", err);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: err?.message || 'Connection error',
-        });
-      });
+      // CRITICAL: Await and store the session
+      sessionRef.current = await sessionPromise;
+      console.log("✅ Session stored in ref");
       
-    } catch (err) {
+    } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);
+      console.error("  Error name:", err?.name);
+      console.error("  Error message:", err?.message);
+      console.error("  Error stack:", err?.stack);
+      
       setIsConnecting(false);
+      
       toast({
         variant: "destructive",
         title: "Failed to Start",
-        description: "Could not connect to Dr. GAM. Check console for details.",
+        description: err?.message || "Could not connect to Dr. GAM",
       });
     }
   };
@@ -365,3 +386,5 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
+
+    
