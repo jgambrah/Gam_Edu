@@ -167,7 +167,7 @@ const TutorSession: React.FC = () => {
     setIsConnecting(true);
     
     try {
-      // FIXED: Pass apiKey in an options object
+      // CHANGED: Pass apiKey in an options object
       const ai = new GoogleGenAI({ apiKey });
       
       // 3. GET MICROPHONE
@@ -201,12 +201,13 @@ const TutorSession: React.FC = () => {
             scriptProcessor.connect(inputAudioContext.destination);
           },
           onmessage: async (message: LiveServerMessage) => {
-            console.log('📨 Message received from Dr. GAM:', message);
+            console.log('📨 Full message from Dr. GAM:', message);
             
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             
             console.log('🔊 Audio data present:', !!base64);
             console.log('🔊 Audio data length:', base64?.length || 0);
+            console.log('🔊 AudioContext state:', audioContextRef.current?.state);
             
             if (base64 && audioContextRef.current) {
               console.log("🎵 DR. GAM IS SPEAKING...");
@@ -216,7 +217,9 @@ const TutorSession: React.FC = () => {
                 console.log('✅ Decoded bytes:', bytes.length);
                 
                 const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
-                console.log('✅ Audio buffer created:', buffer.duration, 'seconds');
+                console.log('✅ Audio buffer created. Duration:', buffer.duration, 'seconds');
+                console.log('✅ Buffer sample rate:', buffer.sampleRate);
+                console.log('✅ Buffer channels:', buffer.numberOfChannels);
                 
                 const source = audioContextRef.current.createBufferSource();
                 source.buffer = buffer;
@@ -226,12 +229,15 @@ const TutorSession: React.FC = () => {
                 source.start(startTime);
                 nextStartTimeRef.current = startTime + buffer.duration;
                 
-                console.log('✅ Audio playback started at', startTime);
+                console.log('✅ Audio scheduled to play at:', startTime);
+                console.log('✅ Current audio time:', audioContextRef.current.currentTime);
+                
               } catch (error) {
                 console.error('❌ Audio playback error:', error);
               }
             } else {
-              console.log('⚠️ No audio data in message');
+              if (!base64) console.log('⚠️ No audio data in message');
+              if (!audioContextRef.current) console.log('⚠️ AudioContext is null');
             }
           },
           onerror: (err) => {
@@ -338,3 +344,5 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
+
+    
