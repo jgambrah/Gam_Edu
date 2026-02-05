@@ -201,19 +201,37 @@ const TutorSession: React.FC = () => {
             scriptProcessor.connect(inputAudioContext.destination);
           },
           onmessage: async (message: LiveServerMessage) => {
+            console.log('📨 Message received from Dr. GAM:', message);
+            
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
+            
+            console.log('🔊 Audio data present:', !!base64);
+            console.log('🔊 Audio data length:', base64?.length || 0);
+            
             if (base64 && audioContextRef.current) {
-              console.log("DR. GAM IS SPEAKING...");
-              const bytes = decode(base64);
-              const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
+              console.log("🎵 DR. GAM IS SPEAKING...");
               
-              const source = audioContextRef.current.createBufferSource();
-              source.buffer = buffer;
-              source.connect(audioContextRef.current.destination);
-              
-              const startTime = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
-              source.start(startTime);
-              nextStartTimeRef.current = startTime + buffer.duration;
+              try {
+                const bytes = decode(base64);
+                console.log('✅ Decoded bytes:', bytes.length);
+                
+                const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
+                console.log('✅ Audio buffer created:', buffer.duration, 'seconds');
+                
+                const source = audioContextRef.current.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContextRef.current.destination);
+                
+                const startTime = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
+                source.start(startTime);
+                nextStartTimeRef.current = startTime + buffer.duration;
+                
+                console.log('✅ Audio playback started at', startTime);
+              } catch (error) {
+                console.error('❌ Audio playback error:', error);
+              }
+            } else {
+              console.log('⚠️ No audio data in message');
             }
           },
           onerror: (err) => {
@@ -320,4 +338,3 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
-
