@@ -141,7 +141,6 @@ const TutorSession: React.FC = () => {
     console.log("--- WAKING UP DR. GAM ---");
 
     // 1. THE MAGIC KEY: Wake up the Audio Engine
-    // Browsers sleep until we do this!
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     }
@@ -154,7 +153,13 @@ const TutorSession: React.FC = () => {
     // 2. CHECK THE KEY
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     if (!apiKey) {
-      alert("Error: Dr. GAM can't find his API Key. Please check your .env file!");
+      toast({
+        variant: "destructive",
+        title: "Live Classroom Disabled",
+        description: "The NEXT_PUBLIC_GEMINI_API_KEY is not configured. Please contact your administrator.",
+        duration: 10000,
+      });
+      setIsConnecting(false);
       return;
     }
 
@@ -169,7 +174,7 @@ const TutorSession: React.FC = () => {
 
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // 4. THE CONNECTION (Using the stable Live Model)
+      // 4. THE CONNECTION
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.0-flash-exp', 
         callbacks: {
@@ -186,7 +191,6 @@ const TutorSession: React.FC = () => {
               if (!sessionRef.current || !isActive) return;
               const inputData = e.inputBuffer.getChannelData(0);
               
-              // Send your voice to Dr. GAM
               const pcmBlob = createBlob(inputData);
               sessionRef.current.sendRealtimeInput({ media: pcmBlob });
             };
@@ -195,7 +199,6 @@ const TutorSession: React.FC = () => {
             scriptProcessor.connect(inputAudioContext.destination);
           },
           onmessage: async (message: LiveServerMessage) => {
-            // WHEN DR. GAM TALKS BACK
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             if (base64 && audioContextRef.current) {
               console.log("DR. GAM IS SPEAKING...");
@@ -206,7 +209,6 @@ const TutorSession: React.FC = () => {
               source.buffer = buffer;
               source.connect(audioContextRef.current.destination);
               
-              // Sync the timing so he doesn't stutter
               const startTime = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
               source.start(startTime);
               nextStartTimeRef.current = startTime + buffer.duration;
@@ -251,7 +253,6 @@ const TutorSession: React.FC = () => {
                </span>
             </div>
             
-            {/* Debug info */}
             {!isActive && !isConnecting && (
               <div className="mb-4 p-2 bg-white rounded text-xs text-slate-500 w-full">
                 <div>School ID: {schoolId ? '✅' : '❌'}</div>
