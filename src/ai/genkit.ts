@@ -1,4 +1,4 @@
-'use client';
+
 import { genkit } from 'genkit';
 import { googleAI, gemini15Flash } from '@genkit-ai/google-genai';
 
