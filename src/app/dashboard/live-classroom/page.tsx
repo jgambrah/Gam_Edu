@@ -189,9 +189,16 @@ const TutorSession: React.FC = () => {
             const scriptProcessor = inputAudioContext.createScriptProcessor(4096, 1, 1);
             scriptProcessorRef.current = scriptProcessor;
             
+            let audioChunkCount = 0; // Add counter
+            
             scriptProcessor.onaudioprocess = (e) => {
-              if (!sessionRef.current || !isActive) return;
+              if (!sessionRef.current) return;
               const inputData = e.inputBuffer.getChannelData(0);
+              
+              audioChunkCount++;
+              if (audioChunkCount % 100 === 0) { // Log every 100 chunks
+                console.log(`🎤 Sent ${audioChunkCount} audio chunks to Dr. GAM`);
+              }
               
               const pcmBlob = createBlob(inputData);
               sessionRef.current.sendRealtimeInput({ media: pcmBlob });
