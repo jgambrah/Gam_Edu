@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
@@ -16,7 +16,6 @@ const ChatInputSchema = z.object({
 });
 
 export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
-  const ai = getAi();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {

@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits'; // Import the action
 
@@ -21,7 +21,6 @@ const TimetableSchema = z.object({
 
 export async function generateTimetable(input: any) {
   console.log("🚀 AI Timetable Generation Started...");
-  const ai = getAi();
 
   try {
     // The credit check is now done on the client-side *before* calling this.

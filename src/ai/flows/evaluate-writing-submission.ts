@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
@@ -23,7 +23,6 @@ const WritingFeedbackSchema = z.object({
 });
 
 export async function evaluateWritingAction(input: WritingInput) {
-  const ai = getAi();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 5);
     if (!creditResult.success) {

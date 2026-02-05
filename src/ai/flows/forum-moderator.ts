@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 // --- SCHEMA 1: SAFETY CHECK ---
@@ -11,7 +11,6 @@ const SafetySchema = z.object({
 });
 
 export async function validateContentSafety(input: { content: string }) {
-  const ai = getAi();
   try {
     const prompt = `
       Analyze the following text for a school forum.
@@ -46,7 +45,6 @@ export async function generateAIModeratorComment(input: {
   threadContent: string; 
   previousReplies: string; 
 }) {
-  const ai = getAi();
   try {
     const prompt = `
       You are an AI Moderator in a school discussion forum. Your goal is to facilitate healthy discussion.

@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 // 1. Define Schema for ONE question
@@ -25,7 +25,6 @@ export async function generateScienceQuestionAction(input: {
   grade: string; 
   count: number; 
 }) {
-  const ai = getAi();
   try {
     const prompt = `
       Generate ${input.count} unique ${input.difficulty} level multiple-choice science questions about "${input.topic}".

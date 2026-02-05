@@ -3,7 +3,7 @@
  * @fileOverview An AI agent for generating writing challenges.
  */
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 const GenerateWritingChallengeInputSchema = z.object({
@@ -21,21 +21,19 @@ const GenerateWritingChallengeOutputSchema = z.object({
 
 export type GenerateWritingChallengeOutput = z.infer<typeof GenerateWritingChallengeOutputSchema>;
 
-
-export async function generateWritingChallenge(input: GenerateWritingChallengeInput): Promise<GenerateWritingChallengeOutput> {
-  const ai = getAi();
-  const prompt = ai.definePrompt({
-    name: 'generateWritingChallengePrompt',
-    input: { schema: GenerateWritingChallengeInputSchema },
-    output: { schema: GenerateWritingChallengeOutputSchema },
-    prompt: `You are an expert English teacher creating an engaging writing challenge for your students.
+const generateWritingChallengePrompt = ai.definePrompt({
+  name: 'generateWritingChallengePrompt',
+  input: { schema: GenerateWritingChallengeInputSchema },
+  output: { schema: GenerateWritingChallengeOutputSchema },
+  prompt: `You are an expert English teacher creating an engaging writing challenge for your students.
 
 Topic: {{{topic}}}
 Challenge Type: {{{challengeType}}}
 
 Based on the above, generate a suitable title and a detailed, creative prompt for the students to respond to. Ensure the prompt is clear and appropriate for the challenge type.`,
-  });
+});
 
-  const { output } = await prompt(input, { model: 'googleai/gemini-3-flash-preview' });
+export async function generateWritingChallenge(input: GenerateWritingChallengeInput): Promise<GenerateWritingChallengeOutput> {
+  const { output } = await generateWritingChallengePrompt(input, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }

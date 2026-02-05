@@ -1,10 +1,9 @@
 
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 
 export async function generateSMSDraftAction(topic: string, tone: 'formal' | 'urgent' | 'friendly') {
-  const ai = getAi();
   try {
     const prompt = `
       Write a short SMS message for a school sending to parents.

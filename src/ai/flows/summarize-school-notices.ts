@@ -8,7 +8,7 @@
  * - SummarizeSchoolNoticesOutput - The return type for the summarizeSchoolNotices function.
  */
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const SummarizeSchoolNoticesInputSchema = z.object({
@@ -31,19 +31,18 @@ export type SummarizeSchoolNoticesOutput = z.infer<
   typeof SummarizeSchoolNoticesOutputSchema
 >;
 
+const summarizeSchoolNoticesPrompt = ai.definePrompt({
+  name: 'summarizeSchoolNoticesPrompt',
+  input: {schema: SummarizeSchoolNoticesInputSchema},
+  output: {schema: SummarizeSchoolNoticesOutputSchema},
+  prompt: `You are an AI assistant tasked with summarizing school announcements for parents. Focus on extracting key information regarding upcoming events, important deadlines, and any actions required from parents. Exclude any information not directly relevant to parents. Keep the summary concise and easy to understand.
+
+School Announcements: {{{announcements}}}`,
+});
+
 export async function summarizeSchoolNotices(
   input: SummarizeSchoolNoticesInput
 ): Promise<SummarizeSchoolNoticesOutput> {
-  const ai = getAi();
-  const prompt = ai.definePrompt({
-    name: 'summarizeSchoolNoticesPrompt',
-    input: {schema: SummarizeSchoolNoticesInputSchema},
-    output: {schema: SummarizeSchoolNoticesOutputSchema},
-    prompt: `You are an AI assistant tasked with summarizing school announcements for parents. Focus on extracting key information regarding upcoming events, important deadlines, and any actions required from parents. Exclude any information not directly relevant to parents. Keep the summary concise and easy to understand.
-
-School Announcements: {{{announcements}}}`,
-  });
-
-  const { output } = await prompt(input);
+  const { output } = await summarizeSchoolNoticesPrompt(input);
   return output!;
 }

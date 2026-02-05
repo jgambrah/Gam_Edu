@@ -1,12 +1,11 @@
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // --- ACTION 1: INTERPRETER ---
 export async function interpretBlockCodeAction(blocks: string[], schoolId: string) {
-  const ai = getAi();
   try {
     const creditResult = await checkAndSpendCredits(schoolId, 1);
     if (!creditResult.success) {
@@ -65,7 +64,6 @@ export async function getCodeCoachResponseAction(input: {
     missionTitle: string,
     schoolId: string
 }) {
-  const ai = getAi();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {
@@ -107,7 +105,6 @@ export async function getCodeCoachResponseAction(input: {
 
 // --- ACTION 3: CONCEPT EXPLAINER ---
 export async function explainCodingConceptAction(concept: string, schoolId: string) {
-  const ai = getAi();
   try {
     const creditResult = await checkAndSpendCredits(schoolId, 1);
     if (!creditResult.success) {

@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
@@ -17,7 +17,6 @@ const LessonSchema = z.object({
 export type GeneratedLesson = z.infer<typeof LessonSchema>;
 
 export async function generateScienceLessonAction(input: { topic: string, grade: string, schoolId: string }): Promise<{ success: boolean; data?: GeneratedLesson, error?: string }> {
-  const ai = getAi();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 3);
     if (!creditResult.success) {

@@ -4,7 +4,7 @@
  * @fileOverview An AI agent for generating a daily science fact.
  */
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 const GenerateDailyFactOutputSchema = z.object({
@@ -13,12 +13,10 @@ const GenerateDailyFactOutputSchema = z.object({
 
 export type GenerateDailyFactOutput = z.infer<typeof GenerateDailyFactOutputSchema>;
 
-export async function generateDailyFact(): Promise<GenerateDailyFactOutput> {
-  const ai = getAi();
-  const prompt = ai.definePrompt({
-    name: 'generateDailyFactPrompt',
-    output: { schema: GenerateDailyFactOutputSchema },
-    prompt: `Generate a single, fascinating, and concise science fact suitable for a school science club. 
+const generateDailyFactPrompt = ai.definePrompt({
+  name: 'generateDailyFactPrompt',
+  output: { schema: GenerateDailyFactOutputSchema },
+  prompt: `Generate a single, fascinating, and concise science fact suitable for a school science club. 
   The fact should be interesting, easily understandable, and verifiable. 
   Do not add any preamble or extra text, just the fact itself.
   
@@ -27,8 +25,9 @@ export async function generateDailyFact(): Promise<GenerateDailyFactOutput> {
     "fact": "A single bolt of lightning contains enough energy to cook 100,000 pieces of toast."
   }
   `,
-  });
+});
 
-  const { output } = await prompt(undefined, { model: 'googleai/gemini-3-flash-preview' });
+export async function generateDailyFact(): Promise<GenerateDailyFactOutput> {
+  const { output } = await generateDailyFactPrompt(undefined, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }

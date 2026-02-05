@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const GenerateQuizInputSchema = z.object({
@@ -27,13 +27,11 @@ const GenerateQuizOutputSchema = z.object({
 
 export type GenerateQuizOutput = z.infer<typeof GenerateQuizOutputSchema>;
 
-export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQuizOutput> {
-  const ai = getAi();
-  const prompt = ai.definePrompt({
-    name: 'generateQuizPrompt',
-    input: { schema: GenerateQuizInputSchema },
-    output: { schema: GenerateQuizOutputSchema },
-    prompt: `You are an expert educator. Generate a multiple-choice quiz based on the provided details.
+const generateQuizPrompt = ai.definePrompt({
+  name: 'generateQuizPrompt',
+  input: { schema: GenerateQuizInputSchema },
+  output: { schema: GenerateQuizOutputSchema },
+  prompt: `You are an expert educator. Generate a multiple-choice quiz based on the provided details.
 
 Topic: {{{topic}}}
 Target Grade Level: {{{forGradeLevel}}}
@@ -48,8 +46,9 @@ For each question, you must:
 3.  Identify the single correct answer.
 4.  Provide a brief explanation for why that answer is correct.
 5.  Generate a suitable title for the entire quiz based on the topic.`,
-  });
+});
 
-  const { output } = await prompt(input, { model: 'googleai/gemini-3-flash-preview' });
+export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQuizOutput> {
+  const { output } = await generateQuizPrompt(input, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }
