@@ -150,20 +150,22 @@ const TutorSession: React.FC = () => {
       console.log("Audio Engine: AWAKE AND LISTENING");
     }
 
-    // 2. CHECK THE KEY
+    // 2. CHECK THE KEY - FIXED VERSION
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     
-    // ADD THESE DEBUG LINES:
-    console.log('API Key exists:', !!apiKey);
-    console.log('API Key length:', apiKey?.length);
-    console.log('API Key first 10 chars:', apiKey?.substring(0, 10));
-    console.log('Full env check:', process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+    // Debug logging
+    console.log('🔍 API Key Debug:');
+    console.log('  - Exists:', !!apiKey);
+    console.log('  - Length:', apiKey?.length || 0);
+    console.log('  - First 10 chars:', apiKey?.substring(0, 10) || 'N/A');
+    console.log('  - Type:', typeof apiKey);
     
-    if (!apiKey) {
+    if (!apiKey || apiKey.trim() === '' || apiKey.startsWith('${')) {
+      console.error('❌ API Key is invalid or not loaded');
       toast({
         variant: "destructive",
         title: "Live Classroom Disabled",
-        description: "The NEXT_PUBLIC_GEMINI_API_KEY is not configured. Please contact your administrator.",
+        description: `API Key Issue: ${!apiKey ? 'Missing' : apiKey.startsWith('${') ? 'Using variable syntax' : 'Empty'}. Check your .env file and restart the dev server.`,
         duration: 10000,
       });
       setIsConnecting(false);
@@ -173,6 +175,7 @@ const TutorSession: React.FC = () => {
     setIsConnecting(true);
     
     try {
+      console.log('✅ Creating GoogleGenAI instance...');
       const ai = new GoogleGenAI(apiKey);
       
       // 3. GET MICROPHONE
