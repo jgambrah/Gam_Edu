@@ -49,12 +49,6 @@ interface VisualState {
 }
 
 const TutorSession: React.FC = () => {
-  // ADD THIS RIGHT AT THE TOP - BEFORE ALL OTHER CODE
-  console.log('🔍 Component Load - Env Check:');
-  console.log('NEXT_PUBLIC_GEMINI_API_KEY exists:', !!process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-  console.log('NEXT_PUBLIC_GEMINI_API_KEY value:', process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-  console.log('First 15 chars:', process.env.NEXT_PUBLIC_GEMINI_API_KEY?.substring(0, 15));
-
   const [isModuleStarted, setIsModuleStarted] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -159,15 +153,7 @@ const TutorSession: React.FC = () => {
     // 2. CHECK THE KEY
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     
-    console.log('🔑 API Key Check in startSession:');
-    console.log('  Raw value:', apiKey);
-    console.log('  Type:', typeof apiKey);
-    console.log('  Length:', apiKey?.length);
-    console.log('  Truthy:', !!apiKey);
-    console.log('  First 20 chars:', apiKey?.substring(0, 20));
-    
     if (!apiKey) {
-      console.error('❌ API KEY IS UNDEFINED OR NULL');
       toast({
         variant: "destructive",
         title: "Live Classroom Disabled",
@@ -181,9 +167,8 @@ const TutorSession: React.FC = () => {
     setIsConnecting(true);
     
     try {
-      console.log('✅ About to create GoogleGenAI with key:', apiKey.substring(0, 20));
-      const ai = new GoogleGenAI(apiKey);
-      console.log('✅ GoogleGenAI instance created successfully');
+      // FIXED: Pass apiKey in an options object
+      const ai = new GoogleGenAI({ apiKey });
       
       // 3. GET MICROPHONE
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -335,3 +320,4 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
+
