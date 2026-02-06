@@ -222,36 +222,18 @@ const startSession = async () => {
             }
           },
           
-          onerror: (err: any) => {
-            console.error("🚨 ERROR:", err);
-            endSession();
-          },
-          
-          onclose: (event: any) => {
-            console.log("🚪 WebSocket CLOSED");
-            console.log("  Code:", event?.code);
-            console.log("  Reason:", event?.reason);
-            endSession();
-          },
+          onerror: () => endSession(),
+          onclose: () => endSession(),
         },
         config: {
           responseModalities: [Modality.AUDIO],
           outputAudioTranscription: {},
-          inputAudioTranscription: {},
-          speechConfig: { 
-            voiceConfig: { 
-              prebuiltVoiceConfig: { voiceName: 'Puck' } 
-            } 
-          },
-        },
-        systemInstruction: { 
-          parts: [{ 
-            text: "Your name is Dr. GAM. You are a magical nursery teacher. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: \"SHOW BOARD: [Concept Name]\"." 
-          }] 
+          inputAudioTranscription: {}, 
+          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
+          systemInstruction: `You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`,
         }
       });
       
-      // CRITICAL: Await and store the session
       sessionRef.current = await sessionPromise;
       console.log("✅ Session stored");
       
@@ -348,3 +330,4 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
+    
