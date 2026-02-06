@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
+import { GoogleGenAI, LiveServerMessage } from '@google/genai';
 import { decode, decodeAudioData, createBlob } from './services/audio';
 import { generateLessonImage } from './services/gemini';
 import { saasService } from './services/saas';
@@ -134,7 +134,7 @@ const TutorSession: React.FC = () => {
     }
   };
 
-  const startSession = async () => {
+const startSession = async () => {
     console.log("--- WAKING UP DR. GAM ---");
 
     // 1. Wake up the Audio Engine
@@ -171,7 +171,7 @@ const TutorSession: React.FC = () => {
 
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // 4. Connect to Gemini
+      // 4. Connect to Gemini - Use the promise-returning version
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
@@ -197,13 +197,6 @@ const TutorSession: React.FC = () => {
             console.log('🎤 Microphone connected');
           },
           
-          onclose: (event: any) => {
-            console.log("🚪 WebSocket CLOSED");
-            console.log("  Code:", event?.code);
-            console.log("  Reason:", event?.reason);
-            endSession();
-          },
-
           onmessage: async (message: LiveServerMessage) => {
             console.log('📨 Message from Dr. GAM');
             
@@ -233,9 +226,16 @@ const TutorSession: React.FC = () => {
             console.error("🚨 ERROR:", err);
             endSession();
           },
+          
+          onclose: (event: any) => {
+            console.log("🚪 WebSocket CLOSED");
+            console.log("  Code:", event?.code);
+            console.log("  Reason:", event?.reason);
+            endSession();
+          },
         },
         generationConfig: {
-          responseModalities: ['AUDIO'],
+          responseModalities: 'audio',
           speechConfig: {
             voiceConfig: {
               prebuiltVoiceConfig: {
@@ -251,6 +251,7 @@ const TutorSession: React.FC = () => {
         }
       });
       
+      // CRITICAL: Await and store the session
       sessionRef.current = await sessionPromise;
       console.log("✅ Session stored");
       
