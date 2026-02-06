@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { GoogleGenAI, LiveServerMessage } from '@google/genai';
+import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 import { decode, decodeAudioData, createBlob } from './services/audio';
 import { generateLessonImage } from './services/gemini';
 import { saasService } from './services/saas';
@@ -171,7 +171,7 @@ const startSession = async () => {
 
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // 4. Connect to Gemini - Use the promise-returning version
+      // 4. Connect to Gemini
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
@@ -234,20 +234,20 @@ const startSession = async () => {
             endSession();
           },
         },
-        generationConfig: {
-          responseModalities: 'audio',
-          speechConfig: {
-            voiceConfig: {
-              prebuiltVoiceConfig: {
-                voiceName: 'Puck'
-              }
-            }
-          }
+        config: {
+          responseModalities: [Modality.AUDIO],
+          outputAudioTranscription: {},
+          inputAudioTranscription: {},
+          speechConfig: { 
+            voiceConfig: { 
+              prebuiltVoiceConfig: { voiceName: 'Puck' } 
+            } 
+          },
         },
-        systemInstruction: {
-          parts: [{
-            text: 'You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".'
-          }]
+        systemInstruction: { 
+          parts: [{ 
+            text: "Your name is Dr. GAM. You are a magical nursery teacher. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: \"SHOW BOARD: [Concept Name]\"." 
+          }] 
         }
       });
       
@@ -261,6 +261,7 @@ const startSession = async () => {
       endSession();
     }
   };
+
 
   if (!isModuleStarted) {
     return <StartScreen title="AI Buddy" icon={Bot} color="bg-[#FFD6A5]" onStart={() => setIsModuleStarted(true)} />;
