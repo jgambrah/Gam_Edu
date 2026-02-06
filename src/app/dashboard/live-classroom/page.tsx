@@ -49,12 +49,6 @@ interface VisualState {
 }
 
 const TutorSession: React.FC = () => {
-  // ADD THIS RIGHT AT THE TOP - BEFORE ALL OTHER CODE
-  console.log('🔍 Component Load - Env Check:');
-  console.log('NEXT_PUBLIC_GEMINI_API_KEY exists:', !!process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-  console.log('NEXT_PUBLIC_GEMINI_API_KEY value:', process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-  console.log('First 15 chars:', process.env.NEXT_PUBLIC_GEMINI_API_KEY?.substring(0, 15));
-
   const [isModuleStarted, setIsModuleStarted] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -82,10 +76,8 @@ const TutorSession: React.FC = () => {
   );
   const { data: schoolData, loading: isLoadingSchool } = useDoc(schoolRef);
 
-  // Initialize SAAS service when school data is available
   useEffect(() => {
     if (schoolId && schoolData && typeof schoolData.aiCredits === 'number') {
-      console.log('✅ Initializing SAAS with credits:', schoolData.aiCredits);
       saasService.initialize(schoolId, schoolData.aiCredits);
     }
   }, [schoolId, schoolData]);
@@ -93,7 +85,6 @@ const TutorSession: React.FC = () => {
 
 
   const endSession = () => {
-    console.log('🛑 Ending session');
     setIsActive(false); 
     setIsConnecting(false);
     
@@ -203,7 +194,6 @@ const startSession = async () => {
             
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
-            console.log('🎤 Microphone connected');
           },
           
           onclose: (event: any) => {
@@ -214,13 +204,9 @@ const startSession = async () => {
           },
 
           onmessage: async (message: LiveServerMessage) => {
-            console.log('📨 Message from Dr. GAM');
-            
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             
             if (base64 && audioContextRef.current) {
-              console.log("🎵 DR. GAM IS SPEAKING...");
-              
               try {
                 nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
                 const bytes = decode(base64);
@@ -232,7 +218,6 @@ const startSession = async () => {
                 source.start(nextStartTimeRef.current);
                 nextStartTimeRef.current += buffer.duration;
                 
-                console.log('✅ Audio playing!');
               } catch (error) {
                 console.error('❌ Audio playback error:', error);
               }
@@ -252,23 +237,18 @@ const startSession = async () => {
         },
         config: {
           responseModalities: [Modality.AUDIO],
-          outputAudioTranscription: {},  // ← ADD THIS
-          inputAudioTranscription: {},   // ← ADD THIS
+          outputAudioTranscription: {},
+          inputAudioTranscription: {},
           speechConfig: { 
             voiceConfig: { 
               prebuiltVoiceConfig: { voiceName: 'Puck' } 
             } 
           },
-          systemInstruction: { 
-            parts: [{ 
-              text: "Your name is Dr. GAM. You are a magical nursery teacher. Talk in very simple, friendly English. Start by saying 'Hello! I am Dr. GAM, your AI buddy!'" 
-            }] 
-          }
+          systemInstruction: `Your name is Dr. GAM. You are a magical nursery teacher. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`
         }
       });
       
       sessionRef.current = await sessionPromise;
-      console.log("✅ Session stored");
       
     } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);
