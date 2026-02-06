@@ -205,48 +205,38 @@ const startSession = async () => {
           },
 
           onmessage: async (message: LiveServerMessage) => {
-            console.log('📨 Message from Dr. GAM');
-            
+            console.log('📨 Full message:', JSON.stringify(message, null, 2));
+      
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             
             if (base64 && audioContextRef.current) {
               console.log("🎵 DR. GAM IS SPEAKING...");
-              
-              try {
-                nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
-                const bytes = decode(base64);
-                const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
-                
-                const source = audioContextRef.current.createBufferSource();
-                source.buffer = buffer;
-                source.connect(audioContextRef.current.destination);
-                source.start(nextStartTimeRef.current);
-                nextStartTimeRef.current += buffer.duration;
-                
-                console.log('✅ Audio playing!');
-              } catch (error) {
-                console.error('❌ Audio playback error:', error);
-              }
+              nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
+              const bytes = decode(base64);
+              const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
+              const source = audioContextRef.current.createBufferSource();
+              source.buffer = buffer;
+              source.connect(audioContextRef.current.destination);
+              source.start(nextStartTimeRef.current);
+              nextStartTimeRef.current += buffer.duration;
             } else {
-              console.log('⚠️ No audio data in message');
+              console.log('⚠️ No audio data. Message structure:', message);
             }
           },
 
           onerror: (err: any) => {
-            console.error("🚨 DR. GAM ERROR:", err);
+            console.error("🚨 ERROR:", err);
             endSession();
           },
         },
         config: {
-          responseModalities: [Modality.AUDIO],
-          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
-          systemInstruction: `You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds.`,
+          responseModalities: ['AUDIO']  // Try string instead of Modality.AUDIO
         }
       });
       
       // CRITICAL: Await and store the session
       sessionRef.current = await sessionPromise;
-      console.log("✅ Session stored in ref");
+      console.log("✅ Session stored");
       
     } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);
@@ -344,5 +334,3 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
-
-    
