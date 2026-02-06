@@ -182,7 +182,7 @@ const startSession = async () => {
 
       // 4. Connect to Gemini - Use the promise-returning version
       const sessionPromise = ai.live.connect({
-        model: 'models/gemini-2.0-flash-exp', // Use the corrected model name
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
           onopen: () => {
             console.log("✅ DR. GAM IS LIVE!");
@@ -406,3 +406,5 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
+
+    
