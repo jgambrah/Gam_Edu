@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
+import { GoogleGenAI, LiveServerMessage } from '@google/genai';
 import { decode, decodeAudioData, createBlob } from './services/audio';
 import { generateLessonImage } from './services/gemini';
 import { saasService } from './services/saas';
@@ -134,7 +134,7 @@ const TutorSession: React.FC = () => {
     }
   };
 
-const startSession = async () => {
+  const startSession = async () => {
     console.log("--- WAKING UP DR. GAM ---");
 
     // 1. Wake up the Audio Engine
@@ -171,7 +171,7 @@ const startSession = async () => {
 
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // 4. Connect to Gemini - Use the promise-returning version
+      // 4. Connect to Gemini
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
@@ -185,16 +185,23 @@ const startSession = async () => {
             scriptProcessorRef.current = scriptProcessor;
             
             scriptProcessor.onaudioprocess = (e) => {
+              if (!sessionRef.current) {
+                console.warn('⚠️ Session ref is null, skipping audio send');
+                return;
+              }
               const inputData = e.inputBuffer.getChannelData(0);
               const pcmBlob = createBlob(inputData);
-              sessionPromise.then((session) => {
-                session.sendRealtimeInput({ media: pcmBlob });
-              });
+              
+              try {
+                sessionRef.current.sendRealtimeInput({ media: pcmBlob });
+              } catch (err) {
+                console.error('❌ Error sending audio:', err);
+              }
             };
             
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
-            console.log('🎤 Microphone connected');
+            console.log('🎤 Microphone connected and listening');
           },
           
           onclose: (event: any) => {
@@ -206,7 +213,7 @@ const startSession = async () => {
 
           onmessage: async (message: LiveServerMessage) => {
             console.log('📨 Full message:', JSON.stringify(message, null, 2));
-      
+            
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             
             if (base64 && audioContextRef.current) {
@@ -230,24 +237,26 @@ const startSession = async () => {
           },
         },
         config: {
-          responseModalities: ['AUDIO']  // Try string instead of Modality.AUDIO
+          responseModalities: ['AUDIO'],
+          speechConfig: { 
+            voiceConfig: { 
+              prebuiltVoiceConfig: { voiceName: 'Puck' } 
+            } 
+          },
+          systemInstruction: `Your name is Dr. GAM. You are a magical nursery teacher. Use very simple English for 3-year-olds.`
         }
       });
       
-      // CRITICAL: Await and store the session
       sessionRef.current = await sessionPromise;
-      console.log("✅ Session stored");
+      console.log("✅ Session stored in ref");
       
     } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);
-      console.error("  Error name:", err?.name);
-      console.error("  Error message:", err?.message);
-      console.error("  Error stack:", err?.stack);
-      
       setIsConnecting(false);
       endSession();
     }
   };
+
 
   if (!isModuleStarted) {
     return <StartScreen title="AI Buddy" icon={Bot} color="bg-[#FFD6A5]" onStart={() => setIsModuleStarted(true)} />;
