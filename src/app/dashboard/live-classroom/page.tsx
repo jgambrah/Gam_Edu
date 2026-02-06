@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { GoogleGenAI, LiveServerMessage } from '@google/genai';
+import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 import { decode, decodeAudioData, createBlob } from './services/audio';
 import { generateLessonImage } from './services/gemini';
 import { saasService } from './services/saas';
@@ -171,7 +171,7 @@ const TutorSession: React.FC = () => {
 
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // 4. Connect to Gemini
+      // 4. Connect to Gemini - Use the promise-returning version
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
@@ -229,21 +229,29 @@ const TutorSession: React.FC = () => {
             } else {
               console.log('⚠️ No audio data. Message structure:', message);
             }
+
+            if (message.serverContent?.outputAudioTranscription) {
+              const text = message.serverContent.outputAudioTranscription.text;
+              transcriptBufferRef.current = (transcriptBufferRef.current + text).slice(-2000);
+              updateVisualsFromText(transcriptBufferRef.current);
+            }
           },
 
           onerror: (err: any) => {
-            console.error("🚨 ERROR:", err);
+            console.error("🚨 DR. GAM ERROR:", err);
             endSession();
           },
         },
         config: {
-          responseModalities: ['AUDIO'],
-          speechConfig: { 
-            voiceConfig: { 
-              prebuiltVoiceConfig: { voiceName: 'Puck' } 
-            } 
-          },
-          systemInstruction: `Your name is Dr. GAM. You are a magical nursery teacher. Use very simple English for 3-year-olds.`
+            responseModalities: [Modality.AUDIO],
+            outputAudioTranscription: {},
+            inputAudioTranscription: {},
+            speechConfig: { 
+                voiceConfig: { 
+                    prebuiltVoiceConfig: { voiceName: 'Puck' } 
+                } 
+            },
+            systemInstruction: `You are Dr. GAM, a magical nursery teacher. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`
         }
       });
       
