@@ -134,7 +134,7 @@ const TutorSession: React.FC = () => {
     }
   };
 
-const startSession = async () => {
+  const startSession = async () => {
     console.log("--- WAKING UP DR. GAM ---");
 
     if (!audioContextRef.current) {
@@ -181,11 +181,18 @@ const startSession = async () => {
             scriptProcessorRef.current = scriptProcessor;
             
             scriptProcessor.onaudioprocess = (e) => {
+              if (!sessionRef.current) {
+                console.warn('⚠️ Session ref is null, skipping audio send');
+                return;
+              }
               const inputData = e.inputBuffer.getChannelData(0);
               const pcmBlob = createBlob(inputData);
-              sessionPromise.then((session) => {
-                session.sendRealtimeInput({ media: pcmBlob });
-              });
+              
+              try {
+                sessionRef.current.sendRealtimeInput({ media: pcmBlob });
+              } catch (err) {
+                console.error('❌ Error sending audio:', err);
+              }
             };
             
             source.connect(scriptProcessor);
@@ -193,6 +200,14 @@ const startSession = async () => {
             console.log('🎤 Microphone connected and listening');
           },
           
+          onclose: (event: any) => {
+            console.log("🚪 WebSocket CLOSED");
+            console.log("  Code:", event?.code);
+            console.log("  Reason:", event?.reason);
+            console.log("  Was clean:", event?.wasClean);
+            endSession();
+          },
+
           onmessage: async (message: LiveServerMessage) => {
             console.log('📨 Full message:', message);
             
@@ -209,6 +224,8 @@ const startSession = async () => {
               source.start(nextStartTimeRef.current);
               nextStartTimeRef.current += buffer.duration;
               console.log('✅ Playing audio!');
+            } else {
+              console.log('⚠️ No audio data. Message structure:', message);
             }
 
             if (message.serverContent?.outputTranscription) {
@@ -218,18 +235,10 @@ const startSession = async () => {
               updateVisualsFromText(transcriptBufferRef.current);
             }
           },
-          
+
           onerror: (err: any) => {
             console.error("🚨 ERROR:", err);
             console.error("Full error object:", JSON.stringify(err, null, 2));
-            endSession();
-          },
-          
-          onclose: (event: any) => {
-            console.log("🚪 WebSocket CLOSED");
-            console.log("  Code:", event?.code);
-            console.log("  Reason:", event?.reason);
-            console.log("  Was clean:", event?.wasClean);
             endSession();
           },
         },
@@ -247,12 +256,22 @@ const startSession = async () => {
       });
       
       sessionRef.current = await sessionPromise;
-      console.log("✅ Session stored");
+      console.log("✅ Session stored in ref");
       
     } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);
+      console.error("  Error name:", err?.name);
+      console.error("  Error message:", err?.message);
+      console.error("  Error stack:", err?.stack);
+      
       setIsConnecting(false);
       endSession();
+      
+      toast({
+        variant: "destructive",
+        title: "Failed to Start",
+        description: err?.message || "Could not connect to Dr. GAM. Please check your network and API key.",
+      });
     }
   };
 
@@ -342,5 +361,3 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
-
-    
