@@ -7,7 +7,10 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
 import { generateSecureToken } from '@/app/actions/generate-secure-token';
 import { useToast } from '@/hooks/use-toast';
-import { doc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
+import { Button } from '@/components/ui/button';
+import { Loader2, X } from 'lucide-react';
+import { checkAndSpendCredits } from '@/app/actions/credits'; // Import the action
 
 const NurseryBloomIframePage: React.FC = () => {
   const [isLaunched, setIsLaunched] = useState(false);
@@ -25,7 +28,7 @@ const NurseryBloomIframePage: React.FC = () => {
     if (!firestore || !schoolId) return null;
     return doc(firestore, 'schools', schoolId);
   }, [firestore, schoolId]);
-  const { data: school } = useDoc(schoolRef);
+  const { data: school, forceRefetch: refetchSchoolData } = useDoc(schoolRef);
 
   const APP_BASE_URL = "https://nursery-bloom-825774943692.us-west1.run.app";
 
@@ -49,13 +52,13 @@ const NurseryBloomIframePage: React.FC = () => {
         schoolId: schoolId,
         userId: user.uid,
         userName: profile.firstName || user.displayName || 'Learner',
-        licenseType: profile.plan || 'Trial',
+        licenseType: school?.plan || 'Trial', // Use plan from school doc
         token: secureToken,
       });
 
       setSessionUrl(`${APP_BASE_URL}?${params.toString()}`);
       setIsLaunched(true);
-      setIsLoading(true); // Set loading to true when iframe is launched
+      setIsLoading(true);
 
     } catch (error: any) {
       console.error("Launch Error:", error);
@@ -72,44 +75,42 @@ const NurseryBloomIframePage: React.FC = () => {
     setSessionUrl('');
   };
   
-  // --- MESSAGE HANDLER: Listens for requests from the iframe ---
   const handleIframeMessage = useCallback(async (event: MessageEvent) => {
-    // SECURITY: Ensure the message is from our trusted app origin
     if (event.origin !== APP_BASE_URL) {
       return;
     }
     
     const { type, payload } = event.data;
 
-    // A. Handle requests for AI balance
+    // Handle requests for AI balance OR on ready
     if (type === 'GET_AI_BALANCE' || type === 'NURSERY_BLOOM_READY') {
-      if (school) { // school data is available from useDoc
+      await refetchSchoolData(); // Ensure we have the latest data
+      if (school) {
         const schoolCredits = school.aiCredits || 0;
-
-        // Post message back to the source (the iframe window)
         (event.source as Window).postMessage({
           type: 'AI_BALANCE_RESPONSE',
-          payload: {
-            aiCredits: schoolCredits,
-            schoolId: schoolId,
-          }
-        }, APP_BASE_URL); // Target origin for security
-        
-        console.log(`GAM EDU: Responded to Nursery Bloom. Sent ${schoolCredits} AI Credits.`);
-      } else {
-        console.warn("GAM EDU: Received balance request, but school data is not ready yet.");
+          payload: { aiCredits: schoolCredits, schoolId: schoolId }
+        }, APP_BASE_URL);
       }
     }
 
-    // B. Handle save requests (existing logic)
-    if (type === 'saveToStorage' && payload.path && payload.dataUrl) {
-      toast({ title: "Saving...", description: "Uploading your creation to the cloud." });
-      console.log("Received save request from Iframe:", payload.path);
-      toast({ title: "Save Request Received!", description: "File upload logic would run here." });
+    // Handle AI Credit Deduction
+    if (type === 'DEDUCT_AI_CREDITS' && payload.cost && schoolId) {
+      const result = await checkAndSpendCredits(schoolId, Number(payload.cost));
+      if (!result.success) {
+        toast({
+            variant: 'destructive',
+            title: 'AI Credit Error',
+            description: result.error || "An operation failed due to insufficient credits.",
+        });
+      }
+      // After deduction, refetch and send the new balance back
+      await refetchSchoolData();
     }
-  }, [school, schoolId, toast]);
 
-  // Add and remove the event listener
+  }, [school, schoolId, toast, firestore, refetchSchoolData]);
+
+
   useEffect(() => {
     window.addEventListener('message', handleIframeMessage);
     return () => {
