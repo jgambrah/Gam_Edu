@@ -171,7 +171,7 @@ const TutorSession: React.FC = () => {
 
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // 4. Connect to Gemini - Use the promise-returning version
+      // 4. Connect to Gemini
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
@@ -185,23 +185,16 @@ const TutorSession: React.FC = () => {
             scriptProcessorRef.current = scriptProcessor;
             
             scriptProcessor.onaudioprocess = (e) => {
-              if (!sessionRef.current) {
-                console.warn('⚠️ Session ref is null, skipping audio send');
-                return;
-              }
               const inputData = e.inputBuffer.getChannelData(0);
               const pcmBlob = createBlob(inputData);
-              
-              try {
-                sessionRef.current.sendRealtimeInput({ media: pcmBlob });
-              } catch (err) {
-                console.error('❌ Error sending audio:', err);
-              }
+              sessionPromise.then((session) => {
+                session.sendRealtimeInput({ media: pcmBlob });
+              });
             };
             
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
-            console.log('🎤 Microphone connected and listening');
+            console.log('🎤 Microphone connected');
           },
           
           onclose: (event: any) => {
@@ -212,7 +205,7 @@ const TutorSession: React.FC = () => {
           },
 
           onmessage: async (message: LiveServerMessage) => {
-            console.log('📨 Full message:', JSON.stringify(message, null, 2));
+            console.log('📨 Message from Dr. GAM');
             
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             
@@ -226,37 +219,40 @@ const TutorSession: React.FC = () => {
               source.connect(audioContextRef.current.destination);
               source.start(nextStartTimeRef.current);
               nextStartTimeRef.current += buffer.duration;
-            } else {
-              console.log('⚠️ No audio data. Message structure:', message);
+              console.log('✅ Playing audio!');
             }
 
-            if (message.serverContent?.outputAudioTranscription) {
-              const text = message.serverContent.outputAudioTranscription.text;
+            if (message.serverContent?.outputTranscription) {
+              const text = message.serverContent.outputTranscription.text;
               transcriptBufferRef.current = (transcriptBufferRef.current + text).slice(-2000);
               updateVisualsFromText(transcriptBufferRef.current);
             }
           },
-
+          
           onerror: (err: any) => {
-            console.error("🚨 DR. GAM ERROR:", err);
+            console.error("🚨 ERROR:", err);
             endSession();
           },
         },
-        config: {
-            responseModalities: [Modality.AUDIO],
-            outputAudioTranscription: {},
-            inputAudioTranscription: {},
-            speechConfig: { 
-                voiceConfig: { 
-                    prebuiltVoiceConfig: { voiceName: 'Puck' } 
-                } 
-            },
-            systemInstruction: `You are Dr. GAM, a magical nursery teacher. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`
+        generationConfig: {
+          responseModalities: ['AUDIO'],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: {
+                voiceName: 'Puck'
+              }
+            }
+          }
+        },
+        systemInstruction: {
+          parts: [{
+            text: 'You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".'
+          }]
         }
       });
       
       sessionRef.current = await sessionPromise;
-      console.log("✅ Session stored in ref");
+      console.log("✅ Session stored");
       
     } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);
@@ -264,7 +260,6 @@ const TutorSession: React.FC = () => {
       endSession();
     }
   };
-
 
   if (!isModuleStarted) {
     return <StartScreen title="AI Buddy" icon={Bot} color="bg-[#FFD6A5]" onStart={() => setIsModuleStarted(true)} />;
