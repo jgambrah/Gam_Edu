@@ -137,7 +137,6 @@ const TutorSession: React.FC = () => {
 const startSession = async () => {
     console.log("--- WAKING UP DR. GAM ---");
 
-    // 1. Wake up the Audio Engine
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     }
@@ -147,7 +146,6 @@ const startSession = async () => {
       console.log("Audio Engine: AWAKE");
     }
 
-    // 2. Check API Key
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     if (!apiKey) {
       toast({
@@ -165,13 +163,11 @@ const startSession = async () => {
     try {
       const ai = new GoogleGenAI({ apiKey });
       
-      // 3. Get Microphone
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       micStreamRef.current = stream;
 
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // 4. Connect to Gemini
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
@@ -194,11 +190,11 @@ const startSession = async () => {
             
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
-            console.log('🎤 Microphone connected');
+            console.log('🎤 Microphone connected and listening');
           },
           
           onmessage: async (message: LiveServerMessage) => {
-            console.log('📨 Message from Dr. GAM');
+            console.log('📨 Full message:', message);
             
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             
@@ -217,20 +213,36 @@ const startSession = async () => {
 
             if (message.serverContent?.outputTranscription) {
               const text = message.serverContent.outputTranscription.text;
+              console.log('📝 Transcript:', text);
               transcriptBufferRef.current = (transcriptBufferRef.current + text).slice(-2000);
               updateVisualsFromText(transcriptBufferRef.current);
             }
           },
           
-          onerror: () => endSession(),
-          onclose: () => endSession(),
+          onerror: (err: any) => {
+            console.error("🚨 ERROR:", err);
+            console.error("Full error object:", JSON.stringify(err, null, 2));
+            endSession();
+          },
+          
+          onclose: (event: any) => {
+            console.log("🚪 WebSocket CLOSED");
+            console.log("  Code:", event?.code);
+            console.log("  Reason:", event?.reason);
+            console.log("  Was clean:", event?.wasClean);
+            endSession();
+          },
         },
         config: {
           responseModalities: [Modality.AUDIO],
           outputAudioTranscription: {},
-          inputAudioTranscription: {}, 
-          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
-          systemInstruction: `You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`,
+          inputAudioTranscription: {},
+          speechConfig: { 
+            voiceConfig: { 
+              prebuiltVoiceConfig: { voiceName: 'Puck' } 
+            } 
+          },
+          systemInstruction: 'You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".',
         }
       });
       
@@ -330,4 +342,5 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
+
     
