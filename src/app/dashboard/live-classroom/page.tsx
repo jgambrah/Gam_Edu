@@ -171,7 +171,7 @@ const startSession = async () => {
 
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // 4. Connect to Gemini
+      // 4. Connect to Gemini - Use the promise-returning version
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
@@ -194,6 +194,7 @@ const startSession = async () => {
             
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
+            console.log('🎤 Microphone connected');
           },
           
           onclose: (event: any) => {
@@ -204,9 +205,13 @@ const startSession = async () => {
           },
 
           onmessage: async (message: LiveServerMessage) => {
+            console.log('📨 Message from Dr. GAM');
+            
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             
             if (base64 && audioContextRef.current) {
+              console.log("🎵 DR. GAM IS SPEAKING...");
+              
               try {
                 nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
                 const bytes = decode(base64);
@@ -218,15 +223,12 @@ const startSession = async () => {
                 source.start(nextStartTimeRef.current);
                 nextStartTimeRef.current += buffer.duration;
                 
+                console.log('✅ Audio playing!');
               } catch (error) {
                 console.error('❌ Audio playback error:', error);
               }
-            }
-
-            if (message.serverContent?.outputTranscription) {
-              const text = message.serverContent.outputTranscription.text;
-              transcriptBufferRef.current = (transcriptBufferRef.current + text).slice(-2000);
-              updateVisualsFromText(transcriptBufferRef.current);
+            } else {
+              console.log('⚠️ No audio data in message');
             }
           },
 
@@ -237,21 +239,21 @@ const startSession = async () => {
         },
         config: {
           responseModalities: [Modality.AUDIO],
-          outputAudioTranscription: {},
-          inputAudioTranscription: {},
-          speechConfig: { 
-            voiceConfig: { 
-              prebuiltVoiceConfig: { voiceName: 'Puck' } 
-            } 
-          },
-          systemInstruction: `Your name is Dr. GAM. You are a magical nursery teacher. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`
+          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
+          systemInstruction: `You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds.`,
         }
       });
       
+      // CRITICAL: Await and store the session
       sessionRef.current = await sessionPromise;
+      console.log("✅ Session stored in ref");
       
     } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);
+      console.error("  Error name:", err?.name);
+      console.error("  Error message:", err?.message);
+      console.error("  Error stack:", err?.stack);
+      
       setIsConnecting(false);
       endSession();
     }
@@ -342,3 +344,5 @@ export default function LiveClassroomPage() {
         </div>
     )
 }
+
+    
