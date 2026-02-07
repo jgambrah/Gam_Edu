@@ -44,6 +44,7 @@ import { searchStudent } from '@/lib/student-utils';
 import { GenerateReceipt } from './generate-receipt';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { StudentSelect } from '@/components/StudentSelect';
 
 
 // --- Types ---
