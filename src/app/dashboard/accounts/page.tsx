@@ -18,7 +18,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, AlertTriangle, ChevronsUpDown, Check, XCircle, Wrench } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, AlertTriangle, ChevronsUpDown, Check, XCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -450,7 +450,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
         
         {!isOpeningBalance && (
             <FormField control={form.control} name="type" render={({ field }) => (
-                <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
             )} />
         )}
         
@@ -828,6 +828,235 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
             </DialogContent>
         </Dialog>
     );
+}
+
+// --- SUB-COMPONENT for Student Details ---
+function StudentLedgerDetail({ 
+    student, 
+    records,
+    onRecordPayment,
+    onApplyWaiver,
+    onEditRecord,
+    onReverseTransaction,
+}: { 
+    student: Student; 
+    records: FinancialRecord[];
+    onRecordPayment: (record: FinancialRecord) => void;
+    onApplyWaiver: (record: FinancialRecord) => void;
+    onEditRecord: (record: FinancialRecord) => void;
+    onReverseTransaction: (record: FinancialRecord) => void;
+}) {
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: startOfMonth(new Date()),
+        to: endOfDay(new Date()),
+    });
+    
+    const [openRowId, setOpenRowId] = useState<string | null>(null);
+  
+    const filteredRecords = useMemo(() => {
+        if (!records) return [];
+        if (!dateRange || !dateRange.from) return [...records].sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        
+        const fromDate = startOfDay(dateRange.from);
+        const toDate = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+        
+        return records.filter(rec => {
+          const recDate = rec.createdAt?.toDate ? rec.createdAt.toDate() : new Date();
+          return recDate >= fromDate && recDate <= toDate;
+        }).sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      }, [records, dateRange]);
+  
+    const overallSummary = useMemo(() => {
+        const activeRecords = records.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
+        const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+        const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
+        const balance = totalBilled - totalPaid;
+        return { totalBilled, totalPaid, balance };
+    }, [records]);
+
+    const getStatusVariant = (status: FinancialRecord['status']) => {
+        switch (status) {
+            case 'Paid': return 'default';
+            case 'Unpaid': return 'secondary';
+            case 'Overdue': return 'destructive';
+            case 'Pending Reversal': return 'secondary'
+            case 'Rejected Reversal': return 'destructive'
+            default: return 'secondary';
+        }
+    };
+  
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button id="date" variant={"outline"} className={cn("w-full sm:w-[300px] justify-start text-left font-normal", !dateRange && "text-muted-foreground")}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Filter by Due Date</span>)}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
+            </PopoverContent>
+          </Popover>
+          {student && (
+              <GenerateStatement 
+                  student={student} 
+                  records={filteredRecords} 
+                  dateRange={dateRange}
+                  summary={overallSummary} 
+              />
+          )}
+        </div>
+        
+        <div className="overflow-x-auto w-full border rounded-md bg-white">
+          <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="text-right">Billed</TableHead>
+                    <TableHead className="text-right">Paid</TableHead>
+                    <TableHead>Due Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right w-[200px]">Actions</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {filteredRecords.map(rec => {
+                    const balance = rec.billedAmount - (rec.amountPaid || 0) - (rec.waiverAmount || 0);
+                    return (
+                        <React.Fragment key={rec.id}>
+                            <TableRow>
+                                <TableCell>
+                                    <span className="font-medium">{rec.description}</span>
+                                    <p className="text-xs text-muted-foreground">{rec.type}</p>
+                                </TableCell>
+                                <TableCell className={`text-right font-mono ${rec.billedAmount < 0 ? 'text-green-600' : ''}`}>
+                                    GH₵{rec.billedAmount.toFixed(2)}
+                                </TableCell>
+                                 <TableCell className="text-right font-mono text-green-600">
+                                    GH₵{(rec.amountPaid || 0).toFixed(2)}
+                                </TableCell>
+                                <TableCell className="text-xs">{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
+                                <TableCell>
+                                    <div className="flex gap-1 justify-end">
+                                        <Button variant="ghost" size="icon" title="View Payment History" onClick={() => setOpenRowId(openRowId === rec.id ? null : rec.id)}>
+                                            <ChevronsUpDown className="h-4 w-4 text-slate-500"/>
+                                        </Button>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4"/></Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                <DropdownMenuItem onClick={() => onRecordPayment(rec)}><DollarSign className="mr-2 h-4 w-4"/> Record Payment</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => onApplyWaiver(rec)} disabled={balance <= 0}><FileCog className="mr-2 h-4 w-4"/> Apply Waiver</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => onEditRecord(rec)}><Edit className="mr-2 h-4 w-4"/> Edit Record</DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => onReverseTransaction(rec)} className="text-red-600"><RefreshCw className="mr-2 h-4 w-4"/> Request Reversal</DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <Dialog>
+                                                    <DialogTrigger asChild>
+                                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                                            <Receipt className="mr-2 h-4 w-4"/> Print Full Receipt
+                                                        </DropdownMenuItem>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                                                        <DialogHeader>
+                                                            <DialogTitle>Full Statement Receipt</DialogTitle>
+                                                            <DialogDescription>Consolidated receipt for all payments made against this bill.</DialogDescription>
+                                                        </DialogHeader>
+                                                        <GenerateReceipt 
+                                                            transaction={rec} 
+                                                            payment={{
+                                                                id: 'consolidated-' + rec.id,
+                                                                amount: rec.amountPaid,
+                                                                method: 'Total Recorded',
+                                                                paidAt: rec.lastPaymentDate || rec.createdAt,
+                                                                notes: 'Consolidated Receipt for ' + rec.description
+                                                            } as any} 
+                                                            variant="full" 
+                                                        />
+                                                    </DialogContent>
+                                                </Dialog>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                            {openRowId === rec.id && (
+                                <TableRow className="bg-slate-50/50">
+                                    <TableCell colSpan={6} className="p-0">
+                                        <PaymentHistory record={rec} />
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </React.Fragment>
+                    );
+                })}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
+}
+
+// --- Reversal Approval Component ---
+function ReversalApproval({ reversals, onUpdate }: { reversals: FinancialRecord[], onUpdate: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isProcessing, setIsProcessing] = useState<string | null>(null);
+
+    const handleDecision = async (record: FinancialRecord, decision: 'Unpaid' | 'Rejected Reversal') => {
+        if (!firestore) return;
+        setIsProcessing(record.id);
+        try {
+            await updateDoc(doc(firestore, 'financialRecords', record.id), { status: decision });
+            toast({ title: `Reversal ${decision === 'Unpaid' ? 'Approved' : 'Rejected'}` });
+            onUpdate();
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Error", description: e.message });
+        } finally {
+            setIsProcessing(null);
+        }
+    };
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-amber-700"><AlertTriangle /> Reversal Requests</CardTitle>
+                <CardDescription>Approve or reject debit memos created by accountants.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Student</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead className="text-right">Amount</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {reversals.length === 0 && <TableRow><TableCell colSpan={4} className="text-center p-8">No pending reversals.</TableCell></TableRow>}
+                        {reversals.map(rec => (
+                            <TableRow key={rec.id}>
+                                <TableCell>{rec.studentName}</TableCell>
+                                <TableCell className="text-xs text-muted-foreground">{rec.description}</TableCell>
+                                <TableCell className="text-right font-bold">GH₵{rec.billedAmount.toFixed(2)}</TableCell>
+                                <TableCell className="text-right">
+                                    <div className="flex gap-2 justify-end">
+                                        <Button size="sm" variant="destructive" onClick={() => handleDecision(rec, 'Rejected Reversal')} disabled={isProcessing === rec.id}>Reject</Button>
+                                        <Button size="sm" onClick={() => handleDecision(rec, 'Unpaid')} disabled={isProcessing === rec.id}>Approve</Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+    )
 }
 
 // --- Main Page ---
