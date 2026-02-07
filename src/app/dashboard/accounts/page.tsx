@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy } from 'firebase/firestore';
 import { format, isPast, startOfDay, endOfDay, startOfMonth } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 
@@ -833,26 +834,24 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
 export default function AccountsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
-    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
-    
     const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
     const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
     const [activeTab, setActiveTab] = useState('billing');
 
-    const finQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const finQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(finQuery);
     
-    const studentQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const studentQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentQuery);
   
-    const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: classes } = useCollection<Class>(classesQuery);
+    const classesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]);
+    const { data: classes } = useCollection(classesQuery);
   
     const isAdmin = ['Administrator', 'Director'].includes(role);
     const canAccess = isAdmin || role === 'Accountant';
-    const isLoading = isLoadingSchool || isLoadingRecords || isLoadingStudents;
+    const isLoading = isLoadingRecords || isLoadingStudents;
   
     const dashboardStats = useMemo(() => {
       if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0 };
@@ -917,25 +916,11 @@ export default function AccountsPage() {
       );
     }
   
-    const handleOpenDialog = (type: 'payment' | 'waiver' | 'reversal', record: FinancialRecord) => setDialogState({ type, record });
+    const handleOpenDialog = (type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord) => setDialogState({ type, record });
     const handleCloseDialog = () => setDialogState({ type: 'payment', record: null });
     const handleOpenEditDialog = (record: FinancialRecord) => setEditingRecord(record);
     const handleCloseEditDialog = () => setEditingRecord(null);
 
-    const handleReversalDecision = async (reversalRecord: FinancialRecord, decision: 'Unpaid' | 'Rejected Reversal') => {
-        if (!firestore) return;
-        setIsSubmitting(true);
-        try {
-            await updateDoc(doc(firestore, 'financialRecords', reversalRecord.id), { status: decision });
-            toast({ title: "Success", description: `Reversal has been ${decision === 'Unpaid' ? 'approved' : 'rejected'}.` });
-            forceRefetch();
-        } catch (e) {
-            toast({ variant: 'destructive', title: "Error" });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-  
     return (
       <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -992,30 +977,28 @@ export default function AccountsPage() {
                 </CardHeader>
                 <CardContent>
                     {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
-                        <Accordion type="multiple" className="w-full space-y-2">
+                        <Accordion type="single" collapsible className="w-full">
                             {studentFinancials.map(({ student, balance, records }) => (
-                                 <AccordionItem value={student.uid} key={student.uid} className="border-none">
-                                    <Card className="overflow-hidden">
-                                        <AccordionTrigger className="hover:no-underline p-4 hover:bg-slate-50">
-                                            <div className='flex justify-between items-center w-full'>
-                                                <StudentDisplay student={student} variant="full" showAvatar />
-                                                <div className="text-right">
-                                                    <p className="text-sm text-muted-foreground">Balance</p>
-                                                    <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>GH₵{balance.toFixed(2)}</p>
-                                                </div>
+                                 <AccordionItem value={student.uid} key={student.uid}>
+                                    <AccordionTrigger className="hover:no-underline p-4">
+                                        <div className='flex justify-between items-center w-full'>
+                                            <StudentDisplay student={student} variant="full" showAvatar />
+                                            <div className="text-right">
+                                                <p className="text-sm text-muted-foreground">Balance</p>
+                                                <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>GH₵{balance.toFixed(2)}</p>
                                             </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="bg-slate-50/50 border-t">
-                                            <StudentLedgerDetail 
-                                                student={student} 
-                                                records={records}
-                                                onRecordPayment={(rec) => handleOpenDialog('payment', rec)}
-                                                onApplyWaiver={(rec) => handleOpenDialog('waiver', rec)}
-                                                onEditRecord={(rec) => handleOpenEditDialog(rec)}
-                                                onReverseTransaction={(rec) => handleOpenDialog('reversal', rec)}
-                                            />
-                                        </AccordionContent>
-                                    </Card>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="p-4 bg-slate-50/50 border-t">
+                                        <StudentLedgerDetail 
+                                            student={student} 
+                                            records={records}
+                                            onRecordPayment={(rec) => handleOpenDialog('payment', rec)}
+                                            onApplyWaiver={(rec) => handleOpenDialog('waiver', rec)}
+                                            onEditRecord={(rec) => handleOpenEditDialog(rec)}
+                                            onReverseTransaction={(rec) => handleOpenDialog('reversal', rec)}
+                                        />
+                                    </AccordionContent>
                                 </AccordionItem>
                             ))}
                         </Accordion>
