@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -22,6 +21,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 // Custom Components
 import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
@@ -454,6 +454,7 @@ function DebateArenaTab({ schoolId }: { schoolId: string | null }) {
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]);
+  const [customTopic, setCustomTopic] = useState('');
   
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
   
@@ -483,12 +484,23 @@ function DebateArenaTab({ schoolId }: { schoolId: string | null }) {
       const auth = getAuth();
       const currentUser = auth.currentUser || user;
       if (!currentUser || !schoolId) return;
+
+      if (!customTopic.trim()) {
+        toast({ title: "Topic Required", description: "Please enter a topic to generate a debate context.", variant: "destructive" });
+        return;
+      }
+
       setIsGenerating(true);
       try {
-          const result = await generateDebateTopic({ targetGroup: activeGroup, schoolId });
+          const result = await generateDebateTopic({ 
+              targetGroup: activeGroup, 
+              schoolId,
+              topic: customTopic
+          });
           await addDoc(collection(firestore!, 'think_tank_debates'), { ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid, schoolId: schoolId });
-          toast({ title: "AI Generated Debate!" });
+          toast({ title: "AI Generated Debate Context!" });
           forceRefetch();
+          setCustomTopic('');
       } catch(e: any) {
           toast({ variant: 'destructive', title: "AI Error", description: e.message });
       } finally {
@@ -504,12 +516,18 @@ function DebateArenaTab({ schoolId }: { schoolId: string | null }) {
         </div>
         {canManage && (
             <Card className="bg-slate-50 border-slate-200">
-                <CardHeader className="pb-2"><CardTitle className="text-sm">Generate New Debate Topic for {activeGroup}</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Generate New Debate Context</CardTitle></CardHeader>
                 <CardContent>
-                    <Button onClick={handleAiGenerate} disabled={isGenerating} variant="outline" size="sm" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
-                        {isGenerating ? <Loader2 className="mr-2 h-3 w-3 animate-spin"/> : <Wand2 className="mr-2 h-3 w-3"/>}
-                        Generate with AI
-                    </Button>
+                    <div className="flex gap-2">
+                        <Input 
+                            placeholder="Enter custom topic..."
+                            value={customTopic}
+                            onChange={(e) => setCustomTopic(e.target.value)}
+                        />
+                        <Button onClick={handleAiGenerate} disabled={isGenerating || !customTopic.trim()} className="bg-purple-600 hover:bg-purple-700">
+                            {isGenerating ? <Loader2 className="animate-spin h-4 w-4"/> : "Go"}
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
         )}

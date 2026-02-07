@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -78,25 +77,27 @@ export async function generateDetectiveCase(input: { targetGroup: string; school
     return { ...output, targetGroup: input.targetGroup };
 }
 
-export async function generateDebateTopic(input: { targetGroup: string; schoolId: string; }) {
+export async function generateDebateTopic(input: { targetGroup: string; schoolId: string; topic: string; }) {
+  try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 2);
     if (!creditResult.success) {
-        throw new Error(creditResult.error || "Insufficient AI credits.");
+      throw new Error(creditResult.error || "Insufficient AI credits.");
     }
     const schema = z.object({ topic: z.string(), context: z.string() });
     
-    const instruction = {
-        'Novice (Basic 1-3)': "Topics: Fun preferences (e.g., 'Cats vs Dogs').",
-        'Apprentice (Basic 4-6)': "Topics: School/Home rules.",
-        'Scholar (JHS)': "Topics: Social issues, Technology.",
-        'Master (SHS)': "Topics: Global policy, Ethics."
-    }[input.targetGroup] || "General topics.";
+    const prompt = `The user-provided topic is: "${input.topic}". Generate a brief, neutral, one-paragraph context for a debate on this topic. The output JSON should include the original topic and the new context.`;
 
-    const output = await callAi(
-        `Generate a debate topic. ${instruction} Output strictly JSON.`,
-        schema
-    );
+    const output = await callAi(prompt, schema);
+    
+    // Ensure the AI doesn't hallucinate a new topic
+    if (output && output.topic.toLowerCase() !== input.topic.toLowerCase()) {
+        output.topic = input.topic;
+    }
+
     return { ...output, targetGroup: input.targetGroup };
+  } catch (e: any) {
+    throw new Error(e.message || "Failed to generate debate topic.");
+  }
 }
 
 // No AI used here, so no changes needed
