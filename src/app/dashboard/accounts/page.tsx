@@ -1063,24 +1063,26 @@ function ReversalApproval({ reversals, onUpdate }: { reversals: FinancialRecord[
 export default function AccountsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+    
     const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
     const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
     const [activeTab, setActiveTab] = useState('billing');
 
-    const finQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const finQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(finQuery);
     
-    const studentQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
+    const studentQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentQuery);
   
-    const classesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]);
+    const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: classes } = useCollection(classesQuery);
   
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
     const isAdmin = ['Administrator', 'Director'].includes(role);
-    const isLoading = isLoadingRecords || isLoadingStudents;
+    const isLoading = isLoadingSchool || isLoadingRecords || isLoadingStudents;
   
     const dashboardStats = useMemo(() => {
       if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0 };
@@ -1180,7 +1182,7 @@ export default function AccountsPage() {
                                         <Utensils className="mr-2 h-4 w-4" /> Add Daily Charge
                                     </Button>
                                 </DialogTrigger>
-                                <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />
+                                {schoolId && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
                             </Dialog>
                             <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
                                 <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
@@ -1192,8 +1194,8 @@ export default function AccountsPage() {
                     </div>
                     </CardHeader>
                     <CardContent>
-                        {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
-                        {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
+                        {schoolId && activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />}
+                        {schoolId && activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
                     </CardContent>
                 </Card>
                 </div>
