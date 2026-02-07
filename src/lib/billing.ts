@@ -1,12 +1,4 @@
-
 'use client';
-
-/**
- * ROBUST ATTENDANCE BILLING SYSTEM
- * 
- * This helper function ensures all students are billed correctly
- * when marked as Present or Late in attendance.
- */
 
 import { doc, setDoc, getDoc, serverTimestamp, Timestamp, collection, writeBatch } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
@@ -15,7 +7,7 @@ import { format } from 'date-fns';
 
 // Define your daily rates (adjust these to your school's rates)
 const DAILY_RATES = {
-  CANTEEN: 5.00,  // GHS per day
+  CANTEEN: 7.00,  // GHS per day
   BUS: 3.00,      // GHS per day
 };
 
@@ -84,7 +76,7 @@ export async function billStudentForAttendance(
 
     // Create unique record ID based on date and student
     const dateStr = attendanceDate.toISOString().split('T')[0]; // YYYY-MM-DD
-    const recordId = `${student.uid}_${dateStr}`;
+    const recordId = `daily-${student.uid}-${dateStr}`;
 
     // Check if already billed for this date
     const existingRecord = await getDoc(
@@ -92,7 +84,7 @@ export async function billStudentForAttendance(
     );
 
     if (existingRecord.exists()) {
-      console.log(`Student ${student.studentId} already billed for ${dateStr}`);
+      console.log(`Student ${student.studentId || student.uid} already billed for ${dateStr}`);
       return {
         success: true,
         message: 'Already billed for this date',
@@ -100,32 +92,24 @@ export async function billStudentForAttendance(
       };
     }
 
-    // Get student's class information
-    const classDoc = student.classId 
-      ? await getDoc(doc(firestore, 'classes', student.classId))
-      : null;
-    
-    const className = classDoc?.exists() ? classDoc.data()?.name : 'Unknown Class';
-
     // Create financial record
     await setDoc(doc(firestore, 'financialRecords', recordId), {
       studentId: student.uid,
       studentName: `${student.firstName} ${student.lastName}`,
       classId: student.classId || '',
-      className: className,
       type: 'Daily Services',
-      description: `Daily charges for ${services.join(' and ')} - ${dateStr}`,
+      description: `Daily charges for ${services.join(' & ')} on ${format(attendanceDate, 'PPP')}`,
       billedAmount: totalAmount,
       amountPaid: 0,
       waiverAmount: 0,
       status: 'Unpaid',
-      dueDate: Timestamp.fromDate(new Date(attendanceDate.getTime() + 7 * 24 * 60 * 60 * 1000)), // Due in 7 days
+      dueDate: Timestamp.fromDate(attendanceDate), // Due immediately
       createdAt: serverTimestamp(),
       billedBy: 'Attendance System',
       schoolId: schoolId,
-    });
+    }, { merge: true });
 
-    console.log(`✅ Successfully billed ${student.studentId} - ${totalAmount} GHS for ${services.join(' & ')}`);
+    console.log(`✅ Successfully billed ${student.studentId || student.uid} - ${totalAmount} GHS for ${services.join(' & ')}`);
 
     return {
       success: true,
