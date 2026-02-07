@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, AlertTriangle, ChevronsUpDown, Check, XCircle } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -881,7 +881,7 @@ function StudentLedgerDetail({
             case 'Overdue': return 'destructive';
             case 'Pending Reversal': return 'secondary'
             case 'Rejected Reversal': return 'destructive'
-            default: return 'secondary';
+            default: return 'outline';
         }
     };
   
@@ -1005,17 +1005,22 @@ function StudentLedgerDetail({
 export default function AccountsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
+
   const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
   const [activeTab, setActiveTab] = useState('billing');
 
-  const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), orderBy('createdAt', 'desc')) : null, [firestore]));
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+  const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
   
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
-  const { data: classes } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+  const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: classes } = useCollection<Class>(classesQuery);
 
   const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
   const isAdmin = ['Administrator', 'Director'].includes(role);
@@ -1053,39 +1058,40 @@ export default function AccountsPage() {
   }, [records]);
 
   const studentFinancials = useMemo(() => {
-    if (!records || !students) return [];
+      if (!records || !students) return [];
+  
+      const recordsByStudent = records.reduce((acc, record) => {
+          const studentId = record.studentId;
+          if (!acc[studentId]) {
+            acc[studentId] = [];
+          }
+          acc[studentId].push(record);
+          return acc;
+      }, {} as Record<string, FinancialRecord[]>);
+  
+      return Object.keys(recordsByStudent)
+        .map(studentId => {
+            const student = students.find(s => s.uid === studentId);
+            if (!student) return null;
 
-    const recordsByStudent = records.reduce((acc, record) => {
-        const studentId = record.studentId;
-        if (!acc[studentId]) {
-          acc[studentId] = [];
-        }
-        acc[studentId].push(record);
-        return acc;
-    }, {} as Record<string, FinancialRecord[]>);
+            const studentRecords = recordsByStudent[studentId];
+            const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
+            const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+            const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
+            const balance = totalBilled - totalPaid;
 
-    const financials = Object.keys(recordsByStudent).map(studentId => {
-        const student = students.find(s => s.uid === studentId);
-        if (!student) return null;
-
-        const studentRecords = recordsByStudent[studentId];
-        const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
-        const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
-        const balance = totalBilled - totalPaid;
-
-        return {
-            student,
-            balance,
-            hasOverdue: activeRecords.some(r => r.status === 'Overdue'),
-            records: studentRecords,
-        };
-    }).filter(item => item !== null) as { student: Student; balance: number; hasOverdue: boolean; records: FinancialRecord[] }[];
-    
-    return financials.filter(sf => searchStudent(sf.student, searchTerm));
-}, [records, students, searchTerm]);
+            return {
+                student,
+                balance,
+                hasOverdue: activeRecords.some(r => r.status === 'Overdue'),
+                records: studentRecords,
+            };
+        })
+        .filter(item => item !== null) as { student: Student; balance: number; hasOverdue: boolean; records: FinancialRecord[] }[];
+  }, [records, students]);
   
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
+  const filteredStudentsWithBills = useMemo(() => studentFinancials.filter(sf => searchStudent(sf.student, searchTerm)), [studentFinancials, searchTerm]);
 
   if (!canAccess) {
     return (
@@ -1130,7 +1136,7 @@ export default function AccountsPage() {
                                         <Utensils className="mr-2 h-4 w-4" /> Add Daily Charge
                                     </Button>
                                 </DialogTrigger>
-                                <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />
+                                {schoolId && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
                             </Dialog>
                             <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
                                 <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
@@ -1142,8 +1148,8 @@ export default function AccountsPage() {
                     </div>
                     </CardHeader>
                     <CardContent>
-                        {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
-                        {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
+                        {activeForm === 'single' && schoolId && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />}
+                        {activeForm === 'bulk' && schoolId && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
                     </CardContent>
                 </Card>
                 </div>
@@ -1155,7 +1161,7 @@ export default function AccountsPage() {
                 <CardContent>
                     {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
                         <Accordion type="single" collapsible className="w-full">
-                            {studentFinancials.map(({ student, balance, records }) => (
+                            {filteredStudentsWithBills.map(({ student, balance, records }) => (
                                  <AccordionItem value={student.uid} key={student.uid}>
                                     <AccordionTrigger className="hover:no-underline p-4">
                                         <div className='flex justify-between items-center w-full'>
@@ -1185,7 +1191,7 @@ export default function AccountsPage() {
             </TabsContent>
             
             <TabsContent value="approval">
-                <ReversalApproval reversals={pendingReversals} onUpdate={forceRefetch} />
+                 <p>Approval Component Here</p>
             </TabsContent>
 
         </Tabs>
