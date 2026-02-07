@@ -10,7 +10,7 @@ import { checkAndSpendCredits } from '@/app/actions/credits';
 async function callAi(prompt: string, schema: any) {
     try {
         const { output } = await ai.generate({
-            model: ai.registry.lookupModel('googleai/gemini-1.5-flash'), // ← CHANGED
+            model: 'googleai/gemini-1.5-flash', // Corrected model syntax
             prompt,
             output: { schema },
         });
@@ -36,8 +36,15 @@ export async function generateDailyParadox(input: { targetGroup: string; schoolI
         difficulty: z.string(),
     });
     
+    const complexityInstruction = {
+        'Novice (Basic 1-3)': "Target audience: Kids 6-8. Simple, fun logic.",
+        'Apprentice (Basic 4-6)': "Target audience: Kids 9-11. Wordplay, math logic.",
+        'Scholar (JHS)': "Target audience: Teens 12-15. Lateral thinking.",
+        'Master (SHS)': "Target audience: Young Adults 16+. Complex paradoxes."
+    }[input.targetGroup] || "General audience.";
+
     const output = await callAi(
-        `Generate a logic puzzle for ${input.targetGroup}. Output JSON.`, 
+        `Generate a logic puzzle/riddle. ${complexityInstruction} Output JSON.`, 
         schema
     );
     return { ...output, targetGroup: input.targetGroup };
@@ -57,8 +64,15 @@ export async function generateDetectiveCase(input: { targetGroup: string; school
         explanation: z.string(),
     });
 
+    const instruction = {
+        'Novice (Basic 1-3)': "Activity: 'Fact vs Opinion'. Simple statements.",
+        'Apprentice (Basic 4-6)': "Activity: 'Bias Hunter'.",
+        'Scholar (JHS)': "Activity: 'Fake News Spotter'. Sensationalized headlines.",
+        'Master (SHS)': "Activity: 'Fallacy Spotter'. Short arguments."
+    }[input.targetGroup] || "General critical thinking exercise.";
+
     const output = await callAi(
-        `Generate a detective case for ${input.targetGroup}. Output JSON.`,
+        `Generate a Critical Thinking 'Detective Case'. ${instruction} Output strictly JSON.`,
         schema
     );
     return { ...output, targetGroup: input.targetGroup };
@@ -70,8 +84,16 @@ export async function generateDebateTopic(input: { targetGroup: string; schoolId
         throw new Error(creditResult.error || "Insufficient AI credits.");
     }
     const schema = z.object({ topic: z.string(), context: z.string() });
+    
+    const instruction = {
+        'Novice (Basic 1-3)': "Topics: Fun preferences (e.g., 'Cats vs Dogs').",
+        'Apprentice (Basic 4-6)': "Topics: School/Home rules.",
+        'Scholar (JHS)': "Topics: Social issues, Technology.",
+        'Master (SHS)': "Topics: Global policy, Ethics."
+    }[input.targetGroup] || "General topics.";
+
     const output = await callAi(
-        `Generate a debate topic for ${input.targetGroup}. Output JSON.`,
+        `Generate a debate topic. ${instruction} Output strictly JSON.`,
         schema
     );
     return { ...output, targetGroup: input.targetGroup };
