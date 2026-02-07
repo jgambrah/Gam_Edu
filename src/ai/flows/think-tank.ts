@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -9,6 +10,7 @@ import { checkAndSpendCredits } from '@/app/actions/credits';
 async function callAi(prompt: string, schema: any) {
     try {
         const { output } = await ai.generate({
+            model: 'googleai/gemini-1.5-flash',
             prompt,
             output: { schema },
         });
