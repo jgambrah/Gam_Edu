@@ -1,9 +1,9 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { MOCK_CROSSWORD_PUZZLES } from '@/lib/data';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // --- HELPER TO PREVENT 500 CRASHES ---
 async function callAi(prompt: string, schema: any) {
@@ -25,7 +25,11 @@ async function callAi(prompt: string, schema: any) {
 
 // --- ACTIONS ---
 
-export async function generateDailyParadox(input: { targetGroup: string }) {
+export async function generateDailyParadox(input: { targetGroup: string; schoolId: string; }) {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+    if (!creditResult.success) {
+        throw new Error(creditResult.error || "Insufficient AI credits.");
+    }
     const schema = z.object({
         question: z.string(),
         answer: z.string(),
@@ -40,7 +44,11 @@ export async function generateDailyParadox(input: { targetGroup: string }) {
     return { ...output, targetGroup: input.targetGroup };
 }
 
-export async function generateDetectiveCase(input: { targetGroup: string }) {
+export async function generateDetectiveCase(input: { targetGroup: string; schoolId: string; }) {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+    if (!creditResult.success) {
+        throw new Error(creditResult.error || "Insufficient AI credits.");
+    }
     const schema = z.object({
         scenario: z.string(),
         question: z.string(),
@@ -57,7 +65,11 @@ export async function generateDetectiveCase(input: { targetGroup: string }) {
     return { ...output, targetGroup: input.targetGroup };
 }
 
-export async function generateDebateTopic(input: { targetGroup: string }) {
+export async function generateDebateTopic(input: { targetGroup: string; schoolId: string; }) {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+    if (!creditResult.success) {
+        throw new Error(creditResult.error || "Insufficient AI credits.");
+    }
     const schema = z.object({ topic: z.string(), context: z.string() });
     const output = await callAi(
         `Generate a debate topic for ${input.targetGroup}. Output JSON.`,

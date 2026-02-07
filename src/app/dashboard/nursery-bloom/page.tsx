@@ -10,7 +10,41 @@ import { useToast } from '@/hooks/use-toast';
 import { doc, getDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Loader2, X } from 'lucide-react';
-import { checkAndSpendCredits } from '@/app/actions/credits'; // Import the action
+import { checkAndSpendCredits } from '@/app/actions/credits';
+
+const StartScreen: React.FC<{ title: string; icon: React.ElementType; color: string; onStart: () => void }> = ({ title, icon: Icon, color, onStart }) => (
+  <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-black flex flex-col items-center justify-center min-h-[500px] animate-in zoom-in font-black text-center">
+    <div className={`w-40 h-40 ${color} text-white rounded-[3rem] flex items-center justify-center text-7xl mb-10 shadow-2xl border-8 border-white animate-bounce`}>
+      <Icon className="h-20 w-20" />
+    </div>
+    <h2 className="text-5xl font-black text-black uppercase tracking-tighter mb-4">{title}</h2>
+    <p className="text-xl text-slate-400 font-black uppercase tracking-widest mb-12">Talk to your AI buddy Dr. GAM!</p>
+    <Button
+      onClick={onStart}
+      className="px-16 py-8 bg-black text-white text-3xl font-black rounded-[3rem] shadow-[0_12px_0_0_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 transition-all uppercase tracking-widest border-4 border-white"
+    >
+      Wake Dr. GAM! 🚀
+    </Button>
+  </div>
+);
+
+const CloseButton: React.FC<{ onExit: () => void }> = ({ onExit }) => (
+  <Button
+    onClick={onExit}
+    variant="ghost"
+    size="icon"
+    className="absolute top-6 left-6 w-12 h-12 bg-white border-4 border-black rounded-2xl text-black hover:bg-red-50 hover:text-red-500 transition-colors z-[160] shadow-sm font-black"
+  >
+    <X className="text-xl" />
+  </Button>
+);
+
+interface VisualState {
+  type: 'concept';
+  value: string;
+  url?: string;
+  id: number;
+}
 
 const NurseryBloomIframePage: React.FC = () => {
   const [isLaunched, setIsLaunched] = useState(false);

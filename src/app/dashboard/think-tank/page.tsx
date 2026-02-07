@@ -1,8 +1,6 @@
-
-
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs, onSnapshot, limit } from 'firebase/firestore';
@@ -35,6 +33,7 @@ import { formatDate } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
 
@@ -49,11 +48,9 @@ const getStudentGroup = (className: string = '') => {
 };
 
 // --- COMPONENT: Teacher Monitor ---
-function TeacherMonitorTab() {
+function TeacherMonitorTab({ schoolId }: { schoolId: string | null }) {
     const firestore = useFirestore();
-    const { schoolId } = useCurrentSchool();
-    
-    // Query last 50 submissions
+    // Query last 50 submissions, filtered by schoolId
     const submissionsQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'think_tank_submissions'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc'), limit(50)) : null,
     [firestore, schoolId]);
@@ -165,12 +162,11 @@ function DetectiveCard({ caseData, onDelete, isStaff }: { caseData: any, onDelet
 }
 
 // --- SUB-COMPONENT: Detective Desk Tab ---
-function DetectiveDeskTab() {
+function DetectiveDeskTab({ schoolId }: { schoolId: string | null }) {
   const { user } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { schoolId } = useCurrentSchool();
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]); 
@@ -180,7 +176,7 @@ function DetectiveDeskTab() {
 
   // 1. Get Student Info
   const { data: studentData } = useCollection<Student>(
-    useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user])
+    useMemoFirebase(() => (role === 'Student' && user && schoolId) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, schoolId])
   );
 
   // 2. Determine Group
@@ -217,7 +213,7 @@ function DetectiveDeskTab() {
     toast({ title: "Investigating...", description: "Gathering evidence for a new case." });
     
     try {
-        const result = await generateDetectiveCase({ targetGroup: activeGroup });
+        const result = await generateDetectiveCase({ targetGroup: activeGroup, schoolId });
         const docRef = await addDoc(collection(firestore!, 'think_tank_detective_cases'), {
             ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid, schoolId: schoolId
         });
@@ -242,7 +238,6 @@ function DetectiveDeskTab() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT: ACTIVE CASE */}
         <div className="lg:col-span-2">
             <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <Badge variant="outline" className="text-sm px-3 py-1 w-fit bg-amber-50 text-amber-800 border-amber-200">
@@ -272,7 +267,6 @@ function DetectiveDeskTab() {
             )}
         </div>
 
-        {/* RIGHT: ARCHIVE */}
         <div className="space-y-4">
             {canManage && (
                 <Card className="bg-amber-50 border-amber-200 shadow-sm">
@@ -313,12 +307,11 @@ function DetectiveDeskTab() {
 }
 
 // --- SUB-COMPONENT: Daily Paradox Tab ---
-function DailyParadoxTab() {
+function DailyParadoxTab({ schoolId }: { schoolId: string | null }) {
   const { user, isUserLoading } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { schoolId } = useCurrentSchool();
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]); 
@@ -327,7 +320,7 @@ function DailyParadoxTab() {
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
   const { data: studentData } = useCollection<Student>(
-    useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user])
+    useMemoFirebase(() => (role === 'Student' && user && schoolId) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, schoolId])
   );
 
   const activeGroup = useMemo(() => {
@@ -398,7 +391,7 @@ function DailyParadoxTab() {
     if (!currentUser || !schoolId) return;
     setIsGenerating(true);
     try {
-        const result = await generateDailyParadox({ targetGroup: activeGroup });
+        const result = await generateDailyParadox({ targetGroup: activeGroup, schoolId });
         if (!result) throw new Error("AI returned no data");
         const docRef = await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
             ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid, schoolId: schoolId
@@ -406,7 +399,7 @@ function DailyParadoxTab() {
         toast({ title: "Success!" });
         setSelectedParadoxId(docRef.id);
         forceRefetch();
-    } catch(e: any) { toast({ variant: 'destructive', title: "AI Error" }); } 
+    } catch(e: any) { toast({ variant: 'destructive', title: "AI Error", description: e.message }); } 
     finally { setIsGenerating(false); }
   };
 
@@ -452,12 +445,11 @@ function DailyParadoxTab() {
 }
 
 // --- SUB-COMPONENT: Debate Arena Tab ---
-function DebateArenaTab() {
+function DebateArenaTab({ schoolId }: { schoolId: string | null }) {
   const { user } = useAuth();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { schoolId } = useCurrentSchool();
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]);
@@ -465,7 +457,7 @@ function DebateArenaTab() {
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
   
   const { data: studentData } = useCollection<Student>(
-    useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user])
+    useMemoFirebase(() => (role === 'Student' && user && schoolId) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, schoolId])
   );
   
   const activeGroup = useMemo(() => {
@@ -492,7 +484,7 @@ function DebateArenaTab() {
       if (!currentUser || !schoolId) return;
       setIsGenerating(true);
       try {
-          const result = await generateDebateTopic({ targetGroup: activeGroup });
+          const result = await generateDebateTopic({ targetGroup: activeGroup, schoolId });
           await addDoc(collection(firestore!, 'think_tank_debates'), { ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid, schoolId: schoolId });
           toast({ title: "AI Generated Debate!" });
           forceRefetch();
@@ -529,6 +521,15 @@ function DebateArenaTab() {
 export default function ThinkTankPage() {
   const { role } = useRole();
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+
+  if (isLoadingSchool) {
+      return (
+          <div className="flex h-64 w-full items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+      );
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -551,12 +552,12 @@ export default function ThinkTankPage() {
             <TabsTrigger value="debate">Debate Arena</TabsTrigger>
             {canManage && <TabsTrigger value="monitor"><Activity className="mr-2 h-4 w-4"/> Activity Log</TabsTrigger>}
         </TabsList>
-        <TabsContent value="paradox" className="mt-6"><DailyParadoxTab /></TabsContent>
-        <TabsContent value="detective" className="mt-6"><DetectiveDeskTab /></TabsContent>
-        <TabsContent value="debate" className="mt-6"><DebateArenaTab /></TabsContent>
+        <TabsContent value="paradox" className="mt-6"><DailyParadoxTab schoolId={schoolId} /></TabsContent>
+        <TabsContent value="detective" className="mt-6"><DetectiveDeskTab schoolId={schoolId} /></TabsContent>
+        <TabsContent value="debate" className="mt-6"><DebateArenaTab schoolId={schoolId} /></TabsContent>
         {canManage && (
             <TabsContent value="monitor" className="mt-6">
-                <TeacherMonitorTab />
+                <TeacherMonitorTab schoolId={schoolId} />
             </TabsContent>
         )}
       </Tabs>
