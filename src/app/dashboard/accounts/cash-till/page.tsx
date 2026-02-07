@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -27,7 +26,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 // --- SUB-COMPONENT: Till Adjustment Dialog ---
-function TillAdjustmentDialog({ activeTill, open, setOpen, onUpdate }: { activeTill: Till; open: boolean; setOpen: (open: boolean) => void; onUpdate: () => void; }) {
+function TillAdjustmentDialog({ open, onOpenChange, tillId, onSuccess }: { open: boolean, onOpenChange: (open: boolean) => void, tillId: string, onSuccess: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
@@ -47,45 +46,46 @@ function TillAdjustmentDialog({ activeTill, open, setOpen, onUpdate }: { activeT
         if (!firestore || !schoolId) return;
         setIsSubmitting(true);
         try {
-            const transactionRef = collection(firestore, `tills/${activeTill.id}/transactions`);
+            const transactionRef = collection(firestore, `tills/${tillId}/transactions`);
             await addDoc(transactionRef, {
-                tillId: activeTill.id,
-                amount: Number(values.amount),
+                tillId: tillId,
+                amount: values.amount,
                 description: `Manual Adjustment: ${values.reason}`,
+                timestamp: serverTimestamp(),
                 type: 'Adjustment',
                 status: 'Pending Adjustment',
-                timestamp: serverTimestamp(),
                 schoolId: schoolId,
             });
-            toast({ title: 'Adjustment Submitted', description: 'Your request has been sent for director approval.' });
-            onUpdate();
-            setOpen(false);
+
+            toast({ title: "Adjustment Submitted", description: `Your request for GH₵${values.amount.toFixed(2)} is pending approval.` });
+            onSuccess();
+            onOpenChange(false);
+            form.reset();
         } catch (e: any) {
             toast({ variant: 'destructive', title: "Error", description: e.message });
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Manual Till Adjustment</DialogTitle>
-                    <DialogDescription>Request a manual change to the till's balance. This requires director approval.</DialogDescription>
+                    <DialogTitle>Request Manual Till Adjustment</DialogTitle>
+                    <DialogDescription>Record a cash adjustment for this till. This will require approval from a Director.</DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField control={form.control} name="amount" render={({ field }) => (
-                            <FormItem><FormLabel>Adjustment Amount (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} placeholder="e.g., -630 for over-recording" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Adjustment Amount (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="-630.00 for deductions" /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="reason" render={({ field }) => (
-                            <FormItem><FormLabel>Reason for Adjustment</FormLabel><FormControl><Textarea placeholder="e.g., Corrected over-recorded payment for INV-123" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Reason</FormLabel><FormControl><Textarea placeholder="e.g., Correction for data entry error on receipt #123" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                            <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Submit for Approval</Button>
-                        </DialogFooter>
+                        <Button type="submit" disabled={isSubmitting} className="w-full">
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Submit for Approval
+                        </Button>
                     </form>
                 </Form>
             </DialogContent>
@@ -98,20 +98,19 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isAdjustmentOpen, setIsAdjustmentOpen] = useState(false);
-    const { schoolId } = useCurrentSchool();
 
     const studentMap = useMemo(() => new Map(students?.map(s => [s.uid, s])), [students]);
     const classMap = useMemo(() => new Map(classes?.map(c => [c.id, c.name])), [classes]);
-
 
     const tillQuery = useMemoFirebase(() => (user && schoolId) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', user.uid), where('status', '==', 'Open')) : null, [firestore, user, schoolId]);
     const { data: openTills, isLoading: isLoadingTills, forceRefetch } = useCollection<Till>(tillQuery);
     const activeTill = openTills?.[0];
 
     const transactionsQuery = useMemoFirebase(() => activeTill ? query(collection(firestore, `tills/${activeTill.id}/transactions`), orderBy('timestamp', 'desc')) : null, [firestore, activeTill]);
-    const { data: transactions, isLoading: isLoadingTransactions, forceRefetch: refetchTransactions } = useCollection<TillTransaction>(transactionsQuery);
+    const { data: transactions, isLoading: isLoadingTransactions } = useCollection<TillTransaction>(transactionsQuery);
 
     const historyQuery = useMemoFirebase(() => (user && schoolId) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', user.uid), where('status', '!=', 'Open'), orderBy('status'), orderBy('dateClosed', 'desc')) : null, [firestore, user, schoolId]);
     const { data: historyTills, isLoading: isLoadingHistory } = useCollection<Till>(historyQuery);
@@ -279,74 +278,14 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
     );
 }
 
-// --- Director's View: Bank Transactions Approval ---
-function DirectorBankTransactionsView() {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    const { schoolId } = useCurrentSchool();
-    
-    const pendingBankTxQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'bank_transactions'), where('schoolId', '==', schoolId), where('status', '==', 'Pending'), orderBy('recordedAt', 'desc')) : null, [firestore, schoolId]);
-    const { data: pendingTxs, isLoading, forceRefetch } = useCollection<BankTransaction>(pendingBankTxQuery);
-
-    const handleApprove = async (txId: string) => {
-        if (!user) return;
-        await updateDoc(doc(firestore, 'bank_transactions', txId), {
-            status: 'Approved',
-            approverId: user.uid,
-            approverName: user.displayName || user.email,
-            approvedAt: serverTimestamp(),
-        });
-        toast({ title: 'Approved', description: 'Transaction has been approved.' });
-        forceRefetch();
-    };
-
-    const handleReject = (txId: string) => {
-        toast({ title: 'Rejected (Not Implemented)', description: 'Rejection logic needs to be built.' });
-    };
-
-    return (
-        <div className="mt-4">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Date Recorded</TableHead>
-                        <TableHead>Recorded By</TableHead>
-                        <TableHead>Student</TableHead>
-                        <TableHead>Method</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {isLoading && <TableRow><TableCell colSpan={6} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow>}
-                    {!isLoading && pendingTxs?.map(tx => (
-                        <TableRow key={tx.id}>
-                            <TableCell>{tx.recordedAt ? format(tx.recordedAt.toDate(), 'PPP p') : 'N/A'}</TableCell>
-                            <TableCell>{tx.recordedByName}</TableCell>
-                            <TableCell>{tx.studentName}</TableCell>
-                            <TableCell><Badge variant="outline">{tx.paymentMethod}</Badge></TableCell>
-                            <TableCell className="text-right font-bold">GH₵{tx.amount.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">
-                                <Button size="sm" onClick={() => handleApprove(tx.id)}>Approve</Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            {!isLoading && pendingTxs?.length === 0 && <p className="text-center text-muted-foreground p-8">No pending bank or mobile money payments to review.</p>}
-        </div>
-    );
-}
-
-// --- Director's View: Till Detail Dialog ---
+// --- Director's View: Approve/Reject Tills ---
 function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classes }: { 
     till: Till | null, 
     open: boolean, 
     onOpenChange: (open: boolean) => void, 
     onUpdate: () => void,
     students: Student[] | null,
-    classes: Class[] | null 
+    classes: Class[] | null
 }) {
     const firestore = useFirestore();
     const { user } = useUser();
@@ -427,20 +366,29 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
                 <DialogHeader>
                     <DialogTitle>Till Submission Review</DialogTitle>
                     <DialogDescription>
-                        For: {till.accountantName} | Date: {till.dateOpened ? format(till.dateOpened.toDate(), 'PPP') : 'N/A'}
+                        For {till.accountantName} on {till.dateOpened ? format(till.dateOpened.toDate(), 'PPP') : 'N/A'}. 
+                        Proposed Closing Balance: GH₵{till.closingBalance?.toFixed(2)}
                     </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
-                    <p>Reported Closing Balance: <strong>GH₵{till.closingBalance?.toFixed(2)}</strong></p>
+                <div className="max-h-[60vh] overflow-y-auto pr-2">
                     <Table>
-                        <TableHeader><TableRow><TableHead>Student</TableHead><TableHead>Details</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Amount (GH₵)</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                        <TableHeader><TableRow><TableHead>Time</TableHead><TableHead>Student</TableHead><TableHead>Details</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Amount (GH₵)</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
                         <TableBody>
-                            {isLoadingTransactions && <TableRow><TableCell colSpan={5} className="text-center"><Loader2 className="animate-spin"/></TableCell></TableRow>}
-                            {transactions?.map(tx => {
+                            {isLoadingTransactions ? <TableRow><TableCell colSpan={6} className="text-center"><Loader2 className="mx-auto h-6 w-6 animate-spin"/></TableCell></TableRow> 
+                            : transactions?.map(tx => {
                                 const student = tx.studentId ? studentMap.get(tx.studentId) : null;
+                                const className = student ? classMap.get(student.classId) : null;
                                 return (
-                                <TableRow key={tx.id} className={tx.status === 'Pending Adjustment' ? 'bg-yellow-50' : ''}>
-                                    <TableCell>{student ? <StudentDisplay student={student} variant="compact" /> : tx.studentName || '-'}</TableCell>
+                                <TableRow key={tx.id} className={tx.status === 'Pending Adjustment' ? 'bg-amber-50' : ''}>
+                                    <TableCell>{tx.timestamp ? format(tx.timestamp.toDate(), 'p') : 'N/A'}</TableCell>
+                                    <TableCell>
+                                        {student ? (
+                                            <div>
+                                                <div className="font-medium">{student.firstName} {student.lastName}</div>
+                                                <div className="text-xs text-muted-foreground">{className}</div>
+                                            </div>
+                                        ) : tx.studentName || '-'}
+                                    </TableCell>
                                     <TableCell className="text-xs">{tx.description}</TableCell>
                                     <TableCell><Badge variant={(tx.status === 'Completed' || !tx.status) ? 'default' : 'secondary'}>{tx.status || 'Completed'}</Badge></TableCell>
                                     <TableCell className={`text-right font-mono ${tx.amount < 0 ? 'text-red-500' : ''}`}>{tx.amount.toFixed(2)}</TableCell>
@@ -533,61 +481,50 @@ function DirectorTillView() {
         <>
             <Card>
                 <CardHeader>
-                    <CardTitle>Financial Approvals</CardTitle>
-                    <CardDescription>Review and approve end-of-day till submissions and other digital payments.</CardDescription>
+                    <CardTitle>Till Submissions</CardTitle>
+                    <CardDescription>Review and approve end-of-day till submissions from accountants.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Tabs defaultValue="tills">
+                    <Tabs defaultValue="pending">
                         <TabsList>
-                            <TabsTrigger value="tills">Till Submissions</TabsTrigger>
-                            <TabsTrigger value="bank">Bank & MoMo Transactions</TabsTrigger>
+                            <TabsTrigger value="pending">Pending Approval</TabsTrigger>
+                            <TabsTrigger value="history">Approval History</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="tills" className="mt-4">
-                            <Tabs defaultValue="pending">
-                                <TabsList>
-                                    <TabsTrigger value="pending">Pending Approval</TabsTrigger>
-                                    <TabsTrigger value="history">Approval History</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="pending" className="mt-4">
-                                    <Table>
-                                        <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date</TableHead><TableHead className="text-right">Closing Balance</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
-                                        <TableBody>
-                                            {isLoading ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
-                                            : sortedPending?.map(till => (
-                                                <TableRow key={till.id}>
-                                                    <TableCell>{till.accountantName}</TableCell>
-                                                    <TableCell>{till.dateOpened ? format(till.dateOpened.toDate(), 'PPP') : 'N/A'}</TableCell>
-                                                    <TableCell className="text-right font-bold">GH₵{till.closingBalance?.toFixed(2)}</TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button size="sm" onClick={() => setReviewingTill(till)}>Review</Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                    {!isLoading && sortedPending?.length === 0 && <p className="text-center text-muted-foreground p-8">No tills are currently pending approval.</p>}
-                                </TabsContent>
-                                <TabsContent value="history" className="mt-4">
-                                    <Table>
-                                        <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date Closed</TableHead><TableHead>Balance</TableHead><TableHead>Approved By</TableHead></TableRow></TableHeader>
-                                        <TableBody>
-                                            {isLoading ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
-                                            : sortedClosed?.map(till => (
-                                                <TableRow key={till.id} onClick={() => setReviewingTill(till)} className="cursor-pointer hover:bg-muted/50">
-                                                    <TableCell>{till.accountantName}</TableCell>
-                                                    <TableCell>{till.dateClosed ? format(till.dateClosed.toDate(), 'PPp') : 'N/A'}</TableCell>
-                                                    <TableCell className="font-medium">GH₵{till.closingBalance?.toFixed(2)}</TableCell>
-                                                    <TableCell>{till.directorApproval?.directorName}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                    {!isLoading && sortedClosed?.length === 0 && <p className="text-center text-muted-foreground p-8">No approved tills in history.</p>}
-                                </TabsContent>
-                            </Tabs>
+                        <TabsContent value="pending" className="mt-4">
+                            <Table>
+                                <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date</TableHead><TableHead className="text-right">Closing Balance</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                                <TableBody>
+                                    {isLoading ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
+                                    : sortedPending?.map(till => (
+                                        <TableRow key={till.id}>
+                                            <TableCell>{till.accountantName}</TableCell>
+                                            <TableCell>{till.dateOpened ? format(till.dateOpened.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                            <TableCell className="text-right font-bold">GH₵{till.closingBalance?.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Button size="sm" onClick={() => setReviewingTill(till)}>Review</Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                            {!isLoading && sortedPending?.length === 0 && <p className="text-center text-muted-foreground p-8">No tills are currently pending approval.</p>}
                         </TabsContent>
-                        <TabsContent value="bank">
-                            <DirectorBankTransactionsView />
+                        <TabsContent value="history" className="mt-4">
+                            <Table>
+                                <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date Closed</TableHead><TableHead>Balance</TableHead><TableHead>Approved By</TableHead></TableRow></TableHeader>
+                                <TableBody>
+                                    {isLoading ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
+                                    : sortedClosed?.map(till => (
+                                        <TableRow key={till.id} onClick={() => setReviewingTill(till)} className="cursor-pointer hover:bg-muted/50">
+                                            <TableCell>{till.accountantName}</TableCell>
+                                            <TableCell>{till.dateClosed ? format(till.dateClosed.toDate(), 'PPp') : 'N/A'}</TableCell>
+                                            <TableCell className="font-medium">GH₵{till.closingBalance?.toFixed(2)}</TableCell>
+                                            <TableCell>{till.directorApproval?.directorName}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                            {!isLoading && sortedClosed?.length === 0 && <p className="text-center text-muted-foreground p-8">No approved tills in history.</p>}
                         </TabsContent>
                     </Tabs>
                 </CardContent>
@@ -608,17 +545,21 @@ function DirectorTillView() {
 
 export default function CashTillPage() {
     const { role } = useRole();
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
-    const [selectedTill, setSelectedTill] = useState<Till | null>(null);
     const firestore = useFirestore();
-    
+    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const { schoolId } = useCurrentSchool();
+
+    const [selectedTill, setSelectedTill] = useState<Till | null>(null);
+
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(
-        useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore])
+        useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId])
     );
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(
-        useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
+        useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId])
     );
-    
+
+    const isLoading = isLoadingStudents || isLoadingClasses;
+
     if (!canAccess) {
         return (
             <Card>
@@ -626,16 +567,17 @@ export default function CashTillPage() {
             </Card>
         );
     }
-
+    
     const isDirector = role === 'Administrator' || role === 'Director';
     const isAccountant = role === 'Accountant';
     
-    const isLoading = isLoadingStudents || isLoadingClasses;
+    const { data: pendingTills, forceRefetch: forceRefetchPending } = useCollection<Till>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'PendingApproval')) : null, [firestore, schoolId]));
 
     return (
         <div className="space-y-6">
             <h1 className="text-3xl font-bold">Financial Submissions</h1>
-            {isLoading && <Loader2 className="mx-auto my-10 animate-spin" />}
+            {isLoading && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>}
+            
             {!isLoading && isDirector && <DirectorTillView setSelectedTill={setSelectedTill} />}
             {!isLoading && isAccountant && <AccountantTillView students={students} classes={classes} setSelectedTill={setSelectedTill} />}
             
@@ -643,7 +585,7 @@ export default function CashTillPage() {
                 till={selectedTill}
                 open={!!selectedTill}
                 onOpenChange={() => setSelectedTill(null)}
-                onUpdate={() => {}} // Director view has its own refetch
+                onUpdate={forceRefetchPending}
                 students={students}
                 classes={classes}
             />
