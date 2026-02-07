@@ -1,4 +1,3 @@
-
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -127,7 +126,7 @@ export function StatementDocument({ student, records, dateRange, summary, school
       
       {/* Totals */}
       <section className="flex justify-end mt-8">
-        <div className="w-1/2">
+        <div className="w-1/2 text-sm">
           <div className="flex justify-between py-2 border-b">
             <span className="font-medium">Charges this Period</span>
             <span className="font-mono">GH₵ {periodSummary.totalBilled.toFixed(2)}</span>
@@ -158,5 +157,3 @@ export function StatementDocument({ student, records, dateRange, summary, school
     </div>
   );
 }
-
-    

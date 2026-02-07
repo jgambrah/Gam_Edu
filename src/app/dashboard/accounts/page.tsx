@@ -1,21 +1,23 @@
-
-
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, Timestamp, arrayUnion, addDoc } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField } from 'firebase/firestore';
+import { format, isPast, startOfDay, endOfDay, startOfMonth } from 'date-fns';
+import type { DateRange } from 'react-day-picker';
+
+// UI Components
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, DollarSign, HandCoins, Receipt, AlertCircle, Eye, Wallet, CheckSquare, Coffee, Printer, Wrench } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, AlertTriangle, ChevronsUpDown, Check, XCircle, Wrench } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,26 +25,24 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, isPast, startOfDay, endOfDay } from 'date-fns';
-import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymentSchema, applyWaiverSchema, Student, Till, Class } from '@/lib/types';
-import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+
+// Local Components & Utils
+import { FeeCategory, PaymentTransaction, Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, applyWaiverSchema, bulkBillingSchema, Class } from '@/lib/types';
+import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { StudentDisplay } from '@/components/student-display';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
-import { StudentSelect } from '@/components/StudentSelect';
-import { useCurrentSchool } from '@/hooks/use-current-school';
 import { GenerateReceipt } from './generate-receipt';
-import { DatePickerWithRange } from '@/components/ui/date-picker-with-range';
-import { DateRange } from 'react-day-picker';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 // --- Types ---
@@ -52,146 +52,155 @@ const extendedFinancialRecordSchema = financialRecordSchema.extend({
 
 const reversalSchema = z.object({
   amount: z.coerce.number().min(0.01, "Amount must be positive."),
-  reason: z.string().min(10, "A detailed reason is required for the reversal request."),
+  reason: z.string().min(5, "A reason for the reversal is required.")
 });
 
+// --- SUB-COMPONENT: Payment History (Inline Table Row) ---
+function PaymentHistory({ record }: { record: FinancialRecord }) {
+    const firestore = useFirestore();
+    
+    const paymentsQuery = useMemoFirebase(() =>
+        (firestore && record?.id) ? 
+        query(
+            collection(firestore, 'financialRecords', record.id, 'payments'), 
+            orderBy('paidAt', 'desc')
+        ) : null,
+        [firestore, record?.id]
+    );
+    
+    const { data: payments, isLoading } = useCollection<PaymentTransaction>(paymentsQuery);
 
-// --- SUB-COMPONENT: Reversal Request Dialog ---
+    if (isLoading) return <div className="p-4 text-xs animate-pulse">Loading history...</div>;
+    
+    if ((!payments || payments.length === 0) && (record.amountPaid || 0) > 0) {
+        return (
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-md m-2 flex justify-between items-center">
+                <div>
+                    <p className="text-xs font-semibold text-blue-800">Legacy Payment Found</p>
+                    <p className="text-[10px] text-blue-600">This payment was recorded before the detailed tracking update.</p>
+                </div>
+                <GenerateReceipt 
+                    transaction={record} 
+                    payment={{
+                        id: 'legacy-' + record.id,
+                        amount: record.amountPaid,
+                        method: 'Recorded Payment',
+                        paidAt: record.lastPaymentDate || record.createdAt,
+                        notes: 'Legacy record'
+                    } as any} 
+                    variant="full" 
+                />
+            </div>
+        );
+    }
+
+    if (!payments || payments.length === 0) {
+        return (
+            <div className="p-4 bg-slate-50 border border-dashed rounded-md m-2">
+                <p className="text-xs text-muted-foreground italic text-center">
+                    No payment transactions recorded for this specific charge yet.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-4 space-y-2">
+            {payments.map(p => (
+                <div key={p.id} className="flex justify-between items-center text-xs bg-white p-2 border rounded">
+                    <span>GH₵{p.amount.toFixed(2)} ({p.method}) - {p.paidAt ? format(p.paidAt.toDate(), 'dd MMM yy') : ''}</span>
+                    <GenerateReceipt transaction={record} payment={p} variant="icon" />
+                </div>
+            ))}
+        </div>
+    );
+}
+
+// --- SUB-COMPONENT: Reversal Dialog ---
 function ReverseTransactionDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore();
-    const { user } = useUser();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { schoolId } = useCurrentSchool();
-
+    
     const form = useForm<z.infer<typeof reversalSchema>>({
         resolver: zodResolver(reversalSchema),
         defaultValues: { amount: 0, reason: '' }
     });
 
     async function onSubmit(values: z.infer<typeof reversalSchema>) {
-        if (!firestore || !user || !schoolId) return;
-
+        if (!firestore || !schoolId) return;
         setIsSubmitting(true);
         try {
-            const newRecord: Omit<FinancialRecord, 'id'> = {
+            const newReversalRecord = {
                 studentId: record.studentId,
                 studentName: record.studentName,
                 classId: record.classId,
-                type: 'Correction / Reversal',
-                description: `Reversal for: '${record.description}'. Reason: ${values.reason}`,
-                billedAmount: values.amount, // This becomes a new charge
+                type: 'Correction / Reversal' as const,
+                description: `Correction for: ${record.description}. Reason: ${values.reason}`,
+                billedAmount: values.amount, 
                 amountPaid: 0,
-                status: 'Pending Reversal', // <<<< NEW STATUS
+                status: 'Pending Reversal' as const, 
                 dueDate: new Date(),
                 createdAt: serverTimestamp(),
-                schoolId,
+                schoolId: schoolId,
             };
 
-            await addDoc(collection(firestore, 'financialRecords'), newRecord);
+            await addDocumentNonBlocking(collection(firestore, 'financialRecords'), newReversalRecord);
             
-            toast({ title: 'Reversal Request Submitted', description: 'Your request has been sent to the director for approval.' });
+            toast({ title: "Reversal Pending", description: "Correction submitted for director's approval."});
             onUpdate();
             setOpen(false);
-        } catch (e: any) {
+        } catch (e) {
             console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: e.message });
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to post reversal.' });
         } finally {
             setIsSubmitting(false);
         }
     }
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Request Payment Reversal</DialogTitle>
-                    <DialogDescription>This will create a new debit entry on the student's account for manager approval.</DialogDescription>
+                    <DialogTitle>Request Reversal / Debit Memo</DialogTitle>
+                    <DialogDescription>Create a debit note to correct an error. This will require approval before it affects the student's balance.</DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="p-4 border rounded-lg bg-red-50 text-red-800">
-                            <p>Original Amount Paid: <strong>GH₵{record.amountPaid.toFixed(2)}</strong> on bill: "{record.description}"</p>
-                            <p className="text-xs mt-1">You are requesting to add this amount back to the student's bill.</p>
+                        <div className="p-3 bg-slate-50 rounded-md border text-sm">
+                            <p><strong>Original Item:</strong> {record.description}</p>
+                            <p><strong>Billed:</strong> GH₵{record.billedAmount.toFixed(2)} | <strong>Paid:</strong> GH₵{(record.amountPaid || 0).toFixed(2)}</p>
                         </div>
                         <FormField control={form.control} name="amount" render={({ field }) => (
-                            <FormItem><FormLabel>Amount to Debit Student (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
-                        )}/>
+                            <FormItem>
+                                <FormLabel>Amount to Debit Student (GH₵)</FormLabel>
+                                <FormControl>
+                                    <Input type="number" step="0.01" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))}/>
+                                </FormControl>
+                                <FormMessage/>
+                            </FormItem>
+                        )} />
                         <FormField control={form.control} name="reason" render={({ field }) => (
-                            <FormItem><FormLabel>Reason for Reversal</FormLabel><FormControl><Textarea {...field} placeholder="e.g., Wrong amount entered during payment recording."/></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <Button type="submit" variant="destructive" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Submit Reversal Request</Button>
+                            <FormItem>
+                                <FormLabel>Reason for Reversal</FormLabel>
+                                <FormControl>
+                                    <Textarea {...field}/>
+                                </FormControl>
+                                <FormMessage/>
+                            </FormItem>
+                        )} />
+                        <Button type="submit" disabled={isSubmitting} className="w-full bg-orange-600 hover:bg-orange-700">
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Submit for Approval
+                        </Button>
                     </form>
                 </Form>
             </DialogContent>
         </Dialog>
-    );
+    )
 }
 
-// --- SUB-COMPONENT: Transaction Detail Modal ---
-function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
-    if (!record) return null;
-    const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Details
-                    </DialogTitle>
-                    <DialogDescription>Transaction ID: {record.id.slice(0, 8)}...</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">Type</p>
-                            <Badge variant="outline">{record.type}</Badge>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">Status</p>
-                            <Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge>
-                        </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                         <p className="text-xs font-medium text-muted-foreground">Description</p>
-                         <div className="p-3 bg-slate-50 rounded-md border text-sm">{record.description}</div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                        <div>
-                            <p className="text-xs text-slate-500 mb-1">Billed</p>
-                            <p className="text-md font-bold text-slate-800">GH₵{record.billedAmount.toFixed(2)}</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-xs text-slate-500 mb-1">Paid</p>
-                            <p className="text-md font-bold text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</p>
-                        </div>
-                        <div className="text-right">
-                             <p className="text-xs text-slate-500 mb-1">Balance</p>
-                             <p className="text-md font-bold text-red-600">GH₵{balance.toFixed(2)}</p>
-                        </div>
-                    </div>
-
-                    <Separator />
-                    
-                    <div className="space-y-2 text-xs text-slate-500">
-                        <div className="flex justify-between">
-                            <span className="flex items-center gap-1"><CalendarIcon className="h-3 w-3"/> Created At:</span>
-                            <span>{record.createdAt ? format(record.createdAt.toDate(), 'PPP p') : 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Due Date:</span>
-                            <span className="text-red-500 font-medium">{record.dueDate ? format(record.dueDate.toDate(), 'PPP') : 'N/A'}</span>
-                        </div>
-                    </div>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-// --- COMPONENT: Manual Daily Charge Form (NEW FEATURE) ---
+// --- SUB-COMPONENT: Daily Charge Form ---
 function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: any[], students: Student[], schoolId: string, onRecordsAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -310,7 +319,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                                     {date ? format(date, 'PP') : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus/></PopoverContent>
+                            <PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus/></PopoverContent>
                         </Popover>
                     </div>
                 </div>
@@ -449,7 +458,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
         )}/>
         <div className="grid grid-cols-2 gap-4">
             <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                <FormItem><FormLabel>Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="dueDate" render={({ field }) => (
                 <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
@@ -524,7 +533,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
             )}/>
             <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                    <FormItem><FormLabel>Amount per Student (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Amount per Student (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="dueDate" render={({ field }) => (
                     <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
@@ -549,52 +558,77 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
 
     const form = useForm<z.infer<typeof recordPaymentSchema>>({
         resolver: zodResolver(recordPaymentSchema),
-        defaultValues: { method: 'Card' }
+        defaultValues: { method: 'Cash' }
     });
+    
+    useEffect(() => {
+        if (record && open) {
+            const newBalance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
+            form.reset({
+                method: 'Cash',
+                amount: newBalance > 0 ? parseFloat(newBalance.toFixed(2)) : 0,
+                notes: '',
+                paidAt: new Date(),
+            });
+        }
+    }, [record, open, form]);
+
 
     async function onSubmit(values: z.infer<typeof recordPaymentSchema>) {
-        if (!firestore || !user || !schoolId) return;
-        
+        const recordId = record.id; 
+        if (!firestore || !user || !recordId || !schoolId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Missing record ID, user, or school context.' });
+            return;
+        }
+    
         setIsSubmitting(true);
+    
         try {
             const batch = writeBatch(firestore);
-            const recordRef = doc(firestore, 'financialRecords', record.id);
+            
+            const paymentDocRef = doc(collection(firestore, 'financialRecords', recordId, 'payments'));
+            const paymentData = {
+                amount: values.amount,
+                method: values.method,
+                notes: values.notes || '',
+                paidAt: serverTimestamp(),
+                processedById: user.uid,
+                processedByName: user.displayName || user.email,
+                studentId: record.studentId,
+                description: record.description,
+                schoolId: schoolId,
+            };
+
+            const recordRef = doc(firestore, 'financialRecords', recordId);
             const newAmountPaid = (record.amountPaid || 0) + values.amount;
-            
-            const newBalance = record.billedAmount - newAmountPaid - (record.waiverAmount || 0);
-            const newStatus = newBalance <= 0 ? 'Paid' : 'Unpaid';
-            
-            batch.update(recordRef, {
+            const isFullyPaid = (record.billedAmount - newAmountPaid - (record.waiverAmount || 0)) <= 0.001; // Epsilon for float issues
+            const updateData = {
                 amountPaid: newAmountPaid,
-                status: newStatus,
-            });
+                status: isFullyPaid ? 'Paid' : 'Unpaid',
+                lastPaymentDate: serverTimestamp()
+            };
+            batch.update(recordRef, updateData);
 
             if (values.method === 'Cash') {
                 const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'), where('schoolId', '==', schoolId));
-                const tillSnapshot = await getDocs(tillQuery);
-                if (tillSnapshot.empty) {
-                    throw new Error("You do not have an open till. Please open a till before recording cash payments.");
-                }
-                const activeTill = tillSnapshot.docs[0];
-                const transactionRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
-                batch.set(transactionRef, {
-                    tillId: activeTill.id,
-                    financialRecordId: record.id,
-                    studentId: record.studentId,
-                    studentName: record.studentName,
-                    amount: values.amount,
-                    timestamp: serverTimestamp(),
-                    description: `Payment for: ${record.description} (${record.type})`,
-                    schoolId: schoolId,
-                    type: 'Payment', // New field
-                    status: 'Completed', // New field
-                });
+                const tillSnap = await getDocs(tillQuery);
+                if (tillSnap.empty) throw new Error("You must have an OPEN TILL to accept cash.");
                 
-                batch.update(doc(firestore, 'tills', activeTill.id), {
-                    currentBalance: increment(values.amount)
+                const activeTill = tillSnap.docs[0];
+                const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
+                
+                batch.set(tillTransRef, {
+                    amount: values.amount,
+                    studentName: record.studentName,
+                    timestamp: serverTimestamp(),
+                    type: 'Payment',
+                    description: `Cash: ${record.description}`,
+                    status: 'Completed',
+                    schoolId: schoolId,
                 });
+                batch.update(doc(firestore, 'tills', activeTill.id), { currentBalance: increment(values.amount) });
+    
             } else {
-                // Log non-cash payments for director approval
                 const bankTransactionRef = doc(collection(firestore, 'bank_transactions'));
                 batch.set(bankTransactionRef, {
                     amount: values.amount,
@@ -602,7 +636,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                     notes: values.notes || '',
                     studentId: record.studentId,
                     studentName: record.studentName,
-                    financialRecordId: record.id,
+                    financialRecordId: recordId,
                     recordedById: user.uid,
                     recordedByName: user.displayName || user.email,
                     recordedAt: serverTimestamp(),
@@ -610,25 +644,21 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                     schoolId: schoolId,
                 });
             }
-
+    
+            batch.set(paymentDocRef, paymentData);
             await batch.commit();
-
-            toast({ 
-                title: 'Payment Recorded', 
-                description: newBalance < 0 
-                    ? `Overpayment accepted. Account is now in credit by GH₵${Math.abs(newBalance).toFixed(2)}`
-                    : 'Payment recorded successfully.' 
-            });
             
+            toast({ title: 'Payment Logged', description: 'Receipt is now available.' });
             onUpdate();
             setOpen(false);
-        } catch(e: any) {
-            console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: e.message || 'Failed to record payment.' });
+        } catch (e: any) {
+            console.error("Payment Error:", e);
+            toast({ variant: 'destructive', title: 'Payment Failed', description: e.message });
         } finally {
             setIsSubmitting(false);
         }
     }
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
@@ -648,17 +678,17 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                             <FormItem>
                                 <FormLabel>Payment Amount (GH₵)</FormLabel>
                                 <FormControl>
-                                    <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                                    <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))} />
                                 </FormControl>
                                 <FormMessage />
                                 <p className="text-[10px] text-muted-foreground">You can enter an amount higher than the balance to create a credit.</p>
                             </FormItem>
-                        )}/>
+                        )} />
                         <FormField control={form.control} name="method" render={({ field }) => (
                             <FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                         )}/>
                         <FormField control={form.control} name="notes" render={({ field }) => (
-                            <FormItem><FormLabel>Notes (Optional)</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Reference / Notes (Optional)</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage /></FormItem>
                         )}/>
                         <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
                     </form>
@@ -674,7 +704,13 @@ function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: Financ
     const [isSubmitting, setIsSubmitting] = useState(false);
     const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
 
-    const form = useForm<z.infer<typeof applyWaiverSchema>>({ resolver: zodResolver(applyWaiverSchema) });
+    const form = useForm<z.infer<typeof applyWaiverSchema>>({ 
+        resolver: zodResolver(applyWaiverSchema),
+        defaultValues: {
+            amount: 0.0,
+            reason: '',
+        }
+    });
 
     async function onSubmit(values: z.infer<typeof applyWaiverSchema>) {
         if (!firestore) return;
@@ -708,17 +744,17 @@ function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: Financ
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogHeader><DialogTitle>Apply Waiver</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>Apply Waiver</DialogTitle><DialogDescription>Apply a financial discount or waiver to this specific record.</DialogDescription></DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <div className="p-2 bg-yellow-50 text-yellow-800 rounded mb-2 text-sm">Max Waiver: GH₵{balance.toFixed(2)}</div>
                         <FormField control={form.control} name="amount" render={({ field }) => (
-                            <FormItem><FormLabel>Waiver Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
-                        )}/>
+                            <FormItem><FormLabel>Waiver Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                        )} />
                         <FormField control={form.control} name="reason" render={({ field }) => (
                             <FormItem><FormLabel>Reason</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
                         )}/>
-                        <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Apply Waiver</Button>
+                        <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Apply Waiver</Button>
                     </form>
                 </Form>
             </DialogContent>
@@ -765,6 +801,7 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Edit Record</DialogTitle>
+                    <DialogDescription>Modify the details of this financial record.</DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -776,7 +813,7 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
                         )}/>
                         <div className="grid grid-cols-2 gap-4">
                             <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                                <FormItem><FormLabel>Billed Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Billed Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                             )}/>
                             <FormField control={form.control} name="dueDate" render={({ field }) => (
                                 <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
@@ -800,10 +837,9 @@ export default function AccountsPage() {
     
     const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal', record: FinancialRecord | null }>({ type: 'payment', record: null });
+    const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
     const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
-    const [transactionDetail, setTransactionDetail] = useState<FinancialRecord | null>(null);
-    const [studentDateRange, setStudentDateRange] = useState<Record<string, DateRange | undefined>>({});
+    const [activeTab, setActiveTab] = useState('billing');
 
     const finQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(finQuery);
@@ -814,8 +850,8 @@ export default function AccountsPage() {
     const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: classes } = useCollection<Class>(classesQuery);
   
-    const isAdminOrDirector = role === 'Administrator' || role === 'Director';
-    const canAccess = isAdminOrDirector || role === 'Accountant';
+    const isAdmin = ['Administrator', 'Director'].includes(role);
+    const canAccess = isAdmin || role === 'Accountant';
     const isLoading = isLoadingSchool || isLoadingRecords || isLoadingStudents;
   
     const dashboardStats = useMemo(() => {
@@ -854,60 +890,27 @@ export default function AccountsPage() {
       if (!records || !students) return [];
   
       return students.map(student => {
-        const studentRecords = records.filter(r => r.studentId === student.uid);
-
-        const recordsForBalance = studentRecords.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
-        const overallBilled = recordsForBalance.reduce((acc, r) => acc + r.billedAmount, 0);
-        const overallPaid = recordsForBalance.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
-        const overallWaivers = recordsForBalance.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
-        const overallBalance = overallBilled - overallPaid - overallWaivers;
+        const studentRecords = records.filter(r => r.studentId === student.uid && r.status !== 'Rejected Reversal');
         
-        const overallSummary = {
-            totalBilled: overallBilled,
-            totalPaid: overallPaid + overallWaivers, // Combined for display
-            balance: overallBalance,
-        };
-
-        const dateRange = studentDateRange[student.uid];
-        const filteredRecords = dateRange?.from ? studentRecords.filter(rec => {
-            if (!rec.createdAt || !rec.createdAt.toDate) return false;
-            const recDate = rec.createdAt.toDate();
-            const from = startOfDay(dateRange.from!);
-            const to = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from!);
-            return recDate >= from && recDate <= to;
-        }) : studentRecords;
-
-
-        const sortedRecords = filteredRecords.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-  
-        const periodNetChange = sortedRecords
-            .filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal')
-            .reduce((acc, r) => acc + (r.billedAmount - ((r.amountPaid || 0) + (r.waiverAmount || 0))), 0);
-        let runningBalance = overallBalance - periodNetChange;
-
-        const ledger = sortedRecords.map(rec => {
-              const debit = rec.billedAmount;
-              const credit = (rec.amountPaid || 0) + (rec.waiverAmount || 0);
-              if (rec.status !== 'Pending Reversal' && rec.status !== 'Rejected Reversal') {
-                runningBalance += (debit - credit); 
-              }
-              return { ...rec, debit, credit, runningBalance };
-          });
-  
+        const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal');
+        const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+        const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
+        const balance = totalBilled - totalPaid;
+        
         return {
           student,
-          balance: overallBalance,
-          hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
-          ledger: ledger.reverse(),
-          summary: overallSummary
+          balance,
+          hasOverdue: activeRecords.some(r => r.status === 'Overdue'),
+          records: studentRecords,
         };
       }).filter(sf => 
-          (sf.ledger.length > 0 || searchTerm) && 
+          (sf.records.length > 0 || searchTerm) && 
           searchStudent(sf.student, searchTerm)
       );
-    }, [records, students, searchTerm, studentDateRange]);
+    }, [records, students, searchTerm]);
   
-  
+    const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
+
     if (!canAccess) {
       return (
         <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted to financial staff.</CardDescription></CardHeader></Card>
@@ -935,21 +938,21 @@ export default function AccountsPage() {
   
     return (
       <div className="space-y-6">
-          <Tabs defaultValue="billing">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-4">
                 <TabsTrigger value="billing">Student Billing</TabsTrigger>
-                {isAdminOrDirector && <TabsTrigger value="reversals">Reversal Requests</TabsTrigger>}
+                {isAdmin && <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger>}
             </TabsList>
             
             <TabsContent value="billing" className="space-y-6">
                 <Card>
                     <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
                     <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Total Outstanding</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</p></CardContent></Card>
-                        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Total Revenue</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">GH₵{dashboardStats.totalRevenue.toFixed(2)}</p></CardContent></Card>
-                        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Tuition Debt</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</p></CardContent></Card>
-                        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Canteen Debt</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</p></CardContent></Card>
-                        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Transport Debt</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</p></CardContent></Card>
+                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Outstanding</CardTitle><DollarSign className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Revenue</CardTitle><HandCoins className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Tuition Debt</CardTitle><Receipt className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Canteen Debt</CardTitle><Utensils className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Transport Debt</CardTitle><Bus className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card>
                     </CardContent>
                 </Card>
         
@@ -957,15 +960,15 @@ export default function AccountsPage() {
                 <Card>
                     <CardHeader>
                     <div className="flex justify-between items-center">
-                        <div><CardTitle>Student Billing</CardTitle><CardDescription>Create, manage, and track all student financial records.</CardDescription></div>
+                        <div><CardTitle>Create Bills</CardTitle><CardDescription>Create, manage, and track all student financial records.</CardDescription></div>
                         <div className="flex gap-2">
                             <Dialog open={activeForm === 'daily'} onOpenChange={(open) => setActiveForm(open ? 'daily' : null)}>
                                 <DialogTrigger asChild>
                                     <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
-                                        <Coffee className="mr-2 h-4 w-4" /> Add Daily Charge
+                                        <Utensils className="mr-2 h-4 w-4" /> Add Daily Charge
                                     </Button>
                                 </DialogTrigger>
-                                {schoolId && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
+                                <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />
                             </Dialog>
                             <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
                                 <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
@@ -977,8 +980,8 @@ export default function AccountsPage() {
                     </div>
                     </CardHeader>
                     <CardContent>
-                        {activeForm === 'single' && schoolId && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />}
-                        {activeForm === 'bulk' && schoolId && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
+                        {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
+                        {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
                     </CardContent>
                 </Card>
                 </div>
@@ -989,142 +992,76 @@ export default function AccountsPage() {
                 </CardHeader>
                 <CardContent>
                     {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
-                        <div className="space-y-4">
-                            {studentFinancials.map(({ student, balance, hasOverdue, ledger, summary }) => (
-                                <Collapsible key={student.uid} className="border rounded-lg">
-                                    <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center group">
-                                        <StudentDisplay student={student} variant="full" showAvatar />
-                                        <div className="flex items-center gap-4">
-                                            <div className="text-right">
-                                                <p className="text-sm text-muted-foreground">Balance</p>
-                                                <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>GH₵{balance.toFixed(2)}</p>
+                        <Accordion type="multiple" className="w-full space-y-2">
+                            {studentFinancials.map(({ student, balance, records }) => (
+                                 <AccordionItem value={student.uid} key={student.uid} className="border-none">
+                                    <Card className="overflow-hidden">
+                                        <AccordionTrigger className="hover:no-underline p-4 hover:bg-slate-50">
+                                            <div className='flex justify-between items-center w-full'>
+                                                <StudentDisplay student={student} variant="full" showAvatar />
+                                                <div className="text-right">
+                                                    <p className="text-sm text-muted-foreground">Balance</p>
+                                                    <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>GH₵{balance.toFixed(2)}</p>
+                                                </div>
                                             </div>
-                                            <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                                        </div>
-                                    </CollapsibleTrigger>
-                                    <CollapsibleContent className="p-4 bg-slate-50/50 border-t">
-                                        <div className="flex justify-end mb-4">
-                                            <DatePickerWithRange 
-                                                date={studentDateRange[student.uid]}
-                                                onDateChange={(range) => setStudentDateRange(prev => ({ ...prev, [student.uid]: range }))}
+                                        </AccordionTrigger>
+                                        <AccordionContent className="bg-slate-50/50 border-t">
+                                            <StudentLedgerDetail 
+                                                student={student} 
+                                                records={records}
+                                                onRecordPayment={(rec) => handleOpenDialog('payment', rec)}
+                                                onApplyWaiver={(rec) => handleOpenDialog('waiver', rec)}
+                                                onEditRecord={(rec) => handleOpenEditDialog(rec)}
+                                                onReverseTransaction={(rec) => handleOpenDialog('reversal', rec)}
                                             />
-                                        </div>
-                                        <div className="border rounded-md overflow-hidden bg-white">
-                                        <Table>
-                                            <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead className="text-right">Debit</TableHead><TableHead className="text-right">Credit</TableHead><TableHead className="text-right">Run. Bal</TableHead><TableHead className="w-[120px] text-right">Actions</TableHead></TableRow></TableHeader>
-                                            <TableBody>
-                                                {ledger.map(rec => (
-                                                    <TableRow key={rec.id} className={cn((rec.status === 'Pending Reversal' || rec.status === 'Rejected Reversal') && 'bg-gray-100 text-gray-400 italic')}>
-                                                        <TableCell className="text-xs text-muted-foreground">{rec.createdAt ? format(rec.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}</TableCell>
-                                                        <TableCell className="font-medium max-w-[200px] truncate">{rec.description}</TableCell>
-                                                        <TableCell className="text-right font-mono text-red-600">{rec.debit > 0 ? `GH₵${rec.debit.toFixed(2)}` : '-'}</TableCell>
-                                                        <TableCell className="text-right font-mono text-green-600">{rec.credit > 0 ? `GH₵${rec.credit.toFixed(2)}` : '-'}</TableCell>
-                                                        <TableCell className="text-right font-bold text-slate-700">GH₵{rec.runningBalance.toFixed(2)}</TableCell>
-                                                        <TableCell>
-                                                            <div className="flex gap-1 justify-end">
-                                                                {(rec.amountPaid || 0) > 0 && rec.type !== 'Correction / Reversal' && <GenerateReceipt transaction={rec} />}
-                                                                <DropdownMenu>
-                                                                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400"><MoreVertical /></Button></DropdownMenuTrigger>
-                                                                    <DropdownMenuContent>
-                                                                        <DropdownMenuItem onClick={() => setTransactionDetail(rec)}><Eye className="mr-2 h-4 w-4"/> View Details</DropdownMenuItem>
-                                                                        <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
-                                                                        <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
-                                                                        <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver</DropdownMenuItem>
-                                                                        <DropdownMenuItem onClick={() => handleOpenDialog('reversal', rec)} className="text-red-600 focus:bg-red-50 focus:text-red-700"><Wrench className="mr-2 h-4 w-4"/> Request Reversal</DropdownMenuItem>
-                                                                    </DropdownMenuContent>
-                                                                </DropdownMenu>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                        </div>
-                                        <div className="mt-4">
-                                            <GenerateStatement 
-                                                student={student}
-                                                records={ledger.reverse()}
-                                                dateRange={studentDateRange[student.uid]}
-                                                summary={summary}
-                                            />
-                                        </div>
-                                    </CollapsibleContent>
-                                </Collapsible>
+                                        </AccordionContent>
+                                    </Card>
+                                </AccordionItem>
                             ))}
-                        </div>
+                        </Accordion>
                     )}
                 </CardContent>
                 </Card>
             </TabsContent>
-            {isAdminOrDirector && (
-                <TabsContent value="reversals">
-                    <Card>
-                        <CardHeader><CardTitle>Pending Reversal Requests</CardTitle><CardDescription>Approve or reject debit memos created by accountants to correct errors.</CardDescription></CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader><TableRow><TableHead>Student</TableHead><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
-                                <TableBody>
-                                    {records?.filter(r => r.status === 'Pending Reversal').map(rec => (
-                                        <TableRow key={rec.id}>
-                                            <TableCell>{rec.studentName}</TableCell>
-                                            <TableCell>{rec.description}</TableCell>
-                                            <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
-                                            <TableCell className="text-right">
-                                                <Button size="sm" variant="destructive" onClick={() => handleReversalDecision(rec, 'Rejected Reversal')} className="mr-2">Reject</Button>
-                                                <Button size="sm" onClick={() => handleReversalDecision(rec, 'Unpaid')}>Approve</Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            )}
-          </Tabs>
-        
-        {dialogState.record && dialogState.type === 'payment' && (
-          <RecordPaymentDialog 
-              record={dialogState.record} 
-              open={!!dialogState.record} 
-              setOpen={handleCloseDialog} 
-              onUpdate={forceRefetch} 
-          />
-        )}
-        {dialogState.record && dialogState.type === 'waiver' && (
-          <ApplyWaiverDialog 
-              record={dialogState.record} 
-              open={!!dialogState.record} 
-              setOpen={handleCloseDialog} 
-              onUpdate={forceRefetch} 
-          />
-        )}
-         {dialogState.record && dialogState.type === 'reversal' && (
-          <ReverseTransactionDialog
-              record={dialogState.record}
-              open={true}
-              setOpen={handleCloseDialog}
-              onUpdate={forceRefetch}
-          />
-        )}
-        {editingRecord && (
-          <EditRecordDialog 
-              record={editingRecord} 
-              open={!!editingRecord} 
-              setOpen={handleCloseEditDialog} 
-              onUpdate={forceRefetch} 
-          />
-        )}
-        {transactionDetail && (
-          <TransactionDetailModal 
-              record={transactionDetail} 
-              open={!!transactionDetail} 
-              setOpen={() => setTransactionDetail(null)}
-          />
-        )}
-      </div>
-    );
-  }
-    
+            
+            <TabsContent value="approval">
+                <ReversalApproval reversals={pendingReversals} onUpdate={forceRefetch} />
+            </TabsContent>
 
-    
+        </Tabs>
+      
+      {dialogState.record && dialogState.type === 'payment' && (
+        <RecordPaymentDialog 
+            record={dialogState.record} 
+            open={!!dialogState.record} 
+            setOpen={handleCloseDialog} 
+            onUpdate={forceRefetch} 
+        />
+      )}
+      {dialogState.record && dialogState.type === 'waiver' && (
+        <ApplyWaiverDialog 
+            record={dialogState.record} 
+            open={!!dialogState.record} 
+            setOpen={handleCloseDialog} 
+            onUpdate={forceRefetch} 
+        />
+      )}
+        {dialogState.record && dialogState.type === 'reversal' && (
+            <ReverseTransactionDialog 
+                record={dialogState.record}
+                open={!!dialogState.record}
+                setOpen={handleCloseDialog}
+                onUpdate={forceRefetch}
+            />
+        )}
+      {editingRecord && (
+        <EditRecordDialog 
+            record={editingRecord} 
+            open={!!editingRecord} 
+            setOpen={handleCloseEditDialog} 
+            onUpdate={forceRefetch} 
+        />
+      )}
+    </div>
+  );
+}

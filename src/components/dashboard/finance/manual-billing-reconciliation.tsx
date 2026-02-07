@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -26,7 +25,7 @@ interface MissingBillItem {
     reason: string;
 }
 
-export function ManualBillingReconciliation() {
+export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     
@@ -38,25 +37,27 @@ export function ManualBillingReconciliation() {
 
     // --- 1. SCAN LOGIC ---
     const handleCheck = async () => {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         setIsLoading(true);
         setMissingBills([]);
         setSelectedItems([]);
 
         try {
             // A. Fetch Rates
-            const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
-            const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
+            const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+            const transportSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'transport'));
             const canteenRate = canteenSnap.exists() ? Number(canteenSnap.data().dailyRate) : 0;
             const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
 
             const dateStr = format(date, 'yyyy-MM-dd');
-            const searchDate = startOfDay(date); // Normalize to 00:00:00
+            const searchDate = startOfDay(date); 
+
+            console.log(`Scanning for missing bills on ${dateStr}... Rates: Canteen=${canteenRate}, Transport=${transportRate}`);
 
             // B. Get Attendance (Who was present?)
-            // We look for 'Present' OR 'Late' students
             const attendanceQ = query(
                 collection(firestore, 'attendance'),
+                where('schoolId', '==', schoolId),
                 where('date', '==', searchDate),
                 where('status', 'in', ['Present', 'Late'])
             );
@@ -68,10 +69,10 @@ export function ManualBillingReconciliation() {
                 return;
             }
 
-            // C. Get Existing Bills (Who already paid?)
-            // We query bills that match the same dueDate
+            // C. Get Existing Bills (Who already has a bill?)
             const billsQ = query(
                 collection(firestore, 'financialRecords'),
+                where('schoolId', '==', schoolId),
                 where('dueDate', '==', searchDate) 
             );
             const billsSnap = await getDocs(billsQ);
@@ -79,38 +80,39 @@ export function ManualBillingReconciliation() {
 
             const detectedMissing: MissingBillItem[] = [];
 
-            // D. Compare Lists (Find the gap)
+            // D. Compare
+            let missingCounter = 0; // To ensure unique keys
             for (const attDoc of attendanceSnap.docs) {
                 const att = attDoc.data();
+                const studentName = att.studentName || "Unknown Student";
                 
                 // 1. Check Canteen Gap
-                // The system expects an ID format: canteen-{studentId}-{yyyy-MM-dd}
-                const expectedCanteenId = `canteen-${att.studentId}-${dateStr}`;
-                
-                if (canteenRate > 0 && !existingBillIds.has(expectedCanteenId)) {
-                    detectedMissing.push({
-                        id: expectedCanteenId,
-                        studentId: att.studentId,
-                        studentName: att.studentName || 'Unknown Student',
-                        classId: att.classId,
-                        type: 'Canteen',
-                        amount: canteenRate,
-                        reason: 'Marked Present but no Canteen Bill found'
-                    });
+                if (canteenRate > 0 && att.usesCanteen !== "false") {
+                    const expectedCanteenId = `canteen-${att.studentId}-${dateStr}`;
+                    
+                    if (!existingBillIds.has(expectedCanteenId)) {
+                        detectedMissing.push({
+                            id: `${expectedCanteenId}-${missingCounter++}`,
+                            studentId: att.studentId,
+                            studentName: studentName,
+                            classId: att.classId,
+                            type: 'Canteen',
+                            amount: canteenRate,
+                            reason: 'Marked Present but no Canteen Bill found'
+                        });
+                    }
                 }
 
                 // 2. Check Transport Gap
-                // We check the 'usesBusService' flag stored on the attendance record
-                // (Note: Your new attendance code saves this as a string "true")
                 const usesBus = att.usesBusService === "true" || att.usesBusService === true;
                 
                 if (transportRate > 0 && usesBus) {
                     const expectedTransportId = `transport-${att.studentId}-${dateStr}`;
                     if (!existingBillIds.has(expectedTransportId)) {
                         detectedMissing.push({
-                            id: expectedTransportId,
+                            id: `${expectedTransportId}-${missingCounter++}`,
                             studentId: att.studentId,
-                            studentName: att.studentName || 'Unknown Student',
+                            studentName: studentName,
                             classId: att.classId,
                             type: 'Transport',
                             amount: transportRate,
@@ -121,13 +123,12 @@ export function ManualBillingReconciliation() {
             }
 
             setMissingBills(detectedMissing);
-            // Auto-select all by default
-            setSelectedItems(detectedMissing.map(m => m.id));
+            setSelectedItems(detectedMissing.map(m => m.id)); // Auto-select all
 
             if (detectedMissing.length === 0) {
-                toast({ title: "All Clear ✅", description: "Every present student has been billed correctly for this date." });
+                toast({ title: "All Clean ✅", description: "No missing bills found for this date." });
             } else {
-                toast({ title: "Discrepancies Found", description: `Found ${detectedMissing.length} students missing bills.` });
+                toast({ title: "Issues Found", description: `Found ${detectedMissing.length} students missing bills.` });
             }
 
         } catch (error: any) {
@@ -140,15 +141,15 @@ export function ManualBillingReconciliation() {
 
     // --- 2. FIX LOGIC ---
     const handleProcess = async () => {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         setIsFixing(true);
         const batch = writeBatch(firestore);
         
-        // Filter only checked items
         const itemsToProcess = missingBills.filter(item => selectedItems.includes(item.id));
         
         itemsToProcess.forEach(item => {
-            const ref = doc(firestore, 'financialRecords', item.id);
+            const cleanId = item.id.substring(0, item.id.lastIndexOf('-'));
+            const ref = doc(firestore, 'financialRecords', cleanId);
             batch.set(ref, {
                 billedAmount: item.amount,
                 studentId: item.studentId,
@@ -157,17 +158,16 @@ export function ManualBillingReconciliation() {
                 type: item.type === 'Canteen' ? 'Canteen Fee' : 'Transport Fee',
                 description: `${item.type} fee for ${format(date, 'PPP')} (Manual Fix)`,
                 status: 'Unpaid',
-                dueDate: startOfDay(date), // Ensure date format matches main system
+                dueDate: startOfDay(date),
                 createdAt: serverTimestamp(),
                 amountPaid: 0,
+                schoolId: schoolId,
             });
         });
 
         try {
             await batch.commit();
-            toast({ title: "Success", description: `Generated ${itemsToProcess.length} missing bills.` });
-            
-            // Remove fixed items from the list UI
+            toast({ title: "Fixed!", description: `Generated ${itemsToProcess.length} invoices.` });
             setMissingBills(prev => prev.filter(p => !selectedItems.includes(p.id)));
             setSelectedItems([]);
         } catch (e: any) {
@@ -178,11 +178,8 @@ export function ManualBillingReconciliation() {
     };
 
     const toggleSelectAll = () => {
-        if (selectedItems.length === missingBills.length) {
-            setSelectedItems([]);
-        } else {
-            setSelectedItems(missingBills.map(m => m.id));
-        }
+        if (selectedItems.length === missingBills.length) setSelectedItems([]);
+        else setSelectedItems(missingBills.map(m => m.id));
     };
 
     return (
@@ -197,7 +194,7 @@ export function ManualBillingReconciliation() {
             </CardHeader>
             <CardContent className="space-y-6">
                 
-                {/* 1. SELECT DATE & SCAN */}
+                {/* CONTROLS */}
                 <div className="flex flex-col sm:flex-row gap-4 items-end bg-white p-4 rounded-lg border">
                     <div className="space-y-2 flex-1 w-full">
                         <Label>Select Date to Audit</Label>
@@ -219,9 +216,9 @@ export function ManualBillingReconciliation() {
                     </Button>
                 </div>
 
-                {/* 2. RESULTS TABLE */}
+                {/* RESULTS */}
                 {missingBills.length > 0 && (
-                    <div className="border rounded-md bg-white overflow-hidden">
+                    <div className="border rounded-md bg-white overflow-hidden shadow-sm">
                         <div className="p-3 bg-orange-100 border-b flex justify-between items-center">
                             <h4 className="font-bold text-orange-800 text-sm flex items-center gap-2">
                                 <AlertCircle className="h-4 w-4"/> Found {missingBills.length} Missing Bills
@@ -235,10 +232,7 @@ export function ManualBillingReconciliation() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="w-[50px]">
-                                        <Checkbox 
-                                            checked={selectedItems.length === missingBills.length && missingBills.length > 0}
-                                            onCheckedChange={toggleSelectAll}
-                                        />
+                                        <Checkbox checked={selectedItems.length === missingBills.length && missingBills.length > 0} onCheckedChange={toggleSelectAll} />
                                     </TableHead>
                                     <TableHead>Student</TableHead>
                                     <TableHead>Missing Fee</TableHead>

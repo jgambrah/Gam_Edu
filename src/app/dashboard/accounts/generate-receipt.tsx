@@ -5,15 +5,22 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Receipt, Download, Loader2 } from 'lucide-react';
+import { Receipt, Download, Loader2, Printer } from 'lucide-react';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { FinancialRecord, Student } from '@/lib/types';
+import { FinancialRecord, Student, PaymentTransaction } from '@/lib/types';
 import { PaymentReceipt } from './payment-receipt';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export function GenerateReceipt({ transaction }: { transaction: FinancialRecord }) {
+interface GenerateReceiptProps {
+    transaction: FinancialRecord;
+    payment: PaymentTransaction;
+    variant?: 'icon' | 'full';
+}
+
+
+export function GenerateReceipt({ transaction, payment, variant = 'icon' }: GenerateReceiptProps) {
     const [loading, setLoading] = useState(false);
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
@@ -41,7 +48,8 @@ export function GenerateReceipt({ transaction }: { transaction: FinancialRecord 
             const element = printRef.current;
             const canvas = await html2canvas(element, { scale: 2, useCORS: true });
             const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const pdf = new jsPDF('p', 'mm', 'a5'); // A5 is smaller, better for receipts
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const imgProps = pdf.getImageProperties(imgData);
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
@@ -55,15 +63,21 @@ export function GenerateReceipt({ transaction }: { transaction: FinancialRecord 
             setLoading(false);
         }
     };
+    
+    const triggerButton = variant === 'icon' ? (
+        <Button variant="ghost" size="icon" className="h-7 w-7"><Printer className="h-4 w-4 text-blue-600"/></Button>
+    ) : (
+        <Button variant="outline" className="w-full">
+            <Printer className="mr-2 h-4 w-4"/> Download Receipt
+        </Button>
+    );
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="sm">
-                    <Receipt className="h-4 w-4 text-blue-600"/>
-                </Button>
+                {triggerButton}
             </DialogTrigger>
-            <DialogContent className="max-w-4xl">
+            <DialogContent className="max-w-3xl">
                 <DialogHeader>
                     <DialogTitle>Receipt Preview</DialogTitle>
                     <DialogDescription>Review the receipt below before downloading.</DialogDescription>
@@ -77,13 +91,13 @@ export function GenerateReceipt({ transaction }: { transaction: FinancialRecord 
                         </div>
                     ) : (
                          <div ref={printRef}>
-                            {student && <PaymentReceipt transaction={transaction} student={student} schoolProfile={schoolProfile} />}
+                            {student && <PaymentReceipt transaction={transaction} payment={payment} student={student} schoolProfile={schoolProfile} />}
                         </div>
                     )}
                 </div>
 
                 <div className="flex justify-end">
-                    <Button onClick={handleDownloadPdf} disabled={loading || isLoadingData}>
+                    <Button onClick={handleDownloadPdf} disabled={loading || isLoadingData} className="bg-indigo-600 hover:bg-indigo-700">
                         {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Download className="mr-2 h-4 w-4"/>}
                         {loading ? 'Generating...' : 'Download PDF'}
                     </Button>
