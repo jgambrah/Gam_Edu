@@ -20,7 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 interface ParadoxCardProps {
   paradox: Paradox;
   onComplete: () => void;
-  onAttempt?: (answer: string) => void; // <--- NEW PROP
+  onAttempt?: (answer: string) => void;
   onDelete?: () => void;
   isStaff?: boolean;
 }
@@ -51,11 +51,9 @@ export function ParadoxCard({ paradox, onComplete, onAttempt, onDelete, isStaff 
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* The Riddle/Question */}
         <div className="p-6 bg-slate-50 rounded-lg border border-slate-200">
             <p className="text-lg font-medium leading-relaxed text-slate-800">{paradox.question}</p>
         </div>
-        {/* Answer Section */}
         <div className="space-y-3">
             <Input 
                 placeholder="Type your answer here..." 
@@ -107,7 +105,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
     
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
@@ -158,8 +155,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
             
             if (result.success && result.data) {
                 setEvaluation(result.data);
-            } else {
-                console.error("Judge failed:", result.error);
             }
         } catch (error) {
             console.error(error);
@@ -206,7 +201,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
             </CardHeader>
 
             <CardContent className="flex-1 p-0 overflow-hidden flex flex-col">
-                {/* Chat Area */}
                 <ScrollArea className="flex-1 p-4 bg-slate-50/50">
                     <div className="space-y-4">
                         {messages.map((msg, i) => (
@@ -223,7 +217,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
                     </div>
                 </ScrollArea>
 
-                {/* Input Area */}
                 <div className="p-4 bg-white border-t mt-auto flex gap-2">
                     <Input 
                         value={input}
@@ -238,7 +231,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
                 </div>
             </CardContent>
 
-            {/* SCORECARD MODAL */}
             {evaluation && (
                 <Dialog open={!!evaluation} onOpenChange={() => setEvaluation(null)}>
                     <DialogContent className="max-w-md">
@@ -250,7 +242,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
                         </DialogHeader>
                         
                         <div className="space-y-6 py-4">
-                            {/* Scores */}
                             <div className="space-y-4">
                                 <div className="space-y-1">
                                     <div className="flex justify-between text-sm font-medium"><span>Logic & Reasoning</span><span>{evaluation.logicScore}/10</span></div>
@@ -266,7 +257,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
                                 </div>
                             </div>
 
-                            {/* Feedback */}
                             <div className="bg-slate-50 p-4 rounded-lg border space-y-3">
                                 <div className="flex gap-2 text-sm">
                                     <TrendingUp className="h-4 w-4 text-green-600 shrink-0"/>
