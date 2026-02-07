@@ -10,17 +10,14 @@ import { checkAndSpendCredits } from '@/app/actions/credits';
 async function callAi(prompt: string, schema: any) {
     try {
         const { output } = await ai.generate({
-            model: 'googleai/gemini-1.5-flash',
+            model: ai.registry.lookupModel('googleai/gemini-1.5-flash'), // ← CHANGED
             prompt,
             output: { schema },
         });
         if (!output) throw new Error("AI returned no results.");
         return output;
     } catch (error: any) {
-        // This prints the REAL error to your Workstation terminal
         console.error("GENKIT_ERROR:", error.message);
-        
-        // This sends a readable error to the UI instead of a 500
         throw new Error(error.message || "AI failed to generate response");
     }
 }
