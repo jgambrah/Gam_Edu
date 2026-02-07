@@ -61,12 +61,17 @@ export async function billStudentForAttendance(
     const services: string[] = [];
 
     if (shouldBillCanteen) {
-      totalAmount += DAILY_RATES.CANTEEN;
+      // In a real app, you'd fetch this from school settings
+      const canteenRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/canteen`));
+      const rate = canteenRateDoc.exists() ? canteenRateDoc.data().dailyRate : DAILY_RATES.CANTEEN;
+      totalAmount += rate;
       services.push('Canteen');
     }
 
     if (shouldBillBus) {
-      totalAmount += DAILY_RATES.BUS;
+      const transportRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/transport`));
+      const rate = transportRateDoc.exists() ? transportRateDoc.data().dailyRate : DAILY_RATES.BUS;
+      totalAmount += rate;
       services.push('Bus Service');
     }
 
@@ -75,7 +80,7 @@ export async function billStudentForAttendance(
     }
 
     // Create unique record ID based on date and student
-    const dateStr = attendanceDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const dateStr = format(attendanceDate, 'yyyy-MM-dd');
     const recordId = `daily-${student.uid}-${dateStr}`;
 
     // Check if already billed for this date
@@ -106,7 +111,7 @@ export async function billStudentForAttendance(
       dueDate: Timestamp.fromDate(attendanceDate), // Due immediately
       createdAt: serverTimestamp(),
       billedBy: 'Attendance System',
-      schoolId: schoolId,
+      schoolId: schoolId, // SAAS Compliance
     }, { merge: true });
 
     console.log(`✅ Successfully billed ${student.studentId || student.uid} - ${totalAmount} GHS for ${services.join(' & ')}`);
@@ -168,7 +173,6 @@ export async function billMultipleStudents(
       errors.push(`${student.studentId || student.firstName}: ${result.message}`);
     }
 
-    // Small delay to avoid overwhelming Firestore
     if (i < students.length - 1) {
       await new Promise(resolve => setTimeout(resolve, 50));
     }
