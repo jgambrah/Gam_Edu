@@ -1063,26 +1063,24 @@ function ReversalApproval({ reversals, onUpdate }: { reversals: FinancialRecord[
 export default function AccountsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
-    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
-    
     const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
     const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
     const [activeTab, setActiveTab] = useState('billing');
 
-    const finQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+    const finQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(finQuery);
     
-    const studentQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const studentQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentQuery);
   
-    const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const classesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]);
     const { data: classes } = useCollection(classesQuery);
   
+    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
     const isAdmin = ['Administrator', 'Director'].includes(role);
-    const canAccess = isAdmin || role === 'Accountant';
-    const isLoading = isLoadingRecords || isLoadingStudents || isLoadingSchool;
+    const isLoading = isLoadingRecords || isLoadingStudents;
   
     const dashboardStats = useMemo(() => {
       if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0 };
@@ -1098,8 +1096,7 @@ export default function AccountsPage() {
       for (const record of reportableRecords) {
           const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
           totalBilled += record.billedAmount;
-          totalPaid += (record.amountPaid || 0) + (record.waiverAmount || 0);
-  
+          totalPaid += (record.amountPaid || 0);
           if (balance > 0) {
               if (record.type === 'Tuition Fee') outstandingTuition += balance;
               else if (record.type === 'Canteen Fee') outstandingCanteen += balance;
@@ -1121,7 +1118,6 @@ export default function AccountsPage() {
   
       return students.map(student => {
         const studentRecords = records.filter(r => r.studentId === student.uid && r.status !== 'Rejected Reversal');
-        
         const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal');
         const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
         const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
@@ -1155,7 +1151,7 @@ export default function AccountsPage() {
     return (
       <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-4">
+            <TabsList>
                 <TabsTrigger value="billing">Student Billing</TabsTrigger>
                 {isAdmin && <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger>}
             </TabsList>
@@ -1184,7 +1180,7 @@ export default function AccountsPage() {
                                         <Utensils className="mr-2 h-4 w-4" /> Add Daily Charge
                                     </Button>
                                 </DialogTrigger>
-                                {schoolId && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
+                                <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />
                             </Dialog>
                             <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
                                 <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
@@ -1196,8 +1192,8 @@ export default function AccountsPage() {
                     </div>
                     </CardHeader>
                     <CardContent>
-                        {activeForm === 'single' && schoolId && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />}
-                        {activeForm === 'bulk' && schoolId && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
+                        {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
+                        {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
                     </CardContent>
                 </Card>
                 </div>
