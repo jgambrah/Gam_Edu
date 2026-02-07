@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -1000,64 +999,6 @@ function StudentLedgerDetail({
         </div>
       </div>
     );
-}
-
-// --- Reversal Approval Component ---
-function ReversalApproval({ reversals, onUpdate }: { reversals: FinancialRecord[], onUpdate: () => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isProcessing, setIsProcessing] = useState<string | null>(null);
-
-    const handleDecision = async (record: FinancialRecord, decision: 'Unpaid' | 'Rejected Reversal') => {
-        if (!firestore) return;
-        setIsProcessing(record.id);
-        try {
-            await updateDoc(doc(firestore, 'financialRecords', record.id), { status: decision });
-            toast({ title: `Reversal ${decision === 'Unpaid' ? 'Approved' : 'Rejected'}` });
-            onUpdate();
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: "Error", description: e.message });
-        } finally {
-            setIsProcessing(null);
-        }
-    };
-    
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-700"><AlertTriangle /> Reversal Requests</CardTitle>
-                <CardDescription>Approve or reject debit memos created by accountants.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Student</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {reversals.length === 0 && <TableRow><TableCell colSpan={4} className="text-center p-8">No pending reversals.</TableCell></TableRow>}
-                        {reversals.map(rec => (
-                            <TableRow key={rec.id}>
-                                <TableCell>{rec.studentName}</TableCell>
-                                <TableCell className="text-xs text-muted-foreground">{rec.description}</TableCell>
-                                <TableCell className="text-right font-bold">GH₵{rec.billedAmount.toFixed(2)}</TableCell>
-                                <TableCell className="text-right">
-                                    <div className="flex gap-2 justify-end">
-                                        <Button size="sm" variant="destructive" onClick={() => handleDecision(rec, 'Rejected Reversal')} disabled={isProcessing === record.id}>Reject</Button>
-                                        <Button size="sm" onClick={() => handleDecision(rec, 'Unpaid')} disabled={isProcessing === record.id}>Approve</Button>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-    )
 }
 
 // --- Main Page ---
