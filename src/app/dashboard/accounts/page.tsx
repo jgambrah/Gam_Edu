@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, deleteDoc } from 'firebase/firestore';
 import { format, isPast, startOfDay, endOfDay, startOfMonth } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 
@@ -1001,6 +1002,74 @@ function StudentLedgerDetail({
     );
 }
 
+// --- NEW COMPONENT: Reversal Approval ---
+function ReversalApproval({ reversals, onUpdate }: { reversals: FinancialRecord[], onUpdate: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const { user } = useUser();
+    const [isProcessing, setIsProcessing] = useState<string | null>(null);
+
+    const handleApproval = async (record: FinancialRecord, decision: 'approve' | 'reject') => {
+        if (!firestore || !user) return;
+        setIsProcessing(record.id);
+        
+        try {
+            const recordRef = doc(firestore, 'financialRecords', record.id);
+            
+            if (decision === 'approve') {
+                // If approved, the record is simply deleted as it was a correction
+                await deleteDoc(recordRef);
+                toast({ title: 'Reversal Approved', description: `The charge for ${record.studentName} has been reversed.` });
+            } else {
+                // If rejected, update its status so it's no longer pending
+                await updateDoc(recordRef, {
+                    status: 'Rejected Reversal',
+                    notes: `Rejected by ${user.displayName || user.email} on ${format(new Date(), 'PPP')}`
+                });
+                toast({ title: 'Reversal Rejected', description: 'The reversal request has been denied.' });
+            }
+            onUpdate();
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Error', description: e.message });
+        } finally {
+            setIsProcessing(null);
+        }
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Pending Reversal Requests</CardTitle>
+                <CardDescription>Approve or reject debit memos created by accountants to correct billing errors.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {reversals.length === 0 ? <p className="text-muted-foreground">No pending reversal requests.</p> : (
+                    <Table>
+                        <TableHeader><TableRow><TableHead>Student</TableHead><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                            {reversals.map(r => (
+                                <TableRow key={r.id}>
+                                    <TableCell>{r.studentName}</TableCell>
+                                    <TableCell className="text-xs text-muted-foreground">{r.description}</TableCell>
+                                    <TableCell className="font-mono font-bold">GH₵{r.billedAmount.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        <Button variant="outline" size="sm" onClick={() => handleApproval(r, 'reject')} disabled={isProcessing === r.id}>
+                                            <XCircle className="mr-1 h-4 w-4" /> Reject
+                                        </Button>
+                                        <Button variant="destructive" size="sm" onClick={() => handleApproval(r, 'approve')} disabled={isProcessing === r.id}>
+                                            <CheckCircle2 className="mr-1 h-4 w-4" /> Approve Reversal
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
 // --- Main Page ---
 export default function AccountsPage() {
   const { role } = useRole();
@@ -1013,7 +1082,8 @@ export default function AccountsPage() {
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
   const [activeTab, setActiveTab] = useState('billing');
 
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+  // Queries
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
   
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -1026,10 +1096,12 @@ export default function AccountsPage() {
   const isAdmin = ['Administrator', 'Director'].includes(role);
   const isLoading = isLoadingRecords || isLoadingStudents;
 
+  // --- STATS ---
   const dashboardStats = useMemo(() => {
     if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0 };
     
-    const reportableRecords = records.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
+    // Filter out reversals
+    const activeRecords = records.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
 
     let totalPaid = 0;
     let totalBilled = 0;
@@ -1037,10 +1109,11 @@ export default function AccountsPage() {
     let outstandingCanteen = 0;
     let outstandingTransport = 0;
 
-    for (const record of reportableRecords) {
+    for (const record of activeRecords) {
         const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
         totalBilled += record.billedAmount;
         totalPaid += (record.amountPaid || 0);
+        
         if (balance > 0) {
             if (record.type === 'Tuition Fee') outstandingTuition += balance;
             else if (record.type === 'Canteen Fee') outstandingCanteen += balance;
@@ -1057,24 +1130,19 @@ export default function AccountsPage() {
     };
   }, [records]);
 
+  // --- STUDENT LIST LOGIC ---
   const studentFinancials = useMemo(() => {
       if (!records || !students) return [];
-  
-      const recordsByStudent = records.reduce((acc, record) => {
-          const studentId = record.studentId;
-          if (!acc[studentId]) {
-            acc[studentId] = [];
-          }
-          acc[studentId].push(record);
-          return acc;
-      }, {} as Record<string, FinancialRecord[]>);
-  
-      return Object.keys(recordsByStudent)
-        .map(studentId => {
-            const student = students.find(s => s.uid === studentId);
-            if (!student) return null;
+      
+      const recordsByStudent: Record<string, FinancialRecord[]> = {};
+      records.forEach(r => {
+          if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = [];
+          recordsByStudent[r.studentId].push(r);
+      });
 
-            const studentRecords = recordsByStudent[studentId];
+      return students.map(student => {
+            const studentRecords = recordsByStudent[student.uid] || [];
+            
             const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
             const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
             const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
@@ -1086,17 +1154,18 @@ export default function AccountsPage() {
                 hasOverdue: activeRecords.some(r => r.status === 'Overdue'),
                 records: studentRecords,
             };
-        })
-        .filter(item => item !== null) as { student: Student; balance: number; hasOverdue: boolean; records: FinancialRecord[] }[];
+        }).sort((a, b) => b.balance - a.balance);
+
   }, [records, students]);
+
+  const filteredStudentsWithBills = useMemo(() => {
+    return studentFinancials.filter(sf => searchStudent(sf.student, searchTerm));
+  }, [studentFinancials, searchTerm]);
   
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
-  const filteredStudentsWithBills = useMemo(() => studentFinancials.filter(sf => searchStudent(sf.student, searchTerm)), [studentFinancials, searchTerm]);
 
   if (!canAccess) {
-    return (
-      <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted to financial staff.</CardDescription></CardHeader></Card>
-    );
+    return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>Restricted Area.</CardDescription></CardHeader></Card>;
   }
 
   const handleOpenDialog = (type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord) => setDialogState({ type, record });
@@ -1113,121 +1182,118 @@ export default function AccountsPage() {
             </TabsList>
             
             <TabsContent value="billing" className="space-y-6">
+                
+                {/* STATS CARDS */}
                 <Card>
                     <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
                     <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Outstanding</CardTitle><DollarSign className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card>
-                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Revenue</CardTitle><HandCoins className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card>
-                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Tuition Debt</CardTitle><Receipt className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card>
-                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Canteen Debt</CardTitle><Utensils className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card>
-                        <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Transport Debt</CardTitle><Bus className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Total Outstanding</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-red-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Total Revenue</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-green-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Tuition Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Canteen Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Transport Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card>
                     </CardContent>
                 </Card>
         
+                {/* ACTIONS & LIST */}
                 <div className="grid lg:grid-cols-1 gap-6">
-                <Card>
-                    <CardHeader>
-                    <div className="flex justify-between items-center">
-                        <div><CardTitle>Create Bills</CardTitle><CardDescription>Create, manage, and track all student financial records.</CardDescription></div>
-                        <div className="flex gap-2">
-                            <Dialog open={activeForm === 'daily'} onOpenChange={(open) => setActiveForm(open ? 'daily' : null)}>
-                                <DialogTrigger asChild>
-                                    <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
-                                        <Utensils className="mr-2 h-4 w-4" /> Add Daily Charge
-                                    </Button>
-                                </DialogTrigger>
-                                {schoolId && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
-                            </Dialog>
-                            <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
-                                <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
-                            </Button>
-                            <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}>
-                                <FileCog className="mr-2 h-4 w-4" /> Bulk Bill
-                            </Button>
-                        </div>
-                    </div>
-                    </CardHeader>
-                    <CardContent>
-                        {activeForm === 'single' && schoolId && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />}
-                        {activeForm === 'bulk' && schoolId && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
-                    </CardContent>
-                </Card>
-                </div>
-        
-                <Card>
-                <CardHeader>
-                    <StudentSearchInput value={searchTerm} onChange={setSearchTerm}/>
-                </CardHeader>
-                <CardContent>
-                    {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
-                        <Accordion type="single" collapsible className="w-full">
-                            {filteredStudentsWithBills.map(({ student, balance, records }) => (
-                                 <AccordionItem value={student.uid} key={student.uid}>
-                                    <AccordionTrigger className="hover:no-underline p-4">
-                                        <div className='flex justify-between items-center w-full'>
-                                            <StudentDisplay student={student} variant="full" showAvatar />
-                                            <div className="text-right">
-                                                <p className="text-sm text-muted-foreground">Balance</p>
-                                                <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>GH₵{balance.toFixed(2)}</p>
-                                            </div>
+                    <Card>
+                        <CardHeader>
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div><CardTitle>Student Accounts</CardTitle><CardDescription>Manage bills and payments.</CardDescription></div>
+                                <div className="flex gap-2 flex-wrap">
+                                    <Dialog open={activeForm === 'daily'} onOpenChange={(open) => setActiveForm(open ? 'daily' : null)}>
+                                        <DialogTrigger asChild><Button variant="outline"><Utensils className="mr-2 h-4 w-4" /> Daily Charge</Button></DialogTrigger>
+                                        {schoolId && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
+                                    </Dialog>
+                                    <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}><PlusCircle className="mr-2 h-4 w-4" /> Single Bill</Button>
+                                    <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}><FileCog className="mr-2 h-4 w-4" /> Bulk Bill</Button>
+                                </div>
+                            </div>
+                        </CardHeader>
+                        
+                        <CardContent className="space-y-6">
+                            {/* ACTIVE FORMS */}
+                            {activeForm === 'single' && schoolId && (
+                                <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
+                                    <h3 className="font-bold mb-4">Create Single Bill</h3>
+                                    <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />
+                                </div>
+                            )}
+                            {activeForm === 'bulk' && schoolId && (
+                                <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
+                                    <h3 className="font-bold mb-4">Create Bulk Bill</h3>
+                                    <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
+                                </div>
+                            )}
+
+                            {/* SEARCH BAR */}
+                            <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-md"/>
+
+                            {/* STUDENT LIST */}
+                            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
+                                <div className="space-y-2">
+                                    {filteredStudentsWithBills.length === 0 ? (
+                                        <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
+                                            No students found matching your search.
                                         </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="p-4 bg-slate-50/50 border-t">
-                                        <StudentLedgerDetail 
-                                            student={student} 
-                                            records={records}
-                                            onRecordPayment={(rec) => handleOpenDialog('payment', rec)}
-                                            onApplyWaiver={(rec) => handleOpenDialog('waiver', rec)}
-                                            onEditRecord={(rec) => handleOpenEditDialog(rec)}
-                                            onReverseTransaction={(rec) => handleOpenDialog('reversal', rec)}
-                                        />
-                                    </AccordionContent>
-                                </AccordionItem>
-                            ))}
-                        </Accordion>
-                    )}
-                </CardContent>
-                </Card>
+                                    ) : (
+                                        <Accordion type="single" collapsible className="w-full">
+                                            {filteredStudentsWithBills.map(({ student, balance, records }) => (
+                                                <AccordionItem value={student.uid} key={student.uid} className="border rounded-lg mb-2 px-4 bg-white">
+                                                    <AccordionTrigger className="hover:no-underline py-4">
+                                                        <div className='flex justify-between items-center w-full pr-4'>
+                                                            <StudentDisplay student={student} variant="full" showAvatar />
+                                                            <div className="text-right">
+                                                                <p className="text-xs uppercase font-bold text-muted-foreground">Balance</p>
+                                                                <p className={cn("font-bold text-xl", balance > 0.01 ? "text-red-600" : "text-green-600")}>
+                                                                    GH₵{Math.abs(balance).toFixed(2)} {balance < -0.01 ? "(CR)" : ""}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </AccordionTrigger>
+                                                    <AccordionContent className="pt-2 pb-4 border-t mt-2">
+                                                        <StudentLedgerDetail 
+                                                            student={student} 
+                                                            records={records}
+                                                            onRecordPayment={(rec) => handleOpenDialog('payment', rec)}
+                                                            onApplyWaiver={(rec) => handleOpenDialog('waiver', rec)}
+                                                            onEditRecord={(rec) => handleOpenEditDialog(rec)}
+                                                            onReverseTransaction={(rec) => handleOpenDialog('reversal', rec)}
+                                                        />
+                                                    </AccordionContent>
+                                                </AccordionItem>
+                                            ))}
+                                        </Accordion>
+                                    )}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
             </TabsContent>
             
             <TabsContent value="approval">
-                 <p>Approval Component Here</p>
+                 <ReversalApproval reversals={pendingReversals} onUpdate={forceRefetch} />
             </TabsContent>
 
         </Tabs>
       
+      {/* DIALOGS */}
       {dialogState.record && dialogState.type === 'payment' && (
-        <RecordPaymentDialog 
-            record={dialogState.record} 
-            open={!!dialogState.record} 
-            setOpen={handleCloseDialog} 
-            onUpdate={forceRefetch} 
-        />
+        <RecordPaymentDialog record={dialogState.record} open={!!dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />
       )}
       {dialogState.record && dialogState.type === 'waiver' && (
-        <ApplyWaiverDialog 
-            record={dialogState.record} 
-            open={!!dialogState.record} 
-            setOpen={handleCloseDialog} 
-            onUpdate={forceRefetch} 
-        />
+        <ApplyWaiverDialog record={dialogState.record} open={!!dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />
       )}
         {dialogState.record && dialogState.type === 'reversal' && (
-            <ReverseTransactionDialog 
-                record={dialogState.record}
-                open={!!dialogState.record}
-                setOpen={handleCloseDialog}
-                onUpdate={forceRefetch}
-            />
+            <ReverseTransactionDialog record={dialogState.record} open={!!dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />
         )}
       {editingRecord && (
-        <EditRecordDialog 
-            record={editingRecord} 
-            open={!!editingRecord} 
-            setOpen={handleCloseEditDialog} 
-            onUpdate={forceRefetch} 
-        />
+        <EditRecordDialog record={editingRecord} open={!!editingRecord} setOpen={handleCloseEditDialog} onUpdate={forceRefetch} />
       )}
     </div>
   );
 }
+
+    
