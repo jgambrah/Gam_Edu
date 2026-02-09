@@ -4,10 +4,10 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, writeBatch, increment, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, writeBatch, increment, updateDoc, getDocs } from 'firebase/firestore';
 import { 
   ShoppingBag, Package, PlusCircle, ShoppingCart, 
-  Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool, Trash2, ArchiveRestore, Edit
+  Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool, Trash2, ArchiveRestore, Edit, Loader2
 } from 'lucide-react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
@@ -23,11 +23,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 
 // --- TYPES ---
 interface ShopItem {
@@ -49,11 +49,123 @@ const restockSchema = z.object({
     quantity: z.coerce.number().int().min(1, "Quantity must be at least 1."),
 });
 
+const editItemSchema = z.object({
+    name: z.string().min(1, "Name is required."),
+    category: z.enum(['Uniform', 'Book', 'Clothing', 'Stationery', 'Other']),
+    price: z.coerce.number().min(0.01, "Price must be at least 0.01."),
+    minStock: z.coerce.number().int().min(0, "Min stock cannot be negative."),
+    description: z.string().optional(),
+});
+
+// --- COMPONENT: Edit Item Dialog ---
+function EditItemDialog({ item, open, onOpenChange, onUpdateComplete }: { item: ShopItem; open: boolean; onOpenChange: (open: boolean) => void; onUpdateComplete: () => void; }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const form = useForm<z.infer<typeof editItemSchema>>({
+        resolver: zodResolver(editItemSchema),
+        defaultValues: {
+            name: item.name,
+            category: item.category,
+            price: item.price,
+            minStock: item.minStock || 10,
+            description: item.description || '',
+        },
+    });
+
+    async function onSubmit(values: z.infer<typeof editItemSchema>) {
+        if (!firestore) return;
+        setIsSubmitting(true);
+        try {
+            const itemRef = doc(firestore, 'school_shop_items', item.id);
+            await updateDoc(itemRef, {
+                ...values,
+                updatedAt: serverTimestamp()
+            });
+
+            toast({ title: 'Success', description: `${values.name} has been updated.` });
+            onUpdateComplete();
+            onOpenChange(false);
+        } catch (error) {
+            console.error('Error updating item:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not update the item.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle>Edit Item: {item.name}</DialogTitle>
+                    <DialogDescription>Update product details and pricing.</DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField control={form.control} name="name" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Item Name</FormLabel>
+                                <FormControl><Input {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name="category" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Category</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="Book">Book</SelectItem>
+                                            <SelectItem value="Uniform">Uniform</SelectItem>
+                                            <SelectItem value="Clothing">Sports/Friday Wear</SelectItem>
+                                            <SelectItem value="Stationery">Stationery</SelectItem>
+                                            <SelectItem value="Other">Other</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )} />
+                            <FormField control={form.control} name="price" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Price (GH₵)</FormLabel>
+                                    <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                        </div>
+                        <FormField control={form.control} name="minStock" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Minimum Stock Alert Level</FormLabel>
+                                <FormControl><Input type="number" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="description" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl><Textarea {...field} /></FormControl>
+                            </FormItem>
+                        )} />
+                        <Button type="submit" disabled={isSubmitting} className="w-full">
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save Changes
+                        </Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 // --- COMPONENT: Restock Dialog ---
 function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: ShopItem; open: boolean; onOpenChange: (open: boolean) => void; onRestockComplete: () => void; }) {
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof restockSchema>>({
@@ -62,7 +174,7 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
     });
 
     async function onSubmit(values: z.infer<typeof restockSchema>) {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         setIsSubmitting(true);
         try {
             const batch = writeBatch(firestore);
@@ -76,7 +188,8 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
                 transactionType: 'RESTOCK',
                 quantityChange: values.quantity,
                 date: serverTimestamp(),
-                notes: `Added ${values.quantity} unit(s).`
+                notes: `Added ${values.quantity} unit(s).`,
+                schoolId: schoolId,
             });
 
             await batch.commit();
@@ -102,7 +215,7 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField control={form.control} name="quantity" render={({ field }) => (
                             <FormItem>
-                                <Label>Quantity to Add</Label>
+                                <FormLabel>Quantity to Add</FormLabel>
                                 <FormControl><Input type="number" {...field} /></FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -118,14 +231,13 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
     );
 }
 
-// --- COMPONENT: Add/Restock Shop Item ---
-function ShopManager({ schoolId }: { schoolId: string }) {
+// --- COMPONENT: Add Shop Item ---
+function ShopManager({ schoolId, onAddItem }: { schoolId: string; onAddItem: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Form State
     const [name, setName] = useState('');
     const [category, setCategory] = useState('Book');
     const [price, setPrice] = useState('');
@@ -148,6 +260,7 @@ function ShopManager({ schoolId }: { schoolId: string }) {
             });
             
             toast({ title: "Product Added", description: `${name} is now available for sale.` });
+            onAddItem();
             setIsFormOpen(false);
             setName(''); setPrice(''); setStock(''); setDesc('');
         } catch (e) {
@@ -206,8 +319,7 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
     const [paymentMethod, setPaymentMethod] = useState('Cash');
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Calculate Total
-    const totalAmount = cart.reduce((sum, item) => sum + (Number(item.price || 0) * item.quantity), 0);
+    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     const addToCart = (item: ShopItem) => {
         if (item.stock <= 0) {
@@ -276,8 +388,8 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
                     itemId: item.id,
                     itemName: item.name,
                     quantity: item.quantity,
-                    priceAtSale: Number(item.price || 0),
-                    total: Number(item.price || 0) * item.quantity,
+                    priceAtSale: item.price,
+                    total: item.price * item.quantity,
                     soldBy: user.uid,
                     date: serverTimestamp(),
                     schoolId: schoolId,
@@ -398,13 +510,16 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
 export default function SchoolShopPage() {
     const { role } = useRole();
     const firestore = useFirestore();
-    const { schoolId } = useCurrentSchool();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     const [restockItem, setRestockItem] = useState<ShopItem | null>(null);
+    const [editingItem, setEditingItem] = useState<ShopItem | null>(null);
 
     const itemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'school_shop_items'), where('schoolId', '==', schoolId), orderBy('name')) : null, [firestore, schoolId]);
     const { data: items, isLoading, forceRefetch } = useCollection<ShopItem>(itemsQuery);
 
     const canManage = ['Administrator', 'Director', 'Accountant'].includes(role);
+
+    const isLoadingPage = isLoadingSchool || isLoading;
 
     if (!canManage) return <div className="p-8 text-center text-red-500">Access Denied. Finance Staff Only.</div>;
 
@@ -418,7 +533,7 @@ export default function SchoolShopPage() {
                         <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-800"><ShoppingBag className="text-emerald-600"/> School Shop</h1>
                         <p className="text-muted-foreground">Sell uniforms, books, and supplies.</p>
                     </div>
-                    {schoolId && <ShopManager schoolId={schoolId} />}
+                    {schoolId && <ShopManager schoolId={schoolId} onAddItem={forceRefetch}/>}
                 </div>
 
                 {lowStockItems.length > 0 && (
@@ -436,7 +551,7 @@ export default function SchoolShopPage() {
                     </TabsList>
 
                     <TabsContent value="pos" className="flex-1 mt-4">
-                        {isLoading || !schoolId ? <Loader2 className="mx-auto mt-20 animate-spin text-emerald-600"/> : <PointOfSale items={items || []} schoolId={schoolId} />}
+                        {isLoadingPage ? <div className="flex justify-center p-10"><Loader2 className="mx-auto mt-20 animate-spin text-emerald-600"/></div> : <PointOfSale items={items || []} schoolId={schoolId!} />}
                     </TabsContent>
 
                     <TabsContent value="list">
@@ -466,7 +581,11 @@ export default function SchoolShopPage() {
                                                         {item.stock}
                                                     </span>
                                                 </TableCell>
-                                                <TableCell className="text-right">
+                                                <TableCell className="text-right space-x-2">
+                                                    <Button variant="outline" size="sm" onClick={() => setEditingItem(item)}>
+                                                        <Edit className="h-4 w-4 mr-1"/>
+                                                        Edit
+                                                    </Button>
                                                     <Button variant="outline" size="sm" onClick={() => setRestockItem(item)}>
                                                         <ArchiveRestore className="h-4 w-4 mr-1"/>
                                                         Restock
@@ -481,6 +600,16 @@ export default function SchoolShopPage() {
                     </TabsContent>
                 </Tabs>
             </div>
+            
+            {editingItem && (
+                <EditItemDialog
+                    item={editingItem}
+                    open={!!editingItem}
+                    onOpenChange={(val) => !val && setEditingItem(null)}
+                    onUpdateComplete={forceRefetch}
+                />
+            )}
+
             {restockItem && (
                 <RestockDialog
                     item={restockItem}
@@ -492,3 +621,5 @@ export default function SchoolShopPage() {
         </>
     );
 }
+
+      
