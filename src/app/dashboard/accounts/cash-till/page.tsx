@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -279,18 +278,181 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
     );
 }
 
+function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classes }: { 
+    till: Till | null, 
+    open: boolean, 
+    onOpenChange: (open: boolean) => void, 
+    onUpdate: () => void,
+    students: Student[] | null,
+    classes: Class[] | null
+}) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isProcessing, setIsProcessing] = useState<string | null>(null);
+
+    const studentMap = useMemo(() => new Map(students?.map(s => [s.uid, s])), [students]);
+    const classMap = useMemo(() => new Map(classes?.map(c => [c.id, c.name])), [classes]);
+
+    const transactionsQuery = useMemoFirebase(() => (till ? query(collection(firestore, `tills/${till.id}/transactions`), orderBy('timestamp', 'desc')) : null), [firestore, till]);
+    const { data: transactions, isLoading: isLoadingTransactions, forceRefetch } = useCollection<TillTransaction>(transactionsQuery);
+
+    if (!till) return null;
+
+    const pendingAdjustments = transactions?.filter(tx => tx.status === 'Pending Adjustment') || [];
+
+    const handleAdjustmentDecision = async (tx: TillTransaction, decision: 'Approve' | 'Reject') => {
+        if (!user || !firestore) return;
+        setIsProcessing(tx.id);
+        try {
+            await runTransaction(firestore, async (transaction) => {
+                const tillRef = doc(firestore, 'tills', till.id);
+                const txRef = doc(firestore, `tills/${till.id}/transactions`, tx.id);
+
+                const tillDoc = await transaction.get(tillRef);
+                if (!tillDoc.exists()) throw new Error("Till does not exist.");
+
+                if (decision === 'Approve') {
+                    transaction.update(txRef, { status: 'Completed', approverId: user.uid, approverName: user.displayName, decisionAt: serverTimestamp() });
+                    transaction.update(tillRef, { closingBalance: increment(tx.amount) });
+                } else { 
+                    transaction.update(txRef, { status: 'Rejected', approverId: user.uid, approverName: user.displayName, decisionAt: serverTimestamp() });
+                }
+            });
+            toast({ title: `Adjustment ${decision.toLowerCase()}d` });
+            forceRefetch();
+            onUpdate();
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Error", description: e.message });
+        } finally {
+            setIsProcessing(null);
+        }
+    };
+    
+    const handleTillDecision = async (action: 'Approve' | 'Reject') => {
+        if (!user || !firestore) return;
+        setIsProcessing('main_till');
+        const tillRef = doc(firestore, 'tills', till.id);
+        
+        try {
+            if (action === 'Approve') {
+                await updateDoc(tillRef, {
+                    status: 'Closed',
+                    'directorApproval.directorId': user.uid,
+                    'directorApproval.directorName': user.displayName || user.email,
+                    'directorApproval.approvedAt': serverTimestamp(),
+                    dateClosed: serverTimestamp(),
+                });
+            } else { 
+                await updateDoc(tillRef, {
+                    status: 'Open', 
+                    'directorApproval.rejectionReason': 'Rejected by Director, please review adjustments.',
+                });
+            }
+             toast({ title: 'Success', description: `Till has been ${action.toLowerCase()}d.` });
+             onOpenChange(false);
+             onUpdate();
+        } catch(e: any) {
+             toast({ variant: 'destructive', title: 'Error', description: e.message });
+        } finally {
+            setIsProcessing(null);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                    <DialogTitle>Till Submission Review</DialogTitle>
+                    <DialogDescription>
+                        For {till.accountantName} on {till.dateOpened ? format(till.dateOpened.toDate(), 'PPP') : 'N/A'}. 
+                        Proposed Closing Balance: GH₵{till.closingBalance?.toFixed(2)}
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[60vh] overflow-y-auto pr-2">
+                    <Table>
+                        <TableHeader><TableRow><TableHead>Time</TableHead><TableHead>Student</TableHead><TableHead>Details</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Amount (GH₵)</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                            {isLoadingTransactions ? <TableRow><TableCell colSpan={6} className="text-center"><Loader2 className="mx-auto h-6 w-6 animate-spin"/></TableCell></TableRow> 
+                            : transactions?.map(tx => {
+                                const student = tx.studentId ? studentMap.get(tx.studentId) : null;
+                                const className = student ? classMap.get(student.classId) : null;
+                                return (
+                                <TableRow key={tx.id} className={tx.status === 'Pending Adjustment' ? 'bg-amber-50' : ''}>
+                                    <TableCell>{tx.timestamp ? format(tx.timestamp.toDate(), 'p') : 'N/A'}</TableCell>
+                                    <TableCell>
+                                        {student ? (
+                                            <div>
+                                                <div className="font-medium">{student.firstName} {student.lastName}</div>
+                                                <div className="text-xs text-muted-foreground">{className}</div>
+                                            </div>
+                                        ) : tx.studentName || '-'}
+                                    </TableCell>
+                                    <TableCell className="text-xs">{tx.description}</TableCell>
+                                    <TableCell><Badge variant={(tx.status === 'Completed' || !tx.status) ? 'default' : 'secondary'}>{tx.status || 'Completed'}</Badge></TableCell>
+                                    <TableCell className={`text-right font-mono ${tx.amount < 0 ? 'text-red-500' : ''}`}>{tx.amount.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right">
+                                        {tx.status === 'Pending Adjustment' && (
+                                            <div className="flex gap-2 justify-end">
+                                                <Button size="sm" variant="destructive" onClick={() => handleAdjustmentDecision(tx, 'Reject')} disabled={isProcessing === tx.id}>Reject</Button>
+                                                <Button size="sm" onClick={() => handleAdjustmentDecision(tx, 'Approve')} disabled={isProcessing === tx.id}>Approve</Button>
+                                            </div>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                                )})
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+                {till.status !== 'Closed' && (
+                    <DialogFooter>
+                        <div className="w-full flex justify-end gap-2 pt-4 border-t">
+                            <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive" disabled={pendingAdjustments.length > 0 || isProcessing === 'main_till'}>Reject Till</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader><AlertDialogTitle>Reject Entire Till?</AlertDialogTitle><AlertDialogDescription>This will reopen the till for the accountant. Use this if there is a major discrepancy.</AlertDialogDescription></AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleTillDecision('Reject')}>Confirm Rejection</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button disabled={pendingAdjustments.length > 0 || isProcessing === 'main_till'}>
+                                        {isProcessing === 'main_till' && <Loader2 className="animate-spin mr-2"/>} Approve Till
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader><AlertDialogTitle>Approve & Close Till?</AlertDialogTitle><AlertDialogDescription>This will finalize the till balance and close it permanently.</AlertDialogDescription></AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleTillDecision('Approve')}>Confirm & Close</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    </DialogFooter>
+                )}
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+
 // --- Director's View: Approve/Reject Tills ---
 function DirectorTillView({ setSelectedTill }: { setSelectedTill: (till: Till) => void }) {
     const firestore = useFirestore();
-    const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
-
-    const [reviewingTill, setReviewingTill] = useState<Till | null>(null);
 
     const pendingTillsQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'PendingApproval')) : null, [firestore, schoolId]);
     const { data: pendingTills, isLoading: isLoadingPending, forceRefetch: forceRefetchPending } = useCollection<Till>(pendingTillsQuery);
     
-    const closedTillsQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'Closed')) : null, [firestore, schoolId]);
+    const closedTillsQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'Closed'), orderBy('dateClosed', 'desc')) : null, [firestore, schoolId]);
     const { data: closedTills, isLoading: isLoadingClosed } = useCollection<Till>(closedTillsQuery);
 
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(
@@ -299,6 +461,8 @@ function DirectorTillView({ setSelectedTill }: { setSelectedTill: (till: Till) =
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(
         useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId])
     );
+
+    const [reviewingTill, setReviewingTill] = useState<Till | null>(null);
 
     const isLoading = isLoadingPending || isLoadingClosed || isLoadingStudents || isLoadingClasses;
 
@@ -397,7 +561,7 @@ export default function CashTillPage() {
     );
 
     const isLoading = isLoadingStudents || isLoadingClasses;
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
     const isDirector = role === 'Administrator' || role === 'Director';
     const isAccountant = role === 'Accountant';
 
@@ -429,5 +593,3 @@ export default function CashTillPage() {
         </div>
     );
 }
-
-      
