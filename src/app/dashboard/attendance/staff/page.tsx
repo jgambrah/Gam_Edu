@@ -6,7 +6,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '
 import { collection, query, where, orderBy, addDoc, serverTimestamp, limit, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin, CheckCircle2 } from 'lucide-react';
+import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -64,8 +64,9 @@ export default function StaffAttendancePage() {
   }, [toast]);
 
   const lastAction = useMemo(() => attendanceLogs?.[0], [attendanceLogs]);
+
   const hasClockedInToday = useMemo(() => {
-    if (!lastAction) return false;
+    if (!lastAction || !lastAction.timestamp) return false;
     const today = new Date();
     const lastActionDate = lastAction.timestamp.toDate();
     return lastAction.type === 'In' && lastActionDate.getDate() === today.getDate() && lastActionDate.getMonth() === today.getMonth();
@@ -202,7 +203,7 @@ export default function StaffAttendancePage() {
                       </div>
                       <div>
                         <p className="font-semibold text-sm">{log.type}</p>
-                        <p className="text-xs text-muted-foreground">{format(log.timestamp.toDate(), 'PPP p')}</p>
+                        <p className="text-xs text-muted-foreground">{log.timestamp ? format(log.timestamp.toDate(), 'PPP p') : 'Processing...'}</p>
                       </div>
                     </div>
                   </li>
