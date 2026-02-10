@@ -1,4 +1,5 @@
 
+
       
 
 import type { LucideIcon } from 'lucide-react';
@@ -805,6 +806,8 @@ export type StaffAttendance = {
     type: 'In' | 'Out';
     timestamp: any;
     verificationPhotoUrl: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 // Maths Club Schemas

@@ -1,6 +1,4 @@
 
-
-      
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -8,7 +6,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '
 import { collection, query, where, orderBy, addDoc, serverTimestamp, limit, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Camera, UserCheck, History, LogIn, LogOut } from 'lucide-react';
+import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -25,6 +23,8 @@ export default function StaffAttendancePage() {
 
   const [imageDataUri, setImageDataUri] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   // Fetch recent attendance logs for the current user
   const attendanceQuery = useMemoFirebase(() => {
@@ -38,6 +38,30 @@ export default function StaffAttendancePage() {
     );
   }, [user, schoolId, firestore]);
   const { data: attendanceLogs, isLoading, forceRefetch } = useCollection<StaffAttendance>(attendanceQuery);
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+          setLocationError(null);
+        },
+        (error) => {
+          setLocationError(error.message);
+          toast({
+            variant: "destructive",
+            title: "Location Error",
+            description: "Could not get your location. Please enable location services.",
+          });
+        }
+      );
+    } else {
+      setLocationError("Geolocation is not supported by your browser.");
+    }
+  }, [toast]);
 
   const lastAction = useMemo(() => attendanceLogs?.[0], [attendanceLogs]);
   const hasClockedInToday = useMemo(() => {
@@ -54,7 +78,14 @@ export default function StaffAttendancePage() {
 
 
   const handleClockIn = async () => {
-    if (!user || !imageDataUri || !schoolId) return;
+    if (!user || !imageDataUri || !schoolId || !location) {
+        toast({
+            variant: 'destructive',
+            title: 'Cannot Clock In',
+            description: 'Please ensure photo is taken and location is enabled.'
+        })
+        return;
+    }
     setIsSubmitting(true);
     try {
       await addDocumentNonBlocking(collection(firestore, 'staff_attendance'), {
@@ -64,6 +95,8 @@ export default function StaffAttendancePage() {
         timestamp: serverTimestamp(),
         verificationPhotoUrl: imageDataUri,
         schoolId: schoolId,
+        latitude: location.latitude,
+        longitude: location.longitude,
       });
       toast({ title: 'Clocked In!', description: 'Your arrival has been recorded.' });
       setImageDataUri(null);
@@ -76,7 +109,14 @@ export default function StaffAttendancePage() {
   };
   
   const handleClockOut = async () => {
-    if (!user || !imageDataUri || !schoolId) return;
+    if (!user || !imageDataUri || !schoolId || !location) {
+        toast({
+            variant: 'destructive',
+            title: 'Cannot Clock Out',
+            description: 'Please ensure photo is taken and location is enabled.'
+        })
+        return;
+    }
     setIsSubmitting(true);
     try {
         await addDocumentNonBlocking(collection(firestore, 'staff_attendance'), {
@@ -86,6 +126,8 @@ export default function StaffAttendancePage() {
             timestamp: serverTimestamp(),
             verificationPhotoUrl: imageDataUri,
             schoolId: schoolId,
+            latitude: location.latitude,
+            longitude: location.longitude,
         });
         toast({ title: 'Clocked Out!', description: 'Your departure has been recorded.' });
         setImageDataUri(null);
@@ -110,17 +152,26 @@ export default function StaffAttendancePage() {
                 imageDataUri={imageDataUri} 
                 setImageDataUri={setImageDataUri}
             />
+             <div className="w-full text-center p-2 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium">
+                {location ? (
+                    <span className="flex items-center justify-center gap-1 text-green-600"><CheckCircle2 className="h-4 w-4"/> Location Acquired</span>
+                ) : locationError ? (
+                    <span className="text-red-600">{locationError}</span>
+                ) : (
+                    <span className="flex items-center justify-center gap-1"><Loader2 className="h-4 w-4 animate-spin"/> Acquiring location...</span>
+                )}
+            </div>
             <div className="flex w-full gap-4 mt-4">
               <Button 
                 onClick={handleClockIn} 
-                disabled={isSubmitting || !imageDataUri || hasClockedInToday}
+                disabled={isSubmitting || !imageDataUri || hasClockedInToday || !location}
                 className="flex-1 bg-green-600 hover:bg-green-700 h-12 text-lg"
               >
                 {isSubmitting ? <Loader2 className="animate-spin"/> : <LogIn className="mr-2"/>} Clock In
               </Button>
               <Button 
                 onClick={handleClockOut}
-                disabled={isSubmitting || !imageDataUri || !hasClockedInToday || hasClockedOutToday}
+                disabled={isSubmitting || !imageDataUri || !hasClockedInToday || hasClockedOutToday || !location}
                 className="flex-1 bg-red-500 hover:bg-red-600 h-12 text-lg"
               >
                 {isSubmitting ? <Loader2 className="animate-spin"/> : <LogOut className="mr-2"/>} Clock Out

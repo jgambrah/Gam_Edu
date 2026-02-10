@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer } from 'lucide-react';
+import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer, MapPin } from 'lucide-react';
 import { format, startOfDay, endOfDay, setHours, setMinutes } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
@@ -138,7 +139,7 @@ export default function StaffAttendanceRecordsPage() {
             <div className="flex justify-center p-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
           ) : (
             <Table>
-              <TableHeader><TableRow><TableHead>Staff Name</TableHead><TableHead>Date</TableHead><TableHead>Time</TableHead><TableHead>Type</TableHead><TableHead>Punctuality</TableHead><TableHead>Verification</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow><TableHead>Staff Name</TableHead><TableHead>Date</TableHead><TableHead>Time</TableHead><TableHead>Type</TableHead><TableHead>Punctuality</TableHead><TableHead>Verification</TableHead><TableHead>Location</TableHead></TableRow></TableHeader>
               <TableBody>
                 {filteredLogs.map(log => {
                     const logDate = log.timestamp.toDate();
@@ -159,10 +160,22 @@ export default function StaffAttendanceRecordsPage() {
                             <TableCell>
                                 <Button variant="outline" size="sm" onClick={() => setPhotoToView(log.verificationPhotoUrl)}>View Photo</Button>
                             </TableCell>
+                             <TableCell>
+                                {log.latitude && log.longitude ? (
+                                    <a href={`https://www.google.com/maps?q=${log.latitude},${log.longitude}`} target="_blank" rel="noopener noreferrer">
+                                        <Button variant="ghost" size="sm" className="flex items-center gap-1 text-blue-600">
+                                            <MapPin className="h-4 w-4" />
+                                            Map
+                                        </Button>
+                                    </a>
+                                ) : (
+                                    <span className="text-xs text-muted-foreground">N/A</span>
+                                )}
+                            </TableCell>
                         </TableRow>
                     );
                 })}
-                 {filteredLogs.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No records match the selected filters.</TableCell></TableRow>}
+                 {filteredLogs.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No records match the selected filters.</TableCell></TableRow>}
               </TableBody>
             </Table>
           )}
