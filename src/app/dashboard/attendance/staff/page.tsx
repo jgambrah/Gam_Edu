@@ -1,4 +1,5 @@
 
+
       
 'use client';
 
@@ -36,7 +37,7 @@ export default function StaffAttendancePage() {
       limit(10)
     );
   }, [user, schoolId, firestore]);
-  const { data: attendanceLogs, isLoading } = useCollection<StaffAttendance>(attendanceQuery);
+  const { data: attendanceLogs, isLoading, forceRefetch } = useCollection<StaffAttendance>(attendanceQuery);
 
   const lastAction = useMemo(() => attendanceLogs?.[0], [attendanceLogs]);
   const hasClockedInToday = useMemo(() => {
@@ -66,6 +67,7 @@ export default function StaffAttendancePage() {
       });
       toast({ title: 'Clocked In!', description: 'Your arrival has been recorded.' });
       setImageDataUri(null);
+      forceRefetch();
     } catch (e) {
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to clock in.' });
     } finally {
@@ -87,6 +89,7 @@ export default function StaffAttendancePage() {
         });
         toast({ title: 'Clocked Out!', description: 'Your departure has been recorded.' });
         setImageDataUri(null);
+        forceRefetch();
     } catch (e) {
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to clock out.'});
     } finally {

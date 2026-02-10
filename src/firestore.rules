@@ -1,5 +1,4 @@
 
-      
 rules_version = '2';
 
 service cloud.firestore {
@@ -106,8 +105,9 @@ service cloud.firestore {
     }
 
     match /staff_attendance/{attendanceId} {
-        allow read: if isAdmin() || isOwner(resource.data.staffId);
         allow create: if isSignedIn();
+        allow read: if isAdmin() || isOwner(resource.data.staffId);
+        allow list: if isAdmin() || (isSignedIn() && request.query.where.staffId == request.auth.uid);
     }
 
     match /report-cards/{reportId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isTeacher(); }

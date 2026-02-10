@@ -314,6 +314,12 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
         },
         {
+            path: '/dashboard/hr/staff-attendance-records',
+            title: 'Staff Attendance Records',
+            icon: CalendarCheck,
+            roles: ['Director', 'Administrator'],
+        },
+        {
             path: '/dashboard/leave-management',
             title: 'Leave Management',
             icon: Plane,
