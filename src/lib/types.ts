@@ -1,4 +1,5 @@
 
+      
 
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
@@ -511,8 +512,19 @@ export type FinancialRecord = {
     status: 'Paid' | 'Unpaid' | 'Overdue' | 'Pending Reversal' | 'Rejected Reversal';
     dueDate: any;
     createdAt: any;
+    lastPaymentDate?: any; // New field
     academicYear?: string;
     term?: string;
+};
+
+export type PaymentTransaction = {
+    id: string;
+    amount: number;
+    method: string;
+    notes?: string;
+    paidAt: any;
+    processedById: string;
+    processedByName: string;
 };
 
 export type Staff = {
@@ -717,7 +729,7 @@ export const checkoutSchema = z.object({
 export type InventoryTransaction = {
     id: string;
     itemId: string;
-    transactionType: 'Creation' | 'Check-Out' | 'Check-In' | 'Sale' | 'Adjustment' | 'Audit';
+    transactionType: 'Creation' | 'Check-Out' | 'Check-In' | 'Sale' | 'Adjustment' | 'Audit' | 'RESTOCK';
     timestamp: any;
     staffId?: string; // Who performed the action
     quantityChange?: number;
@@ -767,6 +779,7 @@ export const attendanceRecordSchema = z.object({
 
 export type AttendanceRecord = z.infer<typeof attendanceRecordSchema> & {
     id: string;
+    verificationPhotoUrl?: string; // New field
 };
 
 
@@ -783,6 +796,16 @@ export const auditLogSchema = z.object({
 export type AuditLog = z.infer<typeof auditLogSchema> & {
   id: string;
 };
+
+// Staff Attendance
+export type StaffAttendance = {
+    id: string;
+    staffId: string;
+    staffName: string;
+    type: 'In' | 'Out';
+    timestamp: any;
+    verificationPhotoUrl: string;
+}
 
 // Maths Club Schemas
 export const mathProblemSchema = z.object({
@@ -1010,7 +1033,6 @@ export type TillTransaction = {
     description: string; 
     type: TillTransactionType;
     status: TillTransactionStatus;
-    schoolId?: string;
 };
 
 
@@ -1316,3 +1338,6 @@ export interface DictionaryWord {
     
     
 
+
+      
+    

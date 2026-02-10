@@ -1,4 +1,5 @@
 
+      
 rules_version = '2';
 
 service cloud.firestore {
@@ -96,13 +97,17 @@ service cloud.firestore {
     match /subjects/{subjectId} { allow read, list: if isSignedIn(); allow write: if isAdmin(); }
     match /timetables/{timetableId} { allow read, list: if isSignedIn(); allow write: if isAdmin(); }
     match /rooms/{roomId} { allow read, list: if isSignedIn(); allow write: if isAdmin(); }
-    // ✅ FIX: More secure rule for these collections
     match /timeSlots/{timeSlotId} { allow read, list, write: if isAdmin() || isTeacher(); }
     match /school_calendar/{eventId} { allow read, list: if isSignedIn(); allow write: if isAdmin(); }
     
     match /attendance/{attendanceId} {
         allow read, list: if isSignedIn();
         allow write: if isTeacher() || isAdmin() || isDirector();
+    }
+
+    match /staff_attendance/{attendanceId} {
+        allow read: if isAdmin() || isOwner(resource.data.staffId);
+        allow create: if isSignedIn();
     }
 
     match /report-cards/{reportId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isTeacher(); }
@@ -113,8 +118,13 @@ service cloud.firestore {
     match /quizzes/{quizId} { allow read, list: if isSignedIn(); allow create: if isStaff() && request.resource.data.teacherId == request.auth.uid; allow update, delete: if isTeacher() && get(/databases/$(database)/documents/quizzes/$(quizId)).data.teacherId == request.auth.uid; match /attempts/{attemptId} { allow read, list: if isTeacher() || isAdmin() || request.auth.uid == resource.data.studentId; allow create: if isStudent(); } }
     match /quizAttempts/{attemptId} { allow create: if isSignedIn(); allow read, list: if isSignedIn(); allow update, delete: if isTeacher() || isAdmin(); }
     match /assessments/{assessmentId} { allow read, list: if isSignedIn(); allow create, update: if isTeacher() || isStaff() || isAdmin(); allow delete: if isAdmin(); }
-    // ✅ FIX: More secure rule for lesson plans
-    match /lesson-plans/{planId} { allow read, list: if isTeacher() || isAdmin(); allow create: if isTeacher() && request.resource.data.teacherId == request.auth.uid; allow update, delete: if isTeacher() && resource.data.teacherId == request.auth.uid; }
+    
+    match /lesson-plans/{planId} {
+      allow read, list: if isSignedIn();
+      allow create: if (isStaff() && request.resource.data.teacherId == request.auth.uid) || isAdmin();
+      allow update, delete: if isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid);
+    }
+
     match /learning_materials/{materialId} { allow read, list: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /behavioral_records/{recordId} { allow read, write, list: if isSignedIn(); }
 
@@ -126,8 +136,7 @@ service cloud.firestore {
       allow read, write, list: if isFinanceStaff() || isAdmin(); 
       match /transactions/{transactionId} { allow read, write, list: if isFinanceStaff() || isAdmin(); } 
     }
-    
-    // NEW: Bank transaction approval flow
+
     match /bank_transactions/{transactionId} {
         allow read, list: if isFinanceStaff() || isAdmin();
         allow create: if isFinanceStaff();
@@ -237,7 +246,6 @@ service cloud.firestore {
     match /student_coding_projects/{projectId} { allow read: if isSignedIn(); allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid; }
     match /forumThreads/{threadId} { allow read: if isSignedIn(); allow create: if isSignedIn(); allow update: if isSignedIn(); allow delete: if isAdmin() || request.auth.uid == resource.data.createdBy.uid; match /replies/{replyId} { allow read: if isSignedIn(); allow create: if isSignedIn(); allow update, delete: if isAdmin() || request.auth.uid == resource.data.author.uid; } }
     
-    // ✅ FIX: Added allow list rule
     match /direct_messages/{chatId} { 
       allow read, update: if isSignedIn() && request.auth.uid in resource.data.participants;
       allow list: if isSignedIn(); 
@@ -250,15 +258,15 @@ service cloud.firestore {
     match /lectures/{lectureId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); match /messages/{messageId} { allow read, create: if isSignedIn(); } }
     match /active_classes/{classId} { allow read, write: if isSignedIn(); match /{document=**} { allow read, write: if isSignedIn(); } }
     
-    // ✅ FIX: Corrected typo in function name
     match /library/{itemId} { 
       allow read: if true; 
       allow write: if isLibrarian() || isAdmin() || isTeacher();
     }
 
-    // ✅ FIX: Changed the restrictive catch-all to a safer admin-only rule
     match /{document=**} {
       allow read, write: if isAdmin();
     }
   }
 }
+      
+    

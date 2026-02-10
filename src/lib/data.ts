@@ -1,4 +1,5 @@
 
+      
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -27,7 +28,7 @@ import {
   BookCopy,
   BarChart,
   CalendarCheck,
-  UserCog as StaffIcon,  // Using UserCog  for  Staff
+  UserCog as StaffIcon,
   Shield,
   Code,
   Sigma,
@@ -55,7 +56,7 @@ import {
   Rocket,
   FileQuestion,
   Sparkles
-} from 'lucide-react'
+} from 'lucide-react';
 
 export const navItems: NavItem[] = [
   {
@@ -126,6 +127,18 @@ export const navItems: NavItem[] = [
     icon: BookOpen,
     roles: ['Director', 'Administrator', 'Teacher', 'Student'],
     subItems: [
+        {
+            path: '/dashboard/attendance/staff',
+            title: 'Staff Clock-In',
+            icon: UserCheckIcon,
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+        },
+        {
+            path: '/dashboard/attendance',
+            title: 'Student Attendance',
+            icon: CalendarCheck,
+            roles: ['Director', 'Administrator', 'Teacher'],
+        },
         {
             path: '/dashboard/academics',
             title: 'Classes',
@@ -656,5 +669,5 @@ export const MOCK_CROSSWORD_PUZZLES = [
     },
   },
 ];
-
+      
     
