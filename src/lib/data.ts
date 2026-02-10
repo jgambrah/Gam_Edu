@@ -128,12 +128,6 @@ export const navItems: NavItem[] = [
     roles: ['Director', 'Administrator', 'Teacher', 'Student'],
     subItems: [
         {
-            path: '/dashboard/attendance/staff',
-            title: 'Staff Clock-In',
-            icon: UserCheckIcon,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
-        },
-        {
             path: '/dashboard/attendance',
             title: 'Student Attendance',
             icon: CalendarCheck,
@@ -313,6 +307,12 @@ export const navItems: NavItem[] = [
     icon: UserCog,
     roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
     subItems: [
+        {
+            path: '/dashboard/attendance/staff',
+            title: 'Staff Clock-In',
+            icon: UserCheckIcon,
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+        },
         {
             path: '/dashboard/leave-management',
             title: 'Leave Management',
