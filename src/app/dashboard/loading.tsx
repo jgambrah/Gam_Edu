@@ -12,7 +12,7 @@ export default function DashboardLoading() {
       {/* Stats Cards Skeleton (Row of 4) */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="p-6 border rounded-xl bg-card space-y-2">
+          <div key={`stat-skeleton-${i}`} className="p-6 border rounded-xl bg-card space-y-2">
             <Skeleton className="h-4 w-[100px]" />
             <Skeleton className="h-8 w-[60px]" />
           </div>
@@ -37,7 +37,7 @@ export default function DashboardLoading() {
            <div className="space-y-4">
              <Skeleton className="h-5 w-[120px] mb-4" />
              {Array.from({ length: 5 }).map((_, i) => (
-               <div key={i} className="flex items-center gap-4">
+               <div key={`activity-skeleton-${i}`} className="flex items-center gap-4">
                   <Skeleton className="h-10 w-10 rounded-full" />
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-[200px]" />

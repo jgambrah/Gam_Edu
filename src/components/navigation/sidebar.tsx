@@ -95,7 +95,7 @@ export default function AppSidebar() {
         <SidebarMenu>
           {loading ? (
             <div className="space-y-2 px-2">
-             {[...Array(8)].map((_, i) => <div key={i} className="h-8 bg-slate-100 rounded animate-pulse"/>)}
+             {[...Array(8)].map((_, i) => <div key={`sidebar-skeleton-${i}`} className="h-8 bg-slate-100 rounded animate-pulse"/>)}
            </div>
           ) : filteredNav.map((item) =>
             isNavItemVisible(item, role) ? (
