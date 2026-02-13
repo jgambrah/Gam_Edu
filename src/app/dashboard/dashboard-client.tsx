@@ -218,10 +218,10 @@ export default function DashboardClient() {
   // --- 2. HOOKS: DATA PROCESSING ---
 
   const recentActivity = useMemo(() => {
-    const activities = [];
-    if (students) activities.push(...students.map(s => ({ type: 'Student', title: 'New Student', description: `${(s as any).firstName} ${(s as any).lastName}`, time: (s as any).createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
-    if (announcements) activities.push(...announcements.map(a => ({ type: 'News', title: 'Announcement', description: (a as any).title, time: (a as any).publishedAt, icon: Bell, iconColor: 'text-purple-600' })));
-    if (financialRecords) activities.push(...financialRecords.map(p => ({ type: 'Payment', title: 'Payment', description: `GH₵${p.amountPaid}`, time: p.createdAt, icon: CheckCircle2, iconColor: 'text-emerald-600' })));
+    const activities: any[] = [];
+    if (students) activities.push(...students.map(s => ({ id: `student-${s.id}`, type: 'Student', title: 'New Student', description: `${s.firstName} ${s.lastName}`, time: (s as any).createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
+    if (announcements) activities.push(...announcements.map((a: any) => ({ id: `announcement-${a.id}`, type: 'News', title: 'Announcement', description: a.title, time: a.publishedAt, icon: Bell, iconColor: 'text-purple-600' })));
+    if (financialRecords) activities.push(...financialRecords.map((p: any) => ({ id: `payment-${p.id}`, type: 'Payment', title: 'Payment', description: `GH₵${p.amountPaid}`, time: p.createdAt, icon: CheckCircle2, iconColor: 'text-emerald-600' })));
     
     return activities.sort((a,b) => (b.time?.seconds || 0) - (a.time?.seconds || 0)).slice(0, 5);
   }, [students, announcements, financialRecords]);
@@ -372,8 +372,8 @@ export default function DashboardClient() {
           <Card>
               <CardHeader><CardTitle>Recent Activity</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                  {recentActivity.map((item, index) => (
-                      <ActivityItem key={index} {...item} time={item.time ? formatDistanceToNow(item.time.toDate(), { addSuffix: true }) : ''} />
+                  {recentActivity.map((item) => (
+                      <ActivityItem key={item.id} {...item} time={item.time ? formatDistanceToNow(item.time.toDate(), { addSuffix: true }) : ''} />
                   ))}
               </CardContent>
           </Card>
