@@ -219,7 +219,7 @@ export default function DashboardClient() {
 
   const recentActivity = useMemo(() => {
     const activities: any[] = [];
-    if (students) activities.push(...students.map(s => ({ id: `student-${s.id}`, type: 'Student', title: 'New Student', description: `${s.firstName} ${s.lastName}`, time: (s as any).createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
+    if (students) activities.push(...students.map(s => ({ id: `student-${(s as any).id}`, type: 'Student', title: 'New Student', description: `${(s as any).firstName} ${(s as any).lastName}`, time: (s as any).createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
     if (announcements) activities.push(...announcements.map((a: any) => ({ id: `announcement-${a.id}`, type: 'News', title: 'Announcement', description: a.title, time: a.publishedAt, icon: Bell, iconColor: 'text-purple-600' })));
     if (financialRecords) activities.push(...financialRecords.map((p: any) => ({ id: `payment-${p.id}`, type: 'Payment', title: 'Payment', description: `GH₵${p.amountPaid}`, time: p.createdAt, icon: CheckCircle2, iconColor: 'text-emerald-600' })));
     
