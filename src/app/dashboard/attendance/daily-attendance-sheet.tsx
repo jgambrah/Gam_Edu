@@ -85,12 +85,16 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
     // --- LOAD STUDENTS ---
     const handleLoadStudents = useCallback(async () => {
-        if (!selectedClassId || !firestore) return;
+        if (!selectedClassId || !firestore || !schoolId) return;
         setIsLoading(true);
         setStudentsLoaded(false);
 
         try {
-            const studentQuery = query(collection(firestore, 'students'), where('classId', '==', selectedClassId));
+            const studentQuery = query(
+                collection(firestore, 'students'), 
+                where('schoolId', '==', schoolId),
+                where('classId', '==', selectedClassId)
+            );
             const studentSnapshot = await getDocs(studentQuery);
             const studentList = studentSnapshot.docs.map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id })) as Student[];
             setStudents(studentList);
@@ -105,6 +109,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
+                where('schoolId', '==', schoolId),
                 where('classId', '==', selectedClassId),
                 where('date', '==', startOfDay(selectedDate))
             );
@@ -134,7 +139,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         } finally {
             setIsLoading(false);
         }
-    }, [selectedClassId, selectedDate, firestore, toast, replace]);
+    }, [selectedClassId, selectedDate, firestore, toast, replace, schoolId]);
 
     useEffect(() => {
         if (selectedClassId) handleLoadStudents();
@@ -225,7 +230,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                     {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setDate(d)} initialFocus /></PopoverContent>
+                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
                         </Popover>
                     </div>
                 </div>
