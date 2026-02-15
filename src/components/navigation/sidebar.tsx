@@ -120,9 +120,9 @@ export function AppSidebarContent() {
               ))}
             </div>
           ) : (
-            filteredNav.map((item) =>
+            filteredNav.map((item, index) =>
               isNavItemVisible(item, role) ? (
-                <SidebarMenuItem key={item.title + item.path}>
+                <SidebarMenuItem key={`${item.title}-${item.path}-${index}`}>
                   {item.subItems &&
                   item.subItems.filter((sub) => isNavItemVisible(sub, role))
                     .length > 0 ? (
@@ -144,9 +144,9 @@ export function AppSidebarContent() {
                       <CollapsibleContent>
                         <ul className="mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5">
                           {item.subItems.map(
-                            (subItem) =>
+                            (subItem, subIndex) =>
                               isNavItemVisible(subItem, role) && (
-                                <li key={subItem.title + subItem.path} className="list-none">
+                                <li key={`${subItem.title}-${subItem.path}-${subIndex}`} className="list-none">
                                   <NavLink item={subItem} isSubItem />
                                 </li>
                               )
