@@ -2,7 +2,6 @@
 "use client";
 
 import { usePathname, useRouter } from 'next/navigation';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,28 +10,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings, PanelLeft } from 'lucide-react';
 import { navItems } from '@/lib/data';
 import { useFirebase, useUser } from '@/firebase'; 
 import { signOut } from 'firebase/auth';
 import { useRole } from '@/context/role-context'; 
 import NotificationBell from './notifications';
-import CreditBalance from '@/components/CreditBalance'; // Import the new component
+import CreditBalance from '@/components/CreditBalance';
+import { AppSidebarContent } from './sidebar';
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { auth } = useFirebase();
   const { user } = useUser();
-  const { role } = useRole();
-  const pageTitle = navItems.find((item) => item.path === pathname)?.title || 'Dashboard';
+  const pageTitle = navItems.find((item) => item.path === pathname)?.title || 
+                  navItems.flatMap(i => i.subItems || []).find(s => s.path === pathname)?.title || 
+                  'Dashboard';
 
   const handleLogout = async () => {
     if (auth) {
         await signOut(auth);
-        // Add a small delay to ensure state clears, then redirect
         setTimeout(() => {
           router.push('/');
         }, 100);
@@ -47,12 +48,24 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6">
       <div className="flex items-center gap-2">
-        <SidebarTrigger className="md:hidden" />
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <PanelLeft />
+              <span className="sr-only">Toggle Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0 bg-sidebar text-sidebar-foreground border-r-sidebar-border">
+             <div className="flex h-full flex-col">
+                <AppSidebarContent />
+             </div>
+          </SheetContent>
+        </Sheet>
         <h1 className="text-lg font-semibold md:text-xl">{pageTitle}</h1>
       </div>
 
       <div className="flex items-center gap-4">
-        <CreditBalance /> {/* Add the balance component */}
+        <CreditBalance />
         <NotificationBell />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
