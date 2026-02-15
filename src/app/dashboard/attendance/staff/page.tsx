@@ -146,7 +146,7 @@ export default function StaffAttendancePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Camera/> Staff Attendance</CardTitle>
-            <CardDescription>Use your device's camera to clock in and out for the day.</CardDescription>
+            <CardDescription>Use your device&apos;s camera to clock in and out for the day.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
             <WebcamCapture 
@@ -193,30 +193,44 @@ export default function StaffAttendancePage() {
             <CardTitle className="flex items-center gap-2"><History/> Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? <Loader2 className="animate-spin"/> : (
+            {isLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="animate-spin h-6 w-6 text-slate-400"/>
+              </div>
+            ) : (
               <ul className="space-y-4">
-                {attendanceLogs?.map((log, index) => {
-                  const uniqueKey = log.id || `${log.staffId}-${log.timestamp?.toMillis() || index}`;
-                  return (
-                    <li key={uniqueKey} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className={`p-2 rounded-full ${log.type === 'In' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                          {log.type === 'In' ? <LogIn className="h-4 w-4"/> : <LogOut className="h-4 w-4"/>}
+                {attendanceLogs && attendanceLogs.length > 0 ? (
+                  attendanceLogs.map((log, index) => {
+                    // Create a truly unique key
+                    const uniqueKey = log.id || 
+                                     `${log.staffId}-${log.type}-${log.timestamp?.toMillis()}-${index}` || 
+                                     `attendance-log-${index}`;
+                    
+                    return (
+                      <li key={uniqueKey} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={`p-2 rounded-full ${log.type === 'In' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {log.type === 'In' ? <LogIn className="h-4 w-4"/> : <LogOut className="h-4 w-4"/>}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm">{log.type === 'In' ? 'Clocked In' : 'Clocked Out'}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {log.timestamp ? format(log.timestamp.toDate(), 'PPP p') : 'Processing...'}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold text-sm">{log.type}</p>
-                          <p className="text-xs text-muted-foreground">{log.timestamp ? format(log.timestamp.toDate(), 'PPP p') : 'Processing...'}</p>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
+                      </li>
+                    );
+                  })
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">No records found.</p>
+                )}
               </ul>
             )}
-            {attendanceLogs?.length === 0 && !isLoading && <p className="text-sm text-muted-foreground text-center">No records found.</p>}
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
+    
