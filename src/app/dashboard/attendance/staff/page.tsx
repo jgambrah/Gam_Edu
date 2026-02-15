@@ -136,7 +136,7 @@ export default function StaffAttendancePage() {
     } catch (e) {
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to clock out.'});
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -195,19 +195,22 @@ export default function StaffAttendancePage() {
           <CardContent>
             {isLoading ? <Loader2 className="animate-spin"/> : (
               <ul className="space-y-4">
-                {attendanceLogs?.map(log => (
-                  <li key={log.id} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className={`p-2 rounded-full ${log.type === 'In' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                        {log.type === 'In' ? <LogIn className="h-4 w-4"/> : <LogOut className="h-4 w-4"/>}
+                {attendanceLogs?.map((log, index) => {
+                  const uniqueKey = log.id || `${log.staffId}-${log.timestamp?.toMillis() || index}`;
+                  return (
+                    <li key={uniqueKey} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`p-2 rounded-full ${log.type === 'In' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {log.type === 'In' ? <LogIn className="h-4 w-4"/> : <LogOut className="h-4 w-4"/>}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-sm">{log.type}</p>
+                          <p className="text-xs text-muted-foreground">{log.timestamp ? format(log.timestamp.toDate(), 'PPP p') : 'Processing...'}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-sm">{log.type}</p>
-                        <p className="text-xs text-muted-foreground">{log.timestamp ? format(log.timestamp.toDate(), 'PPP p') : 'Processing...'}</p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             )}
             {attendanceLogs?.length === 0 && !isLoading && <p className="text-sm text-muted-foreground text-center">No records found.</p>}
@@ -217,5 +220,3 @@ export default function StaffAttendancePage() {
     </div>
   );
 }
-      
-    
