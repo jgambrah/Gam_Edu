@@ -1,5 +1,5 @@
 
-"use client";
+'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -15,9 +15,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { LogOut, Settings, PanelLeft } from 'lucide-react';
 import { navItems } from '@/lib/data';
-import { useFirebase, useUser } from '@/firebase'; 
+import { useFirebase, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useRole } from '@/context/role-context'; 
+import { useRole } from '@/context/role-context';
 import NotificationBell from './notifications';
 import CreditBalance from '@/components/CreditBalance';
 import { AppSidebarContent } from './sidebar';
@@ -27,23 +27,26 @@ export default function Header() {
   const router = useRouter();
   const { auth } = useFirebase();
   const { user } = useUser();
-  const pageTitle = navItems.find((item) => item.path === pathname)?.title || 
-                  navItems.flatMap(i => i.subItems || []).find(s => s.path === pathname)?.title || 
-                  'Dashboard';
+  const pageTitle =
+    navItems.find((item) => item.path === pathname)?.title ||
+    navItems
+      .flatMap((i) => i.subItems || [])
+      .find((s) => s.path === pathname)?.title ||
+    'Dashboard';
 
   const handleLogout = async () => {
     if (auth) {
-        await signOut(auth);
-        setTimeout(() => {
-          router.push('/');
-        }, 100);
+      await signOut(auth);
+      setTimeout(() => {
+        router.push('/');
+      }, 100);
     }
   };
-  
+
   const getInitials = (email?: string | null) => {
     if (!email) return 'U';
     return email.substring(0, 2).toUpperCase();
-  }
+  };
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6">
@@ -55,10 +58,10 @@ export default function Header() {
               <span className="sr-only">Toggle Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0 bg-sidebar text-sidebar-foreground border-r-sidebar-border">
-             <div className="flex h-full flex-col">
-                <AppSidebarContent />
-             </div>
+          <SheetContent side="left" className="w-64 border-r p-0">
+            <div className="flex h-full flex-col">
+              <AppSidebarContent />
+            </div>
           </SheetContent>
         </Sheet>
         <h1 className="text-lg font-semibold md:text-xl">{pageTitle}</h1>
@@ -71,10 +74,7 @@ export default function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
               <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={user?.photoURL || ''}
-                  alt="User Avatar"
-                />
+                <AvatarImage src={user?.photoURL || ''} alt="User Avatar" />
                 <AvatarFallback>{getInitials(user?.email)}</AvatarFallback>
               </Avatar>
             </Button>
