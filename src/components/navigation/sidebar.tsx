@@ -122,7 +122,7 @@ export function AppSidebarContent() {
           ) : (
             filteredNav.map((item) =>
               isNavItemVisible(item, role) ? (
-                <SidebarMenuItem key={item.path}>
+                <SidebarMenuItem key={item.title + item.path}>
                   {item.subItems &&
                   item.subItems.filter((sub) => isNavItemVisible(sub, role))
                     .length > 0 ? (
@@ -146,7 +146,7 @@ export function AppSidebarContent() {
                           {item.subItems.map(
                             (subItem) =>
                               isNavItemVisible(subItem, role) && (
-                                <li key={subItem.path} className="list-none">
+                                <li key={subItem.title + subItem.path} className="list-none">
                                   <NavLink item={subItem} isSubItem />
                                 </li>
                               )
