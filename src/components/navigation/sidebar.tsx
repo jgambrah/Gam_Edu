@@ -112,7 +112,7 @@ export function AppSidebarContent() {
         <SidebarMenu>
           {loading ? (
             <div className="space-y-2 px-2">
-              {[...Array(8)].map((_, i) => (
+              {Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={`sidebar-skeleton-${i}`}
                   className="h-8 animate-pulse rounded bg-slate-100"
@@ -122,7 +122,7 @@ export function AppSidebarContent() {
           ) : (
             filteredNav.map((item, index) =>
               isNavItemVisible(item, role) ? (
-                <SidebarMenuItem key={`${item.title}-${item.path}-${index}`}>
+                <SidebarMenuItem key={`nav-${item.path}-${index}`}>
                   {item.subItems &&
                   item.subItems.filter((sub) => isNavItemVisible(sub, role))
                     .length > 0 ? (
@@ -146,7 +146,7 @@ export function AppSidebarContent() {
                           {item.subItems.map(
                             (subItem, subIndex) =>
                               isNavItemVisible(subItem, role) && (
-                                <li key={`${subItem.title}-${subItem.path}-${subIndex}`} className="list-none">
+                                <li key={`subnav-${subItem.path}-${subIndex}`} className="list-none">
                                   <NavLink item={subItem} isSubItem />
                                 </li>
                               )
