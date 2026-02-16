@@ -356,7 +356,7 @@ export default function LearningMaterialsPage() {
   
   // 1. Student Profile & Class ID
   const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
-    useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, firestore, schoolId])
+    useMemoFirebase(() => (role === 'Student' && user && firestore && schoolId) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, firestore, schoolId])
   );
   const studentClassId = useMemo(() => studentData?.[0]?.classId, [studentData]);
 
@@ -404,19 +404,16 @@ export default function LearningMaterialsPage() {
   };
 
   const handleEdit = (mat: LearningMaterial) => {
-      setSelectedMaterial(mat);
-      setEditorMode('edit');
+      setEditingMaterial(mat);
       setIsFormOpen(true);
   };
 
   const handleCreate = () => {
-      setSelectedMaterial(null);
-      setEditorMode('create');
+      setEditingMaterial(null);
       setIsFormOpen(true);
   };
   
   const pageLoading = isUserLoading || isLoadingSchool || (role === 'Student' && isStudentLoading) || isLoadingSubjects || (!!activeClassId && isLoadingMaterials);
-  const [editorMode, setEditorMode] = useState<'create' | 'edit'>('create');
 
   if (canManage && !activeClassId) {
       return (
@@ -483,6 +480,7 @@ export default function LearningMaterialsPage() {
                     classes={classes}
                     materialToEdit={editingMaterial}
                     subjectsList={subjectsList}
+                    preSelectedSubject={currentSubject || undefined}
                     preSelectedClassId={activeClassId || ''}
                     schoolId={schoolId}
                 />
