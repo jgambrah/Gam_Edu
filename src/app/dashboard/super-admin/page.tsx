@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -11,8 +12,9 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check, Zap } from 'lucide-react'; 
+import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check, Zap, SlidersHorizontal } from 'lucide-react'; 
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type School = { id: string; name: string; plan: string; createdAt: any; aiCredits?: number };
 type Lead = { id: string; schoolName: string; contactName: string; email: string; phone: string; status: string; };
@@ -33,6 +35,11 @@ export default function SuperAdminPage() {
   const [creditSchool, setCreditSchool] = useState<School | null>(null);
   const [creditAmount, setCreditAmount] = useState(1000);
   const [updatingCredits, setUpdatingCredits] = useState(false);
+
+  // New state for managing subscription plan
+  const [planSchool, setPlanSchool] = useState<School | null>(null);
+  const [newPlan, setNewPlan] = useState<'Trial' | 'Premium'>('Trial');
+  const [updatingPlan, setUpdatingPlan] = useState(false);
 
   // Form State
   const [schoolName, setSchoolName] = useState('');
@@ -68,6 +75,13 @@ export default function SuperAdminPage() {
       setCreditAmount(creditSchool.aiCredits || 1000);
     }
   }, [creditSchool]);
+
+  // Set plan when opening dialog
+  useEffect(() => {
+    if (planSchool) {
+      setNewPlan(planSchool.plan as 'Trial' | 'Premium');
+    }
+  }, [planSchool]);
 
 
   // --- POPULATE FUNCTION ---
@@ -149,7 +163,6 @@ export default function SuperAdminPage() {
     }
   };
 
-  // New function to update credits
   const handleUpdateCredits = async () => {
     if (!creditSchool || !firestore) return;
     setUpdatingCredits(true);
@@ -166,6 +179,30 @@ export default function SuperAdminPage() {
         setUpdatingCredits(false);
     }
   };
+  
+  const handleUpdatePlan = async () => {
+    if (!planSchool || !firestore) return;
+    setUpdatingPlan(true);
+    try {
+      const schoolRef = doc(firestore, 'schools', planSchool.id);
+      const updates: { plan: string, trialEndsAt?: any } = { plan: newPlan };
+
+      if (newPlan === 'Trial') {
+        updates.trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // Reset trial
+      } else {
+        updates.trialEndsAt = null; // Remove trial for Premium
+      }
+      
+      await updateDoc(schoolRef, updates);
+      toast({ title: "Plan Updated", description: `${planSchool.name}'s plan is now ${newPlan}.` });
+      setPlanSchool(null);
+      loadData();
+    } catch (e: any) {
+      toast({ variant: 'destructive', title: "Error", description: e.message });
+    } finally {
+      setUpdatingPlan(false);
+    }
+  };
 
   return (
     <div className="p-8 space-y-8">
@@ -175,7 +212,6 @@ export default function SuperAdminPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           
-          {/* LEFT: CREATE FORM */}
           <Card className="border-t-4 border-t-blue-600 shadow-md h-fit">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Plus className="h-5 w-5"/> Create New School</CardTitle>
@@ -205,7 +241,6 @@ export default function SuperAdminPage() {
             </CardContent>
           </Card>
 
-          {/* RIGHT: PENDING LEADS */}
           <Card className="border-t-4 border-t-orange-500 shadow-md h-fit">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><UserPlus className="h-5 w-5"/> Incoming Requests</CardTitle>
@@ -235,7 +270,6 @@ export default function SuperAdminPage() {
           </Card>
       </div>
 
-      {/* SCHOOL LIST */}
       <Card>
         <CardHeader><CardTitle>Active Schools ({schools.length})</CardTitle></CardHeader>
         <CardContent>
@@ -261,6 +295,9 @@ export default function SuperAdminPage() {
                                 </div>
                             </TableCell>
                             <TableCell className="text-right">
+                                <Button variant="ghost" size="sm" onClick={() => setPlanSchool(s)}>
+                                    <SlidersHorizontal className="h-4 w-4 text-slate-600"/>
+                                </Button>
                                 <Button variant="ghost" size="sm" onClick={() => { setCreditSchool(s); setCreditAmount(s.aiCredits || 0); }}>
                                     <Zap className="h-4 w-4 text-orange-500"/>
                                 </Button>
@@ -280,8 +317,7 @@ export default function SuperAdminPage() {
           )}
         </CardContent>
       </Card>
-
-      {/* DELETE DIALOG */}
+      
       <Dialog open={!!schoolToDelete} onOpenChange={(open) => !open && setSchoolToDelete(null)}>
         <DialogContent>
             <DialogHeader>
@@ -299,9 +335,8 @@ export default function SuperAdminPage() {
         </DialogContent>
       </Dialog>
       
-      {/* MANAGE CREDITS DIALOG */}
       <Dialog open={!!creditSchool} onOpenChange={(open) => !open && setCreditSchool(null)}>
-        <DialogContent>
+         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Manage AI Credits</DialogTitle>
                 <DialogDescription>Set or refill the AI credit balance for <strong>{creditSchool?.name}</strong>.</DialogDescription>
@@ -321,6 +356,38 @@ export default function SuperAdminPage() {
                 <Button variant="outline" onClick={() => setCreditSchool(null)}>Cancel</Button>
                 <Button onClick={handleUpdateCredits} disabled={updatingCredits} className="bg-purple-600 hover:bg-purple-700">
                     {updatingCredits ? <Loader2 className="animate-spin mr-2"/> : "Save Balance"}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!planSchool} onOpenChange={(open) => !open && setPlanSchool(null)}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Manage Subscription Plan</DialogTitle>
+                <DialogDescription>Manually override the plan for <strong>{planSchool?.name}</strong>.</DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+                <div className="space-y-2">
+                    <Label>Plan</Label>
+                    <Select value={newPlan} onValueChange={(value) => setNewPlan(value as 'Trial' | 'Premium')}>
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Trial">Trial</SelectItem>
+                            <SelectItem value="Premium">Premium</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                {newPlan === 'Trial' && (
+                    <p className="text-xs text-orange-600">Setting the plan to 'Trial' will grant a new 14-day trial period.</p>
+                )}
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setPlanSchool(null)}>Cancel</Button>
+                <Button onClick={handleUpdatePlan} disabled={updatingPlan} className="bg-blue-600 hover:bg-blue-700">
+                    {updatingPlan ? <Loader2 className="animate-spin mr-2"/> : "Update Plan"}
                 </Button>
             </DialogFooter>
         </DialogContent>
