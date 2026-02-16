@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check, Zap, SlidersHorizontal, Crown } from 'lucide-react'; 
+import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check, Zap, SlidersHorizontal, Crown, Clock } from 'lucide-react'; 
 import { Label } from '@/components/ui/label';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -368,34 +368,38 @@ export default function SuperAdminPage() {
       <Dialog open={!!planSchool} onOpenChange={(open) => !open && setPlanSchool(null)}>
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>Manage Subscription Plan</DialogTitle>
-                <DialogDescription>Manually override the plan for <strong>{planSchool?.name}</strong>.</DialogDescription>
+              <DialogTitle>Change Subscription Plan</DialogTitle>
             </DialogHeader>
             <div className="py-4 space-y-4">
-                <div className="space-y-2">
-                    <Label>Plan</Label>
-                    <Select value={newPlan} onValueChange={(value) => setNewPlan(value as 'Trial' | 'Premium')}>
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Trial">Trial</SelectItem>
-                            <SelectItem value="Premium">Premium</SelectItem>
-                        </SelectContent>
-                    </Select>
+                <p>Managing plan for: <strong>{planSchool?.name}</strong></p>
+                
+                <div className="flex gap-4">
+                    <div 
+                        onClick={() => setNewPlan('Trial')}
+                        className={`flex-1 p-4 border-2 rounded-xl cursor-pointer text-center ${newPlan === 'Trial' ? 'border-blue-500 bg-blue-50' : 'border-slate-200'}`}
+                    >
+                        <Clock className="mx-auto mb-2 h-6 w-6 text-slate-500"/>
+                        <h3 className="font-bold">Trial</h3>
+                        <p className="text-xs text-slate-500">Expiring access (14 Days)</p>
+                    </div>
+
+                    <div 
+                        onClick={() => setNewPlan('Premium')}
+                        className={`flex-1 p-4 border-2 rounded-xl cursor-pointer text-center ${newPlan === 'Premium' ? 'border-yellow-500 bg-yellow-50' : 'border-slate-200'}`}
+                    >
+                        <Crown className="mx-auto mb-2 h-6 w-6 text-yellow-500"/>
+                        <h3 className="font-bold">Premium</h3>
+                        <p className="text-xs text-slate-500">Unlimited access</p>
+                    </div>
                 </div>
-                {newPlan === 'Trial' && (
-                    <p className="text-xs text-orange-600">Setting the plan to 'Trial' will grant a new 14-day trial period.</p>
-                )}
             </div>
             <DialogFooter>
-                <Button variant="outline" onClick={() => setPlanSchool(null)}>Cancel</Button>
-                <Button onClick={handleUpdatePlan} disabled={updatingPlan} className="bg-blue-600 hover:bg-blue-700">
-                    {updatingPlan ? <Loader2 className="animate-spin mr-2"/> : "Update Plan"}
+                <Button onClick={handleUpdatePlan} disabled={updatingPlan} className="w-full">
+                    {updatingPlan ? <Loader2 className="animate-spin"/> : "Save Changes"}
                 </Button>
             </DialogFooter>
         </DialogContent>
-      </Dialog>
+    </Dialog>
     </div>
   );
 }
