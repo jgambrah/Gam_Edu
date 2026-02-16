@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check, Zap, SlidersHorizontal } from 'lucide-react'; 
+import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check, Zap, SlidersHorizontal, Crown } from 'lucide-react'; 
 import { Label } from '@/components/ui/label';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -31,7 +31,7 @@ export default function SuperAdminPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [schoolToDelete, setSchoolToDelete] = useState<School | null>(null);
 
-  // New state for managing credits
+  // State for managing credits
   const [creditSchool, setCreditSchool] = useState<School | null>(null);
   const [creditAmount, setCreditAmount] = useState(1000);
   const [updatingCredits, setUpdatingCredits] = useState(false);
@@ -299,8 +299,8 @@ export default function SuperAdminPage() {
                                 </div>
                             </TableCell>
                             <TableCell className="text-right">
-                                <Button variant="ghost" size="sm" onClick={() => setPlanSchool(s)}>
-                                    <SlidersHorizontal className="h-4 w-4 text-slate-600"/>
+                                <Button variant="ghost" size="sm" onClick={() => { setPlanSchool(s); setNewPlan(s.plan as any); }}>
+                                    <Crown className={`h-4 w-4 ${s.plan === 'Premium' ? 'text-yellow-500' : 'text-slate-400'}`}/>
                                 </Button>
                                 <Button variant="ghost" size="sm" onClick={() => { setCreditSchool(s); setCreditAmount(s.aiCredits || 0); }}>
                                     <Zap className="h-4 w-4 text-orange-500"/>
