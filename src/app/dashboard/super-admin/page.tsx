@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -14,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check, Zap, SlidersHorizontal } from 'lucide-react'; 
 import { Label } from '@/components/ui/label';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type School = { id: string; name: string; plan: string; createdAt: any; aiCredits?: number };
@@ -184,23 +184,27 @@ export default function SuperAdminPage() {
     if (!planSchool || !firestore) return;
     setUpdatingPlan(true);
     try {
-      const schoolRef = doc(firestore, 'schools', planSchool.id);
-      const updates: { plan: string, trialEndsAt?: any } = { plan: newPlan };
+        const schoolRef = doc(firestore, 'schools', planSchool.id);
+        const updates: any = { plan: newPlan };
+        
+        if (newPlan === 'Premium') {
+            updates.trialEndsAt = null; // No expiry
+            updates.status = 'active';
+        } else {
+            // Restart Trial (14 Days)
+            updates.trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+            updates.status = 'active';
+        }
 
-      if (newPlan === 'Trial') {
-        updates.trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // Reset trial
-      } else {
-        updates.trialEndsAt = null; // Remove trial for Premium
-      }
-      
-      await updateDoc(schoolRef, updates);
-      toast({ title: "Plan Updated", description: `${planSchool.name}'s plan is now ${newPlan}.` });
-      setPlanSchool(null);
-      loadData();
+        await updateDoc(schoolRef, updates);
+        
+        toast({ title: "Plan Updated", description: `${planSchool.name} is now on ${newPlan}.` });
+        setPlanSchool(null);
+        loadData();
     } catch (e: any) {
-      toast({ variant: 'destructive', title: "Error", description: e.message });
+        toast({ variant: 'destructive', title: "Error", description: e.message });
     } finally {
-      setUpdatingPlan(false);
+        setUpdatingPlan(false);
     }
   };
 
