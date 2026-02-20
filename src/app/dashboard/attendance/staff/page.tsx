@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -6,7 +5,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '
 import { collection, query, where, orderBy, addDoc, serverTimestamp, limit, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -14,21 +13,25 @@ import { WebcamCapture } from '@/components/dashboard/attendance/WebcamCapture';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import type { StaffAttendance } from '@/lib/types';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useRole } from '@/context/role-context';
 
 export default function StaffAttendancePage() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
+  const { role, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { schoolId } = useCurrentSchool();
+  const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
 
   const [imageDataUri, setImageDataUri] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
 
-  // Fetch recent attendance logs for the current user
+  const isStaff = role && !['Student', 'Parent'].includes(role);
+
+  // Fetch recent attendance logs for the current user (only if they are staff)
   const attendanceQuery = useMemoFirebase(() => {
-    if (!user || !schoolId || !firestore) return null;
+    if (!user || !schoolId || !firestore || !isStaff) return null;
     return query(
       collection(firestore, 'staff_attendance'),
       where('schoolId', '==', schoolId),
@@ -36,11 +39,11 @@ export default function StaffAttendancePage() {
       orderBy('timestamp', 'desc'),
       limit(10)
     );
-  }, [user, schoolId, firestore]);
-  const { data: attendanceLogs, isLoading, forceRefetch } = useCollection<StaffAttendance>(attendanceQuery);
+  }, [user, schoolId, firestore, isStaff]);
+  const { data: attendanceLogs, isLoading: isLogsLoading, forceRefetch } = useCollection<StaffAttendance>(attendanceQuery);
 
   useEffect(() => {
-    if ("geolocation" in navigator) {
+    if (isStaff && "geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocation({
@@ -58,10 +61,8 @@ export default function StaffAttendancePage() {
           });
         }
       );
-    } else {
-      setLocationError("Geolocation is not supported by your browser.");
     }
-  }, [toast]);
+  }, [toast, isStaff]);
 
   const lastAction = useMemo(() => attendanceLogs?.[0], [attendanceLogs]);
 
@@ -140,6 +141,35 @@ export default function StaffAttendancePage() {
     }
   };
 
+  const isLoading = isUserLoading || isRoleLoading || isSchoolLoading;
+
+  if (isLoading) {
+    return <div className="flex justify-center p-12"><Loader2 className="animate-spin h-8 w-8 text-primary"/></div>;
+  }
+
+  if (!isStaff) {
+    return (
+      <div className="flex justify-center p-8">
+        <Card className="max-w-md w-full border-red-100 bg-red-50/50">
+          <CardHeader className="text-center">
+            <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4">
+              <ShieldAlert className="h-8 w-8 text-red-600" />
+            </div>
+            <CardTitle>Staff Only Area</CardTitle>
+            <CardDescription>
+              This feature is reserved for school staff and administrators.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Button asChild variant="outline">
+              <a href="/dashboard">Return to Dashboard</a>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="grid md:grid-cols-3 gap-6 p-4 md:p-6">
       <div className="md:col-span-2">
@@ -193,7 +223,7 @@ export default function StaffAttendancePage() {
             <CardTitle className="flex items-center gap-2"><History/> Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isLogsLoading ? (
               <div className="flex justify-center py-8">
                 <Loader2 className="animate-spin h-6 w-6 text-slate-400"/>
               </div>
@@ -201,11 +231,7 @@ export default function StaffAttendancePage() {
               <ul className="space-y-4">
                 {attendanceLogs && attendanceLogs.length > 0 ? (
                   attendanceLogs.map((log, index) => {
-                    // Create a truly unique key
-                    const uniqueKey = log.id || 
-                                     `${log.staffId}-${log.type}-${log.timestamp?.toMillis()}-${index}` || 
-                                     `attendance-log-${index}`;
-                    
+                    const uniqueKey = log.id || `${log.staffId}-${log.type}-${log.timestamp?.toMillis()}-${index}`;
                     return (
                       <li key={uniqueKey} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -233,4 +259,3 @@ export default function StaffAttendancePage() {
     </div>
   );
 }
-    
