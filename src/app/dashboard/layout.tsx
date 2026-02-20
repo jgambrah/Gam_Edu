@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -81,7 +80,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <main className="relative flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           {children}
           {isLocked && !pathname.includes('/dashboard/subscription') && (
-            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-sm">
+            <div key="access-locked-overlay" className="absolute inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-sm">
               <div className="p-8 text-center max-w-md">
                 <h2 className="mb-2 text-3xl font-bold text-red-600">Access Locked</h2>
                 <p className="mb-6 text-slate-600">

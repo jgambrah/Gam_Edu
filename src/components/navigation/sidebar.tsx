@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -20,8 +19,8 @@ import { navItems } from '@/lib/data';
 import type { NavItem, UserRole } from '@/lib/types';
 import {
   Sidebar,
-  SidebarContent as UiSidebarContent,
   SidebarHeader,
+  SidebarContent as UiSidebarContent,
   SidebarMenu,
   SidebarMenuItem,
   SidebarFooter,
