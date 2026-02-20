@@ -66,7 +66,14 @@ service cloud.firestore {
     // =========================================================
 
     match /users/{userId} { allow read, write: if isSignedIn() && request.auth.uid == userId; }
-    match /staff/{staffId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isOwner(staffId); match /payroll/{configId} { allow read, write: if isFinanceStaff() || isAdmin(); } }
+    match /staff/{staffId} { 
+      allow get: if isSignedIn();
+      allow list: if isAdmin();
+      allow write: if isAdmin() || isOwner(staffId); 
+      match /payroll/{configId} { 
+        allow read, write: if isFinanceStaff() || isAdmin(); 
+      } 
+    }
     match /students/{studentId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isOwner(studentId); }
     match /parents/{parentId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isOwner(parentId); }
     
@@ -100,7 +107,9 @@ service cloud.firestore {
     match /school_calendar/{eventId} { allow read, list: if isSignedIn(); allow write: if isAdmin(); }
     
     match /attendance/{attendanceId} {
-        allow read, list: if isSignedIn();
+        // Updated to allow students to read their own records
+        allow get: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher() || isAdmin() || isDirector());
+        allow list: if isAdmin() || isTeacher() || (isSignedIn() && request.query.where.studentId == request.auth.uid);
         allow write: if isTeacher() || isAdmin() || isDirector();
     }
 
@@ -268,5 +277,3 @@ service cloud.firestore {
     }
   }
 }
-      
-    

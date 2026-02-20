@@ -3,7 +3,7 @@
 
 import { Suspense, useState, useMemo } from 'react';
 import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, where, orderBy, Timestamp } from 'firebase/firestore'; // ✅ Added orderBy
+import { collection, doc, query, where, orderBy, Timestamp } from 'firebase/firestore';
 import { Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2 } from 'lucide-react';
@@ -23,13 +23,20 @@ import { StudentDisplay } from '@/components/student-display';
 
 function AttendanceHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
+    const { role } = useRole();
+    const { user } = useUser();
+    
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: startOfDay(new Date(new Date().setDate(new Date().getDate() - 30))),
         to: endOfDay(new Date()),
     });
 
+    const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+    const isTargetStudent = user?.uid === studentId;
+    const hasPermission = isStaff || isTargetStudent;
+
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !dateRange?.from || !studentId) return null;
+        if (!firestore || !dateRange?.from || !studentId || !hasPermission) return null;
         
         const start = Timestamp.fromDate(startOfDay(dateRange.from));
         const end = dateRange.to ? Timestamp.fromDate(endOfDay(dateRange.to)) : Timestamp.fromDate(endOfDay(dateRange.from));
@@ -40,7 +47,7 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
             where('date', '>=', start),
             where('date', '<=', end)
         );
-    }, [firestore, studentId, dateRange]);
+    }, [firestore, studentId, dateRange, hasPermission]);
     
     const { data: records, isLoading } = useCollection<AttendanceRecord>(attendanceQuery);
 
@@ -53,6 +60,8 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
         }
     };
     
+    if (!hasPermission) return null;
+
     return (
         <div className="space-y-4">
             <div className="flex justify-end">
@@ -95,14 +104,21 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
 
 function BehavioralHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
+    const { role } = useRole();
+    const { user } = useUser();
+
+    const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+    const isTargetStudent = user?.uid === studentId;
+    const hasPermission = isStaff || isTargetStudent;
+
     const recordsQuery = useMemoFirebase(() => {
-        if (!firestore || !studentId) return null;
+        if (!firestore || !studentId || !hasPermission) return null;
         return query(
             collection(firestore, 'behavioral_records'), 
             where('studentId', '==', studentId), 
             orderBy('date', 'desc')
         );
-    }, [firestore, studentId]);
+    }, [firestore, studentId, hasPermission]);
     const { data: records, isLoading } = useCollection<BehavioralRecord>(recordsQuery);
 
     const getIcon = (type: BehavioralRecord['incidentType']) => {
@@ -114,6 +130,8 @@ function BehavioralHistory({ studentId }: { studentId: string }) {
         }
     };
     
+    if (!hasPermission) return null;
+
     return (
         <div className="space-y-4">
              {isLoading ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin" /></div> : (
