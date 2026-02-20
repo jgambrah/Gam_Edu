@@ -31,11 +31,19 @@ export default function TimetablePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [customConstraint, setCustomConstraint] = useState('');
 
+  // Role Checks
+  const canAccess = ['Student', 'Teacher', 'Admin', 'Administrator', 'Director'].includes(role || '');
+  const canGenerate = ['Admin', 'Administrator', 'Director'].includes(role || '');
+
   // SAAS-AWARE QUERIES
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-  const allTeachersQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', '==', 'Teacher')) : null, [firestore, schoolId]);
+  // FIXED: Only fetch staff if user is a manager. Students don't have permission to 'list' staff.
+  const allTeachersQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || !canGenerate) return null;
+    return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', '==', 'Teacher'));
+  }, [firestore, schoolId, canGenerate]);
   const { data: allTeachers } = useCollection<Teacher>(allTeachersQuery);
 
   const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -63,9 +71,6 @@ export default function TimetablePage() {
       }
     }
   }, [role, user, students]);
-
-  const canAccess = ['Student', 'Teacher', 'Admin', 'Administrator', 'Director'].includes(role || '');
-  const canGenerate = ['Admin', 'Administrator', 'Director'].includes(role || '');
 
   const handleGenerateTimetable = async () => {
     if (!canGenerate || !allTeachers || !subjects || !classes || !rooms || !timeSlots || !firestore || !schoolId) return;
