@@ -19,7 +19,7 @@ import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { STAFF_ROLES } from '@/lib/types'; // Import STAFF_ROLES
+import { STAFF_ROLES } from '@/lib/types';
 
 // --- Reusable Components ---
 
@@ -171,15 +171,18 @@ export default function DashboardClient() {
   const isLibrarian = role === 'Librarian';
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian;
 
-  // --- 1. HOOKS: DATA FETCHING (All hooks are now at the top level) ---
+  // --- 1. HOOKS: DATA FETCHING ---
   
-  const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  // FETCH STUDENTS (Restrict to Staff)
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaffUser]);
   const { data: students, isLoading: studentsLoading } = useCollection(studentsQuery);
 
-  const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId]);
+  // FETCH STAFF (Restrict to Staff)
+  const staffQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId, isStaffUser]);
   const { data: staff, isLoading: staffLoading } = useCollection(staffQuery);
 
-  const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  // FETCH CLASSES (Restrict to Staff)
+  const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaffUser]);
   const { data: classes, isLoading: classesLoading } = useCollection(classesQuery);
   
   const assignmentsQuery = useMemoFirebase(() => {
@@ -302,7 +305,7 @@ export default function DashboardClient() {
   
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-  // --- 3. LOADING & GUARD CLAUSES (Moved after hooks) ---
+  // --- 3. LOADING & GUARD CLAUSES ---
 
   const isLoading = studentsLoading || staffLoading || classesLoading || leaveLoading || announcementsLoading || assignmentsLoading;
   
