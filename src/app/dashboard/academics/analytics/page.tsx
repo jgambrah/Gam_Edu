@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { 
@@ -15,6 +15,8 @@ import {
 import { generateLearningInsights } from '@/ai/flows/learning-analytics';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits'; // Import the action
+import { useRole } from '@/context/role-context';
+import { useRouter } from 'next/navigation';
 
 // UI
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,10 +30,19 @@ export default function LearningAnalyticsPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
+  const { role, loading: roleLoading } = useRole();
+  const router = useRouter();
   
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiReport, setAiReport] = useState<any>(null);
+
+  // --- ACCESS GUARD ---
+  useEffect(() => {
+    if (!roleLoading && role === 'Student') {
+      router.replace('/dashboard');
+    }
+  }, [role, roleLoading, router]);
 
   // 1. Fetch Classes for the current school
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -53,7 +64,7 @@ export default function LearningAnalyticsPage() {
   [firestore, selectedClassId, schoolId]);
   const { data: attendance, isLoading: attendanceLoading } = useCollection<AttendanceRecord>(attendanceQuery);
 
-  const isLoading = schoolLoading || classesLoading || (selectedClassId && (studentsLoading || assessmentsLoading || attendanceLoading));
+  const isLoading = schoolLoading || roleLoading || classesLoading || (selectedClassId && (studentsLoading || assessmentsLoading || attendanceLoading));
 
   // --- DATA AGGREGATION ENGINE ---
   const { studentStats, classAverages, scatterData } = useMemo(() => {
@@ -122,6 +133,19 @@ export default function LearningAnalyticsPage() {
           setIsAnalyzing(false);
       }
   };
+
+  if (role === 'Student') {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Access Denied</CardTitle>
+          <CardDescription>
+            This page is for staff only. 
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6 p-6">
