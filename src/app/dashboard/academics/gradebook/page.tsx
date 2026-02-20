@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useRole } from "@/context/role-context";
@@ -7,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import GradebookManager from "./gradebook2-manager";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldAlert } from "lucide-react";
 
 export default function GradebookPage() {
     const { role, loading } = useRole();
@@ -15,7 +13,7 @@ export default function GradebookPage() {
 
     useEffect(() => {
         if (!loading && (role === 'Parent' || role === 'Student')) {
-            router.replace('/dashboard/my-children');
+            router.replace('/dashboard/report-cards');
         }
     }, [role, loading, router]);
     
@@ -27,33 +25,28 @@ export default function GradebookPage() {
         )
     }
 
-    if (role === 'Parent' || role === 'Student') {
+    // Explicitly check for staff roles to prevent any unauthorized component mounting
+    const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant'].includes(role || '');
+
+    if (!isStaff) {
         return (
-             <Card>
-                <CardHeader>
-                    <CardTitle>Redirecting...</CardTitle>
-                    <CardDescription>
-                        Please view grades under the "My Children" or "Report Cards" section. Redirecting you now.
-                    </CardDescription>
-                </CardHeader>
-            </Card>
+             <div className="p-6 flex justify-center">
+                <Card className="max-w-md w-full border-red-100 bg-red-50/50">
+                    <CardHeader className="text-center">
+                        <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4">
+                            <ShieldAlert className="h-8 w-8 text-red-600" />
+                        </div>
+                        <CardTitle>Access Restricted</CardTitle>
+                        <CardDescription>
+                            The full gradebook management system is for school staff only. 
+                            Students and parents can view finalized results in the "Report Cards" section.
+                        </CardDescription>
+                    </CardHeader>
+                </Card>
+             </div>
         );
     }
 
     // For Teacher, Administrator, Director
-    if (['Teacher', 'Administrator', 'Director'].includes(role || '')) {
-        return <GradebookManager />;
-    }
-
-    // Fallback for any other roles or states
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Access Denied</CardTitle>
-                <CardDescription>
-                    The gradebook is not available for your role.
-                </CardDescription>
-            </CardHeader>
-        </Card>
-    );
+    return <GradebookManager />;
 }

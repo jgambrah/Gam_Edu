@@ -1,5 +1,3 @@
-
-      
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -173,7 +171,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/academics/gradebook',
             title: 'Gradebook',
             icon: TrendingUp,
-            roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
+            roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
             path: '/dashboard/academics/analytics',
@@ -588,7 +586,7 @@ export let MOCK_ROUTES: Route[] = [
 export const MOCK_STUDENTS_FOR_TRANSPORT = [
     { uid: 'student-01', firstName: 'Alice', lastName: 'Smith', classId: 'g5', transportStopId: 'stop-A1' },
     { uid: 'student-02', firstName: 'Bob', lastName: 'Johnson', classId: 'g5', transportStopId: 'stop-A2' },
-    { uid: 'student-03', firstName: 'Charlie', lastName: 'Brown', classId: 'g6', transportStopId: 'stop-A2' },
+    { uid: 'student-03', firstName: 'Charlie', lastName: 'Brown', classId: 'g5', transportStopId: 'stop-A2' },
     { uid: 'student-04', firstName: 'Diana', lastName: 'Prince', classId: 'g6', transportStopId: 'stop-B2' },
     { uid: 'student-05', firstName: 'Eve', lastName: 'Adams', classId: 'g7', transportStopId: undefined },
     { uid: 'student-06', firstName: 'Frank', lastName: 'White', classId: 'g7', transportStopId: undefined },
@@ -675,5 +673,3 @@ export const MOCK_CROSSWORD_PUZZLES = [
     },
   },
 ];
-      
-    
