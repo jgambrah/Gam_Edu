@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, getDocs, doc } from 'firebase/firestore';
@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Printer, Download, Search } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { Input } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 
@@ -60,10 +60,9 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    // Use query for school profile since useDoc isn't exported directly in the same way in index
-    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'schools'), where('__name__', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: schoolProfileData } = useCollection<any>(schoolProfileRef);
-    const schoolProfile = schoolProfileData?.[0];
+    // Fetch school profile using useDoc for a single document
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     // --- THE CALCULATION ENGINE ---
     const generateReport = async () => {
