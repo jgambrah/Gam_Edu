@@ -156,8 +156,8 @@ export default function ReportCardsPage() {
                     ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
                     : 0;
 
-                // Use the last specific teacher remark entered if available
-                const savedRemark = myAssessments.find(a => a.remark)?.remark;
+                // Priority: Manual subject remark from Gradebook, otherwise standard remark
+                const savedRemark = myAssessments.find(a => a.teacherRemark)?.teacherRemark;
 
                 reportRows.push({
                     subjectName: sub.name,

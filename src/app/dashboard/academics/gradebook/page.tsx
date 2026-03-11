@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, FileSpreadsheet, ShieldAlert } from 'lucide-react';
+import { Loader2, Save, FileSpreadsheet } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { format } from 'date-fns';
@@ -41,7 +41,7 @@ export default function GradebookPage() {
     const [assessmentType, setAssessmentType] = useState(ASSESSMENT_TYPES[0]);
     const [maxScore, setMaxScore] = useState(100);
 
-    // State for scores: { studentId: score }
+    // State for scores and remarks
     const [scores, setScores] = useState<Record<string, number | ''>>({});
     const [remarks, setRemarks] = useState<Record<string, string>>({});
     const [isSaving, setIsSaving] = useState(false);
@@ -105,7 +105,7 @@ export default function GradebookPage() {
                         assessmentDate: serverTimestamp(),
                         score: Number(score),
                         maxScore: Number(maxScore),
-                        remark: remarks[studentId] || '',
+                        teacherRemark: remarks[studentId] || '',
                         createdAt: serverTimestamp(),
                         gradedAt: serverTimestamp(),
                     });
