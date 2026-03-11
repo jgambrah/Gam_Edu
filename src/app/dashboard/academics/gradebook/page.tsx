@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, FileSpreadsheet, ShieldAlert } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { format } from 'date-fns';
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
@@ -63,7 +64,7 @@ export default function GradebookPage() {
 
     const handleScoreChange = (studentId: string, val: string) => {
         const num = val === '' ? '' : Number(val);
-        if (typeof num === 'number' && num > maxScore) return; // Prevent over-scoring
+        if (typeof num === 'number' && !isNaN(num) && num > maxScore) return; 
         setScores(prev => ({ ...prev, [studentId]: num }));
     };
 
@@ -80,22 +81,23 @@ export default function GradebookPage() {
             let count = 0;
 
             const subjectName = subjects?.find(s => s.id === subjectId)?.name || 'Unknown Subject';
+            const today = new Date();
 
             Object.entries(scores).forEach(([studentId, score]) => {
-                if (score !== '') {
+                if (score !== '' && !isNaN(Number(score))) {
                     const newAssessmentRef = doc(collection(firestore, 'assessments'));
                     batch.set(newAssessmentRef, {
                         studentId,
                         classId,
                         subjectId,
-                        subjectName, // Added for consistency with other assessment logs
-                        schoolId, // SAAS requirement
+                        subjectName, 
+                        schoolId,
                         teacherId: user.uid,
                         term,
                         academicYear,
                         assessmentType,
-                        assessmentName: `${assessmentType} - ${format(new Date(), 'dd/MM/yy')}`, // Added required field
-                        assessmentDate: serverTimestamp(), // Use server timestamp for accuracy
+                        assessmentName: `${assessmentType} - ${format(today, 'dd/MM/yy')}`,
+                        assessmentDate: serverTimestamp(),
                         score: Number(score),
                         maxScore: Number(maxScore),
                         createdAt: serverTimestamp(),
@@ -106,7 +108,7 @@ export default function GradebookPage() {
             });
 
             if (count === 0) {
-                toast({ variant: 'destructive', title: "Empty", description: "No scores entered." });
+                toast({ variant: 'destructive', title: "Empty", description: "No valid scores entered." });
                 setIsSaving(false);
                 return;
             }
@@ -118,8 +120,8 @@ export default function GradebookPage() {
             setScores({});
 
         } catch (error: any) {
-            console.error(error);
-            toast({ variant: 'destructive', title: "Error", description: error.message });
+            console.error("Gradebook Save Error:", error);
+            toast({ variant: 'destructive', title: "Error", description: error.message || "Failed to save scores." });
         } finally {
             setIsSaving(false);
         }
