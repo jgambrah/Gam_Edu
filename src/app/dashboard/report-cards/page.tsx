@@ -292,9 +292,11 @@ export default function ReportCardsPage() {
                     </CardContent>
                     <CardFooter className="flex justify-end gap-2 bg-slate-50 pt-4">
                         <Button variant="outline" onClick={() => { if (printRef.current) { printRef.current.style.display = 'block'; window.print(); printRef.current.style.display = 'none'; } }}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                        <Button variant="outline" onClick={handleDownloadPDF} className="border-blue-200 text-blue-700 hover:bg-blue-50"><Download className="mr-2 h-4 w-4"/> Download PDF</Button>
-                        <Button onClick={handlePublishReport} disabled={isGenerating} className="bg-indigo-600 hover:bg-indigo-700 shadow-md">
-                            {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle className="mr-2 h-4 w-4"/>}
+                        <Button onClick={handleDownloadPDF} variant="secondary" className="bg-slate-200 hover:bg-slate-300 text-slate-800">
+                            <Download className="mr-2 h-4 w-4"/> Download PDF
+                        </Button>
+                        <Button onClick={handlePublishReport} disabled={isGenerating} className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20">
+                            {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
                             Publish to Portal
                         </Button>
                     </CardFooter>
