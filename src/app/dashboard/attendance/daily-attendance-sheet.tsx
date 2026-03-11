@@ -9,8 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle }from '@/components/ui/card';
-import { CalendarIcon, Loader2, Utensils, Bus, Check } from 'lucide-react'; // Added Icons
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CalendarIcon, Loader2, Utensils, Bus, Check } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -37,7 +37,7 @@ const attendanceRecordSchema = z.object({
   notes: z.string().optional(),
   classId: z.string(),
   usesBusService: z.string().optional(),
-  usesCanteen: z.string().optional(), // Added Canteen Flag
+  usesCanteen: z.string().optional(), 
 });
 
 const attendanceFormSchema = z.object({
@@ -59,7 +59,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     
-    // --- NEW: State for billing progress ---
     const [billingProgress, setBillingProgress] = useState<string | null>(null);
 
     // Fetch Classes
@@ -83,7 +82,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         name: "records",
     });
 
-    // --- LOAD STUDENTS ---
     const handleLoadStudents = useCallback(async () => {
         if (!selectedClassId || !firestore || !schoolId) return;
         setIsLoading(true);
@@ -145,7 +143,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         if (selectedClassId) handleLoadStudents();
     }, [selectedClassId, selectedDate, handleLoadStudents]);
     
-    // --- SUBMIT & BILLING ---
     async function onSubmit(data: AttendanceFormData) {
         if (!firestore || !schoolId) {
             toast({ variant: 'destructive', title: 'Error', description: 'Cannot proceed without school context.' });
@@ -156,7 +153,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         
         const batch = writeBatch(firestore);
         
-        // 1. Save Attendance records
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
             const { usesBusService, usesCanteen, id, ...dataToSave } = record; 
@@ -171,7 +167,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         await batch.commit();
         toast({ title: 'Attendance Saved!', description: 'Now processing financial records...' });
 
-        // 2. Start robust billing process
         const studentsToBill = data.records
             .filter(r => r.status === 'Present' || r.status === 'Late')
             .map(r => students.find(s => s.uid === r.studentId))
@@ -205,12 +200,12 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     }
 
     return (
-        <Card>
-            <CardHeader>
+        <Card className="border-none shadow-none bg-transparent">
+            <CardHeader className="px-0">
                 <CardTitle>Take Daily Attendance</CardTitle>
                 <CardDescription>Marking 'Present' automatically generates Canteen bills (and Transport bills for subscribers).</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-0">
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     {!propClassId && (
                         <div className="flex-1">
@@ -240,7 +235,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 {studentsLoaded && (
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)}>
-                             <ScrollArea className="h-[500px] w-full pr-4">
+                             <ScrollArea className="h-[350px] w-full pr-4 border rounded-md p-2 bg-slate-50/30">
                                 <div className="space-y-4">
                                     {fields.map((field, index) => {
                                         const student = students.find(s => s.uid === field.studentId);

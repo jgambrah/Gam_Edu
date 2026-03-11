@@ -62,6 +62,7 @@ import { Subject, TimetableEntry } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const classFormSchema = z.object({
   name: z.string().min(1, { message: 'Class name is required.' }),
@@ -303,142 +304,150 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
     const canTakeAttendance = canManage || isClassTeacher;
 
     return (
-        <DialogContent className="max-w-4xl">
-            <DialogHeader>
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col overflow-hidden p-0">
+            <DialogHeader className="px-6 py-4 border-b">
                 <DialogTitle>Class Details: {classData.name}</DialogTitle>
                 <DialogDescription>View and manage class details below.</DialogDescription>
             </DialogHeader>
-             <Tabs defaultValue="details" className="w-full">
-                <TabsList>
-                    <TabsTrigger value="details">Details</TabsTrigger>
-                    <TabsTrigger value="students">Students</TabsTrigger>
-                    {canTakeAttendance && <TabsTrigger value="attendance">Attendance</TabsTrigger>}
-                </TabsList>
-                <TabsContent value="details">
-                     <div className="grid md:grid-cols-2 gap-6 max-h-[60vh] overflow-y-auto p-1 mt-4">
-                        <div className="space-y-6">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Class Information</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <Form {...form}>
-                                        <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
-                                            <FormField control={form.control} name="teacherId" render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Class Teacher</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value || undefined} disabled={!canManage}>
-                                                        <FormControl>
-                                                            <SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {teachers?.map((t, index) => {
-                                                              const teacherKey = `teacher-detail-${t.uid || t.id}-${index}`;
-                                                              const teacherValue = t.uid || t.id || '';
-                                                              const teacherName = `${t.firstName} ${t.lastName}`;
-                                                              
-                                                              return (
-                                                                <SelectItem key={teacherKey} value={teacherValue}>
-                                                                  {teacherName}
-                                                                </SelectItem>
-                                                              );
-                                                            })}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormItem>
-                                            )}/>
-                                            <FormField control={form.control} name="capacity" render={({ field }) => (
-                                                <FormItem><FormLabel>Class Capacity</FormLabel><FormControl><Input type="number" {...field} disabled={!canManage} /></FormControl></FormItem>
-                                            )}/>
-                                            <FormField control={form.control} name="description" render={({ field }) => (
-                                                <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} disabled={!canManage} /></FormControl></FormItem>
-                                            )}/>
-                                            {canManage && <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Save Changes</Button>}
-                                        </form>
-                                    </Form>
-                                </CardContent>
-                                {canManage && (
-                                     <CardFooter className="border-t pt-4">
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant="destructive" className="w-full">
-                                                    <Trash2 className="mr-2 h-4 w-4"/> Delete Class
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    This action cannot be undone. This will permanently delete the class
-                                                    <strong> {classData.name}</strong>. 
-                                                    {enrolledStudents.length > 0 && <span className="font-bold text-destructive"> This class still has {enrolledStudents.length} student(s) enrolled.</span>}
-                                                </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={handleDeleteClass}>
-                                                    Yes, delete this class
-                                                </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </CardFooter>
-                                )}
-                            </Card>
-                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><BookOpen/> Subject Teachers</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    {subjectTeachers.length > 0 ? (
-                                        <Table>
-                                            <TableHeader>
-                                                <TableRow><TableHead>Subject</TableHead><TableHead>Teacher</TableHead></TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {subjectTeachers.map((st) => (
-                                                    <TableRow key={`${st.subjectId}-${classData.id}`}>
-                                                      <TableCell>{st.subjectName}</TableCell>
-                                                      <TableCell>{st.teacherName}</TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                    ): <p className="text-sm text-muted-foreground">No subject teachers assigned via timetable.</p>}
-                                </CardContent>
-                            </Card>
-                        </div>
+            <div className="flex-1 overflow-hidden flex flex-col">
+                <Tabs defaultValue="details" className="w-full h-full flex flex-col">
+                    <div className="px-6 pt-2 border-b">
+                        <TabsList>
+                            <TabsTrigger value="details">Details</TabsTrigger>
+                            <TabsTrigger value="students">Students</TabsTrigger>
+                            {canTakeAttendance && <TabsTrigger value="attendance">Attendance</TabsTrigger>}
+                        </TabsList>
                     </div>
-                </TabsContent>
-                 <TabsContent value="students">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Users/>Enrolled Students ({enrolledStudents.length})</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="max-h-96 overflow-y-auto pr-2">
-                            {enrolledStudents.length > 0 ? (
-                                <ul className="space-y-2">
-                                    {enrolledStudents.map((s) => (
-                                      <li key={s.uid || s.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
-                                        <UserCircle className="h-5 w-5"/>
-                                        {s.firstName} {s.lastName}
-                                      </li>
-                                    ))}
-                                </ul>
-                            ) : <p className="text-sm text-muted-foreground">No students are enrolled in this class.</p>}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-                {canTakeAttendance && (
-                    <TabsContent value="attendance">
-                         <div className="p-1">
-                            <DailyAttendanceSheet classId={classData.id} />
-                         </div>
-                    </TabsContent>
-                )}
-             </Tabs>
+                    <ScrollArea className="flex-1">
+                        <div className="p-6">
+                            <TabsContent value="details" className="mt-0 outline-none">
+                                <div className="grid md:grid-cols-2 gap-6 p-1">
+                                    <div className="space-y-6">
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>Class Information</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <Form {...form}>
+                                                    <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
+                                                        <FormField control={form.control} name="teacherId" render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Class Teacher</FormLabel>
+                                                                <Select onValueChange={field.onChange} defaultValue={field.value || undefined} disabled={!canManage}>
+                                                                    <FormControl>
+                                                                        <SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger>
+                                                                    </FormControl>
+                                                                    <SelectContent>
+                                                                        {teachers?.map((t, index) => {
+                                                                        const teacherKey = `teacher-detail-${t.uid || t.id}-${index}`;
+                                                                        const teacherValue = t.uid || t.id || '';
+                                                                        const teacherName = `${t.firstName} ${t.lastName}`;
+                                                                        
+                                                                        return (
+                                                                            <SelectItem key={teacherKey} value={teacherValue}>
+                                                                            {teacherName}
+                                                                            </SelectItem>
+                                                                        );
+                                                                        })}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                            </FormItem>
+                                                        )}/>
+                                                        <FormField control={form.control} name="capacity" render={({ field }) => (
+                                                            <FormItem><FormLabel>Class Capacity</FormLabel><FormControl><Input type="number" {...field} disabled={!canManage} /></FormControl></FormItem>
+                                                        )}/>
+                                                        <FormField control={form.control} name="description" render={({ field }) => (
+                                                            <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} disabled={!canManage} /></FormControl></FormItem>
+                                                        )}/>
+                                                        {canManage && <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Save Changes</Button>}
+                                                    </form>
+                                                </Form>
+                                            </CardContent>
+                                            {canManage && (
+                                                <CardFooter className="border-t pt-4">
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="destructive" className="w-full">
+                                                                <Trash2 className="mr-2 h-4 w-4"/> Delete Class
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This action cannot be undone. This will permanently delete the class
+                                                                <strong> {classData.name}</strong>. 
+                                                                {enrolledStudents.length > 0 && <span className="font-bold text-destructive"> This class still has {enrolledStudents.length} student(s) enrolled.</span>}
+                                                            </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={handleDeleteClass}>
+                                                                Yes, delete this class
+                                                            </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </CardFooter>
+                                            )}
+                                        </Card>
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2"><BookOpen/> Subject Teachers</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                {subjectTeachers.length > 0 ? (
+                                                    <Table>
+                                                        <TableHeader>
+                                                            <TableRow><TableHead>Subject</TableHead><TableHead>Teacher</TableHead></TableRow>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {subjectTeachers.map((st) => (
+                                                                <TableRow key={`${st.subjectId}-${classData.id}`}>
+                                                                <TableCell>{st.subjectName}</TableCell>
+                                                                <TableCell>{st.teacherName}</TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                        </TableBody>
+                                                    </Table>
+                                                ): <p className="text-sm text-muted-foreground">No subject teachers assigned via timetable.</p>}
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </div>
+                            </TabsContent>
+                            <TabsContent value="students" className="mt-0 outline-none">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2"><Users/>Enrolled Students ({enrolledStudents.length})</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-2">
+                                        {enrolledStudents.length > 0 ? (
+                                            <ul className="space-y-2">
+                                                {enrolledStudents.map((s) => (
+                                                <li key={s.uid || s.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+                                                    <UserCircle className="h-5 w-5"/>
+                                                    {s.firstName} {s.lastName}
+                                                </li>
+                                                ))}
+                                            </ul>
+                                        ) : <p className="text-sm text-muted-foreground">No students are enrolled in this class.</p>}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                            {canTakeAttendance && (
+                                <TabsContent value="attendance" className="mt-0 outline-none">
+                                    <div className="p-1">
+                                        <DailyAttendanceSheet classId={classData.id} />
+                                    </div>
+                                </TabsContent>
+                            )}
+                        </div>
+                    </ScrollArea>
+                </Tabs>
+            </div>
         </DialogContent>
     )
 }
