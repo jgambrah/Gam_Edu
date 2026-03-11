@@ -4,17 +4,21 @@ import { useState, useMemo, useRef } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, CalendarIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
+import { format } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
 function getGradeAndRemark(score: number) {
     if (score >= 80) return { grade: 'A', defaultRemark: 'Excellent' };
@@ -36,7 +40,11 @@ export default function ReportCardsPage() {
     const [academicYear, setAcademicYear] = useState('2024-2025');
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
-    // Final Comments State (Added here before printing)
+    // Term Dates State
+    const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
+    const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
+
+    // Final Comments State
     const [classTeacherComment, setClassTeacherComment] = useState('');
     const [headmasterComment, setHeadmasterComment] = useState('');
 
@@ -59,7 +67,12 @@ export default function ReportCardsPage() {
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     const generateReport = async () => {
-        if (!firestore || !schoolId || !classId || !selectedStudentId) return;
+        if (!firestore || !schoolId || !classId || !selectedStudentId || !termStartDate || !termEndDate) {
+            if (!termStartDate || !termEndDate) {
+                toast({ variant: 'destructive', title: "Dates Required", description: "Please select start and end dates for the term." });
+            }
+            return;
+        }
         setIsGenerating(true);
 
         try {
@@ -156,7 +169,7 @@ export default function ReportCardsPage() {
 
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
-            // --- 3. FETCH & CALCULATE ATTENDANCE ---
+            // --- 3. FETCH & CALCULATE ATTENDANCE (DATE FILTERED) ---
             const attendanceRef = collection(firestore, 'attendance');
             const attQuery = query(
                 attendanceRef,
@@ -166,17 +179,26 @@ export default function ReportCardsPage() {
             const attSnap = await getDocs(attQuery);
             const allClassAttendance = attSnap.docs.map(d => d.data());
 
-            // A. Calculate Total Unique Days the class met
+            // Filter attendance to ONLY include records within the selected Term Dates
+            const termStartMs = termStartDate.getTime();
+            const termEndMs = new Date(termEndDate).setHours(23, 59, 59, 999);
+
+            const termAttendance = allClassAttendance.filter(a => {
+                const recordTime = a.date.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime();
+                return recordTime >= termStartMs && recordTime <= termEndMs;
+            });
+
+            // A. Calculate Total Unique Days the class met IN THIS TERM
             const uniqueDays = new Set(
-                allClassAttendance.map(a => {
-                    const dateObj = a.date?.toDate ? a.date.toDate() : new Date(a.date?.seconds * 1000 || 0);
-                    return dateObj.toISOString().split('T')[0];
+                termAttendance.map(a => {
+                    const d = a.date.toDate ? a.date.toDate() : new Date(a.date);
+                    return d.toISOString().split('T')[0]; // Get YYYY-MM-DD
                 })
             );
             const totalClassDays = uniqueDays.size;
 
-            // B. Calculate Student's Present/Late days
-            const myAttendance = allClassAttendance.filter(a => 
+            // B. Calculate Student's Present/Late days IN THIS TERM
+            const myAttendance = termAttendance.filter(a => 
                 a.studentId === selectedStudentId && 
                 (a.status === 'Present' || a.status === 'Late')
             );
@@ -228,11 +250,9 @@ export default function ReportCardsPage() {
         setIsGenerating(true);
 
         try {
-            // Document ID format: studentId_academicYear_term
             const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
             const reportRef = doc(firestore, 'report-cards', reportId);
 
-            // Save the finalized, calculated snapshot to the database
             await setDoc(reportRef, {
                 studentId: selectedStudentId,
                 schoolId: schoolId,
@@ -247,7 +267,7 @@ export default function ReportCardsPage() {
                 totalStudents: processedReport.totalStudents,
                 studentPresentDays: processedReport.studentPresentDays,
                 totalClassDays: processedReport.totalClassDays,
-                rows: processedReport.rows, // Save all subject grades
+                rows: processedReport.rows, 
                 classTeacherComment: classTeacherComment,
                 headmasterComment: headmasterComment,
                 status: 'Published',
@@ -276,23 +296,75 @@ export default function ReportCardsPage() {
             {/* CONTROLS */}
             <Card className="border-t-4 border-t-indigo-600 print:hidden">
                 <CardHeader><CardTitle>Report Generator</CardTitle></CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="space-y-2"><Label>Academic Year</Label><Input value={academicYear} onChange={e => setAcademicYear(e.target.value)} /></div>
-                    <div className="space-y-2">
-                        <Label>Term</Label>
-                        <Select value={term} onValueChange={setTerm}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent><SelectItem value="First Term">First Term</SelectItem><SelectItem value="Second Term">Second Term</SelectItem><SelectItem value="Third Term">Third Term</SelectItem></SelectContent></Select>
+                <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                            <Label>Academic Year</Label>
+                            <Input value={academicYear} onChange={e => setAcademicYear(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Term</Label>
+                            <Select value={term} onValueChange={setTerm}>
+                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="First Term">First Term</SelectItem>
+                                    <SelectItem value="Second Term">Second Term</SelectItem>
+                                    <SelectItem value="Third Term">Third Term</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Class</Label>
+                            <Select value={classId} onValueChange={setClassId}>
+                                <SelectTrigger><SelectValue placeholder="Select Class"/></SelectTrigger>
+                                <SelectContent>{classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Select Student</Label>
+                            <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
+                                <SelectTrigger><SelectValue placeholder="Choose Student"/></SelectTrigger>
+                                <SelectContent>{students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
                     </div>
-                    <div className="space-y-2">
-                        <Label>Class</Label>
-                        <Select value={classId} onValueChange={setClassId}><SelectTrigger><SelectValue placeholder="Select Class"/></SelectTrigger><SelectContent>{classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Select Student</Label>
-                        <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}><SelectTrigger><SelectValue placeholder="Choose Student"/></SelectTrigger><SelectContent>{students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t">
+                        <div className="space-y-2">
+                            <Label>Term Start Date *</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !termStartDate && "text-muted-foreground")}>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {termStartDate ? format(termStartDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar mode="single" selected={termStartDate} onSelect={setTermStartDate} initialFocus />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Term End Date *</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !termEndDate && "text-muted-foreground")}>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {termEndDate ? format(termEndDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar mode="single" selected={termEndDate} onSelect={setTermEndDate} initialFocus />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
                     </div>
                 </CardContent>
                 <CardFooter className="justify-end bg-slate-50 pt-4">
-                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600"><Search className="mr-2 h-4 w-4"/> Generate Report</Button>
+                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId || !termStartDate || !termEndDate} className="bg-indigo-600">
+                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>} 
+                        Generate Report
+                    </Button>
                 </CardFooter>
             </Card>
 
