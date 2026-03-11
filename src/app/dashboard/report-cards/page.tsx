@@ -156,19 +156,48 @@ export default function ReportCardsPage() {
 
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
+            // --- 3. FETCH & CALCULATE ATTENDANCE ---
+            const attendanceRef = collection(firestore, 'attendance');
+            const attQuery = query(
+                attendanceRef,
+                where('schoolId', '==', schoolId),
+                where('classId', '==', classId)
+            );
+            const attSnap = await getDocs(attQuery);
+            const allClassAttendance = attSnap.docs.map(d => d.data());
+
+            // A. Calculate Total Unique Days the class met
+            const uniqueDays = new Set(
+                allClassAttendance.map(a => {
+                    const dateObj = a.date?.toDate ? a.date.toDate() : new Date(a.date?.seconds * 1000 || 0);
+                    return dateObj.toISOString().split('T')[0];
+                })
+            );
+            const totalClassDays = uniqueDays.size;
+
+            // B. Calculate Student's Present/Late days
+            const myAttendance = allClassAttendance.filter(a => 
+                a.studentId === selectedStudentId && 
+                (a.status === 'Present' || a.status === 'Late')
+            );
+            const studentPresentDays = myAttendance.length;
+
             setProcessedReport({
                 student: targetStudent,
                 rows: reportRows,
                 overallAverage,
                 totalScore: myGrandTotal,
                 classPosition,
-                totalStudents: students?.length || 0
+                totalStudents: students?.length || 0,
+                studentPresentDays,
+                totalClassDays
             });
             
             setClassTeacherComment('');
             setHeadmasterComment('');
 
         } catch (error: any) {
+            console.error("Report Generation Error:", error);
             toast({ variant: 'destructive', title: "Error", description: "Failed to generate report." });
         } finally {
             setIsGenerating(false);
@@ -216,6 +245,8 @@ export default function ReportCardsPage() {
                 totalScore: processedReport.totalScore,
                 classPosition: processedReport.classPosition,
                 totalStudents: processedReport.totalStudents,
+                studentPresentDays: processedReport.studentPresentDays,
+                totalClassDays: processedReport.totalClassDays,
                 rows: processedReport.rows, // Save all subject grades
                 classTeacherComment: classTeacherComment,
                 headmasterComment: headmasterComment,
@@ -324,6 +355,7 @@ export default function ReportCardsPage() {
                             <div><strong>Academic Year:</strong> {academicYear}</div>
                             <div><strong>Position in Class:</strong> {processedReport.classPosition} out of {processedReport.totalStudents}</div>
                             <div><strong>Overall Average:</strong> {processedReport.overallAverage}%</div>
+                            <div><strong>Attendance:</strong> {processedReport.studentPresentDays} out of {processedReport.totalClassDays} days</div>
                         </div>
 
                         {/* GRADES TABLE */}
