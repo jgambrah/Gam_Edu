@@ -4,7 +4,7 @@ import { useState, useMemo, useRef } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, getDocs, doc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -19,7 +19,9 @@ import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import StudentParentReportCardView from './student-parent-view';
 
+// --- GES GRADING SYSTEM ---
 function getGradeAndRemark(score: number) {
     if (score >= 80) return { grade: 'A', autoRemark: 'Excellent' };
     if (score >= 70) return { grade: 'B', autoRemark: 'Very Good' };
@@ -145,10 +147,8 @@ export default function ReportCardsPage() {
                 myGrandTotal += total100;
                 subjectsTaken++;
 
-                // Get the grade and the automatic system remark
                 const { grade, autoRemark } = getGradeAndRemark(total100);
 
-                // Extract the most recent custom teacher remark for this subject from assessments
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
 
@@ -163,8 +163,8 @@ export default function ReportCardsPage() {
                     exam: Math.round(weightedExam),
                     total: total100,
                     grade: grade,
-                    autoRemark: autoRemark, // System generated (Excellent, Good)
-                    teacherRemark: customTeacherRemark, // Manually typed by teacher
+                    autoRemark: autoRemark,
+                    teacherRemark: customTeacherRemark,
                     classAverage: subjectAverage,
                     position: mySubjectRank
                 });
@@ -172,7 +172,6 @@ export default function ReportCardsPage() {
 
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
-            // --- 3. FETCH & CALCULATE ATTENDANCE (DATE FILTERED) ---
             const attendanceRef = collection(firestore, 'attendance');
             const attQuery = query(
                 attendanceRef,
@@ -182,7 +181,6 @@ export default function ReportCardsPage() {
             const attSnap = await getDocs(attQuery);
             const allClassAttendance = attSnap.docs.map(d => d.data());
 
-            // Filter attendance to ONLY include records within the selected Term Dates
             const termStartMs = termStartDate.getTime();
             const termEndMs = new Date(termEndDate).setHours(23, 59, 59, 999);
 
@@ -191,16 +189,14 @@ export default function ReportCardsPage() {
                 return recordTime >= termStartMs && recordTime <= termEndMs;
             });
 
-            // A. Calculate Total Unique Days the class met IN THIS TERM
             const uniqueDays = new Set(
                 termAttendance.map(a => {
                     const d = a.date.toDate ? a.date.toDate() : new Date(a.date);
-                    return d.toISOString().split('T')[0]; // Get YYYY-MM-DD
+                    return d.toISOString().split('T')[0];
                 })
             );
             const totalClassDays = uniqueDays.size;
 
-            // B. Calculate Student's Present/Late days IN THIS TERM
             const myAttendance = termAttendance.filter(a => 
                 a.studentId === selectedStudentId && 
                 (a.status === 'Present' || a.status === 'Late')
@@ -289,6 +285,11 @@ export default function ReportCardsPage() {
             setIsGenerating(false);
         }
     };
+
+    // --- SWITCH BETWEEN VIEWS ---
+    if (role === 'Student' || role === 'Parent') {
+        return <StudentParentReportCardView />;
+    }
 
     if (!canManage) return <div className="p-8">Access Denied.</div>;
 
