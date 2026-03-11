@@ -21,12 +21,12 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 
 function getGradeAndRemark(score: number) {
-    if (score >= 80) return { grade: 'A', defaultRemark: 'Excellent' };
-    if (score >= 70) return { grade: 'B', defaultRemark: 'Very Good' };
-    if (score >= 60) return { grade: 'C', defaultRemark: 'Good' };
-    if (score >= 50) return { grade: 'D', defaultRemark: 'Credit' };
-    if (score >= 40) return { grade: 'E', defaultRemark: 'Pass' };
-    return { grade: 'F', defaultRemark: 'Fail' };
+    if (score >= 80) return { grade: 'A', autoRemark: 'Excellent' };
+    if (score >= 70) return { grade: 'B', autoRemark: 'Very Good' };
+    if (score >= 60) return { grade: 'C', autoRemark: 'Good' };
+    if (score >= 50) return { grade: 'D', autoRemark: 'Credit' };
+    if (score >= 40) return { grade: 'E', autoRemark: 'Pass' };
+    return { grade: 'F', autoRemark: 'Fail' };
 }
 
 export default function ReportCardsPage() {
@@ -141,15 +141,17 @@ export default function ReportCardsPage() {
                 const examMax = exams.reduce((sum, a) => sum + a.maxScore, 0);
                 const weightedExam = examMax > 0 ? (examScore / examMax) * 50 : 0;
 
-                const teacherRemarks = myAssessments.map(a => a.teacherRemark).filter(Boolean);
-                const finalTeacherRemark = teacherRemarks.length > 0 ? teacherRemarks[teacherRemarks.length - 1] : "";
-
                 const total100 = Math.round(weightedCA + weightedExam);
                 myGrandTotal += total100;
                 subjectsTaken++;
 
-                const { grade, defaultRemark } = getGradeAndRemark(total100);
-                
+                // Get the grade and the automatic system remark
+                const { grade, autoRemark } = getGradeAndRemark(total100);
+
+                // Extract the most recent custom teacher remark for this subject from assessments
+                const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
+                const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
+
                 const mySubjectRank = subjectStats[sub.id].totalScores.sort((a,b)=>b-a).indexOf(total100) + 1;
                 const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
                     ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
@@ -160,8 +162,9 @@ export default function ReportCardsPage() {
                     ca: Math.round(weightedCA),
                     exam: Math.round(weightedExam),
                     total: total100,
-                    grade,
-                    remark: finalTeacherRemark || defaultRemark, 
+                    grade: grade,
+                    autoRemark: autoRemark, // System generated (Excellent, Good)
+                    teacherRemark: customTeacherRemark, // Manually typed by teacher
                     classAverage: subjectAverage,
                     position: mySubjectRank
                 });
@@ -435,13 +438,14 @@ export default function ReportCardsPage() {
                             <thead className="bg-slate-100">
                                 <tr>
                                     <th className="border border-slate-800 p-2 text-left">Subject</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">CA (50)</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">Exam (50)</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">Total (100)</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">Class Avg.</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">Grade</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">Pos.</th>
-                                    <th className="border border-slate-800 p-2 text-left w-40">Teacher Remarks</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">CA</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Exam</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Total</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
+                                    <th className="border border-slate-800 p-2 text-center w-24">Remark</th>
+                                    <th className="border border-slate-800 p-2 text-left">Teacher's Comment</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -454,7 +458,8 @@ export default function ReportCardsPage() {
                                         <td className="border border-slate-800 p-2 text-center text-slate-500">{row.classAverage}</td>
                                         <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
                                         <td className="border border-slate-800 p-2 text-center">{row.position}</td>
-                                        <td className="border border-slate-800 p-2 italic text-xs">{row.remark}</td>
+                                        <td className="border border-slate-800 p-2 text-center font-semibold text-xs">{row.autoRemark}</td>
+                                        <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || "-"}</td>
                                     </tr>
                                 ))}
                             </tbody>
