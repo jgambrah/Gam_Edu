@@ -69,10 +69,6 @@ export default function GradebookPage() {
         setScores(prev => ({ ...prev, [studentId]: num }));
     };
 
-    const handleRemarkChange = (studentId: string, val: string) => {
-        setRemarks(prev => ({ ...prev, [studentId]: val }));
-    };
-
     const handleSaveBatch = async () => {
         if (!firestore || !schoolId || !user) return;
         if (!classId || !subjectId) {
@@ -236,7 +232,7 @@ export default function GradebookPage() {
                                     <TableRow>
                                         <TableHead>Student Name</TableHead>
                                         <TableHead className="w-[120px]">Score (/{maxScore})</TableHead>
-                                        <TableHead>Subject Remark</TableHead>
+                                        <TableHead>Teacher Remark (Optional)</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -256,9 +252,10 @@ export default function GradebookPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <Input 
-                                                    placeholder="e.g. Good performance" 
+                                                    type="text"
+                                                    placeholder="e.g. Needs to focus"
                                                     value={remarks[s.uid] || ''} 
-                                                    onChange={e => handleRemarkChange(s.uid, e.target.value)}
+                                                    onChange={e => setRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
                                                 />
                                             </TableCell>
                                         </TableRow>
