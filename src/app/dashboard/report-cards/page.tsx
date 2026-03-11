@@ -4,14 +4,14 @@ import { useState, useMemo, useRef } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, getDocs, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -194,6 +194,48 @@ export default function ReportCardsPage() {
         }
     };
 
+    const handlePublishReport = async () => {
+        if (!firestore || !schoolId || !processedReport || !selectedStudentId) return;
+        setIsGenerating(true);
+
+        try {
+            // Document ID format: studentId_academicYear_term
+            const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
+            const reportRef = doc(firestore, 'report-cards', reportId);
+
+            // Save the finalized, calculated snapshot to the database
+            await setDoc(reportRef, {
+                studentId: selectedStudentId,
+                schoolId: schoolId,
+                academicYear: academicYear,
+                term: term,
+                studentName: `${processedReport.student.firstName} ${processedReport.student.lastName}`,
+                className: classes?.find((c:any) => c.id === classId)?.name || '',
+                classId: classId,
+                overallAverage: processedReport.overallAverage,
+                totalScore: processedReport.totalScore,
+                classPosition: processedReport.classPosition,
+                totalStudents: processedReport.totalStudents,
+                rows: processedReport.rows, // Save all subject grades
+                classTeacherComment: classTeacherComment,
+                headmasterComment: headmasterComment,
+                status: 'Published',
+                publishedAt: serverTimestamp(),
+            });
+
+            toast({ 
+                title: "Report Published! 🚀", 
+                description: "Parents and Students can now view this report on their dashboard." 
+            });
+
+        } catch (error: any) {
+            console.error("Publish Error:", error);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to publish report." });
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
     if (!canManage) return <div className="p-8">Access Denied.</div>;
 
     return (
@@ -250,7 +292,11 @@ export default function ReportCardsPage() {
                     </CardContent>
                     <CardFooter className="flex justify-end gap-2 bg-slate-50 pt-4">
                         <Button variant="outline" onClick={() => { if (printRef.current) { printRef.current.style.display = 'block'; window.print(); printRef.current.style.display = 'none'; } }}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                        <Button onClick={handleDownloadPDF} className="bg-green-600 hover:bg-green-700"><Download className="mr-2 h-4 w-4"/> Download PDF</Button>
+                        <Button variant="outline" onClick={handleDownloadPDF} className="border-blue-200 text-blue-700 hover:bg-blue-50"><Download className="mr-2 h-4 w-4"/> Download PDF</Button>
+                        <Button onClick={handlePublishReport} disabled={isGenerating} className="bg-indigo-600 hover:bg-indigo-700 shadow-md">
+                            {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle className="mr-2 h-4 w-4"/>}
+                            Publish to Portal
+                        </Button>
                     </CardFooter>
                 </Card>
             )}
