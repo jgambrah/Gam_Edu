@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,7 +24,7 @@ const ASSESSMENT_TYPES = [
 ];
 
 export default function GradebookPage() {
-    const { user } = useAuth();
+    const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
@@ -60,7 +60,11 @@ export default function GradebookPage() {
     };
 
     const handleSaveBatch = async () => {
-        if (!firestore || !schoolId || !user) return;
+        if (!firestore || !schoolId || !user) {
+            toast({ variant: 'destructive', title: "Error", description: "System not ready. Please refresh." });
+            return;
+        }
+        
         if (!classId || !subjectId) {
             toast({ variant: 'destructive', title: "Error", description: "Select Class and Subject." });
             return;
@@ -119,6 +123,10 @@ export default function GradebookPage() {
             setIsSaving(false);
         }
     };
+
+    if (role === 'Student' || role === 'Parent') {
+        return <div className="p-8 text-center text-muted-foreground">Access Restricted. Staff only.</div>;
+    }
 
     return (
         <div className="p-6 space-y-6">
