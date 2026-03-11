@@ -16,6 +16,7 @@ import jsPDF from 'jspdf';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 
 // --- GES GRADING SYSTEM ---
 function getGradeAndRemark(score: number) {
@@ -41,6 +42,10 @@ export default function ReportCardsPage() {
     const [academicYear, setAcademicYear] = useState('2024-2025');
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
+    // Global Remarks State
+    const [classTeacherRemark, setClassTeacherRemark] = useState('');
+    const [headmasterRemark, setHeadmasterRemark] = useState('');
+
     // State for generation
     const [isGenerating, setIsGenerating] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
@@ -60,7 +65,6 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    // Fetch school profile using useDoc for a single document
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
@@ -86,24 +90,21 @@ export default function ReportCardsPage() {
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             const studentTotals: Record<string, number> = {};
 
-            // Initialize subject buckets
             subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
 
-            // Process every student in the class to build the metrics
             students?.forEach((stu: any) => {
                 let grandTotal = 0;
+                let subjectsTaken = 0;
                 
                 subjects?.forEach((sub: any) => {
                     const stuSubjAssessments = allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id);
                     if (stuSubjAssessments.length === 0) return;
 
-                    // Calculate 50% CA
                     const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
                     const caScore = cas.reduce((sum, a) => sum + a.score, 0);
                     const caMax = cas.reduce((sum, a) => sum + a.maxScore, 0);
                     const weightedCA = caMax > 0 ? (caScore / caMax) * 50 : 0;
 
-                    // Calculate 50% Exam
                     const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
                     const examScore = exams.reduce((sum, a) => sum + a.score, 0);
                     const examMax = exams.reduce((sum, a) => sum + a.maxScore, 0);
@@ -111,16 +112,16 @@ export default function ReportCardsPage() {
 
                     const total100 = weightedCA + weightedExam;
                     grandTotal += total100;
+                    subjectsTaken++;
 
                     if (subjectStats[sub.id]) {
                         subjectStats[sub.id].totalScores.push(total100);
                         subjectStats[sub.id].sum += total100;
                     }
                 });
-                studentTotals[stu.uid] = grandTotal;
+                studentTotals[stu.uid] = subjectsTaken > 0 ? grandTotal / subjectsTaken : 0;
             });
 
-            // Calculate class positions based on grand totals
             const sortedStudents = Object.entries(studentTotals).sort(([,a], [,b]) => b - a);
             const classPosition = sortedStudents.findIndex(([uid]) => uid === selectedStudentId) + 1;
 
@@ -128,7 +129,7 @@ export default function ReportCardsPage() {
             const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
             const reportRows = [];
             let myGrandTotal = 0;
-            let subjectsTaken = 0;
+            let mySubjectsTaken = 0;
 
             subjects?.forEach((sub: any) => {
                 const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
@@ -146,15 +147,17 @@ export default function ReportCardsPage() {
 
                 const total100 = Math.round(weightedCA + weightedExam);
                 myGrandTotal += total100;
-                subjectsTaken++;
+                mySubjectsTaken++;
 
                 const { grade, remark } = getGradeAndRemark(total100);
                 
-                // Subject Rank
                 const mySubjectRank = subjectStats[sub.id].totalScores.sort((a,b)=>b-a).indexOf(total100) + 1;
                 const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
                     ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
                     : 0;
+
+                // Use the last specific teacher remark entered if available
+                const savedRemark = myAssessments.find(a => a.remark)?.remark;
 
                 reportRows.push({
                     subjectName: sub.name,
@@ -162,15 +165,14 @@ export default function ReportCardsPage() {
                     exam: Math.round(weightedExam),
                     total: total100,
                     grade,
-                    remark,
+                    remark: savedRemark || remark,
                     classAverage: subjectAverage,
                     position: mySubjectRank
                 });
             });
 
-            const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
+            const overallAverage = mySubjectsTaken > 0 ? Math.round(myGrandTotal / mySubjectsTaken) : 0;
 
-            // Set state for rendering
             setProcessedReport({
                 student: targetStudent,
                 rows: reportRows,
@@ -188,20 +190,16 @@ export default function ReportCardsPage() {
         }
     };
 
-    // --- PDF EXPORT ---
     const handleDownloadPDF = async () => {
         const element = printRef.current;
         if (!element) return;
 
         try {
-            // Keep visibility consistent for snapshot
             const canvas = await html2canvas(element, { scale: 2, useCORS: true });
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`${processedReport?.student?.firstName}_ReportCard_${term}.pdf`);
         } catch (error) {
@@ -218,42 +216,62 @@ export default function ReportCardsPage() {
                 <h1 className="text-3xl font-bold">Terminal Report Cards</h1>
             </div>
 
-            {/* CONTROLS */}
-            <Card className="border-t-4 border-t-indigo-600">
+            <Card className="border-t-4 border-t-indigo-600 shadow-sm">
                 <CardHeader><CardTitle>Report Generator</CardTitle></CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="space-y-2">
-                        <Label>Academic Year</Label>
-                        <Input value={academicYear} onChange={(e: any) => setAcademicYear(e.target.value)} />
+                <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                            <Label>Academic Year</Label>
+                            <Input value={academicYear} onChange={(e: any) => setAcademicYear(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Term</Label>
+                            <Select value={term} onValueChange={setTerm}>
+                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="First Term">First Term</SelectItem>
+                                    <SelectItem value="Second Term">Second Term</SelectItem>
+                                    <SelectItem value="Third Term">Third Term</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Class</Label>
+                            <Select value={classId} onValueChange={setClassId}>
+                                <SelectTrigger><SelectValue placeholder="Select Class"/></SelectTrigger>
+                                <SelectContent>
+                                    {classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Select Student</Label>
+                            <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
+                                <SelectTrigger><SelectValue placeholder="Choose Student"/></SelectTrigger>
+                                <SelectContent>
+                                    {students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
-                    <div className="space-y-2">
-                        <Label>Term</Label>
-                        <Select value={term} onValueChange={setTerm}>
-                            <SelectTrigger><SelectValue/></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="First Term">First Term</SelectItem>
-                                <SelectItem value="Second Term">Second Term</SelectItem>
-                                <SelectItem value="Third Term">Third Term</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Class</Label>
-                        <Select value={classId} onValueChange={setClassId}>
-                            <SelectTrigger><SelectValue placeholder="Select Class"/></SelectTrigger>
-                            <SelectContent>
-                                {classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Select Student</Label>
-                        <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
-                            <SelectTrigger><SelectValue placeholder="Choose Student"/></SelectTrigger>
-                            <SelectContent>
-                                {students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
+                        <div className="space-y-2">
+                            <Label className="text-blue-700 font-bold">Class Teacher's Remark</Label>
+                            <Textarea 
+                                placeholder="General remark on behavior and academic progress..." 
+                                value={classTeacherRemark} 
+                                onChange={e => setClassTeacherRemark(e.target.value)} 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-red-700 font-bold">Headmaster's Remark</Label>
+                            <Textarea 
+                                placeholder="Principal's final endorsement..." 
+                                value={headmasterRemark} 
+                                onChange={e => setHeadmasterRemark(e.target.value)} 
+                            />
+                        </div>
                     </div>
                 </CardContent>
                 <CardFooter className="justify-end bg-slate-50 pt-4">
@@ -264,7 +282,6 @@ export default function ReportCardsPage() {
                 </CardFooter>
             </Card>
 
-            {/* PREVIEW & ACTIONS */}
             {processedReport && (
                 <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={() => window.print()} className="print:hidden">
@@ -276,7 +293,6 @@ export default function ReportCardsPage() {
                 </div>
             )}
 
-            {/* PRINT TEMPLATE (A4 Size) */}
             {processedReport && (
                 <div className="overflow-x-auto bg-slate-200 p-8 flex justify-center rounded-xl border border-slate-300">
                     <div 
@@ -304,16 +320,17 @@ export default function ReportCardsPage() {
                         </div>
 
                         {/* GRADES TABLE */}
-                        <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
+                        <table className="w-full text-xs border-collapse border border-slate-800 mb-8">
                             <thead className="bg-slate-100">
                                 <tr>
                                     <th className="border border-slate-800 p-2 text-left">Subject</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">CA (50)</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">Exam (50)</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">Total (100)</th>
-                                    <th className="border border-slate-800 p-2 text-center w-16">Grade</th>
-                                    <th className="border border-slate-800 p-2 text-center w-24">Pos.</th>
-                                    <th className="border border-slate-800 p-2 text-left w-32">Remarks</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">CA (50)</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Exam (50)</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Total</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Class Avg</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Grade</th>
+                                    <th className="border border-slate-800 p-2 text-left w-32">Teacher's Remark</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -323,23 +340,25 @@ export default function ReportCardsPage() {
                                         <td className="border border-slate-800 p-2 text-center">{row.ca}</td>
                                         <td className="border border-slate-800 p-2 text-center">{row.exam}</td>
                                         <td className="border border-slate-800 p-2 text-center font-bold">{row.total}</td>
+                                        <td className="border border-slate-800 p-2 text-center text-slate-500">{row.classAverage}</td>
+                                        <td className="border border-slate-800 p-2 text-center">{row.position}</td>
                                         <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
-                                        <td className="border border-slate-800 p-2 text-center">{row.position}/{processedReport.totalStudents}</td>
                                         <td className="border border-slate-800 p-2 italic">{row.remark}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
 
-                        {/* GRADING KEY */}
-                        <div className="mb-8 border p-2 text-xs bg-slate-50 flex justify-between">
-                            <strong>Grading System:</strong>
-                            <span>80-100: A</span>
-                            <span>70-79: B</span>
-                            <span>60-69: C</span>
-                            <span>50-59: D</span>
-                            <span>40-49: E</span>
-                            <span>0-39: F</span>
+                        {/* REMARKS SECTION */}
+                        <div className="space-y-4 mb-8">
+                            <div className="p-3 border border-slate-800 rounded">
+                                <p className="text-xs font-bold uppercase mb-1">Class Teacher's Remark:</p>
+                                <p className="text-sm italic min-h-[3em]">{classTeacherRemark || "No remark entered."}</p>
+                            </div>
+                            <div className="p-3 border border-slate-800 rounded">
+                                <p className="text-xs font-bold uppercase mb-1">Headmaster's Remark:</p>
+                                <p className="text-sm italic min-h-[3em]">{headmasterRemark || "No remark entered."}</p>
+                            </div>
                         </div>
 
                         {/* SIGNATURES */}

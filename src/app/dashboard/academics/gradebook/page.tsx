@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,6 +43,7 @@ export default function GradebookPage() {
 
     // State for scores: { studentId: score }
     const [scores, setScores] = useState<Record<string, number | ''>>({});
+    const [remarks, setRemarks] = useState<Record<string, string>>({});
     const [isSaving, setIsSaving] = useState(false);
 
     // Role Guard
@@ -66,6 +67,10 @@ export default function GradebookPage() {
         const num = val === '' ? '' : Number(val);
         if (typeof num === 'number' && !isNaN(num) && num > maxScore) return; 
         setScores(prev => ({ ...prev, [studentId]: num }));
+    };
+
+    const handleRemarkChange = (studentId: string, val: string) => {
+        setRemarks(prev => ({ ...prev, [studentId]: val }));
     };
 
     const handleSaveBatch = async () => {
@@ -100,6 +105,7 @@ export default function GradebookPage() {
                         assessmentDate: serverTimestamp(),
                         score: Number(score),
                         maxScore: Number(maxScore),
+                        remark: remarks[studentId] || '',
                         createdAt: serverTimestamp(),
                         gradedAt: serverTimestamp(),
                     });
@@ -114,14 +120,15 @@ export default function GradebookPage() {
             }
 
             await batch.commit();
-            toast({ title: "Success", description: `Saved ${count} scores successfully.` });
+            toast({ title: "Success", description: `Saved ${count} scores and remarks successfully.` });
             
-            // Clear scores for next entry
+            // Clear inputs for next entry
             setScores({});
+            setRemarks({});
 
         } catch (error: any) {
             console.error("Gradebook Save Error:", error);
-            toast({ variant: 'destructive', title: "Error", description: error.message || "Failed to save scores." });
+            toast({ variant: 'destructive', title: "Error", description: error.message || "Failed to save data." });
         } finally {
             setIsSaving(false);
         }
@@ -142,13 +149,9 @@ export default function GradebookPage() {
              <div className="p-6 flex justify-center">
                 <Card className="max-w-md w-full border-red-100 bg-red-50/50">
                     <CardHeader className="text-center">
-                        <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4">
-                            <ShieldAlert className="h-8 w-8 text-red-600" />
-                        </div>
                         <CardTitle>Access Restricted</CardTitle>
                         <CardDescription>
-                            The full gradebook management system is for school staff only. 
-                            Students and parents can view finalized results in the "Report Cards" section.
+                            The full gradebook management system is for school staff only.
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -160,7 +163,7 @@ export default function GradebookPage() {
         <div className="p-6 space-y-6">
             <div>
                 <h1 className="text-3xl font-bold flex items-center gap-2"><FileSpreadsheet className="text-blue-600"/> Gradebook Entry</h1>
-                <p className="text-muted-foreground">Batch enter continuous assessments and exam scores.</p>
+                <p className="text-muted-foreground">Batch enter continuous assessments, exam scores, and teacher remarks.</p>
             </div>
 
             <Card className="border-t-4 border-t-blue-600 shadow-sm">
@@ -223,7 +226,7 @@ export default function GradebookPage() {
                         <CardTitle>Student Roster</CardTitle>
                         <Button onClick={handleSaveBatch} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
                             {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
-                            Save All Scores
+                            Save All Data
                         </Button>
                     </CardHeader>
                     <CardContent>
@@ -232,11 +235,12 @@ export default function GradebookPage() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Student Name</TableHead>
-                                        <TableHead className="w-[150px]">Score (/{maxScore})</TableHead>
+                                        <TableHead className="w-[120px]">Score (/{maxScore})</TableHead>
+                                        <TableHead>Subject Remark</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {students?.length === 0 && <TableRow><TableCell colSpan={2} className="text-center">No students in this class.</TableCell></TableRow>}
+                                    {students?.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No students in this class.</TableCell></TableRow>}
                                     {students?.map((s:any) => (
                                         <TableRow key={s.id}>
                                             <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
@@ -248,6 +252,13 @@ export default function GradebookPage() {
                                                     value={scores[s.uid] ?? ''} 
                                                     onChange={e => handleScoreChange(s.uid, e.target.value)}
                                                     className={`font-bold ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input 
+                                                    placeholder="e.g. Good performance" 
+                                                    value={remarks[s.uid] || ''} 
+                                                    onChange={e => handleRemarkChange(s.uid, e.target.value)}
                                                 />
                                             </TableCell>
                                         </TableRow>
