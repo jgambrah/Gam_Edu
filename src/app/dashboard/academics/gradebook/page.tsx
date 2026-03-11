@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,8 +13,6 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, FileSpreadsheet } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { format } from 'date-fns';
 
 const ASSESSMENT_TYPES = [
@@ -27,11 +25,10 @@ const ASSESSMENT_TYPES = [
 
 export default function GradebookPage() {
     const { user } = useAuth();
-    const { role, loading: roleLoading } = useRole();
+    const { role } = useRole();
     const firestore = useFirestore();
-    const { schoolId, loading: schoolLoading } = useCurrentSchool();
+    const { schoolId } = useCurrentSchool();
     const { toast } = useToast();
-    const router = useRouter();
 
     // State for filtering
     const [classId, setClassId] = useState('');
@@ -45,13 +42,6 @@ export default function GradebookPage() {
     const [scores, setScores] = useState<Record<string, number | ''>>({});
     const [remarks, setRemarks] = useState<Record<string, string>>({});
     const [isSaving, setIsSaving] = useState(false);
-
-    // Role Guard
-    useEffect(() => {
-        if (!roleLoading && (role === 'Parent' || role === 'Student')) {
-            router.replace('/dashboard/report-cards');
-        }
-    }, [role, roleLoading, router]);
 
     // Data Fetching
     const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -129,31 +119,6 @@ export default function GradebookPage() {
             setIsSaving(false);
         }
     };
-
-    if (roleLoading || schoolLoading) {
-        return (
-            <div className="flex h-64 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        )
-    }
-
-    const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant'].includes(role || '');
-
-    if (!isStaff) {
-        return (
-             <div className="p-6 flex justify-center">
-                <Card className="max-w-md w-full border-red-100 bg-red-50/50">
-                    <CardHeader className="text-center">
-                        <CardTitle>Access Restricted</CardTitle>
-                        <CardDescription>
-                            The full gradebook management system is for school staff only.
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
-             </div>
-        );
-    }
 
     return (
         <div className="p-6 space-y-6">
