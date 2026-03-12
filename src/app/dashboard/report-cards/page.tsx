@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
@@ -11,11 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, CalendarIcon, User } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, CalendarIcon, User, FileX } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -75,6 +76,7 @@ export default function ReportCardsPage() {
             return;
         }
         setIsGenerating(true);
+        setProcessedReport(null); // Reset before starting
 
         try {
             const assessmentsRef = collection(firestore, 'assessments');
@@ -88,25 +90,34 @@ export default function ReportCardsPage() {
             const snap = await getDocs(q);
             const allAssessments = snap.docs.map(d => d.data());
 
+            if (allAssessments.length === 0) {
+                toast({ variant: 'destructive', title: "No Data Found", description: "No grades have been entered for the selected term/class." });
+                setIsGenerating(false);
+                return;
+            }
+
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             const studentTotals: Record<string, number> = {};
 
-            subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
+            subjects?.forEach((sub: any) => { 
+                if (sub.id) subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
+            });
 
+            // Calculate everyone for ranking
             students?.forEach((stu: any) => {
                 let grandTotal = 0;
                 subjects?.forEach((sub: any) => {
                     const stuSubjAssessments = allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id);
                     if (stuSubjAssessments.length === 0) return;
 
-                    const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
-                    const caScore = cas.reduce((sum, a) => sum + a.score, 0);
-                    const caMax = cas.reduce((sum, a) => sum + a.maxScore, 0);
+                    const cas = stuSubjAssessments.filter(a => a.assessmentType && a.assessmentType.includes('CA'));
+                    const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
+                    const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 0), 0);
                     const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
 
-                    const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
-                    const examScore = exams.reduce((sum, a) => sum + a.score, 0);
-                    const examMax = exams.reduce((sum, a) => sum + a.maxScore, 0);
+                    const exams = stuSubjAssessments.filter(a => a.assessmentType && a.assessmentType.includes('Exam'));
+                    const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
+                    const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 0), 0);
                     const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
 
                     const total100 = weightedCA + weightedExam;
@@ -132,14 +143,14 @@ export default function ReportCardsPage() {
                 const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
                 if (myAssessments.length === 0) return; 
 
-                const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
-                const caScore = cas.reduce((sum, a) => sum + a.score, 0);
-                const caMax = cas.reduce((sum, a) => sum + a.maxScore, 0);
+                const cas = myAssessments.filter(a => a.assessmentType && a.assessmentType.includes('CA'));
+                const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
+                const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 0), 0);
                 const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
 
                 const exams = myAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id && a.assessmentType.includes('Exam'));
-                const examScore = exams.reduce((sum, a) => sum + a.score, 0);
-                const examMax = exams.reduce((sum, a) => sum + a.maxScore, 0);
+                const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
+                const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 0), 0);
                 const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
 
                 const total100 = Math.round(weightedCA + weightedExam);
@@ -151,9 +162,10 @@ export default function ReportCardsPage() {
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
 
-                const mySubjectRank = subjectStats[sub.id].totalScores.sort((a,b)=>b-a).indexOf(total100) + 1;
-                const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
-                    ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
+                const scoresList = subjectStats[sub.id]?.totalScores || [];
+                const mySubjectRank = scoresList.sort((a,b)=>b-a).indexOf(total100) + 1;
+                const subjectAverage = scoresList.length > 0 
+                    ? Math.round(subjectStats[sub.id].sum / scoresList.length) 
                     : 0;
 
                 reportRows.push({
@@ -184,13 +196,13 @@ export default function ReportCardsPage() {
             const termEndMs = new Date(termEndDate).setHours(23, 59, 59, 999);
 
             const termAttendance = allClassAttendance.filter(a => {
-                const recordTime = a.date.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime();
-                return recordTime >= termStartMs && recordTime <= termEndMs;
+                const recordTime = a.date?.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime();
+                return !isNaN(recordTime) && recordTime >= termStartMs && recordTime <= termEndMs;
             });
 
             const uniqueDays = new Set(
                 termAttendance.map(a => {
-                    const d = a.date.toDate ? a.date.toDate() : new Date(a.date);
+                    const d = a.date?.toDate ? a.date.toDate() : new Date(a.date);
                     return d.toISOString().split('T')[0];
                 })
             );
@@ -218,7 +230,7 @@ export default function ReportCardsPage() {
 
         } catch (error: any) {
             console.error("Report Generation Error:", error);
-            toast({ variant: 'destructive', title: "Error", description: "Failed to generate report." });
+            toast({ variant: 'destructive', title: "Error", description: "Failed to generate report. Check console." });
         } finally {
             setIsGenerating(false);
         }
@@ -377,11 +389,11 @@ export default function ReportCardsPage() {
                 </CardFooter>
             </Card>
 
-            {processedReport && (
+            {processedReport ? (
                 <Card className="print:hidden border-t-4 border-t-orange-400 animate-in slide-in-from-top-4">
                     <CardHeader>
                         <CardTitle>Final Remarks</CardTitle>
-                        <CardDescription>Enter comments to be included in the final document.</CardDescription>
+                        <CardDescription>Enter comments to be included in the final document for {processedReport.student?.firstName}.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
@@ -412,6 +424,11 @@ export default function ReportCardsPage() {
                         </Button>
                     </CardFooter>
                 </Card>
+            ) : !isGenerating && (
+                <div className="text-center py-20 bg-slate-50 border-2 border-dashed rounded-xl flex flex-col items-center gap-3">
+                    <FileX className="h-12 w-12 text-slate-300" />
+                    <p className="text-slate-500">No report generated yet. Select filters and click "Generate".</p>
+                </div>
             )}
 
             {processedReport && (
