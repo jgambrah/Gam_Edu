@@ -49,8 +49,8 @@ export default function MyReportsPage() {
 
     const { data: reports, isLoading: reportsLoading } = useCollection<any>(reportsQuery);
 
-    // 3. Fetch School Profile for Header
-    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    // 3. FETCH BRANDING FROM PUBLIC PATH (accessible to parents)
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     const handleDownloadPDF = async () => {
@@ -116,7 +116,11 @@ export default function MyReportsPage() {
                                 </div>
                             </div>
                             {schoolProfile?.logoUrl && (
-                                <img src={schoolProfile.logoUrl} alt="" className="w-20 h-20 object-contain" />
+                                <img 
+                                    src={schoolProfile.logoUrl} 
+                                    alt="Logo" 
+                                    className="w-20 h-20 object-contain" 
+                                />
                             )}
                         </div>
                     </CardHeader>
@@ -171,7 +175,12 @@ export default function MyReportsPage() {
                     <div ref={printRef} className="bg-white p-12" style={{ width: '210mm', minHeight: '297mm', color: 'black' }}>
                         <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
                             {schoolProfile?.logoUrl && (
-                                <img src={schoolProfile.logoUrl} alt="" className="w-24 h-24 mx-auto mb-4 object-contain" />
+                                <img 
+                                    src={schoolProfile.logoUrl} 
+                                    alt="Logo" 
+                                    className="w-24 h-24 mx-auto mb-4 object-contain" 
+                                    crossOrigin="anonymous"
+                                />
                             )}
                             <h1 className="text-4xl font-black uppercase">{schoolProfile?.name || "SCHOOL NAME"}</h1>
                             <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>

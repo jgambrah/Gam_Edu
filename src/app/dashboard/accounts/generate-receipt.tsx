@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -26,8 +27,9 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
     const { schoolId } = useCurrentSchool();
     const printRef = useRef<HTMLDivElement>(null);
 
+    // FETCH BRANDING FROM PUBLIC PATH
     const schoolProfileRef = useMemoFirebase(
-        () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+        () => (firestore && schoolId ? doc(firestore, 'schoolSettings', schoolId) : null),
         [firestore, schoolId]
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);

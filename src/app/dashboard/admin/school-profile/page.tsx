@@ -115,9 +115,16 @@ export default function SchoolProfilePage() {
 
     setIsSaving(true);
     try {
+        // 1. Save to main schools document (Private staff-only view)
         await setDoc(doc(firestore, 'schools', schoolId), {
             name, motto, address, phone, email, website, logoUrl,
             caWeight, examWeight,
+            updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        // 2. Save a public copy to schoolSettings (Everyone including Parents can read this)
+        await setDoc(doc(firestore, 'schoolSettings', schoolId), {
+            name, motto, address, phone, email, website, logoUrl,
             updatedAt: serverTimestamp()
         }, { merge: true });
         
@@ -164,12 +171,11 @@ export default function SchoolProfilePage() {
                                         {logoUrl ? (
                                             // eslint-disable-next-line @next/next/no-img-element
                                             <img 
-                                                key={logoUrl} // Force re-render when URL changes
+                                                key={logoUrl} 
                                                 src={logoUrl} 
                                                 alt="" 
                                                 className="max-h-full max-w-full object-contain"
                                                 onError={(e) => {
-                                                    // Fallback if image fails to load
                                                     (e.target as any).src = "https://placehold.co/200x200?text=Error+Loading";
                                                 }}
                                             />
@@ -189,7 +195,7 @@ export default function SchoolProfilePage() {
                                         <p className="text-xs text-slate-500">Logo will be used on all automated receipts and reports.</p>
                                     </div>
                                     <div className="flex flex-col gap-2">
-                                        <Input 
+                                        <input 
                                             id="logo-upload" 
                                             type="file" 
                                             accept="image/*" 

@@ -38,8 +38,9 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
     const firestore = useFirestore();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
+    // FETCH BRANDING FROM PUBLIC PATH (accessible to all)
     const schoolProfileRef = useMemoFirebase(
-      () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+      () => (firestore && schoolId ? doc(firestore, 'schoolSettings', schoolId) : null),
       [firestore, schoolId]
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
@@ -115,7 +116,16 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
       <Card className="w-full max-w-4xl mx-auto print:shadow-none print:border-none">
         <CardHeader className="text-center print:text-left">
             <div className='flex items-center justify-center print:justify-start gap-4'>
-                <AppLogo className="h-12 w-12 text-primary" />
+                {schoolProfile?.logoUrl ? (
+                    <img 
+                        src={schoolProfile.logoUrl} 
+                        alt="Logo" 
+                        className="w-16 h-16 object-contain" 
+                        crossOrigin="anonymous"
+                    />
+                ) : (
+                    <AppLogo className="h-12 w-12 text-primary" />
+                )}
                 <div>
                     <CardTitle className="text-3xl">{schoolProfile?.name || 'School Name Not Set'}</CardTitle>
                     <p className="text-muted-foreground">Student Report Card - {year}</p>

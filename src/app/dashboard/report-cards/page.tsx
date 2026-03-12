@@ -64,7 +64,8 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    // FETCH BRANDING FROM PUBLIC PATH (accessible to all)
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
@@ -420,11 +421,16 @@ export default function ReportCardsPage() {
                         {/* HEADER */}
                         <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
                             {schoolProfile?.logoUrl && (
-                                <img src={schoolProfile.logoUrl} alt="" className="w-24 h-24 mx-auto mb-4 object-contain" />
+                                <img 
+                                    src={schoolProfile.logoUrl} 
+                                    alt="Logo" 
+                                    className="w-24 h-24 mx-auto mb-4 object-contain" 
+                                    crossOrigin="anonymous"
+                                />
                             )}
                             <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
                             <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>
-                            <p className="text-sm font-bold">{schoolProfile?.phone || "" | schoolProfile?.email || ""}</p>
+                            <p className="text-sm font-bold">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
                             <h2 className="text-2xl font-bold mt-6 bg-slate-100 py-2 border border-slate-300">TERMINAL REPORT</h2>
                         </div>
 
