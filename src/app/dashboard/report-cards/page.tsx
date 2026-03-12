@@ -68,6 +68,9 @@ export default function ReportCardsPage() {
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
+    const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
+    const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
+
     const generateReport = async () => {
         if (!firestore || !schoolId || !classId || !selectedStudentId || !termStartDate || !termEndDate) {
             if (!termStartDate || !termEndDate) {
@@ -103,12 +106,12 @@ export default function ReportCardsPage() {
                     const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
                     const caScore = cas.reduce((sum, a) => sum + a.score, 0);
                     const caMax = cas.reduce((sum, a) => sum + a.maxScore, 0);
-                    const weightedCA = caMax > 0 ? (caScore / caMax) * 50 : 0;
+                    const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
 
                     const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
                     const examScore = exams.reduce((sum, a) => sum + a.score, 0);
                     const examMax = exams.reduce((sum, a) => sum + a.maxScore, 0);
-                    const weightedExam = examMax > 0 ? (examScore / examMax) * 50 : 0;
+                    const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
 
                     const total100 = weightedCA + weightedExam;
                     grandTotal += total100;
@@ -136,12 +139,12 @@ export default function ReportCardsPage() {
                 const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
                 const caScore = cas.reduce((sum, a) => sum + a.score, 0);
                 const caMax = cas.reduce((sum, a) => sum + a.maxScore, 0);
-                const weightedCA = caMax > 0 ? (caScore / caMax) * 50 : 0;
+                const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
 
                 const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
                 const examScore = exams.reduce((sum, a) => sum + a.score, 0);
                 const examMax = exams.reduce((sum, a) => sum + a.maxScore, 0);
-                const weightedExam = examMax > 0 ? (examScore / examMax) * 50 : 0;
+                const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
 
                 const total100 = Math.round(weightedCA + weightedExam);
                 myGrandTotal += total100;
@@ -231,12 +234,12 @@ export default function ReportCardsPage() {
         try {
             element.style.display = 'block';
             const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const imgData = canvas.toDataURL('image/png', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`${processedReport?.student?.firstName}_ReportCard_${term}.pdf`);
             element.style.display = 'none';
         } catch (error) {
@@ -439,8 +442,8 @@ export default function ReportCardsPage() {
                             <thead className="bg-slate-100">
                                 <tr>
                                     <th className="border border-slate-800 p-2 text-left">Subject</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">CA</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Exam</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">CA ({CA_WEIGHT})</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Exam ({EXAM_WEIGHT})</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Total</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
