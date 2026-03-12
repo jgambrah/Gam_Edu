@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useFirestore, useUser } from '@/firebase';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { User } from 'firebase/auth';
 
 type Role = 'Director' | 'Administrator' | 'Teacher' | 'Accountant' | 'Student' | 'Parent' | 'Librarian' | 'Cook' | 'Transport Staff' | null;
@@ -16,6 +16,10 @@ interface RoleContextType {
 }
 
 const RoleContext = createContext<RoleContextType>({ role: null, setRole: () => {}, loading: true, profile: null, refreshRole: () => {} });
+
+// Hardcoded Super Admin / CEO Identities
+const SUPER_ADMIN_EMAIL = 'jamesgambrah@gmail.com';
+const SUPER_ADMIN_UID = 'L4oE5XWweKRYrhtIXn6hB8IDHBC2';
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -34,47 +38,66 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
       setLoading(true);
       try {
-        // Priority 1: STAFF (Director, Admin, Teacher, etc.)
+        // --- 0. SUPER ADMIN CHECK ---
+        // If this is the CEO, assign Director role immediately to prevent "No Role"
+        if (currentUser.email?.toLowerCase() === SUPER_ADMIN_EMAIL || currentUser.uid === SUPER_ADMIN_UID) {
+          setRole('Director');
+          // Try to get a profile but don't fail if missing
+          const staffRef = doc(firestore, 'staff', currentUser.uid);
+          const staffSnap = await getDoc(staffRef);
+          if (staffSnap.exists()) {
+            setProfile(staffSnap.data());
+          } else {
+            setProfile({ firstName: 'Super', lastName: 'Admin', role: 'Director' });
+          }
+          setLoading(false);
+          return;
+        }
+
+        // --- 1. PRIMARY: STAFF COLLECTION ---
         const staffRef = doc(firestore, 'staff', currentUser.uid);
         const staffSnap = await getDoc(staffRef);
         if (staffSnap.exists()) {
           const data = staffSnap.data();
           setRole(data.role as Role); 
           setProfile(data);
+          setLoading(false);
           return;
         }
         
-        // Priority 2: STUDENTS
-        const studentRef = doc(firestore, 'students', currentUser.uid);
-        const studentSnap = await getDoc(studentRef);
-        if (studentSnap.exists()) {
-          setRole('Student');
-          setProfile(studentSnap.data());
-          return;
-        }
-
-        // Priority 3: PARENTS
-        const parentRef = doc(firestore, 'parents', currentUser.uid);
-        const parentSnap = await getDoc(parentRef);
-        if (parentSnap.exists()) {
-          setRole('Parent');
-          setProfile(parentSnap.data());
-          return;
-        }
-        
-        // Fallback: Check the generic 'users' collection for a role, if one exists
-        // This is a safety net for your manual change.
+        // --- 2. SECONDARY: USERS MAPPING (FAST LOOKUP) ---
+        // Check central user mapping if specific staff record is missing
         const userRef = doc(firestore, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
              const data = userSnap.data();
              if(data.role) {
                 setRole(data.role as Role);
-                setProfile(data); // Set profile with whatever data is here
+                setProfile(data);
+                setLoading(false);
                 return;
              }
         }
 
+        // --- 3. TERTIARY: STUDENTS ---
+        const studentRef = doc(firestore, 'students', currentUser.uid);
+        const studentSnap = await getDoc(studentRef);
+        if (studentSnap.exists()) {
+          setRole('Student');
+          setProfile(studentSnap.data());
+          setLoading(false);
+          return;
+        }
+
+        // --- 4. QUATERNARY: PARENTS ---
+        const parentRef = doc(firestore, 'parents', currentUser.uid);
+        const parentSnap = await getDoc(parentRef);
+        if (parentSnap.exists()) {
+          setRole('Parent');
+          setProfile(parentSnap.data());
+          setLoading(false);
+          return;
+        }
 
         // Fallback if no profile found anywhere
         setRole(null);
