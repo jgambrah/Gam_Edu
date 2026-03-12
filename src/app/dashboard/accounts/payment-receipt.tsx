@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -60,7 +61,6 @@ export function PaymentReceipt({
               src={schoolProfile.logoUrl} 
               alt="School Logo" 
               className="w-16 h-16 object-contain"
-              crossOrigin="anonymous"
             />
           ) : (
             <AppLogo className="h-12 w-12 text-slate-800" />
