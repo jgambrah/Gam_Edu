@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
@@ -419,23 +418,37 @@ export default function ReportCardsPage() {
                     <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }} id="pdf-content">
                         
                         {/* HEADER */}
-                        <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
-                            {schoolProfile?.logoUrl && (
-                                <img 
-                                    src={schoolProfile.logoUrl} 
-                                    alt="Logo" 
-                                    className="w-24 h-24 mx-auto mb-4 object-contain" 
-                                    crossOrigin="anonymous"
-                                />
-                            )}
-                            <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
-                            <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>
-                            <p className="text-sm font-bold">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
-                            <h2 className="text-2xl font-bold mt-6 bg-slate-100 py-2 border border-slate-300">TERMINAL REPORT</h2>
+                        <div className="flex items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6">
+                            {/* LOGO */}
+                            <div className="w-32 h-32 flex-shrink-0 flex items-center justify-center">
+                                {schoolProfile?.logoUrl ? (
+                                    <img 
+                                        src={schoolProfile.logoUrl} 
+                                        alt="School Logo" 
+                                        className="max-w-full max-h-full object-contain"
+                                        crossOrigin="anonymous" 
+                                    />
+                                ) : (
+                                    <div className="w-24 h-24 bg-slate-200 rounded-full flex items-center justify-center text-slate-400 text-xs text-center">No Logo</div>
+                                )}
+                            </div>
+
+                            {/* SCHOOL DETAILS */}
+                            <div className="flex-1 text-center px-4">
+                                <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
+                                {schoolProfile?.motto && <p className="text-sm italic text-slate-600 mt-1">"{schoolProfile.motto}"</p>}
+                                <p className="text-sm font-bold mt-2">{schoolProfile?.address || ""}</p>
+                                <p className="text-sm font-bold">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
+                            </div>
+
+                            {/* EMPTY SPACE FOR BALANCE */}
+                            <div className="w-32 flex-shrink-0"></div>
                         </div>
 
+                        <h2 className="text-2xl font-bold text-center mt-6 bg-slate-100 py-2 border border-slate-300 uppercase">Terminal Report</h2>
+
                         {/* STUDENT INFO GRID */}
-                        <div className="flex justify-between items-start gap-8 mb-8 border-2 p-4 font-medium relative">
+                        <div className="flex justify-between items-start gap-8 mb-8 border-2 p-4 font-medium relative mt-6">
                             <div className="flex-1 grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
                                 <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
                                 <div><strong>Term:</strong> {term}</div>
