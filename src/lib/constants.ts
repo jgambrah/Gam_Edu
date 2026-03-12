@@ -76,6 +76,12 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Parent'],
   },
   {
+    path: '/dashboard/my-reports',
+    title: 'My Report Cards',
+    icon: FileText,
+    roles: ['Student', 'Parent'],
+  },
+  {
     path: '/dashboard/people',
     title: 'People Management',
     icon: Users,
@@ -125,6 +131,12 @@ export const navItems: NavItem[] = [
     icon: BookOpen,
     roles: ['Director', 'Administrator', 'Teacher', 'Student'],
     subItems: [
+        {
+            path: '/dashboard/attendance',
+            title: 'Student Attendance',
+            icon: CalendarCheck,
+            roles: ['Director', 'Administrator', 'Teacher'],
+        },
         {
             path: '/dashboard/academics',
             title: 'Classes',
@@ -299,6 +311,18 @@ export const navItems: NavItem[] = [
     icon: UserCog,
     roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
     subItems: [
+        {
+            path: '/dashboard/attendance/staff',
+            title: 'Staff Clock-In',
+            icon: UserCheckIcon,
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+        },
+        {
+            path: '/dashboard/hr/staff-attendance-records',
+            title: 'Staff Attendance Records',
+            icon: CalendarCheck,
+            roles: ['Director', 'Administrator'],
+        },
         {
             path: '/dashboard/leave-management',
             title: 'Leave Management',
