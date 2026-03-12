@@ -21,7 +21,8 @@ export default function MyGradesPage() {
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const firestore = useFirestore();
 
-    const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[1] || '2024-2025');
+    // Default to the current/latest available academic year
+    const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
     const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0] || 'First Term');
 
     // 1. Determine Target Students

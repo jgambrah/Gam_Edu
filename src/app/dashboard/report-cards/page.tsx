@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import StudentParentReportCardView from './student-parent-view';
+import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 
 function getGradeAndRemark(score: number) {
     if (score >= 80) return { grade: 'A', autoRemark: 'Excellent' };
@@ -37,8 +38,8 @@ export default function ReportCardsPage() {
     const { toast } = useToast();
 
     const [classId, setClassId] = useState('');
-    const [term, setTerm] = useState('First Term');
-    const [academicYear, setAcademicYear] = useState('2024-2025');
+    const [term, setTerm] = useState(MOCK_TERMS[0]);
+    const [academicYear, setAcademicYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
     const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
@@ -136,7 +137,7 @@ export default function ReportCardsPage() {
                 const caMax = cas.reduce((sum, a) => sum + a.maxScore, 0);
                 const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
 
-                const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
+                const exams = myAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id && a.assessmentType.includes('Exam'));
                 const examScore = exams.reduce((sum, a) => sum + a.score, 0);
                 const examMax = exams.reduce((sum, a) => sum + a.maxScore, 0);
                 const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
@@ -301,16 +302,19 @@ export default function ReportCardsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="space-y-2">
                             <Label>Academic Year</Label>
-                            <Input value={academicYear} onChange={e => setAcademicYear(e.target.value)} />
+                            <Select value={academicYear} onValueChange={setAcademicYear}>
+                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    {MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="space-y-2">
                             <Label>Term</Label>
                             <Select value={term} onValueChange={setTerm}>
                                 <SelectTrigger><SelectValue/></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="First Term">First Term</SelectItem>
-                                    <SelectItem value="Second Term">Second Term</SelectItem>
-                                    <SelectItem value="Third Term">Third Term</SelectItem>
+                                    {MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -400,7 +404,7 @@ export default function ReportCardsPage() {
                             <Download className="mr-2 h-4 w-4"/> Download PDF
                         </Button>
                         <Button onClick={handlePublishReport} disabled={isGenerating} className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20">
-                            {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
+                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
                             Publish to Portal
                         </Button>
                     </CardFooter>

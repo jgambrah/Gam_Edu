@@ -527,7 +527,17 @@ export const MOCK_SUBJECTS = [
     { id: 'art-01', name: 'Art' },
 ];
 
-export const MOCK_ACADEMIC_YEARS = ['2023-2024', '2024-2025'];
+/**
+ * Dynamic Academic Year Generator
+ * Produces a range of 5 years around the current date.
+ * E.g., if 2026: ['2024-2025', '2025-2026', '2026-2027', '2027-2028', '2028-2029']
+ */
+const currentYear = new Date().getFullYear();
+export const MOCK_ACADEMIC_YEARS = Array.from({ length: 6 }, (_, i) => {
+  const start = currentYear - 2 + i;
+  return `${start}-${start + 1}`;
+});
+
 export const MOCK_TERMS = ['First Term', 'Second Term', 'Third Term'];
 
 export const LEAVE_TYPES = ['Sick Leave', 'Vacation', 'Personal', 'Study Leave', 'Unpaid Leave'] as const;

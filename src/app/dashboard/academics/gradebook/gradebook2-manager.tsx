@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -295,7 +294,7 @@ export default function GradebookManager() {
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
-  const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
+  const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
