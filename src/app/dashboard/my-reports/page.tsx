@@ -169,6 +169,9 @@ export default function MyReportsPage() {
                 <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
                     <div ref={printRef} className="bg-white p-12" style={{ width: '210mm', minHeight: '297mm', color: 'black' }}>
                         <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
+                            {schoolProfile?.logoUrl && (
+                                <img src={schoolProfile.logoUrl} alt="Logo" className="w-24 h-24 mx-auto mb-4 object-contain" crossOrigin="anonymous" />
+                            )}
                             <h1 className="text-4xl font-black uppercase">{schoolProfile?.name || "SCHOOL NAME"}</h1>
                             <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>
                             <h2 className="text-2xl font-bold mt-6 bg-slate-100 py-2 border border-slate-300">TERMINAL REPORT CARD</h2>

@@ -418,6 +418,9 @@ export default function ReportCardsPage() {
                         
                         {/* HEADER */}
                         <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
+                            {schoolProfile?.logoUrl && (
+                                <img src={schoolProfile.logoUrl} alt="Logo" className="w-24 h-24 mx-auto mb-4 object-contain" crossOrigin="anonymous" />
+                            )}
                             <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
                             <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>
                             <p className="text-sm font-bold">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
