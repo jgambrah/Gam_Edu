@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Building2, Save, Loader2, Globe, Phone, Mail, GraduationCap, AlertCircle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 export default function SchoolProfilePage() {
   const firestore = useFirestore();
