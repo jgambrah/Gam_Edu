@@ -297,14 +297,18 @@ export default function StudentsV3Page() {
   const filteredStudents = students.filter(s => {
     const term = searchTerm.toLowerCase().trim();
     
-    // Class Filtering Logic
+    // 1. Check Class Filter
+    let matchesClass = true;
     if (classFilter === 'unassigned') {
-      if (s.classId && s.classId !== '') return false;
+      matchesClass = !s.classId || s.classId.trim() === '';
     } else if (classFilter !== 'all') {
-      if (s.classId !== classFilter) return false;
+      matchesClass = s.classId === classFilter;
     }
 
-    return searchStudent(s, term);
+    // 2. Check Search Term
+    const matchesSearch = searchStudent(s, term);
+
+    return matchesSearch && matchesClass;
   });
 
   const overallLoading = isLoadingSchool || isLoading;
@@ -385,7 +389,13 @@ export default function StudentsV3Page() {
                                         {formatStudentId(s)}
                                     </TableCell>
                                     <TableCell>{s.email}</TableCell>
-                                    <TableCell><Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge></TableCell>
+                                    <TableCell>
+                                        {s.classId ? (
+                                            <Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge>
+                                        ) : (
+                                            <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 font-bold italic">Needs Class</Badge>
+                                        )}
+                                    </TableCell>
                                     <TableCell>
                                         <div className="flex gap-2">
                                             {s.usesCanteen !== false && <Utensils className="h-4 w-4 text-orange-500" title="Canteen Subscriber"/>}
