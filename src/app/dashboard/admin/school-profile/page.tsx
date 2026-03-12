@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -84,7 +85,7 @@ export default function SchoolProfilePage() {
       setLogoUrl(url);
       toast({ 
         title: "Logo Uploaded Successfully", 
-        description: "Click 'Save All Settings' below to apply changes to official documents." 
+        description: "The preview has been updated. Remember to save all changes below." 
       });
     } catch (error: any) {
       console.error("Logo upload error:", error);
@@ -161,13 +162,23 @@ export default function SchoolProfilePage() {
                                 <div className="relative group">
                                     <div className="h-32 w-32 border-4 border-white rounded-2xl overflow-hidden bg-white shadow-xl flex items-center justify-center shrink-0">
                                         {logoUrl ? (
-                                            <img src={logoUrl} alt="Logo Preview" className="h-full w-full object-contain" crossOrigin="anonymous" />
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img 
+                                                key={logoUrl} // Force re-render when URL changes
+                                                src={logoUrl} 
+                                                alt="" // Keep alt empty for decorative if the name is next to it
+                                                className="max-h-full max-w-full object-contain"
+                                                onError={(e) => {
+                                                    // Fallback if image fails to load
+                                                    (e.target as any).src = "https://placehold.co/200x200?text=Error+Loading";
+                                                }}
+                                            />
                                         ) : (
                                             <Building2 className="h-12 w-12 text-slate-200" />
                                         )}
                                     </div>
                                     {logoUrl && (
-                                        <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1 shadow-lg">
+                                        <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1 shadow-lg border-2 border-white">
                                             <CheckCircle2 className="h-4 w-4" />
                                         </div>
                                     )}
