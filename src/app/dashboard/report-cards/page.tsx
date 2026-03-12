@@ -63,7 +63,6 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    // FETCH BRANDING FROM PRIMARY SCHOOL DOC (accessible to staff)
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
@@ -279,8 +278,8 @@ export default function ReportCardsPage() {
             });
 
             toast({ 
-                title: "Report Published! 🚀", 
-                description: "Parents and Students can now view this report on their dashboard." 
+                title: "Report Published!", 
+                description: "This report is now available in the Student/Parent portal." 
             });
 
         } catch (error: any) {
@@ -301,7 +300,6 @@ export default function ReportCardsPage() {
         <div className="p-6 space-y-6">
             <h1 className="text-3xl font-bold">Terminal Report Cards</h1>
 
-            {/* CONTROLS */}
             <Card className="border-t-4 border-t-indigo-600 print:hidden">
                 <CardHeader><CardTitle>Report Generator</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
@@ -379,18 +377,17 @@ export default function ReportCardsPage() {
                 </CardFooter>
             </Card>
 
-            {/* PRE-PRINT COMMENT ENTRY */}
             {processedReport && (
                 <Card className="print:hidden border-t-4 border-t-orange-400 animate-in slide-in-from-top-4">
                     <CardHeader>
-                        <CardTitle>Final Remarks (Add before printing)</CardTitle>
-                        <CardDescription>These remarks will appear at the bottom of the printed report card.</CardDescription>
+                        <CardTitle>Final Remarks</CardTitle>
+                        <CardDescription>Enter comments to be included in the final document.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label>Class Teacher's Remark</Label>
                             <Textarea 
-                                placeholder="e.g. John has shown great improvement this term..." 
+                                placeholder="Enter teacher's comment..." 
                                 value={classTeacherComment}
                                 onChange={(e) => setClassTeacherComment(e.target.value)}
                             />
@@ -398,7 +395,7 @@ export default function ReportCardsPage() {
                         <div className="space-y-2">
                             <Label>Headmaster's Remark</Label>
                             <Textarea 
-                                placeholder="e.g. Promoted to the next class." 
+                                placeholder="Enter headmaster's comment..." 
                                 value={headmasterComment}
                                 onChange={(e) => setHeadmasterComment(e.target.value)}
                             />
@@ -406,10 +403,10 @@ export default function ReportCardsPage() {
                     </CardContent>
                     <CardFooter className="flex justify-end gap-2 bg-slate-50 pt-4">
                         <Button variant="outline" onClick={() => { if (printRef.current) { printRef.current.style.display = 'block'; window.print(); printRef.current.style.display = 'none'; } }}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                        <Button onClick={handleDownloadPDF} variant="secondary" className="bg-slate-200 hover:bg-slate-300 text-slate-800">
+                        <Button onClick={handleDownloadPDF} variant="secondary" className="bg-slate-200">
                             <Download className="mr-2 h-4 w-4"/> Download PDF
                         </Button>
-                        <Button onClick={handlePublishReport} disabled={isGenerating} className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20">
+                        <Button onClick={handlePublishReport} disabled={isGenerating} className="bg-blue-600 hover:bg-blue-700 shadow-lg">
                             {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
                             Publish to Portal
                         </Button>
@@ -417,14 +414,12 @@ export default function ReportCardsPage() {
                 </Card>
             )}
 
-            {/* HIDDEN PRINT TEMPLATE (A4 Size) */}
             {processedReport && (
-                <div className="overflow-x-auto bg-slate-200 p-8 flex justify-center print:hidden">
-                    <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }} id="pdf-content">
+                <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
+                    <div ref={printRef} className="bg-white p-12" style={{ width: '210mm', minHeight: '297mm', color: 'black' }}>
                         
                         {/* HEADER */}
                         <div className="flex items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6">
-                            {/* LOGO */}
                             <div className="w-32 h-32 flex-shrink-0 flex items-center justify-center">
                                 {schoolProfile?.logoUrl ? (
                                     <img 
@@ -438,7 +433,6 @@ export default function ReportCardsPage() {
                                 )}
                             </div>
 
-                            {/* SCHOOL DETAILS */}
                             <div className="flex-1 text-center px-4">
                                 <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
                                 {schoolProfile?.motto && <p className="text-sm italic text-slate-600 mt-1">"{schoolProfile.motto}"</p>}
@@ -446,25 +440,22 @@ export default function ReportCardsPage() {
                                 <p className="text-sm font-bold">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
                             </div>
 
-                            {/* EMPTY SPACE FOR BALANCE */}
                             <div className="w-32 flex-shrink-0"></div>
                         </div>
 
-                        <h2 className="text-2xl font-bold text-center mt-6 bg-slate-100 py-2 border border-slate-300 uppercase">Terminal Report</h2>
+                        <h2 className="text-2xl font-bold text-center mt-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-tight">Terminal Report</h2>
 
-                        {/* STUDENT INFO GRID */}
                         <div className="flex justify-between items-start gap-8 mb-8 border-2 p-4 font-medium relative mt-6">
                             <div className="flex-1 grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
                                 <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
                                 <div><strong>Term:</strong> {term}</div>
                                 <div><strong>Class:</strong> {classes?.find((c:any) => c.id === classId)?.name}</div>
                                 <div><strong>Academic Year:</strong> {academicYear}</div>
-                                <div><strong>Position in Class:</strong> {processedReport.classPosition} out of {processedReport.totalStudents}</div>
-                                <div><strong>Overall Average:</strong> {processedReport.overallAverage}%</div>
-                                <div><strong>Attendance:</strong> {processedReport.studentPresentDays} out of {processedReport.totalClassDays} days</div>
+                                <div><strong>Position:</strong> {processedReport.classPosition} of {processedReport.totalStudents}</div>
+                                <div><strong>Average:</strong> {processedReport.overallAverage}%</div>
+                                <div><strong>Attendance:</strong> {processedReport.studentPresentDays} of {processedReport.totalClassDays} days</div>
                             </div>
                             
-                            {/* STUDENT PHOTO */}
                             <div className="w-[100px] h-[100px] border-2 border-slate-200 rounded-lg overflow-hidden shrink-0 bg-slate-50 flex items-center justify-center">
                                 {processedReport.student.photoURL ? (
                                     <img src={processedReport.student.photoURL} alt="" style={{ width: '100px', height: '100px', objectFit: 'cover' }} crossOrigin="anonymous" />
@@ -474,7 +465,6 @@ export default function ReportCardsPage() {
                             </div>
                         </div>
 
-                        {/* GRADES TABLE */}
                         <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
                             <thead className="bg-slate-100">
                                 <tr>
@@ -482,11 +472,9 @@ export default function ReportCardsPage() {
                                     <th className="border border-slate-800 p-2 text-center w-12">CA ({CA_WEIGHT})</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Exam ({EXAM_WEIGHT})</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Total</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
                                     <th className="border border-slate-800 p-2 text-center w-24">Remark</th>
-                                    <th className="border border-slate-800 p-2 text-left">Teacher's Comment</th>
+                                    <th className="border border-slate-800 p-2 text-left">Comment</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -496,9 +484,7 @@ export default function ReportCardsPage() {
                                         <td className="border border-slate-800 p-2 text-center">{row.ca}</td>
                                         <td className="border border-slate-800 p-2 text-center">{row.exam}</td>
                                         <td className="border border-slate-800 p-2 text-center font-bold bg-slate-50">{row.total}</td>
-                                        <td className="border border-slate-800 p-2 text-center text-slate-500">{row.classAverage}</td>
                                         <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
-                                        <td className="border border-slate-800 p-2 text-center">{row.position}</td>
                                         <td className="border border-slate-800 p-2 text-center font-semibold text-xs">{row.autoRemark}</td>
                                         <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || "-"}</td>
                                     </tr>
@@ -506,14 +492,7 @@ export default function ReportCardsPage() {
                             </tbody>
                         </table>
 
-                        {/* GRADING KEY */}
-                        <div className="mb-8 border p-2 text-xs bg-slate-50 flex justify-between">
-                            <strong>Grading System:</strong>
-                            <span>80-100: A</span><span>70-79: B</span><span>60-69: C</span><span>50-59: D</span><span>40-49: E</span><span>0-39: F</span>
-                        </div>
-
-                        {/* FINAL COMMENTS (From Pre-Print inputs) */}
-                        <div className="space-y-4 mb-16">
+                        <div className="space-y-4 mb-16 pt-10">
                             <div className="border-b-2 border-dotted pb-2">
                                 <p className="text-sm font-bold">Class Teacher's Remark:</p>
                                 <p className="text-sm italic mt-1">{classTeacherComment || "_________________________________________________________"}</p>
@@ -524,7 +503,6 @@ export default function ReportCardsPage() {
                             </div>
                         </div>
 
-                        {/* SIGNATURES */}
                         <div className="grid grid-cols-2 gap-8 pt-8">
                             <div className="text-center">
                                 <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>

@@ -14,7 +14,6 @@ import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { format } from 'date-fns';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function MyReportsPage() {
     const { user } = useUser();
@@ -117,7 +116,7 @@ export default function MyReportsPage() {
                             {schoolProfile?.logoUrl && (
                                 <img 
                                     src={schoolProfile.logoUrl} 
-                                    alt="" 
+                                    alt="School Logo" 
                                     className="w-20 h-20 object-contain" 
                                 />
                             )}
@@ -169,6 +168,7 @@ export default function MyReportsPage() {
                     </CardFooter>
                 </Card>
 
+                {/* HIDDEN PRINT TEMPLATE */}
                 <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
                     <div ref={printRef} className="bg-white p-12" style={{ width: '210mm', minHeight: '297mm', color: 'black' }}>
                         <div className="flex items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6">

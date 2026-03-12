@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Building2, Save, Loader2, Globe, Phone, Mail, GraduationCap, AlertCircle, Upload, CheckCircle2 } from 'lucide-react';
+import { Building2, Save, Loader2, Phone, Mail, Globe, Upload, CheckCircle2, AlertCircle, GraduationCap } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +21,7 @@ export default function SchoolProfilePage() {
   const { role } = useRole();
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
   const { toast } = useToast();
+  
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
 
@@ -76,14 +77,14 @@ export default function SchoolProfilePage() {
     setIsUploadingLogo(true);
     try {
       const storage = getStorage();
-      const logoRef = ref(storage, `schools/${schoolId}/branding/logo`);
+      const logoRef = ref(storage, `schools/${schoolId}/assets/logo`);
       const snapshot = await uploadBytes(logoRef, file);
       const url = await getDownloadURL(snapshot.ref);
       
       setLogoUrl(url);
       toast({ 
-        title: "Logo Uploaded Successfully", 
-        description: "The preview has been updated. Remember to save all changes below." 
+        title: "Logo Uploaded", 
+        description: "Preview updated. Remember to save changes below." 
       });
     } catch (error: any) {
       console.error("Logo upload error:", error);
@@ -123,10 +124,10 @@ export default function SchoolProfilePage() {
             caWeight, examWeight,
         }, { merge: true });
 
-        // 2. Save a public copy to schoolSettings (Everyone including Parents can read this)
+        // 2. Save a public copy to schoolSettings (Mirror for Parents/Students)
         await setDoc(doc(firestore, 'schoolSettings', schoolId), brandingData, { merge: true });
         
-        toast({ title: "Settings Saved", description: "School profile and academic settings updated." });
+        toast({ title: "Settings Saved", description: "School profile updated successfully." });
     } catch (error: any) {
         console.error(error);
         toast({ variant: 'destructive', title: "Error", description: "Could not save profile." });
@@ -143,8 +144,6 @@ export default function SchoolProfilePage() {
 
   if (isLoading || isSchoolLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600 h-8 w-8"/></div>;
 
-  if (!schoolId) return <div className="p-8 text-center text-orange-500">No School Linked to this account.</div>;
-
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
         <Card className="border-t-4 border-t-blue-600 shadow-md">
@@ -153,7 +152,7 @@ export default function SchoolProfilePage() {
                     <Building2 className="text-blue-600"/> School Profile Settings
                 </CardTitle>
                 <CardDescription>
-                    These details will appear on Report Cards, Receipts, and Official Documents.
+                    Configure official school information for reports and receipts.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -169,11 +168,8 @@ export default function SchoolProfilePage() {
                                             <img 
                                                 key={logoUrl} 
                                                 src={logoUrl} 
-                                                alt="" 
+                                                alt="Preview" 
                                                 className="max-h-full max-w-full object-contain"
-                                                onError={(e) => {
-                                                    (e.target as any).src = "https://placehold.co/200x200?text=Error+Loading";
-                                                }}
                                             />
                                         ) : (
                                             <Building2 className="h-12 w-12 text-slate-200" />
@@ -187,8 +183,8 @@ export default function SchoolProfilePage() {
                                 </div>
                                 <div className="flex-1 space-y-3 text-center sm:text-left">
                                     <div>
-                                        <h4 className="font-bold text-slate-800">Upload Branding</h4>
-                                        <p className="text-xs text-slate-500">Logo will be used on all automated receipts and reports.</p>
+                                        <h4 className="font-bold text-slate-800">Branding Upload</h4>
+                                        <p className="text-xs text-slate-500">Logo used on all automated receipts and reports.</p>
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <input 
@@ -209,10 +205,10 @@ export default function SchoolProfilePage() {
                                             {isUploadingLogo ? (
                                                 <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Processing...</>
                                             ) : (
-                                                <><Upload className="mr-2 h-4 w-4"/> Select New Logo</>
+                                                <><Upload className="mr-2 h-4 w-4"/> Select Logo File</>
                                             )}
                                         </Button>
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Recommended: Square PNG, max 2MB</p>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Square PNG or JPG recommended, max 2MB</p>
                                     </div>
                                 </div>
                             </div>
@@ -232,21 +228,21 @@ export default function SchoolProfilePage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Physical Address / Location</Label>
+                            <Label>Physical Address</Label>
                             <Textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="e.g. 123 Education Street, Accra, Ghana" rows={3} />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="space-y-2">
-                                <Label className="flex items-center gap-2"><Phone className="h-3 w-3"/> Contact Phone</Label>
+                                <Label className="flex items-center gap-2"><Phone className="h-3 w-3"/> Phone</Label>
                                 <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+233..." />
                             </div>
                             <div className="space-y-2">
-                                <Label className="flex items-center gap-2"><Mail className="h-3 w-3"/> Official Email</Label>
+                                <Label className="flex items-center gap-2"><Mail className="h-3 w-3"/> Email</Label>
                                 <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@school.com" />
                             </div>
                             <div className="space-y-2">
-                                <Label className="flex items-center gap-2"><Globe className="h-3 w-3"/> Website URL</Label>
+                                <Label className="flex items-center gap-2"><Globe className="h-3 w-3"/> Website</Label>
                                 <Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" />
                             </div>
                         </div>
@@ -257,19 +253,19 @@ export default function SchoolProfilePage() {
                     <div className="space-y-6">
                         <div className="flex items-center gap-2">
                             <GraduationCap className="h-5 w-5 text-indigo-600"/>
-                            <h3 className="text-lg font-bold text-slate-800">Academic & Grading Settings</h3>
+                            <h3 className="text-lg font-bold text-slate-800">Academic Weighting</h3>
                         </div>
                         
                         <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
                             <div className="flex items-center gap-2 mb-4">
                                 <AlertCircle className="h-4 w-4 text-amber-600"/>
-                                <p className="text-sm font-medium text-slate-600">Define the weighting ratio for Terminal Reports (e.g., 30% CA / 70% Exam).</p>
+                                <p className="text-sm font-medium text-slate-600">Define the terminal report ratio (e.g., 30% CA / 70% Exam).</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
-                                        <Label className="font-bold">Continuous Assessment (CA) %</Label>
+                                        <Label className="font-bold">CA Weight (%)</Label>
                                         <span className="text-indigo-600 font-black">{caWeight}%</span>
                                     </div>
                                     <Input 
@@ -287,7 +283,7 @@ export default function SchoolProfilePage() {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
-                                        <Label className="font-bold">End of Term Exam %</Label>
+                                        <Label className="font-bold">Exam Weight (%)</Label>
                                         <span className="text-indigo-600 font-black">{examWeight}%</span>
                                     </div>
                                     <Input 
@@ -304,21 +300,13 @@ export default function SchoolProfilePage() {
                                     />
                                 </div>
                             </div>
-                            
-                            <div className="mt-6 flex items-center justify-center p-3 rounded-xl bg-white border-2 border-indigo-100">
-                                <p className="text-sm font-bold text-slate-700">
-                                    Report Total: <span className={cn(caWeight + examWeight === 100 ? "text-green-600" : "text-red-600")}>
-                                        {caWeight + examWeight}%
-                                    </span>
-                                </p>
-                            </div>
                         </div>
                     </div>
 
                     <div className="pt-4 border-t flex justify-end">
-                        <Button type="submit" disabled={isSaving || isUploadingLogo || (caWeight + examWeight !== 100)} className="bg-blue-600 hover:bg-blue-700 w-[200px] h-12 text-lg font-bold shadow-lg shadow-blue-600/20">
+                        <Button type="submit" disabled={isSaving || isUploadingLogo || (caWeight + examWeight !== 100)} className="bg-blue-600 hover:bg-blue-700 w-[200px] h-12 text-lg font-bold">
                             {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
-                            Save All Settings
+                            Save Profile
                         </Button>
                     </div>
                 </form>
