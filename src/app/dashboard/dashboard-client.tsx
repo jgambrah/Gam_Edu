@@ -177,8 +177,8 @@ export default function DashboardClient() {
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaffUser]);
   const { data: students, isLoading: studentsLoading } = useCollection(studentsQuery);
 
-  // FETCH STAFF (Restrict to Staff)
-  const staffQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId, isStaffUser]);
+  // FETCH STAFF (Restrict to ADMINS ONLY to prevent permission errors for Teachers)
+  const staffQuery = useMemoFirebase(() => (firestore && schoolId && isAdminOrDirector) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId, isAdminOrDirector]);
   const { data: staff, isLoading: staffLoading } = useCollection(staffQuery);
 
   // FETCH CLASSES (Restrict to Staff)

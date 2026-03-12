@@ -40,13 +40,14 @@ function LessonPlanDetails({ plan }: { plan: LessonPlan & { teacherName?: string
 }
 
 export default function LessonPlanningPage() {
-  const { role } = useRole();
+  const { role, profile } = useRole();
   const { user } = useUser();
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+  const isAdminOrDirector = role === 'Administrator' || role === 'Director';
 
   const plansQuery = useMemoFirebase(() => {
     if (!user || !firestore || !schoolId) return null;
@@ -68,20 +69,31 @@ export default function LessonPlanningPage() {
   }, [firestore, user, role, schoolId]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
 
-  const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  // Guard the staff query so only admins execute it.
+  const staffQuery = useMemoFirebase(() => (firestore && schoolId && isAdminOrDirector) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdminOrDirector]);
   const { data: staff, isLoading: isLoadingStaff } = useCollection<StaffData>(staffQuery);
   
-  const isLoading = isLoadingPlans || isLoadingClasses || isLoadingStaff || isLoadingSchool;
+  const isLoading = isLoadingPlans || isLoadingClasses || (isAdminOrDirector && isLoadingStaff) || isLoadingSchool;
 
   const enrichedLessonPlans = useMemo(() => {
-    if (!lessonPlans || !classes || !staff) return [];
+    if (!lessonPlans || !classes) return [];
+    
     return lessonPlans.map(plan => {
       const className = classes.find(c => c.id === plan.classId)?.name || 'Unknown Class';
-      const teacher = staff.find(s => s.uid === plan.teacherId);
-      const teacherName = teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unknown Teacher';
+      
+      let teacherName = 'Unknown Teacher';
+      if (role === 'Teacher' && plan.teacherId === user?.uid) {
+          // If viewing own plans as a teacher, use own profile info.
+          teacherName = profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}` : 'Me';
+      } else if (staff) {
+          // If viewing as admin, resolve from staff collection.
+          const teacher = staff.find(s => s.uid === plan.teacherId);
+          teacherName = teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unknown Teacher';
+      }
+      
       return { ...plan, className, teacherName };
     });
-  }, [lessonPlans, classes, staff]);
+  }, [lessonPlans, classes, staff, role, profile, user?.uid]);
 
   if (!canAccess) {
     return (

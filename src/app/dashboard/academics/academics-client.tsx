@@ -460,6 +460,8 @@ export default function AcademicsPageContent() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
 
+  const canManageClasses = role === 'Director' || role === 'Administrator';
+
   // Use the new hook to get schoolId
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
@@ -474,7 +476,7 @@ export default function AcademicsPageContent() {
 
   const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
   
-  const teachersQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const teachersQuery = useMemoFirebase(() => (firestore && schoolId && canManageClasses) ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canManageClasses]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Teacher>(teachersQuery);
   
   const studentsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -488,8 +490,6 @@ export default function AcademicsPageContent() {
   
   const isLoading = isLoadingSchool || isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
 
-  const canManageClasses = role === 'Director' || role === 'Administrator';
-  
   const classStats = useMemo(() => {
     if (!classes || !students || !teachers) return {};
     return classes.reduce((acc, c) => {
