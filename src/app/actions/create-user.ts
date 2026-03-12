@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
@@ -93,7 +92,8 @@ export async function createNewUser(
         lastName: details?.lastName,
         role: role || 'Parent',
         createdAt: new Date(),
-        isActive: true
+        isActive: true,
+        requirePasswordChange: true // NEW: Force password change on first login
     };
 
     if (schoolId) profileData.schoolId = schoolId;
@@ -104,7 +104,8 @@ export async function createNewUser(
     await firestore.collection('users').doc(userRecord.uid).set({
         role: role || 'Parent',
         schoolId: schoolId,
-        email
+        email,
+        requirePasswordChange: true // NEW: Also store in mapping for fast lookup
     }, { merge: true });
     
     // 5. Send Credentials Email (Integrated Step)

@@ -10,9 +10,12 @@ import SchoolSetupWizard from '@/components/onboarding/SchoolSetupWizard';
 import TrialBanner from '@/components/TrialBanner';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { doc, getDoc } from 'firebase/firestore';
+import { useRole } from '@/context/role-context';
+import ForcePasswordChange from '@/components/auth/ForcePasswordChange';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
+  const { profile, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
   const router = useRouter();
@@ -59,7 +62,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || isSchoolLoading) {
+  if (isUserLoading || isSchoolLoading || isRoleLoading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
         <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
@@ -71,6 +74,9 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     return null;
   }
 
+  // Mandatory Password Change Check
+  const needsPasswordChange = profile?.requirePasswordChange === true;
+
   return (
     <div className="flex h-screen overflow-hidden">
       <AppSidebar />
@@ -79,6 +85,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <Header />
         <main className="relative flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           {children}
+          
+          {/* Overlay for expired trial */}
           {isLocked && !pathname.includes('/dashboard/subscription') && (
             <div key="access-locked-overlay" className="absolute inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-sm">
               <div className="p-8 text-center max-w-md">
@@ -91,6 +99,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 <p className="mt-2 text-xs text-muted-foreground">Redirecting to payment...</p>
               </div>
             </div>
+          )}
+
+          {/* Mandatory Password Change Overlay */}
+          {needsPasswordChange && (
+            <ForcePasswordChange user={user} profile={profile} />
           )}
         </main>
       </div>
