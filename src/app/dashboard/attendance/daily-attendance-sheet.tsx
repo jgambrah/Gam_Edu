@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarIcon, Loader2, Utensils, Bus, Check } from 'lucide-react'; 
+import { CalendarIcon, Loader2, Utensils, Bus, Check, Search } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -55,6 +55,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const [isLoading, setIsLoading] = useState(false);
     const [students, setStudents] = useState<Student[]>([]);
     const [studentsLoaded, setStudentsLoaded] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     
     const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -230,6 +231,18 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     </div>
                 </div>
 
+                {studentsLoaded && (
+                    <div className="relative max-w-sm mb-4">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                            placeholder="Search student name..." 
+                            className="pl-8" 
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                )}
+
                 {isLoading && !studentsLoaded && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>}
 
                 {studentsLoaded && (
@@ -242,6 +255,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                         const currentStatus = form.watch(`records.${index}.status`);
                                         const willBillCanteen = (currentStatus === 'Present' || currentStatus === 'Late') && student?.usesCanteen !== false;
                                         const willBillBus = (currentStatus === 'Present' || currentStatus === 'Late') && student?.usesBusService;
+
+                                        const isVisible = !searchTerm || field.studentName.toLowerCase().includes(searchTerm.toLowerCase());
+
+                                        if (!isVisible) return null;
 
                                         return (
                                         <Card key={field.id} className={`p-4 transition-colors ${currentStatus === 'Absent' ? 'bg-red-50' : 'bg-white'}`}>
