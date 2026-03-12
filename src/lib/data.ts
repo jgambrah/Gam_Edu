@@ -76,6 +76,12 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Parent'],
   },
   {
+    path: '/dashboard/my-grades',
+    title: 'Live Grades',
+    icon: TrendingUp,
+    roles: ['Student', 'Parent'],
+  },
+  {
     path: '/dashboard/my-reports',
     title: 'My Report Cards',
     icon: FileText,
