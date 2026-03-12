@@ -230,7 +230,12 @@ export default function ReportCardsPage() {
         if (!element) return;
         try {
             element.style.display = 'block';
-            const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+            const canvas = await html2canvas(element, { 
+                scale: 2, 
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
             const imgData = canvas.toDataURL('image/png', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();

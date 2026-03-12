@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -65,7 +64,6 @@ export default function SchoolProfilePage() {
     const file = e.target.files?.[0];
     if (!file || !schoolId) return;
 
-    // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       toast({
         variant: 'destructive',
@@ -103,7 +101,6 @@ export default function SchoolProfilePage() {
     e.preventDefault();
     if (!firestore || !schoolId) return;
 
-    // Validation: Weights must sum to 100
     if (caWeight + examWeight !== 100) {
         toast({ 
             variant: 'destructive', 
@@ -163,14 +160,12 @@ export default function SchoolProfilePage() {
                 <form onSubmit={handleSave} className="space-y-8">
                     
                     <div className="space-y-6">
-                        {/* LOGO UPLOAD SECTION */}
                         <div className="space-y-3">
                             <Label className="text-sm font-bold text-slate-700">Official School Logo</Label>
                             <div className="flex flex-col sm:flex-row items-center gap-6 p-6 border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 transition-colors hover:bg-slate-50">
                                 <div className="relative group">
                                     <div className="h-32 w-32 border-4 border-white rounded-2xl overflow-hidden bg-white shadow-xl flex items-center justify-center shrink-0">
                                         {logoUrl ? (
-                                            // eslint-disable-next-line @next/next/no-img-element
                                             <img 
                                                 key={logoUrl} 
                                                 src={logoUrl} 
@@ -259,7 +254,6 @@ export default function SchoolProfilePage() {
 
                     <Separator />
 
-                    {/* ACADEMIC SETTINGS */}
                     <div className="space-y-6">
                         <div className="flex items-center gap-2">
                             <GraduationCap className="h-5 w-5 text-indigo-600"/>

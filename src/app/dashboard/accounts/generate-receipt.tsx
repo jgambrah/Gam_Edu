@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -29,13 +28,13 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
 
     // FETCH BRANDING FROM PUBLIC PATH
     const schoolProfileRef = useMemoFirebase(
-        () => (firestore && schoolId ? doc(firestore, 'schoolSettings', schoolId) : null),
+        () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
         [firestore, schoolId]
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
 
     const studentRef = useMemoFirebase(
-        () => (firestore && transaction.studentId ? doc(firestore, 'students', transaction.studentId) : null),
+        () => (firestore && transaction.studentId) ? doc(firestore, 'students', transaction.studentId) : null,
         [firestore, transaction.studentId]
     );
     const { data: student, isLoading: isLoadingStudent } = useDoc<Student>(studentRef);
@@ -48,7 +47,12 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
 
         try {
             const element = printRef.current;
-            const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+            const canvas = await html2canvas(element, { 
+                scale: 2, 
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
             const imgData = canvas.toDataURL('image/png');
             
             const pdf = new jsPDF('p', 'mm', 'a5'); // A5 is smaller, better for receipts

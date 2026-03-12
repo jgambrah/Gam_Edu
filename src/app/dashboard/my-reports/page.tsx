@@ -27,14 +27,12 @@ export default function MyReportsPage() {
     const [isExporting, setIsExporting] = useState(false);
     const printRef = useRef<HTMLDivElement>(null);
 
-    // 1. Determine which Student IDs to fetch for
     const targetStudentIds = useMemo(() => {
         if (role === 'Student' && user) return [user.uid];
         if (role === 'Parent' && profile?.studentIds) return profile.studentIds;
         return [];
     }, [role, user, profile]);
 
-    // 2. Fetch Reports
     const reportsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || targetStudentIds.length === 0) return null;
         return query(
@@ -48,7 +46,6 @@ export default function MyReportsPage() {
 
     const { data: reports, isLoading: reportsLoading } = useCollection<any>(reportsQuery);
 
-    // 3. FETCH BRANDING FROM PUBLIC PATH (accessible to parents/students)
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
@@ -59,7 +56,12 @@ export default function MyReportsPage() {
         try {
             element.style.display = 'block';
             
-            const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+            const canvas = await html2canvas(element, { 
+                scale: 2, 
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
             const imgData = canvas.toDataURL('image/png', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -98,7 +100,6 @@ export default function MyReportsPage() {
                     </div>
                 </div>
 
-                {/* VISIBLE PREVIEW */}
                 <Card className="border-none shadow-xl overflow-hidden bg-white">
                     <CardHeader className="bg-slate-50 border-b p-8">
                         <div className="flex justify-between items-start">
@@ -168,12 +169,9 @@ export default function MyReportsPage() {
                     </CardFooter>
                 </Card>
 
-                {/* HIDDEN PRINT-OPTIMIZED VERSION */}
                 <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
                     <div ref={printRef} className="bg-white p-12" style={{ width: '210mm', minHeight: '297mm', color: 'black' }}>
-                        {/* HEADER */}
                         <div className="flex items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6">
-                            {/* LOGO */}
                             <div className="w-32 h-32 flex-shrink-0 flex items-center justify-center">
                                 {schoolProfile?.logoUrl ? (
                                     <img 
@@ -187,7 +185,6 @@ export default function MyReportsPage() {
                                 )}
                             </div>
 
-                            {/* SCHOOL DETAILS */}
                             <div className="flex-1 text-center px-4">
                                 <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
                                 {schoolProfile?.motto && <p className="text-sm italic text-slate-600 mt-1">"{schoolProfile.motto}"</p>}
@@ -195,7 +192,6 @@ export default function MyReportsPage() {
                                 <p className="text-sm font-bold">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
                             </div>
 
-                            {/* EMPTY SPACE FOR BALANCE */}
                             <div className="w-32 flex-shrink-0"></div>
                         </div>
 

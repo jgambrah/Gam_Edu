@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["https://nursery-bloom-825774943692.us-west1.run.app", "http://localhost:3000", "https://*.cloudworkstations.dev"],
+    "origin": ["*"],
     "method": ["GET", "POST", "PUT", "DELETE", "HEAD"],
     "responseHeader": ["Content-Type", "x-goog-resumable", "Authorization"],
     "maxAgeSeconds": 3600
