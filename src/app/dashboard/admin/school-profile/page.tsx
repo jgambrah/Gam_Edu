@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useToast } from '@/hooks/use-toast';
@@ -11,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Building2, Save, Loader2, Globe, Phone, Mail, GraduationCap, AlertCircle } from 'lucide-react';
+import { Building2, Save, Loader2, Globe, Phone, Mail, GraduationCap, AlertCircle, Upload, CheckCircle2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +22,7 @@ export default function SchoolProfilePage() {
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
 
   // Fetch from the specific School Document
   const schoolRef = useMemoFirebase(
@@ -57,6 +59,44 @@ export default function SchoolProfilePage() {
         setExamWeight(profile.examWeight ?? 70);
     }
   }, [profile]);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !schoolId) return;
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        variant: 'destructive',
+        title: "File Too Large",
+        description: "Please select an image smaller than 2MB."
+      });
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    try {
+      const storage = getStorage();
+      const logoRef = ref(storage, `schools/${schoolId}/branding/logo`);
+      const snapshot = await uploadBytes(logoRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      
+      setLogoUrl(url);
+      toast({ 
+        title: "Logo Uploaded Successfully", 
+        description: "Click 'Save All Settings' below to apply changes to official documents." 
+      });
+    } catch (error: any) {
+      console.error("Logo upload error:", error);
+      toast({ 
+        variant: 'destructive', 
+        title: "Upload Failed", 
+        description: "Could not save logo. Please try again." 
+      });
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,6 +154,59 @@ export default function SchoolProfilePage() {
                 <form onSubmit={handleSave} className="space-y-8">
                     
                     <div className="space-y-6">
+                        {/* LOGO UPLOAD SECTION */}
+                        <div className="space-y-3">
+                            <Label className="text-sm font-bold text-slate-700">Official School Logo</Label>
+                            <div className="flex flex-col sm:flex-row items-center gap-6 p-6 border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 transition-colors hover:bg-slate-50">
+                                <div className="relative group">
+                                    <div className="h-32 w-32 border-4 border-white rounded-2xl overflow-hidden bg-white shadow-xl flex items-center justify-center shrink-0">
+                                        {logoUrl ? (
+                                            <img src={logoUrl} alt="Logo Preview" className="h-full w-full object-contain" crossOrigin="anonymous" />
+                                        ) : (
+                                            <Building2 className="h-12 w-12 text-slate-200" />
+                                        )}
+                                    </div>
+                                    {logoUrl && (
+                                        <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1 shadow-lg">
+                                            <CheckCircle2 className="h-4 w-4" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex-1 space-y-3 text-center sm:text-left">
+                                    <div>
+                                        <h4 className="font-bold text-slate-800">Upload Branding</h4>
+                                        <p className="text-xs text-slate-500">Logo will be used on all automated receipts and reports.</p>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <Input 
+                                            id="logo-upload" 
+                                            type="file" 
+                                            accept="image/*" 
+                                            onChange={handleLogoUpload}
+                                            disabled={isUploadingLogo}
+                                            className="hidden"
+                                        />
+                                        <Button 
+                                            type="button" 
+                                            variant="outline" 
+                                            onClick={() => document.getElementById('logo-upload')?.click()}
+                                            disabled={isUploadingLogo}
+                                            className="w-full sm:w-fit bg-white border-2 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold"
+                                        >
+                                            {isUploadingLogo ? (
+                                                <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Processing...</>
+                                            ) : (
+                                                <><Upload className="mr-2 h-4 w-4"/> Select New Logo</>
+                                            )}
+                                        </Button>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Recommended: Square PNG, max 2MB</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Separator />
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label>School Name</Label>
@@ -143,14 +236,6 @@ export default function SchoolProfilePage() {
                                 <Label className="flex items-center gap-2"><Globe className="h-3 w-3"/> Website URL</Label>
                                 <Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" />
                             </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>Logo URL</Label>
-                            <div className="flex gap-2">
-                                <Input value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="https://..." />
-                            </div>
-                            <p className="text-xs text-muted-foreground">Paste a direct link to your logo.</p>
                         </div>
                     </div>
 
@@ -219,7 +304,7 @@ export default function SchoolProfilePage() {
                     </div>
 
                     <div className="pt-4 border-t flex justify-end">
-                        <Button type="submit" disabled={isSaving || (caWeight + examWeight !== 100)} className="bg-blue-600 hover:bg-blue-700 w-[200px] h-12 text-lg font-bold">
+                        <Button type="submit" disabled={isSaving || isUploadingLogo || (caWeight + examWeight !== 100)} className="bg-blue-600 hover:bg-blue-700 w-[200px] h-12 text-lg font-bold shadow-lg shadow-blue-600/20">
                             {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
                             Save All Settings
                         </Button>
