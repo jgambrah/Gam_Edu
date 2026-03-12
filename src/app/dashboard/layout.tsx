@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -24,8 +25,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function checkSubscription() {
-      if (!user || !firestore || !schoolId) return;
+      if (!user || !firestore || !schoolId || !profile) return;
       if (user.email === 'jamesgambrah@gmail.com') return;
+      
+      // SKIP: Don't perform subscription check for parents as they are blocked from reading the school doc
+      if (profile.role === 'Parent') return;
 
       try {
         const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
@@ -51,10 +55,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       }
     }
 
-    if (!isSchoolLoading && !isUserLoading) {
+    if (!isSchoolLoading && !isUserLoading && !isRoleLoading) {
       checkSubscription();
     }
-  }, [user, firestore, schoolId, isSchoolLoading, isUserLoading, pathname, router]);
+  }, [user, firestore, schoolId, isSchoolLoading, isUserLoading, isRoleLoading, profile, pathname, router]);
 
   useEffect(() => {
     if (!isUserLoading && !user) {

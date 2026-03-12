@@ -39,9 +39,12 @@ service cloud.firestore {
 
     match /schools/{schoolId} {
       allow read, write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2"; 
-      allow read: if isSignedIn() && (
+      // Updated: Allow Staff and Students, but explicitly DENY Parents
+      allow read: if isSignedIn() && getUserRole() != 'Parent' && (
         (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && 
-         get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId)
+         get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == schoolId)
       );
       allow update: if isSignedIn() && 
         get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role == 'Director' &&
@@ -107,7 +110,6 @@ service cloud.firestore {
     match /school_calendar/{eventId} { allow read, list: if isSignedIn(); allow write: if isAdmin(); }
     
     match /attendance/{attendanceId} {
-        // Updated to allow students to read their own records
         allow get: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher() || isAdmin() || isDirector());
         allow list: if isAdmin() || isTeacher() || (isSignedIn() && request.query.where.studentId == request.auth.uid);
         allow write: if isTeacher() || isAdmin() || isDirector();
