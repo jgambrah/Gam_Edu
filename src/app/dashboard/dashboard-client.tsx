@@ -4,13 +4,14 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, doc } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, 
   PlusCircle, FilePen, BookOpen, Calendar,
   ClipboardCheck, Bell, FileText,
   CreditCard, DollarSign, Receipt, Package, Award,
-  Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck
+  Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck,
+  TrendingUp, Sparkles, FolderKanban, HeartHandshake, User as UserIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -23,7 +24,7 @@ import { STAFF_ROLES } from '@/lib/types';
 
 // --- Reusable Components ---
 
-function StatCard({ title, value, icon: Icon, link, isLoading, badge, trend }: any) {
+function StatCard({ title, value, icon: Icon, link, isLoading, badge, trend, colorClass = "text-muted-foreground" }: any) {
   return (
     <Link href={link}>
       <Card className="hover:bg-accent hover:shadow-md transition-all">
@@ -31,7 +32,7 @@ function StatCard({ title, value, icon: Icon, link, isLoading, badge, trend }: a
           <CardTitle className="text-sm font-medium">{title}</CardTitle>
           <div className="flex items-center gap-2">
             {badge && <Badge variant="secondary" className="text-xs">{badge}</Badge>}
-            <Icon className="h-4 w-4 text-muted-foreground" />
+            <Icon className={`h-4 w-4 ${colorClass}`} />
           </div>
         </CardHeader>
         <CardContent>
@@ -88,23 +89,180 @@ function ActivityItem({ title, description, time, icon: Icon, iconColor = "text-
   );
 }
 
+// --- STUDENT DASHBOARD COMPONENT ---
+function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: string }) {
+  const firestore = useFirestore();
+  const { user } = useUser();
 
-// --- NEW TEACHER DASHBOARD COMPONENT ---
+  // 1. Fetch Student Data
+  const studentQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [firestore, user, schoolId]);
+  const { data: studentData, isLoading: loadingStudent } = useCollection(studentQuery);
+  const student = studentData?.[0];
+
+  // 2. Fetch Recent Assessments
+  const assessmentsQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'assessments'), where('studentId', '==', user.uid), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, user, schoolId]);
+  const { data: assessments, isLoading: loadingAssessments } = useCollection<any>(assessmentsQuery);
+
+  // 3. Fetch Class Info
+  const classQuery = useMemoFirebase(() => (firestore && student?.classId) ? doc(firestore, 'classes', student.classId) : null, [firestore, student?.classId]);
+  // We use useCollection here just because we have the hook ready, but a useDoc would be cleaner if we wanted to be strict.
+  // However, for consistency, we'll assume the queries are handled.
+
+  const isLoading = loadingStudent || loadingAssessments;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold text-slate-800">Hello, {profile?.firstName || 'Learner'}! 👋</h1>
+        <p className="text-muted-foreground">Ready for a great day of learning?</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="My Class" value={student?.classId || 'Not Assigned'} icon={School} link="/dashboard/timetable" colorClass="text-blue-600" />
+        <StatCard title="Recent Grade" value={assessments?.[0] ? `${assessments[0].score}/${assessments[0].maxScore}` : 'N/A'} icon={TrendingUp} link="/dashboard/my-grades" colorClass="text-emerald-600" />
+        <StatCard title="Assignments" value="View Tasks" icon={ClipboardCheck} link="/dashboard/assignments" colorClass="text-orange-600" />
+        <StatCard title="Materials" value="Browse" icon={FolderKanban} link="/dashboard/academics/learning-materials" colorClass="text-purple-600" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Sparkles className="text-yellow-500 h-5 w-5"/> Recent Performance</CardTitle>
+            <CardDescription>Your most recent scores and teacher remarks.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loadingAssessments ? <Loader2 className="animate-spin mx-auto h-8 w-8"/> : assessments && assessments.length > 0 ? (
+              <div className="space-y-4">
+                {assessments.map((a: any) => (
+                  <div key={a.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div>
+                      <p className="font-bold text-slate-800">{a.subjectName}</p>
+                      <p className="text-xs text-muted-foreground">{a.assessmentType}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-black text-indigo-600">{a.score}/{a.maxScore}</p>
+                      <p className="text-[10px] text-slate-400">{a.createdAt ? formatDistanceToNow(a.createdAt.toDate(), { addSuffix: true }) : ''}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10 text-muted-foreground italic">No grades recorded yet this term.</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-1">
+          <CardHeader><CardTitle>Quick Links</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <QuickActionCard title="My Timetable" icon={Calendar} link="/dashboard/timetable" />
+            <QuickActionCard title="Study Club" icon={BrainCircuit} link="/dashboard/study-club" />
+            <QuickActionCard title="Report Cards" icon={FileText} link="/dashboard/my-reports" />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// --- PARENT DASHBOARD COMPONENT ---
+function ParentDashboard({ profile, schoolId }: { profile: any, schoolId: string }) {
+  const firestore = useFirestore();
+  const studentIds = profile?.studentIds || [];
+
+  // 1. Fetch Children Data
+  const studentsQuery = useMemoFirebase(() => (firestore && studentIds.length > 0 && schoolId) ? query(collection(firestore, 'students'), where('uid', 'in', studentIds), where('schoolId', '==', schoolId)) : null, [firestore, studentIds.join(','), schoolId]);
+  const { data: children, isLoading: loadingChildren } = useCollection<any>(studentsQuery);
+
+  // 2. Fetch Financial Records for all children
+  const financialQuery = useMemoFirebase(() => (firestore && studentIds.length > 0 && schoolId) ? query(collection(firestore, 'financialRecords'), where('studentId', 'in', studentIds), where('schoolId', '==', schoolId)) : null, [firestore, studentIds.join(','), schoolId]);
+  const { data: finances, isLoading: loadingFinances } = useCollection<any>(financialQuery);
+
+  const totalBalance = useMemo(() => {
+    if (!finances) return 0;
+    return finances.reduce((sum, rec) => {
+      const balance = (rec.billedAmount || 0) - (rec.amountPaid || 0) - (rec.waiverAmount || 0);
+      return sum + balance;
+    }, 0);
+  }, [finances]);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold text-slate-800">Welcome, {profile?.firstName || 'Parent'}! 🏡</h1>
+        <p className="text-muted-foreground">Keep track of your children's school activities and fees.</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <StatCard title="My Children" value={studentIds.length} icon={Users} link="/dashboard/my-children" colorClass="text-blue-600" />
+        <StatCard title="Total Outstanding" value={`GH₵${totalBalance.toFixed(2)}`} icon={Landmark} link="/dashboard/my-bills" colorClass={totalBalance > 0 ? "text-red-600" : "text-emerald-600"} badge={totalBalance > 0 ? "Due" : "Paid"} />
+        <StatCard title="Latest News" value="View Announcements" icon={Megaphone} link="/dashboard/announcements" colorClass="text-purple-600" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><GraduationCap className="text-indigo-600 h-5 w-5"/> My Children</CardTitle>
+            <CardDescription>Quick summary of your children's status.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loadingChildren ? <Loader2 className="animate-spin mx-auto h-8 w-8"/> : children && children.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {children.map((child: any) => {
+                  const childBalance = finances?.filter(f => f.studentId === child.uid).reduce((sum, rec) => sum + (rec.billedAmount - (rec.amountPaid || 0) - (rec.waiverAmount || 0)), 0) || 0;
+                  return (
+                    <Card key={child.uid} className="bg-slate-50 border-slate-100">
+                      <CardContent className="pt-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
+                            {child.firstName[0]}
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-800">{child.firstName} {child.lastName}</p>
+                            <p className="text-xs text-muted-foreground">{child.classId || 'Class Pending'}</p>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center text-sm border-t pt-3">
+                          <span className="text-slate-500">Fees Balance:</span>
+                          <span className={`font-bold ${childBalance > 0 ? 'text-red-600' : 'text-emerald-600'}`}>GH₵{childBalance.toFixed(2)}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-10 text-muted-foreground italic">No children linked to your account. Please contact the administrator.</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-1">
+          <CardHeader><CardTitle>Fast Navigation</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <QuickActionCard title="Pay School Fees" icon={CreditCard} link="/dashboard/my-bills" />
+            <QuickActionCard title="View Report Cards" icon={FileText} link="/dashboard/my-reports" />
+            <QuickActionCard title="Attendance Logs" icon={CalendarCheck} link="/dashboard/my-children" />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// --- TEACHER DASHBOARD COMPONENT ---
 function TeacherDashboard() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();
 
-  // 1. Fetch teacher's classes
   const teacherClassesQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null, [firestore, user, schoolId]);
   const { data: teacherClasses, isLoading: loadingClasses } = useCollection(teacherClassesQuery);
 
-  // 2. Fetch students in those classes
   const teacherClassIds = useMemo(() => teacherClasses?.map((c: any) => c.id) || [], [teacherClasses]);
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && teacherClassIds.length > 0) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', 'in', teacherClassIds)) : null, [firestore, teacherClassIds.join(','), schoolId]);
   const { data: students, isLoading: loadingStudents } = useCollection(studentsQuery);
 
-  // 3. Fetch upcoming assignments
   const assignmentsQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId), orderBy('dueDate', 'asc'), limit(5)) : null, [firestore, user, schoolId]);
   const { data: assignments, isLoading: loadingAssignments } = useCollection(assignmentsQuery);
 
@@ -154,7 +312,6 @@ function TeacherDashboard() {
   );
 }
 
-
 // --- MAIN COMPONENT ---
 export default function DashboardClient() {
   const { user, isUserLoading } = useUser();
@@ -162,7 +319,6 @@ export default function DashboardClient() {
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
-  // Role checks
   const isAdminOrDirector = role === 'Administrator' || role === 'Director';
   const isTeacher = role === 'Teacher';
   const isStudent = role === 'Student';
@@ -171,17 +327,12 @@ export default function DashboardClient() {
   const isLibrarian = role === 'Librarian';
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian;
 
-  // --- 1. HOOKS: DATA FETCHING ---
-  
-  // FETCH STUDENTS (Restrict to Staff)
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaffUser]);
   const { data: students, isLoading: studentsLoading } = useCollection(studentsQuery);
 
-  // FETCH STAFF (Restrict to ADMINS ONLY to prevent permission errors for Teachers)
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && isAdminOrDirector) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId, isAdminOrDirector]);
   const { data: staff, isLoading: staffLoading } = useCollection(staffQuery);
 
-  // FETCH CLASSES (Restrict to Staff)
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaffUser]);
   const { data: classes, isLoading: classesLoading } = useCollection(classesQuery);
   
@@ -217,9 +368,6 @@ export default function DashboardClient() {
   }, [firestore, isFinance, isAdminOrDirector, schoolId]);
   const { data: accountsPayable, isLoading: payablesLoading } = useCollection<any>(accountsPayableQuery);
 
-
-  // --- 2. HOOKS: DATA PROCESSING ---
-
   const recentActivity = useMemo(() => {
     const activities: any[] = [];
     if (students) activities.push(...students.map(s => ({ id: `student-${(s as any).id}`, type: 'Student', title: 'New Student', description: `${(s as any).firstName} ${(s as any).lastName}`, time: (s as any).createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
@@ -229,26 +377,6 @@ export default function DashboardClient() {
     return activities.sort((a,b) => (b.time?.seconds || 0) - (a.time?.seconds || 0)).slice(0, 5);
   }, [students, announcements, financialRecords]);
 
-  const stats = useMemo(() => {
-    const pendingLeave = leaveRequests?.filter(l => (l as any).status === 'Pending').length || 0;
-    const todayAssignments = assignments?.filter(a => {
-      const dueDate = (a as any).dueDate?.toDate?.();
-      const today = new Date();
-      return dueDate && dueDate.toDateString() === today.toDateString();
-    }).length || 0;
-    const totalBooks = libraryItems?.reduce((sum, item) => sum + ((item as any).quantity || 0), 0) || 0;
-    const availableBooks = libraryItems?.reduce((sum, item) => (item as any).status === 'Available' ? sum + ((item as any).quantity || 0) : sum, 0) || 0;
-    const overdueBooks = libraryItems?.filter(l => (l as any).status === 'Borrowed' && (l as any).dueDate?.toDate?.() < new Date()).length || 0;
-    
-    return {
-      pendingLeave,
-      todayAssignments,
-      totalBooks,
-      availableBooks,
-      overdueBooks
-    };
-  }, [leaveRequests, assignments, libraryItems]);
-
   const enrollmentData = useMemo(() => {
     if (!classes || !students) return [];
     return classes.map(c => ({
@@ -256,56 +384,6 @@ export default function DashboardClient() {
       students: students.filter(s => (s as any).classId === (c as any).id).length
     })).sort((a, b) => b.students - a.students);
   }, [classes, students]);
-
-  const staffByRole = useMemo(() => {
-    if (!staff) return [];
-    const roles = staff.reduce((acc, s) => {
-      acc[(s as any).role] = (acc[(s as any).role] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    return Object.entries(roles).map(([name, value]) => ({ name, value }));
-  }, [staff]);
-  
-  const financeStats = useMemo(() => {
-    if (!financialRecords || !accountsPayable) return { monthlyRevenue: 0, pendingPayments: 0, monthlyExpenses: 0, outstandingInvoices: 0, chartData: [] };
-    
-    let monthlyRevenue = 0;
-    let monthlyExpenses = 0;
-    const revenueByDay: Record<string, number> = {};
-    const expensesByDay: Record<string, number> = {};
-
-    financialRecords.forEach(rec => {
-        if (rec.createdAt && isThisMonth(rec.createdAt.toDate())) {
-            monthlyRevenue += (rec.amountPaid || 0);
-            const day = format(rec.createdAt.toDate(), 'MMM dd');
-            revenueByDay[day] = (revenueByDay[day] || 0) + (rec.amountPaid || 0);
-        }
-    });
-
-    accountsPayable.forEach(bill => {
-        if (bill.paidAt && isThisMonth(bill.paidAt.toDate())) {
-            monthlyExpenses += bill.amount;
-            const day = format(bill.paidAt.toDate(), 'MMM dd');
-            expensesByDay[day] = (expensesByDay[day] || 0) + bill.amount;
-        }
-    });
-    
-    const pendingPayments = financialRecords.filter(r => r.status === 'Unpaid' || r.status === 'Overdue').length;
-    const outstandingInvoices = accountsPayable.filter(b => b.status === 'Unpaid').length;
-
-    const allDays = new Set([...Object.keys(revenueByDay), ...Object.keys(expensesByDay)]);
-    const chartData = Array.from(allDays).sort().map(day => ({
-        month: day,
-        revenue: revenueByDay[day] || 0,
-        expenses: expensesByDay[day] || 0,
-    }));
-
-    return { monthlyRevenue, pendingPayments, monthlyExpenses, outstandingInvoices, chartData };
-  }, [financialRecords, accountsPayable]);
-  
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
-
-  // --- 3. LOADING & GUARD CLAUSES ---
 
   const isLoading = studentsLoading || staffLoading || classesLoading || leaveLoading || announcementsLoading || assignmentsLoading;
   
@@ -318,22 +396,9 @@ export default function DashboardClient() {
       );
   }
 
-  if (!schoolId && role !== 'Director') { 
-      if (user?.email !== 'jamesgambrah@gmail.com') {
-        return (
-            <div className="p-8 text-center bg-red-50 border border-red-200 rounded-lg">
-                <h2 className="text-xl font-bold text-red-700">Account Configuration Error</h2>
-                <p className="text-red-600">Your account is not linked to a valid school ID.</p>
-            </div>
-        );
-      }
-  }
-
-  // --- 4. RENDER BY ROLE ---
-
-  if (isTeacher) {
-    return <TeacherDashboard />;
-  }
+  if (isTeacher) return <TeacherDashboard />;
+  if (isStudent) return <StudentDashboard profile={profile} schoolId={schoolId!} />;
+  if (isParent) return <ParentDashboard profile={profile} schoolId={schoolId!} />;
 
   if (isAdminOrDirector) {
       return (
@@ -342,7 +407,7 @@ export default function DashboardClient() {
             <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} link="/dashboard/students-v3" isLoading={isLoading} />
             <StatCard title="Total Staff" value={staff?.length || 0} icon={Users} link="/dashboard/staff-management-v2" isLoading={isLoading} />
             <StatCard title="Active Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} />
-            <StatCard title="Pending Leave" value={stats.pendingLeave} icon={ClipboardCheck} link="/dashboard/hr/leave-management" isLoading={isLoading} badge={stats.pendingLeave > 0 ? "Action" : undefined} />
+            <StatCard title="News" value={announcements?.length || 0} icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -372,19 +437,31 @@ export default function DashboardClient() {
             </Card>
           </div>
           
-          <Card>
-              <CardHeader><CardTitle>Recent Activity</CardTitle></CardHeader>
-              <CardContent className="space-y-4">
-                  {recentActivity.map((item) => (
-                      <ActivityItem key={item.id} {...item} time={item.time ? formatDistanceToNow(item.time.toDate(), { addSuffix: true }) : ''} />
-                  ))}
-              </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+                <CardHeader><CardTitle>Recent Activity</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    {recentActivity.map((item) => (
+                        <ActivityItem key={item.id} {...item} time={item.time ? formatDistanceToNow(item.time.toDate(), { addSuffix: true }) : ''} />
+                    ))}
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader><CardTitle>Latest Announcements</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    {announcements?.slice(0, 3).map((a: any) => (
+                        <div key={a.id} className="p-3 bg-slate-50 rounded-lg border">
+                            <p className="font-bold text-sm">{a.title}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-2">{a.content}</p>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+          </div>
         </div>
       );
   }
 
-  // --- DEFAULT RENDER (Students/Parents/etc.) ---
   return (
     <div className="space-y-6">
         <h1 className="text-3xl font-bold">Welcome, {profile?.firstName || 'User'}!</h1>
