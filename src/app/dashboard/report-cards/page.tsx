@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
+import { useAuth, useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -21,7 +21,6 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import StudentParentReportCardView from './student-parent-view';
 
-// --- GES GRADING SYSTEM ---
 function getGradeAndRemark(score: number) {
     if (score >= 80) return { grade: 'A', autoRemark: 'Excellent' };
     if (score >= 70) return { grade: 'B', autoRemark: 'Very Good' };
@@ -42,11 +41,9 @@ export default function ReportCardsPage() {
     const [academicYear, setAcademicYear] = useState('2024-2025');
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
-    // Term Dates State
     const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
     const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
 
-    // Final Comments State
     const [classTeacherComment, setClassTeacherComment] = useState('');
     const [headmasterComment, setHeadmasterComment] = useState('');
 
@@ -73,9 +70,7 @@ export default function ReportCardsPage() {
 
     const generateReport = async () => {
         if (!firestore || !schoolId || !classId || !selectedStudentId || !termStartDate || !termEndDate) {
-            if (!termStartDate || !termEndDate) {
-                toast({ variant: 'destructive', title: "Dates Required", description: "Please select start and end dates for the term." });
-            }
+            toast({ variant: 'destructive', title: "Missing Information", description: "Ensure all filters and term dates are selected." });
             return;
         }
         setIsGenerating(true);
@@ -289,7 +284,6 @@ export default function ReportCardsPage() {
         }
     };
 
-    // --- SWITCH BETWEEN VIEWS ---
     if (role === 'Student' || role === 'Parent') {
         return <StudentParentReportCardView />;
     }
