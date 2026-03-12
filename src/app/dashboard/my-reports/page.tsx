@@ -49,16 +49,15 @@ export default function MyReportsPage() {
 
     const { data: reports, isLoading: reportsLoading } = useCollection<any>(reportsQuery);
 
-    // 3. FETCH BRANDING FROM PUBLIC PATH (accessible to parents)
+    // 3. FETCH BRANDING FROM PUBLIC PATH (fallback to "SCHOOL NAME" if doc missing)
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     const handleDownloadPDF = async () => {
-        if (!printRef.current || !selectedReport) return;
+        const element = printRef.current;
+        if (!element || !selectedReport) return;
         setIsExporting(true);
         try {
-            // Momentarily show the print-optimized version
-            const element = printRef.current;
             element.style.display = 'block';
             
             const canvas = await html2canvas(element, { scale: 2, useCORS: true });
@@ -118,7 +117,7 @@ export default function MyReportsPage() {
                             {schoolProfile?.logoUrl && (
                                 <img 
                                     src={schoolProfile.logoUrl} 
-                                    alt="Logo" 
+                                    alt="" 
                                     className="w-20 h-20 object-contain" 
                                 />
                             )}
@@ -177,7 +176,7 @@ export default function MyReportsPage() {
                             {schoolProfile?.logoUrl && (
                                 <img 
                                     src={schoolProfile.logoUrl} 
-                                    alt="Logo" 
+                                    alt="" 
                                     className="w-24 h-24 mx-auto mb-4 object-contain" 
                                     crossOrigin="anonymous"
                                 />

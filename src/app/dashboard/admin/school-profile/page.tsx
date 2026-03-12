@@ -115,18 +115,19 @@ export default function SchoolProfilePage() {
 
     setIsSaving(true);
     try {
+        const brandingData = {
+            name, motto, address, phone, email, website, logoUrl,
+            updatedAt: serverTimestamp()
+        };
+
         // 1. Save to main schools document (Private staff-only view)
         await setDoc(doc(firestore, 'schools', schoolId), {
-            name, motto, address, phone, email, website, logoUrl,
+            ...brandingData,
             caWeight, examWeight,
-            updatedAt: serverTimestamp()
         }, { merge: true });
 
         // 2. Save a public copy to schoolSettings (Everyone including Parents can read this)
-        await setDoc(doc(firestore, 'schoolSettings', schoolId), {
-            name, motto, address, phone, email, website, logoUrl,
-            updatedAt: serverTimestamp()
-        }, { merge: true });
+        await setDoc(doc(firestore, 'schoolSettings', schoolId), brandingData, { merge: true });
         
         toast({ title: "Settings Saved", description: "School profile and academic settings updated." });
     } catch (error: any) {
