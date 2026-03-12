@@ -1,7 +1,3 @@
-
-
-      
-
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -393,6 +389,7 @@ export type Student = {
     transportStopId?: string;
     usesBusService?: boolean;
     usesCanteen?: boolean;
+    photoURL?: string; // New field
 };
 
 export type Class = {
@@ -1338,9 +1335,3 @@ export interface DictionaryWord {
   category: string;
   imagePrompt: string;
 }
-    
-    
-
-
-      
-    

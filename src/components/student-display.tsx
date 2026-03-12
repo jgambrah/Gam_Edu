@@ -1,11 +1,10 @@
-
 'use client';
 
 import { Badge } from '@/components/ui/badge';
 import { User } from 'lucide-react';
 import { Student } from '@/lib/types';
 import { formatStudentId, formatStudentBadge } from '@/lib/student-utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 interface StudentDisplayProps {
@@ -36,6 +35,7 @@ export function StudentDisplay({
       <div className={`flex items-center gap-3 ${className}`}>
         {showAvatar && (
           <Avatar className="h-10 w-10">
+            {student.photoURL && <AvatarImage src={student.photoURL} alt={student.firstName} className="object-cover" />}
             <AvatarFallback>{student.firstName?.charAt(0)}{student.lastName?.charAt(0)}</AvatarFallback>
           </Avatar>
         )}
@@ -54,10 +54,18 @@ export function StudentDisplay({
   // Compact (for dropdowns, select items)
   if (variant === 'compact') {
     return (
-      <span className={className}>
-        {student.firstName} {student.lastName} 
-        <span className="text-muted-foreground text-xs ml-2 font-mono">
-          ({formatStudentId(student)})
+      <span className={`flex items-center gap-2 ${className}`}>
+        {showAvatar && (
+          <Avatar className="h-6 w-6">
+            {student.photoURL && <AvatarImage src={student.photoURL} alt={student.firstName} className="object-cover" />}
+            <AvatarFallback className="text-[8px]">{student.firstName?.charAt(0)}{student.lastName?.charAt(0)}</AvatarFallback>
+          </Avatar>
+        )}
+        <span>
+          {student.firstName} {student.lastName} 
+          <span className="text-muted-foreground text-xs ml-2 font-mono">
+            ({formatStudentId(student)})
+          </span>
         </span>
       </span>
     );
@@ -75,11 +83,19 @@ export function StudentDisplay({
   
   // List item (for tables, lists)
   return (
-    <div className={`flex flex-col ${className}`}>
-      <span className="font-medium">{student.firstName} {student.lastName}</span>
-      <span className="text-xs text-muted-foreground font-mono">
-        {formatStudentId(student)}
-      </span>
+    <div className={`flex items-center gap-3 ${className}`}>
+      {showAvatar && (
+        <Avatar className="h-8 w-8">
+          {student.photoURL && <AvatarImage src={student.photoURL} alt={student.firstName} className="object-cover" />}
+          <AvatarFallback className="text-[10px]">{student.firstName?.charAt(0)}{student.lastName?.charAt(0)}</AvatarFallback>
+        </Avatar>
+      )}
+      <div className="flex flex-col">
+        <span className="font-medium">{student.firstName} {student.lastName}</span>
+        <span className="text-xs text-muted-foreground font-mono">
+          {formatStudentId(student)}
+        </span>
+      </div>
     </div>
   );
 }

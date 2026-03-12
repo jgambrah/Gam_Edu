@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -16,6 +15,7 @@ import {
   query, 
   where
 } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { createNewUser } from '@/app/actions/create-user';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
 
@@ -29,7 +29,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -57,6 +57,7 @@ export default function StudentsV3Page() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,6 +66,7 @@ export default function StudentsV3Page() {
   // Form State
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
 
   // Reset form state when opening modals
   useEffect(() => {
@@ -72,11 +74,13 @@ export default function StudentsV3Page() {
         setIsSubmitting(false); 
         setSelectedClassId(''); 
         setSelectedGender(''); 
+        setSelectedPhoto(null);
     }
     if (editingStudent) { 
         setIsSubmitting(false); 
         setSelectedClassId(editingStudent.classId || ''); 
         setSelectedGender(editingStudent.gender || ''); 
+        setSelectedPhoto(null);
     }
   }, [isAddOpen, editingStudent]);
 
@@ -124,11 +128,30 @@ export default function StudentsV3Page() {
       loadData();
   }, [loadData]);
   
+  // --- UPLOAD HELPER ---
+  const uploadProfilePhoto = async (studentUid: string, file: File): Promise<string | null> => {
+    if (!adminSchoolId) return null;
+    const storage = getStorage();
+    const photoRef = ref(storage, `schools/${adminSchoolId}/students/${studentUid}/profile_pic`);
+    
+    try {
+        setIsUploadingPhoto(true);
+        const snapshot = await uploadBytes(photoRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        return url;
+    } catch (error) {
+        console.error("Photo upload failed:", error);
+        toast({ variant: 'destructive', title: "Upload Failed", description: "Could not save profile picture." });
+        return null;
+    } finally {
+        setIsUploadingPhoto(false);
+    }
+  };
+
   // --- ADD STUDENT LOGIC (With ID Generation) ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       
-      // SAFETY CHECK: Prevent submission if school ID is missing
       if (!adminSchoolId) {
           toast({ 
               variant: 'destructive', 
@@ -160,13 +183,19 @@ export default function StudentsV3Page() {
             
           if ('error' in result) throw new Error(result.error);
 
-          // B. Generate Sequential Student ID (Transaction)
+          // B. Upload Photo if selected
+          let photoURL = null;
+          if (selectedPhoto) {
+              photoURL = await uploadProfilePhoto(result.uid, selectedPhoto);
+          }
+
+          // C. Generate Sequential Student ID (Transaction)
           const newStudentId = await generateNextStudentId(firestore);
           
-          // C. Save student document with the new ID
+          // D. Save student document with the new ID
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              studentId: newStudentId, // <--- SAVING THE REAL ID
+              studentId: newStudentId, 
               firstName: values.firstName,
               lastName: values.lastName,
               email: values.email,
@@ -176,6 +205,7 @@ export default function StudentsV3Page() {
               address: values.address,
               usesBusService: values.usesBusService === 'on',
               usesCanteen: values.usesCanteen === 'on',
+              photoURL: photoURL,
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp(),
               schoolId: adminSchoolId
@@ -202,6 +232,11 @@ export default function StudentsV3Page() {
     const values = Object.fromEntries(formData.entries());
 
     try {
+        let photoURL = editingStudent.photoURL || null;
+        if (selectedPhoto) {
+            photoURL = await uploadProfilePhoto(editingStudent.uid, selectedPhoto) || photoURL;
+        }
+
         const studentRef = doc(firestore, 'students', editingStudent.id);
         await updateDoc(studentRef, {
             firstName: values.firstName,
@@ -212,6 +247,7 @@ export default function StudentsV3Page() {
             address: values.address,
             usesBusService: values.usesBusService === 'on',
             usesCanteen: values.usesCanteen === 'on',
+            photoURL: photoURL,
         });
 
         toast({ title: "Updated", description: "Student saved." });
@@ -237,21 +273,14 @@ export default function StudentsV3Page() {
   };
 
   const handleSendBill = async (student: Student) => {
-    // In a real app, you would fetch the parent's phone number and the student's balance.
-    // For this demonstration, we'll use placeholder data.
-    
-    // To implement this fully, you would:
-    // 1. Query the 'parents' collection where 'studentIds' array-contains student.uid
-    // 2. Get the 'phone' field from the parent document.
-    const parentPhone = "0240000000"; // Replace with actual logic
+    const parentPhone = "0240000000"; 
     if (!parentPhone) {
         toast({ variant: 'destructive', title: "No Parent Linked", description: "Cannot send SMS. No phone number found for this student's parent." });
         return;
     }
 
-    // 3. Query the 'financialRecords' collection for this student's balance.
-    const amountDue = 500; // Placeholder
-    const schoolName = "GAM Edu"; // Placeholder for school name
+    const amountDue = 500; 
+    const schoolName = "GAM Edu"; 
 
     if (confirm(`Send SMS bill reminder of GHS ${amountDue} to ${student.firstName}'s parent?`)) {
         const msg = `Dear Parent, fees of GHS ${amountDue} for ${student.firstName} are due. Please pay via MoMo to 0550000000. - ${schoolName}`;
@@ -332,7 +361,7 @@ export default function StudentsV3Page() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead>
+                                <TableHead>Student</TableHead>
                                 <TableHead>Student ID</TableHead>
                                 <TableHead>Email</TableHead>
                                 <TableHead>Class</TableHead>
@@ -343,8 +372,8 @@ export default function StudentsV3Page() {
                         <TableBody>
                             {filteredStudents.map((s) => (
                                 <TableRow key={s.id}>
-                                    <TableCell className="font-medium">
-                                        <div>{s.firstName} {s.lastName}</div>
+                                    <TableCell>
+                                        <StudentDisplay student={s} variant="list" showAvatar />
                                     </TableCell>
                                     <TableCell className="font-mono text-xs">
                                         {formatStudentId(s)}
@@ -379,8 +408,26 @@ export default function StudentsV3Page() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Enrol New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader><DialogTitle>Enrol New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
+                 <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                    <div className="relative h-24 w-24 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center overflow-hidden">
+                        {selectedPhoto ? (
+                            <img src={URL.createObjectURL(selectedPhoto)} alt="Preview" className="h-full w-full object-cover" />
+                        ) : (
+                            <Camera className="h-8 w-8 text-slate-300" />
+                        )}
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <Label htmlFor="photo-upload" className="cursor-pointer bg-white border px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 flex items-center gap-2">
+                            <Upload className="h-3 w-3"/> Select Profile Photo
+                        </Label>
+                        <Input id="photo-upload" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
+                        <p className="text-[10px] text-slate-400 mt-2">JPG or PNG, max 2MB.</p>
+                    </div>
+                 </div>
+
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
@@ -401,7 +448,6 @@ export default function StudentsV3Page() {
                             )}
                         </SelectContent>
                     </Select>
-                    {classes.length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please use a Debug/Initialize button if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
@@ -425,8 +471,10 @@ export default function StudentsV3Page() {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
+                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
+                        {isSubmitting || isUploadingPhoto ? (
+                            <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> {isUploadingPhoto ? "Uploading Photo..." : "Saving..."}</>
+                        ) : "Create Account"}
                     </Button>
                 </DialogFooter>
             </form>
@@ -435,9 +483,27 @@ export default function StudentsV3Page() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle><DialogDescription>Modify the student's profile.</DialogDescription></DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle><DialogDescription>Modify the student's profile.</DialogDescription></DialogHeader>
             {editingStudent && (
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
+                    <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                        <div className="relative h-24 w-24 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center overflow-hidden">
+                            {selectedPhoto ? (
+                                <img src={URL.createObjectURL(selectedPhoto)} alt="Preview" className="h-full w-full object-cover" />
+                            ) : editingStudent.photoURL ? (
+                                <img src={editingStudent.photoURL} alt="Current" className="h-full w-full object-cover" />
+                            ) : (
+                                <Camera className="h-8 w-8 text-slate-300" />
+                            )}
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <Label htmlFor="photo-upload-edit" className="cursor-pointer bg-white border px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 flex items-center gap-2">
+                                <Upload className="h-3 w-3"/> Change Profile Photo
+                            </Label>
+                            <Input id="photo-upload-edit" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
+                        </div>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required /></div>
                         <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
@@ -474,8 +540,10 @@ export default function StudentsV3Page() {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                        <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
+                            {isSubmitting || isUploadingPhoto ? (
+                                <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> {isUploadingPhoto ? "Uploading Photo..." : "Saving..."}</>
+                            ) : "Save Changes"}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -485,5 +553,3 @@ export default function StudentsV3Page() {
     </div>
   );
 }
-
-    

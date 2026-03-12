@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, CalendarIcon } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, CalendarIcon, User } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -420,15 +420,26 @@ export default function ReportCardsPage() {
                             <h2 className="text-2xl font-bold mt-6 bg-slate-100 py-2 border border-slate-300">TERMINAL REPORT</h2>
                         </div>
 
-                        {/* STUDENT INFO */}
-                        <div className="grid grid-cols-2 gap-4 mb-8 text-sm border-2 p-4 font-medium">
-                            <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
-                            <div><strong>Term:</strong> {term}</div>
-                            <div><strong>Class:</strong> {classes?.find((c:any) => c.id === classId)?.name}</div>
-                            <div><strong>Academic Year:</strong> {academicYear}</div>
-                            <div><strong>Position in Class:</strong> {processedReport.classPosition} out of {processedReport.totalStudents}</div>
-                            <div><strong>Overall Average:</strong> {processedReport.overallAverage}%</div>
-                            <div><strong>Attendance:</strong> {processedReport.studentPresentDays} out of {processedReport.totalClassDays} days</div>
+                        {/* STUDENT INFO GRID */}
+                        <div className="flex justify-between items-start gap-8 mb-8 border-2 p-4 font-medium relative">
+                            <div className="flex-1 grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                                <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
+                                <div><strong>Term:</strong> {term}</div>
+                                <div><strong>Class:</strong> {classes?.find((c:any) => c.id === classId)?.name}</div>
+                                <div><strong>Academic Year:</strong> {academicYear}</div>
+                                <div><strong>Position in Class:</strong> {processedReport.classPosition} out of {processedReport.totalStudents}</div>
+                                <div><strong>Overall Average:</strong> {processedReport.overallAverage}%</div>
+                                <div><strong>Attendance:</strong> {processedReport.studentPresentDays} out of {processedReport.totalClassDays} days</div>
+                            </div>
+                            
+                            {/* STUDENT PHOTO */}
+                            <div className="w-[100px] h-[100px] border-2 border-slate-200 rounded-lg overflow-hidden shrink-0 bg-slate-50 flex items-center justify-center">
+                                {processedReport.student.photoURL ? (
+                                    <img src={processedReport.student.photoURL} alt="Student" style={{ width: '100px', height: '100px', objectFit: 'cover' }} crossOrigin="anonymous" />
+                                ) : (
+                                    <User className="h-12 w-12 text-slate-200" />
+                                )}
+                            </div>
                         </div>
 
                         {/* GRADES TABLE */}
