@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
@@ -115,7 +116,7 @@ export default function MyReportsPage() {
                                 </div>
                             </div>
                             {schoolProfile?.logoUrl && (
-                                <img src={schoolProfile.logoUrl} alt={schoolProfile?.name || "Logo"} className="w-20 h-20 object-contain" />
+                                <img src={schoolProfile.logoUrl} alt="" className="w-20 h-20 object-contain" />
                             )}
                         </div>
                     </CardHeader>
@@ -170,7 +171,7 @@ export default function MyReportsPage() {
                     <div ref={printRef} className="bg-white p-12" style={{ width: '210mm', minHeight: '297mm', color: 'black' }}>
                         <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
                             {schoolProfile?.logoUrl && (
-                                <img src={schoolProfile.logoUrl} alt={schoolProfile?.name || "Logo"} className="w-24 h-24 mx-auto mb-4 object-contain" crossOrigin="anonymous" />
+                                <img src={schoolProfile.logoUrl} alt="" className="w-24 h-24 mx-auto mb-4 object-contain" crossOrigin="anonymous" />
                             )}
                             <h1 className="text-4xl font-black uppercase">{schoolProfile?.name || "SCHOOL NAME"}</h1>
                             <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>

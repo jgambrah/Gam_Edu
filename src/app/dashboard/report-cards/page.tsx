@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
@@ -419,7 +420,7 @@ export default function ReportCardsPage() {
                         {/* HEADER */}
                         <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
                             {schoolProfile?.logoUrl && (
-                                <img src={schoolProfile.logoUrl} alt={schoolProfile?.name || "Logo"} className="w-24 h-24 mx-auto mb-4 object-contain" crossOrigin="anonymous" />
+                                <img src={schoolProfile.logoUrl} alt="" className="w-24 h-24 mx-auto mb-4 object-contain" crossOrigin="anonymous" />
                             )}
                             <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
                             <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>
@@ -442,7 +443,7 @@ export default function ReportCardsPage() {
                             {/* STUDENT PHOTO */}
                             <div className="w-[100px] h-[100px] border-2 border-slate-200 rounded-lg overflow-hidden shrink-0 bg-slate-50 flex items-center justify-center">
                                 {processedReport.student.photoURL ? (
-                                    <img src={processedReport.student.photoURL} alt="Student" style={{ width: '100px', height: '100px', objectFit: 'cover' }} crossOrigin="anonymous" />
+                                    <img src={processedReport.student.photoURL} alt="" style={{ width: '100px', height: '100px', objectFit: 'cover' }} crossOrigin="anonymous" />
                                 ) : (
                                     <User className="h-12 w-12 text-slate-200" />
                                 )}

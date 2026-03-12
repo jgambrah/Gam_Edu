@@ -157,9 +157,8 @@ export const HTMLReportCard = ({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img 
                         src={schoolProfile.logoUrl} 
-                        alt="Logo" 
+                        alt="" 
                         className="w-24 h-24 mx-auto mb-2 object-contain"
-                        crossOrigin="anonymous" 
                     />
                 ) : (
                     // Fallback Spacer

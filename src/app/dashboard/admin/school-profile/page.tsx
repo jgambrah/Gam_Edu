@@ -166,7 +166,7 @@ export default function SchoolProfilePage() {
                                             <img 
                                                 key={logoUrl} // Force re-render when URL changes
                                                 src={logoUrl} 
-                                                alt="" // Keep alt empty for decorative if the name is next to it
+                                                alt="" 
                                                 className="max-h-full max-w-full object-contain"
                                                 onError={(e) => {
                                                     // Fallback if image fails to load
