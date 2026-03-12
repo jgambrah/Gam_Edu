@@ -296,9 +296,14 @@ export default function StudentsV3Page() {
   
   const filteredStudents = students.filter(s => {
     const term = searchTerm.toLowerCase().trim();
-    if (classFilter !== 'all' && s.classId !== classFilter) {
-      return false;
+    
+    // Class Filtering Logic
+    if (classFilter === 'unassigned') {
+      if (s.classId && s.classId !== '') return false;
+    } else if (classFilter !== 'all') {
+      if (s.classId !== classFilter) return false;
     }
+
     return searchStudent(s, term);
   });
 
@@ -339,6 +344,7 @@ export default function StudentsV3Page() {
                     <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Classes</SelectItem>
+                        <SelectItem value="unassigned" className="text-orange-600 font-bold">Unassigned Students</SelectItem>
                         {classes.map(c => (
                             <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                         ))}
