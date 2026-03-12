@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { Assessment, ReportCardComment, ReportCard, Subject } from '@/lib/types';
 import { collection, query, where, doc } from 'firebase/firestore';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -114,88 +114,101 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
   
     return (
       <Card className="w-full max-w-4xl mx-auto print:shadow-none print:border-none">
-        <CardHeader className="text-center print:text-left">
-            <div className='flex items-center justify-center print:justify-start gap-4'>
-                {schoolProfile?.logoUrl ? (
-                    <img 
-                        src={schoolProfile.logoUrl} 
-                        alt="Logo" 
-                        className="w-16 h-16 object-contain" 
-                        crossOrigin="anonymous"
-                    />
-                ) : (
-                    <AppLogo className="h-12 w-12 text-primary" />
-                )}
-                <div>
-                    <CardTitle className="text-3xl">{schoolProfile?.name || 'School Name Not Set'}</CardTitle>
-                    <p className="text-muted-foreground">Student Report Card - {year}</p>
+        <CardContent className="p-8">
+            {/* PROFESSIONAL LETTERHEAD */}
+            <div className="flex items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6">
+                <div className="w-32 h-32 flex-shrink-0 flex items-center justify-center">
+                    {schoolProfile?.logoUrl ? (
+                        <img 
+                            src={schoolProfile.logoUrl} 
+                            alt="School Logo" 
+                            className="max-w-full max-h-full object-contain"
+                            crossOrigin="anonymous" 
+                        />
+                    ) : (
+                        <div className="w-24 h-24 bg-slate-200 rounded-full flex items-center justify-center text-slate-400 text-xs text-center">No Logo</div>
+                    )}
                 </div>
+
+                <div className="flex-1 text-center px-4">
+                    <h1 className="text-4xl font-black uppercase tracking-widest text-black">{schoolProfile?.name || "SCHOOL NAME"}</h1>
+                    {schoolProfile?.motto && <p className="text-sm italic text-slate-600 mt-1">"{schoolProfile.motto}"</p>}
+                    <p className="text-sm font-bold mt-2 text-black">{schoolProfile?.address || ""}</p>
+                    <p className="text-sm font-bold text-black">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
+                </div>
+
+                <div className="w-32 flex-shrink-0"></div>
             </div>
-            <Separator className="my-4"/>
-            <div className='text-left text-sm'>
-                <p><span className='font-semibold'>Student Name:</span> {student.firstName} {student.lastName}</p>
-                <p><span className='font-semibold'>Class:</span> {student.classId}</p>
-                <p><span className='font-semibold'>Term:</span> {term}</p>
+
+            <h2 className="text-2xl font-bold text-center mt-6 bg-slate-100 py-2 border border-slate-300 uppercase text-black">Terminal Report</h2>
+
+            <div className="grid grid-cols-2 gap-4 my-8 text-sm border-2 p-4 font-medium text-black bg-slate-50/50">
+                <p><span className='font-bold'>Student Name:</span> {student.firstName} {student.lastName}</p>
+                <p><span className='font-bold'>Class:</span> {student.classId}</p>
+                <p><span className='font-bold'>Term:</span> {term}</p>
+                <p><span className='font-bold'>Academic Year:</span> {year}</p>
             </div>
-        </CardHeader>
-        <CardContent>
+
             <Table>
                 <TableHeader>
-                    <TableRow>
-                        <TableHead>Subject</TableHead>
-                        <TableHead className="text-center">Final Score (%)</TableHead>
-                        <TableHead className="text-center">Grade</TableHead>
-                        <TableHead>Teacher's Comment</TableHead>
+                    <TableRow className="bg-slate-100 border-slate-800">
+                        <TableHead className="text-black font-bold">Subject</TableHead>
+                        <TableHead className="text-center text-black font-bold">Final Score (%)</TableHead>
+                        <TableHead className="text-center text-black font-bold">Grade</TableHead>
+                        <TableHead className="text-black font-bold">Teacher's Comment</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {reportCardData.map(data => (
-                        <TableRow key={data.subject}>
-                            <TableCell className="font-medium">{data.subject}</TableCell>
-                            <TableCell className="text-center">{data.percentage > 0 ? data.percentage : 'N/A'}</TableCell>
-                            <TableCell className="text-center font-semibold">{data.finalGrade}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{data.comment}</TableCell>
+                        <TableRow key={data.subject} className="border-slate-200">
+                            <TableCell className="font-bold text-black">{data.subject}</TableCell>
+                            <TableCell className="text-center text-black">{data.percentage > 0 ? data.percentage : 'N/A'}</TableCell>
+                            <TableCell className="text-center font-bold text-black">{data.finalGrade}</TableCell>
+                            <TableCell className="text-sm text-slate-600 italic">{data.comment}</TableCell>
                         </TableRow>
                     ))}
                     {reportCardData.length === 0 && (
                         <TableRow>
-                            <TableCell colSpan={4} className="text-center text-muted-foreground py-4">No subjects or grades found for this term.</TableCell>
+                            <TableCell colSpan={4} className="text-center text-muted-foreground py-4 italic">No subjects or grades found for this term.</TableCell>
                         </TableRow>
                     )}
                 </TableBody>
             </Table>
-            <Separator className="my-6" />
-            <div className="grid grid-cols-2 gap-4">
-                <Card>
-                    <CardHeader><CardTitle>Overall Summary</CardTitle></CardHeader>
-                    <CardContent className="text-center">
-                        <p className="text-5xl font-bold">{overall.finalGrade}</p>
-                        <p className="text-muted-foreground">({overall.percentage}%)</p>
+
+            <Separator className="my-8 bg-slate-800" />
+
+            <div className="grid grid-cols-2 gap-8">
+                <Card className="border-2 border-slate-200 shadow-none">
+                    <CardHeader className="py-3 bg-slate-50 border-b"><CardTitle className="text-sm uppercase font-bold text-slate-600">Overall Performance</CardTitle></CardHeader>
+                    <CardContent className="text-center py-6">
+                        <p className="text-5xl font-black text-black">{overall.finalGrade}</p>
+                        <p className="text-slate-500 font-bold mt-1">({overall.percentage}%)</p>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader><CardTitle>General Comments</CardTitle></CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-muted-foreground">No general comments for this term.</p>
+                <Card className="border-2 border-slate-200 shadow-none">
+                    <CardHeader className="py-3 bg-slate-50 border-b"><CardTitle className="text-sm uppercase font-bold text-slate-600">General Remarks</CardTitle></CardHeader>
+                    <CardContent className="py-6">
+                        <p className="text-sm text-slate-600 italic">"Keep up the hard work and focus on areas requiring improvement."</p>
                     </CardContent>
                 </Card>
+            </div>
+
+            <div className="flex justify-around pt-20">
+                <div className="text-center w-48">
+                    <div className="border-b-2 border-black mb-2"></div>
+                    <p className="text-xs font-bold uppercase text-black">Class Teacher</p>
+                </div>
+                <div className="text-center w-48">
+                    <div className="border-b-2 border-black mb-2"></div>
+                    <p className="text-xs font-bold uppercase text-black">Head of School</p>
+                </div>
             </div>
         </CardContent>
-        <CardFooter className="flex-col items-stretch gap-8 pt-8 print:block">
-            <div className="flex justify-around pt-16">
-                <div className="text-center">
-                    <Separator className="mb-2" />
-                    <p className="text-sm font-semibold">Class Teacher</p>
-                </div>
-                <div className="text-center">
-                    <Separator className="mb-2" />
-                    <p className="text-sm font-semibold">Head of School</p>
-                </div>
-            </div>
-            <div className="flex justify-end print:hidden">
-                <Button onClick={() => window.print()}>Print Report</Button>
-            </div>
+        <CardFooter className="flex justify-end pt-8 print:hidden">
+            <Button onClick={() => window.print()} className="bg-black text-white hover:bg-slate-800">
+                <Printer className="mr-2 h-4 w-4" /> Print Report
+            </Button>
         </CardFooter>
       </Card>
     );
-  }
+}

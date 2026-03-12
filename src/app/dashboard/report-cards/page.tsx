@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, CalendarIcon, User, FileX } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, CalendarIcon, User, FileX, FileCheck } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -35,7 +35,7 @@ function getGradeAndRemark(score: number) {
 export default function ReportCardsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
-    const { schoolId } = useCurrentSchool();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     const { toast } = useToast();
 
     const [classId, setClassId] = useState('');
@@ -51,6 +51,7 @@ export default function ReportCardsPage() {
 
     const [isGenerating, setIsGenerating] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
+    const [isPublishing, setIsPublishing] = useState(false);
     const printRef = useRef<HTMLDivElement>(null);
 
     const canManage = ['Administrator', 'Director', 'Teacher'].includes(role || '');
@@ -76,19 +77,20 @@ export default function ReportCardsPage() {
             return;
         }
         setIsGenerating(true);
-        setProcessedReport(null); // Reset before starting
+        setProcessedReport(null);
 
         try {
+            // 1. Fetch Assessments - Filter by Class locally to avoid index needs
             const assessmentsRef = collection(firestore, 'assessments');
             const q = query(
                 assessmentsRef, 
                 where('schoolId', '==', schoolId),
-                where('classId', '==', classId),
-                where('academicYear', '==', academicYear),
-                where('term', '==', term)
+                where('classId', '==', classId)
             );
             const snap = await getDocs(q);
-            const allAssessments = snap.docs.map(d => d.data());
+            const allAssessments = snap.docs
+                .map(d => d.data())
+                .filter(a => a.academicYear === academicYear && a.term === term);
 
             if (allAssessments.length === 0) {
                 toast({ variant: 'destructive', title: "No Data Found", description: "No grades have been entered for the selected term/class." });
@@ -230,39 +232,15 @@ export default function ReportCardsPage() {
 
         } catch (error: any) {
             console.error("Report Generation Error:", error);
-            toast({ variant: 'destructive', title: "Error", description: "Failed to generate report. Check console." });
+            toast({ variant: 'destructive', title: "Error", description: "Failed to generate report." });
         } finally {
             setIsGenerating(false);
         }
     };
 
-    const handleDownloadPDF = async () => {
-        const element = printRef.current;
-        if (!element) return;
-        try {
-            element.style.display = 'block';
-            const canvas = await html2canvas(element, { 
-                scale: 2, 
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff'
-            });
-            const imgData = canvas.toDataURL('image/png', 1.0);
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`${processedReport?.student?.firstName}_ReportCard_${term}.pdf`);
-            element.style.display = 'none';
-        } catch (error) {
-            toast({ variant: 'destructive', title: "Export Failed" });
-        }
-    };
-
     const handlePublishReport = async () => {
         if (!firestore || !schoolId || !processedReport || !selectedStudentId) return;
-        setIsGenerating(true);
+        setIsPublishing(true);
 
         try {
             const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
@@ -298,7 +276,31 @@ export default function ReportCardsPage() {
             console.error("Publish Error:", error);
             toast({ variant: 'destructive', title: "Error", description: "Failed to publish report." });
         } finally {
-            setIsGenerating(false);
+            setIsPublishing(false);
+        }
+    };
+
+    const handleDownloadPDF = async () => {
+        const element = printRef.current;
+        if (!element) return;
+        try {
+            element.style.display = 'block';
+            const canvas = await html2canvas(element, { 
+                scale: 2, 
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+            const imgData = canvas.toDataURL('image/png', 1.0);
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`${processedReport?.student?.firstName}_ReportCard_${term}.pdf`);
+            element.style.display = 'none';
+        } catch (error) {
+            toast({ variant: 'destructive', title: "Export Failed" });
         }
     };
 
@@ -418,8 +420,8 @@ export default function ReportCardsPage() {
                         <Button onClick={handleDownloadPDF} variant="secondary" className="bg-slate-200">
                             <Download className="mr-2 h-4 w-4"/> Download PDF
                         </Button>
-                        <Button onClick={handlePublishReport} disabled={isGenerating} className="bg-blue-600 hover:bg-blue-700 shadow-lg">
-                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
+                        <Button onClick={handlePublishReport} disabled={isPublishing} className="bg-blue-600 hover:bg-blue-700 shadow-lg">
+                            {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
                             Publish to Portal
                         </Button>
                     </CardFooter>
@@ -533,6 +535,25 @@ export default function ReportCardsPage() {
                     </div>
                 </div>
             )}
+            <style jsx global>{`
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+                    .print\\:hidden {
+                        display: none;
+                    }
+                    #pdf-content, #pdf-content * {
+                        visibility: visible;
+                    }
+                    #pdf-content {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
