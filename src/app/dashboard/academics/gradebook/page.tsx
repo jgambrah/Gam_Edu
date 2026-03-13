@@ -40,7 +40,7 @@ export default function GradebookPage() {
 
     // State for scores and remarks
     const [scores, setScores] = useState<Record<string, number | ''>>({});
-    const [remarks, setRemarks] = useState<Record<string, string>>({}); // NEW
+    const [remarks, setRemarks] = useState<Record<string, string>>({}); // NEW: Teacher remarks
     const [isSaving, setIsSaving] = useState(false);
 
     // Data Fetching
@@ -95,7 +95,7 @@ export default function GradebookPage() {
                         assessmentDate: serverTimestamp(),
                         score: Number(score),
                         maxScore: Number(maxScore),
-                        teacherRemark: remarks[studentId] || "", // NEW
+                        teacherRemark: remarks[studentId] || "", // NEW: Save the remark
                         createdAt: serverTimestamp(),
                         gradedAt: serverTimestamp(),
                     });
