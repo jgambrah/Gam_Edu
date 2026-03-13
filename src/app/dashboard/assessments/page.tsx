@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/role-context';
-import { ClipboardCheck, FilePlus, UserCog, Wand2, Loader2 } from 'lucide-react';
+import { ClipboardCheck, FilePlus, UserCog, Wand2, Loader2, ShieldAlert } from 'lucide-react';
 import { BehavioralRecordForm } from './behavioral-record-form';
 import { AiQuizGenerator } from './ai-quiz-generator';
 import {
@@ -26,6 +26,7 @@ function AssessmentsLog() {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     
+    // Index Required: assessments (schoolId: Asc, assessmentDate: Desc)
     const assessmentsQuery = useMemoFirebase(
         () => (firestore && schoolId) ? query(
             collection(firestore, 'assessments'), 
@@ -116,6 +117,7 @@ function BehavioralLog() {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
 
+    // Index Required: behavioral_records (schoolId: Asc, date: Desc)
     const recordsQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(
             collection(firestore, 'behavioral_records'), 
@@ -201,15 +203,33 @@ function BehavioralLog() {
 }
 
 export default function AssessmentsPage() {
-    const { role } = useRole();
+    const { role, loading: roleLoading } = useRole();
     const [activeForm, setActiveForm] = useState<string | null>(null);
 
     const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
+    if (roleLoading) {
+        return (
+            <div className="flex justify-center p-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     if (!canAccess) {
         return (
-            <div className="text-center py-10">
-                <p className="text-muted-foreground">Access Denied. This module is for staff only.</p>
+            <div className="flex justify-center p-8">
+                <Card className="max-w-md w-full border-red-100 bg-red-50/50">
+                    <CardHeader className="text-center">
+                        <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4">
+                            <ShieldAlert className="h-8 w-8 text-red-600" />
+                        </div>
+                        <CardTitle>Access Restricted</CardTitle>
+                        <CardDescription>
+                            Assessment logs and management tools are restricted to staff members.
+                        </CardDescription>
+                    </CardHeader>
+                </Card>
             </div>
         );
     }
