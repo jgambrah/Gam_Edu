@@ -23,7 +23,27 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 
-// --- GES GRADING SYSTEM WITH AUTO REMARKS ---
+// --- HELPERS ---
+
+// Helper to safely convert external URLs to Base64
+async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
+    try {
+        const res = await fetch(imageUrl, { mode: 'cors' });
+        if (!res.ok) throw new Error("Network response was not ok");
+        const blob = await res.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error("Error converting image to base64:", error);
+        return ""; // Fallback to empty string if it fails
+    }
+}
+
+// GES Grading System
 function getGradeAndRemark(score: number) {
     if (score >= 80) return { grade: 'A', autoRemark: 'Excellent' };
     if (score >= 70) return { grade: 'B', autoRemark: 'Very Good' };
@@ -58,6 +78,7 @@ export default function ReportCardsPage() {
     const [isPublishing, setIsPublishing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
+    const [logoBase64, setLogoBase64] = useState<string>('');
     const printRef = useRef<HTMLDivElement>(null);
 
     const canManage = ['Administrator', 'Director', 'Teacher'].includes(role || '');
@@ -72,7 +93,6 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    // FIX: Fetch school profile using useDoc
     const schoolProfileRef = useMemoFirebase(
         () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
         [firestore, schoolId]
@@ -88,7 +108,6 @@ export default function ReportCardsPage() {
         setIsGenerating(true);
 
         try {
-            // 1. Fetch ALL assessments for this class, term, and year
             const assessmentsRef = collection(firestore, 'assessments');
             const q = query(
                 assessmentsRef, 
@@ -158,10 +177,8 @@ export default function ReportCardsPage() {
                 myGrandTotal += total100;
                 subjectsTaken++;
 
-                // Get the grade and the automatic system remark
                 const { grade, autoRemark } = getGradeAndRemark(total100);
 
-                // Extract the most recent custom teacher remark for this subject from assessments
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
                 
@@ -176,8 +193,8 @@ export default function ReportCardsPage() {
                     exam: Math.round(weightedExam),
                     total: total100,
                     grade: grade,
-                    autoRemark: autoRemark, // System generated (Excellent, Good)
-                    teacherRemark: customTeacherRemark, // Manually typed by teacher
+                    autoRemark: autoRemark,
+                    teacherRemark: customTeacherRemark,
                     classAverage: subjectAverage,
                     position: mySubjectRank
                 });
@@ -253,25 +270,36 @@ export default function ReportCardsPage() {
 
     const handleDownloadPDF = async () => {
         const element = printRef.current;
-        if (!element) return;
+        if (!element || !processedReport) return;
+        
         setIsExporting(true);
         try {
+            // THE ULTIMATE FIX: Convert to Base64 before html2canvas
+            if (schoolProfile?.logoUrl) {
+                const base64 = await getBase64ImageFromUrl(schoolProfile.logoUrl);
+                setLogoBase64(base64);
+                // Give React a tiny moment to update the <img> src in the DOM
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
             element.style.display = 'block';
             const canvas = await html2canvas(element, { 
                 scale: 2, 
-                useCORS: true,           // CRITICAL for Firebase Storage images
-                allowTaint: true,        // Allow images without CORS headers to be drawn
-                logging: false,          // Keep console clean
-                backgroundColor: '#ffffff' // Ensure background is white
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                backgroundColor: '#ffffff'
             });
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`${processedReport?.student?.firstName}_Report_${term}.pdf`);
+            pdf.save(`${processedReport.student?.firstName}_Report_${term}.pdf`);
             element.style.display = 'none';
         } catch (error) {
+            console.error("PDF Export Error:", error);
             toast({ variant: 'destructive', title: "Export Failed" });
         } finally {
             setIsExporting(false);
@@ -362,16 +390,15 @@ export default function ReportCardsPage() {
                         <div className="flex flex-row items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6 w-full">
                             {/* Left Logo Space */}
                             <div className="w-32 h-32 flex-shrink-0 flex items-center justify-start">
-                                {schoolProfile?.logoUrl && (
+                                {(logoBase64 || schoolProfile?.logoUrl) && (
                                     <img 
-                                        src={schoolProfile.logoUrl} 
+                                        src={logoBase64 || schoolProfile?.logoUrl} 
                                         alt="Logo" 
                                         crossOrigin="anonymous" 
                                         loading="eager"
                                         className="max-w-[120px] max-h-[120px] object-contain" 
                                         onError={(e) => {
                                             e.currentTarget.style.display = 'none';
-                                            console.warn("Logo failed to load for PDF generation due to CORS or bad URL.");
                                         }}
                                     />
                                 )}
@@ -385,7 +412,6 @@ export default function ReportCardsPage() {
                                 <p className="text-sm font-bold">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
                             </div>
 
-                            {/* Right Space (to keep text perfectly centered) */}
                             <div className="w-32 flex-shrink-0"></div>
                         </div>
                         <h2 className="text-2xl font-bold text-center mt-2 mb-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
