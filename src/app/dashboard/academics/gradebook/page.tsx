@@ -40,7 +40,7 @@ export default function GradebookPage() {
 
     // State for scores and remarks
     const [scores, setScores] = useState<Record<string, number | ''>>({});
-    const [remarks, setRemarks] = useState<Record<string, string>>({}); 
+    const [remarks, setRemarks] = useState<Record<string, string>>({}); // NEW
     const [isSaving, setIsSaving] = useState(false);
 
     // Data Fetching
@@ -95,7 +95,7 @@ export default function GradebookPage() {
                         assessmentDate: serverTimestamp(),
                         score: Number(score),
                         maxScore: Number(maxScore),
-                        teacherRemark: remarks[studentId] || '',
+                        teacherRemark: remarks[studentId] || "", // NEW
                         createdAt: serverTimestamp(),
                         gradedAt: serverTimestamp(),
                     });
@@ -204,7 +204,7 @@ export default function GradebookPage() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Student Name</TableHead>
-                                        <TableHead className="w-[120px]">Score (/{maxScore})</TableHead>
+                                        <TableHead className="w-[150px]">Score (/{maxScore})</TableHead>
                                         <TableHead>Teacher Remark (Optional)</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -225,9 +225,9 @@ export default function GradebookPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <Input 
-                                                    type="text"
+                                                    type="text" 
                                                     placeholder="e.g. Needs to focus"
-                                                    value={remarks[s.uid] || ''} 
+                                                    value={remarks[s.uid] ?? ''} 
                                                     onChange={e => setRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
                                                 />
                                             </TableCell>
