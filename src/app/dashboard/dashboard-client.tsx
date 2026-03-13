@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -11,7 +10,8 @@ import {
   ClipboardCheck, Bell, FileText,
   CreditCard, DollarSign, Receipt, Package, Award,
   Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck,
-  TrendingUp, Sparkles, FolderKanban, HeartHandshake, User as UserIcon
+  TrendingUp, Sparkles, FolderKanban, HeartHandshake, User as UserIcon,
+  BrainCircuit
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -104,10 +104,6 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
   const { data: assessments, isLoading: loadingAssessments } = useCollection<any>(assessmentsQuery);
 
   // 3. Fetch Class Info
-  const classQuery = useMemoFirebase(() => (firestore && student?.classId) ? doc(firestore, 'classes', student.classId) : null, [firestore, student?.classId]);
-  // We use useCollection here just because we have the hook ready, but a useDoc would be cleaner if we wanted to be strict.
-  // However, for consistency, we'll assume the queries are handled.
-
   const isLoading = loadingStudent || loadingAssessments;
 
   return (
@@ -353,21 +349,12 @@ export default function DashboardClient() {
   const leaveRequestsQuery = useMemoFirebase(() => (firestore && isStaffUser && schoolId) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, isStaffUser, schoolId]);
   const { data: leaveRequests, isLoading: leaveLoading } = useCollection(leaveRequestsQuery);
   
-  const libraryItemsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'library')) : null, [firestore]);
-  const { data: libraryItems, isLoading: libraryLoading } = useCollection(libraryItemsQuery);
-
   const financialRecordsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId || !(isFinance || isAdminOrDirector)) return null;
     return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
   }, [firestore, isFinance, isAdminOrDirector, schoolId]);
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<any>(financialRecordsQuery);
   
-  const accountsPayableQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !(isFinance || isAdminOrDirector)) return null;
-    return query(collection(firestore, 'accountsPayable'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
-  }, [firestore, isFinance, isAdminOrDirector, schoolId]);
-  const { data: accountsPayable, isLoading: payablesLoading } = useCollection<any>(accountsPayableQuery);
-
   const recentActivity = useMemo(() => {
     const activities: any[] = [];
     if (students) activities.push(...students.map(s => ({ id: `student-${(s as any).id}`, type: 'Student', title: 'New Student', description: `${(s as any).firstName} ${(s as any).lastName}`, time: (s as any).createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
