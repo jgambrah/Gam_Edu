@@ -58,6 +58,10 @@ function getGradeAndRemark(score: number) {
 }
 
 // --- SUB-COMPONENT: ACTUAL REPORT CARD CONTENT ---
+// KEY LAYOUT FIXES:
+//  1. Replaced flex-grow (caused huge gap) with natural stacking — content sits tight together
+//  2. Remarks use a 2-column box layout with whiteSpace:pre-wrap + wordBreak:break-word so long text wraps properly
+//  3. All spacing uses fixed px values so nothing stretches unpredictably
 function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: {
     data: any;
     classTeacherComment: string;
@@ -94,48 +98,48 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                 marginBottom: '8px',
             }}>
                 {/* Logo */}
-                <div style={{ width: '96px', height: '96px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                <div style={{ width: '88px', height: '88px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
                     {data.logoBase64 ? (
                         <img
                             src={data.logoBase64}
                             alt="School Logo"
-                            style={{ maxWidth: '96px', maxHeight: '96px', objectFit: 'contain', display: 'block' }}
+                            style={{ maxWidth: '88px', maxHeight: '88px', objectFit: 'contain', display: 'block' }}
                         />
                     ) : (
-                        <div style={{ width: 96, height: 96, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#94a3b8', textAlign: 'center' }}>
+                        <div style={{ width: 88, height: 88, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#94a3b8', textAlign: 'center' }}>
                             No Logo
                         </div>
                     )}
                 </div>
 
                 {/* School Info */}
-                <div style={{ flex: 1, textAlign: 'center', padding: '0 16px' }}>
-                    <div style={{ fontSize: '32px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: 1.1 }}>
+                <div style={{ flex: 1, textAlign: 'center', padding: '0 12px' }}>
+                    <div style={{ fontSize: '19px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: 1.2 }}>
                         {data.schoolName || 'SCHOOL NAME'}
                     </div>
                     {data.schoolMotto && (
-                        <div style={{ fontSize: '12px', fontStyle: 'italic', color: '#475569', marginTop: '4px' }}>
+                        <div style={{ fontSize: '9px', fontStyle: 'italic', color: '#475569', marginTop: '2px' }}>
                             "{data.schoolMotto}"
                         </div>
                     )}
-                    <div style={{ fontSize: '12px', fontWeight: 700, marginTop: '4px' }}>{data.schoolAddress || ''}</div>
-                    <div style={{ fontSize: '12px', fontWeight: 700 }}>
+                    <div style={{ fontSize: '9px', fontWeight: 700, marginTop: '3px' }}>{data.schoolAddress || ''}</div>
+                    <div style={{ fontSize: '9px', fontWeight: 700 }}>
                         {[data.schoolPhone, data.schoolEmail].filter(Boolean).join(' | ')}
                     </div>
                 </div>
 
                 {/* Spacer to balance logo */}
-                <div style={{ width: '96px', flexShrink: 0 }} />
+                <div style={{ width: '88px', flexShrink: 0 }} />
             </div>
 
             {/* ── REPORT TITLE ── */}
             <div style={{
-                fontSize: '18px',
+                fontSize: '13px',
                 fontWeight: 700,
                 textAlign: 'center',
-                marginBottom: '10px',
+                marginBottom: '8px',
                 background: '#f1f5f9',
-                padding: '6px',
+                padding: '4px',
                 border: '1px solid #cbd5e1',
                 textTransform: 'uppercase',
                 letterSpacing: '0.12em',
@@ -147,11 +151,11 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '4px 20px',
-                marginBottom: '10px',
-                fontSize: '13px',
+                gap: '3px 16px',
+                marginBottom: '8px',
+                fontSize: '10px',
                 border: '2px solid #cbd5e1',
-                padding: '10px 14px',
+                padding: '7px 10px',
                 fontWeight: 500,
                 background: '#f8fafc',
             }}>
@@ -160,7 +164,7 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                 <div><strong>Class:</strong> {data.className}</div>
                 <div><strong>Academic Year:</strong> {data.academicYear}</div>
                 <div><strong>Attendance:</strong> {data.studentPresentDays} / {data.totalClassDays} days</div>
-                <div style={{ gridColumn: '1 / -1', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ gridColumn: '1 / -1', marginTop: '4px', paddingTop: '4px', borderTop: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
                     <span>
                         <strong>Position in Class: </strong>
                         <span style={{ fontWeight: 700, textDecoration: 'underline' }}>{data.classPosition}</span> of {data.totalStudents}
@@ -173,7 +177,9 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
             </div>
 
             {/* ── GRADES TABLE ── */}
-            <table style={{ width: '100%', fontSize: '12.5px', borderCollapse: 'collapse', marginBottom: '8px', tableLayout: 'fixed' }}>
+            {/* table-layout:fixed + percentage colgroup = exactly 9 columns, no phantom space.
+                Widths must sum to 100%. Numeric cols are narrow; Subject + Teacher fill the rest. */}
+            <table style={{ width: '100%', fontSize: '9.5px', borderCollapse: 'collapse', marginBottom: '5px', tableLayout: 'fixed' }}>
                 <colgroup>
                     <col style={{ width: '22%' }} />   {/* Subject */}
                     <col style={{ width: '6%' }} />    {/* CA */}
@@ -183,33 +189,33 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                     <col style={{ width: '5%' }} />    {/* Grd */}
                     <col style={{ width: '5%' }} />    {/* Pos */}
                     <col style={{ width: '9%' }} />    {/* Remark */}
-                    <col style={{ width: '35%' }} />   {/* Teacher's Comment */}
+                    <col style={{ width: '35%' }} />   {/* Teacher's Comment — gets generous space */}
                 </colgroup>
                 <thead>
                     <tr style={{ background: '#f1f5f9' }}>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px 6px', textAlign: 'left', overflow: 'hidden' }}>Subject</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px 6px', textAlign: 'center' }}>CA ({caWeight})</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px 6px', textAlign: 'center' }}>Exam ({examWeight})</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px 6px', textAlign: 'center' }}>Total</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px 6px', textAlign: 'center' }}>Avg</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px 6px', textAlign: 'center' }}>Grd</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px 6px', textAlign: 'center' }}>Pos</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px 6px', textAlign: 'center' }}>Remark</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px 6px', textAlign: 'left' }}>Teacher's Comment</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'left', overflow: 'hidden' }}>Subject</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>CA ({caWeight})</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Exam ({examWeight})</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Total</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Avg</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Grd</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Pos</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Remark</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'left' }}>Teacher's Comment</th>
                     </tr>
                 </thead>
                 <tbody>
                     {data.rows.map((row: any, i: number) => (
                         <tr key={i} style={{ background: i % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 6px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.subjectName}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 6px', textAlign: 'center' }}>{row.ca}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 6px', textAlign: 'center' }}>{row.exam}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 6px', textAlign: 'center', fontWeight: 900, background: '#f1f5f9' }}>{row.total}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 6px', textAlign: 'center', color: '#64748b', fontStyle: 'italic' }}>{row.classAverage}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 6px', textAlign: 'center', fontWeight: 700 }}>{row.grade}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 6px', textAlign: 'center' }}>{row.position}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 6px', textAlign: 'center', fontWeight: 600, fontSize: '11px' }}>{row.autoRemark}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 6px', fontStyle: 'italic', fontSize: '11px', color: '#475569', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{row.teacherRemark || '-'}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.subjectName}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center' }}>{row.ca}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center' }}>{row.exam}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', fontWeight: 900, background: '#f1f5f9' }}>{row.total}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', color: '#64748b', fontStyle: 'italic' }}>{row.classAverage}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', fontWeight: 700 }}>{row.grade}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center' }}>{row.position}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', fontWeight: 600, fontSize: '8.5px' }}>{row.autoRemark}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', fontStyle: 'italic', fontSize: '8.5px', color: '#475569', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{row.teacherRemark || '-'}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -218,12 +224,12 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
             {/* ── GRADING KEY ── */}
             <div style={{
                 border: '1px solid #cbd5e1',
-                padding: '4px 8px',
-                fontSize: '11px',
+                padding: '3px 6px',
+                fontSize: '8px',
                 background: '#f8fafc',
-                marginBottom: '10px',
+                marginBottom: '8px',
                 display: 'flex',
-                gap: '8px',
+                gap: '5px',
                 flexWrap: 'wrap',
                 alignItems: 'center',
             }}>
@@ -236,14 +242,14 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                 <span>0–39: F (Fail)</span>
             </div>
 
-            {/* ── REMARKS ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '4px', padding: '8px 12px', background: '#f8fafc' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '6px', letterSpacing: '0.06em' }}>
+            {/* ── REMARKS — 2-column box layout, text wraps naturally ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '2px', padding: '6px 8px', background: '#f8fafc' }}>
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px', letterSpacing: '0.06em' }}>
                         Class Teacher's Remark:
                     </div>
                     <div style={{
-                        fontSize: '13px',
+                        fontSize: '10px',
                         fontStyle: 'italic',
                         fontFamily: 'Georgia, serif',
                         color: '#1e293b',
@@ -251,17 +257,17 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-word',
                         overflowWrap: 'break-word',
-                        minHeight: '36px',
+                        minHeight: '28px',
                     }}>
                         {classTeacherComment || '...'}
                     </div>
                 </div>
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '4px', padding: '8px 12px', background: '#f8fafc' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '6px', letterSpacing: '0.06em' }}>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '2px', padding: '6px 8px', background: '#f8fafc' }}>
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px', letterSpacing: '0.06em' }}>
                         Headmaster's Remark:
                     </div>
                     <div style={{
-                        fontSize: '13px',
+                        fontSize: '10px',
                         fontStyle: 'italic',
                         fontFamily: 'Georgia, serif',
                         color: '#1e293b',
@@ -269,7 +275,7 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-word',
                         overflowWrap: 'break-word',
-                        minHeight: '36px',
+                        minHeight: '28px',
                     }}>
                         {headmasterComment || '...'}
                     </div>
@@ -280,19 +286,19 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '40px',
+                gap: '32px',
                 borderTop: '2px dashed #cbd5e1',
-                paddingTop: '12px',
+                paddingTop: '10px',
             }}>
                 <div style={{ textAlign: 'center' }}>
-                    <div style={{ height: '32px', borderBottom: '1px solid black', width: '75%', margin: '0 auto 6px' }} />
-                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <div style={{ height: '28px', borderBottom: '1px solid black', width: '75%', margin: '0 auto 4px' }} />
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                         Class Teacher Signature &amp; Date
                     </div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
-                    <div style={{ height: '32px', borderBottom: '1px solid black', width: '75%', margin: '0 auto 6px' }} />
-                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <div style={{ height: '28px', borderBottom: '1px solid black', width: '75%', margin: '0 auto 4px' }} />
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                         Headmaster Signature &amp; Date
                     </div>
                 </div>
@@ -666,23 +672,19 @@ export default function ReportCardsPage() {
                             <Button variant="outline" onClick={() => {
                                 const el = printRef.current;
                                 if (!el) return;
-
-                                // Step 1: Make template visible so print engine can render it
+                                // Make visible so browser print engine can render it
                                 el.style.visibility = 'visible';
                                 el.style.zIndex = '9999';
-
-                                // Step 2: Small delay lets browser paint before print dialog opens
                                 setTimeout(() => {
                                     window.print();
-
-                                    // Step 3: Restore hidden state after dialog closes
+                                    // Restore after print dialog closes
                                     setTimeout(() => {
                                         el.style.visibility = 'hidden';
                                         el.style.zIndex = '-1';
                                     }, 1000);
                                 }, 100);
                             }}>
-                                <Printer className="mr-2 h-4 w-4" /> Print
+                                <Printer className="mr-2 h-4 w-4"/> Print
                             </Button>
                             <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary">
                                 <Download className="mr-2 h-4 w-4"/> {isExporting ? 'Generating PDF...' : 'Download PDF'}
