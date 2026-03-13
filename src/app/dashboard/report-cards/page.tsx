@@ -4,14 +4,14 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, getDocs, doc, setDoc, serverTimestamp, orderBy, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Trash2 } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -76,7 +76,7 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                 boxSizing: 'border-box',
                 margin: '0 auto',
                 backgroundColor: 'white',
-                padding: '24px 32px',
+                padding: '28px 36px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0px',
@@ -90,8 +90,8 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 borderBottom: '4px double #1e293b',
-                paddingBottom: '12px',
-                marginBottom: '10px',
+                paddingBottom: '10px',
+                marginBottom: '8px',
             }}>
                 {/* Logo */}
                 <div style={{ width: '96px', height: '96px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
@@ -175,15 +175,15 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
             {/* ── GRADES TABLE ── */}
             <table style={{ width: '100%', fontSize: '12.5px', borderCollapse: 'collapse', marginBottom: '8px', tableLayout: 'fixed' }}>
                 <colgroup>
-                    <col style={{ width: '22%' }} />
-                    <col style={{ width: '6%' }} />
-                    <col style={{ width: '7%' }} />
-                    <col style={{ width: '6%' }} />
-                    <col style={{ width: '5%' }} />
-                    <col style={{ width: '5%' }} />
-                    <col style={{ width: '5%' }} />
-                    <col style={{ width: '9%' }} />
-                    <col style={{ width: '35%' }} />
+                    <col style={{ width: '22%' }} />   {/* Subject */}
+                    <col style={{ width: '6%' }} />    {/* CA */}
+                    <col style={{ width: '7%' }} />    {/* Exam */}
+                    <col style={{ width: '6%' }} />    {/* Total */}
+                    <col style={{ width: '5%' }} />    {/* Avg */}
+                    <col style={{ width: '5%' }} />    {/* Grd */}
+                    <col style={{ width: '5%' }} />    {/* Pos */}
+                    <col style={{ width: '9%' }} />    {/* Remark */}
+                    <col style={{ width: '35%' }} />   {/* Teacher's Comment */}
                 </colgroup>
                 <thead>
                     <tr style={{ background: '#f1f5f9' }}>
@@ -666,12 +666,15 @@ export default function ReportCardsPage() {
                             <Button variant="outline" onClick={() => {
                                 const el = printRef.current;
                                 if (!el) return;
-                                // Make visible so browser print engine can render it
+                                // Step 1: Make template visible so print engine can render it
                                 el.style.visibility = 'visible';
                                 el.style.zIndex = '9999';
+
+                                // Step 2: Small delay lets browser paint before print dialog opens
                                 setTimeout(() => {
                                     window.print();
-                                    // Restore after print dialog closes
+
+                                    // Step 3: Restore hidden state after dialog closes
                                     setTimeout(() => {
                                         el.style.visibility = 'hidden';
                                         el.style.zIndex = '-1';
