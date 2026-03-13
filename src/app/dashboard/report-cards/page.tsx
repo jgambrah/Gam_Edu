@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Printer, Download, Search, FileCheck, GraduationCap, Send, CheckCircle, Calendar as CalendarIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import jsPDF from 'jsPDF';
+import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_ACADEMIC_YEARS } from '@/lib/data';
@@ -72,7 +72,7 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     // --- THE CALCULATION ENGINE ---
@@ -129,7 +129,7 @@ export default function ReportCardsPage() {
             const classPosition = sortedStudents.findIndex(([uid]) => uid === selectedStudentId) + 1;
 
             const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
-            const reportRows = [];
+            const reportRows: any[] = [];
             let myGrandTotal = 0;
             let subjectsTaken = 0;
 
@@ -151,11 +151,13 @@ export default function ReportCardsPage() {
                 myGrandTotal += total100;
                 subjectsTaken++;
 
+                // Get the grade and the automatic system remark
                 const { grade, autoRemark } = getGradeAndRemark(total100);
 
+                // Extract the most recent custom teacher remark for this subject from assessments
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
-                
+
                 const mySubjectRank = subjectStats[sub.id].totalScores.sort((a,b)=>b-a).indexOf(total100) + 1;
                 const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
                     ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
@@ -166,9 +168,9 @@ export default function ReportCardsPage() {
                     ca: Math.round(weightedCA),
                     exam: Math.round(weightedExam),
                     total: total100,
-                    grade,
-                    autoRemark,
-                    teacherRemark: customTeacherRemark,
+                    grade: grade,
+                    autoRemark: autoRemark, // System generated (Excellent, Good)
+                    teacherRemark: customTeacherRemark, // Manually typed by teacher
                     classAverage: subjectAverage,
                     position: mySubjectRank
                 });
@@ -247,11 +249,17 @@ export default function ReportCardsPage() {
         if (!element) return;
         try {
             element.style.display = 'block';
-            const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+            const canvas = await html2canvas(element, { 
+                scale: 2, 
+                useCORS: true, 
+                backgroundColor: '#ffffff',
+                logging: false 
+            });
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`${processedReport?.student?.firstName}_Report_${term}.pdf`);
             element.style.display = 'none';
@@ -308,7 +316,7 @@ export default function ReportCardsPage() {
                 </CardFooter>
             </Card>
 
-            {/* INTERACTIVE PREVIEW & COMMENT ENTRY */}
+            {/* PREVIEW & ACTIONS */}
             {processedReport && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
                     <Card className="print:hidden border-t-4 border-t-orange-400 shadow-xl bg-white">
@@ -342,7 +350,7 @@ export default function ReportCardsPage() {
                                 Review generated details before taking action.
                             </div>
                             <div className="flex gap-3">
-                                <Button variant="outline" size="lg" className="border-slate-300" onClick={() => window.print()}>
+                                <Button variant="outline" size="lg" className="border-slate-300" onClick={() => { if (printRef.current) { printRef.current.style.display = 'block'; window.print(); printRef.current.style.display = 'none'; } }}>
                                     <Printer className="mr-2 h-4 w-4"/> Print
                                 </Button>
                                 <Button variant="secondary" size="lg" onClick={handleDownloadPDF} className="bg-slate-200 hover:bg-slate-300 text-slate-800">
@@ -358,7 +366,7 @@ export default function ReportCardsPage() {
 
                     {/* LIVE REPORT PREVIEW (VISIBLE) */}
                     <div className="overflow-x-auto bg-slate-200 p-8 flex justify-center rounded-3xl border-2 border-slate-300 shadow-inner">
-                        <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }}>
+                        <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }} id="pdf-content">
                             {/* HEADER */}
                             <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
                                 {schoolProfile?.logoUrl && (
@@ -394,6 +402,7 @@ export default function ReportCardsPage() {
                                         <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
                                         <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
                                         <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
+                                        <th className="border border-slate-800 p-2 text-center w-24">Remark</th>
                                         <th className="border border-slate-800 p-2 text-left">Teacher's Comment</th>
                                     </tr>
                                 </thead>
@@ -407,13 +416,14 @@ export default function ReportCardsPage() {
                                             <td className="border border-slate-800 p-2 text-center text-slate-500 italic text-xs">{row.classAverage}</td>
                                             <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
                                             <td className="border border-slate-800 p-2 text-center">{row.position}</td>
-                                            <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || row.autoRemark}</td>
+                                            <td className="border border-slate-800 p-2 text-center font-semibold text-xs">{row.autoRemark}</td>
+                                            <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || "-"}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
 
-                            {/* FINAL COMMENTS (REFLECTING LIVE INPUTS) */}
+                            {/* FINAL COMMENTS */}
                             <div className="space-y-4 mb-16">
                                 <div className="border-b-2 border-dotted border-slate-400 pb-2">
                                     <p className="text-xs font-bold uppercase text-slate-500">Class Teacher's Remark:</p>
@@ -450,7 +460,6 @@ export default function ReportCardsPage() {
                     .print\\:hidden { display: none !important; }
                     #sidebar, header, nav { display: none !important; }
                     .bg-slate-200 { background: none !important; padding: 0 !important; }
-                    #print-preview-container { border: none !important; box-shadow: none !important; }
                     #pdf-content, #pdf-content * { visibility: visible; }
                     #pdf-content { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
                 }
