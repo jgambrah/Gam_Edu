@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Trash2 } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -58,10 +58,6 @@ function getGradeAndRemark(score: number) {
 }
 
 // --- SUB-COMPONENT: ACTUAL REPORT CARD CONTENT ---
-// KEY LAYOUT FIXES:
-//  1. Replaced flex-grow (caused huge gap) with natural stacking — content sits tight together
-//  2. Remarks use a 2-column box layout with whiteSpace:pre-wrap + wordBreak:break-word so long text wraps properly
-//  3. All spacing uses fixed px values so nothing stretches unpredictably
 function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: {
     data: any;
     classTeacherComment: string;
@@ -177,20 +173,17 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
             </div>
 
             {/* ── GRADES TABLE ── */}
-            {/* table-layout:fixed + colgroup locks every column to its declared width,
-                preventing the browser from creating extra space or phantom columns.
-                The last column (Teacher's Comment) gets the remaining width automatically. */}
             <table style={{ width: '100%', fontSize: '9.5px', borderCollapse: 'collapse', marginBottom: '5px', tableLayout: 'fixed' }}>
                 <colgroup>
-                    <col style={{ width: 'auto' }} />          {/* Subject — fills remaining */}
-                    <col style={{ width: '38px' }} />           {/* CA */}
-                    <col style={{ width: '46px' }} />           {/* Exam */}
-                    <col style={{ width: '36px' }} />           {/* Total */}
-                    <col style={{ width: '36px' }} />           {/* Avg */}
-                    <col style={{ width: '28px' }} />           {/* Grd */}
-                    <col style={{ width: '28px' }} />           {/* Pos */}
-                    <col style={{ width: '56px' }} />           {/* Remark */}
-                    <col style={{ width: '130px' }} />          {/* Teacher's Comment */}
+                    <col style={{ width: '22%' }} />
+                    <col style={{ width: '6%' }} />
+                    <col style={{ width: '7%' }} />
+                    <col style={{ width: '6%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '9%' }} />
+                    <col style={{ width: '35%' }} />
                 </colgroup>
                 <thead>
                     <tr style={{ background: '#f1f5f9' }}>
@@ -243,7 +236,7 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                 <span>0–39: F (Fail)</span>
             </div>
 
-            {/* ── REMARKS — 2-column box layout, text wraps naturally ── */}
+            {/* ── REMARKS ── */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
                 <div style={{ border: '1px solid #cbd5e1', borderRadius: '2px', padding: '6px 8px', background: '#f8fafc' }}>
                     <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px', letterSpacing: '0.06em' }}>
@@ -670,7 +663,21 @@ export default function ReportCardsPage() {
                             </div>
                         </CardContent>
                         <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
-                            <Button variant="outline" onClick={() => window.print()}>
+                            <Button variant="outline" onClick={() => {
+                                const el = printRef.current;
+                                if (!el) return;
+                                // Make visible so browser print engine can render it
+                                el.style.visibility = 'visible';
+                                el.style.zIndex = '9999';
+                                setTimeout(() => {
+                                    window.print();
+                                    // Restore after print dialog closes
+                                    setTimeout(() => {
+                                        el.style.visibility = 'hidden';
+                                        el.style.zIndex = '-1';
+                                    }, 1000);
+                                }, 100);
+                            }}>
                                 <Printer className="mr-2 h-4 w-4"/> Print
                             </Button>
                             <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary">
@@ -713,31 +720,43 @@ export default function ReportCardsPage() {
             )}
 
             {/* HIDDEN PRINT / PDF CAPTURE TEMPLATE */}
-            <div style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1 }}>
-                <div ref={printRef}>
-                    {processedReport && (
-                        <ReportCardTemplate
-                            data={processedReport}
-                            classTeacherComment={classTeacherComment}
-                            headmasterComment={headmasterComment}
-                            caWeight={CA_WEIGHT}
-                            examWeight={EXAM_WEIGHT}
-                        />
-                    )}
-                </div>
+            <div
+                ref={printRef}
+                id="print-template"
+                style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px' }}
+            >
+                {processedReport && (
+                    <ReportCardTemplate
+                        data={processedReport}
+                        classTeacherComment={classTeacherComment}
+                        headmasterComment={headmasterComment}
+                        caWeight={CA_WEIGHT}
+                        examWeight={EXAM_WEIGHT}
+                    />
+                )}
             </div>
 
             <style jsx global>{`
                 @media print {
+                    /* Hide everything on the page */
                     body * { visibility: hidden !important; }
-                    #pdf-content, #pdf-content * { visibility: visible !important; }
-                    #pdf-content {
-                        position: absolute !important;
+                    /* Show only the hidden print template */
+                    #print-template,
+                    #print-template * { visibility: visible !important; }
+                    #print-template {
+                        position: fixed !important;
                         left: 0 !important;
                         top: 0 !important;
-                        width: 100% !important;
+                        width: 210mm !important;
+                        height: 297mm !important;
                         margin: 0 !important;
                         padding: 0 !important;
+                        visibility: visible !important;
+                        z-index: 9999 !important;
+                    }
+                    @page {
+                        size: A4 portrait;
+                        margin: 0;
                     }
                 }
             `}</style>
