@@ -28,8 +28,6 @@ import { Textarea } from '@/components/ui/textarea';
 // Helper to safely convert external URLs to Base64 using our server-side proxy to avoid CORS
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
-        console.log('📡 Fetching image via proxy for:', imageUrl);
-        
         // Route Firebase Storage URLs through server-side proxy to avoid CORS
         const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
             ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
@@ -46,12 +44,9 @@ async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => {
-                const result = reader.result as string;
-                console.log('✅ Base64 conversion successful');
-                resolve(result);
+                resolve(reader.result as string);
             };
             reader.onerror = (e) => {
-                console.error('❌ FileReader error:', e);
                 reject(e);
             };
             reader.readAsDataURL(blob);
@@ -72,7 +67,7 @@ function getGradeAndRemark(score: number) {
     return { grade: 'F', autoRemark: 'Fail' };
 }
 
-// --- MAIN COMPONENT ---
+// --- MAIN PAGE ---
 export default function ReportCardsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
@@ -138,31 +133,42 @@ export default function ReportCardsPage() {
             const snap = await getDocs(q);
             const allAssessments = snap.docs.map(d => d.data());
 
+            // 1. Initialize Subject Stats (Ensure arrays are clean)
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             const studentTotals: Record<string, number> = {};
 
-            subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
+            subjects?.forEach((sub: any) => { 
+                subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
+            });
 
+            // 2. Loop ALL students to build the comparative data
             students?.forEach((stu: any) => {
                 let grandTotal = 0;
+                
                 subjects?.forEach((sub: any) => {
                     const stuSubjAssessments = allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id);
-                    if (stuSubjAssessments.length === 0) return;
+                    
+                    // Even if length is 0, we must record a 0 score to maintain accurate ranking counts
+                    let total100 = 0;
+                    
+                    if (stuSubjAssessments.length > 0) {
+                        const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
+                        const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
+                        const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                        const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
 
-                    const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
-                    const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
-                    const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                    const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
+                        const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
+                        const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
+                        const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                        const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
 
-                    const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
-                    const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
-                    const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                    const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
+                        total100 = Math.round(weightedCA + weightedExam);
+                    }
 
-                    const total100 = weightedCA + weightedExam;
                     grandTotal += total100;
 
                     if (subjectStats[sub.id]) {
+                        // Push every student's score so the rank is out of the total class size
                         subjectStats[sub.id].totalScores.push(total100);
                         subjectStats[sub.id].sum += total100;
                     }
@@ -170,6 +176,7 @@ export default function ReportCardsPage() {
                 studentTotals[stu.uid] = grandTotal;
             });
 
+            // 3. Process the TARGET Student
             const sortedStudents = Object.entries(studentTotals).sort(([,a], [,b]) => b - a);
             const classPosition = sortedStudents.findIndex(([uid]) => uid === selectedStudentId) + 1;
 
@@ -196,14 +203,15 @@ export default function ReportCardsPage() {
                 myGrandTotal += total100;
                 subjectsTaken++;
 
-                // Get the grade and the automatic system remark
                 const { grade, autoRemark } = getGradeAndRemark(total100);
-
-                // Extract the most recent custom teacher remark for this subject from assessments
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
 
-                const mySubjectRank = subjectStats[sub.id].totalScores.sort((a,b)=>b-a).indexOf(total100) + 1;
+                // Safe Subject Rank Calculation
+                const sortedScores = [...subjectStats[sub.id].totalScores].sort((a, b) => b - a);
+                const rankIndex = sortedScores.indexOf(total100);
+                const mySubjectRank = rankIndex >= 0 ? rankIndex + 1 : sortedScores.length;
+
                 const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
                     ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
                     : 0;
@@ -245,7 +253,6 @@ export default function ReportCardsPage() {
                 studentPresentDays = termAtt.filter(a => a.studentId === selectedStudentId && (a.status === 'Present' || a.status === 'Late')).length;
             }
 
-            // Fetch the logo via proxy and convert to Base64 for bulletproof PDF rendering
             let finalLogoStr = '';
             if (schoolProfile?.logoUrl) {
                 finalLogoStr = await getBase64ImageFromUrl(schoolProfile.logoUrl);
@@ -307,14 +314,12 @@ export default function ReportCardsPage() {
 
         setIsExporting(true);
         try {
-            // Keep the element in the DOM but hidden from view
             element.style.visibility = 'visible';
             element.style.position = 'fixed';
             element.style.top = '0';
             element.style.left = '0';
             element.style.zIndex = '-1';
 
-            // Wait for paint
             await new Promise(resolve => setTimeout(resolve, 300));
 
             const canvas = await html2canvas(element, {
@@ -349,7 +354,6 @@ export default function ReportCardsPage() {
         <div className="p-6 space-y-6">
             <h1 className="text-3xl font-bold flex items-center gap-2"><GraduationCap className="h-8 w-8 text-indigo-600"/> Terminal Report Cards</h1>
 
-            {/* CONTROLS */}
             <Card className="border-t-4 border-t-indigo-600 print:hidden shadow-md">
                 <CardHeader><CardTitle>Report Generator</CardTitle></CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -391,7 +395,6 @@ export default function ReportCardsPage() {
                 </CardFooter>
             </Card>
 
-            {/* PREVIEW & ACTIONS */}
             {processedReport && (
                 <Card className="print:hidden border-t-4 border-t-orange-400 animate-in slide-in-from-top-4 shadow-md">
                     <CardHeader>
@@ -419,7 +422,6 @@ export default function ReportCardsPage() {
                 </Card>
             )}
 
-            {/* HIDDEN PRINT TEMPLATE */}
             {processedReport && (
                 <div 
                     ref={printRef} 
@@ -436,9 +438,7 @@ export default function ReportCardsPage() {
                     }} 
                     id="pdf-content"
                 >
-                    {/* HEADER */}
                     <div className="flex flex-row items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6 w-full">
-                        {/* Left Logo Space */}
                         <div className="w-32 h-32 flex-shrink-0 flex items-center justify-start">
                             {processedReport.logoBase64 ? (
                                 <img 
@@ -447,13 +447,12 @@ export default function ReportCardsPage() {
                                     style={{ maxWidth: '120px', maxHeight: '120px', objectFit: 'contain' }}
                                 />
                             ) : (
-                                <div style={{ width: 120, height: 120, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#94a3b8' }}>
+                                <div style={{ width: 120, height: 120, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifySelf: 'center', fontSize: 10, color: '#94a3b8' }}>
                                     No Logo
                                 </div>
                             )}
                         </div>
 
-                        {/* Center Text */}
                         <div className="flex-1 text-center px-4">
                             <h1 className="text-3xl font-black uppercase tracking-widest leading-tight">{processedReport.schoolName || "SCHOOL NAME"}</h1>
                             {processedReport.schoolMotto && <p className="text-sm italic text-slate-600 mt-1">"{processedReport.schoolMotto}"</p>}
@@ -465,7 +464,6 @@ export default function ReportCardsPage() {
                     </div>
                     <h2 className="text-2xl font-bold text-center mt-2 mb-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
 
-                    {/* STUDENT INFO */}
                     <div className="grid grid-cols-2 gap-4 mb-8 text-sm border-2 p-4 font-medium bg-slate-50/50">
                         <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
                         <div><strong>Term:</strong> {term}</div>
@@ -478,7 +476,6 @@ export default function ReportCardsPage() {
                         </div>
                     </div>
 
-                    {/* GRADES TABLE */}
                     <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
                         <thead className="bg-slate-100">
                             <tr>
@@ -510,7 +507,6 @@ export default function ReportCardsPage() {
                         </tbody>
                     </table>
 
-                    {/* FINAL COMMENTS */}
                     <div className="space-y-4 mb-16">
                         <div className="border-b-2 border-dotted border-slate-400 pb-2">
                             <p className="text-xs font-bold uppercase text-slate-500">Class Teacher's Remark:</p>
@@ -522,7 +518,6 @@ export default function ReportCardsPage() {
                         </div>
                     </div>
 
-                    {/* SIGNATURES */}
                     <div className="grid grid-cols-2 gap-8 pt-10 border-t-2 border-dashed border-slate-300">
                         <div className="text-center">
                             <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
@@ -534,7 +529,8 @@ export default function ReportCardsPage() {
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
+
             <style jsx global>{`
                 @media print {
                     body * { visibility: hidden; }
