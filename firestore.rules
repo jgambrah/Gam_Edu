@@ -1,4 +1,3 @@
-
 rules_version = '2';
 
 service cloud.firestore {
@@ -139,10 +138,10 @@ service cloud.firestore {
     match /quizzes/{quizId} { allow read, list: if isSignedIn(); allow create: if isStaff() && request.resource.data.teacherId == request.auth.uid; allow update, delete: if isTeacher() && get(/databases/$(database)/documents/quizzes/$(quizId)).data.teacherId == request.auth.uid; match /attempts/{attemptId} { allow read, list: if isTeacher() || isAdmin() || request.auth.uid == resource.data.studentId; allow create: if isStudent(); } }
     match /quizAttempts/{attemptId} { allow create: if isSignedIn(); allow read, list: if isSignedIn(); allow update, delete: if isTeacher() || isAdmin(); }
     
-    match /assessments/{assessmentId} { 
-        allow get, list: if isSignedIn(); 
-        allow create, update: if isTeacher() || isStaff() || isAdmin(); 
-        allow delete: if isAdmin(); 
+    match /assessments/{assessmentId} {
+        allow read, list: if isSignedIn();
+        allow create, update: if isTeacher() || isStaff() || isAdmin();
+        allow delete: if isAdmin();
     }
     
     match /lesson-plans/{planId} {
