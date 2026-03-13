@@ -1,349 +1,374 @@
 'use client';
 
-import { Suspense, useState, useMemo } from 'react';
-import { useUser, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useState, useMemo, useRef } from 'react';
+import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { collection, query, where, getDocs, doc, setDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { reportCardCommentSchema, ReportCard, ReportCardComment, ReportCardStatus, Class, Subject } from '@/lib/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { Loader2, Send, CheckCircle, ShieldCheck, Printer } from 'lucide-react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { StudentReportCard } from './student-report-card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { useCurrentSchool } from '@/hooks/use-current-school'; // SAAS IMPORT
+import { Loader2, Printer, Download, Search, CheckCircle } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { MOCK_ACADEMIC_YEARS } from '@/lib/data';
 
-type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
-
-function CommentForm({ student, reportCard, disabled, academicYear, term, schoolId, onCommentSaved }: { 
-    student: Student; 
-    reportCard: ReportCard | undefined; 
-    disabled: boolean; 
-    academicYear: string;
-    term: string;
-    schoolId: string | null;
-    onCommentSaved: () => void;
-}) {
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedSubjectId, setSelectedSubjectId] = useState('');
-  
-  const subjectsQuery = useMemoFirebase(
-    () => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
-    [firestore, schoolId]
-  );
-  const { data: subjects } = useCollection<Subject>(subjectsQuery);
-
-  const commentsQuery = useMemoFirebase(
-    () => reportCard ? query(collection(firestore, `report-cards/${reportCard.id}/comments`)) : null,
-    [firestore, reportCard]
-  );
-  const { data: comments } = useCollection<ReportCardComment>(commentsQuery);
-  
-  const form = useForm({
-    resolver: zodResolver(reportCardCommentSchema),
-    defaultValues: { subjectId: '', comment: '' },
-  });
-
-  const handleSubjectChange = (subjectId: string) => {
-    setSelectedSubjectId(subjectId);
-    const existingComment = comments?.find(c => c.subjectId === subjectId);
-    form.setValue('comment', existingComment?.comment || '');
-    form.setValue('subjectId', subjectId);
-  };
-
-  async function onSubmit(values: { subjectId: string, comment: string }) {
-    if (!user || !firestore || !student.uid || !student.classId || !schoolId) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Missing required data to save comment.' });
-        return;
-    };
-    setIsSubmitting(true);
-
-    const reportCardId = `${student.uid}-${academicYear}-${term}`;
-    const reportCardRef = doc(firestore, 'report-cards', reportCardId);
-
-    try {
-        const docSnap = await getDoc(reportCardRef);
-        if (!docSnap.exists()) {
-            await setDoc(reportCardRef, {
-                id: reportCardId,
-                studentId: student.uid,
-                classId: student.classId,
-                academicYear,
-                term,
-                schoolId,
-                status: 'Draft',
-                createdAt: serverTimestamp(),
-            }, { merge: true });
-        }
-
-        const commentRef = doc(firestore, `report-cards/${reportCardId}/comments`, `${values.subjectId}_${user.uid}`);
-        
-        await setDoc(commentRef, {
-            studentId: student.uid,
-            subjectId: values.subjectId,
-            comment: values.comment,
-            teacherId: user.uid,
-            term: term,
-            academicYear: academicYear,
-            updatedAt: serverTimestamp(),
-            createdAt: serverTimestamp(),
-        }, { merge: true });
-
-        toast({ title: "Success", description: "Comment saved." });
-        onCommentSaved(); // This will trigger a refetch in the parent
-    } catch (error: any) {
-      console.error(error);
-      const permissionError = new FirestorePermissionError({
-          path: `report-cards/${reportCardId}/comments/${values.subjectId}_${user.uid}`,
-          operation: 'write',
-          requestResourceData: values,
-      });
-      errorEmitter.emit('permission-error', permissionError);
-      
-      if (!error.message.includes('permission-denied')) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not save comment.' });
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className='flex gap-4 items-end'>
-            <div className='flex-grow'>
-                <label className='text-sm font-medium'>Subject</label>
-                <Select onValueChange={handleSubjectChange} disabled={disabled}>
-                    <SelectTrigger><SelectValue placeholder="Select a subject"/></SelectTrigger>
-                    <SelectContent>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                </Select>
-            </div>
-            <Button type="submit" disabled={isSubmitting || disabled || !selectedSubjectId}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Comment
-            </Button>
-        </div>
-      <Controller name="comment" control={form.control} render={({ field }) => (
-        <Textarea {...field} placeholder="Enter teacher's comment for the selected subject..." rows={4} disabled={disabled || !selectedSubjectId} />
-      )}/>
-    </form>
-  );
+// --- GES GRADING SYSTEM ---
+function getGradeAndRemark(score: number) {
+    if (score >= 80) return { grade: 'A', remark: 'Excellent' };
+    if (score >= 70) return { grade: 'B', remark: 'Very Good' };
+    if (score >= 60) return { grade: 'C', remark: 'Good' };
+    if (score >= 50) return { grade: 'D', remark: 'Credit' };
+    if (score >= 40) return { grade: 'E', remark: 'Pass' };
+    return { grade: 'F', remark: 'Fail' };
 }
 
-export default function ReportCardManager() {
-  const { user } = useUser();
-  const { role } = useRole();
-  const firestore = useFirestore();
-  const { toast } = useToast();
-  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+// --- MAIN COMPONENT ---
+export default function ReportCardsPage() {
+    const { user } = useAuth();
+    const { role } = useRole();
+    const firestore = useFirestore();
+    const { schoolId, loading: schoolLoading } = useCurrentSchool();
+    const { toast } = useToast();
 
-  const [selectedClassId, setSelectedClassId] = useState('');
-  const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
-  const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
-  const [processingStudentId, setProcessingStudentId] = useState<string | null>(null);
-  
-  const classesQuery = useMemoFirebase(() => {
-      if(!firestore || !user || !schoolId) return null;
-      let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-      if (role === 'Teacher') {
-        q = query(q, where('teacherId', '==', user.uid));
-      }
-      return q;
-  }, [firestore, user, role, schoolId]);
-  
-  const { data: teacherClasses } = useCollection<Class>(classesQuery);
+    // Filters
+    const [classId, setClassId] = useState('');
+    const [term, setTerm] = useState('First Term');
+    const [academicYear, setAcademicYear] = useState('2024-2025');
+    const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
-  const studentsQuery = useMemoFirebase(
-    () => (selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null,
-    [firestore, selectedClassId, schoolId]
-  );
-  const { data: students } = useCollection<Student>(studentsQuery);
-  
-  const reportCardsQuery = useMemoFirebase(() => {
-    if (!selectedClassId || !selectedYear || !selectedTerm || !schoolId) return null;
-    return query(
-        collection(firestore, 'report-cards'),
-        where('schoolId', '==', schoolId),
-        where('classId', '==', selectedClassId),
-        where('academicYear', '==', selectedYear),
-        where('term', '==', selectedTerm)
-    );
-  }, [firestore, selectedClassId, selectedYear, selectedTerm, schoolId]);
-  const { data: reportCards, forceRefetch } = useCollection<ReportCard>(reportCardsQuery);
+    // State for generation
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [processedReport, setProcessedReport] = useState<any>(null);
 
-  const getStudentReportCard = (studentId: string) => reportCards?.find(rc => rc.studentId === studentId);
+    // Refs for PDF
+    const printRef = useRef<HTMLDivElement>(null);
 
-  const handleStatusUpdate = async (student: Student, newStatus: ReportCardStatus) => {
-    setProcessingStudentId(student.uid);
-    if (!firestore || !schoolId) return;
+    const canManage = ['Administrator', 'Director', 'Teacher'].includes(role || '');
 
-    const reportCardId = `${student.uid}-${selectedYear}-${selectedTerm}`;
-    const reportCardRef = doc(firestore, 'report-cards', reportCardId);
+    // --- DATA FETCHING ---
+    const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: classes } = useCollection<any>(classesQuery);
 
-    try {
-        const dataToSet: Partial<ReportCard> = { status: newStatus };
-        if (newStatus === 'Published') {
-            dataToSet.publishedAt = serverTimestamp();
-            console.log(`Notification Sent to Parents of ${student.firstName} ${student.lastName}`);
-            toast({ title: 'Parent Notified', description: 'An in-app and email notification has been sent.' });
+    const studentsQuery = useMemoFirebase(() => (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, [firestore, schoolId, classId]);
+    const { data: students } = useCollection<any>(studentsQuery);
+
+    const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: subjects } = useCollection<any>(subjectsQuery);
+
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
+
+    // --- THE CALCULATION ENGINE ---
+    const generateReport = async () => {
+        if (!firestore || !schoolId || !classId || !selectedStudentId) return;
+        setIsGenerating(true);
+
+        try {
+            // 1. Fetch ALL assessments for this class, term, and year
+            const assessmentsRef = collection(firestore, 'assessments');
+            const q = query(
+                assessmentsRef, 
+                where('schoolId', '==', schoolId),
+                where('classId', '==', classId),
+                where('academicYear', '==', academicYear),
+                where('term', '==', term)
+            );
+            const snap = await getDocs(q);
+            const allAssessments = snap.docs.map(d => d.data());
+
+            // 2. Calculate Class Averages & Positions
+            const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
+            const studentTotals: Record<string, number> = {};
+
+            // Initialize subject buckets
+            subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
+
+            // Process every student in the class to build the metrics
+            students?.forEach((stu: any) => {
+                let grandTotal = 0;
+                
+                subjects?.forEach((sub: any) => {
+                    const stuSubjAssessments = allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id);
+                    if (stuSubjAssessments.length === 0) return;
+
+                    // Calculate 50% CA
+                    const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
+                    const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
+                    const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                    const weightedCA = caMax > 0 ? (caScore / caMax) * 50 : 0;
+
+                    // Calculate 50% Exam
+                    const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
+                    const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
+                    const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                    const weightedExam = examMax > 0 ? (examScore / examMax) * 50 : 0;
+
+                    const total100 = weightedCA + weightedExam;
+                    grandTotal += total100;
+
+                    if (subjectStats[sub.id]) {
+                        subjectStats[sub.id].totalScores.push(total100);
+                        subjectStats[sub.id].sum += total100;
+                    }
+                });
+                studentTotals[stu.uid] = grandTotal;
+            });
+
+            // Calculate class positions based on grand totals
+            const sortedStudents = Object.entries(studentTotals).sort(([,a], [,b]) => b - a);
+            const classPosition = sortedStudents.findIndex(([uid]) => uid === selectedStudentId) + 1;
+
+            // 3. Extract Data for the Selected Student
+            const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
+            const reportRows = [];
+            let myGrandTotal = 0;
+            let subjectsTaken = 0;
+
+            subjects?.forEach((sub: any) => {
+                const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
+                if (myAssessments.length === 0) return; 
+
+                const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
+                const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
+                const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                const weightedCA = caMax > 0 ? (caScore / caMax) * 50 : 0;
+
+                const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
+                const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
+                const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                const weightedExam = examMax > 0 ? (examScore / examMax) * 50 : 0;
+
+                const total100 = Math.round(weightedCA + weightedExam);
+                myGrandTotal += total100;
+                subjectsTaken++;
+
+                const { grade, remark } = getGradeAndRemark(total100);
+                
+                const mySubjectRank = subjectStats[sub.id].totalScores.sort((a,b)=>b-a).indexOf(total100) + 1;
+                const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
+                    ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
+                    : 0;
+
+                reportRows.push({
+                    subjectName: sub.name,
+                    ca: Math.round(weightedCA),
+                    exam: Math.round(weightedExam),
+                    total: total100,
+                    grade,
+                    remark,
+                    classAverage: subjectAverage,
+                    position: mySubjectRank
+                });
+            });
+
+            const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
+
+            setProcessedReport({
+                student: targetStudent,
+                rows: reportRows,
+                overallAverage,
+                totalScore: myGrandTotal,
+                classPosition,
+                totalStudents: students?.length || 0
+            });
+
+        } catch (error: any) {
+            console.error(error);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to generate report." });
+        } finally {
+            setIsGenerating(false);
         }
-        
-        const reportCardData: Partial<ReportCard> = {
-            id: reportCardId,
-            studentId: student.uid,
-            classId: selectedClassId,
-            academicYear: selectedYear,
-            term: selectedTerm,
-            schoolId: schoolId,
-            status: newStatus,
-            ...dataToSet
-        };
-        await setDoc(reportCardRef, reportCardData, { merge: true });
+    };
 
-        toast({ title: 'Success', description: `Report card for ${student.firstName} is now ${newStatus}.` });
-        forceRefetch(); // Refresh the list
-    } catch(error) {
-        console.error("Error updating status:", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to update status.' });
-    } finally {
-        setProcessingStudentId(null);
-    }
-  }
+    // --- PDF EXPORT ---
+    const handleDownloadPDF = async () => {
+        const element = printRef.current;
+        if (!element) return;
 
-  const getStatusBadgeVariant = (status: ReportCardStatus) => {
-    switch(status) {
-        case 'Draft': return 'secondary';
-        case 'AwaitingFinalApproval': return 'default';
-        case 'Published': return 'destructive';
-        default: return 'outline';
-    }
-  }
+        try {
+            element.style.display = 'block';
+            const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`${processedReport?.student?.firstName}_ReportCard_${term}.pdf`);
+            element.style.display = 'none';
+        } catch (error) {
+            console.error("PDF Error:", error);
+            toast({ variant: 'destructive', title: "Export Failed" });
+        }
+    };
 
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Report Card Management</CardTitle>
-          <CardDescription>Select a class and term to manage student report card comments and approvals.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
-          </Select>
-          <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-          </Select>
-          <Select onValueChange={setSelectedClassId}>
-            <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-            <SelectContent>{teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
-      
-      {selectedClassId && (
-        <Card>
-            <CardHeader>
-                <CardTitle>Students in Class</CardTitle>
-            </CardHeader>
-            <CardContent>
-                {students && students.length > 0 ? (
-                <Accordion type="single" collapsible>
-                    {students.map(student => {
-                        const reportCard = getStudentReportCard(student.uid);
-                        const status = reportCard?.status || 'Draft';
-                        const isProcessing = processingStudentId === student.uid;
-                        const isLocked = status === 'AwaitingFinalApproval' || status === 'Published';
-                        
-                        return (
-                            <AccordionItem value={student.uid} key={student.uid}>
-                                <AccordionTrigger>
-                                    <div className='flex justify-between items-center w-full pr-4'>
-                                        <span>{student.firstName} {student.lastName}</span>
-                                        <Badge variant={getStatusBadgeVariant(status)}>{status}</Badge>
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="space-y-4 p-4 bg-muted/50 rounded-md">
-                                    <CommentForm 
-                                      student={student} 
-                                      reportCard={reportCard} 
-                                      disabled={isLocked && role === 'Teacher'} 
-                                      academicYear={selectedYear}
-                                      term={selectedTerm}
-                                      schoolId={schoolId}
-                                      onCommentSaved={forceRefetch}
-                                    />
-                                    <div className="flex justify-end gap-2 pt-4 border-t">
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <Button variant="outline"><Printer className="mr-2 h-4 w-4" /> View/Print</Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="max-w-4xl">
-                                                <DialogHeader><DialogTitle>Student Report Card</DialogTitle></DialogHeader>
-                                                <Suspense fallback={<Loader2 />}>
-                                                  <StudentReportCard student={student} term={selectedTerm} year={selectedYear} />
-                                                </Suspense>
-                                            </DialogContent>
-                                        </Dialog>
+    if (!canManage) return <div className="p-8">Access Denied.</div>;
 
-                                        {role === 'Teacher' && status === 'Draft' && (
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button disabled={isProcessing}>
-                                                        {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                                                        Submit for Final Approval
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will lock the report and send it for final approval.</AlertDialogDescription></AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => handleStatusUpdate(student, 'AwaitingFinalApproval')}>Confirm</AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        )}
-                                        {(role === 'Administrator' || role === 'Director') && status === 'AwaitingFinalApproval' && (
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button disabled={isProcessing} variant="destructive">
-                                                        {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
-                                                        Publish Report Card
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader><AlertDialogTitle>Publish Report Card?</AlertDialogTitle><AlertDialogDescription>This will publish the report card and notify parents. This action cannot be undone.</AlertDialogDescription></AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => handleStatusUpdate(student, 'Published')}>Confirm and Publish</AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        )}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        )
-                    })}
-                </Accordion>
-                ) : (
-                    <p className="text-muted-foreground text-center">No students in this class.</p>
-                )}
-            </CardContent>
-        </Card>
-      )}
-    </div>
-  );
+    return (
+        <div className="p-6 space-y-6">
+            <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold">Terminal Report Cards</h1>
+            </div>
+
+            {/* CONTROLS */}
+            <Card className="border-t-4 border-t-indigo-600">
+                <CardHeader><CardTitle>Report Generator</CardTitle></CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                        <Label>Academic Year</Label>
+                        <Input value={academicYear} onChange={e => setAcademicYear(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Term</Label>
+                        <Select value={term} onValueChange={setTerm}>
+                            <SelectTrigger><SelectValue/></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="First Term">First Term</SelectItem>
+                                <SelectItem value="Second Term">Second Term</SelectItem>
+                                <SelectItem value="Third Term">Third Term</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select value={classId} onValueChange={setClassId}>
+                            <SelectTrigger><SelectValue placeholder="Select Class"/></SelectTrigger>
+                            <SelectContent>
+                                {classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Select Student</Label>
+                        <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
+                            <SelectTrigger><SelectValue placeholder="Choose Student"/></SelectTrigger>
+                            <SelectContent>
+                                {students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </CardContent>
+                <CardFooter className="justify-end bg-slate-50 pt-4">
+                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600">
+                        {isGenerating ? <Loader2 className="animate-spin mr-2"/> : <Search className="mr-2 h-4 w-4"/>}
+                        Generate Report
+                    </Button>
+                </CardFooter>
+            </Card>
+
+            {/* PREVIEW & ACTIONS */}
+            {processedReport && (
+                <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => {
+                        if (printRef.current) {
+                            printRef.current.style.display = 'block';
+                            window.print();
+                            printRef.current.style.display = 'none';
+                        }
+                    }}>
+                        <Printer className="mr-2 h-4 w-4"/> Print
+                    </Button>
+                    <Button onClick={handleDownloadPDF} className="bg-green-600 hover:bg-green-700">
+                        <Download className="mr-2 h-4 w-4"/> Download PDF
+                    </Button>
+                </div>
+            )}
+
+            {/* HIDDEN PRINT TEMPLATE (A4 Size) */}
+            {processedReport && (
+                <div className="overflow-x-auto bg-slate-200 p-8 flex justify-center">
+                    <div 
+                        ref={printRef} 
+                        className="bg-white p-12 shadow-2xl" 
+                        style={{ width: '210mm', minHeight: '297mm', color: 'black', display: 'none' }}
+                        id="pdf-content"
+                    >
+                        {/* HEADER */}
+                        <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
+                            {schoolProfile?.logoUrl && (
+                                <img 
+                                    src={schoolProfile.logoUrl} 
+                                    alt="Logo" 
+                                    className="w-24 h-24 mx-auto mb-4 object-contain"
+                                    crossOrigin="anonymous" 
+                                />
+                            )}
+                            <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
+                            <p className="text-sm font-bold mt-1">{schoolProfile?.address || "Address Line 1"}</p>
+                            <p className="text-sm font-bold">{schoolProfile?.phone} | {schoolProfile?.email}</p>
+                            <h2 className="text-2xl font-bold mt-6 bg-slate-100 py-2 border border-slate-300">TERMINAL REPORT</h2>
+                        </div>
+
+                        {/* STUDENT INFO */}
+                        <div className="grid grid-cols-2 gap-4 mb-8 text-sm border-2 p-4 font-medium">
+                            <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
+                            <div><strong>Term:</strong> {term}</div>
+                            <div><strong>Class:</strong> {classes?.find((c:any) => c.id === classId)?.name}</div>
+                            <div><strong>Academic Year:</strong> {academicYear}</div>
+                            <div><strong>Position in Class:</strong> {processedReport.classPosition} out of {processedReport.totalStudents}</div>
+                            <div><strong>Overall Average:</strong> {processedReport.overallAverage}%</div>
+                        </div>
+
+                        {/* GRADES TABLE */}
+                        <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
+                            <thead className="bg-slate-100">
+                                <tr>
+                                    <th className="border border-slate-800 p-2 text-left">Subject</th>
+                                    <th className="border border-slate-800 p-2 text-center w-16">CA (50)</th>
+                                    <th className="border border-slate-800 p-2 text-center w-16">Exam (50)</th>
+                                    <th className="border border-slate-800 p-2 text-center w-16">Total (100)</th>
+                                    <th className="border border-slate-800 p-2 text-center w-16">Grade</th>
+                                    <th className="border border-slate-800 p-2 text-center w-24">Pos.</th>
+                                    <th className="border border-slate-800 p-2 text-left w-32">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {processedReport.rows.map((row: any, i: number) => (
+                                    <tr key={i}>
+                                        <td className="border border-slate-800 p-2 font-bold">{row.subjectName}</td>
+                                        <td className="border border-slate-800 p-2 text-center">{row.ca}</td>
+                                        <td className="border border-slate-800 p-2 text-center">{row.exam}</td>
+                                        <td className="border border-slate-800 p-2 text-center font-bold">{row.total}</td>
+                                        <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
+                                        <td className="border border-slate-800 p-2 text-center">{row.position}/{processedReport.totalStudents}</td>
+                                        <td className="border border-slate-800 p-2 italic">{row.remark}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        {/* GRADING KEY */}
+                        <div className="mb-8 border p-2 text-xs bg-slate-50 flex justify-between">
+                            <strong>Grading System:</strong>
+                            <span>80-100: A</span>
+                            <span>70-79: B</span>
+                            <span>60-69: C</span>
+                            <span>50-59: D</span>
+                            <span>40-49: E</span>
+                            <span>0-39: F</span>
+                        </div>
+
+                        {/* SIGNATURES */}
+                        <div className="grid grid-cols-2 gap-8 mt-16 pt-8 border-t-2 border-dashed">
+                            <div className="text-center">
+                                <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
+                                <p className="font-bold">Class Teacher Signature</p>
+                            </div>
+                            <div className="text-center">
+                                <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
+                                <p className="font-bold">Headmaster Signature</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
