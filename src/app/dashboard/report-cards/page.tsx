@@ -11,9 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, FileCheck, GraduationCap, Calendar as CalendarIcon, CheckCircle, Send } from 'lucide-react';
+import { Loader2, Printer, Download, Search, FileCheck, GraduationCap, Send, CheckCircle, Calendar as CalendarIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import jsPDF from 'jsPDF';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_ACADEMIC_YEARS } from '@/lib/data';
@@ -246,6 +246,7 @@ export default function ReportCardsPage() {
         const element = printRef.current;
         if (!element) return;
         try {
+            element.style.display = 'block';
             const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -253,6 +254,7 @@ export default function ReportCardsPage() {
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`${processedReport?.student?.firstName}_Report_${term}.pdf`);
+            element.style.display = 'none';
         } catch (error) {
             toast({ variant: 'destructive', title: "Export Failed" });
         }
@@ -347,7 +349,7 @@ export default function ReportCardsPage() {
                                     <Download className="mr-2 h-4 w-4"/> Download PDF
                                 </Button>
                                 <Button onClick={handlePublish} disabled={isPublishing} size="lg" className="bg-green-600 hover:bg-green-700 shadow-lg shadow-green-600/20 font-bold px-8">
-                                    {isPublishing ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Send className="mr-2 h-4 w-4"/>} 
+                                    {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <Send className="mr-2 h-4 w-4"/>} 
                                     Publish to Portal
                                 </Button>
                             </div>
