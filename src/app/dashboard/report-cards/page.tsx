@@ -72,6 +72,7 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
+    // FIX: Fetch school profile using useDoc
     const schoolProfileRef = useMemoFirebase(
         () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
         [firestore, schoolId]
@@ -157,8 +158,10 @@ export default function ReportCardsPage() {
                 myGrandTotal += total100;
                 subjectsTaken++;
 
+                // Get the grade and the automatic system remark
                 const { grade, autoRemark } = getGradeAndRemark(total100);
 
+                // Extract the most recent custom teacher remark for this subject from assessments
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
                 
@@ -172,9 +175,9 @@ export default function ReportCardsPage() {
                     ca: Math.round(weightedCA),
                     exam: Math.round(weightedExam),
                     total: total100,
-                    grade,
-                    autoRemark,
-                    teacherRemark: customTeacherRemark,
+                    grade: grade,
+                    autoRemark: autoRemark, // System generated (Excellent, Good)
+                    teacherRemark: customTeacherRemark, // Manually typed by teacher
                     classAverage: subjectAverage,
                     position: mySubjectRank
                 });
@@ -256,10 +259,10 @@ export default function ReportCardsPage() {
             element.style.display = 'block';
             const canvas = await html2canvas(element, { 
                 scale: 2, 
-                useCORS: true, 
-                allowTaint: true,
-                logging: false,
-                backgroundColor: '#ffffff' 
+                useCORS: true,           // CRITICAL for Firebase Storage images
+                allowTaint: true,        // Allow images without CORS headers to be drawn
+                logging: false,          // Keep console clean
+                backgroundColor: '#ffffff' // Ensure background is white
             });
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -356,28 +359,36 @@ export default function ReportCardsPage() {
                 <div className="overflow-x-auto bg-slate-200 p-8 flex justify-center print:hidden">
                     <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }} id="pdf-content">
                         {/* HEADER */}
-                        <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
-                            <div className="w-32 h-32 flex-shrink-0 flex items-center justify-center mx-auto mb-4">
-                                {schoolProfile?.logoUrl ? (
+                        <div className="flex flex-row items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6 w-full">
+                            {/* Left Logo Space */}
+                            <div className="w-32 h-32 flex-shrink-0 flex items-center justify-start">
+                                {schoolProfile?.logoUrl && (
                                     <img 
                                         src={schoolProfile.logoUrl} 
-                                        alt="School Logo" 
-                                        crossOrigin="anonymous"
+                                        alt="Logo" 
+                                        crossOrigin="anonymous" 
                                         loading="eager"
-                                        className="max-w-[120px] max-h-[120px] object-contain"
+                                        className="max-w-[120px] max-h-[120px] object-contain" 
                                         onError={(e) => {
                                             e.currentTarget.style.display = 'none';
                                             console.warn("Logo failed to load for PDF generation due to CORS or bad URL.");
                                         }}
                                     />
-                                ) : null}
+                                )}
                             </div>
-                            <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
-                            {schoolProfile?.motto && <p className="text-sm italic text-slate-600 mt-1">"{schoolProfile.motto}"</p>}
-                            <p className="text-sm font-bold mt-2">{schoolProfile?.address || ""}</p>
-                            <p className="text-sm font-bold">{schoolProfile?.phone} | {schoolProfile?.email}</p>
-                            <h2 className="text-2xl font-bold mt-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
+
+                            {/* Center Text */}
+                            <div className="flex-1 text-center px-4">
+                                <h1 className="text-3xl font-black uppercase tracking-widest leading-tight">{schoolProfile?.name || "SCHOOL NAME"}</h1>
+                                {schoolProfile?.motto && <p className="text-sm italic text-slate-600 mt-1">"{schoolProfile.motto}"</p>}
+                                <p className="text-sm font-bold mt-2">{schoolProfile?.address || ""}</p>
+                                <p className="text-sm font-bold">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
+                            </div>
+
+                            {/* Right Space (to keep text perfectly centered) */}
+                            <div className="w-32 flex-shrink-0"></div>
                         </div>
+                        <h2 className="text-2xl font-bold text-center mt-2 mb-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
 
                         {/* STUDENT INFO */}
                         <div className="grid grid-cols-2 gap-4 mb-8 text-sm border-2 p-4 font-medium bg-slate-50/50">
