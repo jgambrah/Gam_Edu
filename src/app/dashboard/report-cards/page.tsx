@@ -35,7 +35,6 @@ function getGradeAndRemark(score: number) {
 
 // --- MAIN COMPONENT ---
 export default function ReportCardsPage() {
-    const { user } = useAuth();
     const { role } = useRole();
     const firestore = useFirestore();
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
@@ -72,7 +71,6 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    // Dynamic Weighting Fetch
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
@@ -379,6 +377,7 @@ export default function ReportCardsPage() {
                                     <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
+                                    <th className="border border-slate-800 p-2 text-center w-24">Remark</th>
                                     <th className="border border-slate-800 p-2 text-left">Teacher's Comment</th>
                                 </tr>
                             </thead>
@@ -392,7 +391,8 @@ export default function ReportCardsPage() {
                                         <td className="border border-slate-800 p-2 text-center text-slate-500 italic text-xs">{row.classAverage}</td>
                                         <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
                                         <td className="border border-slate-800 p-2 text-center">{row.position}</td>
-                                        <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || row.autoRemark}</td>
+                                        <td className="border border-slate-800 p-2 text-center font-semibold text-xs">{row.autoRemark}</td>
+                                        <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || "-"}</td>
                                     </tr>
                                 ))}
                             </tbody>
