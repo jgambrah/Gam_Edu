@@ -14,6 +14,7 @@ import { Loader2, TrendingUp, BookOpen, User as UserIcon, Calendar } from 'lucid
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Assessment, Student, Subject } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 export default function MyGradesPage() {
     const { user } = useUser();
@@ -35,14 +36,20 @@ export default function MyGradesPage() {
     // 2. Data Fetching
     const assessmentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || studentIds.length === 0) return null;
-        return query(
+        
+        // Optimizing for security rules: use equality for single student lookups
+        const baseQuery = query(
             collection(firestore, 'assessments'),
             where('schoolId', '==', schoolId),
-            where('studentId', 'in', studentIds),
             where('academicYear', '==', selectedYear),
-            where('term', '==', selectedTerm),
-            orderBy('createdAt', 'desc')
+            where('term', '==', selectedTerm)
         );
+
+        if (studentIds.length === 1) {
+            return query(baseQuery, where('studentId', '==', studentIds[0]), orderBy('createdAt', 'desc'));
+        }
+
+        return query(baseQuery, where('studentId', 'in', studentIds), orderBy('createdAt', 'desc'));
     }, [firestore, schoolId, studentIds, selectedYear, selectedTerm]);
 
     const { data: assessments, isLoading: loadingAssessments } = useCollection<Assessment>(assessmentsQuery);

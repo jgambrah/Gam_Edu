@@ -144,7 +144,8 @@ service cloud.firestore {
             isTeacher() || isAdmin() || isDirector() || isStaff()
         );
         allow list: if isSignedIn() && (
-            isTeacher() || isAdmin() || isDirector() || isStaff()
+            isTeacher() || isAdmin() || isDirector() || isStaff() ||
+            (request.query.limit <= 100 && request.query.where.studentId == request.auth.uid)
         );
         allow create, update: if isTeacher() || isStaff() || isAdmin(); 
         allow delete: if isAdmin(); 
@@ -163,7 +164,8 @@ service cloud.firestore {
             isTeacher() || isAdmin() || isDirector() || isStaff()
         );
         allow list: if isSignedIn() && (
-            isTeacher() || isAdmin() || isDirector() || isStaff()
+            isTeacher() || isAdmin() || isDirector() || isStaff() ||
+            (request.query.limit <= 100 && request.query.where.studentId == request.auth.uid)
         );
         allow create, update: if isTeacher() || isStaff() || isAdmin();
         allow delete: if isAdmin();
@@ -279,7 +281,7 @@ service cloud.firestore {
     match /think_tank_debates/{debateId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /think_tank_crosswords/{puzzleId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /think_tank_submissions/{submissionId} { allow read: if isSignedIn(); allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow update: if isTeacher() || isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid); allow delete: if isTeacher() || isAdmin(); }
-    match /think_tank_responses/{responseId} { allow read: if isSignedIn(); allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid; }
+    match /think_tank_responses/{responseId} { allow read: if isSignedIn(); allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow update, delete: if isSignedIn() && request.resource.data.userId == request.auth.uid; }
 
     match /scratch_assets/{assetId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /coding_curriculum/{lessonId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
