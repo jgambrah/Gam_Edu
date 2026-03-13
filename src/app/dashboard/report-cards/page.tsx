@@ -78,7 +78,10 @@ export default function ReportCardsPage() {
     const [isPublishing, setIsPublishing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
-    const [logoBase64, setLogoBase64] = useState<string>('');
+    
+    // NEW: State for Base64 Logo
+    const [base64Logo, setBase64Logo] = useState<string>('');
+    
     const printRef = useRef<HTMLDivElement>(null);
 
     const canManage = ['Administrator', 'Director', 'Teacher'].includes(role || '');
@@ -177,11 +180,13 @@ export default function ReportCardsPage() {
                 myGrandTotal += total100;
                 subjectsTaken++;
 
+                // Get the grade and the automatic system remark
                 const { grade, autoRemark } = getGradeAndRemark(total100);
 
+                // Extract the most recent custom teacher remark for this subject from assessments
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
-                
+
                 const mySubjectRank = subjectStats[sub.id].totalScores.sort((a,b)=>b-a).indexOf(total100) + 1;
                 const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
                     ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
@@ -222,6 +227,13 @@ export default function ReportCardsPage() {
                 const uniqueDays = new Set(termAtt.map(a => format(a.date?.toDate ? a.date.toDate() : new Date(a.date), 'yyyy-MM-dd')));
                 totalClassDays = uniqueDays.size;
                 studentPresentDays = termAtt.filter(a => a.studentId === selectedStudentId && (a.status === 'Present' || a.status === 'Late')).length;
+            }
+
+            // NEW: Fetch the logo as Base64 so html2canvas doesn't fail
+            let finalLogoStr = '';
+            if (schoolProfile?.logoUrl) {
+                finalLogoStr = await getBase64ImageFromUrl(schoolProfile.logoUrl);
+                setBase64Logo(finalLogoStr);
             }
 
             setProcessedReport({
@@ -274,11 +286,11 @@ export default function ReportCardsPage() {
         
         setIsExporting(true);
         try {
-            // THE ULTIMATE FIX: Convert to Base64 before html2canvas
-            if (schoolProfile?.logoUrl) {
+            // Re-verify the base64 logo is ready
+            if (!base64Logo && schoolProfile?.logoUrl) {
                 const base64 = await getBase64ImageFromUrl(schoolProfile.logoUrl);
-                setLogoBase64(base64);
-                // Give React a tiny moment to update the <img> src in the DOM
+                setBase64Logo(base64);
+                // Wait a tiny bit for the state to render in the hidden div
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
 
@@ -388,11 +400,11 @@ export default function ReportCardsPage() {
                     <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }} id="pdf-content">
                         {/* HEADER */}
                         <div className="flex flex-row items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6 w-full">
-                            {/* Left Logo Space */}
+                            {/* Left Logo Space - Optimized with Base64 */}
                             <div className="w-32 h-32 flex-shrink-0 flex items-center justify-start">
-                                {(logoBase64 || schoolProfile?.logoUrl) && (
+                                {(base64Logo || schoolProfile?.logoUrl) && (
                                     <img 
-                                        src={logoBase64 || schoolProfile?.logoUrl} 
+                                        src={base64Logo || schoolProfile?.logoUrl} 
                                         alt="Logo" 
                                         crossOrigin="anonymous" 
                                         loading="eager"
@@ -429,7 +441,7 @@ export default function ReportCardsPage() {
                             </div>
                         </div>
 
-                        {/* GRADES TABLE */}
+                        {/* GRADES TABLE - Exactly 9 columns */}
                         <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
                             <thead className="bg-slate-100">
                                 <tr>
