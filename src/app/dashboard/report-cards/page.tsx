@@ -25,21 +25,36 @@ import { Textarea } from '@/components/ui/textarea';
 
 // --- HELPERS ---
 
-// Helper to safely convert external URLs to Base64
+// Helper to safely convert external URLs to Base64 with enhanced logging
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
+        console.log('📡 Fetching image from:', imageUrl);
         const res = await fetch(imageUrl, { mode: 'cors' });
-        if (!res.ok) throw new Error("Network response was not ok");
+        
+        if (!res.ok) {
+            console.error(`❌ Fetch failed: ${res.status} ${res.statusText}`);
+            return "";
+        }
+        
         const blob = await res.blob();
+        console.log('✅ Blob received, size:', blob.size, 'type:', blob.type);
+        
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                console.log('✅ Base64 ready, starts with:', result.substring(0, 30));
+                resolve(result);
+            };
+            reader.onerror = (e) => {
+                console.error('❌ FileReader error:', e);
+                reject(e);
+            };
             reader.readAsDataURL(blob);
         });
-    } catch (error) {
-        console.error("Error converting image to base64:", error);
-        return ""; // Fallback to empty string if it fails
+    } catch (error: any) {
+        console.error("❌ getBase64ImageFromUrl failed:", error.message || error);
+        return "";
     }
 }
 
@@ -226,10 +241,21 @@ export default function ReportCardsPage() {
                 studentPresentDays = termAtt.filter(a => a.studentId === selectedStudentId && (a.status === 'Present' || a.status === 'Late')).length;
             }
 
-            // NEW: Fetch the logo as Base64 so html2canvas doesn't fail
+            // NEW: Fetch the logo as Base64 with enhanced logging
             let finalLogoStr = '';
             if (schoolProfile?.logoUrl) {
+                console.log('🔍 Logo URL found:', schoolProfile.logoUrl);
+                console.log('🔍 URL type:', schoolProfile.logoUrl.substring(0, 50));
+                
                 finalLogoStr = await getBase64ImageFromUrl(schoolProfile.logoUrl);
+                
+                if (finalLogoStr) {
+                    console.log('✅ Logo converted successfully, length:', finalLogoStr.length);
+                } else {
+                    console.error('❌ Logo conversion returned empty string');
+                }
+            } else {
+                console.warn('⚠️ No logoUrl found in schoolProfile:', schoolProfile);
             }
 
             setProcessedReport({
@@ -521,7 +547,7 @@ export default function ReportCardsPage() {
             <style jsx global>{`
                 @media print {
                     body * { visibility: hidden; }
-                    .print\\:hidden { display: none; }
+                    .print\\:hidden { display: none !important; }
                     #pdf-content, #pdf-content * { visibility: visible; }
                     #pdf-content { position: absolute; left: 0; top: 0; width: 100%; }
                 }
