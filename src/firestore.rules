@@ -119,8 +119,8 @@ service cloud.firestore {
     match /school_calendar/{eventId} { allow read, list: if isSignedIn(); allow write: if isAdmin(); }
     
     match /attendance/{attendanceId} {
-        allow get: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher() || isAdmin() || isDirector() || isStaff());
-        allow list: if isSignedIn() && (isTeacher() || isAdmin() || isDirector() || isStaff());
+        allow get: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher() || isStaff() || isAdmin() || isDirector());
+        allow list: if isSignedIn() && (isTeacher() || isStaff() || isAdmin() || isDirector());
         allow write: if isTeacher() || isAdmin() || isDirector();
     }
 
@@ -138,17 +138,16 @@ service cloud.firestore {
     match /quizzes/{quizId} { allow read, list: if isSignedIn(); allow create: if isStaff() && request.resource.data.teacherId == request.auth.uid; allow update, delete: if isTeacher() && get(/databases/$(database)/documents/quizzes/$(quizId)).data.teacherId == request.auth.uid; match /attempts/{attemptId} { allow read, list: if isTeacher() || isAdmin() || request.auth.uid == resource.data.studentId; allow create: if isStudent(); } }
     match /quizAttempts/{attemptId} { allow create: if isSignedIn(); allow read, list: if isSignedIn(); allow update, delete: if isTeacher() || isAdmin(); }
     
-    match /assessments/{assessmentId} { 
+    match /assessments/{assessmentId} {
         allow get: if isSignedIn() && (
             resource.data.studentId == request.auth.uid || 
-            isTeacher() || isAdmin() || isDirector() || isStaff()
+            isTeacher() || isStaff() || isAdmin() || isDirector()
         );
         allow list: if isSignedIn() && (
-            isTeacher() || isAdmin() || isDirector() || isStaff() ||
-            (request.query.limit <= 100 && request.query.where.studentId == request.auth.uid)
+            isTeacher() || isStaff() || isAdmin() || isDirector()
         );
-        allow create, update: if isTeacher() || isStaff() || isAdmin(); 
-        allow delete: if isAdmin(); 
+        allow create, update: if isTeacher() || isStaff() || isAdmin();
+        allow delete: if isAdmin();
     }
     
     match /lesson-plans/{planId} {
@@ -158,14 +157,14 @@ service cloud.firestore {
     }
 
     match /learning_materials/{materialId} { allow read, list: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
-    match /behavioral_records/{recordId} { 
+    
+    match /behavioral_records/{recordId} {
         allow get: if isSignedIn() && (
             resource.data.studentId == request.auth.uid || 
-            isTeacher() || isAdmin() || isDirector() || isStaff()
+            isTeacher() || isStaff() || isAdmin() || isDirector()
         );
         allow list: if isSignedIn() && (
-            isTeacher() || isAdmin() || isDirector() || isStaff() ||
-            (request.query.limit <= 100 && request.query.where.studentId == request.auth.uid)
+            isTeacher() || isStaff() || isAdmin() || isDirector()
         );
         allow create, update: if isTeacher() || isStaff() || isAdmin();
         allow delete: if isAdmin();
@@ -286,7 +285,7 @@ service cloud.firestore {
     match /scratch_assets/{assetId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /coding_curriculum/{lessonId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /student_coding_progress/{progressId} { allow read, write: if isSignedIn() && (progressId.startsWith(request.auth.uid) || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid); allow read: if isTeacher() || isAdmin(); }
-    match /student_coding_projects/{projectId} { allow read: if isSignedIn(); allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow update, delete: if isSignedIn() && request.resource.data.userId == request.auth.uid; }
+    match /coding-club-projects/{userId} { allow read, write: if isOwner(userId); }
     match /forumThreads/{threadId} { allow read: if isSignedIn(); allow create: if isSignedIn(); allow update: if isSignedIn(); allow delete: if isAdmin() || request.auth.uid == resource.data.createdBy.uid; match /replies/{replyId} { allow read: if isSignedIn(); allow create: if isSignedIn(); allow update, delete: if isAdmin() || request.auth.uid == resource.data.author.uid; } }
     
     match /direct_messages/{chatId} { 

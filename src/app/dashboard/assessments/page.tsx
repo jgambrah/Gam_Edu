@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/role-context';
@@ -29,7 +29,6 @@ function AssessmentsLog() {
     
     const isStaffRole = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
-    // Index Required: assessments (schoolId: Asc, assessmentDate: Desc)
     const assessmentsQuery = useMemoFirebase(
         () => (firestore && schoolId && isStaffRole) ? query(
             collection(firestore, 'assessments'), 
@@ -125,7 +124,6 @@ function BehavioralLog() {
 
     const isStaffRole = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
-    // Index Required: behavioral_records (schoolId: Asc, date: Desc)
     const recordsQuery = useMemoFirebase(() => 
         (firestore && schoolId && isStaffRole) ? query(
             collection(firestore, 'behavioral_records'), 
@@ -214,11 +212,20 @@ function BehavioralLog() {
 
 export default function AssessmentsPage() {
     const { role, loading: roleLoading } = useRole();
+    const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const [activeForm, setActiveForm] = useState<string | null>(null);
+
+    // DEBUG LOGS
+    useEffect(() => {
+        if (!roleLoading && !schoolLoading) {
+            console.log('DEBUG role:', role, 'loading:', roleLoading);
+            console.log('DEBUG schoolId:', schoolId, 'loading:', schoolLoading);
+        }
+    }, [role, roleLoading, schoolId, schoolLoading]);
 
     const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-    if (roleLoading) {
+    if (roleLoading || schoolLoading) {
         return (
             <div className="flex justify-center p-12">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
