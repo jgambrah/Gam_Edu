@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Trash2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -58,122 +58,249 @@ function getGradeAndRemark(score: number) {
 }
 
 // --- SUB-COMPONENT: ACTUAL REPORT CARD CONTENT ---
-function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: { data: any, classTeacherComment: string, headmasterComment: string, caWeight: number, examWeight: number }) {
+// KEY LAYOUT FIXES:
+//  1. Replaced flex-grow (caused huge gap) with natural stacking — content sits tight together
+//  2. Remarks use a 2-column box layout with whiteSpace:pre-wrap + wordBreak:break-word so long text wraps properly
+//  3. All spacing uses fixed px values so nothing stretches unpredictably
+function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: {
+    data: any;
+    classTeacherComment: string;
+    headmasterComment: string;
+    caWeight: number;
+    examWeight: number;
+}) {
     return (
-        <div 
-            className="bg-white px-10 py-8 flex flex-col justify-between" 
-            style={{ 
-                width: '794px',   // 210mm @ 96DPI
-                height: '1123px', // 297mm @ 96DPI
+        <div
+            id="pdf-content"
+            style={{
+                width: '794px',
+                minHeight: '1123px',
+                maxHeight: '1123px',
                 color: 'black',
                 boxSizing: 'border-box',
-                margin: '0 auto'
+                margin: '0 auto',
+                backgroundColor: 'white',
+                padding: '28px 36px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0px',
+                overflow: 'hidden',
             }}
-            id="pdf-content"
         >
-            {/* --- TOP SECTION (Header + Info) --- */}
-            <div>
-                <div className="flex flex-row items-center justify-between border-b-4 border-double border-slate-800 pb-4 mb-4 w-full">
-                    <div className="w-24 h-24 flex-shrink-0 flex items-center justify-start">
-                        {data.logoBase64 ? (
-                            <img 
-                                src={data.logoBase64} 
-                                alt="School Logo" 
-                                style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain' }}
-                            />
-                        ) : (
-                            <div style={{ width: 100, height: 100, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#94a3b8' }}>
-                                No Logo
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex-1 text-center px-4">
-                        <h1 className="text-2xl font-black uppercase tracking-widest leading-tight">{data.schoolName || "SCHOOL NAME"}</h1>
-                        {data.schoolMotto && <p className="text-[10px] italic text-slate-600">"{data.schoolMotto}"</p>}
-                        <p className="text-[10px] font-bold mt-1">{data.schoolAddress || ""}</p>
-                        <p className="text-[10px] font-bold">{data.schoolPhone || ""} | {data.schoolEmail || ""}</p>
-                    </div>
-
-                    <div className="w-24 flex-shrink-0"></div>
+            {/* ── HEADER ── */}
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderBottom: '4px double #1e293b',
+                paddingBottom: '10px',
+                marginBottom: '8px',
+            }}>
+                {/* Logo */}
+                <div style={{ width: '88px', height: '88px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                    {data.logoBase64 ? (
+                        <img
+                            src={data.logoBase64}
+                            alt="School Logo"
+                            style={{ maxWidth: '88px', maxHeight: '88px', objectFit: 'contain', display: 'block' }}
+                        />
+                    ) : (
+                        <div style={{ width: 88, height: 88, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#94a3b8', textAlign: 'center' }}>
+                            No Logo
+                        </div>
+                    )}
                 </div>
 
-                <h2 className="text-xl font-bold text-center mb-4 bg-slate-100 py-1 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
-
-                {/* Student Info Grid */}
-                <div className="grid grid-cols-2 gap-2 mb-4 text-[11px] border-2 p-3 font-medium bg-slate-50/50">
-                    <div><strong>Name:</strong> {data.student.firstName} {data.student.lastName}</div>
-                    <div><strong>Term:</strong> {data.term}</div>
-                    <div><strong>Class:</strong> {data.className}</div>
-                    <div><strong>Academic Year:</strong> {data.academicYear}</div>
-                    <div className="mt-1"><strong>Attendance:</strong> {data.studentPresentDays} / {data.totalClassDays} days</div>
-                    <div className="col-span-2 mt-1 pt-1 border-t flex justify-between items-center">
-                        <span><strong>Position in Class:</strong> <span className="font-bold underline">{data.classPosition}</span> of {data.totalStudents}</span>
-                        <span><strong>Overall Average:</strong> <span className="font-bold underline">{data.overallAverage}%</span></span>
+                {/* School Info */}
+                <div style={{ flex: 1, textAlign: 'center', padding: '0 12px' }}>
+                    <div style={{ fontSize: '19px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: 1.2 }}>
+                        {data.schoolName || 'SCHOOL NAME'}
                     </div>
+                    {data.schoolMotto && (
+                        <div style={{ fontSize: '9px', fontStyle: 'italic', color: '#475569', marginTop: '2px' }}>
+                            "{data.schoolMotto}"
+                        </div>
+                    )}
+                    <div style={{ fontSize: '9px', fontWeight: 700, marginTop: '3px' }}>{data.schoolAddress || ''}</div>
+                    <div style={{ fontSize: '9px', fontWeight: 700 }}>
+                        {[data.schoolPhone, data.schoolEmail].filter(Boolean).join(' | ')}
+                    </div>
+                </div>
+
+                {/* Spacer to balance logo */}
+                <div style={{ width: '88px', flexShrink: 0 }} />
+            </div>
+
+            {/* ── REPORT TITLE ── */}
+            <div style={{
+                fontSize: '13px',
+                fontWeight: 700,
+                textAlign: 'center',
+                marginBottom: '8px',
+                background: '#f1f5f9',
+                padding: '4px',
+                border: '1px solid #cbd5e1',
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+            }}>
+                Terminal Report Card
+            </div>
+
+            {/* ── STUDENT INFO ── */}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '3px 16px',
+                marginBottom: '8px',
+                fontSize: '10px',
+                border: '2px solid #cbd5e1',
+                padding: '7px 10px',
+                fontWeight: 500,
+                background: '#f8fafc',
+            }}>
+                <div><strong>Name:</strong> {data.student.firstName} {data.student.lastName}</div>
+                <div><strong>Term:</strong> {data.term}</div>
+                <div><strong>Class:</strong> {data.className}</div>
+                <div><strong>Academic Year:</strong> {data.academicYear}</div>
+                <div><strong>Attendance:</strong> {data.studentPresentDays} / {data.totalClassDays} days</div>
+                <div style={{ gridColumn: '1 / -1', marginTop: '4px', paddingTop: '4px', borderTop: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>
+                        <strong>Position in Class: </strong>
+                        <span style={{ fontWeight: 700, textDecoration: 'underline' }}>{data.classPosition}</span> of {data.totalStudents}
+                    </span>
+                    <span>
+                        <strong>Overall Average: </strong>
+                        <span style={{ fontWeight: 700, textDecoration: 'underline' }}>{data.overallAverage}%</span>
+                    </span>
                 </div>
             </div>
 
-            {/* --- MIDDLE SECTION (Grades Table) --- */}
-            <div className="flex-grow flex flex-col">
-                <table className="w-full text-[10px] border-collapse border border-slate-800 mb-2">
-                    <thead className="bg-slate-100">
-                        <tr>
-                            <th className="border border-slate-800 p-1 text-left">Subject</th>
-                            <th className="border border-slate-800 p-1 text-center w-10">CA ({caWeight})</th>
-                            <th className="border border-slate-800 p-1 text-center w-10">Exam ({examWeight})</th>
-                            <th className="border border-slate-800 p-1 text-center w-10">Total</th>
-                            <th className="border border-slate-800 p-1 text-center w-10">Avg</th>
-                            <th className="border border-slate-800 p-1 text-center w-8">Grd</th>
-                            <th className="border border-slate-800 p-1 text-center w-8">Pos</th>
-                            <th className="border border-slate-800 p-1 text-center w-20">Remark</th>
-                            <th className="border border-slate-800 p-1 text-left">Teacher's Comment</th>
+            {/* ── GRADES TABLE ── */}
+            {/* table-layout:fixed + colgroup locks every column to its declared width,
+                preventing the browser from creating extra space or phantom columns.
+                The last column (Teacher's Comment) gets the remaining width automatically. */}
+            <table style={{ width: '100%', fontSize: '9.5px', borderCollapse: 'collapse', marginBottom: '5px', tableLayout: 'fixed' }}>
+                <colgroup>
+                    <col style={{ width: 'auto' }} />          {/* Subject — fills remaining */}
+                    <col style={{ width: '38px' }} />           {/* CA */}
+                    <col style={{ width: '46px' }} />           {/* Exam */}
+                    <col style={{ width: '36px' }} />           {/* Total */}
+                    <col style={{ width: '36px' }} />           {/* Avg */}
+                    <col style={{ width: '28px' }} />           {/* Grd */}
+                    <col style={{ width: '28px' }} />           {/* Pos */}
+                    <col style={{ width: '56px' }} />           {/* Remark */}
+                    <col style={{ width: '130px' }} />          {/* Teacher's Comment */}
+                </colgroup>
+                <thead>
+                    <tr style={{ background: '#f1f5f9' }}>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'left', overflow: 'hidden' }}>Subject</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>CA ({caWeight})</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Exam ({examWeight})</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Total</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Avg</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Grd</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Pos</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Remark</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'left' }}>Teacher's Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.rows.map((row: any, i: number) => (
+                        <tr key={i} style={{ background: i % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.subjectName}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center' }}>{row.ca}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center' }}>{row.exam}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', fontWeight: 900, background: '#f1f5f9' }}>{row.total}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', color: '#64748b', fontStyle: 'italic' }}>{row.classAverage}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', fontWeight: 700 }}>{row.grade}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center' }}>{row.position}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', fontWeight: 600, fontSize: '8.5px' }}>{row.autoRemark}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', fontStyle: 'italic', fontSize: '8.5px', color: '#475569', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{row.teacherRemark || '-'}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {data.rows.map((row: any, i: number) => (
-                            <tr key={i}>
-                                <td className="border border-slate-800 py-0.5 px-1 font-bold">{row.subjectName}</td>
-                                <td className="border border-slate-800 py-0.5 px-1 text-center">{row.ca}</td>
-                                <td className="border border-slate-800 py-0.5 px-1 text-center">{row.exam}</td>
-                                <td className="border border-slate-800 py-0.5 px-1 text-center font-black bg-slate-50">{row.total}</td>
-                                <td className="border border-slate-800 py-0.5 px-1 text-center text-slate-500 italic">{row.classAverage}</td>
-                                <td className="border border-slate-800 py-0.5 px-1 text-center font-bold">{row.grade}</td>
-                                <td className="border border-slate-800 py-0.5 px-1 text-center">{row.position}</td>
-                                <td className="border border-slate-800 py-0.5 px-1 text-center font-semibold text-[9px]">{row.autoRemark}</td>
-                                <td className="border border-slate-800 py-0.5 px-1 italic text-[9px] text-slate-600">{row.teacherRemark || "-"}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                    ))}
+                </tbody>
+            </table>
 
-                {/* Grading Key */}
-                <div className="border p-1 text-[9px] bg-slate-50 flex justify-between mb-4">
-                    <strong>Key:</strong> 80-100:A (Exc) | 70-79:B (V.G) | 60-69:C (Good) | 50-59:D (Cred) | 40-49:E (Pass) | 0-39:F (Fail)
+            {/* ── GRADING KEY ── */}
+            <div style={{
+                border: '1px solid #cbd5e1',
+                padding: '3px 6px',
+                fontSize: '8px',
+                background: '#f8fafc',
+                marginBottom: '8px',
+                display: 'flex',
+                gap: '5px',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+            }}>
+                <strong>Key:</strong>
+                <span>80–100: A (Excellent)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>70–79: B (Very Good)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>60–69: C (Good)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>50–59: D (Credit)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>40–49: E (Pass)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>0–39: F (Fail)</span>
+            </div>
+
+            {/* ── REMARKS — 2-column box layout, text wraps naturally ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '2px', padding: '6px 8px', background: '#f8fafc' }}>
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px', letterSpacing: '0.06em' }}>
+                        Class Teacher's Remark:
+                    </div>
+                    <div style={{
+                        fontSize: '10px',
+                        fontStyle: 'italic',
+                        fontFamily: 'Georgia, serif',
+                        color: '#1e293b',
+                        lineHeight: 1.5,
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        minHeight: '28px',
+                    }}>
+                        {classTeacherComment || '...'}
+                    </div>
+                </div>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '2px', padding: '6px 8px', background: '#f8fafc' }}>
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px', letterSpacing: '0.06em' }}>
+                        Headmaster's Remark:
+                    </div>
+                    <div style={{
+                        fontSize: '10px',
+                        fontStyle: 'italic',
+                        fontFamily: 'Georgia, serif',
+                        color: '#1e293b',
+                        lineHeight: 1.5,
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        minHeight: '28px',
+                    }}>
+                        {headmasterComment || '...'}
+                    </div>
                 </div>
             </div>
 
-            {/* --- BOTTOM SECTION (Comments & Signatures) --- */}
-            <div className="mt-auto pt-2">
-                <div className="space-y-2 mb-6">
-                    <div className="border-b border-dotted pb-1">
-                        <p className="text-[10px] font-bold uppercase text-slate-500">Class Teacher's Remark:</p>
-                        <p className="text-xs italic mt-1 font-serif">{classTeacherComment || "...................................................................................................."}</p>
-                    </div>
-                    <div className="border-b border-dotted pb-1">
-                        <p className="text-[10px] font-bold uppercase text-slate-500">Headmaster's Remark:</p>
-                        <p className="text-xs italic mt-1 font-serif">{headmasterComment || "...................................................................................................."}</p>
+            {/* ── SIGNATURES ── */}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '32px',
+                borderTop: '2px dashed #cbd5e1',
+                paddingTop: '10px',
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ height: '28px', borderBottom: '1px solid black', width: '75%', margin: '0 auto 4px' }} />
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Class Teacher Signature &amp; Date
                     </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-8 pt-4">
-                    <div className="text-center">
-                        <div className="h-6 border-b border-black w-3/4 mx-auto mb-1"></div>
-                        <p className="font-bold uppercase text-[9px]">Class Teacher Signature</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="h-6 border-b border-black w-3/4 mx-auto mb-1"></div>
-                        <p className="font-bold uppercase text-[9px]">Headmaster Signature</p>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ height: '28px', borderBottom: '1px solid black', width: '75%', margin: '0 auto 4px' }} />
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Headmaster Signature &amp; Date
                     </div>
                 </div>
             </div>
@@ -237,7 +364,6 @@ export default function ReportCardsPage() {
             const snap = await getDocs(q);
             const allAssessments = snap.docs.map(d => d.data());
 
-            // 1. Initialize Subject Stats (Ensure arrays are clean)
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             const studentTotals: Record<string, number> = {};
 
@@ -245,16 +371,11 @@ export default function ReportCardsPage() {
                 subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
             });
 
-            // 2. Loop ALL students to build the comparative data
             students?.forEach((stu: any) => {
                 let grandTotal = 0;
-                
                 subjects?.forEach((sub: any) => {
                     const stuSubjAssessments = allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id);
-                    
-                    // Even if length is 0, we must record a 0 score to maintain accurate ranking counts
                     let total100 = 0;
-                    
                     if (stuSubjAssessments.length > 0) {
                         const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
                         const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
@@ -268,11 +389,8 @@ export default function ReportCardsPage() {
 
                         total100 = Math.round(weightedCA + weightedExam);
                     }
-
                     grandTotal += total100;
-
                     if (subjectStats[sub.id]) {
-                        // Push every student's score so the rank is out of the total class size
                         subjectStats[sub.id].totalScores.push(total100);
                         subjectStats[sub.id].sum += total100;
                     }
@@ -323,8 +441,8 @@ export default function ReportCardsPage() {
                     ca: Math.round(weightedCA),
                     exam: Math.round(weightedExam),
                     total: total100,
-                    grade: grade,
-                    autoRemark: autoRemark,
+                    grade,
+                    autoRemark,
                     teacherRemark: customTeacherRemark,
                     classAverage: subjectAverage,
                     position: mySubjectRank
@@ -414,13 +532,12 @@ export default function ReportCardsPage() {
 
         setIsExporting(true);
         try {
-            // New logic: Use flex and fixed dimensions
             element.style.visibility = 'visible';
             element.style.position = 'fixed';
             element.style.top = '0';
             element.style.left = '0';
             element.style.zIndex = '-1';
-            element.style.display = 'flex'; // Ensure flex layout for PDF
+            element.style.display = 'flex';
 
             await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -437,11 +554,10 @@ export default function ReportCardsPage() {
 
             element.style.visibility = 'hidden';
             element.style.position = 'absolute';
-            element.style.display = 'block'; // Reset
+            element.style.display = 'block';
 
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
-            // Image maps exactly to A4 (210mm x 297mm)
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
             pdf.save(`${processedReport.student?.firstName}_Report_${term}.pdf`);
         } catch (error) {
@@ -456,7 +572,9 @@ export default function ReportCardsPage() {
 
     return (
         <div className="p-6 space-y-6">
-            <h1 className="text-3xl font-bold flex items-center gap-2"><GraduationCap className="h-8 w-8 text-indigo-600"/> Terminal Report Cards</h1>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+                <GraduationCap className="h-8 w-8 text-indigo-600"/> Terminal Report Cards
+            </h1>
 
             {/* Filter Section */}
             <Card className="border-t-4 border-t-indigo-600 shadow-md print:hidden">
@@ -471,39 +589,74 @@ export default function ReportCardsPage() {
                     </div>
                     <div className="space-y-2">
                         <Label>Term</Label>
-                        <Select value={term} onValueChange={setTerm}><SelectTrigger className="bg-white"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="First Term">First Term</SelectItem><SelectItem value="Second Term">Second Term</SelectItem><SelectItem value="Third Term">Third Term</SelectItem></SelectContent></Select>
+                        <Select value={term} onValueChange={setTerm}>
+                            <SelectTrigger className="bg-white"><SelectValue/></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="First Term">First Term</SelectItem>
+                                <SelectItem value="Second Term">Second Term</SelectItem>
+                                <SelectItem value="Third Term">Third Term</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div className="space-y-2">
                         <Label>Class</Label>
-                        <Select value={classId} onValueChange={setClassId}><SelectTrigger className="bg-white"><SelectValue placeholder="Select Class"/></SelectTrigger><SelectContent>{classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select>
+                        <Select value={classId} onValueChange={setClassId}>
+                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Class"/></SelectTrigger>
+                            <SelectContent>{classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select>
                     </div>
                     <div className="space-y-2">
                         <Label>Select Student</Label>
-                        <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}><SelectTrigger className="bg-white"><SelectValue placeholder="Choose Student"/></SelectTrigger><SelectContent>{students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select>
+                        <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
+                            <SelectTrigger className="bg-white"><SelectValue placeholder="Choose Student"/></SelectTrigger>
+                            <SelectContent>{students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
+                        </Select>
                     </div>
                     <div className="space-y-2">
                         <Label>Term Start</Label>
-                        <Popover><PopoverTrigger asChild><Button variant="outline" className="w-full text-left font-normal bg-white">{termStartDate ? format(termStartDate, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50"/></Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={termStartDate} onSelect={setTermStartDate} initialFocus /></PopoverContent></Popover>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full text-left font-normal bg-white">
+                                    {termStartDate ? format(termStartDate, "PPP") : <span>Pick date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={termStartDate} onSelect={setTermStartDate} initialFocus />
+                            </PopoverContent>
+                        </Popover>
                     </div>
                     <div className="space-y-2">
                         <Label>Term End</Label>
-                        <Popover><PopoverTrigger asChild><Button variant="outline" className="w-full text-left font-normal bg-white">{termEndDate ? format(termEndDate, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50"/></Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={termEndDate} onSelect={setTermEndDate} initialFocus /></PopoverContent></Popover>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full text-left font-normal bg-white">
+                                    {termEndDate ? format(termEndDate, "PPP") : <span>Pick date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={termEndDate} onSelect={setTermEndDate} initialFocus />
+                            </PopoverContent>
+                        </Popover>
                     </div>
                 </CardContent>
                 <CardFooter className="justify-end bg-slate-50 pt-4 border-t">
                     <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600 hover:bg-indigo-700">
-                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>} 
+                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>}
                         Generate Report
                     </Button>
                 </CardFooter>
             </Card>
 
-            {/* Remark Section & Live Preview */}
+            {/* Remarks + Preview */}
             {processedReport && (
                 <div className="space-y-6 animate-in slide-in-from-top-4 duration-500">
                     <Card className="border-t-4 border-t-orange-400 shadow-md">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-orange-800"><FileCheck className="h-5 w-5"/> Final Remarks</CardTitle>
+                            <CardTitle className="flex items-center gap-2 text-orange-800">
+                                <FileCheck className="h-5 w-5"/> Final Remarks
+                            </CardTitle>
                             <CardDescription>Add terminal comments before publishing or printing.</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -517,10 +670,14 @@ export default function ReportCardsPage() {
                             </div>
                         </CardContent>
                         <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
-                            <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary"><Download className="mr-2 h-4 w-4"/> {isExporting ? 'Generating PDF...' : 'Download PDF'}</Button>
+                            <Button variant="outline" onClick={() => window.print()}>
+                                <Printer className="mr-2 h-4 w-4"/> Print
+                            </Button>
+                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary">
+                                <Download className="mr-2 h-4 w-4"/> {isExporting ? 'Generating PDF...' : 'Download PDF'}
+                            </Button>
                             <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700">
-                                {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <CheckCircle className="mr-2 h-4 w-4"/>} 
+                                {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
                                 Publish to Portal
                             </Button>
                         </CardFooter>
@@ -529,15 +686,19 @@ export default function ReportCardsPage() {
                     {/* VISIBLE LIVE PREVIEW */}
                     <Card className="border shadow-xl overflow-hidden">
                         <CardHeader className="bg-slate-900 text-white">
-                            <CardTitle className="flex items-center gap-2 text-lg"><Eye className="h-5 w-5 text-indigo-400"/> Live Preview</CardTitle>
-                            <CardDescription className="text-slate-400">Review the student's terminal report below as it will appear on the final document.</CardDescription>
+                            <CardTitle className="flex items-center gap-2 text-lg">
+                                <Eye className="h-5 w-5 text-indigo-400"/> Live Preview
+                            </CardTitle>
+                            <CardDescription className="text-slate-400">
+                                Review the student's terminal report below as it will appear on the final document.
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="p-0 bg-slate-200">
-                            <ScrollArea className="h-[800px] w-full">
-                                <div className="p-12">
-                                    <div className="shadow-2xl ring-1 ring-black/5 bg-white mx-auto overflow-hidden rounded-sm">
-                                        <ReportCardTemplate 
-                                            data={processedReport} 
+                            <ScrollArea className="h-[900px] w-full">
+                                <div className="p-8">
+                                    <div className="shadow-2xl ring-1 ring-black/5 bg-white mx-auto overflow-hidden rounded-sm" style={{ width: '794px' }}>
+                                        <ReportCardTemplate
+                                            data={processedReport}
                                             classTeacherComment={classTeacherComment}
                                             headmasterComment={headmasterComment}
                                             caWeight={CA_WEIGHT}
@@ -551,12 +712,12 @@ export default function ReportCardsPage() {
                 </div>
             )}
 
-            {/* HIDDEN PRINT TEMPLATE (Strict A4 Size) */}
+            {/* HIDDEN PRINT / PDF CAPTURE TEMPLATE */}
             <div style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1 }}>
                 <div ref={printRef}>
                     {processedReport && (
-                        <ReportCardTemplate 
-                            data={processedReport} 
+                        <ReportCardTemplate
+                            data={processedReport}
                             classTeacherComment={classTeacherComment}
                             headmasterComment={headmasterComment}
                             caWeight={CA_WEIGHT}
@@ -570,10 +731,10 @@ export default function ReportCardsPage() {
                 @media print {
                     body * { visibility: hidden !important; }
                     #pdf-content, #pdf-content * { visibility: visible !important; }
-                    #pdf-content { 
-                        position: absolute !important; 
-                        left: 0 !important; 
-                        top: 0 !important; 
+                    #pdf-content {
+                        position: absolute !important;
+                        left: 0 !important;
+                        top: 0 !important;
                         width: 100% !important;
                         margin: 0 !important;
                         padding: 0 !important;
