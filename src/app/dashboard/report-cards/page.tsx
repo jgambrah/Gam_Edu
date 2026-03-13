@@ -79,9 +79,6 @@ export default function ReportCardsPage() {
     const [isExporting, setIsExporting] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
     
-    // State for Base64 Logo
-    const [base64Logo, setBase64Logo] = useState<string>('');
-    
     const printRef = useRef<HTMLDivElement>(null);
 
     const canManage = ['Administrator', 'Director', 'Teacher'].includes(role || '');
@@ -229,11 +226,10 @@ export default function ReportCardsPage() {
                 studentPresentDays = termAtt.filter(a => a.studentId === selectedStudentId && (a.status === 'Present' || a.status === 'Late')).length;
             }
 
-            // Fetch the logo as Base64 so html2canvas doesn't fail
+            // NEW: Fetch the logo as Base64 so html2canvas doesn't fail
             let finalLogoStr = '';
             if (schoolProfile?.logoUrl) {
                 finalLogoStr = await getBase64ImageFromUrl(schoolProfile.logoUrl);
-                setBase64Logo(finalLogoStr);
             }
 
             setProcessedReport({
@@ -244,7 +240,13 @@ export default function ReportCardsPage() {
                 classPosition,
                 totalStudents: students?.length || 0,
                 studentPresentDays,
-                totalClassDays
+                totalClassDays,
+                logoBase64: finalLogoStr,
+                schoolName: schoolProfile?.name,
+                schoolMotto: schoolProfile?.motto,
+                schoolAddress: schoolProfile?.address,
+                schoolPhone: schoolProfile?.phone,
+                schoolEmail: schoolProfile?.email,
             });
 
         } catch (error: any) {
@@ -283,33 +285,37 @@ export default function ReportCardsPage() {
     const handleDownloadPDF = async () => {
         const element = printRef.current;
         if (!element || !processedReport) return;
-        
+
         setIsExporting(true);
         try {
-            // Re-verify the base64 logo is ready
-            if (!base64Logo && schoolProfile?.logoUrl) {
-                const base64 = await getBase64ImageFromUrl(schoolProfile.logoUrl);
-                setBase64Logo(base64);
-                // Wait a tiny bit for the state to render in the hidden div
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
+            element.style.visibility = 'visible';
+            element.style.position = 'fixed';
+            element.style.top = '0';
+            element.style.left = '0';
+            element.style.zIndex = '-1';
 
-            element.style.display = 'block';
-            const canvas = await html2canvas(element, { 
-                scale: 2, 
+            // Give React one frame to paint the logo before capturing
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            const canvas = await html2canvas(element, {
+                scale: 2,
                 useCORS: true,
                 allowTaint: true,
                 logging: false,
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                // Tell html2canvas images are already inlined as base64
+                imageTimeout: 0,
             });
+
+            element.style.visibility = 'hidden';
+            element.style.position = 'absolute';
+
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`${processedReport.student?.firstName}_Report_${term}.pdf`);
-            element.style.display = 'none';
         } catch (error) {
             console.error("PDF Export Error:", error);
             toast({ variant: 'destructive', title: "Export Failed" });
@@ -384,7 +390,7 @@ export default function ReportCardsPage() {
                         </div>
                     </CardContent>
                     <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
-                        <Button variant="outline" onClick={() => { if (printRef.current) { printRef.current.style.display = 'block'; window.print(); printRef.current.style.display = 'none'; } }}><Printer className="mr-2 h-4 w-4"/> Print</Button>
+                        <Button variant="outline" onClick={() => { if (printRef.current) { printRef.current.style.visibility = 'visible'; window.print(); printRef.current.style.visibility = 'hidden'; } }}><Printer className="mr-2 h-4 w-4"/> Print</Button>
                         <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary"><Download className="mr-2 h-4 w-4"/> {isExporting ? 'Generating PDF...' : 'Download PDF'}</Button>
                         <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600">
                             {isPublishing ? <Loader2 className="animate-spin mr-2"/> : <CheckCircle className="mr-2 h-4 w-4"/>} 
@@ -397,25 +403,44 @@ export default function ReportCardsPage() {
             {/* HIDDEN PRINT TEMPLATE */}
             {processedReport && (
                 <div className="overflow-x-auto bg-slate-200 p-8 flex justify-center print:hidden">
-                    <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }} id="pdf-content">
+                    <div 
+                        ref={printRef} 
+                        className="bg-white p-12 shadow-2xl" 
+                        style={{ 
+                            visibility: 'hidden',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            zIndex: -1,
+                            width: '210mm', 
+                            minHeight: '297mm', 
+                            color: 'black' 
+                        }} 
+                        id="pdf-content"
+                    >
                         {/* HEADER */}
                         <div className="flex flex-row items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6 w-full">
                             {/* Left Logo Space */}
                             <div className="w-32 h-32 flex-shrink-0 flex items-center justify-start">
-                                {/* Use the base64 string we generated, or fallback to standard URL if it failed */}
-                                <img 
-                                    src={base64Logo || schoolProfile?.logoUrl} 
-                                    alt="School Logo" 
-                                    className="max-w-[120px] max-h-[120px] object-contain"
-                                />
+                                {processedReport.logoBase64 ? (
+                                    <img 
+                                        src={processedReport.logoBase64} 
+                                        alt="School Logo" 
+                                        style={{ maxWidth: '120px', maxHeight: '120px', objectFit: 'contain' }}
+                                    />
+                                ) : (
+                                    <div style={{ width: 120, height: 120, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#94a3b8' }}>
+                                        No Logo
+                                    </div>
+                                )}
                             </div>
 
                             {/* Center Text */}
                             <div className="flex-1 text-center px-4">
-                                <h1 className="text-3xl font-black uppercase tracking-widest leading-tight">{schoolProfile?.name || "SCHOOL NAME"}</h1>
-                                {schoolProfile?.motto && <p className="text-sm italic text-slate-600 mt-1">"{schoolProfile.motto}"</p>}
-                                <p className="text-sm font-bold mt-2">{schoolProfile?.address || ""}</p>
-                                <p className="text-sm font-bold">{schoolProfile?.phone || ""} | {schoolProfile?.email || ""}</p>
+                                <h1 className="text-3xl font-black uppercase tracking-widest leading-tight">{processedReport.schoolName || "SCHOOL NAME"}</h1>
+                                {processedReport.schoolMotto && <p className="text-sm italic text-slate-600 mt-1">"{processedReport.schoolMotto}"</p>}
+                                <p className="text-sm font-bold mt-2">{processedReport.schoolAddress || ""}</p>
+                                <p className="text-sm font-bold">{processedReport.schoolPhone || ""} | {processedReport.schoolEmail || ""}</p>
                             </div>
 
                             <div className="w-32 flex-shrink-0"></div>
