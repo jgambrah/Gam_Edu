@@ -71,7 +71,8 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    // FIX: Use useDoc for single document reference
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
@@ -247,9 +248,15 @@ export default function ReportCardsPage() {
     const handleDownloadPDF = async () => {
         const element = printRef.current;
         if (!element) return;
+        setIsExporting(true);
         try {
             element.style.display = 'block';
-            const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+            const canvas = await html2canvas(element, { 
+                scale: 2, 
+                useCORS: true, 
+                logging: false,
+                backgroundColor: '#ffffff' 
+            });
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -259,8 +266,12 @@ export default function ReportCardsPage() {
             element.style.display = 'none';
         } catch (error) {
             toast({ variant: 'destructive', title: "Export Failed" });
+        } finally {
+            setIsExporting(false);
         }
     };
+
+    const [isExporting, setIsExporting] = useState(false);
 
     if (!canManage) return <div className="p-8">Access Denied.</div>;
 
@@ -329,7 +340,7 @@ export default function ReportCardsPage() {
                     </CardContent>
                     <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
                         <Button variant="outline" onClick={() => { if (printRef.current) { printRef.current.style.display = 'block'; window.print(); printRef.current.style.display = 'none'; } }}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                        <Button onClick={handleDownloadPDF} variant="secondary"><Download className="mr-2 h-4 w-4"/> PDF</Button>
+                        <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary"><Download className="mr-2 h-4 w-4"/> {isExporting ? 'Generating PDF...' : 'Download PDF'}</Button>
                         <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600">
                             {isPublishing ? <Loader2 className="animate-spin mr-2"/> : <CheckCircle className="mr-2 h-4 w-4"/>} 
                             Publish to Portal
