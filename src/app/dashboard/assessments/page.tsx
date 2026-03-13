@@ -1,12 +1,10 @@
-
-
 'use client';
 
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/role-context';
-import { ClipboardCheck, FilePlus, UserCog, Wand2 } from 'lucide-react';
+import { ClipboardCheck, FilePlus, UserCog, Wand2, Loader2 } from 'lucide-react';
 import { BehavioralRecordForm } from './behavioral-record-form';
 import { AiQuizGenerator } from './ai-quiz-generator';
 import {
@@ -18,24 +16,32 @@ import {
     TableRow,
   } from '@/components/ui/table';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { Assessment, BehavioralRecord, Student } from '@/lib/types';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { useCurrentSchool } from '@/hooks/use-current-school';
   
 function AssessmentsLog() {
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
     
     const assessmentsQuery = useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'assessments'), orderBy('assessmentDate', 'desc')) : null, 
-        [firestore]
+        () => (firestore && schoolId) ? query(
+            collection(firestore, 'assessments'), 
+            where('schoolId', '==', schoolId),
+            orderBy('assessmentDate', 'desc')
+        ) : null, 
+        [firestore, schoolId]
     );
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     const studentsQuery = useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'students')) : null,
-        [firestore]
+        () => (firestore && schoolId) ? query(
+            collection(firestore, 'students'),
+            where('schoolId', '==', schoolId)
+        ) : null,
+        [firestore, schoolId]
     );
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
     
@@ -48,7 +54,7 @@ function AssessmentsLog() {
 
     const toDate = (dateValue: any): Date | null => {
         if (!dateValue) return null;
-        if (dateValue.toDate) return dateValue.toDate(); // It's a Firestore Timestamp
+        if (dateValue.toDate) return dateValue.toDate(); 
         if (typeof dateValue === 'string' || typeof dateValue === 'number') {
             const d = new Date(dateValue);
             if (!isNaN(d.getTime())) return d;
@@ -73,7 +79,7 @@ function AssessmentsLog() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {isLoading && Array.from({ length: 3 }).map((_, i) => (
+                        {isLoading ? Array.from({ length: 3 }).map((_, i) => (
                             <TableRow key={i}>
                                 <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                                 <TableCell><Skeleton className="h-4 w-32" /></TableCell>
@@ -81,8 +87,13 @@ function AssessmentsLog() {
                                 <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                                 <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                             </TableRow>
-                        ))}
-                        {assessments?.map((item) => {
+                        )) : assessments?.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                                    No assessment records found for your school.
+                                </TableCell>
+                            </TableRow>
+                        ) : assessments?.map((item) => {
                             const assessmentDate = toDate(item.assessmentDate);
                             return (
                                 <TableRow key={item.id}>
@@ -103,10 +114,25 @@ function AssessmentsLog() {
   
 function BehavioralLog() {
     const firestore = useFirestore();
-    const recordsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'behavioral_records'), orderBy('date', 'desc')) : null, [firestore]);
+    const { schoolId } = useCurrentSchool();
+
+    const recordsQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(
+            collection(firestore, 'behavioral_records'), 
+            where('schoolId', '==', schoolId),
+            orderBy('date', 'desc')
+        ) : null, 
+        [firestore, schoolId]
+    );
     const { data: records, isLoading: isLoadingRecords } = useCollection<BehavioralRecord>(recordsQuery);
 
-    const studentsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'students')) : null, [firestore]);
+    const studentsQuery = useMemoFirebase(
+        () => (firestore && schoolId) ? query(
+            collection(firestore, 'students'),
+            where('schoolId', '==', schoolId)
+        ) : null,
+        [firestore, schoolId]
+    );
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
     
     const studentMap = useMemo(() => {
@@ -142,15 +168,20 @@ function BehavioralLog() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {isLoading && Array.from({ length: 3 }).map((_, i) => (
+                        {isLoading ? Array.from({ length: 3 }).map((_, i) => (
                             <TableRow key={i}>
                                 <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                                 <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                                 <TableCell><Skeleton className="h-4 w-28" /></TableCell>
                                 <TableCell><Skeleton className="h-4 w-full" /></TableCell>
                             </TableRow>
-                        ))}
-                        {records?.map((item) => {
+                        )) : records?.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                                    No behavioral records found for your school.
+                                </TableCell>
+                            </TableRow>
+                        ) : records?.map((item) => {
                              const incidentDate = toDate(item.date);
                              const studentName = item.studentName || studentMap.get(item.studentId) || item.studentId;
                              return (
