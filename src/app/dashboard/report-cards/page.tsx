@@ -79,7 +79,7 @@ export default function ReportCardsPage() {
     const [isExporting, setIsExporting] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
     
-    // NEW: State for Base64 Logo
+    // State for Base64 Logo
     const [base64Logo, setBase64Logo] = useState<string>('');
     
     const printRef = useRef<HTMLDivElement>(null);
@@ -229,7 +229,7 @@ export default function ReportCardsPage() {
                 studentPresentDays = termAtt.filter(a => a.studentId === selectedStudentId && (a.status === 'Present' || a.status === 'Late')).length;
             }
 
-            // NEW: Fetch the logo as Base64 so html2canvas doesn't fail
+            // Fetch the logo as Base64 so html2canvas doesn't fail
             let finalLogoStr = '';
             if (schoolProfile?.logoUrl) {
                 finalLogoStr = await getBase64ImageFromUrl(schoolProfile.logoUrl);
@@ -400,20 +400,14 @@ export default function ReportCardsPage() {
                     <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }} id="pdf-content">
                         {/* HEADER */}
                         <div className="flex flex-row items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6 w-full">
-                            {/* Left Logo Space - Optimized with Base64 */}
+                            {/* Left Logo Space */}
                             <div className="w-32 h-32 flex-shrink-0 flex items-center justify-start">
-                                {(base64Logo || schoolProfile?.logoUrl) && (
-                                    <img 
-                                        src={base64Logo || schoolProfile?.logoUrl} 
-                                        alt="Logo" 
-                                        crossOrigin="anonymous" 
-                                        loading="eager"
-                                        className="max-w-[120px] max-h-[120px] object-contain" 
-                                        onError={(e) => {
-                                            e.currentTarget.style.display = 'none';
-                                        }}
-                                    />
-                                )}
+                                {/* Use the base64 string we generated, or fallback to standard URL if it failed */}
+                                <img 
+                                    src={base64Logo || schoolProfile?.logoUrl} 
+                                    alt="School Logo" 
+                                    className="max-w-[120px] max-h-[120px] object-contain"
+                                />
                             </div>
 
                             {/* Center Text */}
@@ -441,7 +435,7 @@ export default function ReportCardsPage() {
                             </div>
                         </div>
 
-                        {/* GRADES TABLE - Exactly 9 columns */}
+                        {/* GRADES TABLE */}
                         <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
                             <thead className="bg-slate-100">
                                 <tr>
@@ -486,7 +480,7 @@ export default function ReportCardsPage() {
                         </div>
 
                         {/* SIGNATURES */}
-                        <div className="grid grid-cols-2 gap-8 pt-8 border-t-2 border-dashed border-slate-300">
+                        <div className="grid grid-cols-2 gap-8 pt-10 border-t-2 border-dashed border-slate-300">
                             <div className="text-center">
                                 <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
                                 <p className="font-bold uppercase text-[10px]">Class Teacher Signature</p>
