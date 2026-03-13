@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, Printer, Download, Search, FileCheck, GraduationCap, Calendar as CalendarIcon, CheckCircle, Send } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -246,7 +246,6 @@ export default function ReportCardsPage() {
         const element = printRef.current;
         if (!element) return;
         try {
-            element.style.display = 'block';
             const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -254,7 +253,6 @@ export default function ReportCardsPage() {
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`${processedReport?.student?.firstName}_Report_${term}.pdf`);
-            element.style.display = 'none';
         } catch (error) {
             toast({ variant: 'destructive', title: "Export Failed" });
         }
@@ -267,7 +265,7 @@ export default function ReportCardsPage() {
             <h1 className="text-3xl font-bold flex items-center gap-2"><GraduationCap className="h-8 w-8 text-indigo-600"/> Terminal Report Cards</h1>
 
             {/* CONTROLS */}
-            <Card className="border-t-4 border-t-indigo-600 print:hidden">
+            <Card className="border-t-4 border-t-indigo-600 print:hidden shadow-md">
                 <CardHeader><CardTitle>Report Generator</CardTitle></CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
@@ -300,121 +298,145 @@ export default function ReportCardsPage() {
                         <Popover><PopoverTrigger asChild><Button variant="outline" className="w-full text-left font-normal">{termEndDate ? format(termEndDate, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50"/></Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={termEndDate} onSelect={setTermEndDate} initialFocus /></PopoverContent></Popover>
                     </div>
                 </CardContent>
-                <CardFooter className="justify-end bg-slate-50 pt-4">
-                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600">
+                <CardFooter className="justify-end bg-slate-50 pt-4 border-t">
+                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600 hover:bg-indigo-700 h-12 px-8 shadow-lg shadow-indigo-600/20">
                         {isGenerating ? <Loader2 className="animate-spin mr-2"/> : <Search className="mr-2 h-4 w-4"/>} 
                         Generate Report
                     </Button>
                 </CardFooter>
             </Card>
 
-            {/* PRE-PRINT COMMENT ENTRY */}
+            {/* INTERACTIVE PREVIEW & COMMENT ENTRY */}
             {processedReport && (
-                <Card className="print:hidden border-t-4 border-t-orange-400 animate-in slide-in-from-top-4 shadow-md">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-orange-800"><FileCheck className="h-5 w-5"/> Final Remarks</CardTitle>
-                        <CardDescription>Add final administrative comments before publishing or printing.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <Label className="font-bold">Class Teacher's Remark</Label>
-                            <Textarea placeholder="Overall performance..." value={classTeacherComment} onChange={(e) => setClassTeacherComment(e.target.value)} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="font-bold">Headmaster's Remark</Label>
-                            <Textarea placeholder="Final decision..." value={headmasterComment} onChange={(e) => setHeadmasterComment(e.target.value)} />
-                        </div>
-                    </CardContent>
-                    <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
-                        <Button variant="outline" onClick={() => { if (printRef.current) { printRef.current.style.display = 'block'; window.print(); printRef.current.style.display = 'none'; } }}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                        <Button onClick={handleDownloadPDF} variant="secondary"><Download className="mr-2 h-4 w-4"/> PDF</Button>
-                        <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600">
-                            {isPublishing ? <Loader2 className="animate-spin mr-2"/> : <CheckCircle className="mr-2 h-4 w-4"/>} 
-                            Publish to Portal
-                        </Button>
-                    </CardFooter>
-                </Card>
-            )}
-
-            {/* HIDDEN PRINT TEMPLATE */}
-            {processedReport && (
-                <div className="overflow-x-auto bg-slate-200 p-8 flex justify-center print:hidden">
-                    <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black', display: 'none' }} id="pdf-content">
-                        {/* HEADER */}
-                        <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
-                            {schoolProfile?.logoUrl && (
-                                <img src={schoolProfile.logoUrl} alt="Logo" className="w-24 h-24 mx-auto mb-4 object-contain" crossOrigin="anonymous" />
-                            )}
-                            <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
-                            <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>
-                            <p className="text-sm font-bold">{schoolProfile?.phone} | {schoolProfile?.email}</p>
-                            <h2 className="text-2xl font-bold mt-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
-                        </div>
-
-                        {/* STUDENT INFO */}
-                        <div className="grid grid-cols-2 gap-4 mb-8 text-sm border-2 p-4 font-medium bg-slate-50/50">
-                            <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
-                            <div><strong>Term:</strong> {term}</div>
-                            <div><strong>Class:</strong> {classes?.find((c:any) => c.id === classId)?.name}</div>
-                            <div><strong>Academic Year:</strong> {academicYear}</div>
-                            <div className="mt-2"><strong>Attendance:</strong> {processedReport.studentPresentDays} out of {processedReport.totalClassDays} days</div>
-                            <div className="col-span-2 mt-2 pt-2 border-t flex justify-between items-center">
-                                <span><strong>Position in Class:</strong> <span className="text-lg underline font-bold">{processedReport.classPosition}</span> of {processedReport.totalStudents}</span>
-                                <span><strong>Overall Average:</strong> <span className="text-lg underline font-bold">{processedReport.overallAverage}%</span></span>
+                <div className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <Card className="print:hidden border-t-4 border-t-orange-400 shadow-xl bg-white">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-orange-800"><FileCheck className="h-5 w-5"/> Terminal Finalization</CardTitle>
+                            <CardDescription>Enter the final administrative remarks while reviewing the report below.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label className="font-bold text-slate-700">Class Teacher's Remark</Label>
+                                <Textarea 
+                                    placeholder="Overall class performance, conduct, and growth..." 
+                                    value={classTeacherComment} 
+                                    onChange={(e) => setClassTeacherComment(e.target.value)} 
+                                    className="min-h-[120px] text-base"
+                                />
                             </div>
-                        </div>
+                            <div className="space-y-2">
+                                <Label className="font-bold text-slate-700">Headmaster's Remark</Label>
+                                <Textarea 
+                                    placeholder="Final administrative decision and encouragement..." 
+                                    value={headmasterComment} 
+                                    onChange={(e) => setHeadmasterComment(e.target.value)} 
+                                    className="min-h-[120px] text-base"
+                                />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-between items-center bg-slate-50 border-t p-6">
+                            <div className="text-sm text-muted-foreground italic flex items-center gap-2">
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                Review generated details before taking action.
+                            </div>
+                            <div className="flex gap-3">
+                                <Button variant="outline" size="lg" className="border-slate-300" onClick={() => window.print()}>
+                                    <Printer className="mr-2 h-4 w-4"/> Print
+                                </Button>
+                                <Button variant="secondary" size="lg" onClick={handleDownloadPDF} className="bg-slate-200 hover:bg-slate-300 text-slate-800">
+                                    <Download className="mr-2 h-4 w-4"/> Download PDF
+                                </Button>
+                                <Button onClick={handlePublish} disabled={isPublishing} size="lg" className="bg-green-600 hover:bg-green-700 shadow-lg shadow-green-600/20 font-bold px-8">
+                                    {isPublishing ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Send className="mr-2 h-4 w-4"/>} 
+                                    Publish to Portal
+                                </Button>
+                            </div>
+                        </CardFooter>
+                    </Card>
 
-                        {/* GRADES TABLE */}
-                        <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
-                            <thead className="bg-slate-100">
-                                <tr>
-                                    <th className="border border-slate-800 p-2 text-left">Subject</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">CA</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Exam</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Total</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
-                                    <th className="border border-slate-800 p-2 text-left">Teacher's Comment</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {processedReport.rows.map((row: any, i: number) => (
-                                    <tr key={i}>
-                                        <td className="border border-slate-800 p-2 font-bold">{row.subjectName}</td>
-                                        <td className="border border-slate-800 p-2 text-center">{row.ca}</td>
-                                        <td className="border border-slate-800 p-2 text-center">{row.exam}</td>
-                                        <td className="border border-slate-800 p-2 text-center font-black bg-slate-50">{row.total}</td>
-                                        <td className="border border-slate-800 p-2 text-center text-slate-500 italic text-xs">{row.classAverage}</td>
-                                        <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
-                                        <td className="border border-slate-800 p-2 text-center">{row.position}</td>
-                                        <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || row.autoRemark}</td>
+                    {/* LIVE REPORT PREVIEW (VISIBLE) */}
+                    <div className="overflow-x-auto bg-slate-200 p-8 flex justify-center rounded-3xl border-2 border-slate-300 shadow-inner">
+                        <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }}>
+                            {/* HEADER */}
+                            <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
+                                {schoolProfile?.logoUrl && (
+                                    <img src={schoolProfile.logoUrl} alt="Logo" className="w-24 h-24 mx-auto mb-4 object-contain" crossOrigin="anonymous" />
+                                )}
+                                <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
+                                <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>
+                                <p className="text-sm font-bold">{schoolProfile?.phone} | {schoolProfile?.email}</p>
+                                <h2 className="text-2xl font-bold mt-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
+                            </div>
+
+                            {/* STUDENT INFO */}
+                            <div className="grid grid-cols-2 gap-4 mb-8 text-sm border-2 p-4 font-medium bg-slate-50/50">
+                                <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
+                                <div><strong>Term:</strong> {term}</div>
+                                <div><strong>Class:</strong> {classes?.find((c:any) => c.id === classId)?.name}</div>
+                                <div><strong>Academic Year:</strong> {academicYear}</div>
+                                <div className="mt-2"><strong>Attendance:</strong> {processedReport.studentPresentDays} out of {processedReport.totalClassDays} days</div>
+                                <div className="col-span-2 mt-2 pt-2 border-t flex justify-between items-center">
+                                    <span><strong>Position in Class:</strong> <span className="text-lg underline font-bold">{processedReport.classPosition}</span> of {processedReport.totalStudents}</span>
+                                    <span><strong>Overall Average:</strong> <span className="text-lg underline font-bold">{processedReport.overallAverage}%</span></span>
+                                </div>
+                            </div>
+
+                            {/* GRADES TABLE */}
+                            <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
+                                <thead className="bg-slate-100">
+                                    <tr>
+                                        <th className="border border-slate-800 p-2 text-left">Subject</th>
+                                        <th className="border border-slate-800 p-2 text-center w-12">CA</th>
+                                        <th className="border border-slate-800 p-2 text-center w-12">Exam</th>
+                                        <th className="border border-slate-800 p-2 text-center w-12">Total</th>
+                                        <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
+                                        <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
+                                        <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
+                                        <th className="border border-slate-800 p-2 text-left">Teacher's Comment</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {processedReport.rows.map((row: any, i: number) => (
+                                        <tr key={i}>
+                                            <td className="border border-slate-800 p-2 font-bold">{row.subjectName}</td>
+                                            <td className="border border-slate-800 p-2 text-center">{row.ca}</td>
+                                            <td className="border border-slate-800 p-2 text-center">{row.exam}</td>
+                                            <td className="border border-slate-800 p-2 text-center font-black bg-slate-50">{row.total}</td>
+                                            <td className="border border-slate-800 p-2 text-center text-slate-500 italic text-xs">{row.classAverage}</td>
+                                            <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
+                                            <td className="border border-slate-800 p-2 text-center">{row.position}</td>
+                                            <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || row.autoRemark}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
 
-                        {/* FINAL COMMENTS */}
-                        <div className="space-y-4 mb-16">
-                            <div className="border-b-2 border-dotted border-slate-400 pb-2">
-                                <p className="text-xs font-bold uppercase text-slate-500">Class Teacher's Remark:</p>
-                                <p className="text-sm italic mt-1 font-serif">{classTeacherComment || ".................................................................................................................................."}</p>
+                            {/* FINAL COMMENTS (REFLECTING LIVE INPUTS) */}
+                            <div className="space-y-4 mb-16">
+                                <div className="border-b-2 border-dotted border-slate-400 pb-2">
+                                    <p className="text-xs font-bold uppercase text-slate-500">Class Teacher's Remark:</p>
+                                    <p className="text-sm italic mt-1 font-serif">
+                                        {classTeacherComment || ".................................................................................................................................."}
+                                    </p>
+                                </div>
+                                <div className="border-b-2 border-dotted border-slate-400 pb-2">
+                                    <p className="text-xs font-bold uppercase text-slate-500">Headmaster's Remark:</p>
+                                    <p className="text-sm italic mt-1 font-serif">
+                                        {headmasterComment || ".................................................................................................................................."}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="border-b-2 border-dotted border-slate-400 pb-2">
-                                <p className="text-xs font-bold uppercase text-slate-500">Headmaster's Remark:</p>
-                                <p className="text-sm italic mt-1 font-serif">{headmasterComment || ".................................................................................................................................."}</p>
-                            </div>
-                        </div>
 
-                        {/* SIGNATURES */}
-                        <div className="grid grid-cols-2 gap-8 pt-8 border-t-2 border-dashed border-slate-300">
-                            <div className="text-center">
-                                <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
-                                <p className="font-bold uppercase text-[10px]">Class Teacher Signature</p>
-                            </div>
-                            <div className="text-center">
-                                <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
-                                <p className="font-bold uppercase text-[10px]">Headmaster Signature</p>
+                            {/* SIGNATURES */}
+                            <div className="grid grid-cols-2 gap-8 pt-8 border-t-2 border-dashed border-slate-300">
+                                <div className="text-center">
+                                    <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
+                                    <p className="font-bold uppercase text-[10px]">Class Teacher Signature</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
+                                    <p className="font-bold uppercase text-[10px]">Headmaster Signature</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -423,9 +445,12 @@ export default function ReportCardsPage() {
             <style jsx global>{`
                 @media print {
                     body * { visibility: hidden; }
-                    .print\\:hidden { display: none; }
+                    .print\\:hidden { display: none !important; }
+                    #sidebar, header, nav { display: none !important; }
+                    .bg-slate-200 { background: none !important; padding: 0 !important; }
+                    #print-preview-container { border: none !important; box-shadow: none !important; }
                     #pdf-content, #pdf-content * { visibility: visible; }
-                    #pdf-content { position: absolute; left: 0; top: 0; width: 100%; }
+                    #pdf-content { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
                 }
             `}</style>
         </div>
