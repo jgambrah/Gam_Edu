@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, FileCheck, GraduationCap, Send, CheckCircle, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -72,8 +72,12 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
+    // Dynamic Weighting Fetch
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
+
+    const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
+    const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
 
     // --- THE CALCULATION ENGINE ---
     const generateReport = async () => {
@@ -107,12 +111,12 @@ export default function ReportCardsPage() {
                     const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
                     const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
                     const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                    const weightedCA = caMax > 0 ? (caScore / caMax) * 50 : 0;
+                    const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
 
                     const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
                     const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
                     const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                    const weightedExam = examMax > 0 ? (examScore / examMax) * 50 : 0;
+                    const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
 
                     const total100 = weightedCA + weightedExam;
                     grandTotal += total100;
@@ -140,12 +144,12 @@ export default function ReportCardsPage() {
                 const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
                 const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
                 const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                const weightedCA = caMax > 0 ? (caScore / caMax) * 50 : 0;
+                const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
 
                 const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
                 const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
                 const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                const weightedExam = examMax > 0 ? (examScore / examMax) * 50 : 0;
+                const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
 
                 const total100 = Math.round(weightedCA + weightedExam);
                 myGrandTotal += total100;
@@ -166,8 +170,8 @@ export default function ReportCardsPage() {
                     ca: Math.round(weightedCA),
                     exam: Math.round(weightedExam),
                     total: total100,
-                    grade: grade,
-                    autoRemark: autoRemark,
+                    grade,
+                    autoRemark,
                     teacherRemark: customTeacherRemark,
                     classAverage: subjectAverage,
                     position: mySubjectRank
@@ -369,13 +373,12 @@ export default function ReportCardsPage() {
                             <thead className="bg-slate-100">
                                 <tr>
                                     <th className="border border-slate-800 p-2 text-left">Subject</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">CA</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Exam</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">CA ({CA_WEIGHT})</th>
+                                    <th className="border border-slate-800 p-2 text-center w-12">Exam ({EXAM_WEIGHT})</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Total</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
                                     <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
-                                    <th className="border border-slate-800 p-2 text-center w-24">Remark</th>
                                     <th className="border border-slate-800 p-2 text-left">Teacher's Comment</th>
                                 </tr>
                             </thead>
@@ -389,8 +392,7 @@ export default function ReportCardsPage() {
                                         <td className="border border-slate-800 p-2 text-center text-slate-500 italic text-xs">{row.classAverage}</td>
                                         <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
                                         <td className="border border-slate-800 p-2 text-center">{row.position}</td>
-                                        <td className="border border-slate-800 p-2 text-center font-semibold text-xs">{row.autoRemark}</td>
-                                        <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || "-"}</td>
+                                        <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || row.autoRemark}</td>
                                     </tr>
                                 ))}
                             </tbody>

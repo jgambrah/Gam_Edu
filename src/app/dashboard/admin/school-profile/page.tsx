@@ -125,7 +125,11 @@ export default function SchoolProfilePage() {
         }, { merge: true });
 
         // 2. Save a public copy to schoolSettings (Mirror for Parents/Students)
-        await setDoc(doc(firestore, 'schoolSettings', schoolId), brandingData, { merge: true });
+        await setDoc(doc(firestore, 'schoolSettings', schoolId), {
+            ...brandingData,
+            caWeight,
+            examWeight,
+        }, { merge: true });
         
         toast({ title: "Settings Saved", description: "School profile updated successfully." });
     } catch (error: any) {
