@@ -25,11 +25,17 @@ import { Textarea } from '@/components/ui/textarea';
 
 // --- HELPERS ---
 
-// Helper to safely convert external URLs to Base64 with enhanced logging
+// Helper to safely convert external URLs to Base64 using our server-side proxy to avoid CORS
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
-        console.log('📡 Fetching image from:', imageUrl);
-        const res = await fetch(imageUrl, { mode: 'cors' });
+        console.log('📡 Fetching image via proxy for:', imageUrl);
+        
+        // Route Firebase Storage URLs through server-side proxy to avoid CORS
+        const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
+            ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
+            : imageUrl;
+
+        const res = await fetch(fetchUrl);
         
         if (!res.ok) {
             console.error(`❌ Fetch failed: ${res.status} ${res.statusText}`);
@@ -37,13 +43,11 @@ async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
         }
         
         const blob = await res.blob();
-        console.log('✅ Blob received, size:', blob.size, 'type:', blob.type);
-        
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const result = reader.result as string;
-                console.log('✅ Base64 ready, starts with:', result.substring(0, 30));
+                console.log('✅ Base64 conversion successful');
                 resolve(result);
             };
             reader.onerror = (e) => {
@@ -241,21 +245,10 @@ export default function ReportCardsPage() {
                 studentPresentDays = termAtt.filter(a => a.studentId === selectedStudentId && (a.status === 'Present' || a.status === 'Late')).length;
             }
 
-            // NEW: Fetch the logo as Base64 with enhanced logging
+            // Fetch the logo via proxy and convert to Base64 for bulletproof PDF rendering
             let finalLogoStr = '';
             if (schoolProfile?.logoUrl) {
-                console.log('🔍 Logo URL found:', schoolProfile.logoUrl);
-                console.log('🔍 URL type:', schoolProfile.logoUrl.substring(0, 50));
-                
                 finalLogoStr = await getBase64ImageFromUrl(schoolProfile.logoUrl);
-                
-                if (finalLogoStr) {
-                    console.log('✅ Logo converted successfully, length:', finalLogoStr.length);
-                } else {
-                    console.error('❌ Logo conversion returned empty string');
-                }
-            } else {
-                console.warn('⚠️ No logoUrl found in schoolProfile:', schoolProfile);
             }
 
             setProcessedReport({
@@ -314,13 +307,14 @@ export default function ReportCardsPage() {
 
         setIsExporting(true);
         try {
+            // Keep the element in the DOM but hidden from view
             element.style.visibility = 'visible';
             element.style.position = 'fixed';
             element.style.top = '0';
             element.style.left = '0';
             element.style.zIndex = '-1';
 
-            // Give React one frame to paint the logo before capturing
+            // Wait for paint
             await new Promise(resolve => setTimeout(resolve, 300));
 
             const canvas = await html2canvas(element, {
@@ -329,7 +323,6 @@ export default function ReportCardsPage() {
                 allowTaint: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                // Tell html2canvas images are already inlined as base64
                 imageTimeout: 0,
             });
 
@@ -350,7 +343,7 @@ export default function ReportCardsPage() {
         }
     };
 
-    if (!canManage) return <div className="p-8">Access Denied.</div>;
+    if (!canManage) return <div className="p-8 text-center text-muted-foreground">Access Denied.</div>;
 
     return (
         <div className="p-6 space-y-6">
@@ -416,7 +409,7 @@ export default function ReportCardsPage() {
                         </div>
                     </CardContent>
                     <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
-                        <Button variant="outline" onClick={() => { if (printRef.current) { printRef.current.style.visibility = 'visible'; window.print(); printRef.current.style.visibility = 'hidden'; } }}><Printer className="mr-2 h-4 w-4"/> Print</Button>
+                        <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print</Button>
                         <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary"><Download className="mr-2 h-4 w-4"/> {isExporting ? 'Generating PDF...' : 'Download PDF'}</Button>
                         <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600">
                             {isPublishing ? <Loader2 className="animate-spin mr-2"/> : <CheckCircle className="mr-2 h-4 w-4"/>} 
@@ -428,122 +421,120 @@ export default function ReportCardsPage() {
 
             {/* HIDDEN PRINT TEMPLATE */}
             {processedReport && (
-                <div className="overflow-x-auto bg-slate-200 p-8 flex justify-center print:hidden">
-                    <div 
-                        ref={printRef} 
-                        className="bg-white p-12 shadow-2xl" 
-                        style={{ 
-                            visibility: 'hidden',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            zIndex: -1,
-                            width: '210mm', 
-                            minHeight: '297mm', 
-                            color: 'black' 
-                        }} 
-                        id="pdf-content"
-                    >
-                        {/* HEADER */}
-                        <div className="flex flex-row items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6 w-full">
-                            {/* Left Logo Space */}
-                            <div className="w-32 h-32 flex-shrink-0 flex items-center justify-start">
-                                {processedReport.logoBase64 ? (
-                                    <img 
-                                        src={processedReport.logoBase64} 
-                                        alt="School Logo" 
-                                        style={{ maxWidth: '120px', maxHeight: '120px', objectFit: 'contain' }}
-                                    />
-                                ) : (
-                                    <div style={{ width: 120, height: 120, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#94a3b8' }}>
-                                        No Logo
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Center Text */}
-                            <div className="flex-1 text-center px-4">
-                                <h1 className="text-3xl font-black uppercase tracking-widest leading-tight">{processedReport.schoolName || "SCHOOL NAME"}</h1>
-                                {processedReport.schoolMotto && <p className="text-sm italic text-slate-600 mt-1">"{processedReport.schoolMotto}"</p>}
-                                <p className="text-sm font-bold mt-2">{processedReport.schoolAddress || ""}</p>
-                                <p className="text-sm font-bold">{processedReport.schoolPhone || ""} | {processedReport.schoolEmail || ""}</p>
-                            </div>
-
-                            <div className="w-32 flex-shrink-0"></div>
-                        </div>
-                        <h2 className="text-2xl font-bold text-center mt-2 mb-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
-
-                        {/* STUDENT INFO */}
-                        <div className="grid grid-cols-2 gap-4 mb-8 text-sm border-2 p-4 font-medium bg-slate-50/50">
-                            <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
-                            <div><strong>Term:</strong> {term}</div>
-                            <div><strong>Class:</strong> {classes?.find((c:any) => c.id === classId)?.name}</div>
-                            <div><strong>Academic Year:</strong> {academicYear}</div>
-                            <div className="mt-2"><strong>Attendance:</strong> {processedReport.studentPresentDays} out of {processedReport.totalClassDays} days</div>
-                            <div className="col-span-2 mt-2 pt-2 border-t flex justify-between items-center">
-                                <span><strong>Position in Class:</strong> <span className="text-lg underline font-bold">{processedReport.classPosition}</span> of {processedReport.totalStudents}</span>
-                                <span><strong>Overall Average:</strong> <span className="text-lg underline font-bold">{processedReport.overallAverage}%</span></span>
-                            </div>
+                <div 
+                    ref={printRef} 
+                    className="bg-white p-12 shadow-2xl" 
+                    style={{ 
+                        visibility: 'hidden',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        zIndex: -1,
+                        width: '210mm', 
+                        minHeight: '297mm', 
+                        color: 'black' 
+                    }} 
+                    id="pdf-content"
+                >
+                    {/* HEADER */}
+                    <div className="flex flex-row items-center justify-between border-b-4 border-double border-slate-800 pb-6 mb-6 w-full">
+                        {/* Left Logo Space */}
+                        <div className="w-32 h-32 flex-shrink-0 flex items-center justify-start">
+                            {processedReport.logoBase64 ? (
+                                <img 
+                                    src={processedReport.logoBase64} 
+                                    alt="School Logo" 
+                                    style={{ maxWidth: '120px', maxHeight: '120px', objectFit: 'contain' }}
+                                />
+                            ) : (
+                                <div style={{ width: 120, height: 120, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#94a3b8' }}>
+                                    No Logo
+                                </div>
+                            )}
                         </div>
 
-                        {/* GRADES TABLE */}
-                        <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
-                            <thead className="bg-slate-100">
-                                <tr>
-                                    <th className="border border-slate-800 p-2 text-left">Subject</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">CA ({CA_WEIGHT})</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Exam ({EXAM_WEIGHT})</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Total</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
-                                    <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
-                                    <th className="border border-slate-800 p-2 text-center w-24">Remark</th>
-                                    <th className="border border-slate-800 p-2 text-left">Teacher's Comment</th>
+                        {/* Center Text */}
+                        <div className="flex-1 text-center px-4">
+                            <h1 className="text-3xl font-black uppercase tracking-widest leading-tight">{processedReport.schoolName || "SCHOOL NAME"}</h1>
+                            {processedReport.schoolMotto && <p className="text-sm italic text-slate-600 mt-1">"{processedReport.schoolMotto}"</p>}
+                            <p className="text-sm font-bold mt-2">{processedReport.schoolAddress || ""}</p>
+                            <p className="text-sm font-bold">{processedReport.schoolPhone || ""} | {processedReport.schoolEmail || ""}</p>
+                        </div>
+
+                        <div className="w-32 flex-shrink-0"></div>
+                    </div>
+                    <h2 className="text-2xl font-bold text-center mt-2 mb-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
+
+                    {/* STUDENT INFO */}
+                    <div className="grid grid-cols-2 gap-4 mb-8 text-sm border-2 p-4 font-medium bg-slate-50/50">
+                        <div><strong>Name:</strong> {processedReport.student.firstName} {processedReport.student.lastName}</div>
+                        <div><strong>Term:</strong> {term}</div>
+                        <div><strong>Class:</strong> {processedReport.className}</div>
+                        <div><strong>Academic Year:</strong> {academicYear}</div>
+                        <div className="mt-2"><strong>Attendance:</strong> {processedReport.studentPresentDays} out of {processedReport.totalClassDays} days</div>
+                        <div className="col-span-2 mt-2 pt-2 border-t flex justify-between items-center">
+                            <span><strong>Position in Class:</strong> <span className="text-lg underline font-bold">{processedReport.classPosition}</span> of {processedReport.totalStudents}</span>
+                            <span><strong>Overall Average:</strong> <span className="text-lg underline font-bold">{processedReport.overallAverage}%</span></span>
+                        </div>
+                    </div>
+
+                    {/* GRADES TABLE */}
+                    <table className="w-full text-sm border-collapse border border-slate-800 mb-8">
+                        <thead className="bg-slate-100">
+                            <tr>
+                                <th className="border border-slate-800 p-2 text-left">Subject</th>
+                                <th className="border border-slate-800 p-2 text-center w-12">CA ({CA_WEIGHT})</th>
+                                <th className="border border-slate-800 p-2 text-center w-12">Exam ({EXAM_WEIGHT})</th>
+                                <th className="border border-slate-800 p-2 text-center w-12">Total</th>
+                                <th className="border border-slate-800 p-2 text-center w-12">Avg</th>
+                                <th className="border border-slate-800 p-2 text-center w-12">Grd</th>
+                                <th className="border border-slate-800 p-2 text-center w-12">Pos</th>
+                                <th className="border border-slate-800 p-2 text-center w-24">Remark</th>
+                                <th className="border border-slate-800 p-2 text-left">Teacher's Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {processedReport.rows.map((row: any, i: number) => (
+                                <tr key={i}>
+                                    <td className="border border-slate-800 p-2 font-bold">{row.subjectName}</td>
+                                    <td className="border border-slate-800 p-2 text-center">{row.ca}</td>
+                                    <td className="border border-slate-800 p-2 text-center">{row.exam}</td>
+                                    <td className="border border-slate-800 p-2 text-center font-black bg-slate-50">{row.total}</td>
+                                    <td className="border border-slate-800 p-2 text-center text-slate-500 italic text-xs">{row.classAverage}</td>
+                                    <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
+                                    <td className="border border-slate-800 p-2 text-center">{row.position}</td>
+                                    <td className="border border-slate-800 p-2 text-center font-semibold text-xs">{row.autoRemark}</td>
+                                    <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || "-"}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {processedReport.rows.map((row: any, i: number) => (
-                                    <tr key={i}>
-                                        <td className="border border-slate-800 p-2 font-bold">{row.subjectName}</td>
-                                        <td className="border border-slate-800 p-2 text-center">{row.ca}</td>
-                                        <td className="border border-slate-800 p-2 text-center">{row.exam}</td>
-                                        <td className="border border-slate-800 p-2 text-center font-black bg-slate-50">{row.total}</td>
-                                        <td className="border border-slate-800 p-2 text-center text-slate-500 italic text-xs">{row.classAverage}</td>
-                                        <td className="border border-slate-800 p-2 text-center font-bold">{row.grade}</td>
-                                        <td className="border border-slate-800 p-2 text-center">{row.position}</td>
-                                        <td className="border border-slate-800 p-2 text-center font-semibold text-xs">{row.autoRemark}</td>
-                                        <td className="border border-slate-800 p-2 italic text-xs text-slate-600">{row.teacherRemark || "-"}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                            ))}
+                        </tbody>
+                    </table>
 
-                        {/* FINAL COMMENTS */}
-                        <div className="space-y-4 mb-16">
-                            <div className="border-b-2 border-dotted border-slate-400 pb-2">
-                                <p className="text-xs font-bold uppercase text-slate-500">Class Teacher's Remark:</p>
-                                <p className="text-sm italic mt-1 font-serif">{classTeacherComment || ".................................................................................................................................."}</p>
-                            </div>
-                            <div className="border-b-2 border-dotted border-slate-400 pb-2">
-                                <p className="text-xs font-bold uppercase text-slate-500">Headmaster's Remark:</p>
-                                <p className="text-sm italic mt-1 font-serif">{headmasterComment || ".................................................................................................................................."}</p>
-                            </div>
+                    {/* FINAL COMMENTS */}
+                    <div className="space-y-4 mb-16">
+                        <div className="border-b-2 border-dotted border-slate-400 pb-2">
+                            <p className="text-xs font-bold uppercase text-slate-500">Class Teacher's Remark:</p>
+                            <p className="text-sm italic mt-1 font-serif">{classTeacherComment || ".................................................................................................................................."}</p>
                         </div>
+                        <div className="border-b-2 border-dotted border-slate-400 pb-2">
+                            <p className="text-xs font-bold uppercase text-slate-500">Headmaster's Remark:</p>
+                            <p className="text-sm italic mt-1 font-serif">{headmasterComment || ".................................................................................................................................."}</p>
+                        </div>
+                    </div>
 
-                        {/* SIGNATURES */}
-                        <div className="grid grid-cols-2 gap-8 pt-10 border-t-2 border-dashed border-slate-300">
-                            <div className="text-center">
-                                <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
-                                <p className="font-bold uppercase text-[10px]">Class Teacher Signature</p>
-                            </div>
-                            <div className="text-center">
-                                <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
-                                <p className="font-bold uppercase text-[10px]">Headmaster Signature</p>
-                            </div>
+                    {/* SIGNATURES */}
+                    <div className="grid grid-cols-2 gap-8 pt-10 border-t-2 border-dashed border-slate-300">
+                        <div className="text-center">
+                            <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
+                            <p className="font-bold uppercase text-[10px]">Class Teacher Signature</p>
+                        </div>
+                        <div className="text-center">
+                            <div className="h-10 border-b border-black w-3/4 mx-auto mb-2"></div>
+                            <p className="font-bold uppercase text-[10px]">Headmaster Signature</p>
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
             <style jsx global>{`
                 @media print {
                     body * { visibility: hidden; }
