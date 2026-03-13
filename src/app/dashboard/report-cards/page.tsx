@@ -666,6 +666,7 @@ export default function ReportCardsPage() {
                             <Button variant="outline" onClick={() => {
                                 const el = printRef.current;
                                 if (!el) return;
+
                                 // Step 1: Make template visible so print engine can render it
                                 el.style.visibility = 'visible';
                                 el.style.zIndex = '9999';
@@ -681,7 +682,7 @@ export default function ReportCardsPage() {
                                     }, 1000);
                                 }, 100);
                             }}>
-                                <Printer className="mr-2 h-4 w-4"/> Print
+                                <Printer className="mr-2 h-4 w-4" /> Print
                             </Button>
                             <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary">
                                 <Download className="mr-2 h-4 w-4"/> {isExporting ? 'Generating PDF...' : 'Download PDF'}
