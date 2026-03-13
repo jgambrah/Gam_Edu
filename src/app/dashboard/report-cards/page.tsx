@@ -56,6 +56,7 @@ export default function ReportCardsPage() {
 
     const [isGenerating, setIsGenerating] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
     const printRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +72,10 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const schoolProfileRef = useMemoFirebase(
+        () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
+        [firestore, schoolId]
+    );
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
@@ -131,7 +135,7 @@ export default function ReportCardsPage() {
             const classPosition = sortedStudents.findIndex(([uid]) => uid === selectedStudentId) + 1;
 
             const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
-            const reportRows = [];
+            const reportRows: any[] = [];
             let myGrandTotal = 0;
             let subjectsTaken = 0;
 
@@ -253,6 +257,7 @@ export default function ReportCardsPage() {
             const canvas = await html2canvas(element, { 
                 scale: 2, 
                 useCORS: true, 
+                allowTaint: true,
                 logging: false,
                 backgroundColor: '#ffffff' 
             });
@@ -269,8 +274,6 @@ export default function ReportCardsPage() {
             setIsExporting(false);
         }
     };
-
-    const [isExporting, setIsExporting] = useState(false);
 
     if (!canManage) return <div className="p-8">Access Denied.</div>;
 
@@ -354,7 +357,6 @@ export default function ReportCardsPage() {
                     <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }} id="pdf-content">
                         {/* HEADER */}
                         <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
-                            {/* LOGO CONTAINER */}
                             <div className="w-32 h-32 flex-shrink-0 flex items-center justify-center mx-auto mb-4">
                                 {schoolProfile?.logoUrl ? (
                                     <img 
@@ -371,7 +373,8 @@ export default function ReportCardsPage() {
                                 ) : null}
                             </div>
                             <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
-                            <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>
+                            {schoolProfile?.motto && <p className="text-sm italic text-slate-600 mt-1">"{schoolProfile.motto}"</p>}
+                            <p className="text-sm font-bold mt-2">{schoolProfile?.address || ""}</p>
                             <p className="text-sm font-bold">{schoolProfile?.phone} | {schoolProfile?.email}</p>
                             <h2 className="text-2xl font-bold mt-6 bg-slate-100 py-2 border border-slate-300 uppercase tracking-widest">Terminal Report Card</h2>
                         </div>
