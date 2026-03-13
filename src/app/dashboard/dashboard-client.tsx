@@ -11,7 +11,7 @@ import {
   CreditCard, DollarSign, Receipt, Package, Award,
   Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, Sparkles, FolderKanban, HeartHandshake, User as UserIcon,
-  BrainCircuit
+  BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -96,15 +96,12 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
 
   // 1. Fetch Student Data
   const studentQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [firestore, user, schoolId]);
-  const { data: studentData, isLoading: loadingStudent } = useCollection(studentQuery);
+  const { data: studentData, isLoading: loadingStudent } = useCollection<any>(studentQuery);
   const student = studentData?.[0];
 
-  // 2. Fetch Recent Assessments
-  const assessmentsQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'assessments'), where('studentId', '==', user.uid), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, user, schoolId]);
-  const { data: assessments, isLoading: loadingAssessments } = useCollection<any>(assessmentsQuery);
+  // REMOVED: Recent Assessments fetch to prevent dashboard permission errors for students
 
-  // 3. Fetch Class Info
-  const isLoading = loadingStudent || loadingAssessments;
+  const isLoading = loadingStudent;
 
   return (
     <div className="space-y-6">
@@ -115,7 +112,7 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard title="My Class" value={student?.classId || 'Not Assigned'} icon={School} link="/dashboard/timetable" colorClass="text-blue-600" />
-        <StatCard title="Recent Grade" value={assessments?.[0] ? `${assessments[0].score}/${assessments[0].maxScore}` : 'N/A'} icon={TrendingUp} link="/dashboard/my-grades" colorClass="text-emerald-600" />
+        <StatCard title="My Grades" value="View All" icon={TrendingUp} link="/dashboard/my-grades" colorClass="text-emerald-600" />
         <StatCard title="Assignments" value="View Tasks" icon={ClipboardCheck} link="/dashboard/assignments" colorClass="text-orange-600" />
         <StatCard title="Materials" value="Browse" icon={FolderKanban} link="/dashboard/academics/learning-materials" colorClass="text-purple-600" />
       </div>
@@ -123,33 +120,21 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Sparkles className="text-yellow-500 h-5 w-5"/> Recent Performance</CardTitle>
-            <CardDescription>Your most recent scores and teacher remarks.</CardDescription>
+            <CardTitle className="flex items-center gap-2"><Sparkles className="text-yellow-500 h-5 w-5"/> Learning Hub</CardTitle>
+            <CardDescription>Quick access to your academic clubs and activities.</CardDescription>
           </CardHeader>
           <CardContent>
-            {loadingAssessments ? <Loader2 className="animate-spin mx-auto h-8 w-8"/> : assessments && assessments.length > 0 ? (
-              <div className="space-y-4">
-                {assessments.map((a: any) => (
-                  <div key={a.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <div>
-                      <p className="font-bold text-slate-800">{a.subjectName}</p>
-                      <p className="text-xs text-muted-foreground">{a.assessmentType}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-black text-indigo-600">{a.score}/{a.maxScore}</p>
-                      <p className="text-[10px] text-slate-400">{a.createdAt ? formatDistanceToNow(a.createdAt.toDate(), { addSuffix: true }) : ''}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-10 text-muted-foreground italic">No grades recorded yet this term.</div>
-            )}
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <QuickActionCard title="Maths Club" description="Practice problems and climb the leaderboard." icon={Sigma} link="/dashboard/maths-club-v2" />
+                <QuickActionCard title="Science Lab" description="Explore facts and AI-led lessons." icon={FlaskConical} link="/dashboard/science-club-v2" />
+                <QuickActionCard title="ELA Club" description="Grammar, reading, and writing challenges." icon={BookOpenCheck} link="/dashboard/ela-club" />
+                <QuickActionCard title="Coding Club" description="Learn to build with blocks and Python." icon={Code} link="/dashboard/coding-club" />
+             </div>
           </CardContent>
         </Card>
 
         <Card className="lg:col-span-1">
-          <CardHeader><CardTitle>Quick Links</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Schedule & Reports</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <QuickActionCard title="My Timetable" icon={Calendar} link="/dashboard/timetable" />
             <QuickActionCard title="Study Club" icon={BrainCircuit} link="/dashboard/study-club" />
@@ -253,14 +238,14 @@ function TeacherDashboard() {
   const { schoolId } = useCurrentSchool();
 
   const teacherClassesQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null, [firestore, user, schoolId]);
-  const { data: teacherClasses, isLoading: loadingClasses } = useCollection(teacherClassesQuery);
+  const { data: teacherClasses, isLoading: loadingClasses } = useCollection<any>(teacherClassesQuery);
 
   const teacherClassIds = useMemo(() => teacherClasses?.map((c: any) => c.id) || [], [teacherClasses]);
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && teacherClassIds.length > 0) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', 'in', teacherClassIds)) : null, [firestore, teacherClassIds.join(','), schoolId]);
-  const { data: students, isLoading: loadingStudents } = useCollection(studentsQuery);
+  const { data: students, isLoading: loadingStudents } = useCollection<any>(studentsQuery);
 
   const assignmentsQuery = useMemoFirebase(() => (firestore && user && schoolId) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId), orderBy('dueDate', 'asc'), limit(5)) : null, [firestore, user, schoolId]);
-  const { data: assignments, isLoading: loadingAssignments } = useCollection(assignmentsQuery);
+  const { data: assignments, isLoading: loadingAssignments } = useCollection<any>(assignmentsQuery);
 
   const isLoading = loadingClasses || loadingStudents || loadingAssignments;
 
@@ -324,13 +309,13 @@ export default function DashboardClient() {
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian;
 
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaffUser]);
-  const { data: students, isLoading: studentsLoading } = useCollection(studentsQuery);
+  const { data: students, isLoading: studentsLoading } = useCollection<any>(studentsQuery);
 
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && isAdminOrDirector) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId, isAdminOrDirector]);
-  const { data: staff, isLoading: staffLoading } = useCollection(staffQuery);
+  const { data: staff, isLoading: staffLoading } = useCollection<any>(staffQuery);
 
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaffUser]);
-  const { data: classes, isLoading: classesLoading } = useCollection(classesQuery);
+  const { data: classes, isLoading: classesLoading } = useCollection<any>(classesQuery);
   
   const assignmentsQuery = useMemoFirebase(() => {
     if (!user || !firestore || !schoolId) return null;
@@ -338,16 +323,16 @@ export default function DashboardClient() {
     if(isTeacher) q = query(q, where('teacherId', '==', user.uid));
     return q;
   }, [firestore, user, isTeacher, schoolId]);
-  const { data: assignments, isLoading: assignmentsLoading } = useCollection(assignmentsQuery);
+  const { data: assignments, isLoading: assignmentsLoading } = useCollection<any>(assignmentsQuery);
 
   const announcementsQuery = useMemoFirebase(() => {
     if(!firestore || !schoolId) return null;
     return query(collection(firestore, 'announcements_v2'), where('schoolId', '==', schoolId), orderBy('publishedAt', 'desc'), limit(5))
   }, [firestore, schoolId]);
-  const { data: announcements, isLoading: announcementsLoading } = useCollection(announcementsQuery);
+  const { data: announcements, isLoading: announcementsLoading } = useCollection<any>(announcementsQuery);
   
   const leaveRequestsQuery = useMemoFirebase(() => (firestore && isStaffUser && schoolId) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, isStaffUser, schoolId]);
-  const { data: leaveRequests, isLoading: leaveLoading } = useCollection(leaveRequestsQuery);
+  const { data: leaveRequests, isLoading: leaveLoading } = useCollection<any>(leaveRequestsQuery);
   
   const financialRecordsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId || !(isFinance || isAdminOrDirector)) return null;
