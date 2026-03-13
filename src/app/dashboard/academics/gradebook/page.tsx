@@ -40,7 +40,7 @@ export default function GradebookPage() {
 
     // State for scores and remarks
     const [scores, setScores] = useState<Record<string, number | ''>>({});
-    const [remarks, setRemarks] = useState<Record<string, string>>({});
+    const [remarks, setRemarks] = useState<Record<string, string>>({}); 
     const [isSaving, setIsSaving] = useState(false);
 
     // Data Fetching
