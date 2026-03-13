@@ -23,26 +23,29 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useCurrentSchool } from '@/hooks/use-current-school';
   
 function AssessmentsLog() {
+    const { role } = useRole();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     
+    const isStaffRole = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+
     // Index Required: assessments (schoolId: Asc, assessmentDate: Desc)
     const assessmentsQuery = useMemoFirebase(
-        () => (firestore && schoolId) ? query(
+        () => (firestore && schoolId && isStaffRole) ? query(
             collection(firestore, 'assessments'), 
             where('schoolId', '==', schoolId),
             orderBy('assessmentDate', 'desc')
         ) : null, 
-        [firestore, schoolId]
+        [firestore, schoolId, isStaffRole]
     );
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     const studentsQuery = useMemoFirebase(
-        () => (firestore && schoolId) ? query(
+        () => (firestore && schoolId && isStaffRole) ? query(
             collection(firestore, 'students'),
             where('schoolId', '==', schoolId)
         ) : null,
-        [firestore, schoolId]
+        [firestore, schoolId, isStaffRole]
     );
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
     
@@ -52,6 +55,8 @@ function AssessmentsLog() {
     }, [students]);
 
     const isLoading = isLoadingAssessments || isLoadingStudents;
+
+    if (!isStaffRole) return null;
 
     const toDate = (dateValue: any): Date | null => {
         if (!dateValue) return null;
@@ -114,26 +119,29 @@ function AssessmentsLog() {
 }
   
 function BehavioralLog() {
+    const { role } = useRole();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
 
+    const isStaffRole = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+
     // Index Required: behavioral_records (schoolId: Asc, date: Desc)
     const recordsQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(
+        (firestore && schoolId && isStaffRole) ? query(
             collection(firestore, 'behavioral_records'), 
             where('schoolId', '==', schoolId),
             orderBy('date', 'desc')
         ) : null, 
-        [firestore, schoolId]
+        [firestore, schoolId, isStaffRole]
     );
     const { data: records, isLoading: isLoadingRecords } = useCollection<BehavioralRecord>(recordsQuery);
 
     const studentsQuery = useMemoFirebase(
-        () => (firestore && schoolId) ? query(
+        () => (firestore && schoolId && isStaffRole) ? query(
             collection(firestore, 'students'),
             where('schoolId', '==', schoolId)
         ) : null,
-        [firestore, schoolId]
+        [firestore, schoolId, isStaffRole]
     );
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
     
@@ -143,6 +151,8 @@ function BehavioralLog() {
     }, [students]);
 
     const isLoading = isLoadingRecords || isLoadingStudents;
+
+    if (!isStaffRole) return null;
 
     const toDate = (dateValue: any): Date | null => {
         if (!dateValue) return null;
@@ -174,7 +184,7 @@ function BehavioralLog() {
                             <TableRow key={i}>
                                 <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                                 <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                                <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                                <Skeleton className="h-4 w-28" />
                                 <TableCell><Skeleton className="h-4 w-full" /></TableCell>
                             </TableRow>
                         )) : records?.length === 0 ? (

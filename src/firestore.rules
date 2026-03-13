@@ -119,15 +119,15 @@ service cloud.firestore {
     match /school_calendar/{eventId} { allow read, list: if isSignedIn(); allow write: if isAdmin(); }
     
     match /attendance/{attendanceId} {
-        allow get: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher() || isAdmin() || isDirector());
-        allow list: if isAdmin() || isTeacher() || isDirector() || (isSignedIn() && resource.data.studentId == request.auth.uid);
+        allow get: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher() || isAdmin() || isDirector() || isStaff());
+        allow list: if isSignedIn() && (isTeacher() || isAdmin() || isDirector() || isStaff());
         allow write: if isTeacher() || isAdmin() || isDirector();
     }
 
     match /staff_attendance/{attendanceId} {
         allow create: if isSignedIn();
         allow read: if isAdmin() || isOwner(resource.data.staffId);
-        allow list: if isAdmin() || (isSignedIn() && resource.data.staffId == request.auth.uid);
+        allow list: if isAdmin() || (isSignedIn() && isStaff());
     }
 
     match /report-cards/{reportId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isTeacher(); }
@@ -139,8 +139,13 @@ service cloud.firestore {
     match /quizAttempts/{attemptId} { allow create: if isSignedIn(); allow read, list: if isSignedIn(); allow update, delete: if isTeacher() || isAdmin(); }
     
     match /assessments/{assessmentId} { 
-        allow get: if isSignedIn() && (resource.data.studentId == request.auth.uid || isTeacher() || isAdmin() || isDirector() || isStaff());
-        allow list: if isSignedIn() && (isTeacher() || isAdmin() || isDirector() || isStaff() || resource.data.studentId == request.auth.uid);
+        allow get: if isSignedIn() && (
+            resource.data.studentId == request.auth.uid || 
+            isTeacher() || isAdmin() || isDirector() || isStaff()
+        );
+        allow list: if isSignedIn() && (
+            isTeacher() || isAdmin() || isDirector() || isStaff()
+        );
         allow create, update: if isTeacher() || isStaff() || isAdmin(); 
         allow delete: if isAdmin(); 
     }
@@ -152,7 +157,17 @@ service cloud.firestore {
     }
 
     match /learning_materials/{materialId} { allow read, list: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
-    match /behavioral_records/{recordId} { allow read, write, list: if isSignedIn(); }
+    match /behavioral_records/{recordId} { 
+        allow get: if isSignedIn() && (
+            resource.data.studentId == request.auth.uid || 
+            isTeacher() || isAdmin() || isDirector() || isStaff()
+        );
+        allow list: if isSignedIn() && (
+            isTeacher() || isAdmin() || isDirector() || isStaff()
+        );
+        allow create, update: if isTeacher() || isStaff() || isAdmin();
+        allow delete: if isAdmin();
+    }
 
     // =========================================================
     // 7. FINANCE (Updated Fixes)
