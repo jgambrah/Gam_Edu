@@ -11,19 +11,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_ACADEMIC_YEARS } from '@/lib/data';
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 
-// --- GES GRADING SYSTEM ---
+// --- GES GRADING SYSTEM WITH AUTO REMARKS ---
 function getGradeAndRemark(score: number) {
     if (score >= 80) return { grade: 'A', autoRemark: 'Excellent' };
     if (score >= 70) return { grade: 'B', autoRemark: 'Very Good' };
@@ -47,20 +47,17 @@ export default function ReportCardsPage() {
     const [academicYear, setAcademicYear] = useState('2024-2025');
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
-    // Term Dates for Attendance
+    // Term Dates for Attendance Filtering
     const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
     const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
 
-    // Final Comments
+    // Final Comments State
     const [classTeacherComment, setClassTeacherComment] = useState('');
     const [headmasterComment, setHeadmasterComment] = useState('');
 
-    // State for generation
     const [isGenerating, setIsGenerating] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
-
-    // Refs for PDF
     const printRef = useRef<HTMLDivElement>(null);
 
     const canManage = ['Administrator', 'Director', 'Teacher'].includes(role || '');
@@ -75,7 +72,7 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     // --- THE CALCULATION ENGINE ---
@@ -96,7 +93,6 @@ export default function ReportCardsPage() {
             const snap = await getDocs(q);
             const allAssessments = snap.docs.map(d => d.data());
 
-            // 2. Calculate Class Averages & Positions
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             const studentTotals: Record<string, number> = {};
 
@@ -132,7 +128,6 @@ export default function ReportCardsPage() {
             const sortedStudents = Object.entries(studentTotals).sort(([,a], [,b]) => b - a);
             const classPosition = sortedStudents.findIndex(([uid]) => uid === selectedStudentId) + 1;
 
-            // 3. Extract Data for the Selected Student
             const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
             const reportRows = [];
             let myGrandTotal = 0;
@@ -158,7 +153,6 @@ export default function ReportCardsPage() {
 
                 const { grade, autoRemark } = getGradeAndRemark(total100);
 
-                // Get teacher specific remark if it exists in any of the assessments
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
                 
@@ -182,7 +176,6 @@ export default function ReportCardsPage() {
 
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
-            // 4. Attendance Stats
             const attendanceRef = collection(firestore, 'attendance');
             const attQuery = query(attendanceRef, where('schoolId', '==', schoolId), where('classId', '==', classId));
             const attSnap = await getDocs(attQuery);
@@ -279,7 +272,12 @@ export default function ReportCardsPage() {
                 <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
                         <Label>Academic Year</Label>
-                        <Input value={academicYear} onChange={e => setAcademicYear(e.target.value)} />
+                        <Select value={academicYear} onValueChange={setAcademicYear}>
+                            <SelectTrigger><SelectValue/></SelectTrigger>
+                            <SelectContent>
+                                {MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div className="space-y-2">
                         <Label>Term</Label>
