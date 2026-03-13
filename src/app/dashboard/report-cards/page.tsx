@@ -71,7 +71,6 @@ export default function ReportCardsPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    // FIX: Use useDoc for single document reference
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
@@ -355,9 +354,22 @@ export default function ReportCardsPage() {
                     <div ref={printRef} className="bg-white p-12 shadow-2xl" style={{ width: '210mm', minHeight: '297mm', color: 'black' }} id="pdf-content">
                         {/* HEADER */}
                         <div className="text-center border-b-4 border-double border-slate-800 pb-6 mb-6">
-                            {schoolProfile?.logoUrl && (
-                                <img src={schoolProfile.logoUrl} alt="Logo" className="w-24 h-24 mx-auto mb-4 object-contain" crossOrigin="anonymous" />
-                            )}
+                            {/* LOGO CONTAINER */}
+                            <div className="w-32 h-32 flex-shrink-0 flex items-center justify-center mx-auto mb-4">
+                                {schoolProfile?.logoUrl ? (
+                                    <img 
+                                        src={schoolProfile.logoUrl} 
+                                        alt="School Logo" 
+                                        crossOrigin="anonymous"
+                                        loading="eager"
+                                        className="max-w-[120px] max-h-[120px] object-contain"
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none';
+                                            console.warn("Logo failed to load for PDF generation due to CORS or bad URL.");
+                                        }}
+                                    />
+                                ) : null}
+                            </div>
                             <h1 className="text-4xl font-black uppercase tracking-widest">{schoolProfile?.name || "SCHOOL NAME"}</h1>
                             <p className="text-sm font-bold mt-1">{schoolProfile?.address || ""}</p>
                             <p className="text-sm font-bold">{schoolProfile?.phone} | {schoolProfile?.email}</p>
