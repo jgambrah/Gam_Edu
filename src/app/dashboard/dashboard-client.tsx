@@ -14,11 +14,10 @@ import {
   BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code
 } from 'lucide-react';
 import Link from 'next/link';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { Badge } from '@/components/ui/badge';
-import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { STAFF_ROLES } from '@/lib/types';
 
@@ -57,15 +56,15 @@ function StatCard({ title, value, icon: Icon, link, isLoading, badge, trend, col
 function QuickActionCard({ title, description, icon: Icon, link }: any) {
   return (
     <Link href={link}>
-      <Card className="hover:bg-accent hover:shadow-md transition-all cursor-pointer h-full">
+      <Card className="hover:bg-accent hover:shadow-md transition-all cursor-pointer h-full border-none shadow-none bg-slate-50">
         <CardContent className="pt-6">
           <div className="flex items-start gap-4">
-            <div className="rounded-lg bg-primary/10 p-3">
+            <div className="rounded-lg bg-white p-3 shadow-sm border">
               <Icon className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold">{title}</h3>
-              {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
+              <h3 className="font-semibold text-sm">{title}</h3>
+              {description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{description}</p>}
             </div>
           </div>
         </CardContent>
@@ -99,14 +98,12 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
   const { data: studentData, isLoading: loadingStudent } = useCollection<any>(studentQuery);
   const student = studentData?.[0];
 
-  // REMOVED: Recent Assessments fetch to prevent dashboard permission errors for students
-
-  const isLoading = loadingStudent;
+  const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Learner';
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold text-slate-800">Hello, {profile?.firstName || 'Learner'}! 👋</h1>
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Hello, {displayName}! 👋</h1>
         <p className="text-muted-foreground">Ready for a great day of learning?</p>
       </div>
 
@@ -134,11 +131,29 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
         </Card>
 
         <Card className="lg:col-span-1">
-          <CardHeader><CardTitle>Schedule & Reports</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-lg">My Portal</CardTitle></CardHeader>
           <CardContent className="space-y-3">
-            <QuickActionCard title="My Timetable" icon={Calendar} link="/dashboard/timetable" />
-            <QuickActionCard title="Study Club" icon={BrainCircuit} link="/dashboard/study-club" />
-            <QuickActionCard title="Report Cards" icon={FileText} link="/dashboard/my-reports" />
+            <Link href="/dashboard/timetable" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg"><Calendar className="h-4 w-4 text-blue-600"/></div>
+                    <span className="text-sm font-semibold">Weekly Timetable</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/study-club" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-100 rounded-lg"><BrainCircuit className="h-4 w-4 text-purple-600"/></div>
+                    <span className="text-sm font-semibold">Dr. Gam AI Tutor</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/my-reports" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-emerald-100 rounded-lg"><FileText className="h-4 w-4 text-emerald-600"/></div>
+                    <span className="text-sm font-semibold">Official Report Cards</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -167,10 +182,12 @@ function ParentDashboard({ profile, schoolId }: { profile: any, schoolId: string
     }, 0);
   }, [finances]);
 
+  const displayName = profile?.firstName || 'Parent';
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold text-slate-800">Welcome, {profile?.firstName || 'Parent'}! 🏡</h1>
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Welcome, {displayName}! 🏡</h1>
         <p className="text-muted-foreground">Keep track of your children's school activities and fees.</p>
       </div>
 
@@ -221,9 +238,27 @@ function ParentDashboard({ profile, schoolId }: { profile: any, schoolId: string
         <Card className="lg:col-span-1">
           <CardHeader><CardTitle>Fast Navigation</CardTitle></CardHeader>
           <CardContent className="space-y-3">
-            <QuickActionCard title="Pay School Fees" icon={CreditCard} link="/dashboard/my-bills" />
-            <QuickActionCard title="View Report Cards" icon={FileText} link="/dashboard/my-reports" />
-            <QuickActionCard title="Attendance Logs" icon={CalendarCheck} link="/dashboard/my-children" />
+            <Link href="/dashboard/my-bills" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-indigo-100 rounded-lg"><CreditCard className="h-4 w-4 text-indigo-600"/></div>
+                    <span className="text-sm font-semibold">Pay School Fees</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/my-reports" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-emerald-100 rounded-lg"><FileText className="h-4 w-4 text-emerald-600"/></div>
+                    <span className="text-sm font-semibold">View Report Cards</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/my-children" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg"><CalendarCheck className="h-4 w-4 text-blue-600"/></div>
+                    <span className="text-sm font-semibold">Attendance Logs</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -262,9 +297,27 @@ function TeacherDashboard() {
         <Card className="lg:col-span-1">
           <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
           <CardContent className="space-y-3">
-            <QuickActionCard title="New Assignment" icon={FilePen} link="/dashboard/assignments" />
-            <QuickActionCard title="Take Attendance" icon={CalendarCheck} link="/dashboard/attendance" />
-            <QuickActionCard title="Enter Grades" icon={BookOpen} link="/dashboard/academics/gradebook" />
+            <Link href="/dashboard/assignments" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg"><FilePen className="h-4 w-4 text-blue-600"/></div>
+                    <span className="text-sm font-semibold">New Assignment</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/attendance" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 rounded-lg"><CalendarCheck className="h-4 w-4 text-green-600"/></div>
+                    <span className="text-sm font-semibold">Take Attendance</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/academics/gradebook" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-amber-100 rounded-lg"><BookOpen className="h-4 w-4 text-amber-600"/></div>
+                    <span className="text-sm font-semibold">Enter Grades</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
           </CardContent>
         </Card>
 
@@ -373,8 +426,14 @@ export default function DashboardClient() {
   if (isParent) return <ParentDashboard profile={profile} schoolId={schoolId!} />;
 
   if (isAdminOrDirector) {
+      const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Administrator';
       return (
         <div className="space-y-6">
+          <div className="flex flex-col gap-1 mb-2">
+            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">System Overview: {displayName} 🏢</h1>
+            <p className="text-muted-foreground">Real-time metrics for your school administration.</p>
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} link="/dashboard/students-v3" isLoading={isLoading} />
             <StatCard title="Total Staff" value={staff?.length || 0} icon={Users} link="/dashboard/staff-management-v2" isLoading={isLoading} />
@@ -386,23 +445,49 @@ export default function DashboardClient() {
             <Card>
               <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
               <CardContent className="space-y-3">
-                <QuickActionCard title="Add Student" icon={GraduationCap} link="/dashboard/students-v3" />
-                <QuickActionCard title="Add Staff" icon={Users} link="/dashboard/staff-management-v2" />
-                <QuickActionCard title="Post News" icon={Bell} link="/dashboard/announcements" />
-                <QuickActionCard title="Finance" icon={Banknote} link="/dashboard/finance/accounting" />
+                <Link href="/dashboard/students-v3" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-green-100 rounded-lg"><GraduationCap className="h-4 w-4 text-green-600"/></div>
+                        <span className="text-sm font-semibold">Enroll Student</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-slate-300"/>
+                </Link>
+                <Link href="/dashboard/staff-management-v2" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-purple-100 rounded-lg"><Users className="h-4 w-4 text-purple-600"/></div>
+                        <span className="text-sm font-semibold">Add New Staff</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-slate-300"/>
+                </Link>
+                <Link href="/dashboard/announcements" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 rounded-lg"><Bell className="h-4 w-4 text-blue-600"/></div>
+                        <span className="text-sm font-semibold">Post News</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-slate-300"/>
+                </Link>
+                <Link href="/dashboard/finance/accounting" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-emerald-100 rounded-lg"><Banknote className="h-4 w-4 text-emerald-600"/></div>
+                        <span className="text-sm font-semibold">Financial Ledger</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-slate-300"/>
+                </Link>
               </CardContent>
             </Card>
 
             <Card className="lg:col-span-2">
-              <CardHeader><CardTitle>Enrollment</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Enrollment By Class</CardTitle></CardHeader>
               <CardContent className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={enrollmentData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" fontSize={12} />
-                      <YAxis allowDecimals={false} />
-                      <Tooltip />
-                      <Bar dataKey="students" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                      />
+                      <Bar dataKey="students" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -424,7 +509,7 @@ export default function DashboardClient() {
                     {announcements?.slice(0, 3).map((a: any) => (
                         <div key={a.id} className="p-3 bg-slate-50 rounded-lg border">
                             <p className="font-bold text-sm">{a.title}</p>
-                            <p className="text-xs text-muted-foreground line-clamp-2">{a.content}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{a.content}</p>
                         </div>
                     ))}
                 </CardContent>
