@@ -80,7 +80,7 @@ service cloud.firestore {
     match /users/{userId} { allow read, write: if isSignedIn() && request.auth.uid == userId; }
     match /staff/{staffId} { 
       allow get: if isSignedIn();
-      allow list: if isAdmin();
+      allow list: if isAdmin() || isFinanceStaff();
       allow write: if isAdmin() || isOwner(staffId); 
       match /payroll/{configId} { 
         allow read, write: if isFinanceStaff() || isAdmin(); 
@@ -205,6 +205,15 @@ service cloud.firestore {
       ); 
       allow list: if isSignedIn();
       allow write: if isFinanceStaff() || isAdmin() || isTeacher(); 
+
+      match /payments/{paymentId} {
+        allow read, write: if isFinanceStaff() || isAdmin() || isTeacher();
+        allow read: if isSignedIn() && (
+            exists(/databases/$(database)/documents/financialRecords/$(recordId)) && 
+            (get(/databases/$(database)/documents/financialRecords/$(recordId)).data.studentId == request.auth.uid ||
+             (isParent() && get(/databases/$(database)/documents/financialRecords/$(recordId)).data.studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentIds))
+        );
+      }
     }
     
     match /accountsPayable/{payableId} { allow read, list: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isFinanceStaff() || isAdmin(); allow write: if isFinanceStaff() || isAdmin(); }
@@ -235,7 +244,12 @@ service cloud.firestore {
     match /payrollSettings/{settingsId} { allow read, list: if isFinanceStaff(); allow write: if isAdmin(); }
     match /payroll_settings/{docId} { allow read, list: if isSignedIn(); allow write: if isFinanceStaff() || isAdmin(); }
     match /payroll_runs/{runId} { allow read, list: if isFinanceStaff() || isAdmin() || (isSignedIn() && request.auth.uid == resource.data.staffId); allow write: if isFinanceStaff() || isAdmin(); }
-    match /payrollRecords/{recordId} { allow read, list: if isFinanceStaff(); allow get: if request.auth.uid == resource.data.staffId; allow write: if isFinanceStaff(); }
+    match /payrollRecords/{recordId} { 
+      allow read, write: if isFinanceStaff(); 
+      allow get: if isSignedIn() && request.auth.uid == resource.data.staffId; 
+      allow list: if isSignedIn() && (isFinanceStaff() || request.query.where.staffId == request.auth.uid);
+    }
+    
     match /staff_salary_details/{userId} { allow read, list: if isFinanceStaff() || isAdmin() || request.auth.uid == userId; allow write: if isFinanceStaff() || isAdmin(); }
     match /routes/{routeId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isFinanceStaff(); }
     match /buses/{busId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isFinanceStaff(); }
