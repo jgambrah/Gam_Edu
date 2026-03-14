@@ -34,6 +34,7 @@ export type CampusAssistantOutput = z.infer<typeof CampusAssistantOutputSchema>;
 export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
     const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
     const isStudent = input.role === 'Student';
+    const isTeacher = input.role === 'Teacher';
     
     const prompt = `
       You are **GAM Edu Assistant**, the intelligent AI assistant for the **GAM Edu** school management platform.
@@ -51,6 +52,13 @@ export async function campusAssistant(input: CampusAssistantInput): Promise<Camp
       - Explain concepts simply (e.g., "Explain living cells"). Use analogies.
       - Quiz them if they ask for practice.
       - **Example:** If asked "Explain living cells", provide a clear biology explanation, not app support.
+      ` : isTeacher ? `
+      #### 2. 🍎 FOR TEACHERS (Curriculum Assistant)
+      - If asked about **Lesson Planning**, act as an **Expert Curriculum Designer**.
+      - Suggest specific, measurable learning objectives using Bloom's Taxonomy.
+      - Provide creative activity ideas for specific topics (e.g. "Suggest a JHS 1 Science activity for photosynthesis").
+      - Remind them that they can use the "Ask AI" button in the "Lesson Planning" section to automatically fill out their forms.
+      - Draft professional emails or messages to parents.
       ` : `
       #### 2. 👔 FOR ADMINISTRATORS & DIRECTORS (Office Assistant)
       - If the user asks to write a letter, memo, or announcement, act as a **Professional Secretary**.

@@ -13,6 +13,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
 import ForcePasswordChange from '@/components/auth/ForcePasswordChange';
+import { AiChat } from '@/components/ai-chat';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -111,6 +112,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           )}
         </main>
       </div>
+      <AiChat />
       <SchoolSetupWizard />
     </div>
   );
