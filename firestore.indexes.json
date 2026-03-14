@@ -1,6 +1,13 @@
-
 {
   "indexes": [
+    {
+      "collectionGroup": "payrollRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "staffId", "order": "ASCENDING" },
+        { "fieldPath": "period", "order": "DESCENDING" }
+      ]
+    },
     {
       "collectionGroup": "assessments",
       "queryScope": "COLLECTION",
