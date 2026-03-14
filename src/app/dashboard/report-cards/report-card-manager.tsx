@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Send, ShieldCheck } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -66,6 +66,8 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
     caWeight: number;
     examWeight: number;
 }) {
+    if (!data) return null;
+
     return (
         <div
             id="pdf-content"
@@ -324,6 +326,7 @@ export default function ReportCardManager() {
     const [headmasterComment, setHeadmasterComment] = useState('');
 
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
@@ -359,21 +362,26 @@ export default function ReportCardManager() {
 
     // Load existing report remarks if available
     useEffect(() => {
-        if (!selectedStudentId || !academicYear || !term || !firestore) return;
+        if (!selectedStudentId || !academicYear || !term || !firestore || !schoolId) return;
         const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
         const fetchExisting = async () => {
-            const snap = await getDocs(query(collection(firestore, 'report-cards'), where('id', '==', reportId)));
-            if (!snap.empty) {
-                const data = snap.docs[0].data();
+            const docRef = doc(firestore, 'report-cards', reportId);
+            const snap = await getDoc(docRef);
+            if (snap.exists()) {
+                const data = snap.data();
                 setClassTeacherComment(data.classTeacherComment || '');
                 setHeadmasterComment(data.headmasterComment || '');
+                // Also set the processed report status if it matches the current view
+                if (data.schoolId === schoolId) {
+                    setProcessedReport(prev => prev ? { ...prev, status: data.status } : null);
+                }
             } else {
                 setClassTeacherComment('');
                 setHeadmasterComment('');
             }
         };
         fetchExisting();
-    }, [selectedStudentId, academicYear, term, firestore]);
+    }, [selectedStudentId, academicYear, term, firestore, schoolId]);
 
     const generateReport = async () => {
         if (!firestore || !schoolId || !classId || !selectedStudentId) return;
@@ -534,6 +542,29 @@ export default function ReportCardManager() {
             toast({ variant: 'destructive', title: "Error", description: "Failed to compile report data." });
         } finally {
             setIsGenerating(false);
+        }
+    };
+
+    const handleSaveProgress = async () => {
+        if (!processedReport || !schoolId || isSaving) return;
+        setIsSaving(true);
+        try {
+            const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
+            await setDoc(doc(firestore!, 'report-cards', reportId), {
+                ...processedReport,
+                id: reportId,
+                schoolId,
+                status: processedReport.status || 'Draft',
+                classTeacherComment,
+                headmasterComment,
+                lastUpdatedBy: user?.uid,
+                updatedAt: serverTimestamp()
+            }, { merge: true });
+            toast({ title: "Progress Saved", description: "The report and remarks have been stored." });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Error", description: "Failed to save progress." });
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -731,9 +762,15 @@ export default function ReportCardManager() {
                             <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary" className="rounded-xl h-11 px-6 font-bold">
                                 <Download className="mr-2 h-4 w-4"/> {isExporting ? 'Exporting...' : 'Save as PDF'}
                             </Button>
+                            
+                            <Button onClick={handleSaveDraft} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl h-11 px-6 font-bold">
+                                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
+                                Save Progress
+                            </Button>
+
                             {isAdminOrDirector && (
                                 <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700 rounded-xl h-11 px-8 font-black shadow-lg shadow-green-900/10">
-                                    {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
+                                    {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>}
                                     Publish to Portal
                                 </Button>
                             )}
