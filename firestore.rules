@@ -80,7 +80,7 @@ service cloud.firestore {
     match /users/{userId} { allow read, write: if isSignedIn() && request.auth.uid == userId; }
     match /staff/{staffId} { 
       allow get: if isSignedIn();
-      allow list: if isAdmin();
+      allow list: if isAdmin() || isFinanceStaff();
       allow write: if isAdmin() || isOwner(staffId); 
       match /payroll/{configId} { 
         allow read, write: if isFinanceStaff() || isAdmin(); 
