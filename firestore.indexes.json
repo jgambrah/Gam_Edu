@@ -83,6 +83,15 @@
         { "fieldPath": "studentId", "order": "ASCENDING" },
         { "fieldPath": "completedAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "ela_user_submissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "date_submitted", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

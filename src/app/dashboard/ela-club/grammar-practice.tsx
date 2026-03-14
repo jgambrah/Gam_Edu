@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRole } from '@/context/role-context';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp, doc, setDoc, increment } from 'firebase/firestore';
 import { ElaGrammarDrill, Student } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- SUB-COMPONENT: The Actual Drill Modal ---
 function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | null, open: boolean, setOpen: (o: boolean) => void }) {
@@ -25,23 +26,23 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
     const [isCorrect, setIsCorrect] = useState(false);
     const { user } = useUser();
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
 
     if (!drill) return null;
 
     const handleSubmit = async () => {
-        if (!selectedOption) return;
+        if (!selectedOption || !schoolId) return;
         
         const correct = selectedOption === drill.correct_answer;
         setIsCorrect(correct);
         setIsSubmitted(true);
 
-        // Optional: Save the result to Firestore if user is logged in
+        // Save the result to Firestore if user is logged in
         if (user && firestore) {
             try {
-                // We fire and forget this save (don't await it to block UI)
                  addDocumentNonBlocking(collection(firestore, 'ela_user_submissions'), {
                     userId: user.uid,
-                    challenge_id: drill.id, // Using drill ID as challenge ID
+                    challenge_id: drill.id,
                     challenge_title: drill.topic + " Drill",
                     type: 'Grammar Drill',
                     question: drill.question_prompt,
@@ -49,8 +50,20 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
                     is_correct: correct,
                     date_submitted: serverTimestamp(),
                     status: 'Graded',
-                    teacher_score: correct ? 100 : 0
+                    teacher_score: correct ? 100 : 0,
+                    schoolId: schoolId, // SAAS Compliance
                 });
+
+                if (correct) {
+                    const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
+                    setDoc(leaderboardRef, {
+                        userId: user.uid,
+                        userName: user.displayName || user.email,
+                        profilePictureUrl: user.photoURL || '',
+                        total_correct_answers: increment(1),
+                        schoolId: schoolId
+                    }, { merge: true });
+                }
             } catch (e) {
                 console.error("Failed to save progress", e);
             }
@@ -70,7 +83,7 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
 
     return (
         <Dialog open={open} onOpenChange={handleReset}>
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>{drill.topic} Practice</DialogTitle>
                     <DialogDescription>Read the prompt and select the correct answer.</DialogDescription>
@@ -82,7 +95,7 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
                     </div>
 
                     <RadioGroup value={selectedOption} onValueChange={setSelectedOption} disabled={isSubmitted}>
-                        {drill.options.map((option, idx) => (
+                        {drill.options?.map((option, idx) => (
                             <div key={idx} className={cn("flex items-center space-x-2 border p-3 rounded-md transition-colors", 
                                 isSubmitted && option === drill.correct_answer ? "border-green-500 bg-green-50" : "",
                                 isSubmitted && option === selectedOption && !isCorrect ? "border-red-500 bg-red-50" : ""
@@ -119,8 +132,9 @@ export function GrammarPractice() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const { role } = useRole();
+  const { schoolId } = useCurrentSchool();
   
-  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
+  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   // State for Dropdowns
   const [selectedTopic, setSelectedTopic] = useState<string>('');
@@ -130,22 +144,25 @@ export function GrammarPractice() {
   // 1. Get Student Data
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => {
-      if (!user || !firestore || isStaff) return null;
-      return query(collection(firestore, 'students'), where('uid', '==', user.uid));
-    }, [firestore, user, isStaff])
+      if (!user || !firestore || isStaff || !schoolId) return null;
+      return query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId));
+    }, [firestore, user, isStaff, schoolId])
   );
   
   const studentClassId = studentData?.[0]?.classId;
 
   // 2. Query Drills
   const drillsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    if (isStaff) return query(collection(firestore, 'ela_grammar_drills'));
+    if (!firestore || !schoolId) return null;
+    let q = query(collection(firestore, 'ela_grammar_drills'), where('schoolId', '==', schoolId));
+    
+    if (isStaff) return q;
+    
     if (studentClassId) {
-      return query(collection(firestore, 'ela_grammar_drills'), where('classId', '==', studentClassId));
+      return query(q, where('classId', '==', studentClassId));
     }
     return null;
-  }, [firestore, studentClassId, isStaff]);
+  }, [firestore, studentClassId, isStaff, schoolId]);
 
   const { data: drills, isLoading: isLoadingDrills } = useCollection<ElaGrammarDrill>(drillsQuery);
 
@@ -172,11 +189,6 @@ export function GrammarPractice() {
       }
   };
 
-  // Helper utility for classnames
-  function cn(...classes: (string | undefined | null | false)[]) {
-    return classes.filter(Boolean).join(' ');
-  }
-
   return (
     <>
         <Card>
@@ -196,12 +208,10 @@ export function GrammarPractice() {
             ) : (!isStaff && !studentClassId) ? (
             <div className="text-center py-8">
                 <p className="text-muted-foreground">You are not assigned to a class.</p>
-                <p className="text-xs text-red-400 mt-2">Debug: User ID: {user?.uid || 'Not Found'}</p>
             </div>
             ) : drills && drills.length > 0 ? (
                 <div className="space-y-6 max-w-xl mx-auto py-4">
                     
-                    {/* DROP DOWN 1: TOPIC */}
                     <div className="space-y-2">
                         <Label>1. Choose a Topic</Label>
                         <Select value={selectedTopic} onValueChange={(val) => { setSelectedTopic(val); setSelectedDrillId(''); }}>
@@ -216,7 +226,6 @@ export function GrammarPractice() {
                         </Select>
                     </div>
 
-                    {/* DROP DOWN 2: QUESTION */}
                     <div className="space-y-2">
                         <Label>2. Choose a Question</Label>
                         <Select value={selectedDrillId} onValueChange={setSelectedDrillId} disabled={!selectedTopic}>
@@ -226,7 +235,6 @@ export function GrammarPractice() {
                             <SelectContent>
                                 {filteredDrills.map((drill, index) => (
                                     <SelectItem key={drill.id} value={drill.id}>
-                                        {/* We truncate long questions for the dropdown */}
                                         Q{index + 1}: {drill.question_prompt.substring(0, 50)}{drill.question_prompt.length > 50 ? "..." : ""}
                                     </SelectItem>
                                 ))}
@@ -246,7 +254,6 @@ export function GrammarPractice() {
         </CardContent>
         </Card>
 
-        {/* THE MODAL THAT OPENS THE DRILL */}
         <ActiveDrillDialog 
             drill={activeDrill} 
             open={isDrillOpen} 

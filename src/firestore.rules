@@ -159,7 +159,7 @@ service cloud.firestore {
             resource.data.studentId == request.auth.uid || 
             isTeacher() || isStaff() || isAdmin() || isDirector()
         );
-        allow list: if isSignedIn();
+        allow list: if isSignedIn() && (isTeacher() || isStaff() || isAdmin() || isDirector());
         allow create, update: if isTeacher() || isStaff() || isAdmin();
         allow delete: if isAdmin();
     }
@@ -177,7 +177,7 @@ service cloud.firestore {
             resource.data.studentId == request.auth.uid || 
             isTeacher() || isStaff() || isAdmin() || isDirector()
         );
-        allow list: if isSignedIn();
+        allow list: if isSignedIn() && (isTeacher() || isStaff() || isAdmin() || isDirector());
         allow create, update: if isTeacher() || isStaff() || isAdmin();
         allow delete: if isAdmin();
     }
@@ -293,7 +293,17 @@ service cloud.firestore {
     match /ela_grammar_drills/{drillId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /ela_reading_passages/{passageId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /ela_writing_challenges/{challengeId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
-    match /ela_user_submissions/{submissionId} { allow create: if isOwner(request.resource.data.userId); allow read, list: if isOwner(request.data.userId) || isTeacher() || isAdmin(); allow update: if isTeacher() || isAdmin(); }
+    
+    match /ela_user_submissions/{submissionId} { 
+        allow get: if isSignedIn() && (
+            resource.data.userId == request.auth.uid || 
+            isTeacher() || isStaff() || isAdmin() || isDirector()
+        );
+        allow list: if isSignedIn();
+        allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; 
+        allow update: if isTeacher() || isStaff() || isAdmin() || isDirector(); 
+    }
+    
     match /ela_learning_history/{id} { allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow read, list: if isSignedIn(); allow delete: if request.auth.uid == resource.data.userId || isAdmin(); }
     match /ela_leaderboard/{userId} { allow read: if isSignedIn(); allow write: if isOwner(userId) || isAdmin(); }
     match /think_tank_paradoxes/{paradoxId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
