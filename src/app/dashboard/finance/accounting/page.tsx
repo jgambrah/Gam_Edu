@@ -4,7 +4,7 @@
 import { useState, useMemo, useRef } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment } from 'firebase/firestore';
+import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment, setDoc } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
   Save, Loader2, CornerDownRight, Trash2, Receipt, BarChart, TrendingUp, BookOpen, PlusCircle, BookMarked
@@ -106,13 +106,13 @@ function GeneralLedger({
                     <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
                         <SelectTrigger><SelectValue placeholder="Select Account to View" /></SelectTrigger>
                         <SelectContent>
-                            {accounts.sort((a,b) => a.code.localeCompare(b.code)).map(a => (
+                            {accounts.sort((a,b) => (a.code || '').localeCompare(b.code || '')).map(a => (
                                 <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
                 </div>
-                <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print Ledger</Button>
+                <Button variant="outline" onClick={() => window.print()}>Print Ledger</Button>
             </div>
 
             {selectedAccountId !== 'all' && selectedAccount ? (
@@ -169,7 +169,7 @@ function TrialBalance({ data }: { data: AccountBalance[] }) {
         <Card>
             <CardHeader className="flex flex-row justify-between">
                 <div><CardTitle>Trial Balance</CardTitle><CardDescription>As of {new Date().toLocaleDateString()}</CardDescription></div>
-                <Button variant="outline" onClick={() => window.print()} className="print:hidden"><Printer className="mr-2 h-4 w-4"/> Print</Button>
+                <Button variant="outline" onClick={() => window.print()} className="print:hidden">Print</Button>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -387,18 +387,32 @@ function AccountForm({ setOpen, onAccountAdded, accounts, schoolId }: { setOpen:
         if (!firestore) return;
         setIsSubmitting(true);
         try {
+            const isControl = values.parentAccountId === 'None';
+            let newCode = '';
+
+            if (isControl) {
+                const sameType = accounts.filter(a => a.type === values.type && a.isControlAccount);
+                const prefix = (ACCOUNT_TYPES.indexOf(values.type) + 1) * 1000;
+                newCode = String(prefix + (sameType.length * 100));
+            } else {
+                const parent = accounts.find(a => a.id === values.parentAccountId);
+                const siblings = accounts.filter(a => a.parentAccountId === values.parentAccountId);
+                newCode = `${parent?.code || '0000'}-${(siblings.length + 1).toString().padStart(2, '0')}`;
+            }
+
             const newDocRef = doc(collection(firestore, 'accounts'));
             await setDoc(newDocRef, {
                 ...values,
                 id: newDocRef.id,
+                code: newCode,
                 schoolId: schoolId,
                 balance: 0,
-                isControlAccount: values.parentAccountId === 'None',
-                parentAccountId: values.parentAccountId === 'None' ? null : values.parentAccountId,
-                code: 'TEMP', // Will be updated
+                isControlAccount: isControl,
+                parentAccountId: isControl ? null : values.parentAccountId,
+                createdAt: serverTimestamp()
             });
 
-            toast({ title: 'Success', description: 'New account has been added.' });
+            toast({ title: 'Success', description: `Account ${newCode} has been added.` });
             onAccountAdded();
             form.reset();
             setOpen(false);
@@ -414,16 +428,41 @@ function AccountForm({ setOpen, onAccountAdded, accounts, schoolId }: { setOpen:
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
-                    <FormItem><FormLabel>Account Name</FormLabel><FormControl><Input placeholder="e.g., Office Supplies" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem>
+                        <FormLabel>Account Name</FormLabel>
+                        <FormControl><Input placeholder="e.g., Office Supplies" {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
                 )} />
                 <FormField control={form.control} name="type" render={({ field }) => (
-                    <FormItem><FormLabel>Account Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a type" /></SelectTrigger></FormControl><SelectContent>{ACCOUNT_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem>
+                        <FormLabel>Account Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl><SelectTrigger><SelectValue placeholder="Select a type" /></SelectTrigger></FormControl>
+                            <SelectContent>{ACCOUNT_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
                 )} />
                 <FormField control={form.control} name="parentAccountId" render={({ field }) => (
-                    <FormItem><FormLabel>Parent Account</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="None">None (Create new Control Account)</SelectItem>{controlAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem>
+                        <FormLabel>Parent Account</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                            <SelectContent>
+                                <SelectItem value="None">None (Create new Control Account)</SelectItem>
+                                {controlAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
                 )} />
                 <FormField control={form.control} name="description" render={({ field }) => (
-                    <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the purpose of this account" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl><Textarea placeholder="Describe the purpose of this account" {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
                 )} />
                 <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create Account</Button>
             </form>
@@ -443,7 +482,7 @@ function ChartOfAccounts({ accounts, schoolId, onAccountsChanged }: { accounts: 
         const result: Account[] = [];
         controlAccounts.forEach(control => {
             result.push(control);
-            const children = subAccounts.filter(sub => sub.parentId === control.id).sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+            const children = subAccounts.filter(sub => sub.parentAccountId === control.id).sort((a, b) => (a.code || '').localeCompare(b.code || ''));
             result.push(...children);
         });
         return result;
@@ -471,7 +510,7 @@ function ChartOfAccounts({ accounts, schoolId, onAccountsChanged }: { accounts: 
                         {sortedAccounts.map(acc => (
                             <TableRow key={acc.id} className={cn(acc.isControlAccount && 'bg-muted/50 font-bold')}>
                                 <TableCell>{acc.code}</TableCell><TableCell>{acc.name}</TableCell><TableCell>{acc.type}</TableCell>
-                                <TableCell>{acc.parentAccountId || '-'}</TableCell><TableCell>{acc.description}</TableCell>
+                                <TableCell>{accounts.find(p => p.id === acc.parentAccountId)?.name || '-'}</TableCell><TableCell>{acc.description}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -568,7 +607,7 @@ export default function AccountingPage() {
     const journalsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
     const { data: journals, isLoading: jLoading, forceRefetch: forceRefetchJournals } = useCollection<JournalEntry>(journalsQuery);
 
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
     if (!canAccess) return <div className="p-8 text-center text-red-500">Access Denied</div>;
 
     const isLoading = isLoadingSchool || accLoading || jLoading;
@@ -592,4 +631,3 @@ export default function AccountingPage() {
         </div>
     );
 }
-

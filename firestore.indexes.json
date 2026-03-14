@@ -1,3 +1,4 @@
+
 {
   "indexes": [
     {
@@ -6,6 +7,16 @@
       "fields": [
         { "fieldPath": "staffId", "order": "ASCENDING" },
         { "fieldPath": "period", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "tills",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "accountantId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "dateClosed", "order": "DESCENDING" }
       ]
     },
     {
