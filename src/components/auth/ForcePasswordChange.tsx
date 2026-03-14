@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ShieldAlert, Lock } from 'lucide-react';
+import { useRole } from '@/context/role-context';
 
 interface ForcePasswordChangeProps {
   user: User;
@@ -25,6 +26,7 @@ interface ForcePasswordChangeProps {
 export default function ForcePasswordChange({ user, profile }: ForcePasswordChangeProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { refreshRole } = useRole();
   
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -73,7 +75,9 @@ export default function ForcePasswordChange({ user, profile }: ForcePasswordChan
         description: 'Your password has been changed successfully. Welcome to the portal!',
       });
       
-      // The component will unmount once the layout re-renders due to profile change
+      // Trigger a refresh of the role context to unmount this dialog
+      refreshRole();
+      
     } catch (err: any) {
       console.error('Password change failed:', err);
       
@@ -82,8 +86,7 @@ export default function ForcePasswordChange({ user, profile }: ForcePasswordChan
       } else {
         setError(err.message || 'An error occurred. Please try again.');
       }
-    } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -116,7 +119,7 @@ export default function ForcePasswordChange({ user, profile }: ForcePasswordChan
                 required
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="h-12 border-2 focus:ring-indigo-500 rounded-xl"
+                className="h-12 border-2 focus:ring-indigo-500 rounded-xl text-black"
                 placeholder="••••••••"
               />
             </div>
@@ -128,7 +131,7 @@ export default function ForcePasswordChange({ user, profile }: ForcePasswordChan
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-12 border-2 focus:ring-indigo-500 rounded-xl"
+                className="h-12 border-2 focus:ring-indigo-500 rounded-xl text-black"
                 placeholder="••••••••"
               />
             </div>
