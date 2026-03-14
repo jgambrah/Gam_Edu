@@ -269,7 +269,7 @@ function ParentDashboard({ profile, schoolId }: { profile: any, schoolId: string
 }
 
 // --- TEACHER DASHBOARD COMPONENT ---
-function TeacherDashboard() {
+function TeacherDashboard({ profile }: { profile: any }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();
@@ -285,9 +285,15 @@ function TeacherDashboard() {
   const { data: assignments, isLoading: loadingAssignments } = useCollection<any>(assignmentsQuery);
 
   const isLoading = loadingClasses || loadingStudents || loadingAssignments;
+  const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Teacher';
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Welcome back, {displayName}! 🍎</h1>
+        <p className="text-muted-foreground">Manage your classes, assignments, and student progress.</p>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard title="My Students" value={students?.length ?? 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} />
         <StatCard title="My Classes" value={teacherClasses?.length ?? 0} icon={School} link="/dashboard/academics" isLoading={isLoading} />
@@ -423,7 +429,7 @@ export default function DashboardClient() {
       );
   }
 
-  if (isTeacher) return <TeacherDashboard />;
+  if (isTeacher) return <TeacherDashboard profile={profile} />;
   if (isStudent) return <StudentDashboard profile={profile} schoolId={schoolId!} />;
   if (isParent) return <ParentDashboard profile={profile} schoolId={schoolId!} />;
 
