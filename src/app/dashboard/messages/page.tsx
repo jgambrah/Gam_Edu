@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, limit, getDocs } from 'firebase/firestore'; 
 import { 
   MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, 
-  Loader2, ArrowLeft, CheckCheck, BookOpen, GraduationCap, Users
+  Loader2, ArrowLeft, CheckCheck, BookOpen, GraduationCap, Users, HeartHandshake
 } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -70,6 +70,7 @@ function getRoleIcon(role: string) {
     const r = (role || '').toLowerCase();
     if (r.includes('teacher')) return <BookOpen className="h-3 w-3" />;
     if (r.includes('student')) return <GraduationCap className="h-3 w-3" />;
+    if (r.includes('parent')) return <HeartHandshake className="h-3 w-3" />;
     return <Users className="h-3 w-3" />;
 }
 
@@ -100,30 +101,60 @@ function NewChatDialog({ open, setOpen, onStartChat, schoolId }: {
     const [results, setResults] = useState<SearchUser[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
-    const allowedRoles = role === 'Student' ? ['staff'] : ['students', 'staff'];
+    // Determine allowed search categories based on current user role
+    const searchCategories = useMemo(() => {
+        // Staff/Admins can message everyone
+        if (['Administrator', 'Director', 'Teacher', 'Accountant', 'Librarian'].includes(role || '')) {
+            return [
+                { id: 'staff', label: 'Staff' },
+                { id: 'students', label: 'Students' },
+                { id: 'parents', label: 'Parents' }
+            ];
+        }
+        // Students and Parents can only search for Staff/Teachers for security/privacy
+        return [{ id: 'staff', label: 'Staff' }];
+    }, [role]);
+
+    // Ensure searchRole is valid when searchCategories change
+    useEffect(() => {
+        if (!searchCategories.find(cat => cat.id === searchRole)) {
+            setSearchRole(searchCategories[0].id);
+        }
+    }, [searchCategories, searchRole]);
 
     const handleSearch = async () => {
         if (!firestore || !schoolId) return;
         setIsSearching(true);
         try {
-            const collectionName = searchRole === 'staff' ? 'staff' : 'students';
+            const collectionName = searchRole; // 'staff', 'students', or 'parents'
             const q = query(collection(firestore, collectionName), where('schoolId', '==', schoolId), limit(50));
             const snap = await getDocs(q);
             const users = snap.docs.map(d => {
                 const data = d.data();
+                let effectiveRole = data.role;
+                if (!effectiveRole) {
+                    if (searchRole === 'students') effectiveRole = 'Student';
+                    if (searchRole === 'parents') effectiveRole = 'Parent';
+                    if (searchRole === 'staff') effectiveRole = 'Staff';
+                }
                 return { 
-                    ...data, uid: d.id,
-                    role: data.role || (searchRole === 'students' ? 'Student' : 'Staff'),
+                    ...data, 
+                    uid: d.id,
+                    role: effectiveRole || 'Member',
                     photoURL: data.photoURL || null
                 };
             }) as SearchUser[];
+
             const filtered = users.filter(u => 
                 ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (u.email || '').toLowerCase().includes(searchTerm.toLowerCase())
             );
             setResults(filtered);
-        } catch (e) { console.error(e); }
-        finally { setIsSearching(false); }
+        } catch (e) { 
+            console.error("Messaging Search Error:", e); 
+        } finally { 
+            setIsSearching(false); 
+        }
     };
 
     return (
@@ -132,7 +163,7 @@ function NewChatDialog({ open, setOpen, onStartChat, schoolId }: {
                 {/* Header */}
                 <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-6 pb-8">
                     <DialogTitle className="text-white text-xl font-bold tracking-tight">New Conversation</DialogTitle>
-                    <p className="text-indigo-200 text-xs mt-1">Search for a teacher, student, or staff member</p>
+                    <p className="text-indigo-200 text-xs mt-1">Connect with someone in your school community</p>
                 </div>
 
                 {/* Search bar overlapping header */}
@@ -143,13 +174,14 @@ function NewChatDialog({ open, setOpen, onStartChat, schoolId }: {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                {allowedRoles.includes('staff') && <SelectItem value="staff">Staff</SelectItem>}
-                                {allowedRoles.includes('students') && <SelectItem value="students">Students</SelectItem>}
+                                {searchCategories.map(cat => (
+                                    <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         <div className="w-px h-6 bg-slate-200" />
                         <Input
-                            placeholder="Search by name or email..."
+                            placeholder="Search by name..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -203,8 +235,8 @@ function NewChatDialog({ open, setOpen, onStartChat, schoolId }: {
                                 <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center">
                                     <User className="h-6 w-6 text-slate-300"/>
                                 </div>
-                                <p className="text-xs font-medium text-slate-400">
-                                    {isSearching ? 'Searching...' : 'Search to find someone'}
+                                <p className="text-xs font-medium text-slate-400 text-center px-4">
+                                    {isSearching ? 'Searching...' : 'Search to find someone at your school'}
                                 </p>
                             </div>
                         )}
