@@ -67,52 +67,46 @@ export async function billStudentForAttendance(
     if (shouldBillCanteen && canteenRate > 0) {
         const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
         const canteenRef = doc(firestore, 'financialRecords', canteenRecordId);
-        const existing = await getDoc(canteenRef);
         
-        if (!existing.exists()) {
-            batch.set(canteenRef, {
-                studentId: student.uid,
-                studentName: `${student.firstName} ${student.lastName}`,
-                classId: student.classId || '',
-                type: 'Canteen Fee',
-                description: `Canteen - ${format(attendanceDate, 'PPP')}`,
-                billedAmount: canteenRate,
-                amountPaid: 0,
-                waiverAmount: 0,
-                status: 'Unpaid',
-                dueDate: Timestamp.fromDate(attendanceDate),
-                createdAt: serverTimestamp(),
-                schoolId: schoolId,
-            }, { merge: true });
-            totalBilled += canteenRate;
-            billedServices.push('Canteen');
-        }
+        batch.set(canteenRef, {
+            studentId: student.uid,
+            studentName: `${student.firstName} ${student.lastName}`,
+            classId: student.classId || '',
+            type: 'Canteen Fee',
+            description: `Canteen - ${format(attendanceDate, 'PPP')}`,
+            billedAmount: canteenRate,
+            amountPaid: 0,
+            waiverAmount: 0,
+            status: 'Unpaid',
+            dueDate: Timestamp.fromDate(attendanceDate),
+            createdAt: serverTimestamp(),
+            schoolId: schoolId,
+        }, { merge: true });
+        totalBilled += canteenRate;
+        billedServices.push('Canteen');
     }
 
     // 2. Process Transport Bill
     if (shouldBillBus && transportRate > 0) {
         const transportRecordId = `transport-${student.uid}-${dateStr}`;
         const transportRef = doc(firestore, 'financialRecords', transportRecordId);
-        const existing = await getDoc(transportRef);
         
-        if (!existing.exists()) {
-            batch.set(transportRef, {
-                studentId: student.uid,
-                studentName: `${student.firstName} ${student.lastName}`,
-                classId: student.classId || '',
-                type: 'Transport Fee',
-                description: `Transport - ${format(attendanceDate, 'PPP')}`,
-                billedAmount: transportRate,
-                amountPaid: 0,
-                waiverAmount: 0,
-                status: 'Unpaid',
-                dueDate: Timestamp.fromDate(attendanceDate),
-                createdAt: serverTimestamp(),
-                schoolId: schoolId,
-            }, { merge: true });
-            totalBilled += transportRate;
-            billedServices.push('Transport');
-        }
+        batch.set(transportRef, {
+            studentId: student.uid,
+            studentName: `${student.firstName} ${student.lastName}`,
+            classId: student.classId || '',
+            type: 'Transport Fee',
+            description: `Transport - ${format(attendanceDate, 'PPP')}`,
+            billedAmount: transportRate,
+            amountPaid: 0,
+            waiverAmount: 0,
+            status: 'Unpaid',
+            dueDate: Timestamp.fromDate(attendanceDate),
+            createdAt: serverTimestamp(),
+            schoolId: schoolId,
+        }, { merge: true });
+        totalBilled += transportRate;
+        billedServices.push('Transport');
     }
 
     if (billedServices.length > 0) {
