@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, limit, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, limit, getDocs } from 'firebase/firestore'; 
 import { 
   MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, Loader2, ArrowLeft
 } from 'lucide-react';
@@ -68,11 +68,21 @@ function NewChatDialog({ open, setOpen, onStartChat, schoolId }: { open: boolean
             const collectionName = searchRole === 'staff' ? 'staff' : 'students';
             const q = query(collection(firestore, collectionName), where('schoolId', '==', schoolId), limit(50));
             const snap = await getDocs(q);
-            const users = snap.docs.map(d => ({ ...d.data(), uid: d.id })) as SearchUser[];
+            
+            // Normalize data to ensure no undefined roles
+            const users = snap.docs.map(d => {
+                const data = d.data();
+                return { 
+                    ...data, 
+                    uid: d.id,
+                    role: data.role || (searchRole === 'students' ? 'Student' : 'Staff Member'),
+                    photoURL: data.photoURL || null // Use null instead of undefined for Firestore
+                };
+            }) as SearchUser[];
             
             const filtered = users.filter(u => 
-                (u.firstName + ' ' + u.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
-                u.email.toLowerCase().includes(searchTerm.toLowerCase())
+                ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (u.email || '').toLowerCase().includes(searchTerm.toLowerCase())
             );
             setResults(filtered);
         } catch (e) {
@@ -121,7 +131,8 @@ function NewChatDialog({ open, setOpen, onStartChat, schoolId }: { open: boolean
                                     <Avatar className="h-10 w-10 border">
                                         <AvatarImage src={user.photoURL} />
                                         <AvatarFallback className="bg-indigo-100 text-indigo-700 font-bold">
-                                            {user.firstName[0]}{user.lastName[0]}
+                                            {user.firstName ? user.firstName[0] : 'U'}
+                                            {user.lastName ? user.lastName[0] : ''}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="text-left">
@@ -148,6 +159,7 @@ function NewChatDialog({ open, setOpen, onStartChat, schoolId }: { open: boolean
 // --- MAIN PAGE ---
 export default function MessagesPage() {
     const { user } = useUser();
+    const { role } = useRole();
     const firestore = useFirestore();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     const { toast } = useToast();
@@ -232,13 +244,21 @@ export default function MessagesPage() {
 
         try {
             const myName = user.displayName || user.email?.split('@')[0] || 'Me';
-            const targetName = `${targetUser.firstName} ${targetUser.lastName}`;
+            const targetName = `${targetUser.firstName || ''} ${targetUser.lastName || ''}`.trim() || 'User';
             
             const docRef = await addDoc(collection(firestore, 'direct_messages'), {
                 participants: [user.uid, targetUid],
                 participantDetails: {
-                    [user.uid]: { name: myName, role: 'User', photoURL: user.photoURL || '' },
-                    [targetUid]: { name: targetName, role: targetUser.role, photoURL: targetUser.photoURL || '' }
+                    [user.uid]: { 
+                        name: myName, 
+                        role: role || 'Member', 
+                        photoURL: user.photoURL || null 
+                    },
+                    [targetUid]: { 
+                        name: targetName, 
+                        role: targetUser.role || 'Member', 
+                        photoURL: targetUser.photoURL || null 
+                    }
                 },
                 lastMessage: 'Chat started',
                 lastMessageTime: serverTimestamp(),
@@ -250,7 +270,7 @@ export default function MessagesPage() {
             setIsNewChatOpen(false);
         } catch (e: any) {
             console.error("Error creating chat:", e);
-            toast({ variant: 'destructive', title: 'Chat Error', description: 'Could not initialize conversation.' });
+            toast({ variant: 'destructive', title: 'Chat Error', description: e.message || 'Could not initialize conversation.' });
         }
     };
 
