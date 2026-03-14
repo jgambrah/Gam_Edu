@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // =========================================================
+    // = =========================================================
     // 1. HELPER FUNCTIONS
     // =========================================================
     
@@ -190,7 +190,16 @@ service cloud.firestore {
         allow update: if isAdmin();
     }
 
-    match /financialRecords/{recordId} { allow read, list: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isFinanceStaff() || isAdmin() || isTeacher(); allow write: if isFinanceStaff() || isAdmin() || isTeacher(); }
+    match /financialRecords/{recordId} { 
+      allow read, list: if isSignedIn() && (
+        request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || 
+        isFinanceStaff() || isAdmin() || isTeacher() ||
+        (resource.data.studentId == request.auth.uid) ||
+        (isParent() && resource.data.studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentIds)
+      ); 
+      allow write: if isFinanceStaff() || isAdmin() || isTeacher(); 
+    }
+    
     match /accountsPayable/{payableId} { allow read, list: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isFinanceStaff() || isAdmin(); allow write: if isFinanceStaff() || isAdmin(); }
     match /accountsReceivable/{receivableId} { allow read, list: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isFinanceStaff() || isAdmin(); allow write: if isFinanceStaff() || isAdmin(); }
     

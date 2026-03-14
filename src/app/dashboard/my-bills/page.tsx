@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useState, useMemo, Suspense } from 'react';
 import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, doc, query, where, Timestamp, documentId } from 'firebase/firestore';
+import { collection, doc, query, where, Timestamp, documentId, orderBy } from 'firebase/firestore';
 import { Student, FinancialRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, FileText, ShieldAlert } from 'lucide-react';
@@ -18,15 +17,22 @@ import { DateRange } from 'react-day-picker';
 import { DatePickerWithRange } from '@/components/ui/date-picker-with-range';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useRole } from '@/context/role-context';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function StudentBillView({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
     const recordsQuery = useMemoFirebase(() => {
-        if (!firestore || !studentId) return null;
-        return query(collection(firestore, 'financialRecords'), where('studentId', '==', studentId));
-    }, [firestore, studentId]);
+        if (!firestore || !studentId || !schoolId) return null;
+        return query(
+            collection(firestore, 'financialRecords'), 
+            where('schoolId', '==', schoolId),
+            where('studentId', '==', studentId),
+            orderBy('createdAt', 'desc')
+        );
+    }, [firestore, studentId, schoolId]);
     const { data: records, isLoading } = useCollection<FinancialRecord>(recordsQuery);
 
     const { data: student } = useDoc<Student>(useMemoFirebase(() => firestore && studentId ? doc(firestore, 'students', studentId) : null, [firestore, studentId]));
@@ -42,11 +48,10 @@ function StudentBillView({ studentId }: { studentId: string }) {
 
     const filteredRecords = useMemo(() => {
         if (!records) return [];
-        let sortedRecords = [...records].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
         
-        if (!dateRange || !dateRange.from) return sortedRecords;
+        if (!dateRange || !dateRange.from) return records;
         
-        return sortedRecords.filter(rec => {
+        return records.filter(rec => {
             if (!rec.dueDate?.toDate) return false;
             const recDate = rec.dueDate.toDate();
             const from = startOfDay(dateRange.from!);
