@@ -1,491 +1,818 @@
+
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, setDoc, serverTimestamp, orderBy } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { reportCardCommentSchema, ReportCard, ReportCardComment, ReportCardStatus, Class, Subject, Assessment, Student, FinancialRecord } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
-import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { Loader2, Send, ShieldCheck, Trophy, TrendingUp, FileText, Users } from 'lucide-react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { GenerateReportCard } from '../academics/gradebook/report-card-pdf';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { StudentDisplay } from '@/components/student-display';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { collection, query, where, getDocs, doc, setDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Send, ShieldCheck } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import { format, startOfDay, endOfDay } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
-// --- HELPER: Grading Logic ---
-function getGrade(percentage: number) {
-    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
-    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
-    if (percentage >= 60) return { grade: 'C', remark: 'Good' };
-    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
-    if (percentage > 0) return { grade: 'F', remark: 'Fail' };
-    return { grade: 'N/A', remark: '' };
+// --- HELPERS ---
+
+async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
+    try {
+        const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
+            ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
+            : imageUrl;
+
+        const res = await fetch(fetchUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
+        const blob = await res.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error: any) {
+        console.error("❌ getBase64ImageFromUrl failed:", error.message);
+        return "";
+    }
 }
 
-// --- SUB-COMPONENT: Student Detail ---
-function StudentGradesDetail({ 
-    student, 
-    allAssessments, 
-    allSubjects,
-    rank, 
-    totalStudents,
-    term,
-    year,
-    schoolId,
-    reportCard,
-    onUpdate
-}: { 
-    student: Student; 
-    allAssessments: Assessment[];
-    allSubjects: Subject[];
-    rank: number;
-    totalStudents: number;
-    term: string;
-    year: string;
-    schoolId: string;
-    reportCard?: ReportCard;
-    onUpdate: () => void;
+function getGradeAndRemark(score: number) {
+    if (score >= 80) return { grade: 'A', autoRemark: 'Excellent' };
+    if (score >= 70) return { grade: 'B', autoRemark: 'Very Good' };
+    if (score >= 60) return { grade: 'C', autoRemark: 'Good' };
+    if (score >= 50) return { grade: 'D', autoRemark: 'Credit' };
+    if (score >= 40) return { grade: 'E', autoRemark: 'Pass' };
+    return { grade: 'F', autoRemark: 'Fail' };
+}
+
+// --- SUB-COMPONENT: ACTUAL REPORT CARD CONTENT ---
+function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: {
+    data: any;
+    classTeacherComment: string;
+    headmasterComment: string;
+    caWeight: number;
+    examWeight: number;
 }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const commentsQuery = useMemoFirebase(
-        () => (firestore && reportCard) ? query(collection(firestore, `report-cards/${reportCard.id}/comments`)) : null,
-        [firestore, reportCard?.id]
-    );
-    const { data: comments } = useCollection<ReportCardComment>(commentsQuery);
-
-    const commentForm = useForm({
-        resolver: zodResolver(reportCardCommentSchema),
-        defaultValues: { subjectId: '', comment: '' },
-    });
-
-    // 1. Calculate weighted scores
-    const globalSubjectStats = useMemo(() => {
-        const grouping: Record<string, Record<string, { ca: number, caMax: number, exam: number, examMax: number }>> = {};
-        allAssessments.forEach((a: Assessment) => {
-             const subId = a.subjectId || 'unknown';
-             const uId = a.studentId;
-             if (!grouping[subId]) grouping[subId] = {};
-             if (!grouping[subId][uId]) grouping[subId][uId] = { ca: 0, caMax: 0, exam: 0, examMax: 0 };
-             const type = (a.assessmentType || '').toLowerCase();
-             const isExam = type.includes('exam') || type.includes('term');
-             if (isExam) {
-                 grouping[subId][uId].exam += (a.score || 0);
-                 grouping[subId][uId].examMax += (a.maxScore || 0);
-             } else {
-                 grouping[subId][uId].ca += (a.score || 0);
-                 grouping[subId][uId].caMax += (a.maxScore || 0);
-             }
-        });
-        const stats: Record<string, { average: number, studentScores: Record<string, number> }> = {};
-        Object.keys(grouping).forEach(subId => {
-            const studentsInSub = grouping[subId];
-            let sumPercentages = 0;
-            let count = 0;
-            const scoresMap: Record<string, number> = {};
-            Object.entries(studentsInSub).forEach(([uid, data]) => {
-                const caPct = data.caMax > 0 ? (data.ca / data.caMax) * 50 : 0;
-                const examPct = data.examMax > 0 ? (data.exam / data.examMax) * 50 : 0;
-                const final = caPct + examPct;
-                scoresMap[uid] = final;
-                sumPercentages += final;
-                count++;
-            });
-            stats[subId] = { average: count > 0 ? sumPercentages / count : 0, studentScores: scoresMap };
-        });
-        return stats;
-    }, [allAssessments]);
-
-    const reportData = useMemo(() => {
-        if (!allSubjects || allSubjects.length === 0) return [];
-        return allSubjects.map(subject => {
-            const subId = subject.id;
-            const studentAssessments = allAssessments.filter(a => a.studentId === student.uid && a.subjectId === subId);
-            let caObt = 0, caMax = 0, exObt = 0, exMax = 0;
-            studentAssessments.forEach(a => {
-                const isExam = (a.assessmentType || '').toLowerCase().includes('exam');
-                if (isExam) { exObt += (a.score || 0); exMax += (a.maxScore || 0); }
-                else { caObt += (a.score || 0); caMax += (a.maxScore || 0); }
-            });
-            const caW = caMax > 0 ? (caObt / caMax) * 50 : 0;
-            const exW = exMax > 0 ? (exObt / exMax) * 50 : 0;
-            const total = caW + exW;
-            const subStats = globalSubjectStats[subId];
-            let subRank = 0;
-            let totalSubStudents = 0;
-            if (subStats && subStats.studentScores) {
-                const allScores = Object.values(subStats.studentScores).sort((a,b) => b - a);
-                const score = subStats.studentScores[student.uid];
-                if (score !== undefined) subRank = allScores.findIndex(s => Math.abs(s - score) < 0.001) + 1;
-                totalSubStudents = allScores.length;
-            }
-            const existingComment = comments?.find(c => c.subjectId === subId)?.comment || "";
-            return { id: subId, name: subject.name, caW, exW, total, classAvg: subStats?.average || 0, rank: subRank, totalSubStudents, comment: existingComment, ...getGrade(total) };
-        });
-    }, [allAssessments, student.uid, allSubjects, globalSubjectStats, comments]);
-
-    const overallAverage = reportData.length > 0 
-        ? reportData.reduce((sum, i) => sum + i.total, 0) / reportData.length 
-        : 0;
-
-    const handleSaveComment = async (values: { subjectId: string, comment: string }) => {
-        if (!firestore || !user || !schoolId) return;
-        setIsSubmitting(true);
-        try {
-            const reportCardId = `${student.uid}-${year}-${term}`;
-            const commentRef = doc(firestore, `report-cards/${reportCardId}/comments`, `${values.subjectId}_${user.uid}`);
-            await setDoc(commentRef, {
-                studentId: student.uid,
-                subjectId: values.subjectId,
-                comment: values.comment,
-                teacherId: user.uid,
-                term, academicYear: year,
-                updatedAt: serverTimestamp(),
-                createdAt: serverTimestamp(),
-            }, { merge: true });
-            toast({ title: "Comment Saved" });
-            onUpdate();
-        } catch (e) {
-            toast({ variant: 'destructive', title: "Error Saving Comment" });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     return (
-        <div className="space-y-6 p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
-                    <CardContent className="p-4 flex items-center gap-3 text-indigo-900">
-                        <Trophy className="h-8 w-8 text-indigo-600"/>
-                        <div><p className="text-[10px] font-black uppercase tracking-widest">Class Position</p><p className="text-2xl font-black">{rank} <span className="text-sm font-normal opacity-50">/ {totalStudents}</span></p></div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-emerald-50 border-emerald-100 shadow-sm">
-                    <CardContent className="p-4 flex items-center gap-3 text-emerald-900">
-                        <TrendingUp className="h-8 w-8 text-emerald-600"/>
-                        <div><p className="text-[10px] font-black uppercase tracking-widest">Overall Average</p><p className="text-2xl font-black">{overallAverage.toFixed(1)}%</p></div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-white border-slate-200 shadow-sm">
-                     <CardContent className="p-4 flex flex-col justify-center h-full">
-                        <GenerateReportCard
-                            student={student}
-                            assessments={allAssessments}
-                            subjects={allSubjects || []}
-                            year={year}
-                            term={term}
-                            rank={rank}
-                            totalStudents={totalStudents}
+        <div
+            id="pdf-content"
+            style={{
+                width: '794px',
+                minHeight: '1123px',
+                maxHeight: '1123px',
+                color: 'black',
+                boxSizing: 'border-box',
+                margin: '0 auto',
+                backgroundColor: 'white',
+                padding: '28px 36px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0px',
+                overflow: 'hidden',
+            }}
+        >
+            {/* ── HEADER ── */}
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderBottom: '4px double #1e293b',
+                paddingBottom: '10px',
+                marginBottom: '8px',
+            }}>
+                {/* Logo */}
+                <div style={{ width: '88px', height: '88px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                    {data.logoBase64 ? (
+                        <img
+                            src={data.logoBase64}
+                            alt="School Logo"
+                            style={{ maxWidth: '88px', maxHeight: '88px', objectFit: 'contain', display: 'block' }}
                         />
-                     </CardContent>
-                </Card>
+                    ) : (
+                        <div style={{ width: 88, height: 88, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#94a3b8', textAlign: 'center' }}>
+                            No Logo
+                        </div>
+                    )}
+                </div>
+
+                {/* School Info */}
+                <div style={{ flex: 1, textAlign: 'center', padding: '0 12px' }}>
+                    <div style={{ fontSize: '19px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: 1.2 }}>
+                        {data.schoolName || 'SCHOOL NAME'}
+                    </div>
+                    {data.schoolMotto && (
+                        <div style={{ fontSize: '9px', fontStyle: 'italic', color: '#475569', marginTop: '2px' }}>
+                            "{data.schoolMotto}"
+                        </div>
+                    )}
+                    <div style={{ fontSize: '9px', fontWeight: 700, marginTop: '3px' }}>{data.schoolAddress || ''}</div>
+                    <div style={{ fontSize: '9px', fontWeight: 700 }}>
+                        {[data.schoolPhone, data.schoolEmail].filter(Boolean).join(' | ')}
+                    </div>
+                </div>
+
+                {/* Spacer to balance logo */}
+                <div style={{ width: '88px', flexShrink: 0 }} />
             </div>
 
-            <div className="border rounded-xl bg-white overflow-hidden shadow-sm">
-                <Table>
-                    <TableHeader className="bg-slate-50">
-                        <TableRow>
-                            <TableHead className="w-[20%]">Subject</TableHead>
-                            <TableHead className="text-center">CA (50%)</TableHead>
-                            <TableHead className="text-center">Exam (50%)</TableHead>
-                            <TableHead className="text-center font-bold">Total</TableHead>
-                            <TableHead className="text-center">Pos</TableHead>
-                            <TableHead>Grade</TableHead>
-                            <TableHead className="w-[30%]">Teacher's Remark</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {reportData.map((row) => (
-                            <TableRow key={row.id}>
-                                <TableCell className="font-bold text-slate-700">{row.name}</TableCell>
-                                <TableCell className="text-center font-mono">{row.caW > 0 ? row.caW.toFixed(1) : '-'}</TableCell>
-                                <TableCell className="text-center font-mono">{row.exW > 0 ? row.exW.toFixed(1) : '-'}</TableCell>
-                                <TableCell className="text-center font-black text-indigo-600">{row.total > 0 ? `${row.total.toFixed(1)}%` : '-'}</TableCell>
-                                <TableCell className="text-center text-xs font-bold text-slate-400">{row.rank > 0 ? `${row.rank}/${row.totalSubStudents}` : '-'}</TableCell>
-                                <TableCell><Badge variant={row.grade === 'F' ? 'destructive' : row.grade === 'N/A' ? 'outline' : 'default'}>{row.grade}</Badge></TableCell>
-                                <TableCell className="text-xs italic text-slate-500">{row.comment || "No comment yet."}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+            {/* ── REPORT TITLE ── */}
+            <div style={{
+                fontSize: '13px',
+                fontWeight: 700,
+                textAlign: 'center',
+                marginBottom: '8px',
+                background: '#f1f5f9',
+                padding: '4px',
+                border: '1px solid #cbd5e1',
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+            }}>
+                Terminal Report Card
             </div>
 
-            {reportCard?.status === 'Draft' && (
-                <Card className="border-t-4 border-t-amber-400 shadow-sm">
-                    <CardHeader className="py-3 px-4 bg-slate-50 border-b">
-                        <CardTitle className="text-sm font-black uppercase flex items-center gap-2"><FileText className="h-4 w-4"/> Add/Update Subject Remarks</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-4">
-                        <Form {...commentForm}>
-                            <form onSubmit={commentForm.handleSubmit(handleSaveComment)} className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                                    <div className="md:col-span-4">
-                                        <FormField control={commentForm.control} name="subjectId" render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-xs uppercase font-bold text-slate-400">Select Subject</FormLabel>
-                                                <Select onValueChange={(v) => { field.onChange(v); const existing = comments?.find(c => c.subjectId === v); commentForm.setValue('comment', existing?.comment || ''); }} value={field.value}>
-                                                    <SelectTrigger className="rounded-xl border-2"><SelectValue placeholder="..." /></SelectTrigger>
-                                                    <SelectContent>
-                                                        {allSubjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormItem>
-                                        )}/>
-                                    </div>
-                                    <div className="md:col-span-6">
-                                        <FormField control={commentForm.control} name="comment" render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-xs uppercase font-bold text-slate-400">Teacher's Remark</FormLabel>
-                                                <FormControl><Input placeholder="Enter student performance remark..." {...field} className="rounded-xl border-2"/></FormControl>
-                                            </FormItem>
-                                        )}/>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <Button type="submit" disabled={isSubmitting || !commentForm.watch('subjectId')} className="w-full rounded-xl bg-indigo-600 h-10">
-                                            {isSubmitting ? <Loader2 className="animate-spin h-4 w-4"/> : "Save"}
-                                        </Button>
-                                    </div>
-                                </div>
-                            </form>
-                        </Form>
-                    </CardContent>
-                </Card>
-            )}
+            {/* ── STUDENT INFO ── */}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '3px 16px',
+                marginBottom: '8px',
+                fontSize: '10px',
+                border: '2px solid #cbd5e1',
+                padding: '7px 10px',
+                fontWeight: 500,
+                background: '#f8fafc',
+            }}>
+                <div><strong>Name:</strong> {data.student?.firstName} {data.student?.lastName}</div>
+                <div><strong>Term:</strong> {data.term}</div>
+                <div><strong>Class:</strong> {data.className}</div>
+                <div><strong>Academic Year:</strong> {data.academicYear}</div>
+                <div><strong>Attendance:</strong> {data.studentPresentDays} / {data.totalClassDays} days</div>
+                <div style={{ gridColumn: '1 / -1', marginTop: '4px', paddingTop: '4px', borderTop: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>
+                        <strong>Position in Class: </strong>
+                        <span style={{ fontWeight: 700, textDecoration: 'underline' }}>{data.classPosition}</span> of {data.totalStudents}
+                    </span>
+                    <span>
+                        <strong>Overall Average: </strong>
+                        <span style={{ fontWeight: 700, textDecoration: 'underline' }}>{data.overallAverage}%</span>
+                    </span>
+                </div>
+            </div>
+
+            {/* ── GRADES TABLE ── */}
+            <table style={{ width: '100%', fontSize: '9.5px', borderCollapse: 'collapse', marginBottom: '5px', tableLayout: 'fixed' }}>
+                <colgroup>
+                    <col style={{ width: '22%' }} />
+                    <col style={{ width: '6%' }} />
+                    <col style={{ width: '7%' }} />
+                    <col style={{ width: '6%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '9%' }} />
+                    <col style={{ width: '35%' }} />
+                </colgroup>
+                <thead>
+                    <tr style={{ background: '#f1f5f9' }}>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'left', overflow: 'hidden' }}>Subject</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>CA ({caWeight})</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Exam ({examWeight})</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Total</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Avg</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Grd</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Pos</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>Remark</th>
+                        <th style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'left' }}>Teacher's Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.rows?.map((row: any, i: number) => (
+                        <tr key={i} style={{ background: i % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.subjectName}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center' }}>{row.ca}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center' }}>{row.exam}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', fontWeight: 900, background: '#f1f5f9' }}>{row.total}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', color: '#64748b', fontStyle: 'italic' }}>{row.classAverage}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', fontWeight: 700 }}>{row.grade}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center' }}>{row.position}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', textAlign: 'center', fontWeight: 600, fontSize: '8.5px' }}>{row.autoRemark}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '2px 4px', fontStyle: 'italic', fontSize: '8.5px', color: '#475569', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{row.teacherRemark || '-'}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {/* ── GRADING KEY ── */}
+            <div style={{
+                border: '1px solid #cbd5e1',
+                padding: '3px 6px',
+                fontSize: '8px',
+                background: '#f8fafc',
+                marginBottom: '8px',
+                display: 'flex',
+                gap: '5px',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+            }}>
+                <strong>Key:</strong>
+                <span>80–100: A (Excellent)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>70–79: B (Very Good)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>60–69: C (Good)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>50–59: D (Credit)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>40–49: E (Pass)</span><span style={{ color: '#94a3b8' }}>|</span>
+                <span>0–39: F (Fail)</span>
+            </div>
+
+            {/* ── REMARKS ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '2px', padding: '6px 8px', background: '#f8fafc' }}>
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px', letterSpacing: '0.06em' }}>
+                        Class Teacher's Remark:
+                    </div>
+                    <div style={{
+                        fontSize: '10px',
+                        fontStyle: 'italic',
+                        fontFamily: 'Georgia, serif',
+                        color: '#1e293b',
+                        lineHeight: 1.5,
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        minHeight: '28px',
+                    }}>
+                        {classTeacherComment || '...'}
+                    </div>
+                </div>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '2px', padding: '6px 8px', background: '#f8fafc' }}>
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px', letterSpacing: '0.06em' }}>
+                        Headmaster's Remark:
+                    </div>
+                    <div style={{
+                        fontSize: '10px',
+                        fontStyle: 'italic',
+                        fontFamily: 'Georgia, serif',
+                        color: '#1e293b',
+                        lineHeight: 1.5,
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        minHeight: '28px',
+                    }}>
+                        {headmasterComment || '...'}
+                    </div>
+                </div>
+            </div>
+
+            {/* ── SIGNATURES ── */}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '32px',
+                borderTop: '2px dashed #cbd5e1',
+                paddingTop: '10px',
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ height: '28px', borderBottom: '1px solid black', width: '75%', margin: '0 auto 4px' }} />
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Class Teacher Signature &amp; Date
+                    </div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ height: '28px', borderBottom: '1px solid black', width: '75%', margin: '0 auto 4px' }} />
+                    <div style={{ fontSize: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Headmaster Signature &amp; Date
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
 
-// --- MAIN PAGE ---
 export default function ReportCardManager() {
-  const { user } = useUser();
-  const { role, isRoleLoading } = useRole();
-  const firestore = useFirestore();
-  const { toast } = useToast();
-  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+    const { user } = useUser();
+    const { role } = useRole();
+    const firestore = useFirestore();
+    const { schoolId, loading: schoolLoading } = useCurrentSchool();
+    const { toast } = useToast();
 
-  const [selectedClassId, setSelectedClassId] = useState('');
-  const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
-  const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
-  const [processingStudentId, setProcessingStudentId] = useState<string | null>(null);
-  
-  const classesQuery = useMemoFirebase(() => {
-      if(!firestore || !user || !schoolId) return null;
-      let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-      if (role === 'Teacher') q = query(q, where('teacherId', '==', user.uid));
-      return q;
-  }, [firestore, user, role, schoolId]);
-  const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery);
+    // Selection State
+    const [classId, setClassId] = useState('');
+    const [term, setTerm] = useState('First Term');
+    const [academicYear, setAcademicYear] = useState('2024-2025');
+    const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
-  const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: subjects } = useCollection<Subject>(subjectsQuery);
+    // Attendance Period
+    const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
+    const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
 
-  const studentsQuery = useMemoFirebase(() => (selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, [firestore, selectedClassId, schoolId]);
-  const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
-  
-  const reportCardsQuery = useMemoFirebase(() => {
-    if (!selectedClassId || !selectedYear || !selectedTerm || !schoolId) return null;
-    return query(collection(firestore, 'report-cards'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('academicYear', '==', selectedYear), where('term', '==', selectedTerm));
-  }, [firestore, selectedClassId, selectedYear, selectedTerm, schoolId]);
-  const { data: reportCards, forceRefetch: refetchReports } = useCollection<ReportCard>(reportCardsQuery);
+    // Comments State
+    const [classTeacherComment, setClassTeacherComment] = useState('');
+    const [headmasterComment, setHeadmasterComment] = useState('');
 
-  const assessmentsQuery = useMemoFirebase(() => {
-    if (!selectedClassId || !selectedYear || !selectedTerm || !schoolId) return null;
-    return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('academicYear', '==', selectedYear), where('term', '==', selectedTerm));
-  }, [firestore, selectedClassId, selectedYear, selectedTerm, schoolId]);
-  const { data: assessments, isLoading: loadingAssessments } = useCollection<Assessment>(assessmentsQuery);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [isPublishing, setIsPublishing] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+    const [processedReport, setProcessedReport] = useState<any>(null);
+    
+    const printRef = useRef<HTMLDivElement>(null);
 
-  const financialRecordsQuery = useMemoFirebase(() => (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId, schoolId]);
-  const { data: financialRecords } = useCollection<FinancialRecord>(financialRecordsQuery);
+    const isAdminOrDirector = ['Administrator', 'Director'].includes(role || '');
+    const isTeacher = role === 'Teacher';
 
-  const rankedStudents = useMemo(() => {
-      if (!students || !assessments) return [];
-      const studentsWithScore = students.map(s => {
-          const myAssessments = assessments.filter(a => a.studentId === s.uid);
-          const grouping: Record<string, { ca: number, caMax: number, exam: number, examMax: number }> = {};
-          myAssessments.forEach(a => {
-              const subId = a.subjectId || 'unknown';
-              if (!grouping[subId]) grouping[subId] = { ca: 0, caMax: 0, exam: 0, examMax: 0 };
-              const isExam = (a.assessmentType || '').toLowerCase().includes('exam');
-              if (isExam) { grouping[subId].exam += (a.score || 0); grouping[subId].examMax += (a.maxScore || 0); }
-              else { grouping[subId].ca += (a.score || 0); grouping[subId].caMax += (a.maxScore || 0); }
-          });
-          const subjectAverages = Object.values(grouping).map(g => {
-              const caPct = g.caMax > 0 ? (g.ca / g.caMax) * 50 : 0;
-              const exPct = g.examMax > 0 ? (g.exam / g.examMax) * 50 : 0;
-              return caPct + exPct;
-          });
-          const average = subjectAverages.length > 0 ? subjectAverages.reduce((a,b) => a+b, 0) / subjectAverages.length : 0;
-          return { ...s, average };
-      });
-      return studentsWithScore.sort((a, b) => b.average - a.average);
-  }, [students, assessments]);
+    // Data Fetching
+    const classesQuery = useMemoFirebase(() => {
+        if(!firestore || !user || !schoolId) return null;
+        let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+        if (role === 'Teacher') q = query(q, where('teacherId', '==', user.uid));
+        return q;
+    }, [firestore, user, role, schoolId]);
+    const { data: classes } = useCollection<any>(classesQuery);
 
-  const studentFinancials = useMemo(() => {
-    if (!students || !financialRecords) return {};
-    const financials: Record<string, { balance: number }> = {};
-    students.forEach(student => {
-        const myRecords = financialRecords.filter(r => r.studentId === student.uid && r.status !== 'Pending Reversal');
-        const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const paid = myRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
-        financials[student.uid] = { balance: billed - paid };
-    });
-    return financials;
-  }, [students, financialRecords]);
+    const { data: students } = useCollection<any>(useMemoFirebase(() => 
+        (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, 
+    [firestore, schoolId, classId]));
 
-  const handleStatusUpdate = async (student: Student, newStatus: ReportCardStatus) => {
-    setProcessingStudentId(student.uid);
-    if (!firestore || !schoolId) return;
-    const reportCardId = `${student.uid}-${selectedYear}-${selectedTerm}`;
-    try {
-        const reportCardRef = doc(firestore, 'report-cards', reportCardId);
-        const dataToSet: any = { status: newStatus, studentName: `${student.firstName} ${student.lastName}`, className: classes?.find(c => c.id === selectedClassId)?.name || 'N/A' };
-        if (newStatus === 'Published') dataToSet.publishedAt = serverTimestamp();
-        await setDoc(reportCardRef, {
-            id: reportCardId, studentId: student.uid, classId: selectedClassId,
-            academicYear: selectedYear, term: selectedTerm, schoolId, ...dataToSet
-        }, { merge: true });
-        toast({ title: `Report ${newStatus}` });
-        refetchReports();
-    } catch(error) {
-        toast({ variant: 'destructive', title: 'Update Failed' });
-    } finally {
-        setProcessingStudentId(null);
-    }
-  };
+    const { data: subjects } = useCollection<any>(useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
+    [firestore, schoolId]));
+    
+    const { data: schoolProfile } = useDoc<any>(useMemoFirebase(() => 
+        (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
+    [firestore, schoolId]));
 
-  const isLoading = isRoleLoading || isLoadingSchool || loadingClasses || (selectedClassId && (loadingStudents || loadingAssessments));
+    const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
+    const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
 
-  return (
-    <div className="space-y-6">
-      <Card className="border-t-4 border-t-indigo-600 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><FileText className="text-indigo-600"/> Terminal Report Engine</CardTitle>
-          <CardDescription>Finalize grades, add remarks, and publish student results.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
-          <div className="space-y-1">
-             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Academic Year</span>
-             <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
-                <SelectTrigger className="bg-white rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
-             </Select>
-          </div>
-          <div className="space-y-1">
-             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Term</span>
-             <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
-                <SelectTrigger className="bg-white rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-             </Select>
-          </div>
-          <div className="space-y-1">
-             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Class</span>
-             <Select onValueChange={setSelectedClassId} disabled={loadingClasses}>
-                <SelectTrigger className="bg-white rounded-xl"><SelectValue placeholder="Choose class..." /></SelectTrigger>
-                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-             </Select>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {selectedClassId && (
-        <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden">
-            <CardHeader className="py-4 px-6 border-b bg-white">
-                <CardTitle className="text-lg flex items-center gap-2"><Users className="h-5 w-5 text-slate-400"/> Class Performance Overview</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-                {isLoading ? (
-                    <div className="flex flex-col items-center py-20 gap-2 text-slate-400">
-                        <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />
-                        <p className="font-bold text-xs uppercase tracking-widest">Compiling Results...</p>
+    // Load existing report remarks if available
+    useEffect(() => {
+        if (!selectedStudentId || !academicYear || !term || !firestore) return;
+        const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
+        const fetchExisting = async () => {
+            const snap = await getDocs(query(collection(firestore, 'report-cards'), where('id', '==', reportId)));
+            if (!snap.empty) {
+                const data = snap.docs[0].data();
+                setClassTeacherComment(data.classTeacherComment || '');
+                setHeadmasterComment(data.headmasterComment || '');
+            } else {
+                setClassTeacherComment('');
+                setHeadmasterComment('');
+            }
+        };
+        fetchExisting();
+    }, [selectedStudentId, academicYear, term, firestore]);
+
+    const generateReport = async () => {
+        if (!firestore || !schoolId || !classId || !selectedStudentId) return;
+        setIsGenerating(true);
+        setProcessedReport(null);
+
+        try {
+            // 1. Fetch Assessments
+            const assessmentsRef = collection(firestore, 'assessments');
+            const q = query(
+                assessmentsRef, 
+                where('schoolId', '==', schoolId),
+                where('classId', '==', classId),
+                where('academicYear', '==', academicYear),
+                where('term', '==', term)
+            );
+            const snap = await getDocs(q);
+            const allAssessments = snap.docs.map(d => d.data());
+
+            // 2. Statistical Analysis
+            const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
+            const studentTotals: Record<string, number> = {};
+
+            subjects?.forEach((sub: any) => { 
+                subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
+            });
+
+            students?.forEach((stu: any) => {
+                let grandTotal = 0;
+                subjects?.forEach((sub: any) => {
+                    const stuSubjAssessments = allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id);
+                    let total100 = 0;
+                    if (stuSubjAssessments.length > 0) {
+                        const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
+                        const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
+                        const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                        const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
+
+                        const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
+                        const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
+                        const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                        const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
+
+                        total100 = Math.round(weightedCA + weightedExam);
+                    }
+                    grandTotal += total100;
+                    if (subjectStats[sub.id]) {
+                        subjectStats[sub.id].totalScores.push(total100);
+                        subjectStats[sub.id].sum += total100;
+                    }
+                });
+                studentTotals[stu.uid] = grandTotal;
+            });
+
+            // 3. Ranks
+            const sortedStudentTotals = Object.entries(studentTotals).sort(([,a], [,b]) => b - a);
+            const classPosition = sortedStudentTotals.findIndex(([uid]) => uid === selectedStudentId) + 1;
+
+            const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
+            const reportRows: any[] = [];
+            let myGrandTotal = 0;
+            let subjectsTaken = 0;
+
+            subjects?.forEach((sub: any) => {
+                const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
+                if (myAssessments.length === 0) return; 
+
+                const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
+                const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
+                const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
+
+                const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
+                const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
+                const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+                const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
+
+                const total100 = Math.round(weightedCA + weightedExam);
+                myGrandTotal += total100;
+                subjectsTaken++;
+
+                const { grade, autoRemark } = getGradeAndRemark(total100);
+                const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
+                const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
+
+                const sortedScores = [...subjectStats[sub.id].totalScores].sort((a, b) => b - a);
+                const rankIndex = sortedScores.indexOf(total100);
+                const mySubjectRank = rankIndex >= 0 ? rankIndex + 1 : sortedScores.length;
+
+                const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
+                    ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
+                    : 0;
+
+                reportRows.push({
+                    subjectName: sub.name,
+                    ca: Math.round(weightedCA),
+                    exam: Math.round(weightedExam),
+                    total: total100,
+                    grade,
+                    autoRemark,
+                    teacherRemark: customTeacherRemark,
+                    classAverage: subjectAverage,
+                    position: mySubjectRank
+                });
+            });
+
+            const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
+
+            // 4. Attendance
+            const attendanceRef = collection(firestore, 'attendance');
+            const attQuery = query(attendanceRef, where('schoolId', '==', schoolId), where('classId', '==', classId));
+            const attSnap = await getDocs(attQuery);
+            const allAtt = attSnap.docs.map(d => d.data());
+
+            let studentPresentDays = 0;
+            let totalClassDays = 0;
+
+            if (termStartDate && termEndDate) {
+                const start = startOfDay(termStartDate).getTime();
+                const end = endOfDay(termEndDate).getTime();
+                const termAtt = allAtt.filter(a => {
+                    const d = a.date?.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime();
+                    return d >= start && d <= end;
+                });
+                const uniqueDays = new Set(termAtt.map(a => format(a.date?.toDate ? a.date.toDate() : new Date(a.date), 'yyyy-MM-dd')));
+                totalClassDays = uniqueDays.size;
+                studentPresentDays = termAtt.filter(a => a.studentId === selectedStudentId && (a.status === 'Present' || a.status === 'Late')).length;
+            }
+
+            // 5. Assets & Final Structure
+            let finalLogoStr = '';
+            if (schoolProfile?.logoUrl) {
+                finalLogoStr = await getBase64ImageFromUrl(schoolProfile.logoUrl);
+            }
+
+            setProcessedReport({
+                student: targetStudent,
+                rows: reportRows,
+                overallAverage,
+                totalScore: myGrandTotal,
+                classPosition,
+                totalStudents: students?.length || 0,
+                studentPresentDays,
+                totalClassDays,
+                logoBase64: finalLogoStr,
+                schoolName: schoolProfile?.name,
+                schoolMotto: schoolProfile?.motto,
+                schoolAddress: schoolProfile?.address,
+                schoolPhone: schoolProfile?.phone,
+                schoolEmail: schoolProfile?.email,
+                term,
+                academicYear,
+                className: classes?.find((c:any) => c.id === classId)?.name || ''
+            });
+
+        } catch (error: any) {
+            console.error(error);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report data." });
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    const handlePublish = async () => {
+        if (!processedReport || !schoolId || isPublishing) return;
+        setIsPublishing(true);
+        try {
+            const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
+            await setDoc(doc(firestore!, 'report-cards', reportId), {
+                ...processedReport,
+                id: reportId,
+                schoolId,
+                status: 'Published',
+                publishedAt: serverTimestamp(),
+                classTeacherComment,
+                headmasterComment,
+                generatedBy: user?.uid
+            }, { merge: true });
+            toast({ title: "Report Published", description: "This result is now visible in the student portal." });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Error", description: "Publishing failed." });
+        } finally {
+            setIsPublishing(false);
+        }
+    };
+
+    const handleDownloadPDF = async () => {
+        const element = printRef.current;
+        if (!element || !processedReport) return;
+
+        setIsExporting(true);
+        try {
+            element.style.visibility = 'visible';
+            element.style.position = 'fixed';
+            element.style.top = '0';
+            element.style.left = '0';
+            element.style.zIndex = '-1';
+            element.style.display = 'flex';
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                windowWidth: 794,
+                windowHeight: 1123,
+                imageTimeout: 0,
+            });
+
+            element.style.visibility = 'hidden';
+            element.style.position = 'absolute';
+            element.style.display = 'block';
+
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            pdf.save(`${processedReport.student?.firstName}_Report_${term}.pdf`);
+        } catch (error) {
+            console.error("PDF Export Error:", error);
+            toast({ variant: 'destructive', title: "Export Failed" });
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    return (
+        <div className="p-6 space-y-6 max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-3xl font-black flex items-center gap-3 text-slate-900 uppercase tracking-tighter">
+                        <GraduationCap className="h-10 w-10 text-indigo-600"/> Terminal Reports
+                    </h1>
+                    <p className="text-slate-500 font-medium italic">Generate, Review, and Publish Student Results.</p>
+                </div>
+            </div>
+
+            {/* Filter Section */}
+            <Card className="border-t-4 border-t-indigo-600 shadow-md print:hidden">
+                <CardHeader><CardTitle className="text-lg">Report Configuration</CardTitle></CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                        <Label className="text-xs font-black text-slate-400 uppercase">Academic Year</Label>
+                        <Select value={academicYear} onValueChange={setAcademicYear}>
+                            <SelectTrigger className="bg-white rounded-xl"><SelectValue/></SelectTrigger>
+                            <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+                        </Select>
                     </div>
-                ) : rankedStudents.length > 0 ? (
-                <Accordion type="single" collapsible className="w-full">
-                    {rankedStudents.map((student, index) => {
-                        const report = reportCards?.find(rc => rc.studentId === student.uid);
-                        const status = report?.status || 'Draft';
-                        const rank = index + 1;
-                        
-                        return (
-                            <AccordionItem value={student.uid} key={student.uid} className="px-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
-                                <AccordionTrigger className="hover:no-underline py-5">
-                                    <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full pr-4 gap-4'>
-                                        <div className="flex items-center gap-4">
-                                            <div className={`flex items-center justify-center w-10 h-10 rounded-2xl text-sm font-black ${rank <= 3 ? 'bg-yellow-400 text-yellow-900 shadow-lg shadow-yellow-500/20' : 'bg-slate-100 text-slate-500'}`}>
-                                                #{rank}
-                                            </div>
-                                            <StudentDisplay student={student} variant="list" showAvatar />
-                                        </div>
-
-                                        <div className="flex items-center gap-3">
-                                            <Badge variant="outline" className={cn("rounded-lg px-3 py-1 font-bold", status === 'Published' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200')}>
-                                                {status}
-                                            </Badge>
-                                            <div className="text-right min-w-[80px]">
-                                                <p className="text-[10px] font-black text-slate-400 uppercase">Average</p>
-                                                <p className="text-xl font-black text-indigo-600">{student.average.toFixed(1)}%</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-0 border-t bg-slate-50/30">
-                                    <StudentGradesDetail 
-                                        student={student}
-                                        allAssessments={assessments || []}
-                                        allSubjects={subjects || []}
-                                        rank={rank}
-                                        totalStudents={rankedStudents.length}
-                                        term={selectedTerm}
-                                        year={selectedYear}
-                                        schoolId={schoolId!}
-                                        reportCard={report}
-                                        onUpdate={refetchReports}
-                                    />
-                                    
-                                    <div className="p-6 border-t bg-white flex justify-end gap-3">
-                                        {role === 'Teacher' && status === 'Draft' && (
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild><Button className="bg-indigo-600 hover:bg-indigo-700 rounded-xl px-6 font-bold"><Send className="mr-2 h-4 w-4" /> Submit for Approval</Button></AlertDialogTrigger>
-                                                <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Ready to Submit?</AlertDialogTitle><AlertDialogDescription>This will lock the report card and send it to the Director for final review.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleStatusUpdate(student, 'AwaitingFinalApproval')}>Submit Report</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
-                                            </AlertDialog>
-                                        )}
-                                        {['Administrator', 'Director'].includes(role || '') && status === 'AwaitingFinalApproval' && (
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild><Button variant="destructive" className="rounded-xl px-6 font-bold"><ShieldCheck className="mr-2 h-4 w-4" /> Publish Report</Button></AlertDialogTrigger>
-                                                <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Publish Official Result?</AlertDialogTitle><AlertDialogDescription>This will make the report card visible to parents and students. They will receive a notification.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleStatusUpdate(student, 'Published')} className="bg-green-600">Publish Now</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
-                                            </AlertDialog>
-                                        )}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        );
-                    })}
-                </Accordion>
-                ) : (
-                    <div className="text-center py-20 text-slate-300 flex flex-col items-center">
-                        <FileText className="h-16 w-16 mb-4 opacity-10" />
-                        <p className="font-black uppercase tracking-tighter text-xl">No Results Found</p>
-                        <p className="text-sm">Please ensure grades have been entered in the Gradebook.</p>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-black text-slate-400 uppercase">Term</Label>
+                        <Select value={term} onValueChange={setTerm}>
+                            <SelectTrigger className="bg-white rounded-xl"><SelectValue/></SelectTrigger>
+                            <SelectContent>
+                                {MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
                     </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-black text-slate-400 uppercase">Class</Label>
+                        <Select value={classId} onValueChange={setClassId}>
+                            <SelectTrigger className="bg-white rounded-xl"><SelectValue placeholder="Select Class"/></SelectTrigger>
+                            <SelectContent>{classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-black text-slate-400 uppercase">Student</Label>
+                        <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
+                            <SelectTrigger className="bg-white rounded-xl"><SelectValue placeholder="Choose Student"/></SelectTrigger>
+                            <SelectContent>{students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-black text-slate-400 uppercase">Attendance Start</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full text-left font-normal bg-white rounded-xl">
+                                    {termStartDate ? format(termStartDate, "PPP") : <span>Pick date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={termStartDate} onSelect={setTermStartDate} initialFocus />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-black text-slate-400 uppercase">Attendance End</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full text-left font-normal bg-white rounded-xl">
+                                    {termEndDate ? format(termEndDate, "PPP") : <span>Pick date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={termEndDate} onSelect={setTermEndDate} initialFocus />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </CardContent>
+                <CardFooter className="justify-end bg-slate-50 pt-4 border-t">
+                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600 hover:bg-indigo-700 px-8 h-12 rounded-xl font-bold">
+                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>}
+                        Generate Master Preview
+                    </Button>
+                </CardFooter>
+            </Card>
+
+            {processedReport && (
+                <div className="space-y-6 animate-in slide-in-from-top-4 duration-500">
+                    <Card className="border-t-4 border-t-orange-400 shadow-md">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-orange-800">
+                                <FileCheck className="h-5 w-5"/> Final Sign-off & Remarks
+                            </CardTitle>
+                            <CardDescription>Review the compilation and add final comments.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label className="font-bold text-slate-700">Class Teacher's Remark</Label>
+                                <Textarea 
+                                    placeholder="Enter overall student performance remark..." 
+                                    value={classTeacherComment} 
+                                    onChange={(e) => setClassTeacherComment(e.target.value)} 
+                                    className="min-h-[100px] rounded-xl" 
+                                    disabled={!isTeacher && !isAdminOrDirector}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="font-bold text-slate-700">Headmaster's Remark</Label>
+                                <Textarea 
+                                    placeholder="Enter final headmaster decision/remark..." 
+                                    value={headmasterComment} 
+                                    onChange={(e) => setHeadmasterComment(e.target.value)} 
+                                    className="min-h-[100px] rounded-xl" 
+                                    disabled={!isAdminOrDirector}
+                                />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
+                            <Button variant="outline" className="rounded-xl h-11 px-6 font-bold" onClick={() => {
+                                const el = printRef.current;
+                                if (!el) return;
+                                el.style.visibility = 'visible';
+                                el.style.zIndex = '9999';
+                                setTimeout(() => {
+                                    window.print();
+                                    setTimeout(() => { el.style.visibility = 'hidden'; el.style.zIndex = '-1'; }, 1000);
+                                }, 100);
+                            }}>
+                                <Printer className="mr-2 h-4 w-4"/> Print
+                            </Button>
+                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary" className="rounded-xl h-11 px-6 font-bold">
+                                <Download className="mr-2 h-4 w-4"/> {isExporting ? 'Exporting...' : 'Save as PDF'}
+                            </Button>
+                            {isAdminOrDirector && (
+                                <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700 rounded-xl h-11 px-8 font-black shadow-lg shadow-green-900/10">
+                                    {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
+                                    Publish to Portal
+                                </Button>
+                            )}
+                        </CardFooter>
+                    </Card>
+
+                    {/* LIVE PREVIEW SCROLL AREA */}
+                    <Card className="border shadow-2xl overflow-hidden rounded-[2rem]">
+                        <CardHeader className="bg-slate-900 text-white flex flex-row justify-between items-center px-8">
+                            <div>
+                                <CardTitle className="flex items-center gap-2 text-lg">
+                                    <Eye className="h-5 w-5 text-indigo-400"/> Interactive Document Preview
+                                </CardTitle>
+                                <CardDescription className="text-slate-400">Exact replica of the A4 printable document.</CardDescription>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Weighting Applied</p>
+                                    <p className="text-xs font-bold text-indigo-400">{CA_WEIGHT}% CA / {EXAM_WEIGHT}% Exam</p>
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0 bg-slate-200">
+                            <ScrollArea className="h-[900px] w-full">
+                                <div className="p-12 flex justify-center">
+                                    <div className="shadow-2xl ring-1 ring-black/10 bg-white" style={{ width: '794px' }}>
+                                        <ReportCardTemplate
+                                            data={processedReport}
+                                            classTeacherComment={classTeacherComment}
+                                            headmasterComment={headmasterComment}
+                                            caWeight={CA_WEIGHT}
+                                            examWeight={EXAM_WEIGHT}
+                                        />
+                                    </div>
+                                </div>
+                            </ScrollArea>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
+            {/* HIDDEN TEMPLATE FOR CAPTURE */}
+            <div
+                ref={printRef}
+                style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px' }}
+            >
+                {processedReport && (
+                    <ReportCardTemplate
+                        data={processedReport}
+                        classTeacherComment={classTeacherComment}
+                        headmasterComment={headmasterComment}
+                        caWeight={CA_WEIGHT}
+                        examWeight={EXAM_WEIGHT}
+                    />
                 )}
-            </CardContent>
-        </Card>
-      )}
-    </div>
-  );
+            </div>
+
+            <style jsx global>{`
+                @media print {
+                    body * { visibility: hidden !important; }
+                    #print-template,
+                    #print-template * { visibility: visible !important; }
+                    #print-template {
+                        position: fixed !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 210mm !important;
+                        height: 297mm !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        visibility: visible !important;
+                        z-index: 9999 !important;
+                    }
+                    @page {
+                        size: A4 portrait;
+                        margin: 0;
+                    }
+                }
+            `}</style>
+        </div>
+    );
 }
