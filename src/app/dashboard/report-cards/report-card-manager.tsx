@@ -1,28 +1,28 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, setDoc, serverTimestamp, getDoc, orderBy } from 'firebase/firestore';
+import { collection, query, where, doc, setDoc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { useForm, Controller } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { reportCardCommentSchema, ReportCard, ReportCardComment, ReportCardStatus, Class, Subject, Assessment, Student, FinancialRecord } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { Loader2, Send, CheckCircle, ShieldCheck, Printer, Trophy, TrendingUp, FileText, Landmark } from 'lucide-react';
+import { Loader2, Send, ShieldCheck, Trophy, TrendingUp, FileText, Users } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { GenerateReportCard } from '../academics/gradebook/report-card-pdf';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentDisplay } from '@/components/student-display';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { cn } from '@/lib/utils';
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
@@ -284,7 +284,6 @@ export default function ReportCardManager() {
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
   const [processingStudentId, setProcessingStudentId] = useState<string | null>(null);
   
-  // 1. Metadata Fetching
   const classesQuery = useMemoFirebase(() => {
       if(!firestore || !user || !schoolId) return null;
       let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
@@ -296,7 +295,6 @@ export default function ReportCardManager() {
   const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: subjects } = useCollection<Subject>(subjectsQuery);
 
-  // 2. Student & Result Fetching
   const studentsQuery = useMemoFirebase(() => (selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, [firestore, selectedClassId, schoolId]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
   
@@ -310,12 +308,11 @@ export default function ReportCardManager() {
     if (!selectedClassId || !selectedYear || !selectedTerm || !schoolId) return null;
     return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('academicYear', '==', selectedYear), where('term', '==', selectedTerm));
   }, [firestore, selectedClassId, selectedYear, selectedTerm, schoolId]);
-  const { data: assessments, isLoading: loadingAssessments, forceRefetch: refetchAssessments } = useCollection<Assessment>(assessmentsQuery);
+  const { data: assessments, isLoading: loadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
   const financialRecordsQuery = useMemoFirebase(() => (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId, schoolId]);
   const { data: financialRecords } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 3. Derived Ranking Logic
   const rankedStudents = useMemo(() => {
       if (!students || !assessments) return [];
       const studentsWithScore = students.map(s => {
@@ -351,7 +348,6 @@ export default function ReportCardManager() {
     return financials;
   }, [students, financialRecords]);
 
-  // 4. Action Handlers
   const handleStatusUpdate = async (student: Student, newStatus: ReportCardStatus) => {
     setProcessingStudentId(student.uid);
     if (!firestore || !schoolId) return;
@@ -421,7 +417,6 @@ export default function ReportCardManager() {
                 ) : rankedStudents.length > 0 ? (
                 <Accordion type="single" collapsible className="w-full">
                     {rankedStudents.map((student, index) => {
-                        const financials = studentFinancials[student.uid] || { balance: 0 };
                         const report = reportCards?.find(rc => rc.studentId === student.uid);
                         const status = report?.status || 'Draft';
                         const rank = index + 1;
@@ -471,14 +466,14 @@ export default function ReportCardManager() {
                                         )}
                                         {['Administrator', 'Director'].includes(role || '') && status === 'AwaitingFinalApproval' && (
                                             <AlertDialog>
-                                                <AlertDialogTrigger asChild><Button variant="destructive" className="rounded-xl px-6 font-bold"><ShieldCheck className="mr-2 h-4 w-4" /> Publish Report</Button></DialogTrigger>
+                                                <AlertDialogTrigger asChild><Button variant="destructive" className="rounded-xl px-6 font-bold"><ShieldCheck className="mr-2 h-4 w-4" /> Publish Report</Button></AlertDialogTrigger>
                                                 <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Publish Official Result?</AlertDialogTitle><AlertDialogDescription>This will make the report card visible to parents and students. They will receive a notification.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleStatusUpdate(student, 'Published')} className="bg-green-600">Publish Now</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
                                             </AlertDialog>
                                         )}
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
-                        )
+                        );
                     })}
                 </Accordion>
                 ) : (
