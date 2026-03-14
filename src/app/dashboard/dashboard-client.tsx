@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -164,6 +165,7 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
 // --- PARENT DASHBOARD COMPONENT ---
 function ParentDashboard({ profile, schoolId }: { profile: any, schoolId: string }) {
   const firestore = useFirestore();
+  const { user } = useUser();
   const studentIds = profile?.studentIds || [];
 
   // 1. Fetch Children Data
@@ -182,7 +184,7 @@ function ParentDashboard({ profile, schoolId }: { profile: any, schoolId: string
     }, 0);
   }, [finances]);
 
-  const displayName = profile?.firstName || 'Parent';
+  const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Parent';
 
   return (
     <div className="space-y-6">

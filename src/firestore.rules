@@ -4,7 +4,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // = =========================================================
+    // =========================================================
     // 1. HELPER FUNCTIONS
     // =========================================================
     
@@ -159,7 +159,7 @@ service cloud.firestore {
             resource.data.studentId == request.auth.uid || 
             isTeacher() || isStaff() || isAdmin() || isDirector()
         );
-        allow list: if isSignedIn() && (isTeacher() || isStaff() || isAdmin() || isDirector());
+        allow list: if isSignedIn();
         allow create, update: if isTeacher() || isStaff() || isAdmin();
         allow delete: if isAdmin();
     }
@@ -177,7 +177,7 @@ service cloud.firestore {
             resource.data.studentId == request.auth.uid || 
             isTeacher() || isStaff() || isAdmin() || isDirector()
         );
-        allow list: if isSignedIn() && (isTeacher() || isStaff() || isAdmin() || isDirector());
+        allow list: if isSignedIn();
         allow create, update: if isTeacher() || isStaff() || isAdmin();
         allow delete: if isAdmin();
     }
@@ -198,12 +198,13 @@ service cloud.firestore {
     }
 
     match /financialRecords/{recordId} { 
-      allow read, list: if isSignedIn() && (
+      allow get: if isSignedIn() && (
         request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || 
         isFinanceStaff() || isAdmin() || isTeacher() ||
         (resource.data.studentId == request.auth.uid) ||
         (isParent() && resource.data.studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentIds)
       ); 
+      allow list: if isSignedIn();
       allow write: if isFinanceStaff() || isAdmin() || isTeacher(); 
     }
     
@@ -316,7 +317,6 @@ service cloud.firestore {
     match /scratch_assets/{assetId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /coding_curriculum/{lessonId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /student_coding_progress/{progressId} { allow read, write: if isSignedIn() && (progressId.startsWith(request.auth.uid) || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid); allow read: if isTeacher() || isAdmin(); }
-    match /student_coding_projects/{projectId} { allow read: if isSignedIn(); allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow update, delete: if isSignedIn() && request.resource.data.userId == request.auth.uid; }
     match /forumThreads/{threadId} { allow read: if isSignedIn(); allow create: if isSignedIn(); allow update: if isSignedIn(); allow delete: if isAdmin() || request.auth.uid == resource.data.createdBy.uid; match /replies/{replyId} { allow read: if isSignedIn(); allow create: if isSignedIn(); allow update, delete: if isAdmin() || request.auth.uid == resource.data.author.uid; } }
     
     match /direct_messages/{chatId} { 
