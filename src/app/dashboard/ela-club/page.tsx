@@ -10,26 +10,34 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb, Trophy, Microscope, Sparkles, Atom, Database, TrendingUp, AlertCircle, Trash2, PencilRuler } from 'lucide-react';
+import { 
+  BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, 
+  Wand2, CheckCircle2, XCircle, Lightbulb, Trophy, Microscope, 
+  Sparkles, Atom, Database, TrendingUp, AlertCircle, Trash2, PencilRuler,
+  Loader2, HelpCircle, Save
+} from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, query, addDoc, where, serverTimestamp, doc, setDoc, increment, orderBy, limit } from 'firebase/firestore';
-import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student, ElaLeaderboardEntry } from '@/lib/types';
+import { collection, query, addDoc, where, serverTimestamp, doc, setDoc, increment, orderBy, limit, deleteDoc } from 'firebase/firestore';
+import { 
+  ElaGrammarDrill, elaGrammarDrillSchema, 
+  ElaReadingPassage, elaReadingPassageSchema, 
+  ElaWritingChallenge, elaWritingChallengeSchema, 
+  ElaUserSubmission, Class, Student, ElaLeaderboardEntry 
+} from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableRow, TableHeader, TableCell, TableBody, TableHead } from '@/components/ui/table';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -48,12 +56,12 @@ import { evaluateReadingSubmissionAction } from '@/ai/flows/evaluate-reading-sub
 import { evaluateWritingAction } from '@/ai/flows/evaluate-writing-submission';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
-
 interface LessonCard extends GeneratedElaLesson {
     id?: string;
     timestamp?: any;
 }
 
+// --- SUB-COMPONENT: ELA EXPLORER ---
 function ElaExplorerTab() {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -64,7 +72,6 @@ function ElaExplorerTab() {
     const [currentLesson, setCurrentLesson] = useState<LessonCard | null>(null);
     const [showAnswer, setShowAnswer] = useState(false);
 
-    // Fetch History
     const historyQuery = useMemoFirebase(() => 
         (user && firestore && schoolId) ? query(collection(firestore, 'ela_learning_history'), where('userId', '==', user.uid), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc'), limit(10)) : null,
     [user, firestore, schoolId]);
@@ -179,7 +186,7 @@ function ElaExplorerTab() {
     );
 }
 
-// --- LEADERBOARD ---
+// --- SUB-COMPONENT: LEADERBOARD ---
 function ElaLeaderboard() {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
@@ -232,7 +239,7 @@ function ElaLeaderboard() {
     )
 }
 
-// --- SUB-COMPONENT: Reader Modal ---
+// --- SUB-COMPONENT: READING MODAL ---
 function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPassage | null, open: boolean, setOpen: (o: boolean) => void }) {
     const [answers, setAnswers] = useState<Record<number, string>>({});
     const [isGrading, setIsGrading] = useState(false);
@@ -400,26 +407,211 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
     );
 }
 
-// --- Writing Submission Tab ---
+// --- SUB-COMPONENT: READING LIST ---
+function ReadingPracticeTab() {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { role } = useRole();
+    const { schoolId } = useCurrentSchool();
+    
+    const [selectedPassage, setSelectedPassage] = useState<ElaReadingPassage | null>(null);
+    const [isPassageOpen, setIsPassageOpen] = useState(false);
+
+    const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+
+    const { data: studentData } = useCollection<Student>(
+        useMemoFirebase(() => (user && firestore && !isStaff && schoolId) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [firestore, user, isStaff, schoolId])
+    );
+    const studentClassId = studentData?.[0]?.classId;
+
+    const { data: passages, isLoading } = useCollection<ElaReadingPassage>(
+        useMemoFirebase(() => {
+            if(!firestore || !schoolId) return null;
+            let q = query(collection(firestore, 'ela_reading_passages'), where('schoolId', '==', schoolId));
+            if (!isStaff && studentClassId) q = query(q, where('classId', '==', studentClassId));
+            return q;
+        }, [firestore, studentClassId, isStaff, schoolId])
+    );
+
+    const handleStart = (p: ElaReadingPassage) => {
+        setSelectedPassage(p);
+        setIsPassageOpen(true);
+    };
+
+    return (
+        <>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Reading Comprehension</CardTitle>
+                    <CardDescription>Practice your reading and analytical skills with these passages.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {isLoading ? <Loader2 className="animate-spin mx-auto"/> : (!isStaff && !studentClassId) ? (
+                        <p className="text-center text-muted-foreground py-8">Your class assignment is pending.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {passages?.map(p => (
+                                <Card key={p.id} className="hover:border-primary transition-colors cursor-pointer" onClick={() => handleStart(p)}>
+                                    <CardHeader className="pb-2">
+                                        <Badge variant="secondary" className="w-fit mb-2">{p.reading_level}</Badge>
+                                        <CardTitle className="text-lg">{p.title}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm text-muted-foreground line-clamp-2">{p.passage_text}</p>
+                                    </CardContent>
+                                    <CardFooter className="pt-0">
+                                        <Button variant="ghost" size="sm" className="w-full text-primary">Start Reading <ChevronRight className="ml-1 h-4 w-4"/></Button>
+                                    </CardFooter>
+                                </Card>
+                            ))}
+                            {passages?.length === 0 && <p className="col-span-full text-center py-10 text-muted-foreground">No passages found.</p>}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+            <ActivePassageDialog passage={selectedPassage} open={isPassageOpen} setOpen={setIsPassageOpen} />
+        </>
+    );
+}
+
+// --- SUB-COMPONENT: WRITING MODAL ---
+function ActiveChallengeDialog({ challenge, existingSubmission, open, setOpen }: { challenge: ElaWritingChallenge | null, existingSubmission?: ElaUserSubmission, open: boolean, setOpen: (o: boolean) => void }) {
+    const [draft, setDraft] = useState('');
+    const [isEvaluating, setIsEvaluating] = useState(false);
+    const [evaluation, setEvaluation] = useState<any>(null);
+    
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { schoolId } = useCurrentSchool();
+    const { toast } = useToast();
+
+    useEffect(() => {
+        if (existingSubmission) {
+            setDraft(existingSubmission.submission_text);
+            setEvaluation(existingSubmission.teacher_score !== null ? { 
+                score: existingSubmission.teacher_score, 
+                summary: existingSubmission.teacher_feedback 
+            } : null);
+        } else {
+            setDraft('');
+            setEvaluation(null);
+        }
+    }, [existingSubmission, open]);
+
+    if (!challenge) return null;
+
+    const handleAutoGrade = async () => {
+        if (!draft.trim() || !schoolId) return;
+        setIsEvaluating(true);
+        try {
+            const result = await evaluateWritingAction({
+                prompt: challenge.prompt,
+                studentText: draft,
+                type: challenge.challengeType,
+                schoolId: schoolId
+            });
+
+            if (result.success && result.data) {
+                setEvaluation(result.data);
+                if (user && firestore) {
+                    await addDocumentNonBlocking(collection(firestore, 'ela_user_submissions'), {
+                        userId: user.uid,
+                        challenge_id: challenge.id,
+                        challenge_title: challenge.title,
+                        type: 'Writing Challenge',
+                        submission_text: draft,
+                        teacher_score: result.data.score,
+                        teacher_feedback: result.data.summary,
+                        date_submitted: serverTimestamp(),
+                        status: 'Graded',
+                        schoolId: schoolId,
+                    });
+                }
+            }
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Grading Error", description: "AI could not evaluate your writing." });
+        } finally {
+            setIsEvaluating(true);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+                <DialogHeader>
+                    <DialogTitle>{challenge.title}</DialogTitle>
+                    <DialogDescription>{challenge.challengeType} Challenge</DialogDescription>
+                </DialogHeader>
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden py-4">
+                    <div className="flex flex-col gap-4 overflow-hidden">
+                        <div className="p-4 bg-slate-50 border rounded-lg">
+                            <h4 className="font-bold text-xs uppercase text-slate-400 mb-2">Prompt</h4>
+                            <p className="text-slate-800 leading-relaxed italic">"{challenge.prompt}"</p>
+                        </div>
+                        <Textarea 
+                            value={draft} 
+                            onChange={(e) => setDraft(e.target.value)}
+                            placeholder="Start writing here..."
+                            className="flex-1 resize-none text-lg font-serif p-4"
+                            disabled={!!evaluation}
+                        />
+                    </div>
+                    <div className="flex flex-col gap-4 overflow-hidden">
+                        <h4 className="font-bold text-slate-700 flex justify-between">
+                            AI Writing Coach
+                            {evaluation && <Badge className="bg-indigo-600">Score: {evaluation.score}%</Badge>}
+                        </h4>
+                        <ScrollArea className="flex-1 border rounded-lg bg-indigo-50/30 p-4">
+                            {evaluation ? (
+                                <div className="space-y-4 animate-in fade-in">
+                                    <div className="bg-white p-4 rounded-md border shadow-sm">
+                                        <h5 className="font-bold text-sm text-indigo-700 mb-1">Feedback Summary</h5>
+                                        <p className="text-sm text-slate-600 italic">"{evaluation.summary}"</p>
+                                    </div>
+                                    {evaluation.strengths && (
+                                        <div className="space-y-2">
+                                            <h5 className="font-bold text-xs uppercase text-green-600">Key Strengths</h5>
+                                            <ul className="text-sm space-y-1">{evaluation.strengths.map((s:string, i:number) => <li key={i} className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5"/> {s}</li>)}</ul>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-full text-slate-400 text-center px-6">
+                                    <Sparkles className="h-12 w-12 mb-4 opacity-20"/>
+                                    <p className="text-sm">Submit your draft to receive detailed feedback and a grade from the AI coach.</p>
+                                </div>
+                            )}
+                        </ScrollArea>
+                        {!evaluation && (
+                            <Button onClick={handleAutoGrade} disabled={isEvaluating || draft.length < 50} className="bg-indigo-600 hover:bg-indigo-700">
+                                {isEvaluating ? <Loader2 className="animate-spin mr-2"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                                Submit for AI Evaluation
+                            </Button>
+                        )}
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- SUB-COMPONENT: WRITING LIST ---
 function WritingSubmissionTab() {
     const firestore = useFirestore();
     const { user, isUserLoading } = useUser();
     const { role } = useRole();
     const { schoolId } = useCurrentSchool();
     
-    const [selectedType, setSelectedType] = useState<string>('');
     const [selectedChallengeId, setSelectedChallengeId] = useState<string>('');
     const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
 
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
-    // 1. Fetch Student Data (to get Class ID)
-    const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
+    const { data: studentData } = useCollection<Student>(
         useMemoFirebase(() => (user && firestore && !isStaff && schoolId) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [firestore, user, isStaff, schoolId])
     );
     const studentClassId = studentData?.[0]?.classId;
 
-    // 2. Fetch Challenges
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
         useMemoFirebase(() => {
             if(!firestore || !schoolId) return null;
@@ -430,8 +622,7 @@ function WritingSubmissionTab() {
         }, [firestore, studentClassId, isStaff, schoolId])
     );
 
-    // 3. Fetch My Submissions (Gated by schoolId and userId)
-    const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(
+    const { data: submissions } = useCollection<ElaUserSubmission>(
         useMemoFirebase(() => {
             if (!user || !firestore || !schoolId) return null;
             return query(
@@ -443,17 +634,7 @@ function WritingSubmissionTab() {
         }, [firestore, user, schoolId])
     );
 
-    const isLoading = isUserLoading || isLoadingChallenges || isLoadingSubmissions || (isLoadingStudent && !isStaff);
-
-    const uniqueTypes = useMemo(() => {
-        if (!challenges) return [];
-        return Array.from(new Set(challenges.map(c => c.challengeType))).sort();
-    }, [challenges]);
-
-    const filteredChallenges = useMemo(() => {
-        if (!challenges || !selectedType) return [];
-        return challenges.filter(c => c.challengeType === selectedType);
-    }, [challenges, selectedType]);
+    const isLoading = isUserLoading || isLoadingChallenges;
 
     const activeChallenge = useMemo(() => {
         return challenges?.find(c => c.id === selectedChallengeId) || null;
@@ -464,159 +645,80 @@ function WritingSubmissionTab() {
         return submissions.find(s => s.challenge_id === activeChallenge.id);
     }, [activeChallenge, submissions]);
 
-    const handleStart = () => {
-        if (selectedChallengeId) setIsWorkspaceOpen(true);
-    };
-
     return (
         <>
             <Card>
                 <CardHeader>
-                    <CardTitle>Writing & Summarizing Challenges</CardTitle>
-                    <CardDescription>{isStaff ? "Viewing ALL Challenges" : "Select a challenge type to begin writing."}</CardDescription>
+                    <CardTitle>Writing Challenges</CardTitle>
+                    <CardDescription>Select a challenge to start writing.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {isLoading ? (
-                        <div className="flex flex-col space-y-4">
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-10 w-full" />
-                            <div className="flex justify-center text-muted-foreground text-sm gap-2">
-                                <Loader2 className="h-4 w-4 animate-spin" /> Loading challenges...
-                            </div>
+                    {isLoading ? <Loader2 className="animate-spin mx-auto"/> : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {challenges?.map(c => {
+                                const isDone = submissions?.some(s => s.challenge_id === c.id);
+                                return (
+                                    <Card key={c.id} className="cursor-pointer hover:border-primary transition-all" onClick={() => { setSelectedChallengeId(c.id); setIsWorkspaceOpen(true); }}>
+                                        <CardHeader className="pb-2">
+                                            <div className="flex justify-between items-start">
+                                                <Badge variant="outline">{c.challengeType}</Badge>
+                                                {isDone && <CheckCircle2 className="h-5 w-5 text-green-500"/>}
+                                            </div>
+                                            <CardTitle className="text-lg mt-2">{c.title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm text-muted-foreground line-clamp-2 italic">"{c.prompt}"</p>
+                                        </CardContent>
+                                    </Card>
+                                )
+                            })}
                         </div>
-                    ) : 
-                    (!isStaff && !studentClassId) ? (
-                        <div className="text-center py-8 text-muted-foreground">
-                            You are not assigned to a class.
-                        </div>
-                    ) :
-                    challenges && challenges.length > 0 ? (
-                        <div className="space-y-6 max-w-xl mx-auto py-4">
-                            <div className="space-y-2">
-                                <Label>1. Choose Challenge Type</Label>
-                                <Select value={selectedType} onValueChange={(val) => { setSelectedType(val); setSelectedChallengeId(''); }}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select Type (e.g., Essay, Creative Writing)" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {uniqueTypes.map(type => (
-                                            <SelectItem key={type} value={type}>{type}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label>2. Choose Challenge</Label>
-                                <Select value={selectedChallengeId} onValueChange={setSelectedChallengeId} disabled={!selectedType}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={!selectedType ? "Select a type first" : "Select a Title"} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filteredChallenges.map(c => {
-                                            const isDone = submissions?.some(s => s.challenge_id === c.id);
-                                            return (
-                                                <SelectItem key={c.id} value={c.id}>
-                                                    {c.title} {isDone ? "✅" : ""}
-                                                </SelectItem>
-                                            );
-                                        })}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <Button className="w-full" size="lg" onClick={handleStart} disabled={!selectedChallengeId}>
-                                {existingSubmission ? "View My Submission" : "Open Writing Workspace"}
-                                {existingSubmission ? <BookOpenCheck className="ml-2 h-4 w-4"/> : <PenSquare className="ml-2 h-4 w-4" />}
-                            </Button>
-                        </div>
-                    ) : (
-                         <p className="text-center text-muted-foreground py-12">{isStaff ? "No challenges found." : "No writing challenges available for your class."}</p>
                     )}
                 </CardContent>
             </Card>
-
-            <ActiveChallengeDialog 
-                challenge={activeChallenge} 
-                existingSubmission={existingSubmission}
-                open={isWorkspaceOpen} 
-                setOpen={setIsWorkspaceOpen} 
-            />
+            <ActiveChallengeDialog challenge={activeChallenge} existingSubmission={existingSubmission} open={isWorkspaceOpen} setOpen={setIsWorkspaceOpen} />
         </>
     );
 }
 
-// --- Main ELA Club Page Component ---
+// --- MAIN PAGE ---
 export default function ElaClubPage() {
   const { role } = useRole();
-  const isTeacherOrAdmin =
-    role === 'Teacher' || role === 'Administrator' || role === 'Director';
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();
-
-  const { data: classes } = useCollection<Class>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
+  const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BookOpenCheck />
-            ELA Club
+            <BookOpenCheck /> ELA Club
           </CardTitle>
-          <CardDescription>
-            Improve your reading, writing, and grammar skills.
-          </CardDescription>
+          <CardDescription>Improve your reading, writing, and grammar skills.</CardDescription>
         </CardHeader>
       </Card>
 
       <Tabs defaultValue="grammar" className="w-full">
         <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-5" : "grid-cols-4")}>
-          <TabsTrigger value="grammar">
-            <Edit className="mr-2 h-4 w-4" />
-            Grammar Practice
-          </TabsTrigger>
-          <TabsTrigger value="reading">
-            <FileText className="mr-2 h-4 w-4" />
-            Reading Practice
-          </TabsTrigger>
-          <TabsTrigger value="writing">
-            <PenSquare className="mr-2 h-4 w-4" />
-            Writing Challenges
-          </TabsTrigger>
-           <TabsTrigger value="leaderboard">
-            <Trophy className="mr-2 h-4 w-4" />
-            Leaderboard
-          </TabsTrigger>
-           <TabsTrigger value="learn">ELA Explorer</TabsTrigger>
-          {isTeacherOrAdmin && <TabsTrigger value="manage-content">Manage Content</TabsTrigger>}
+          <TabsTrigger value="grammar"><Edit className="mr-2 h-4 w-4" /> Grammar</TabsTrigger>
+          <TabsTrigger value="reading"><FileText className="mr-2 h-4 w-4" /> Reading</TabsTrigger>
+          <TabsTrigger value="writing"><PenSquare className="mr-2 h-4 w-4" /> Writing</TabsTrigger>
+          <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4" /> Leaderboard</TabsTrigger>
+          {isTeacherOrAdmin && <TabsTrigger value="manage">Manage</TabsTrigger>}
         </TabsList>
-        <TabsContent value="grammar">
-          <GrammarPractice />
-        </TabsContent>
-        <TabsContent value="reading">
-          <ReadingPracticeTab />
-        </TabsContent>
-        <TabsContent value="writing">
-          <WritingSubmissionTab />
-        </TabsContent>
-        <TabsContent value="leaderboard">
-            <Card>
-                <CardHeader>
-                    <CardTitle>ELA Club Leaderboard</CardTitle>
-                    <CardDescription>Ranking based on correct answers in grammar and reading drills.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ElaLeaderboard />
-                </CardContent>
-            </Card>
-        </TabsContent>
-        <TabsContent value="learn" className="mt-6">
-            <ElaExplorerTab />
-        </TabsContent>
+        <TabsContent value="grammar"><GrammarPractice /></TabsContent>
+        <TabsContent value="reading"><ReadingPracticeTab /></TabsContent>
+        <TabsContent value="writing"><WritingSubmissionTab /></TabsContent>
+        <TabsContent value="leaderboard"><Card><CardContent className="pt-6"><ElaLeaderboard /></CardContent></Card></TabsContent>
         {isTeacherOrAdmin && (
-            <TabsContent value="manage-content" className="space-y-6">
-                {/* Internal Management Components (ManageDrills, etc.) remain as defined in the full file */}
+            <TabsContent value="manage">
+                <Card>
+                    <CardHeader><CardTitle>AI Content Management</CardTitle></CardHeader>
+                    <CardContent className="space-y-6">
+                        <AiProblemGenerator subject="ELA Grammar" setOpen={() => {}} />
+                    </CardContent>
+                </Card>
             </TabsContent>
         )}
       </Tabs>
