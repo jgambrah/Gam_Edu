@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -531,7 +530,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem><FormLabel>Description</FormLabel><FormControl><Input placeholder="e.g., Spring Term Tuition" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Description</Label><FormControl><Input placeholder="e.g., Spring Term Tuition" {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="billedAmount" render={({ field }) => (
@@ -914,7 +913,7 @@ function StudentLedgerDetail({
           <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Description</TableHead>
+                    <TableHead>Date & Description</TableHead>
                     <TableHead className="text-right">Billed</TableHead>
                     <TableHead className="text-right">Paid</TableHead>
                     <TableHead>Due Date</TableHead>
@@ -929,8 +928,9 @@ function StudentLedgerDetail({
                         <React.Fragment key={rec.id}>
                             <TableRow>
                                 <TableCell>
+                                    <p className="text-[10px] text-muted-foreground">{format(rec.createdAt.toDate(), 'dd MMM yy')}</p>
                                     <span className="font-medium">{rec.description}</span>
-                                    <p className="text-xs text-muted-foreground">{rec.type}</p>
+                                    <p className="text-[10px] uppercase font-bold text-slate-400">{rec.type}</p>
                                 </TableCell>
                                 <TableCell className={`text-right font-mono ${rec.billedAmount < 0 ? 'text-green-600' : ''}`}>
                                     GH₵{rec.billedAmount.toFixed(2)}
@@ -1098,35 +1098,49 @@ export default function AccountsPage() {
 
   // --- STATS ---
   const dashboardStats = useMemo(() => {
-    if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0 };
+    if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0 };
     
     // Filter out reversals
     const activeRecords = records.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
 
     let totalPaid = 0;
     let totalBilled = 0;
+    let totalWaivers = 0;
     let outstandingTuition = 0;
     let outstandingCanteen = 0;
     let outstandingTransport = 0;
+    let otherDebt = 0;
 
     for (const record of activeRecords) {
         const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
         totalBilled += record.billedAmount;
         totalPaid += (record.amountPaid || 0);
+        totalWaivers += (record.waiverAmount || 0);
         
         if (balance > 0) {
-            if (record.type === 'Tuition Fee') outstandingTuition += balance;
-            else if (record.type === 'Canteen Fee') outstandingCanteen += balance;
-            else if (record.type === 'Transport Fee') outstandingTransport += balance;
+            const type = (record.type || '').toLowerCase();
+            const desc = (record.description || '').toLowerCase();
+
+            // Flexible categorization logic
+            if (type.includes('tuition')) {
+                outstandingTuition += balance;
+            } else if (type.includes('canteen') || desc.startsWith('canteen')) {
+                outstandingCanteen += balance;
+            } else if (type.includes('transport') || type.includes('bus') || desc.startsWith('transport')) {
+                outstandingTransport += balance;
+            } else {
+                otherDebt += balance;
+            }
         }
     }
     
     return {
         totalRevenue: totalPaid,
-        totalOutstanding: totalBilled - totalPaid,
+        totalOutstanding: totalBilled - totalPaid - totalWaivers,
         outstandingTuition,
         outstandingCanteen,
-        outstandingTransport
+        outstandingTransport,
+        otherDebt
     };
   }, [records]);
 
@@ -1186,12 +1200,13 @@ export default function AccountsPage() {
                 {/* STATS CARDS */}
                 <Card>
                     <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
-                    <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Total Outstanding</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-red-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card>
-                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Total Revenue</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-green-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card>
+                    <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+                        <Card className="border-l-4 border-l-red-500"><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Outstanding</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-red-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card>
+                        <Card className="border-l-4 border-l-green-500"><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Revenue</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-green-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card>
                         <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Tuition Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card>
                         <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Canteen Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card>
                         <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Transport Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card>
+                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Other Fees</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.otherDebt.toFixed(2)}</div></CardContent></Card>
                     </CardContent>
                 </Card>
         
@@ -1295,5 +1310,3 @@ export default function AccountsPage() {
     </div>
   );
 }
-
-    

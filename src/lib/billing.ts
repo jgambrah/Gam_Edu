@@ -18,32 +18,29 @@ interface BillingResult {
 }
 
 /**
- * Bills a student for canteen and/or bus services when they attend school
+ * Bills a student for canteen and/or bus services when they attend school.
+ * Now generates individual records per service for better accounting.
  */
 export async function billStudentForAttendance(
   firestore: Firestore,
   student: Student,
   attendanceDate: Date,
-  schoolId: string
+  schoolId: string,
+  providedRates?: { canteen: number, transport: number }
 ): Promise<BillingResult> {
   
   try {
     // Safety checks
-    if (!student || !student.uid) {
-      console.error('Invalid student data:', student);
+    if (!student || !student.uid || !schoolId) {
+      console.error('Invalid student or school data:', student);
       return {
         success: false,
-        message: 'Invalid student data',
+        message: 'Invalid data provided for billing',
         amountBilled: 0
       };
     }
 
-    if (!schoolId) {
-        return { success: false, message: 'School ID is required for billing.', amountBilled: 0 };
-    }
-
     // Determine which services to bill for
-    // DEFAULT: If usesCanteen is undefined, assume TRUE (for backward compatibility)
     const shouldBillCanteen = student.usesCanteen !== false;
     const shouldBillBus = student.usesBusService === true;
 
@@ -56,74 +53,85 @@ export async function billStudentForAttendance(
       };
     }
 
-    // Calculate total amount to bill
-    let totalAmount = 0;
-    const services: string[] = [];
+    // Use provided rates or fall back to defaults
+    const canteenRate = providedRates ? providedRates.canteen : DAILY_RATES.CANTEEN;
+    const transportRate = providedRates ? providedRates.transport : DAILY_RATES.BUS;
 
-    if (shouldBillCanteen) {
-      // In a real app, you'd fetch this from school settings
-      const canteenRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/canteen`));
-      const rate = canteenRateDoc.exists() ? canteenRateDoc.data().dailyRate : DAILY_RATES.CANTEEN;
-      totalAmount += rate;
-      services.push('Canteen');
-    }
-
-    if (shouldBillBus) {
-      const transportRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/transport`));
-      const rate = transportRateDoc.exists() ? transportRateDoc.data().dailyRate : DAILY_RATES.BUS;
-      totalAmount += rate;
-      services.push('Bus Service');
-    }
-
-    if (totalAmount === 0) {
-        return { success: true, message: 'No applicable charges.', amountBilled: 0 };
-    }
-
-    // Create unique record ID based on date and student
+    // Create unique record ID prefix based on date and student
     const dateStr = format(attendanceDate, 'yyyy-MM-dd');
-    const recordId = `daily-${student.uid}-${dateStr}`;
+    const batch = writeBatch(firestore);
+    let totalBilled = 0;
+    const billedServices: string[] = [];
 
-    // Check if already billed for this date
-    const existingRecord = await getDoc(
-      doc(firestore, 'financialRecords', recordId)
-    );
-
-    if (existingRecord.exists()) {
-      console.log(`Student ${student.studentId || student.uid} already billed for ${dateStr}`);
-      return {
-        success: true,
-        message: 'Already billed for this date',
-        amountBilled: 0
-      };
+    // 1. Process Canteen Bill
+    if (shouldBillCanteen && canteenRate > 0) {
+        const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
+        const canteenRef = doc(firestore, 'financialRecords', canteenRecordId);
+        const existing = await getDoc(canteenRef);
+        
+        if (!existing.exists()) {
+            batch.set(canteenRef, {
+                studentId: student.uid,
+                studentName: `${student.firstName} ${student.lastName}`,
+                classId: student.classId || '',
+                type: 'Canteen Fee',
+                description: `Canteen - ${format(attendanceDate, 'PPP')}`,
+                billedAmount: canteenRate,
+                amountPaid: 0,
+                waiverAmount: 0,
+                status: 'Unpaid',
+                dueDate: Timestamp.fromDate(attendanceDate),
+                createdAt: serverTimestamp(),
+                schoolId: schoolId,
+            }, { merge: true });
+            totalBilled += canteenRate;
+            billedServices.push('Canteen');
+        }
     }
 
-    // Create financial record
-    await setDoc(doc(firestore, 'financialRecords', recordId), {
-      studentId: student.uid,
-      studentName: `${student.firstName} ${student.lastName}`,
-      classId: student.classId || '',
-      type: 'Daily Services',
-      description: `Daily charges for ${services.join(' & ')} on ${format(attendanceDate, 'PPP')}`,
-      billedAmount: totalAmount,
-      amountPaid: 0,
-      waiverAmount: 0,
-      status: 'Unpaid',
-      dueDate: Timestamp.fromDate(attendanceDate), // Due immediately
-      createdAt: serverTimestamp(),
-      billedBy: 'Attendance System',
-      schoolId: schoolId, // SAAS Compliance
-    }, { merge: true });
+    // 2. Process Transport Bill
+    if (shouldBillBus && transportRate > 0) {
+        const transportRecordId = `transport-${student.uid}-${dateStr}`;
+        const transportRef = doc(firestore, 'financialRecords', transportRecordId);
+        const existing = await getDoc(transportRef);
+        
+        if (!existing.exists()) {
+            batch.set(transportRef, {
+                studentId: student.uid,
+                studentName: `${student.firstName} ${student.lastName}`,
+                classId: student.classId || '',
+                type: 'Transport Fee',
+                description: `Transport - ${format(attendanceDate, 'PPP')}`,
+                billedAmount: transportRate,
+                amountPaid: 0,
+                waiverAmount: 0,
+                status: 'Unpaid',
+                dueDate: Timestamp.fromDate(attendanceDate),
+                createdAt: serverTimestamp(),
+                schoolId: schoolId,
+            }, { merge: true });
+            totalBilled += transportRate;
+            billedServices.push('Transport');
+        }
+    }
 
-    console.log(`✅ Successfully billed ${student.studentId || student.uid} - ${totalAmount} GHS for ${services.join(' & ')}`);
+    if (billedServices.length > 0) {
+        await batch.commit();
+        return {
+            success: true,
+            message: `Billed GHS ${totalBilled.toFixed(2)} for ${billedServices.join(' and ')}`,
+            amountBilled: totalBilled
+        };
+    }
 
     return {
-      success: true,
-      message: `Billed GHS ${totalAmount.toFixed(2)} for ${services.join(' and ')}`,
-      amountBilled: totalAmount
+        success: true,
+        message: 'No new bills needed (already billed or zero rates)',
+        amountBilled: 0
     };
 
   } catch (error: any) {
-    console.error('Billing error for student:', student?.studentId, error);
+    console.error('Billing error for student:', student?.uid, error);
     return {
       success: false,
       message: `Billing failed: ${error.message}`,
@@ -133,8 +141,8 @@ export async function billStudentForAttendance(
 }
 
 /**
- * Bulk billing function for multiple students
- * Use this when marking attendance for an entire class
+ * Bulk billing function for multiple students.
+ * Fetches rates once to optimize performance.
  */
 export async function billMultipleStudents(
   firestore: Firestore,
@@ -149,6 +157,15 @@ export async function billMultipleStudents(
   errors: string[];
 }> {
   
+  // Fetch school settings once
+  const canteenRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/canteen`));
+  const transportRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/transport`));
+  
+  const rates = {
+      canteen: canteenRateDoc.exists() ? canteenRateDoc.data().dailyRate : DAILY_RATES.CANTEEN,
+      transport: transportRateDoc.exists() ? transportRateDoc.data().dailyRate : DAILY_RATES.BUS
+  };
+
   let successful = 0;
   let failed = 0;
   let totalBilled = 0;
@@ -161,7 +178,7 @@ export async function billMultipleStudents(
       onProgress(i + 1, students.length, `${student.firstName} ${student.lastName}`);
     }
 
-    const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId);
+    const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, rates);
     
     if (result.success) {
       if (result.amountBilled > 0) {
@@ -170,7 +187,7 @@ export async function billMultipleStudents(
       }
     } else {
       failed++;
-      errors.push(`${student.studentId || student.firstName}: ${result.message}`);
+      errors.push(`${student.firstName}: ${result.message}`);
     }
 
     if (i < students.length - 1) {
