@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useRef } from 'react';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
 import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment, setDoc } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
@@ -112,7 +112,7 @@ function GeneralLedger({
                         </SelectContent>
                     </Select>
                 </div>
-                <Button variant="outline" onClick={() => window.print()}>Print Ledger</Button>
+                <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print Ledger</Button>
             </div>
 
             {selectedAccountId !== 'all' && selectedAccount ? (
@@ -169,7 +169,7 @@ function TrialBalance({ data }: { data: AccountBalance[] }) {
         <Card>
             <CardHeader className="flex flex-row justify-between">
                 <div><CardTitle>Trial Balance</CardTitle><CardDescription>As of {new Date().toLocaleDateString()}</CardDescription></div>
-                <Button variant="outline" onClick={() => window.print()} className="print:hidden">Print</Button>
+                <Button variant="outline" onClick={() => window.print()} className="print:hidden"><Printer className="mr-2 h-4 w-4"/> Print</Button>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -379,7 +379,10 @@ function AccountForm({ setOpen, onAccountAdded, accounts, schoolId }: { setOpen:
     const form = useForm<z.infer<typeof accountSchema>>({
         resolver: zodResolver(accountSchema),
         defaultValues: {
+            name: '',
+            type: 'Asset',
             parentAccountId: 'None',
+            description: '',
         },
     });
 
@@ -531,6 +534,12 @@ function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Acco
 
     const form = useForm<z.infer<typeof journalEntrySchema>>({
         resolver: zodResolver(journalEntrySchema),
+        defaultValues: {
+            description: '',
+            amount: 0,
+            debitAccountId: '',
+            creditAccountId: '',
+        }
     });
 
     async function onSubmit(values: z.infer<typeof journalEntrySchema>) {
