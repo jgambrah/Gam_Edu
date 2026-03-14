@@ -92,6 +92,14 @@
         { "fieldPath": "userId", "order": "ASCENDING" },
         { "fieldPath": "date_submitted", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "ela_leaderboard",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "total_correct_answers", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
