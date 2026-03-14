@@ -8,6 +8,7 @@ import {
   MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, Loader2, ArrowLeft
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
