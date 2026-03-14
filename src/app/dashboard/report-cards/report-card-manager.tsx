@@ -5,14 +5,14 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, getDocs, doc, setDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -127,7 +127,6 @@ function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWe
                     </div>
                 </div>
 
-                {/* Spacer to balance logo */}
                 <div style={{ width: '88px', flexShrink: 0 }} />
             </div>
 
@@ -371,7 +370,7 @@ export default function ReportCardManager() {
                 const data = snap.data();
                 setClassTeacherComment(data.classTeacherComment || '');
                 setHeadmasterComment(data.headmasterComment || '');
-                // Also set the processed report status if it matches the current view
+                // Also set the processed report if it matches the current view to allow previewing without regenerating
                 if (data.schoolId === schoolId) {
                     setProcessedReport(prev => prev ? { ...prev, status: data.status } : null);
                 }
@@ -554,7 +553,7 @@ export default function ReportCardManager() {
                 ...processedReport,
                 id: reportId,
                 schoolId,
-                status: processedReport.status || 'Draft',
+                status: 'Draft',
                 classTeacherComment,
                 headmasterComment,
                 lastUpdatedBy: user?.uid,
@@ -763,7 +762,7 @@ export default function ReportCardManager() {
                                 <Download className="mr-2 h-4 w-4"/> {isExporting ? 'Exporting...' : 'Save as PDF'}
                             </Button>
                             
-                            <Button onClick={handleSaveDraft} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl h-11 px-6 font-bold">
+                            <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl h-11 px-6 font-bold">
                                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
                                 Save Progress
                             </Button>
