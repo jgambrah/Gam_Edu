@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -23,7 +24,8 @@ function ReportListForStudent({ student }: { student: Student }) {
       () => studentIdentifier ? query(
           collection(firestore, 'report-cards'), 
           where('studentId', '==', studentIdentifier), 
-          where('status', '==', 'Published')
+          where('status', '==', 'Published'),
+          orderBy('publishedAt', 'desc')
       ) : null,
       [firestore, studentIdentifier]
     );
@@ -43,15 +45,16 @@ function ReportListForStudent({ student }: { student: Student }) {
                 <div key={report.id} className="flex justify-between items-center p-3 border rounded-md bg-white shadow-sm">
                     <div>
                         <p className="font-medium text-slate-900">{report.academicYear} - {report.term}</p>
+                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Average: {report.overallAverage}% • Pos: {report.classPosition}</p>
                     </div>
                     <Dialog>
                         <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">View Report</Button>
+                            <Button variant="outline" size="sm">View Detailed Report</Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader><DialogTitle>Student Report Card</DialogTitle></DialogHeader>
                             <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
-                                <StudentReportCard student={student} term={report.term} year={report.academicYear} />
+                                <StudentReportCard student={student} term={report.term} year={report.academicYear} savedReport={report} />
                             </Suspense>
                         </DialogContent>
                     </Dialog>
@@ -163,12 +166,12 @@ export default function StudentParentReportCardView() {
 
     // --- View for Parents ---
     if (role === 'Parent') {
-        if (!students || students.length === 0) {
+        if (!studentIds || studentIds.length === 0) {
             return (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><FileText className="text-primary" /> My Bills</CardTitle>
-                        <CardDescription>A summary of your financial records with the school.</CardDescription>
+                        <CardTitle className="flex items-center gap-2"><FileText className="text-primary" /> My Children's Reports</CardTitle>
+                        <CardDescription>A summary of official academic reports.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-8 text-center text-muted-foreground">
                         No children linked to your account.
@@ -186,13 +189,6 @@ export default function StudentParentReportCardView() {
                     <CardDescription>Select a child to view their published academic results.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {studentIds.length > students.length && (
-                        <div className="mb-4 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-700 flex items-center gap-2">
-                            <AlertTriangle className="h-3 w-3" />
-                            Some linked student records could not be found.
-                        </div>
-                    )}
-
                     <Accordion type="single" collapsible defaultValue={studentIds[0]}>
                         {studentIds.map(uid => (
                             <StudentAccordionItem key={uid} studentUid={uid} />
