@@ -4,84 +4,134 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, addDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, Check, X } from 'lucide-react';
+import { Loader2, PlusCircle, Check, X, Plane, CalendarIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { LeaveRequest, leaveApplicationSchema, managerApprovalSchema, managerRejectionSchema, PublicHoliday, LeaveStatus, Staff, LEAVE_TYPES } from '@/lib/types';
+import { LeaveRequest, leaveApplicationSchema, managerApprovalSchema, managerRejectionSchema, PublicHoliday, LEAVE_TYPES } from '@/lib/types';
 import { MOCK_PUBLIC_HOLIDAYS } from '@/lib/data';
-
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 // --- Staff View: Form for applying for leave ---
-function LeaveApplicationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
-  const firestore = useFirestore();
+function LeaveApplicationForm({ setOpen, schoolId }: { setOpen: (open: boolean) => void, schoolId: string }) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const staffName = user?.displayName || user?.email;
+  const firestore = useFirestore();
 
   const form = useForm<z.infer<typeof leaveApplicationSchema>>({
     resolver: zodResolver(leaveApplicationSchema),
+    defaultValues: {
+      reason: '',
+    }
   });
 
   async function onSubmit(values: z.infer<typeof leaveApplicationSchema>) {
-    if (!user || !staffName) return;
+    if (!user || !staffName || !schoolId || !firestore) return;
     setIsSubmitting(true);
-    try {
-      await addDoc(collection(firestore, 'leaveRequests'), {
-        ...values,
-        staffId: user.uid,
-        staffName: staffName,
-        status: 'Pending',
-        createdAt: serverTimestamp(),
+    
+    const requestData = {
+      ...values,
+      staffId: user.uid,
+      staffName: staffName,
+      status: 'Pending',
+      createdAt: serverTimestamp(),
+      schoolId: schoolId,
+    };
+
+    addDocumentNonBlocking(collection(firestore, 'leaveRequests'), requestData)
+      .then(() => {
+        toast({ title: 'Request Submitted', description: 'Your leave request has been submitted for approval.' });
+        form.reset();
+        setOpen(false);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-      toast({ title: 'Request Submitted', description: 'Your leave request has been submitted for approval.' });
-      form.reset();
-      setOpen(false);
-    } catch (error) {
-      console.error('Error submitting leave request:', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not submit your request.' });
-    } finally {
-      setIsSubmitting(false);
-    }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField control={form.control} name="leaveType" render={({ field }) => (
-          <FormItem><FormLabel>Leave Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a leave type" /></SelectTrigger></FormControl><SelectContent>{LEAVE_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+          <FormItem>
+            <FormLabel>Leave Type</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger><SelectValue placeholder="Select a leave type" /></SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {LEAVE_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
         )} />
         <div className="grid grid-cols-2 gap-4">
             <FormField control={form.control} name="startDate" render={({ field }) => (
-                <FormItem className="flex flex-col"><FormLabel>Start Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
-                <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button>
-                </FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>
+                <FormItem className="flex flex-col">
+                  <FormLabel>Start Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                          {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
             )}/>
             <FormField control={form.control} name="endDate" render={({ field }) => (
-                <FormItem className="flex flex-col"><FormLabel>End Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
-                <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button>
-                </FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>
+                <FormItem className="flex flex-col">
+                  <FormLabel>End Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                          {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
             )}/>
         </div>
         <FormField control={form.control} name="reason" render={({ field }) => (
-          <FormItem><FormLabel>Reason</FormLabel><FormControl><Textarea placeholder="Please provide a brief reason for your leave request..." {...field} /></FormControl><FormMessage /></FormItem>
+          <FormItem>
+            <FormLabel>Reason (Min 10 characters)</FormLabel>
+            <FormControl>
+              <Textarea placeholder="Please provide a brief reason for your leave request..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
         )} />
         <Button type="submit" disabled={isSubmitting} className="w-full">
           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Submit Request
@@ -95,19 +145,35 @@ function LeaveApplicationForm({ setOpen }: { setOpen: (open: boolean) => void })
 function StaffLeaveView() {
     const { user } = useAuth();
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
     const [isFormOpen, setFormOpen] = useState(false);
 
-    const myRequestsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'leaveRequests'), where('staffId', '==', user.uid)) : null, [firestore, user]);
+    const myRequestsQuery = useMemoFirebase(() => 
+        (user && schoolId && firestore) ? query(collection(firestore, 'leaveRequests'), where('staffId', '==', user.uid), where('schoolId', '==', schoolId)) : null, 
+    [firestore, user, schoolId]);
     const { data: myRequests, isLoading } = useCollection<LeaveRequest>(myRequestsQuery);
 
     return (
         <div className="space-y-6">
             <Card>
                 <CardHeader className='flex flex-row justify-between items-center'>
-                    <CardTitle>My Leave Requests</CardTitle>
+                    <div>
+                        <CardTitle>My Leave Requests</CardTitle>
+                        <CardDescription>Track the status of your time-off applications.</CardDescription>
+                    </div>
                     <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Apply for Leave</Button></DialogTrigger>
-                        <DialogContent><DialogHeader><DialogTitle>New Leave Application</DialogTitle><DialogDescription>Fill out the form below to request time off.</DialogDescription></DialogHeader><LeaveApplicationForm setOpen={setFormOpen} /></DialogContent>
+                        <DialogTrigger asChild>
+                            <Button disabled={!schoolId}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Apply for Leave
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>New Leave Application</DialogTitle>
+                                <DialogDescription>Fill out the form below to request time off.</DialogDescription>
+                            </DialogHeader>
+                            {schoolId && <LeaveApplicationForm setOpen={setFormOpen} schoolId={schoolId} />}
+                        </DialogContent>
                     </Dialog>
                 </CardHeader>
                 <CardContent>
@@ -118,11 +184,20 @@ function StaffLeaveView() {
                                 {myRequests?.map(req => (
                                     <TableRow key={req.id}>
                                         <TableCell>{req.leaveType}</TableCell>
-                                        <TableCell>{format(req.startDate.toDate(), 'PPP')} - {format(req.endDate.toDate(), 'PPP')}</TableCell>
+                                        <TableCell>{req.startDate?.toDate ? format(req.startDate.toDate(), 'PPP') : 'N/A'} - {req.endDate?.toDate ? format(req.endDate.toDate(), 'PPP') : 'N/A'}</TableCell>
                                         <TableCell className="max-w-xs truncate">{req.reason}</TableCell>
-                                        <TableCell><Badge>{req.status}</Badge></TableCell>
+                                        <TableCell>
+                                            <Badge variant={req.status === 'Approved' ? 'default' : req.status === 'Rejected' ? 'destructive' : 'secondary'}>
+                                                {req.status}
+                                            </Badge>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
+                                {(!myRequests || myRequests.length === 0) && (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No leave requests found.</TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                         </Table>
                      )}
@@ -135,19 +210,21 @@ function StaffLeaveView() {
 
 // --- Manager View Components ---
 
-function TeamAvailabilityCalendar({ approvedLeaves, holidays }: { approvedLeaves: LeaveRequest[], holidays: PublicHoliday[] }) {
+function TeamAvailabilityCalendar({ approvedLeaves }: { approvedLeaves: LeaveRequest[], holidays: PublicHoliday[] }) {
     const [date, setDate] = useState<Date | undefined>(new Date());
 
-    const onLeave = approvedLeaves.flatMap(leave => {
-        const dates = [];
-        let currentDate = leave.startDate.toDate();
-        const endDate = leave.endDate.toDate();
-        while (currentDate <= endDate) {
-            dates.push({ date: new Date(currentDate), staffName: leave.staffName });
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return dates;
-    });
+    const onLeave = useMemo(() => {
+        return approvedLeaves.flatMap(leave => {
+            const dates = [];
+            let currentDate = leave.startDate.toDate();
+            const endDate = leave.endDate.toDate();
+            while (currentDate <= endDate) {
+                dates.push({ date: new Date(currentDate), staffName: leave.staffName });
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            return dates;
+        });
+    }, [approvedLeaves]);
 
     const isHoliday = (date: Date) => MOCK_PUBLIC_HOLIDAYS.find(h => format(h.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'));
 
@@ -204,7 +281,7 @@ function ManagerApprovalDialog({ request, setOpen, action }: { request: LeaveReq
     });
 
     async function handleDecision(values: z.infer<typeof formSchema>) {
-        if (!user) return;
+        if (!user || !firestore) return;
         setIsSubmitting(true);
         try {
             const requestRef = doc(firestore, 'leaveRequests', request.id);
@@ -253,8 +330,11 @@ function ManagerApprovalDialog({ request, setOpen, action }: { request: LeaveReq
 
 function ManagerLeaveView() {
   const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
 
-  const { data: allRequests, isLoading } = useCollection<LeaveRequest>(useMemoFirebase(() => collection(firestore, 'leaveRequests'), [firestore]));
+  const { data: allRequests, isLoading } = useCollection<LeaveRequest>(
+    useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId])
+  );
 
   const pendingRequests = useMemo(() => allRequests?.filter(r => r.status === 'Pending') || [], [allRequests]);
   const approvedRequests = useMemo(() => allRequests?.filter(r => r.status === 'Approved') || [], [allRequests]);
@@ -335,7 +415,7 @@ export default function LeaveManagementPage() {
   const { role } = useRole();
 
   const isManager = role === 'Administrator' || role === 'Director';
-  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook'].includes(role) || isManager;
+  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'].includes(role || '') || isManager;
   
   if (!isStaff) {
     return (
