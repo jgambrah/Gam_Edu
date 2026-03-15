@@ -4,11 +4,11 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, updateDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
@@ -26,7 +26,6 @@ import { format } from 'date-fns';
 import { LeaveRequest, leaveApplicationSchema, managerApprovalSchema, managerRejectionSchema, PublicHoliday, LEAVE_TYPES } from '@/lib/types';
 import { MOCK_PUBLIC_HOLIDAYS } from '@/lib/data';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 // --- Staff View: Form for applying for leave ---
 function LeaveApplicationForm({ setOpen, schoolId }: { setOpen: (open: boolean) => void, schoolId: string }) {
@@ -44,27 +43,38 @@ function LeaveApplicationForm({ setOpen, schoolId }: { setOpen: (open: boolean) 
   });
 
   async function onSubmit(values: z.infer<typeof leaveApplicationSchema>) {
-    if (!user || !staffName || !schoolId || !firestore) return;
-    setIsSubmitting(true);
+    if (!user || !staffName || !schoolId || !firestore) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Missing required data. Please refresh.' });
+        return;
+    }
     
-    const requestData = {
-      ...values,
-      staffId: user.uid,
-      staffName: staffName,
-      status: 'Pending',
-      createdAt: serverTimestamp(),
-      schoolId: schoolId,
-    };
-
-    addDocumentNonBlocking(collection(firestore, 'leaveRequests'), requestData)
-      .then(() => {
-        toast({ title: 'Request Submitted', description: 'Your leave request has been submitted for approval.' });
+    setIsSubmitting(true);
+    try {
+        await addDoc(collection(firestore, 'leaveRequests'), {
+            ...values,
+            staffId: user.uid,
+            staffName: staffName,
+            status: 'Pending',
+            createdAt: serverTimestamp(),
+            schoolId: schoolId,
+        });
+        
+        toast({ 
+            title: 'Request Submitted', 
+            description: 'Your leave request has been submitted for approval.' 
+        });
         form.reset();
         setOpen(false);
-      })
-      .finally(() => {
+    } catch (error: any) {
+        console.error('Leave submit error:', error);
+        toast({ 
+            variant: 'destructive', 
+            title: 'Submission Failed', 
+            description: error.message || 'Could not submit your request. Please check your permissions.' 
+        });
+    } finally {
         setIsSubmitting(false);
-      });
+    }
   }
 
   return (
