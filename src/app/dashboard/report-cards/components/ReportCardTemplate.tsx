@@ -55,7 +55,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                             style={{ maxWidth: '80px', maxHeight: '80px', objectFit: 'contain', display: 'block' }}
                         />
                     ) : (
-                        <div style={{ width: 80, height: 80, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#94a3b8', textAlign: 'center' }}>
+                        <div style={{ width: 80, height: 80, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#94a3b8', textAlign: 'center' }}>
                             No Logo
                         </div>
                     )}
@@ -63,16 +63,16 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
 
                 {/* School Info */}
                 <div style={{ flex: 1, textAlign: 'center', padding: '0 10px' }}>
-                    <div style={{ fontSize: '22px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.1 }}>
+                    <div style={{ fontSize: '23px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.1 }}>
                         {data.schoolName || 'SCHOOL NAME'}
                     </div>
                     {data.schoolMotto && (
-                        <div style={{ fontSize: '11px', fontStyle: 'italic', color: '#475569', marginTop: '1px' }}>
+                        <div style={{ fontSize: '12px', fontStyle: 'italic', color: '#475569', marginTop: '1px' }}>
                             "{data.schoolMotto}"
                         </div>
                     )}
-                    <div style={{ fontSize: '11px', fontWeight: 700, marginTop: '3px' }}>{data.schoolAddress || ''}</div>
-                    <div style={{ fontSize: '11px', fontWeight: 700 }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, marginTop: '3px' }}>{data.schoolAddress || ''}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 700 }}>
                         {[data.schoolPhone, data.schoolEmail].filter(Boolean).join(' | ')}
                     </div>
                 </div>
@@ -82,7 +82,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
 
             {/* ── REPORT TITLE ── */}
             <div style={{
-                fontSize: '16px',
+                fontSize: '17px',
                 fontWeight: 800,
                 textAlign: 'center',
                 marginBottom: '8px',
@@ -101,7 +101,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 gridTemplateColumns: '1.2fr 1fr',
                 gap: '4px 16px',
                 marginBottom: '8px',
-                fontSize: '12px',
+                fontSize: '13px',
                 border: '1px solid #cbd5e1',
                 padding: '8px 12px',
                 fontWeight: 500,
@@ -125,7 +125,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             </div>
 
             {/* ── GRADES TABLE ── */}
-            <table style={{ width: '100%', fontSize: '10px', borderCollapse: 'collapse', marginBottom: '8px', tableLayout: 'fixed' }}>
+            <table style={{ width: '100%', fontSize: '11px', borderCollapse: 'collapse', marginBottom: '8px', tableLayout: 'fixed' }}>
                 <colgroup>
                     <col style={{ width: '22%' }} />
                     <col style={{ width: '7%' }} />
@@ -138,7 +138,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     <col style={{ width: '29%' }} />
                 </colgroup>
                 <thead>
-                    <tr style={{ background: '#f1f5f9', fontSize: '10px' }}>
+                    <tr style={{ background: '#f1f5f9', fontSize: '11px' }}>
                         <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'left' }}>Subject</th>
                         <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'center' }}>CA ({caWeight})</th>
                         <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'center' }}>Ex ({examWeight})</th>
@@ -161,7 +161,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                             <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center', fontWeight: 700 }}>{row.grade}</td>
                             <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>{row.position}</td>
                             <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center', fontWeight: 600 }}>{row.autoRemark}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', fontStyle: 'italic', color: '#475569', fontSize: '9.5px', wordBreak: 'break-word' }}>{row.teacherRemark || '-'}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', fontStyle: 'italic', color: '#475569', fontSize: '10.5px', wordBreak: 'break-word' }}>{row.teacherRemark || '-'}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -171,7 +171,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             <div style={{
                 border: '1px solid #cbd5e1',
                 padding: '4px 10px',
-                fontSize: '10px',
+                fontSize: '11px',
                 background: '#f8fafc',
                 marginBottom: '8px',
                 display: 'flex',
@@ -191,11 +191,11 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             {/* ── REMARKS ── */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
                 <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
                         Class Teacher's Remark:
                     </div>
                     <div style={{
-                        fontSize: '11px',
+                        fontSize: '12px',
                         fontStyle: 'italic',
                         color: '#1e293b',
                         lineHeight: 1.3,
@@ -206,11 +206,11 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     </div>
                 </div>
                 <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
                         Headmaster's Remark:
                     </div>
                     <div style={{
-                        fontSize: '11px',
+                        fontSize: '12px',
                         fontStyle: 'italic',
                         color: '#1e293b',
                         lineHeight: 1.3,
@@ -234,19 +234,19 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             }}>
                 <div style={{ textAlign: 'center' }}>
                     <div style={{ height: '20px', borderBottom: '1px solid black', width: '60%', margin: '0 auto 4px' }} />
-                    <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>
                         Class Teacher Signature
                     </div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
                     <div style={{ height: '20px', borderBottom: '1px solid black', width: '60%', margin: '0 auto 4px' }} />
-                    <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>
                         Headmaster Signature
                     </div>
                 </div>
             </div>
             
-            <div style={{ fontSize: '8px', textAlign: 'center', color: '#94a3b8' }}>
+            <div style={{ fontSize: '9px', textAlign: 'center', color: '#94a3b8' }}>
                 Generated via GAM Edu Management System
             </div>
         </div>
