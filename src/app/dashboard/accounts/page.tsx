@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -41,6 +42,7 @@ import { GenerateReceipt } from './generate-receipt';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentSelect } from '@/components/StudentSelect';
+import { billMultipleStudents } from '@/lib/billing';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -184,7 +186,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                 )}
             />
 
-            {!isOpeningBalance && (
+            {(!isOpeningBalance) && (
                 <FormField 
                     control={form.control} 
                     name="type" 
@@ -431,6 +433,76 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     );
 }
 
+function DailyBillingForm({ setOpen, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; schoolId: string, onRecordsAdded: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [date, setDate] = useState<Date>(new Date());
+
+    const handleProcess = async () => {
+        if (!firestore || !schoolId) return;
+        setIsProcessing(true);
+        try {
+            // Find all attendance for this date
+            const start = startOfDay(date);
+            const attendanceQuery = query(
+                collection(firestore, 'attendance'),
+                where('schoolId', '==', schoolId),
+                where('date', '==', start),
+                where('status', 'in', ['Present', 'Late'])
+            );
+            const snap = await getDocs(attendanceQuery);
+            const presentUids = snap.docs.map(d => d.data().studentId);
+
+            if (presentUids.length === 0) {
+                toast({ title: "No students present", description: "Found 0 students marked present/late for this date." });
+                setIsProcessing(false);
+                return;
+            }
+
+            // Fetch students to check subscriptions
+            const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', presentUids));
+            const studentsSnap = await getDocs(studentsQuery);
+            const studentsToBill = studentsSnap.docs.map(d => ({ ...d.data(), uid: d.id })) as Student[];
+
+            const result = await billMultipleStudents(firestore, studentsToBill, date, schoolId);
+            
+            toast({ title: "Daily Billing Complete", description: `Billed ${result.successful} students for GH₵${result.totalBilled.toFixed(2)}` });
+            onRecordsAdded();
+            setOpen(false);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Error", description: e.message || "Failed to process billing." });
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row items-end gap-4">
+                <div className="space-y-2 flex-1 w-full">
+                    <Label>Select Date to Bill</Label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+                <Button onClick={handleProcess} disabled={isProcessing} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700">
+                    {isProcessing ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
+                    Run Billing
+                </Button>
+            </div>
+        </div>
+    );
+}
+
 function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore(); 
     const { user } = useUser(); 
@@ -651,7 +723,7 @@ export default function AccountsPage() {
         const balance = billed - paid - waiver;
         totalBilled += billed; totalPaid += paid; totalWaivers += waiver;
         
-        if (balance > 0) {
+        if (balance > 0.01) {
             const type = (record.type || '').toLowerCase();
             const desc = (record.description || '').toLowerCase();
             
@@ -721,6 +793,7 @@ export default function AccountsPage() {
                             <div className="flex gap-2 flex-wrap">
                                 <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}><PlusCircle className="mr-2 h-4 w-4" /> Single Bill</Button>
                                 <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}><FileCog className="mr-2 h-4 w-4" /> Bulk Bill</Button>
+                                <Button variant={activeForm === 'daily' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'daily' ? null : 'daily')}><CalendarIcon className="mr-2 h-4 w-4" /> Daily Billing</Button>
                             </div>
                         </div>
                     </CardHeader>
@@ -735,6 +808,13 @@ export default function AccountsPage() {
                             <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4">Create Bulk Bill</h3>
                                 <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
+                            </div>
+                        )}
+                        {activeForm === 'daily' && schoolId && (
+                            <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
+                                <h3 className="font-bold mb-4">Process Daily Service Bills</h3>
+                                <p className="text-sm text-muted-foreground mb-4">This will generate Canteen and Transport bills for all students marked 'Present' or 'Late' on the selected date.</p>
+                                <DailyBillingForm setOpen={() => setActiveForm(null)} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
                         )}
                         <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-md"/>
