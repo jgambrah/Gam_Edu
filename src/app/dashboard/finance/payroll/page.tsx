@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -21,6 +20,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Staff, StaffPayrollConfig, PayrollSettings, PayrollRecord } from '@/lib/types';
 import { PayslipDialog } from '../../payroll/payslip-dialog';
@@ -211,7 +212,7 @@ function RemittanceReports({ schoolId }: { schoolId: string }) {
                                     <TableRow key={`ssnit-${r.id}`}>
                                         <TableCell className="font-medium">{r.staffName}</TableCell>
                                         <TableCell className="font-mono text-xs">{(r as any).ssnitNumber || '-'}</TableCell>
-                                        <TableCell className="text-right">GH₵{r.basicSalary.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">GH₵{(r.basicSalary || 0).toFixed(2)}</TableCell>
                                         <TableCell className="text-right">GH₵{(r.statutory?.ssnitEmployee || 0).toFixed(2)}</TableCell>
                                         <TableCell className="text-right">GH₵{(r.statutory?.ssnitEmployer || 0).toFixed(2)}</TableCell>
                                         <TableCell className="text-right font-bold">GH₵{((r.statutory?.ssnitEmployee || 0) + (r.statutory?.ssnitEmployer || 0)).toFixed(2)}</TableCell>
@@ -249,8 +250,8 @@ function RemittanceReports({ schoolId }: { schoolId: string }) {
                                     <TableRow key={`paye-${r.id}`}>
                                         <TableCell className="font-medium">{r.staffName}</TableCell>
                                         <TableCell className="font-mono text-xs">{(r as any).tinNumber || '-'}</TableCell>
-                                        <TableCell className="text-right">GH₵{r.grossSalary.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right">GH₵{(r as any).taxableIncome?.toFixed(2) || '-'}</TableCell>
+                                        <TableCell className="text-right">GH₵{(r.grossSalary || 0).toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">GH₵{(r as any).taxableIncome?.toFixed(2) || '0.00'}</TableCell>
                                         <TableCell className="text-right font-bold text-rose-700">GH₵{(r.statutory?.paye || 0).toFixed(2)}</TableCell>
                                     </TableRow>
                                 ))}
@@ -312,8 +313,8 @@ function PayrollHistory({ schoolId }: { schoolId: string }) {
 
     const totals = useMemo(() => {
         return records.reduce((acc, r) => ({
-            gross: acc.gross + r.grossSalary,
-            net: acc.net + r.netSalary,
+            gross: acc.gross + (r.grossSalary || 0),
+            net: acc.net + (r.netSalary || 0),
             tax: acc.tax + (r.statutory?.paye || 0)
         }), { gross: 0, net: 0, tax: 0 });
     }, [records]);
@@ -376,8 +377,8 @@ function PayrollHistory({ schoolId }: { schoolId: string }) {
                                     {records.map(r => (
                                         <TableRow key={r.id}>
                                             <TableCell className="font-bold">{r.staffName}</TableCell>
-                                            <TableCell className="text-right text-slate-500">GH₵{r.grossSalary.toFixed(2)}</TableCell>
-                                            <TableCell className="text-right font-black text-emerald-700">GH₵{r.netSalary.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right text-slate-500">GH₵{(r.grossSalary || 0).toFixed(2)}</TableCell>
+                                            <TableCell className="text-right font-black text-emerald-700">GH₵{(r.netSalary || 0).toFixed(2)}</TableCell>
                                             <TableCell className="text-right">
                                                 <Dialog>
                                                     <DialogTrigger asChild>
@@ -522,10 +523,10 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
                                 {previewData.map((p) => (
                                     <TableRow key={p.staffId}>
                                         <TableCell className="font-bold">{p.staffName}</TableCell>
-                                        <TableCell className="text-right text-slate-500">GH₵{p.grossSalary.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right text-rose-500">-{p.statutory.ssnitEmployee.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right text-rose-500">-{p.statutory.paye.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right font-black text-emerald-700">GH₵{p.netSalary.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right text-slate-500">GH₵{(p.grossSalary || 0).toFixed(2)}</TableCell>
+                                        <TableCell className="text-right text-rose-500">-{p.statutory?.ssnitEmployee?.toFixed(2) || '0.00'}</TableCell>
+                                        <TableCell className="text-right text-rose-500">-{p.statutory?.paye?.toFixed(2) || '0.00'}</TableCell>
+                                        <TableCell className="text-right font-black text-emerald-700">GH₵{(p.netSalary || 0).toFixed(2)}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
