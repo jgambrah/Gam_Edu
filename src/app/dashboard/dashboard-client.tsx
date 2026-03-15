@@ -12,10 +12,10 @@ import {
   CreditCard, DollarSign, Receipt, Package, Award,
   Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, Sparkles, FolderKanban, HeartHandshake, User as UserIcon,
-  BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code
+  BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code, ShoppingBag, Wallet, Calculator, ArrowUpRight
 } from 'lucide-react';
 import Link from 'next/link';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,6 +85,153 @@ function ActivityItem({ title, description, time, icon: Icon, iconColor = "text-
         <p className="text-xs text-muted-foreground">{description}</p>
         <p className="text-xs text-muted-foreground">{time}</p>
       </div>
+    </div>
+  );
+}
+
+// --- ACCOUNTANT DASHBOARD COMPONENT ---
+function AccountantDashboard({ profile, schoolId, financialRecords }: { profile: any, schoolId: string, financialRecords: any[] | null }) {
+  const { user } = useUser();
+  const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Accountant';
+
+  const stats = useMemo(() => {
+    if (!financialRecords) return { totalRevenue: 0, totalOutstanding: 0, debtorCount: 0, byType: [] as any[] };
+    
+    let paid = 0;
+    let outstanding = 0;
+    const debtorIds = new Set();
+    const typeTotals: Record<string, number> = {};
+
+    financialRecords.forEach(r => {
+      paid += (r.amountPaid || 0);
+      const balance = (r.billedAmount || 0) - (r.amountPaid || 0) - (r.waiverAmount || 0);
+      if (balance > 0.01) {
+        outstanding += balance;
+        debtorIds.add(r.studentId);
+      }
+      // Group revenue by type
+      const type = r.type || 'Other';
+      typeTotals[type] = (typeTotals[type] || 0) + (r.amountPaid || 0);
+    });
+
+    return {
+      totalRevenue: paid,
+      totalOutstanding: outstanding,
+      debtorCount: debtorIds.size,
+      byType: Object.entries(typeTotals).map(([name, value]) => ({ name, value })).filter(i => i.value > 0)
+    };
+  }, [financialRecords]);
+
+  const recentCollections = useMemo(() => {
+    if (!financialRecords) return [];
+    return [...financialRecords]
+      .filter(r => (r.amountPaid || 0) > 0)
+      .sort((a, b) => (b.lastPaymentDate?.seconds || 0) - (a.lastPaymentDate?.seconds || 0))
+      .slice(0, 5);
+  }, [financialRecords]);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Financial Hub: {displayName} 💰</h1>
+        <p className="text-muted-foreground">Manage billings, payments, and payroll.</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="Total Revenue" value={`GH₵${stats.totalRevenue.toLocaleString()}`} icon={Landmark} link="/dashboard/reports/financials" colorClass="text-emerald-600" />
+        <StatCard title="Outstanding Fees" value={`GH₵${stats.totalOutstanding.toLocaleString()}`} icon={AlertCircle} link="/dashboard/accounts" colorClass="text-red-600" />
+        <StatCard title="Active Debtors" value={stats.debtorCount} icon={Users} link="/dashboard/accounts" colorClass="text-orange-600" />
+        <StatCard title="Pending Records" value={financialRecords?.length || 0} icon={FileText} link="/dashboard/accounts" colorClass="text-blue-600" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><ArrowUpRight className="text-emerald-500 h-5 w-5"/> Revenue Distribution</CardTitle>
+            <CardDescription>Breakdown of collections by fee category.</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            {stats.byType.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats.byType}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis fontSize={10} tickLine={false} axisLine={false} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-muted-foreground italic">No revenue recorded yet.</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-1">
+          <CardHeader><CardTitle className="text-lg">Quick Finance Actions</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <Link href="/dashboard/accounts" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-emerald-100 rounded-lg"><DollarSign className="h-4 w-4 text-emerald-600"/></div>
+                    <span className="text-sm font-semibold">Record Payment</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/accounts/cash-till" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg"><Wallet className="h-4 w-4 text-blue-600"/></div>
+                    <span className="text-sm font-semibold">My Cash Till</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/finance/payroll" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-100 rounded-lg"><Calculator className="h-4 w-4 text-purple-600"/></div>
+                    <span className="text-sm font-semibold">Run Payroll</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/finance/accounting" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-slate-100 rounded-lg"><Book className="h-4 w-4 text-slate-600"/></div>
+                    <span className="text-sm font-semibold">General Ledger</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Recent Collections</CardTitle>
+          <CardDescription>The latest fees processed for your school.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {recentCollections.map((record) => (
+              <div key={record.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
+                <div className="flex items-center gap-3">
+                  <div className="bg-emerald-100 p-2 rounded-full">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">{record.studentName}</p>
+                    <p className="text-xs text-muted-foreground">{record.description}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-emerald-700">+GH₵{record.amountPaid.toFixed(2)}</p>
+                  <p className="text-[10px] text-slate-400">
+                    {record.lastPaymentDate ? formatDistanceToNow(record.lastPaymentDate.toDate(), { addSuffix: true }) : ''}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {recentCollections.length === 0 && <p className="text-center py-6 text-muted-foreground italic">No recent collections found.</p>}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -432,6 +579,7 @@ export default function DashboardClient() {
   if (isTeacher) return <TeacherDashboard profile={profile} />;
   if (isStudent) return <StudentDashboard profile={profile} schoolId={schoolId!} />;
   if (isParent) return <ParentDashboard profile={profile} schoolId={schoolId!} />;
+  if (isFinance) return <AccountantDashboard profile={profile} schoolId={schoolId!} financialRecords={financialRecords} />;
 
   if (isAdminOrDirector) {
       const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Administrator';
