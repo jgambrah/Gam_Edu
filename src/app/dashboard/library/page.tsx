@@ -46,7 +46,7 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
   async function onSubmit(values: z.infer<typeof libraryItemSchema>) {
     setIsSubmitting(true);
     try {
-      const newItemRef = doc(collection(firestore, 'library'));
+      const newItemRef = doc(collection(firestore!, 'library'));
       const dataToSave = {
         ...values,
         status: 'Available',
@@ -182,7 +182,7 @@ export default function LibraryPage() {
   }, [libraryItems]);
 
   const handleRequestBorrow = (item: LibraryItem) => {
-    if (!user) return;
+    if (!user || !firestore) return;
     if (myBorrowedItems.some(i => i.dueDate && new Date(i.dueDate.toDate()) < new Date())) {
         toast({ variant: 'destructive', title: 'Overdue Item', description: 'You cannot borrow new items while you have an overdue item.' });
         return;
@@ -196,6 +196,7 @@ export default function LibraryPage() {
   }
   
   const handleMarkForReturn = (item: LibraryItem) => {
+    if (!firestore) return;
     updateDocumentNonBlocking(doc(firestore, 'library', item.id), {
         status: 'Pending Return',
     });
@@ -203,6 +204,7 @@ export default function LibraryPage() {
   }
   
   const handleApproveRequest = async (item: LibraryItem) => {
+    if (!firestore) return;
     const dueDate = addDays(new Date(), 14); // Set due date to 14 days from now
     try {
         await updateDocumentNonBlocking(doc(firestore, 'library', item.id), {
@@ -216,6 +218,7 @@ export default function LibraryPage() {
   };
 
   const handleRejectRequest = async (item: LibraryItem) => {
+    if (!firestore) return;
     try {
         await updateDocumentNonBlocking(doc(firestore, 'library', item.id), {
             status: 'Available',
@@ -225,6 +228,21 @@ export default function LibraryPage() {
         toast({ title: "Rejected", description: `Request for ${item.name} has been rejected.`});
     } catch(e) {
         toast({ variant: 'destructive', title: "Error", description: "Failed to reject request." });
+    }
+  };
+
+  const handleConfirmReturn = async (item: LibraryItem) => {
+    if (!firestore) return;
+    try {
+        await updateDocumentNonBlocking(doc(firestore, 'library', item.id), {
+            status: 'Available',
+            currentHolderId: '',
+            currentHolderName: '',
+            dueDate: null,
+        });
+        toast({ title: 'Return Confirmed', description: `"${item.name}" is now available in the catalog.` });
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to confirm return.' });
     }
   };
 
@@ -309,7 +327,11 @@ export default function LibraryPage() {
                                    <TableCell><Badge variant={item.status === 'Available' ? 'secondary' : 'outline'}>{item.status}</Badge></TableCell>
                                    <TableCell className="text-right">
                                        {canBorrow && item.status === 'Available' && <Button size="sm" onClick={() => handleRequestBorrow(item)}>Request Borrow</Button>}
-                                        {canManage && item.status === 'Pending Return' && <Button size="sm" variant="destructive">Confirm Return</Button>}
+                                        {canManage && item.status === 'Pending Return' && (
+                                            <Button size="sm" variant="destructive" onClick={() => handleConfirmReturn(item)}>
+                                                Confirm Return
+                                            </Button>
+                                        )}
                                    </TableCell>
                                </TableRow>
                            ))}
