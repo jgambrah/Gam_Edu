@@ -13,6 +13,7 @@ interface ReportCardTemplateProps {
 /**
  * Standardized Report Card Template for GAM Edu.
  * Used for both live preview and PDF generation.
+ * All font sizes increased by 2pt for enhanced readability.
  */
 export default function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: ReportCardTemplateProps) {
     if (!data) return null;
@@ -55,7 +56,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                             style={{ maxWidth: '80px', maxHeight: '80px', objectFit: 'contain', display: 'block' }}
                         />
                     ) : (
-                        <div style={{ width: 80, height: 80, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>
+                        <div style={{ width: 80, height: 80, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#94a3b8', textAlign: 'center' }}>
                             No Logo
                         </div>
                     )}
@@ -63,7 +64,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
 
                 {/* School Info */}
                 <div style={{ flex: 1, textAlign: 'center', padding: '0 10px' }}>
-                    <div style={{ fontSize: '25px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.1 }}>
+                    <div style={{ fontSize: '27px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.1 }}>
                         {data.schoolName || 'SCHOOL NAME'}
                     </div>
                     {data.schoolMotto && (
@@ -82,7 +83,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
 
             {/* ── REPORT TITLE ── */}
             <div style={{
-                fontSize: '19px',
+                fontSize: '21px',
                 fontWeight: 800,
                 textAlign: 'center',
                 marginBottom: '8px',
@@ -161,7 +162,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                             <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center', fontWeight: 700 }}>{row.grade}</td>
                             <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>{row.position}</td>
                             <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center', fontWeight: 600 }}>{row.autoRemark}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', fontStyle: 'italic', color: '#475569', fontSize: '12.5px', wordBreak: 'break-word' }}>{row.teacherRemark || '-'}</td>
+                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', fontStyle: 'italic', color: '#475569', fontSize: '13px', wordBreak: 'break-word' }}>{row.teacherRemark || '-'}</td>
                         </tr>
                     ))}
                 </tbody>
