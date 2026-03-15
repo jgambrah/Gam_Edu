@@ -321,11 +321,24 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const form = useForm<z.infer<typeof extendedFinancialRecordSchema>>({ resolver: zodResolver(extendedFinancialRecordSchema), defaultValues: { type: 'Tuition Fee', billedAmount: 0, isOpeningBalance: false } });
+  const form = useForm<z.infer<typeof extendedFinancialRecordSchema>>({ 
+    resolver: zodResolver(extendedFinancialRecordSchema), 
+    defaultValues: { 
+      studentId: '',
+      type: 'Tuition Fee', 
+      description: '',
+      billedAmount: 0, 
+      dueDate: new Date(),
+      isOpeningBalance: false 
+    } 
+  });
   const isOpeningBalance = form.watch('isOpeningBalance');
 
   useEffect(() => {
-      if (isOpeningBalance) { form.setValue('type', 'Other'); form.setValue('description', 'Opening Balance (Arrears from previous term)'); }
+      if (isOpeningBalance) { 
+        form.setValue('type', 'Other'); 
+        form.setValue('description', 'Opening Balance (Arrears from previous term)'); 
+      }
   }, [isOpeningBalance, form]);
 
   async function onSubmit(values: z.infer<typeof extendedFinancialRecordSchema>) {
@@ -363,7 +376,16 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const form = useForm<z.infer<typeof bulkBillingSchema>>({ resolver: zodResolver(bulkBillingSchema), defaultValues: { type: 'Tuition Fee', description: '', billedAmount: 0 } });
+    const form = useForm<z.infer<typeof bulkBillingSchema>>({ 
+      resolver: zodResolver(bulkBillingSchema), 
+      defaultValues: { 
+        classId: '',
+        type: 'Tuition Fee', 
+        description: '', 
+        billedAmount: 0,
+        dueDate: new Date()
+      } 
+    });
   
     async function onSubmit(values: z.infer<typeof bulkBillingSchema>) {
       if (!firestore || !schoolId) return;
@@ -631,7 +653,7 @@ export default function AccountsPage() {
   }, [records, students]);
 
   const filteredStudentsWithBills = useMemo(() => studentFinancials.filter(sf => searchStudent(sf.student, searchTerm)), [studentFinancials, searchTerm]);
-  const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
+  const pendingReversals = useMemo(() => reversals => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
 
   if (!canAccess) return <Card><CardHeader><CardTitle>Access Denied</CardTitle></CardHeader></Card>;
 
@@ -641,7 +663,7 @@ export default function AccountsPage() {
   return (
     <div className="space-y-6"><Tabs value={activeTab} onValueChange={setActiveTab}><TabsList><TabsTrigger value="billing">Student Billing</TabsTrigger>{isAdmin && <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger>}</TabsList>
             <TabsContent value="billing" className="space-y-6"><Card><CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader><CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-6"><Card className="border-l-4 border-l-red-500"><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Outstanding</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-red-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card><Card className="border-l-4 border-l-green-500"><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Revenue</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-green-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card><Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Tuition Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card><Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Canteen Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card><Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Transport Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card><Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Other Fees</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.otherDebt.toFixed(2)}</div></CardContent></Card></CardContent></Card>
-                <div className="grid lg:grid-cols-1 gap-6"><Card><CardHeader><div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"><div><CardTitle>Student Accounts</CardTitle></div><div className="flex gap-2 flex-wrap"><Dialog open={activeForm === 'daily'} onOpenChange={(open) => setActiveForm(open ? 'daily' : null)}><DialogTrigger asChild><Button variant="outline"><Utensils className="mr-2 h-4 w-4" /> Daily Charge</Button></DialogTrigger>{schoolId && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}</Dialog><Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}><PlusCircle className="mr-2 h-4 w-4" /> Single Bill</Button><Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}><FileCog className="mr-2 h-4 w-4" /> Bulk Bill</Button></div></div></CardHeader><CardContent className="space-y-6">
+                <div className="grid lg:grid-cols-1 gap-6"><Card><CardHeader><div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"><div><CardTitle>Student Accounts</CardTitle></div><div className="flex gap-2 flex-wrap"><Dialog open={activeForm === 'daily'} onValueChange={(open) => setActiveForm(open ? 'daily' : null)}><DialogTrigger asChild><Button variant="outline"><Utensils className="mr-2 h-4 w-4" /> Daily Charge</Button></DialogTrigger>{schoolId && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}</Dialog><Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}><PlusCircle className="mr-2 h-4 w-4" /> Single Bill</Button><Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}><FileCog className="mr-2 h-4 w-4" /> Bulk Bill</Button></div></div></CardHeader><CardContent className="space-y-6">
                             {activeForm === 'single' && schoolId && (<div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2"><h3 className="font-bold mb-4">Create Single Bill</h3><FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} /></div>)}
                             {activeForm === 'bulk' && schoolId && (<div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2"><h3 className="font-bold mb-4">Create Bulk Bill</h3><BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} /></div>)}
                             <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-md"/>
