@@ -2,7 +2,7 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, limit, doc } from 'firebase/firestore';
 import { 
@@ -13,7 +13,7 @@ import {
   Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, Sparkles, FolderKanban, HeartHandshake, User as UserIcon,
   BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code, ShoppingBag, Wallet, Calculator, ArrowUpRight,
-  AlertCircle, Book
+  AlertCircle, Book, Library, History
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { STAFF_ROLES } from '@/lib/types';
+import { STAFF_ROLES, LibraryItem } from '@/lib/types';
 
 // --- Reusable Components ---
 
@@ -86,6 +86,152 @@ function ActivityItem({ title, description, time, icon: Icon, iconColor = "text-
         <p className="text-xs text-muted-foreground">{description}</p>
         <p className="text-xs text-muted-foreground">{time}</p>
       </div>
+    </div>
+  );
+}
+
+// --- LIBRARIAN DASHBOARD COMPONENT ---
+function LibrarianDashboard({ profile, schoolId }: { profile: any, schoolId: string }) {
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Librarian';
+
+  const libraryQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'library'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: libraryItems, isLoading: loadingLibrary } = useCollection<LibraryItem>(libraryQuery);
+
+  const stats = useMemo(() => {
+    if (!libraryItems) return { total: 0, available: 0, borrowed: 0, overdue: 0, byStatus: [] as any[] };
+    
+    const total = libraryItems.length;
+    const available = libraryItems.filter(i => i.status === 'Available').length;
+    const borrowed = libraryItems.filter(i => i.status === 'Borrowed' || i.status === 'Pending Return').length;
+    const overdue = libraryItems.filter(i => i.status === 'Borrowed' && i.dueDate && new Date(i.dueDate.toDate()) < new Date()).length;
+
+    return {
+      total,
+      available,
+      borrowed,
+      overdue,
+      byStatus: [
+        { name: 'Available', value: available },
+        { name: 'Borrowed', value: borrowed },
+        { name: 'Overdue', value: overdue }
+      ].filter(i => i.value > 0)
+    };
+  }, [libraryItems]);
+
+  const recentActivity = useMemo(() => {
+    if (!libraryItems) return [];
+    return [...libraryItems]
+      .filter(i => i.status === 'Requested' || i.status === 'Pending Return' || i.status === 'Borrowed')
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+      .slice(0, 5);
+  }, [libraryItems]);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Library Portal: {displayName} 📚</h1>
+        <p className="text-muted-foreground">Manage the school catalog, lending, and student requests.</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="Total Books" value={stats.total} icon={Book} link="/dashboard/library" colorClass="text-blue-600" isLoading={loadingLibrary} />
+        <StatCard title="Available" value={stats.available} icon={CheckCircle2} link="/dashboard/library" colorClass="text-emerald-600" isLoading={loadingLibrary} />
+        <StatCard title="Borrowed" value={stats.borrowed} icon={History} link="/dashboard/library" colorClass="text-orange-600" isLoading={loadingLibrary} />
+        <StatCard title="Overdue" value={stats.overdue} icon={AlertCircle} link="/dashboard/library" colorClass="text-red-600" isLoading={loadingLibrary} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><TrendingUp className="text-blue-500 h-5 w-5"/> Lending Statistics</CardTitle>
+            <CardDescription>Visual breakdown of your current library status.</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            {stats.byStatus.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={stats.byStatus}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    <Cell fill="#10b981" />
+                    <Cell fill="#f59e0b" />
+                    <Cell fill="#ef4444" />
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-muted-foreground italic">No library records found.</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-1">
+          <CardHeader><CardTitle className="text-lg">Librarian Actions</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <Link href="/dashboard/library" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg"><BookMarked className="h-4 w-4 text-blue-600"/></div>
+                    <span className="text-sm font-semibold">Library Catalog</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/library" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-orange-100 rounded-lg"><History className="h-4 w-4 text-orange-600"/></div>
+                    <span className="text-sm font-semibold">Borrowing Requests</span>
+                </div>
+                <Badge className="bg-orange-500">{libraryItems?.filter(i => i.status === 'Requested').length || 0}</Badge>
+            </Link>
+            <Link href="/dashboard/academics/learning-materials" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-100 rounded-lg"><FolderKanban className="h-4 w-4 text-purple-600"/></div>
+                    <span className="text-sm font-semibold">Course Materials</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Recent Lending Activity</CardTitle>
+          <CardDescription>Track new requests and returns.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {recentActivity.map((item) => (
+              <div key={item.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-full ${item.status === 'Requested' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
+                    <UserIcon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">{item.name}</p>
+                    <p className="text-xs text-muted-foreground">{item.currentHolderName || 'Anonymous'} • {item.status}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] text-slate-400">
+                    {item.createdAt ? formatDistanceToNow(item.createdAt.toDate(), { addSuffix: true }) : ''}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {recentActivity.length === 0 && <p className="text-center py-6 text-muted-foreground italic">No recent borrowing activity.</p>}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -581,6 +727,7 @@ export default function DashboardClient() {
   if (isStudent) return <StudentDashboard profile={profile} schoolId={schoolId!} />;
   if (isParent) return <ParentDashboard profile={profile} schoolId={schoolId!} />;
   if (isFinance) return <AccountantDashboard profile={profile} schoolId={schoolId!} financialRecords={financialRecords} />;
+  if (isLibrarian) return <LibrarianDashboard profile={profile} schoolId={schoolId!} />;
 
   if (isAdminOrDirector) {
       const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Administrator';
