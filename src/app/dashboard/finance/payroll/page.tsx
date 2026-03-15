@@ -7,13 +7,13 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, setDoc, writeBatch, where, getDocs, runTransaction, increment } from 'firebase/firestore';
 import { 
   Banknote, Calculator, Settings, UserCog, CheckCircle2, 
-  FileText, Loader2, Save, Printer, DollarSign, Landmark 
+  FileText, Loader2, Save, Printer, DollarSign, Landmark, History, Eye, Search
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -94,6 +94,129 @@ function calculatePayslip(staff: any, config: any) {
     };
 }
 
+// --- COMPONENT: Payroll History ---
+function PayrollHistory({ schoolId }: { schoolId: string }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [period, setPeriod] = useState(format(new Date(), 'yyyy-MM'));
+    const [records, setRecords] = useState<PayrollRecord[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [selectedSlip, setSelectedSlip] = useState<PayrollRecord | null>(null);
+
+    const fetchHistory = async () => {
+        if (!firestore || !schoolId) return;
+        setLoading(true);
+        try {
+            const q = query(
+                collection(firestore, 'payrollRecords'),
+                where('schoolId', '==', schoolId),
+                where('period', '==', period)
+            );
+            const snap = await getDocs(q);
+            setRecords(snap.docs.map(d => ({ id: d.id, ...d.data() } as PayrollRecord)));
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to load history." });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (schoolId) fetchHistory();
+    }, [period, schoolId]);
+
+    const totals = useMemo(() => {
+        return records.reduce((acc, r) => ({
+            gross: acc.gross + r.grossSalary,
+            net: acc.net + r.netSalary,
+            tax: acc.tax + (r.statutory?.paye || 0)
+        }), { gross: 0, net: 0, tax: 0 });
+    }, [records]);
+
+    return (
+        <div className="space-y-6 animate-in fade-in duration-500">
+            <Card className="bg-slate-50 border-slate-200">
+                <CardHeader className="pb-4">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <CardTitle className="text-lg">Reference Past Runs</CardTitle>
+                            <CardDescription>Select a period to view saved payroll data.</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Label className="text-xs uppercase font-bold text-slate-500">Month</Label>
+                            <Input 
+                                type="month" 
+                                value={period} 
+                                onChange={e => setPeriod(e.target.value)} 
+                                className="bg-white w-[200px]"
+                            />
+                        </div>
+                    </div>
+                </CardHeader>
+            </Card>
+
+            {loading ? (
+                <div className="flex justify-center p-20"><Loader2 className="animate-spin h-8 w-8 text-indigo-600"/></div>
+            ) : records.length === 0 ? (
+                <div className="text-center py-20 bg-white border-2 border-dashed rounded-3xl">
+                    <History className="mx-auto h-12 w-12 text-slate-200 mb-2"/>
+                    <p className="text-slate-500">No payroll records found for {period}.</p>
+                </div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Card className="bg-indigo-50 border-indigo-100">
+                            <CardContent className="p-4"><p className="text-xs font-bold text-indigo-600 uppercase">Gross Payout</p><p className="text-2xl font-black">GH₵{totals.gross.toLocaleString()}</p></CardContent>
+                        </Card>
+                        <Card className="bg-rose-50 border-rose-100">
+                            <CardContent className="p-4"><p className="text-xs font-bold text-rose-600 uppercase">Total PAYE Tax</p><p className="text-2xl font-black">GH₵{totals.tax.toLocaleString()}</p></CardContent>
+                        </Card>
+                        <Card className="bg-emerald-50 border-emerald-100">
+                            <CardContent className="p-4"><p className="text-xs font-bold text-emerald-600 uppercase">Total Net Paid</p><p className="text-2xl font-black">GH₵{totals.net.toLocaleString()}</p></CardContent>
+                        </Card>
+                    </div>
+
+                    <Card>
+                        <CardContent className="p-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Staff Member</TableHead>
+                                        <TableHead className="text-right">Gross</TableHead>
+                                        <TableHead className="text-right">Net Salary</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {records.map(r => (
+                                        <TableRow key={r.id}>
+                                            <TableCell className="font-bold">{r.staffName}</TableCell>
+                                            <TableCell className="text-right text-slate-500">GH₵{r.grossSalary.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right font-black text-emerald-700">GH₵{r.netSalary.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Dialog>
+                                                    <DialogTrigger asChild>
+                                                        <Button variant="ghost" size="sm" onClick={() => setSelectedSlip(r)}>
+                                                            <Eye className="h-4 w-4 mr-2"/> View Slip
+                                                        </Button>
+                                                    </DialogTrigger>
+                                                    {selectedSlip && selectedSlip.id === r.id && (
+                                                        <PayslipDialog payslip={selectedSlip} />
+                                                    )}
+                                                </Dialog>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </>
+            )}
+        </div>
+    );
+}
 
 // --- COMPONENT: Run Payroll ---
 function RunPayroll({ staff, config }: { staff: any[], config: any }) {
@@ -112,7 +235,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
         const existingRecordsQuery = query(collection(firestore, 'payrollRecords'), where('period', '==', month), where('schoolId', '==', schoolId));
         const existingRecordsSnapshot = await getDocs(existingRecordsQuery);
         if (!existingRecordsSnapshot.empty) {
-            toast({ variant: 'destructive', title: 'Payroll Already Run', description: `Payroll for ${month} has already been processed. View in "Reports".`});
+            toast({ variant: 'destructive', title: 'Payroll Already Run', description: `Payroll for ${month} has already been processed. View in "History" tab.`});
             setIsProcessing(false);
             return;
         }
@@ -155,7 +278,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
 
             await batch.commit();
 
-            toast({ title: "Payroll Processed", description: `Paid ${previewData.length} employees for ${month}.` });
+            toast({ title: "Payroll Processed", description: `Paid ${previewData.length} employees for ${month}. Data is now archived in History.` });
             setPreviewData([]);
         } catch (e: any) {
             console.error(e);
@@ -167,49 +290,124 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
 
     return (
         <div className="space-y-6">
-            <Card>
-                <CardHeader><CardTitle>Run Monthly Payroll</CardTitle></CardHeader>
-                <CardContent className="flex gap-4 items-end">
+            <Card className="border-l-4 border-l-indigo-600">
+                <CardHeader>
+                    <CardTitle>Calculate Monthly Payroll</CardTitle>
+                    <CardDescription>Generate salaries for all staff based on their individual configurations.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex gap-4 items-end bg-slate-50/50 p-6 border-t border-b">
                     <div className="space-y-2 flex-1">
-                        <Label>Select Month</Label>
-                        <Input type="month" value={month} onChange={e => setMonth(e.target.value)} />
+                        <Label className="text-xs font-black text-slate-500 uppercase">Payout Month</Label>
+                        <Input type="month" value={month} onChange={e => setMonth(e.target.value)} className="bg-white h-12" />
                     </div>
-                    <Button onClick={handlePreview} className="bg-indigo-600" disabled={isProcessing}>
+                    <Button onClick={handlePreview} className="bg-indigo-600 h-12 px-8 font-bold" disabled={isProcessing}>
                         {isProcessing ? <Loader2 className="animate-spin mr-2"/> : <Calculator className="mr-2 h-4 w-4"/>} 
-                        Calculate Payroll
+                        Generate Preview
                     </Button>
                 </CardContent>
             </Card>
 
             {previewData.length > 0 && (
-                <Card>
-                    <CardHeader className="flex flex-row justify-between">
-                        <CardTitle>Payroll Preview: {month}</CardTitle>
-                        <Button onClick={handleCommit} disabled={isProcessing} className="bg-green-600 hover:bg-green-700">
-                            {isProcessing ? <Loader2 className="animate-spin"/> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
+                <Card className="animate-in slide-in-from-bottom-2 duration-500">
+                    <CardHeader className="flex flex-row justify-between items-center bg-slate-50 border-b">
+                        <div>
+                            <CardTitle>Approval Required: {month}</CardTitle>
+                            <CardDescription>Review the net payouts before committing to the ledger.</CardDescription>
+                        </div>
+                        <Button onClick={handleCommit} disabled={isProcessing} className="bg-green-600 hover:bg-green-700 h-12 px-10 font-black shadow-lg shadow-green-900/10">
+                            {isProcessing ? <Loader2 className="animate-spin"/> : <CheckCircle2 className="mr-2 h-5 w-5"/>}
                             Approve & Save Payroll
                         </Button>
                     </CardHeader>
-                    <CardContent>
-                        <div className="border rounded-md overflow-hidden">
+                    <CardContent className="p-0">
                         <Table>
-                            <TableHeader><TableRow><TableHead>Staff</TableHead><TableHead className="text-right">Gross</TableHead><TableHead className="text-right">SSNIT</TableHead><TableHead className="text-right">Tax (PAYE)</TableHead><TableHead className="text-right font-bold">Net Pay</TableHead></TableRow></TableHeader>
+                            <TableHeader>
+                                <TableRow className="bg-slate-50/50">
+                                    <TableHead>Staff Member</TableHead>
+                                    <TableHead className="text-right">Gross</TableHead>
+                                    <TableHead className="text-right">SSNIT (5.5%)</TableHead>
+                                    <TableHead className="text-right">PAYE Tax</TableHead>
+                                    <TableHead className="text-right font-bold">Net Pay</TableHead>
+                                </TableRow>
+                            </TableHeader>
                             <TableBody>
                                 {previewData.map((p) => (
                                     <TableRow key={p.staffId}>
-                                        <TableCell>{p.staffName}</TableCell>
-                                        <TableCell className="text-right">{p.grossSalary.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right">-{p.ssnitDeduction.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right">-{p.payeTax.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right font-bold text-green-700">GH₵{p.netSalary.toFixed(2)}</TableCell>
+                                        <TableCell className="font-bold">{p.staffName}</TableCell>
+                                        <TableCell className="text-right text-slate-500">GH₵{p.grossSalary.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right text-rose-500">-{p.ssnitDeduction.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right text-rose-500">-{p.payeTax.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right font-black text-emerald-700">GH₵{p.netSalary.toFixed(2)}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
-                        </div>
                     </CardContent>
                 </Card>
             )}
+        </div>
+    );
+}
+
+// --- COMPONENT: Payroll Settings ---
+function PayrollSettingsForm() {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    
+    const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
+    const { data: config, isLoading } = useDoc(settingsRef);
+
+    if (isLoading) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-indigo-600"/></div>;
+
+    const displayBrackets = config?.payeeBrackets || DEFAULT_TAX_BRACKETS;
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5 text-indigo-600"/> Global Statutory Rates</CardTitle>
+                    <CardDescription>Standard rates used for SSNIT calculations.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-slate-50 rounded-xl border">
+                            <Label className="text-[10px] uppercase font-black text-slate-400">Employee SSNIT</Label>
+                            <p className="text-2xl font-black text-indigo-700">{((config?.ssnitEmployeeContributionRate || 0.055) * 100).toFixed(1)}%</p>
+                        </div>
+                        <div className="p-4 bg-slate-50 rounded-xl border">
+                            <Label className="text-[10px] uppercase font-black text-slate-400">Employer SSNIT</Label>
+                            <p className="text-2xl font-black text-indigo-700">{((config?.ssnitEmployerContributionRate || 0.13) * 100).toFixed(1)}%</p>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Landmark className="h-5 w-5 text-indigo-600"/> PAYE Tax Brackets</CardTitle>
+                    <CardDescription>Annual income ranges according to the latest tax laws.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="border rounded-xl overflow-hidden">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-slate-50">
+                                    <TableHead>Annual Income Range (GH₵)</TableHead>
+                                    <TableHead className="text-right">Rate</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {displayBrackets.map((b: any, i: number) => (
+                                    <TableRow key={i}>
+                                        <TableCell className="font-mono text-xs">{b.from.toLocaleString()} - {(b.to === Infinity || !b.to) ? 'Above' : b.to.toLocaleString()}</TableCell>
+                                        <TableCell className="text-right font-bold">{(b.rate * 100).toFixed(1)}%</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }
@@ -218,7 +416,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
 export default function PayrollPage() {
     const { role } = useRole();
     const firestore = useFirestore();
-    const { schoolId } = useCurrentSchool();
+    const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
     const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: staff, isLoading: isLoadingStaff } = useCollection<any>(staffQuery);
@@ -226,25 +424,57 @@ export default function PayrollPage() {
     const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
     const { data: config, isLoading: isLoadingSettings } = useDoc(settingsRef);
 
-    const canManage = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canManage = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
-    const isLoading = isLoadingStaff || isLoadingSettings;
+    const isLoading = schoolLoading || isLoadingStaff || isLoadingSettings;
 
-    if (!canManage) return <div className="p-8 text-center text-red-500">Access Denied</div>;
+    if (!canManage) return <div className="p-8 text-center text-red-500">Access Denied. Financial staff only.</div>;
 
     return (
-        <div className="space-y-6 p-6">
-            <div className="flex items-center gap-2 mb-4">
-                <Banknote className="h-8 w-8 text-indigo-700"/>
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Payroll Management</h1>
-                    <p className="text-muted-foreground">Manage salaries, taxes (PAYE), and SSNIT.</p>
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg shadow-indigo-200">
+                        <Banknote className="h-8 w-8 text-white"/>
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase">Payroll Hub</h1>
+                        <p className="text-muted-foreground font-medium italic">Generate salaries and track payment history.</p>
+                    </div>
                 </div>
             </div>
 
-            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
-                <RunPayroll staff={staff || []} config={config} />
-            )}
+            <Tabs defaultValue="run" className="w-full">
+                <TabsList className="w-full md:w-auto bg-slate-100 p-1 rounded-xl mb-6">
+                    <TabsTrigger value="run" className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <Calculator className="h-4 w-4 mr-2"/> Run Payroll
+                    </TabsTrigger>
+                    <TabsTrigger value="history" className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <History className="h-4 w-4 mr-2"/> History
+                    </TabsTrigger>
+                    <TabsTrigger value="settings" className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <Settings className="h-4 w-4 mr-2"/> Tax Config
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="run">
+                    {isLoading ? (
+                        <div className="flex justify-center p-20"><Loader2 className="animate-spin h-8 w-8 text-indigo-600" /></div>
+                    ) : (
+                        <RunPayroll staff={staff || []} config={config} />
+                    )}
+                </TabsContent>
+
+                <TabsContent value="history">
+                    {schoolId && <PayrollHistory schoolId={schoolId} />}
+                </TabsContent>
+
+                <TabsContent value="settings">
+                    <PayrollSettingsForm />
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }
+
+    
