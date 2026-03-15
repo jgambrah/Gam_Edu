@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -7,8 +8,19 @@ import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { PayrollRecord } from '@/lib/types';
 import { format } from 'date-fns';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 export function PayslipDialog({ payslip }: { payslip: PayrollRecord }) {
+  const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
+  
+  const schoolRef = useMemoFirebase(
+    () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+    [firestore, schoolId]
+  );
+  const { data: schoolProfile } = useDoc(schoolRef);
 
   const handlePrint = () => {
     window.print();
@@ -19,9 +31,13 @@ export function PayslipDialog({ payslip }: { payslip: PayrollRecord }) {
       <div id="payslip-content">
         <DialogHeader className="text-center print:text-left">
           <div className="flex items-center justify-center print:justify-start gap-4">
-            <AppLogo className="h-12 w-12 text-primary" />
+            {schoolProfile?.logoUrl ? (
+              <img src={schoolProfile.logoUrl} alt="Logo" className="h-16 w-16 object-contain" />
+            ) : (
+              <AppLogo className="h-12 w-12 text-primary" />
+            )}
             <div>
-              <DialogTitle className="text-3xl">SunnySide High School</DialogTitle>
+              <DialogTitle className="text-3xl">{schoolProfile?.name || 'School Name'}</DialogTitle>
               <DialogDescription>Payslip for Period: {payslip.period}</DialogDescription>
             </div>
           </div>
