@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, setDoc, writeBatch, where, getDocs, runTransaction, increment } from 'firebase/firestore';
 import { 
   Banknote, Calculator, Settings, UserCog, CheckCircle2, 
-  FileText, Loader2, Save, Printer, DollarSign, Landmark, History, Eye, Search, FileDown, ShieldCheck
+  FileText, Loader2, Save, Printer, DollarSign, Landmark, History, Eye, Search, FileDown, ShieldCheck, Plus, Trash2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -24,19 +24,31 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from '@/hooks/use-toast';
 import { Staff, StaffPayrollConfig, PayrollSettings, PayrollRecord } from '@/lib/types';
 import { PayslipDialog } from '../../payroll/payslip-dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
-
-// --- CONSTANTS: GHANA 2024 TAX TABLE (Default) ---
+// --- CONSTANTS: GHANA 2024 MONTHLY TAX TABLE ---
 const DEFAULT_TAX_BRACKETS = [
-    { from: 0, to: 5880, rate: 0 },
-    { from: 5880, to: 7200, rate: 0.05 },
-    { from: 7200, to: 8760, rate: 0.10 },
-    { from: 8760, to: 46760, rate: 0.175 },
-    { from: 46760, to: 238760, rate: 0.25 },
-    { from: 238760, to: 605000, rate: 0.30 },
-    { from: 605000, to: Infinity, rate: 0.35 }
+    { from: 0, to: 490, rate: 0 },
+    { from: 490, to: 600, rate: 0.05 },
+    { from: 600, to: 730, rate: 0.10 },
+    { from: 730, to: 3896.67, rate: 0.175 },
+    { from: 3896.67, to: 19896.67, rate: 0.25 },
+    { from: 19896.67, to: 50416.67, rate: 0.30 },
+    { from: 50416.67, to: 99999999, rate: 0.35 }
 ];
+
+const payrollSettingsSchema = z.object({
+    ssnitEmployeeContributionRate: z.coerce.number().min(0).max(1),
+    ssnitEmployerContributionRate: z.coerce.number().min(0).max(1),
+    payeeBrackets: z.array(z.object({
+        from: z.coerce.number().min(0),
+        to: z.coerce.number().min(0),
+        rate: z.coerce.number().min(0).max(1)
+    }))
+});
 
 // --- HELPER: CALCULATE PAYSLIP ---
 function calculatePayslip(staff: any, config: any) {
@@ -46,37 +58,36 @@ function calculatePayslip(staff: any, config: any) {
     const totalAllowances = (staff.allowances || []).reduce((sum: number, a: any) => sum + (parseFloat(a.amount) || 0), 0);
     const grossSalary = basic + totalAllowances;
 
-    // 2. SSNIT (Tier 1 & 2 Employee Share - 5.5%)
-    const ssnitEmployee = basic * ((config?.ssnitEmployeeContributionRate || 0.055));
+    // 2. SSNIT (Tier 1 & 2 Employee Share - Default 5.5%)
+    const ssnitEmployeeRate = config?.ssnitEmployeeContributionRate ?? 0.055;
+    const ssnitEmployee = basic * ssnitEmployeeRate;
 
-    // 3. Provident Fund (Tier 3 - Tax Deductible up to 16.5%)
-    const tier3 = basic * ((staff.tier3Contribution || 0) / 100);
+    // 3. Taxable Income (Basic + Allowances - SSNIT)
+    const taxableIncome = grossSalary - ssnitEmployee;
 
-    // 4. Taxable Income (Basic + Taxable Allowances - Reliefs)
-    const taxableIncome = (basic + totalAllowances) - ssnitEmployee - tier3;
-
-    // 5. PAYE Calculation (Progressive)
-    let taxRemaining = taxableIncome * 12; // Annualize for calculation
-    let payeTaxAnnual = 0;
+    // 4. PAYE Calculation (Monthly Progressive)
+    let taxPayable = 0;
+    let remainingIncome = taxableIncome;
     const brackets = config?.payeeBrackets || DEFAULT_TAX_BRACKETS;
 
     for (const bracket of brackets) {
-        if (taxRemaining <= 0) break;
-        const taxableInBracket = Math.min(taxRemaining, (bracket.to || Infinity) - bracket.from);
-        if (taxableInBracket > 0) {
-            payeTaxAnnual += taxableInBracket * bracket.rate;
-            taxRemaining -= taxableInBracket;
+        if (remainingIncome <= 0) break;
+        const width = bracket.to - bracket.from;
+        const amountInBracket = Math.min(remainingIncome, width);
+        if (amountInBracket > 0) {
+            taxPayable += amountInBracket * bracket.rate;
+            remainingIncome -= amountInBracket;
         }
     }
-    const payeTax = payeTaxAnnual / 12;
 
-    // 6. Net Salary
+    // 5. Net Salary
     const manualDeductions = (staff.deductions || []).reduce((sum: number, d: any) => sum + (parseFloat(d.amount) || 0), 0);
-    const totalDeductions = ssnitEmployee + tier3 + payeTax + manualDeductions;
+    const totalDeductions = ssnitEmployee + taxPayable + manualDeductions;
     const netSalary = grossSalary - totalDeductions;
 
-    // 7. Employer Costs
-    const employerSSNIT = basic * ((config?.ssnitEmployerContributionRate || 0.13));
+    // 6. Employer Costs
+    const ssnitEmployerRate = config?.ssnitEmployerContributionRate ?? 0.13;
+    const employerSSNIT = basic * ssnitEmployerRate;
 
     return {
         basicSalary: basic,
@@ -92,7 +103,7 @@ function calculatePayslip(staff: any, config: any) {
         statutory: {
             ssnitEmployee,
             ssnitEmployer: employerSSNIT,
-            paye: payeTax
+            paye: taxPayable
         }
     };
 }
@@ -145,10 +156,6 @@ function RemittanceReports({ schoolId }: { schoolId: string }) {
         }), { gross: 0, taxable: 0, paye: 0 });
     }, [records]);
 
-    const handlePrint = () => {
-        window.print();
-    };
-
     return (
         <div className="space-y-6">
             <Card className="bg-slate-50 border-slate-200 print:hidden">
@@ -165,7 +172,7 @@ function RemittanceReports({ schoolId }: { schoolId: string }) {
                                 onChange={e => setPeriod(e.target.value)} 
                                 className="bg-white w-[200px]"
                             />
-                            <Button onClick={handlePrint} variant="outline">
+                            <Button onClick={() => window.print()} variant="outline">
                                 <Printer className="mr-2 h-4 w-4"/> Print
                             </Button>
                         </div>
@@ -405,33 +412,38 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
     const [month, setMonth] = useState(format(new Date(), 'yyyy-MM'));
     const [previewData, setPreviewData] = useState<any[]>([]);
 
-    // Generate Preview
     const handlePreview = async () => {
         if (!firestore || !schoolId) return;
         setIsProcessing(true);
-        const existingRecordsQuery = query(collection(firestore, 'payrollRecords'), where('period', '==', month), where('schoolId', '==', schoolId));
-        const existingRecordsSnapshot = await getDocs(existingRecordsQuery);
-        if (!existingRecordsSnapshot.empty) {
-            toast({ variant: 'destructive', title: 'Payroll Already Run', description: `Payroll for ${month} has already been processed. View in "History" tab.`});
-            setIsProcessing(false);
-            return;
-        }
-
-        const staffWithConfig = [];
-        for (const emp of staff) {
-            const configSnap = await getDocs(query(collection(firestore, `staff/${emp.uid}/payroll`)));
-            if (!configSnap.empty) {
-                staffWithConfig.push({ ...emp, salaryInfo: configSnap.docs[0].data() });
+        try {
+            const existingRecordsQuery = query(collection(firestore, 'payrollRecords'), where('period', '==', month), where('schoolId', '==', schoolId));
+            const existingRecordsSnapshot = await getDocs(existingRecordsQuery);
+            if (!existingRecordsSnapshot.empty) {
+                toast({ variant: 'destructive', title: 'Payroll Already Run', description: `Payroll for ${month} has already been processed.`});
+                setIsProcessing(false);
+                return;
             }
-        }
 
-        const generated = staffWithConfig.map(emp => {
-            const salaryInfo = emp.salaryInfo || {};
-            const calc = calculatePayslip(salaryInfo, config);
-            return { staffId: emp.uid, staffName: `${emp.firstName} ${emp.lastName}`, ...calc };
-        });
-        setPreviewData(generated);
-        setIsProcessing(false);
+            const staffWithConfig = [];
+            for (const emp of staff) {
+                const configSnap = await getDocs(query(collection(firestore, `staff/${emp.uid}/payroll`)));
+                if (!configSnap.empty) {
+                    staffWithConfig.push({ ...emp, salaryInfo: configSnap.docs[0].data() });
+                }
+            }
+
+            const generated = staffWithConfig.map(emp => {
+                const salaryInfo = emp.salaryInfo || {};
+                const calc = calculatePayslip(salaryInfo, config);
+                return { staffId: emp.uid, staffName: `${emp.firstName} ${emp.lastName}`, ...calc };
+            });
+            setPreviewData(generated);
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Preview Error" });
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     const handleCommit = async () => {
@@ -454,8 +466,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
             });
 
             await batch.commit();
-
-            toast({ title: "Payroll Processed", description: `Paid ${previewData.length} employees for ${month}. Data is now archived in History.` });
+            toast({ title: "Payroll Processed", description: `Paid ${previewData.length} employees for ${month}.` });
             setPreviewData([]);
         } catch (e: any) {
             console.error(e);
@@ -470,7 +481,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
             <Card className="border-l-4 border-l-indigo-600">
                 <CardHeader>
                     <CardTitle>Calculate Monthly Payroll</CardTitle>
-                    <CardDescription>Generate salaries for all staff based on their individual configurations.</CardDescription>
+                    <CardDescription>Generate salaries based on individual staff configurations and global tax settings.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex gap-4 items-end bg-slate-50/50 p-6 border-t border-b">
                     <div className="space-y-2 flex-1">
@@ -527,65 +538,143 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
 }
 
 // --- COMPONENT: Payroll Settings ---
-function PayrollSettingsForm() {
+function PayrollSettingsTab() {
     const firestore = useFirestore();
     const { toast } = useToast();
+    const [isSaving, setIsSaving] = useState(false);
     
     const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
     const { data: config, isLoading } = useDoc(settingsRef);
 
+    const form = useForm<z.infer<typeof payrollSettingsSchema>>({
+        resolver: zodResolver(payrollSettingsSchema),
+        defaultValues: {
+            ssnitEmployeeContributionRate: 0.055,
+            ssnitEmployerContributionRate: 0.13,
+            payeeBrackets: DEFAULT_TAX_BRACKETS
+        }
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "payeeBrackets"
+    });
+
+    useEffect(() => {
+        if (config) {
+            form.reset({
+                ssnitEmployeeContributionRate: config.ssnitEmployeeContributionRate,
+                ssnitEmployerContributionRate: config.ssnitEmployerContributionRate,
+                payeeBrackets: config.payeeBrackets || DEFAULT_TAX_BRACKETS
+            });
+        }
+    }, [config, form]);
+
+    async function onSubmit(values: z.infer<typeof payrollSettingsSchema>) {
+        if (!firestore) return;
+        setIsSaving(true);
+        try {
+            await setDoc(doc(firestore, 'payrollSettings', 'global'), {
+                ...values,
+                updatedAt: serverTimestamp()
+            }, { merge: true });
+            toast({ title: "Settings Saved", description: "Global payroll configuration updated." });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Error", description: "Could not save settings." });
+        } finally {
+            setIsSaving(false);
+        }
+    }
+
     if (isLoading) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-indigo-600"/></div>;
 
-    const displayBrackets = config?.payeeBrackets || DEFAULT_TAX_BRACKETS;
-
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5 text-indigo-600"/> Global Statutory Rates</CardTitle>
-                    <CardDescription>Standard rates used for SSNIT calculations.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 bg-slate-50 rounded-xl border">
-                            <Label className="text-[10px] uppercase font-black text-slate-400">Employee SSNIT</Label>
-                            <p className="text-2xl font-black text-indigo-700">{((config?.ssnitEmployeeContributionRate || 0.055) * 100).toFixed(1)}%</p>
-                        </div>
-                        <div className="p-4 bg-slate-50 rounded-xl border">
-                            <Label className="text-[10px] uppercase font-black text-slate-400">Employer SSNIT</Label>
-                            <p className="text-2xl font-black text-indigo-700">{((config?.ssnitEmployerContributionRate || 0.13) * 100).toFixed(1)}%</p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-            
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Landmark className="h-5 w-5 text-indigo-600"/> PAYE Tax Brackets</CardTitle>
-                    <CardDescription>Annual income ranges according to the latest tax laws.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="border rounded-xl overflow-hidden">
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="bg-slate-50">
-                                    <TableHead>Annual Income Range (GH₵)</TableHead>
-                                    <TableHead className="text-right">Rate</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {displayBrackets.map((b: any, i: number) => (
-                                    <TableRow key={i}>
-                                        <TableCell className="font-mono text-xs">{b.from.toLocaleString()} - {(b.to === Infinity || !b.to) ? 'Above' : b.to.toLocaleString()}</TableCell>
-                                        <TableCell className="text-right font-bold">{(b.rate * 100).toFixed(1)}%</TableCell>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Statutory Rates</CardTitle>
+                            <CardDescription>Configure SSNIT and mandatory contributions.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <FormField control={form.control} name="ssnitEmployeeContributionRate" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Employee SSNIT (5.5% = 0.055)</FormLabel>
+                                        <FormControl><Input type="number" step="0.001" {...field} /></FormControl>
+                                    </FormItem>
+                                )}/>
+                                <FormField control={form.control} name="ssnitEmployerContributionRate" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Employer SSNIT (13% = 0.13)</FormLabel>
+                                        <FormControl><Input type="number" step="0.001" {...field} /></FormControl>
+                                    </FormItem>
+                                )}/>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle>PAYE Tax Brackets (Monthly)</CardTitle>
+                                    <CardDescription>Income tax bands according to GRA 2024 laws.</CardDescription>
+                                </div>
+                                <Button type="button" variant="outline" size="sm" onClick={() => append({ from: 0, to: 0, rate: 0 })}>
+                                    <Plus className="h-4 w-4 mr-1"/> Add Band
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>From</TableHead>
+                                        <TableHead>To</TableHead>
+                                        <TableHead>Rate (%)</TableHead>
+                                        <TableHead></TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+                                </TableHeader>
+                                <TableBody>
+                                    {fields.map((field, index) => (
+                                        <TableRow key={field.id}>
+                                            <TableCell className="p-1">
+                                                <FormField control={form.control} name={`payeeBrackets.${index}.from`} render={({ field }) => (
+                                                    <FormControl><Input type="number" className="h-8 text-xs" {...field} /></FormControl>
+                                                )}/>
+                                            </TableCell>
+                                            <TableCell className="p-1">
+                                                <FormField control={form.control} name={`payeeBrackets.${index}.to`} render={({ field }) => (
+                                                    <FormControl><Input type="number" className="h-8 text-xs" {...field} /></FormControl>
+                                                )}/>
+                                            </TableCell>
+                                            <TableCell className="p-1">
+                                                <FormField control={form.control} name={`payeeBrackets.${index}.rate`} render={({ field }) => (
+                                                    <FormControl><Input type="number" step="0.001" className="h-8 text-xs" {...field} /></FormControl>
+                                                )}/>
+                                            </TableCell>
+                                            <TableCell className="p-1">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500" onClick={() => remove(index)}>
+                                                    <Trash2 className="h-4 w-4"/>
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </div>
+                <div className="flex justify-end">
+                    <Button type="submit" disabled={isSaving} className="bg-indigo-600 h-12 px-10 font-bold">
+                        {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
+                        Save Global Config
+                    </Button>
+                </div>
+            </form>
+        </Form>
     );
 }
 
@@ -616,7 +705,7 @@ export default function PayrollPage() {
                     </div>
                     <div>
                         <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase">Payroll Hub</h1>
-                        <p className="text-muted-foreground font-medium italic">Generate salaries and track payment history.</p>
+                        <p className="text-muted-foreground font-medium italic">Generate salaries and track compliance.</p>
                     </div>
                 </div>
             </div>
@@ -654,7 +743,7 @@ export default function PayrollPage() {
                 </TabsContent>
 
                 <TabsContent value="settings">
-                    <PayrollSettingsForm />
+                    <PayrollSettingsTab />
                 </TabsContent>
             </Tabs>
         </div>
