@@ -441,7 +441,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/reports',
     title: 'Reporting & Analytics',
     icon: BarChart,
-    roles: ['Director', 'Administrator', 'Teacher', 'Accountant'],
+    roles: ['Director', 'Administrator', 'Teacher'],
      subItems: [
       {
         path: '/dashboard/reports/academics',
