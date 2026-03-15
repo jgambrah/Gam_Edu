@@ -31,6 +31,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { Separator } from '@/components/ui/separator';
 
 import { FeeCategory, PaymentTransaction, Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, applyWaiverSchema, bulkBillingSchema, Class } from '@/lib/types';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -166,7 +167,7 @@ function ReverseTransactionDialog({ record, open, setOpen, onUpdate }: { record:
                             <FormItem>
                                 <FormLabel>Amount to Debit Student (GH₵)</FormLabel>
                                 <FormControl>
-                                    <Input type="number" step="0.01" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))}/>
+                                    <Input type="number" step="0.01" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))}/>
                                 </FormControl>
                                 <FormMessage/>
                             </FormItem>
@@ -284,7 +285,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                         <Label>Date</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant={'outline'} className="w-full justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, 'PP') : <span>Pick a date</span>}</Button>
+                                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, 'PP') : <span>Pick a date</span>}</Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus/></PopoverContent>
                         </Popover>
@@ -361,11 +362,29 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
     <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="flex items-center gap-2 p-2 bg-slate-100 rounded mb-2"><input type="checkbox" id="openingBalance" className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" {...form.register('isOpeningBalance')}/><label htmlFor="openingBalance" className="text-sm font-medium text-slate-700 cursor-pointer">This is an Opening Balance (Arrears)</label></div>
         <FormField control={form.control} name="studentId" render={({ field }) => (<FormItem><FormLabel>Student</FormLabel><StudentSelect students={students || []} value={field.value} onValueChange={field.onChange} /><FormMessage /></FormItem>)}/>
-        {!isOpeningBalance && (<FormField control={form.control} name="type" render={({ field }) => (<FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)}/>)}
-        <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
+        {!isOpeningBalance && (<FormField control={form.control} name="type" render={({ field }) => (<FormItem><FormLabel>Fee Type</Label><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)}/>)}
+        <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Input placeholder="Brief description of charge" {...field} /></FormControl><FormMessage /></FormItem>)}/>
         <div className="grid grid-cols-2 gap-4">
-            <FormField control={form.control} name="billedAmount" render={({ field }) => (<FormItem><FormLabel>Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>)}/>
-            <FormField control={form.control} name="dueDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={'outline'} className={cn('pl-3 text-left font-normal',!field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/></PopoverContent></Popover><FormMessage /></FormItem>)}/>
+            <FormField control={form.control} name="billedAmount" render={({ field }) => (<FormItem><FormLabel>Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>)}/>
+            <FormField control={form.control} name="dueDate" render={({ field }) => (
+                <FormItem className="flex flex-col">
+                    <FormLabel>Due Date</FormLabel>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <FormControl>
+                                <Button variant={'outline'} className={cn('pl-3 text-left font-normal',!field.value && 'text-muted-foreground')}>
+                                    {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                            </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/>
+                        </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                </FormItem>
+            )}/>
         </div>
         <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} {isOpeningBalance ? 'Save Opening Balance' : 'Add Bill'}</Button>
       </form></Form>
@@ -390,16 +409,29 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     async function onSubmit(values: z.infer<typeof bulkBillingSchema>) {
       if (!firestore || !schoolId) return;
       setIsSubmitting(true);
-      const studentsInClass = students.filter(s => s.classId === values.classId);
-      if(studentsInClass.length === 0) { toast({variant: 'destructive', title: 'No Students', description: 'There are no students in the selected class.'}); setIsSubmitting(false); return; }
+      
+      const targetStudents = values.classId === 'all' 
+        ? students 
+        : students.filter(s => s.classId === values.classId);
+
+      if(targetStudents.length === 0) { 
+        toast({
+            variant: 'destructive', 
+            title: 'No Students', 
+            description: values.classId === 'all' ? 'There are no students in the school.' : 'There are no students in the selected class.'
+        }); 
+        setIsSubmitting(false); 
+        return; 
+      }
+
       try {
         const batch = writeBatch(firestore);
-        studentsInClass.forEach(student => {
+        targetStudents.forEach(student => {
             const newRecordRef = doc(collection(firestore, 'financialRecords'));
             batch.set(newRecordRef, { ...values, studentId: student.uid, studentName: `${student.firstName} ${student.lastName}`, amountPaid: 0, status: isPast(values.dueDate) ? 'Overdue' : 'Unpaid', createdAt: serverTimestamp(), schoolId: schoolId });
         });
         await batch.commit();
-        toast({ title: 'Success', description: `Billed ${studentsInClass.length} students successfully.` });
+        toast({ title: 'Success', description: `Billed ${targetStudents.length} students successfully.` });
         onRecordsAdded(); setOpen(false); form.reset();
       } catch (e) {
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to create bulk bills.' });
@@ -409,26 +441,72 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     }
   
     return (
-      <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="classId" render={({ field }) => (
-                <FormItem><FormLabel>Class</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl><SelectContent>{classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                <FormItem>
+                    <FormLabel>Class / Target</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="Select target..."/></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="all" className="font-bold text-indigo-600 italic">All Students (Whole School)</SelectItem>
+                            <Separator className="my-1" />
+                            {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
             )}/>
             <FormField control={form.control} name="type" render={({ field }) => (
-                <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                <FormItem>
+                    <FormLabel>Fee Type</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl>
+                        <SelectContent>{['Tuition Fee', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
             )}/>
             <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem><FormLabel>Description</FormLabel><FormControl><Input placeholder="e.g., Spring Term Tuition" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl><Input placeholder="e.g., Spring Term Tuition" {...field} /></FormControl>
+                    <FormMessage />
+                </FormItem>
             )}/>
             <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                    <FormItem><FormLabel>Amount per Student (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                    <FormItem>
+                        <FormLabel>Amount per Student (GH₵)</FormLabel>
+                        <FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
                 )}/>
                 <FormField control={form.control} name="dueDate" render={({ field }) => (
-                    <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={'outline'} className={cn('pl-3 text-left font-normal',!field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/></PopoverContent></Popover><FormMessage /></FormItem>
+                    <FormItem className="flex flex-col">
+                        <FormLabel>Due Date</FormLabel>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <FormControl>
+                                    <Button variant={'outline'} className={cn('pl-3 text-left font-normal',!field.value && 'text-muted-foreground')}>
+                                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/>
+                            </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                    </FormItem>
                 )}/>
             </div>
-            <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Bulk Bill</Button>
-        </form></Form>
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Bulk Bill
+            </Button>
+        </form>
+      </Form>
     )
 }
 
@@ -483,9 +561,9 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                             <p className="text-xs uppercase font-semibold text-slate-500">{balance <= 0 ? "Current Credit" : "Outstanding Balance"}</p>
                             <p className={`text-3xl font-bold ${balance <= 0 ? "text-green-700" : "text-indigo-900"}`}>GH₵{Math.abs(balance).toFixed(2)}</p>
                         </div>
-                        <FormField control={form.control} name="amount" render={({ field }) => (<FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))}/></FormControl><FormMessage /></FormItem>)}/>
+                        <FormField control={form.control} name="amount" render={({ field }) => (<FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))}/></FormControl><FormMessage /></FormItem>)}/>
                         <FormField control={form.control} name="method" render={({ field }) => (<FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)}/>
-                        <FormField control={form.control} name="notes" render={({ field }) => (<FormItem><FormLabel>Reference / Notes (Optional)</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage /></FormItem>)}/>
+                        <FormField control={form.control} name="notes" render={({ field }) => (<FormItem><FormLabel>Reference / Notes (Optional)</FormLabel><FormControl><Textarea placeholder="Ref or notes..." {...field}/></FormControl><FormMessage /></FormItem>)}/>
                         <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
                     </form></Form></DialogContent></Dialog>
     );
@@ -514,8 +592,8 @@ function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: Financ
         <Dialog open={open} onOpenChange={setOpen}><DialogContent><DialogHeader><DialogTitle>Apply Waiver</DialogTitle><DialogDescription>Apply a financial discount or waiver to this specific record.</DialogDescription></DialogHeader>
                 <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <div className="p-2 bg-yellow-50 text-yellow-800 rounded mb-2 text-sm">Max Waiver: GH₵{balance.toFixed(2)}</div>
-                        <FormField control={form.control} name="amount" render={({ field }) => (<FormItem><FormLabel>Waiver Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>)}/>
-                        <FormField control={form.control} name="reason" render={({ field }) => (<FormItem><FormLabel>Reason</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)}/>
+                        <FormField control={form.control} name="amount" render={({ field }) => (<FormItem><FormLabel>Waiver Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>)}/>
+                        <FormField control={form.control} name="reason" render={({ field }) => (<FormItem><FormLabel>Reason</FormLabel><FormControl><Textarea placeholder="Reason for waiver..." {...field} /></FormControl><FormMessage /></FormItem>)}/>
                         <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Apply Waiver</Button>
                     </form></Form></DialogContent></Dialog>
     );
@@ -542,7 +620,7 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
                         <FormField control={form.control} name="type" render={({ field }) => (<FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)}/>
                         <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
                         <div className="grid grid-cols-2 gap-4">
-                            <FormField control={form.control} name="billedAmount" render={({ field }) => (<FormItem><FormLabel>Billed Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? NaN : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>)}/>
+                            <FormField control={form.control} name="billedAmount" render={({ field }) => (<FormItem><FormLabel>Billed Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>)}/>
                             <FormField control={form.control} name="dueDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={'outline'} className={cn('pl-3 text-left font-normal',!field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/></PopoverContent></Popover><FormMessage /></FormItem>)}/>
                         </div>
                         <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Changes</Button>
@@ -653,7 +731,7 @@ export default function AccountsPage() {
   }, [records, students]);
 
   const filteredStudentsWithBills = useMemo(() => studentFinancials.filter(sf => searchStudent(sf.student, searchTerm)), [studentFinancials, searchTerm]);
-  const pendingReversals = useMemo(() => reversals => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
+  const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
 
   if (!canAccess) return <Card><CardHeader><CardTitle>Access Denied</CardTitle></CardHeader></Card>;
 
