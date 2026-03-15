@@ -186,6 +186,12 @@ export const navItems: NavItem[] = [
             roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
+            path: '/dashboard/academics/gradebook/manual-entry',
+            title: 'Bulk Grade Entry',
+            icon: PenSquare,
+            roles: ['Teacher', 'Administrator', 'Director'],
+        },
+        {
             path: '/dashboard/academics/analytics',
             title: 'Learning Analytics',
             icon: BrainCircuit,
@@ -353,7 +359,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/financials',
     title: 'Financials',
     icon: Banknote,
-    roles: ['Director', 'Administrator', 'Accountant', 'Librarian', 'Cook'],
+    roles: ['Director', 'Administrator', 'Accountant'],
      subItems: [
       {
         path: '/dashboard/accounts',
