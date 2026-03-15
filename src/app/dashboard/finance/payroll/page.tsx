@@ -14,12 +14,12 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Staff, StaffPayrollConfig, PayrollSettings, PayrollRecord } from '@/lib/types';
@@ -82,17 +82,18 @@ function calculatePayslip(staff: any, config: any) {
         basicSalary: basic,
         totalAllowances,
         grossSalary,
-        ssnitDeduction: ssnitEmployee,
-        tier3Deduction: tier3,
         taxableIncome,
-        payeTax,
         netSalary,
-        employerSSNIT,
-        totalCostToCompany: grossSalary + employerSSNIT,
+        totalDeductions,
         allowances: staff.allowances || [],
         deductions: staff.deductions || [],
         ssnitNumber: staff.ssnitNumber || '',
         tinNumber: staff.tinNumber || '',
+        statutory: {
+            ssnitEmployee,
+            ssnitEmployer: employerSSNIT,
+            paye: payeTax
+        }
     };
 }
 
@@ -204,9 +205,9 @@ function RemittanceReports({ schoolId }: { schoolId: string }) {
                                         <TableCell className="font-medium">{r.staffName}</TableCell>
                                         <TableCell className="font-mono text-xs">{(r as any).ssnitNumber || '-'}</TableCell>
                                         <TableCell className="text-right">GH₵{r.basicSalary.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right">GH₵{r.statutory.ssnitEmployee.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right">GH₵{r.statutory.ssnitEmployer.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right font-bold">GH₵{(r.statutory.ssnitEmployee + r.statutory.ssnitEmployer).toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">GH₵{(r.statutory?.ssnitEmployee || 0).toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">GH₵{(r.statutory?.ssnitEmployer || 0).toFixed(2)}</TableCell>
+                                        <TableCell className="text-right font-bold">GH₵{((r.statutory?.ssnitEmployee || 0) + (r.statutory?.ssnitEmployer || 0)).toFixed(2)}</TableCell>
                                     </TableRow>
                                 ))}
                                 <TableRow className="bg-slate-100 font-black">
@@ -243,7 +244,7 @@ function RemittanceReports({ schoolId }: { schoolId: string }) {
                                         <TableCell className="font-mono text-xs">{(r as any).tinNumber || '-'}</TableCell>
                                         <TableCell className="text-right">GH₵{r.grossSalary.toFixed(2)}</TableCell>
                                         <TableCell className="text-right">GH₵{(r as any).taxableIncome?.toFixed(2) || '-'}</TableCell>
-                                        <TableCell className="text-right font-bold text-rose-700">GH₵{r.statutory.paye.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right font-bold text-rose-700">GH₵{(r.statutory?.paye || 0).toFixed(2)}</TableCell>
                                     </TableRow>
                                 ))}
                                 <TableRow className="bg-slate-100 font-black">
@@ -511,8 +512,8 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
                                     <TableRow key={p.staffId}>
                                         <TableCell className="font-bold">{p.staffName}</TableCell>
                                         <TableCell className="text-right text-slate-500">GH₵{p.grossSalary.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right text-rose-500">-{p.ssnitDeduction.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right text-rose-500">-{p.payeTax.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right text-rose-500">-{p.statutory.ssnitEmployee.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right text-rose-500">-{p.statutory.paye.toFixed(2)}</TableCell>
                                         <TableCell className="text-right font-black text-emerald-700">GH₵{p.netSalary.toFixed(2)}</TableCell>
                                     </TableRow>
                                 ))}
