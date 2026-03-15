@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, addDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,7 +32,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 // --- Staff View: Form for applying for leave ---
 function LeaveApplicationForm({ setOpen, schoolId }: { setOpen: (open: boolean) => void, schoolId: string }) {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const staffName = user?.displayName || user?.email;
@@ -42,7 +42,10 @@ function LeaveApplicationForm({ setOpen, schoolId }: { setOpen: (open: boolean) 
   });
 
   async function onSubmit(values: z.infer<typeof leaveApplicationSchema>) {
-    if (!user || !staffName || !schoolId) return;
+    if (!user || !staffName || !schoolId || !firestore) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Missing required data. Please refresh.' });
+        return;
+    }
     setIsSubmitting(true);
     try {
       await addDoc(collection(firestore, 'leaveRequests'), {
@@ -95,7 +98,7 @@ function LeaveApplicationForm({ setOpen, schoolId }: { setOpen: (open: boolean) 
 
 // --- Staff View: Main Component ---
 function StaffLeaveView() {
-    const { user } = useAuth();
+    const { user } = useUser();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     const [isFormOpen, setFormOpen] = useState(false);
@@ -200,7 +203,7 @@ function TeamAvailabilityCalendar({ approvedLeaves, holidays }: { approvedLeaves
 
 function ManagerApprovalDialog({ request, setOpen, action }: { request: LeaveRequest, setOpen: (open: boolean) => void, action: 'Approve' | 'Reject' }) {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user } = useUser();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
