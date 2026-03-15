@@ -61,10 +61,10 @@ service cloud.firestore {
     
     match /schoolSettings/{docId} { 
       allow read: if isSignedIn(); 
-      allow write: if isAdmin(); 
+      allow write: if isAdmin() || isFinanceStaff(); 
       match /{subcollection}/{subdocId} {
         allow read: if isSignedIn();
-        allow write: if isAdmin();
+        allow write: if isAdmin() || isFinanceStaff();
       }
     }
 
@@ -244,10 +244,11 @@ service cloud.firestore {
     match /payrollSettings/{settingsId} { allow read, list: if isFinanceStaff(); allow write: if isAdmin(); }
     match /payroll_settings/{docId} { allow read, list: if isSignedIn(); allow write: if isFinanceStaff() || isAdmin(); }
     match /payroll_runs/{runId} { allow read, list: if isFinanceStaff() || isAdmin() || (isSignedIn() && request.auth.uid == resource.data.staffId); allow write: if isFinanceStaff() || isAdmin(); }
+    
     match /payrollRecords/{recordId} { 
       allow read, write: if isFinanceStaff(); 
-      allow get: if isSignedIn() && request.auth.uid == resource.data.staffId; 
-      allow list: if isSignedIn() && (isFinanceStaff() || request.query.where.staffId == request.auth.uid);
+      allow get: if isSignedIn() && (isFinanceStaff() || resource.data.staffId == request.auth.uid); 
+      allow list: if isSignedIn() && (isFinanceStaff() || (request.query.where.staffId == request.auth.uid && request.query.where.schoolId != null));
     }
     
     match /staff_salary_details/{userId} { allow read, list: if isFinanceStaff() || isAdmin() || request.auth.uid == userId; allow write: if isFinanceStaff() || isAdmin(); }
@@ -346,8 +347,12 @@ service cloud.firestore {
     match /active_classes/{classId} { allow read, write: if isSignedIn(); match /{document=**} { allow read, write: if isSignedIn(); } }
     
     match /library/{itemId} { 
-      allow read: if true; 
-      allow write: if isLibrarian() || isAdmin() || isTeacher();
+      allow read: if isSignedIn(); 
+      allow create: if isLibrarian() || isAdmin() || isTeacher();
+      allow update: if isLibrarian() || isAdmin() || isTeacher() || 
+                    (isStudent() && request.resource.data.status == 'Requested' && request.resource.data.currentHolderId == request.auth.uid) ||
+                    (isStudent() && resource.data.currentHolderId == request.auth.uid && request.resource.data.status == 'Pending Return');
+      allow delete: if isLibrarian() || isAdmin();
     }
 
     match /{document=**} {

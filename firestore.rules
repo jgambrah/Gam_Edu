@@ -347,8 +347,12 @@ service cloud.firestore {
     match /active_classes/{classId} { allow read, write: if isSignedIn(); match /{document=**} { allow read, write: if isSignedIn(); } }
     
     match /library/{itemId} { 
-      allow read: if true; 
-      allow write: if isLibrarian() || isAdmin() || isTeacher();
+      allow read: if isSignedIn(); 
+      allow create: if isLibrarian() || isAdmin() || isTeacher();
+      allow update: if isLibrarian() || isAdmin() || isTeacher() || 
+                    (isStudent() && request.resource.data.status == 'Requested' && request.resource.data.currentHolderId == request.auth.uid) ||
+                    (isStudent() && resource.data.currentHolderId == request.auth.uid && request.resource.data.status == 'Pending Return');
+      allow delete: if isLibrarian() || isAdmin();
     }
 
     match /{document=**} {
