@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, setDoc, writeBatch, where, getDocs, runTransaction, increment } from 'firebase/firestore';
 import { 
   Banknote, Calculator, Settings, UserCog, CheckCircle2, 
-  FileText, Loader2, Save, Printer, DollarSign, Landmark, History, Eye, Search
+  FileText, Loader2, Save, Printer, DollarSign, Landmark, History, Eye, Search, FileDown, ShieldCheck
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -91,7 +91,183 @@ function calculatePayslip(staff: any, config: any) {
         totalCostToCompany: grossSalary + employerSSNIT,
         allowances: staff.allowances || [],
         deductions: staff.deductions || [],
+        ssnitNumber: staff.ssnitNumber || '',
+        tinNumber: staff.tinNumber || '',
     };
+}
+
+// --- COMPONENT: Remittance Reports ---
+function RemittanceReports({ schoolId }: { schoolId: string }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [period, setPeriod] = useState(format(new Date(), 'yyyy-MM'));
+    const [records, setRecords] = useState<PayrollRecord[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    const fetchRecords = async () => {
+        if (!firestore || !schoolId) return;
+        setLoading(true);
+        try {
+            const q = query(
+                collection(firestore, 'payrollRecords'),
+                where('schoolId', '==', schoolId),
+                where('period', '==', period)
+            );
+            const snap = await getDocs(q);
+            setRecords(snap.docs.map(d => ({ id: d.id, ...d.data() } as PayrollRecord)));
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to load remittance data." });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (schoolId) fetchRecords();
+    }, [period, schoolId]);
+
+    const ssnitTotals = useMemo(() => {
+        return records.reduce((acc, r) => ({
+            basic: acc.basic + (r.basicSalary || 0),
+            employee: acc.employee + (r.statutory?.ssnitEmployee || 0),
+            employer: acc.employer + (r.statutory?.ssnitEmployer || 0),
+            total: acc.total + (r.statutory?.ssnitEmployee || 0) + (r.statutory?.ssnitEmployer || 0)
+        }), { basic: 0, employee: 0, employer: 0, total: 0 });
+    }, [records]);
+
+    const payeTotals = useMemo(() => {
+        return records.reduce((acc, r) => ({
+            gross: acc.gross + (r.grossSalary || 0),
+            taxable: acc.taxable + (r.taxableIncome || 0),
+            paye: acc.paye + (r.statutory?.paye || 0)
+        }), { gross: 0, taxable: 0, paye: 0 });
+    }, [records]);
+
+    const handlePrint = () => {
+        window.print();
+    };
+
+    return (
+        <div className="space-y-6">
+            <Card className="bg-slate-50 border-slate-200 print:hidden">
+                <CardHeader className="pb-4">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <CardTitle className="text-lg">Compliance & Remittance Reports</CardTitle>
+                            <CardDescription>Generate monthly summaries for SSNIT and GRA (PAYE).</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Input 
+                                type="month" 
+                                value={period} 
+                                onChange={e => setPeriod(e.target.value)} 
+                                className="bg-white w-[200px]"
+                            />
+                            <Button onClick={handlePrint} variant="outline">
+                                <Printer className="mr-2 h-4 w-4"/> Print
+                            </Button>
+                        </div>
+                    </div>
+                </CardHeader>
+            </Card>
+
+            {loading ? (
+                <div className="flex justify-center p-20"><Loader2 className="animate-spin h-8 w-8 text-indigo-600"/></div>
+            ) : records.length === 0 ? (
+                <div className="text-center py-20 bg-white border-2 border-dashed rounded-3xl print:hidden">
+                    <FileDown className="mx-auto h-12 w-12 text-slate-200 mb-2"/>
+                    <p className="text-slate-500">No data found for {period}. Please run payroll first.</p>
+                </div>
+            ) : (
+                <div className="space-y-12">
+                    {/* SSNIT REPORT */}
+                    <div className="space-y-4">
+                        <div className="border-b pb-2">
+                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">SSNIT Remittance Schedule - {period}</h3>
+                            <p className="text-sm text-slate-500">Tier 1 & Tier 2 Contributions (18.5% Total)</p>
+                        </div>
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-slate-50">
+                                    <TableHead>Staff Name</TableHead>
+                                    <TableHead>SSNIT Number</TableHead>
+                                    <TableHead className="text-right">Basic Salary</TableHead>
+                                    <TableHead className="text-right">Employee (5.5%)</TableHead>
+                                    <TableHead className="text-right">Employer (13%)</TableHead>
+                                    <TableHead className="text-right font-bold">Total (18.5%)</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {records.map(r => (
+                                    <TableRow key={`ssnit-${r.id}`}>
+                                        <TableCell className="font-medium">{r.staffName}</TableCell>
+                                        <TableCell className="font-mono text-xs">{(r as any).ssnitNumber || '-'}</TableCell>
+                                        <TableCell className="text-right">GH₵{r.basicSalary.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">GH₵{r.statutory.ssnitEmployee.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">GH₵{r.statutory.ssnitEmployer.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right font-bold">GH₵{(r.statutory.ssnitEmployee + r.statutory.ssnitEmployer).toFixed(2)}</TableCell>
+                                    </TableRow>
+                                ))}
+                                <TableRow className="bg-slate-100 font-black">
+                                    <TableCell colSpan={2}>Grand Totals</TableCell>
+                                    <TableCell className="text-right">GH₵{ssnitTotals.basic.toLocaleString()}</TableCell>
+                                    <TableCell className="text-right">GH₵{ssnitTotals.employee.toLocaleString()}</TableCell>
+                                    <TableCell className="text-right">GH₵{ssnitTotals.employer.toLocaleString()}</TableCell>
+                                    <TableCell className="text-right">GH₵{ssnitTotals.total.toLocaleString()}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    {/* PAYE REPORT */}
+                    <div className="space-y-4 pt-8 border-t-2">
+                        <div className="border-b pb-2">
+                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PAYE Tax Remittance (GRA) - {period}</h3>
+                            <p className="text-sm text-slate-500">Monthly Individual Income Tax Summary</p>
+                        </div>
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-slate-50">
+                                    <TableHead>Staff Name</TableHead>
+                                    <TableHead>TIN Number</TableHead>
+                                    <TableHead className="text-right">Gross Salary</TableHead>
+                                    <TableHead className="text-right">Taxable Income</TableHead>
+                                    <TableHead className="text-right font-bold">PAYE Tax Due</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {records.map(r => (
+                                    <TableRow key={`paye-${r.id}`}>
+                                        <TableCell className="font-medium">{r.staffName}</TableCell>
+                                        <TableCell className="font-mono text-xs">{(r as any).tinNumber || '-'}</TableCell>
+                                        <TableCell className="text-right">GH₵{r.grossSalary.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">GH₵{(r as any).taxableIncome?.toFixed(2) || '-'}</TableCell>
+                                        <TableCell className="text-right font-bold text-rose-700">GH₵{r.statutory.paye.toFixed(2)}</TableCell>
+                                    </TableRow>
+                                ))}
+                                <TableRow className="bg-slate-100 font-black">
+                                    <TableCell colSpan={2}>Grand Totals</TableCell>
+                                    <TableCell className="text-right">GH₵{payeTotals.gross.toLocaleString()}</TableCell>
+                                    <TableCell className="text-right">GH₵{payeTotals.taxable.toLocaleString()}</TableCell>
+                                    <TableCell className="text-right text-rose-700">GH₵{payeTotals.paye.toLocaleString()}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+            )}
+            <style jsx global>{`
+                @media print {
+                    .print\\:hidden { display: none !important; }
+                    body { background: white; padding: 0; }
+                    header, aside, nav { display: none !important; }
+                    main { margin: 0 !important; padding: 0 !important; }
+                    .card { border: none !important; box-shadow: none !important; }
+                }
+            `}</style>
+        </div>
+    );
 }
 
 // --- COMPONENT: Payroll History ---
@@ -452,6 +628,9 @@ export default function PayrollPage() {
                     <TabsTrigger value="history" className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
                         <History className="h-4 w-4 mr-2"/> History
                     </TabsTrigger>
+                    <TabsTrigger value="remittance" className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <ShieldCheck className="h-4 w-4 mr-2"/> Remittance
+                    </TabsTrigger>
                     <TabsTrigger value="settings" className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
                         <Settings className="h-4 w-4 mr-2"/> Tax Config
                     </TabsTrigger>
@@ -469,6 +648,10 @@ export default function PayrollPage() {
                     {schoolId && <PayrollHistory schoolId={schoolId} />}
                 </TabsContent>
 
+                <TabsContent value="remittance">
+                    {schoolId && <RemittanceReports schoolId={schoolId} />}
+                </TabsContent>
+
                 <TabsContent value="settings">
                     <PayrollSettingsForm />
                 </TabsContent>
@@ -476,5 +659,3 @@ export default function PayrollPage() {
         </div>
     );
 }
-
-    
