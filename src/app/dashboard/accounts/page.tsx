@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
+import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, deleteDoc, addDoc } from 'firebase/firestore';
 import { format, isPast, startOfDay, endOfDay, startOfMonth } from 'date-fns';
@@ -432,58 +432,108 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     );
 }
 
-function DailyBillingForm({ setOpen, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; schoolId: string, onRecordsAdded: () => void }) {
+function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: Class[], schoolId: string, onRecordsAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
-    const [isProcessing, setIsProcessing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedClassId, setSelectedClassId] = useState('');
+    const [chargeType, setChargeType] = useState<'Canteen' | 'Transport'>('Canteen');
     const [date, setDate] = useState<Date>(new Date());
+    const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+    const [rate, setRate] = useState(0);
 
-    const handleProcess = async () => {
-        if (!firestore || !schoolId) return;
-        setIsProcessing(true);
+    // Fetch students for selected class
+    const studentsQuery = useMemoFirebase(() => 
+        (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId)) : null,
+    [firestore, selectedClassId, schoolId]);
+    const { data: classStudents, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
+
+    // Fetch rate
+    useEffect(() => {
+        async function fetchRate() {
+            if (!firestore || !schoolId) return;
+            const path = chargeType === 'Canteen' ? 'canteen' : 'transport';
+            const snap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', path));
+            if (snap.exists()) setRate(snap.data().dailyRate || 0);
+        }
+        fetchRate();
+    }, [firestore, schoolId, chargeType]);
+
+    const handleDailyChargeLevy = async () => {
+        if(!firestore || !schoolId || !classStudents) return;
+        setIsSubmitting(true);
+        
         try {
-            const start = startOfDay(date);
-            const attendanceQuery = query(
-                collection(firestore, 'attendance'),
-                where('schoolId', '==', schoolId),
-                where('date', '==', start),
-                where('status', 'in', ['Present', 'Late'])
-            );
-            const snap = await getDocs(attendanceQuery);
-            const presentUids = snap.docs.map(d => d.data().studentId);
+            const batch = writeBatch(firestore);
+            const dateStr = format(date, 'yyyy-MM-dd');
 
-            if (presentUids.length === 0) {
-                toast({ title: "No students present", description: "Found 0 students marked present/late for this date." });
-                setIsProcessing(false);
-                return;
-            }
+            selectedStudents.forEach(uid => {
+                const student = classStudents.find(s => s.uid === uid);
+                if(!student) return;
 
-            const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', presentUids));
-            const studentsSnap = await getDocs(studentsQuery);
-            const studentsToBill = studentsSnap.docs.map(d => ({ ...d.data(), uid: d.id })) as Student[];
+                // DETERMINISTIC ID: Prevents double billing for the same day/student/type
+                const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
+                const recordRef = doc(firestore, 'financialRecords', recordId);
+                
+                batch.set(recordRef, {
+                    studentId: uid,
+                    studentName: `${student.firstName} ${student.lastName}`,
+                    classId: selectedClassId,
+                    type: `${chargeType} Fee`,
+                    description: `${chargeType} Fee - ${format(date, 'PPP')}`,
+                    billedAmount: rate,
+                    amountPaid: 0,
+                    status: 'Unpaid',
+                    dueDate: startOfDay(date),
+                    createdAt: serverTimestamp(),
+                    schoolId: schoolId
+                }, { merge: true });
+            });
 
-            const result = await billMultipleStudents(firestore, studentsToBill, date, schoolId);
-            
-            toast({ title: "Daily Billing Complete", description: `Billed ${result.successful} students for GH₵${result.totalBilled.toFixed(2)}` });
+            await batch.commit();
+            toast({ title: 'Bills Generated', description: `Successfully levied ${selectedStudents.length} charges.` });
             onRecordsAdded();
             setOpen(false);
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: "Error", description: e.message || "Failed to process billing." });
+        } catch(e: any) {
+            toast({ variant: 'destructive', title: 'Error', description: e.message });
         } finally {
-            setIsProcessing(false);
+            setIsSubmitting(false);
         }
+    };
+
+    const toggleStudent = (uid: string) => {
+        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]);
     };
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-end gap-4">
-                <div className="space-y-2 flex-1 w-full">
-                    <Label>Select Date to Bill</Label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                    <Label>Charge Type</Label>
+                    <Select value={chargeType} onValueChange={(v: any) => setChargeType(v)}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Canteen">Canteen (Rate: GH₵{rate})</SelectItem>
+                            <SelectItem value="Transport">Transport (Rate: GH₵{rate})</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label>Target Class</Label>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger><SelectValue placeholder="Select Class"/></SelectTrigger>
+                        <SelectContent>
+                            {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label>Date of Service</Label>
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                                {format(date, "PPP")}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -491,11 +541,35 @@ function DailyBillingForm({ setOpen, schoolId, onRecordsAdded }: { setOpen: (ope
                         </PopoverContent>
                     </Popover>
                 </div>
-                <Button onClick={handleProcess} disabled={isProcessing} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700">
-                    {isProcessing ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <CheckCircle2 className="mr-2 h-4 w-4"/>}
-                    Run Billing
-                </Button>
             </div>
+
+            {selectedClassId && (
+                <div className="border rounded-md bg-white">
+                    <div className="p-2 border-b bg-slate-50 flex justify-between items-center">
+                        <span className="text-sm font-bold">{selectedStudents.length} Students Selected</span>
+                        <Button variant="ghost" size="sm" onClick={() => setSelectedStudents(selectedStudents.length === classStudents?.length ? [] : classStudents?.map(s => s.uid) || [])}>
+                            {selectedStudents.length === classStudents?.length ? 'Deselect All' : 'Select All'}
+                        </Button>
+                    </div>
+                    <ScrollArea className="h-48">
+                        {loadingStudents ? <div className="p-4 flex justify-center"><Loader2 className="animate-spin h-4 w-4"/></div> : (
+                            <div className="p-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {classStudents?.map(s => (
+                                    <div key={s.uid} className="flex items-center space-x-2 p-2 hover:bg-slate-50 rounded">
+                                        <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)} />
+                                        <span className="text-sm">{s.firstName} {s.lastName}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </ScrollArea>
+                </div>
+            )}
+
+            <Button onClick={handleDailyChargeLevy} disabled={isSubmitting || selectedStudents.length === 0} className="w-full bg-indigo-600 hover:bg-indigo-700">
+                {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HandCoins className="mr-2 h-4 w-4"/>}
+                Levy {chargeType} Charges
+            </Button>
         </div>
     );
 }
@@ -717,7 +791,7 @@ export default function AccountsPage() {
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
   
-  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null); 
+  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | null>(null); 
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null); 
@@ -752,7 +826,6 @@ export default function AccountsPage() {
             const type = (record.type || '').toLowerCase();
             const desc = (record.description || '').toLowerCase();
             
-            // Refined categorization logic checking both type and description
             if (type.includes('tuition') || desc.includes('tuition')) { 
                 outstandingTuition += balance; 
             } else if (type.includes('canteen') || desc.includes('canteen') || desc.includes('lunch') || desc.includes('food')) { 
@@ -819,30 +892,30 @@ export default function AccountsPage() {
                             <div className="flex gap-2 flex-wrap">
                                 <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}><PlusCircle className="mr-2 h-4 w-4" /> Single Bill</Button>
                                 <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}><FileCog className="mr-2 h-4 w-4" /> Bulk Bill</Button>
-                                <Button variant={activeForm === 'daily' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'daily' ? null : 'daily')}><CalendarIcon className="mr-2 h-4 w-4" /> Manual Billing</Button>
+                                <Button variant={activeForm === 'levy' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'levy' ? null : 'levy')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"><HandCoins className="mr-2 h-4 w-4" /> Add Daily Charge</Button>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {activeForm === 'single' && schoolId ? (
+                        {activeForm === 'single' ? (
                             <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4">Create Single Bill</h3>
-                                <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />
+                                <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId!} onRecordAdded={forceRefetch} />
                             </div>
                         ) : null}
-                        {activeForm === 'bulk' && schoolId ? (
+                        {activeForm === 'bulk' ? (
                             <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4">Create Bulk Bill</h3>
-                                <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
+                                <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId!} onRecordsAdded={forceRefetch} />
                             </div>
                         ) : null}
-                        {activeForm === 'daily' && schoolId ? (
-                            <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4">Process Daily Service Bills</h3>
-                                <p className="text-sm text-muted-foreground mb-4">This will generate Canteen and Transport bills for all students marked 'Present' or 'Late' on the selected date.</p>
-                                <DailyBillingForm setOpen={() => setActiveForm(null)} schoolId={schoolId} onRecordsAdded={forceRefetch} />
+                        {activeForm === 'levy' ? (
+                            <div className="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100 mb-4 animate-in slide-in-from-top-2">
+                                <h3 className="font-bold mb-4 text-indigo-900">Manual Daily Service Levy</h3>
+                                <ManualLevyForm setOpen={() => setActiveForm(null)} classes={classes || []} schoolId={schoolId!} onRecordsAdded={forceRefetch} />
                             </div>
                         ) : null}
+                        
                         <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-md"/>
                         {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
                             <div className="space-y-2">
