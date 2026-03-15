@@ -12,7 +12,8 @@ import {
   CreditCard, DollarSign, Receipt, Package, Award,
   Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, Sparkles, FolderKanban, HeartHandshake, User as UserIcon,
-  BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code, ShoppingBag, Wallet, Calculator, ArrowUpRight
+  BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code, ShoppingBag, Wallet, Calculator, ArrowUpRight,
+  AlertCircle, Book
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
