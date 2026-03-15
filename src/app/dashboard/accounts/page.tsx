@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -17,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Smartphone } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -42,7 +41,7 @@ import { GenerateReceipt } from './generate-receipt';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentSelect } from '@/components/StudentSelect';
-import { billMultipleStudents } from '@/lib/billing';
+import { billMultipleStudents, billStudentForAttendance } from '@/lib/billing';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -186,7 +185,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                 )}
             />
 
-            {(!isOpeningBalance) && (
+            {isOpeningBalance ? null : (
                 <FormField 
                     control={form.control} 
                     name="type" 
@@ -262,7 +261,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                 />
             </div>
             <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} 
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null} 
                 {isOpeningBalance ? 'Save Opening Balance' : 'Add Bill'}
             </Button>
         </form>
@@ -425,7 +424,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 />
             </div>
             <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} 
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null} 
                 Add Bulk Bill
             </Button>
         </form>
@@ -443,7 +442,6 @@ function DailyBillingForm({ setOpen, schoolId, onRecordsAdded }: { setOpen: (ope
         if (!firestore || !schoolId) return;
         setIsProcessing(true);
         try {
-            // Find all attendance for this date
             const start = startOfDay(date);
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
@@ -460,7 +458,6 @@ function DailyBillingForm({ setOpen, schoolId, onRecordsAdded }: { setOpen: (ope
                 return;
             }
 
-            // Fetch students to check subscriptions
             const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', presentUids));
             const studentsSnap = await getDocs(studentsQuery);
             const studentsToBill = studentsSnap.docs.map(d => ({ ...d.data(), uid: d.id })) as Student[];
@@ -583,6 +580,10 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
 }
 
 function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver, onEditRecord, onReverseTransaction }: { student: Student; records: FinancialRecord[]; onRecordPayment: (record: FinancialRecord) => void; onApplyWaiver: (record: FinancialRecord) => void; onEditRecord: (record: FinancialRecord) => void; onReverseTransaction: (record: FinancialRecord) => void; }) {
+    const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
+    const { toast } = useToast();
+    const [isBilling, setIsBilling] = useState(false);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: startOfMonth(new Date()), to: endOfDay(new Date()) });
     const [openRowId, setOpenRowId] = useState<string | null>(null);
     
@@ -604,6 +605,24 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
         return { totalBilled, totalPaid, balance: totalBilled - totalPaid };
     }, [records]);
 
+    const handleManualServiceBill = async () => {
+        if (!firestore || !schoolId || isBilling) return;
+        setIsBilling(true);
+        try {
+            const today = new Date();
+            const result = await billStudentForAttendance(firestore, student, today, schoolId);
+            if (result.success) {
+                toast({ title: result.amountBilled > 0 ? "Billed" : "Already Billed", description: result.message });
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Billing Failed", description: e.message });
+        } finally {
+            setIsBilling(false);
+        }
+    };
+
     const getStatusVariant = (status: FinancialRecord['status']) => {
         switch (status) { case 'Paid': return 'default'; case 'Unpaid': return 'secondary'; case 'Overdue': return 'destructive'; case 'Pending Reversal': return 'secondary'; case 'Rejected Reversal': return 'destructive'; default: return 'outline'; }
     };
@@ -622,7 +641,13 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
                       <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
                   </PopoverContent>
               </Popover>
-              {student && (<GenerateStatement student={student} records={filteredRecords} dateRange={dateRange} summary={overallSummary} />)}
+              <div className="flex gap-2">
+                <Button variant="secondary" size="sm" onClick={handleManualServiceBill} disabled={isBilling} className="bg-orange-50 text-orange-700 border-orange-200">
+                    {isBilling ? <Loader2 className="h-4 w-4 animate-spin mr-2"/> : <Utensils className="h-4 w-4 mr-2"/>}
+                    Bill Today's Services
+                </Button>
+                {student && (<GenerateStatement student={student} records={filteredRecords} dateRange={dateRange} summary={overallSummary} />)}
+              </div>
           </div>
           <div className="overflow-x-auto w-full border rounded-md bg-white">
               <Table>
@@ -727,11 +752,12 @@ export default function AccountsPage() {
             const type = (record.type || '').toLowerCase();
             const desc = (record.description || '').toLowerCase();
             
+            // Refined categorization logic checking both type and description
             if (type.includes('tuition') || desc.includes('tuition')) { 
                 outstandingTuition += balance; 
-            } else if (type.includes('canteen') || desc.includes('canteen')) { 
+            } else if (type.includes('canteen') || desc.includes('canteen') || desc.includes('lunch') || desc.includes('food')) { 
                 outstandingCanteen += balance; 
-            } else if (type.includes('transport') || type.includes('bus') || desc.includes('transport') || desc.includes('bus')) { 
+            } else if (type.includes('transport') || type.includes('bus') || desc.includes('transport') || desc.includes('bus') || desc.includes('shuttle')) { 
                 outstandingTransport += balance; 
             } else { 
                 otherDebt += balance; 
@@ -771,7 +797,7 @@ export default function AccountsPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList>
                 <TabsTrigger value="billing">Student Billing</TabsTrigger>
-                {isAdmin && <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger>}
+                {isAdmin ? <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger> : null}
             </TabsList>
             <TabsContent value="billing" className="space-y-6">
                 <Card>
@@ -793,30 +819,30 @@ export default function AccountsPage() {
                             <div className="flex gap-2 flex-wrap">
                                 <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}><PlusCircle className="mr-2 h-4 w-4" /> Single Bill</Button>
                                 <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}><FileCog className="mr-2 h-4 w-4" /> Bulk Bill</Button>
-                                <Button variant={activeForm === 'daily' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'daily' ? null : 'daily')}><CalendarIcon className="mr-2 h-4 w-4" /> Daily Billing</Button>
+                                <Button variant={activeForm === 'daily' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'daily' ? null : 'daily')}><CalendarIcon className="mr-2 h-4 w-4" /> Manual Billing</Button>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {activeForm === 'single' && schoolId && (
+                        {activeForm === 'single' && schoolId ? (
                             <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4">Create Single Bill</h3>
                                 <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />
                             </div>
-                        )}
-                        {activeForm === 'bulk' && schoolId && (
+                        ) : null}
+                        {activeForm === 'bulk' && schoolId ? (
                             <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4">Create Bulk Bill</h3>
                                 <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
-                        )}
-                        {activeForm === 'daily' && schoolId && (
+                        ) : null}
+                        {activeForm === 'daily' && schoolId ? (
                             <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4">Process Daily Service Bills</h3>
                                 <p className="text-sm text-muted-foreground mb-4">This will generate Canteen and Transport bills for all students marked 'Present' or 'Late' on the selected date.</p>
                                 <DailyBillingForm setOpen={() => setActiveForm(null)} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
-                        )}
+                        ) : null}
                         <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-md"/>
                         {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
                             <div className="space-y-2">
@@ -858,7 +884,7 @@ export default function AccountsPage() {
             </TabsContent>
         </Tabs>
 
-        {dialogState.record && dialogState.type === 'payment' && (<RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={forceRefetch} />)}
+        {dialogState.record && dialogState.type === 'payment' ? (<RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={forceRefetch} />) : null}
     </div>
   );
 }
