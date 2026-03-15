@@ -44,7 +44,6 @@ service cloud.firestore {
 
     match /schools/{schoolId} {
       allow read, write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2"; 
-      // Allow any user associated with this school to read the profile/settings
       allow read: if isSignedIn() && (
         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == schoolId) ||
@@ -182,7 +181,7 @@ service cloud.firestore {
     }
 
     // =========================================================
-    // 7. FINANCE (Updated Fixes)
+    // 7. FINANCE
     // =========================================================
 
     match /tills/{tillId} { 
@@ -216,8 +215,9 @@ service cloud.firestore {
       }
     }
     
-    match /accountsPayable/{payableId} { allow read, list: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isFinanceStaff() || isAdmin(); allow write: if isFinanceStaff() || isAdmin(); }
-    match /accountsReceivable/{receivableId} { allow read, list: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isFinanceStaff() || isAdmin(); allow write: if isFinanceStaff() || isAdmin(); }
+    match /vendors/{vendorId} { allow read, list: if isSignedIn(); allow write: if isFinanceStaff() || isAdmin(); }
+    match /accountsPayable/{payableId} { allow read, list: if isFinanceStaff() || isAdmin(); allow write: if isFinanceStaff() || isAdmin(); }
+    match /accountsReceivable/{receivableId} { allow read, list: if isFinanceStaff() || isAdmin(); allow write: if isFinanceStaff() || isAdmin(); }
     
     match /inventory/{itemId} { 
         allow read, list: if isSignedIn(); 

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -11,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle } from 'lucide-react';
+import { Loader2, PlusCircle, CalendarIcon, Truck } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,36 +19,43 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Vendor, AccountsPayableRecord, payableSchema } from '@/lib/types';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
-function PayableForm({ setOpen, onBillAdded }: { setOpen: (open: boolean) => void; onBillAdded: () => void }) {
+function PayableForm({ setOpen, onBillAdded, schoolId }: { setOpen: (open: boolean) => void; onBillAdded: () => void; schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const { data: vendors } = useCollection<Vendor>(useMemoFirebase(() => firestore ? collection(firestore, 'vendors') : null, [firestore]));
+    const { data: vendors } = useCollection<Vendor>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'vendors'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
     const form = useForm<z.infer<typeof payableSchema>>({
         resolver: zodResolver(payableSchema),
+        defaultValues: {
+            description: '',
+            amount: 0,
+            invoiceNumber: '',
+            vendorId: '',
+            expenseAccountId: '',
+        }
     });
 
     async function onSubmit(values: z.infer<typeof payableSchema>) {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         setIsSubmitting(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'accountsPayable'), {
                 ...values,
                 status: 'Unpaid',
                 createdAt: serverTimestamp(),
+                schoolId: schoolId,
             });
-            // TODO: addJournalEntry
             toast({ title: 'Success', description: 'Bill has been recorded.' });
             onBillAdded();
             form.reset();
@@ -73,7 +79,7 @@ function PayableForm({ setOpen, onBillAdded }: { setOpen: (open: boolean) => voi
                 )} />
                 <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="amount" render={({ field }) => (
-                        <FormItem><FormLabel>Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>Amount (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="dueDate" render={({ field }) => (
                         <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
@@ -85,10 +91,19 @@ function PayableForm({ setOpen, onBillAdded }: { setOpen: (open: boolean) => voi
                     <FormItem><FormLabel>Invoice # (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="expenseAccountId" render={({ field }) => (
-                    <FormItem><FormLabel>Expense Account</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select an expense account" /></SelectTrigger></FormControl><SelectContent>{/* TODO: Fetch expense accounts */}</SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Expense Account</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select an expense account" /></SelectTrigger></FormControl><SelectContent>
+                        {/* Static mapping for now, in a real app this would come from the Chart of Accounts */}
+                        <SelectItem value="office-supplies">Office Supplies</SelectItem>
+                        <SelectItem value="maintenance">Maintenance</SelectItem>
+                        <SelectItem value="utilities">Utilities</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                    </SelectContent></Select><FormMessage /></FormItem>
                 )} />
 
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Record Bill</Button>
+                <Button type="submit" disabled={isSubmitting} className="w-full">
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Record Bill
+                </Button>
             </form>
         </Form>
     );
@@ -112,7 +127,6 @@ function PayBillDialog({ bill, setOpen, onBillPaid }: { bill: AccountsPayableRec
                 paidAt: serverTimestamp(),
                 paymentAccountId,
             });
-            // TODO: addJournalEntry
             toast({ title: 'Success', description: 'Bill has been marked as paid.' });
             onBillPaid();
             setOpen(false);
@@ -128,9 +142,18 @@ function PayBillDialog({ bill, setOpen, onBillPaid }: { bill: AccountsPayableRec
         <DialogContent>
             <DialogHeader><DialogTitle>Confirm Bill Payment</DialogTitle><DialogDescription>You are about to pay a bill for GH₵{bill.amount.toFixed(2)} to a vendor.</DialogDescription></DialogHeader>
             <div className="space-y-4 py-4">
-                <Select onValueChange={setPaymentAccountId}><SelectTrigger><SelectValue placeholder="Select payment account (e.g., bank)"/></SelectTrigger><SelectContent>{/* TODO: Fetch asset accounts */}</SelectContent></Select>
+                <Select onValueChange={setPaymentAccountId}>
+                    <SelectTrigger><SelectValue placeholder="Select payment account (e.g., bank)"/></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="bank-main">Main Operating Bank Account</SelectItem>
+                        <SelectItem value="petty-cash">Petty Cash</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
-             <Button onClick={handlePayment} disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Confirm Payment</Button>
+             <Button onClick={handlePayment} disabled={isSubmitting} className="w-full">
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Confirm Payment
+            </Button>
         </DialogContent>
     );
 }
@@ -139,81 +162,106 @@ function PayBillDialog({ bill, setOpen, onBillPaid }: { bill: AccountsPayableRec
 export default function AccountsPayablePage() {
     const { role } = useRole();
     const firestore = useFirestore();
+    const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const [isFormOpen, setFormOpen] = useState(false);
     const [payingBill, setPayingBill] = useState<AccountsPayableRecord | null>(null);
 
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
-    const payablesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accountsPayable') : null, [firestore]);
-    const { data: payables, isLoading, forceRefetch } = useCollection<AccountsPayableRecord>(payablesQuery);
-    const { data: vendors } = useCollection<Vendor>(useMemoFirebase(() => firestore ? collection(firestore, 'vendors') : null, [firestore]));
+    const payablesQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'accountsPayable'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, 
+    [firestore, schoolId]);
+    const { data: payables, isLoading: isLoadingPayables, forceRefetch } = useCollection<AccountsPayableRecord>(payablesQuery);
+    
+    const vendorsQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'vendors'), where('schoolId', '==', schoolId)) : null, 
+    [firestore, schoolId]);
+    const { data: vendors } = useCollection<Vendor>(vendorsQuery);
     
     const unpaidBills = useMemo(() => payables?.filter(p => p.status === 'Unpaid'), [payables]);
     const paidBills = useMemo(() => payables?.filter(p => p.status === 'Paid'), [payables]);
 
     const getVendorName = (vendorId: string) => vendors?.find(v => v.id === vendorId)?.name || 'Unknown Vendor';
 
+    const isLoading = schoolLoading || isLoadingPayables;
+
     if (!canAccess) {
-        return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted to financial staff.</CardDescription></CardHeader></Card>;
+        return <Card className="m-6"><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted to financial staff.</CardDescription></CardHeader></Card>;
     }
     
     return (
-        <div className="space-y-6">
-            <Card>
+        <div className="space-y-6 p-6">
+            <Card className="border-t-4 border-t-indigo-600 shadow-sm">
                 <CardHeader>
-                     <div className="flex justify-between items-center">
+                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
-                            <CardTitle>Accounts Payable</CardTitle>
-                            <CardDescription>Track and manage bills from vendors.</CardDescription>
+                            <CardTitle className="flex items-center gap-2"><Truck className="text-indigo-600 h-6 w-6"/> Procurement & Payables</CardTitle>
+                            <CardDescription>Track and manage bills from vendors and suppliers.</CardDescription>
                         </div>
                         <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-                            <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Record New Bill</Button></DialogTrigger>
-                            <DialogContent>
+                            <DialogTrigger asChild>
+                                <Button className="bg-indigo-600 hover:bg-indigo-700">
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Record New Bill
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
                                 <DialogHeader><DialogTitle>Record a New Bill</DialogTitle><DialogDescription>Enter the details from the vendor's invoice.</DialogDescription></DialogHeader>
-                                <PayableForm setOpen={setFormOpen} onBillAdded={forceRefetch} />
+                                {schoolId && <PayableForm setOpen={setFormOpen} onBillAdded={forceRefetch} schoolId={schoolId} />}
                             </DialogContent>
                         </Dialog>
                     </div>
                 </CardHeader>
                 <CardContent>
                     <Tabs defaultValue="unpaid">
-                        <TabsList>
-                            <TabsTrigger value="unpaid">Unpaid</TabsTrigger>
-                            <TabsTrigger value="paid">Paid</TabsTrigger>
+                        <TabsList className="mb-4">
+                            <TabsTrigger value="unpaid">Unpaid Bills ({unpaidBills?.length || 0})</TabsTrigger>
+                            <TabsTrigger value="paid">Paid Bills ({paidBills?.length || 0})</TabsTrigger>
                         </TabsList>
                         <TabsContent value="unpaid">
-                            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
-                                <Table>
-                                    <TableHeader><TableRow><TableHead>Vendor</TableHead><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead>Due Date</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
-                                    <TableBody>
-                                        {unpaidBills?.map(bill => (
-                                            <TableRow key={bill.id}>
-                                                <TableCell>{getVendorName(bill.vendorId)}</TableCell>
-                                                <TableCell>{bill.description}</TableCell>
-                                                <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
-                                                <TableCell>{bill.dueDate.toDate ? format(bill.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
-                                                <TableCell><Button size="sm" onClick={() => setPayingBill(bill)}>Pay Bill</Button></TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div> : (
+                                <div className="rounded-md border bg-white">
+                                    <Table>
+                                        <TableHeader><TableRow><TableHead>Vendor</TableHead><TableHead>Description</TableHead><TableHead className="text-right">Amount</TableHead><TableHead>Due Date</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                                        <TableBody>
+                                            {unpaidBills && unpaidBills.length > 0 ? unpaidBills.map(bill => (
+                                                <TableRow key={bill.id}>
+                                                    <TableCell className="font-medium">{getVendorName(bill.vendorId)}</TableCell>
+                                                    <TableCell className="max-w-xs truncate">{bill.description}</TableCell>
+                                                    <TableCell className="text-right font-bold">GH₵{bill.amount.toFixed(2)}</TableCell>
+                                                    <TableCell className="text-xs text-muted-foreground">{bill.dueDate?.toDate ? format(bill.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                                    <TableCell className="text-right">
+                                                        <Button size="sm" onClick={() => setPayingBill(bill)} className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200">
+                                                            Process Payment
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )) : (
+                                                <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">No unpaid bills found.</TableCell></TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             )}
                         </TabsContent>
                          <TabsContent value="paid">
-                            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
-                                <Table>
-                                    <TableHeader><TableRow><TableHead>Vendor</TableHead><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead>Paid At</TableHead></TableRow></TableHeader>
-                                    <TableBody>
-                                        {paidBills?.map(bill => (
-                                            <TableRow key={bill.id}>
-                                                <TableCell>{getVendorName(bill.vendorId)}</TableCell>
-                                                <TableCell>{bill.description}</TableCell>
-                                                <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
-                                                <TableCell>{bill.paidAt?.toDate ? format(bill.paidAt.toDate(), 'PPP') : 'N/A'}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div> : (
+                                <div className="rounded-md border bg-white">
+                                    <Table>
+                                        <TableHeader><TableRow><TableHead>Vendor</TableHead><TableHead>Description</TableHead><TableHead className="text-right">Amount</TableHead><TableHead>Paid At</TableHead></TableRow></TableHeader>
+                                        <TableBody>
+                                            {paidBills && paidBills.length > 0 ? paidBills.map(bill => (
+                                                <TableRow key={bill.id}>
+                                                    <TableCell className="font-medium">{getVendorName(bill.vendorId)}</TableCell>
+                                                    <TableCell className="max-w-xs truncate">{bill.description}</TableCell>
+                                                    <TableCell className="text-right font-bold">GH₵{bill.amount.toFixed(2)}</TableCell>
+                                                    <TableCell className="text-xs text-muted-foreground">{bill.paidAt?.toDate ? format(bill.paidAt.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                                </TableRow>
+                                            )) : (
+                                                <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">No payment history found.</TableCell></TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             )}
                         </TabsContent>
                     </Tabs>
@@ -226,5 +274,3 @@ export default function AccountsPayablePage() {
         </div>
     );
 }
-
-    
