@@ -19,8 +19,8 @@ export default function MyPayslipsPage() {
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const payslipsQuery = useMemoFirebase(
-    () => (user && schoolId) ? query(
-        collection(firestore!, 'payrollRecords'), 
+    () => (user && schoolId && firestore) ? query(
+        collection(firestore, 'payrollRecords'), 
         where('schoolId', '==', schoolId),
         where('staffId', '==', user.uid), 
         orderBy('period', 'desc')
