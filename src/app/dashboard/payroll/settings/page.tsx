@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -17,19 +16,20 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, Timestamp, increment, getDoc } from 'firebase/firestore';
-import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus, RefreshCw } from 'lucide-react';
-import { PayrollSettings, payrollSettingsFormSchema } from '@/lib/types';
+import { useFirestore, useMemoFirebase, useDoc } from '@/firebase';
+import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, getDoc } from 'firebase/firestore';
+import { Loader2, Utensils, Bus, RefreshCw } from 'lucide-react';
 import { useRole } from '@/context/role-context';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { DateRange } from 'react-day-picker';
-import { format, startOfDay, endOfDay, getYear, getMonth } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const canteenRateSchema = z.object({
     dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
@@ -60,19 +60,26 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         }
     }, [canteenSettings, form]);
 
-    const handleSave = async (values: z.infer<typeof canteenRateSchema>) => {
+    const handleSave = (values: z.infer<typeof canteenRateSchema>) => {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
-        try {
-            await setDoc(settingsRef, { dailyRate: values.dailyRate }, { merge: true });
-            toast({ title: 'Success', description: 'Canteen daily rate has been updated.' });
-        } catch (error) {
-            console.error('Error saving canteen rate:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save canteen settings.' });
-        } finally {
-            setIsSaving(false);
-        }
+        const data = { dailyRate: values.dailyRate };
+        setDoc(settingsRef, data, { merge: true })
+            .then(() => {
+                toast({ title: 'Success', description: 'Canteen daily rate has been updated.' });
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: settingsRef.path,
+                    operation: 'write',
+                    requestResourceData: data,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsSaving(false);
+            });
     };
 
     return (
@@ -128,19 +135,26 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
         }
     }, [transportSettings, form]);
 
-    const handleSave = async (values: z.infer<typeof transportRateSchema>) => {
+    const handleSave = (values: z.infer<typeof transportRateSchema>) => {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
-        try {
-            await setDoc(settingsRef, { dailyRate: values.dailyRate }, { merge: true });
-            toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
-        } catch (error) {
-            console.error('Error saving transport rate:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save transport settings.' });
-        } finally {
-            setIsSaving(false);
-        }
+        const data = { dailyRate: values.dailyRate };
+        setDoc(settingsRef, data, { merge: true })
+            .then(() => {
+                toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: settingsRef.path,
+                    operation: 'write',
+                    requestResourceData: data,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsSaving(false);
+            });
     };
 
     return (
@@ -205,16 +219,22 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             const canteenRate = canteenSettingsSnap.data()?.dailyRate || 0;
             const transportRate = transportSettingsSnap.data()?.dailyRate || 0;
             
+            // 1. Fetch ALL attendance for school (Bypass complex index issues)
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
                 where('schoolId', '==', schoolId),
-                where('date', '>=', Timestamp.fromDate(start)),
-                where('date', '<=', Timestamp.fromDate(end)),
                 where('status', 'in', ['Present', 'Late'])
             );
 
             const attendanceSnapshot = await getDocs(attendanceQuery);
-            const recordsToProcess = attendanceSnapshot.docs;
+            let recordsToProcess = attendanceSnapshot.docs;
+            
+            // 2. Filter by Date manually (Javascript)
+            recordsToProcess = recordsToProcess.filter(doc => {
+                const data = doc.data();
+                const date = data.date.toDate(); // Convert Timestamp
+                return date >= start && date <= end;
+            });
 
             if(recordsToProcess.length === 0) {
                 toast({ title: 'Nothing to Process', description: 'No "Present" or "Late" attendance records found in the selected range.' });
@@ -251,13 +271,24 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                 }
             }
 
-            await billingBatch.commit();
-            toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} attendance records.` });
+            billingBatch.commit()
+                .then(() => {
+                    toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} attendance records.` });
+                })
+                .catch(async (serverError) => {
+                    const permissionError = new FirestorePermissionError({
+                        path: 'financialRecords',
+                        operation: 'write',
+                    });
+                    errorEmitter.emit('permission-error', permissionError);
+                })
+                .finally(() => {
+                    setIsProcessing(false);
+                });
 
         } catch (error) {
-            console.error('Error reprocessing billing:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to reprocess billing.' });
-        } finally {
+            console.error('Error in reprocess setup:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Setup failed.' });
             setIsProcessing(false);
         }
     };
@@ -303,7 +334,7 @@ export default function FinancialSettingsPage() {
   const { role } = useRole();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   
-  if (!['Administrator', 'Director', 'Accountant'].includes(role)) {
+  if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
     return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted.</CardDescription></CardHeader></Card>;
   }
 
@@ -327,5 +358,3 @@ export default function FinancialSettingsPage() {
     </div>
   );
 }
-
-    
