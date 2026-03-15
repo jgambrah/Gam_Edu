@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { format } from 'date-fns';
+import ReportCardTemplate from '../report-cards/components/ReportCardTemplate';
 
 export default function MyReportsPage() {
     const { user } = useUser();
@@ -34,8 +35,6 @@ export default function MyReportsPage() {
 
     const reportsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || targetStudentIds.length === 0 || roleLoading) return null;
-        
-        // Students/Parents only list published reports where they are the owner
         return query(
             collection(firestore, 'report-cards'),
             where('schoolId', '==', schoolId),
@@ -50,31 +49,51 @@ export default function MyReportsPage() {
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
+    const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
+    const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
+
     const handleDownloadPDF = async () => {
         const element = printRef.current;
         if (!element || !selectedReport) return;
+        
         setIsExporting(true);
         try {
+            // Temporarily position element for capture
             element.style.display = 'block';
-            
+            element.style.visibility = 'visible';
+            element.style.position = 'fixed';
+            element.style.top = '0';
+            element.style.left = '0';
+            element.style.zIndex = '-1';
+
+            // Short delay to ensure browser renders the hidden element
+            await new Promise(resolve => setTimeout(resolve, 500));
+
             const canvas = await html2canvas(element, { 
                 scale: 2, 
                 useCORS: true,
                 logging: false,
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                windowWidth: 794,
+                windowHeight: 1123,
             });
-            const imgData = canvas.toDataURL('image/png', 1.0);
+
+            // Re-hide element
+            element.style.display = 'none';
+            element.style.visibility = 'hidden';
+            element.style.position = 'absolute';
+
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfWidth = pdf.internal.pageSize.getWidth(); // 210
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`${selectedReport.studentName}_Report_${selectedReport.term}.pdf`);
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, 297);
+            pdf.save(`${selectedReport.student?.firstName || 'Student'}_Report_${selectedReport.term}.pdf`);
             
-            element.style.display = 'none';
             toast({ title: "Success", description: "Report card downloaded." });
         } catch (error) {
-            console.error(error);
+            console.error("PDF Download Error:", error);
             toast({ variant: 'destructive', title: "Download Failed" });
         } finally {
             setIsExporting(false);
@@ -101,7 +120,7 @@ export default function MyReportsPage() {
 
     if (selectedReport) {
         return (
-            <div className="space-y-6 max-w-5xl mx-auto pb-20">
+            <div className="space-y-6 max-w-5xl mx-auto pb-20 p-4">
                 <div className="flex justify-between items-center print:hidden">
                     <Button variant="ghost" onClick={() => setSelectedReport(null)} className="gap-2">
                         <ChevronRight className="rotate-180 h-4 w-4" /> Back to List
@@ -115,80 +134,38 @@ export default function MyReportsPage() {
                     </div>
                 </div>
 
-                <Card className="border-none shadow-xl overflow-hidden bg-white">
-                    <CardHeader className="bg-slate-50 border-b p-8">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <CardTitle className="text-2xl text-slate-900">{selectedReport.studentName}</CardTitle>
-                                <CardDescription className="text-lg font-medium text-indigo-600">
-                                    {selectedReport.academicYear} • {selectedReport.term}
-                                </CardDescription>
-                                <div className="mt-4 flex gap-4 text-sm text-slate-500">
-                                    <Badge variant="outline" className="bg-white">{selectedReport.className}</Badge>
-                                    <span>Pos: <strong>{selectedReport.classPosition}</strong> of {selectedReport.totalStudents}</span>
-                                    <span>Avg: <strong>{selectedReport.overallAverage}%</strong></span>
-                                </div>
-                            </div>
-                            {schoolProfile?.logoUrl && (
-                                <img 
-                                    src={schoolProfile.logoUrl} 
-                                    alt="School Logo" 
-                                    className="w-20 h-20 object-contain" 
-                                />
-                            )}
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="bg-slate-50/50">
-                                    <TableHead className="font-bold">Subject</TableHead>
-                                    <TableHead className="text-center">CA</TableHead>
-                                    <TableHead className="text-center">Exam</TableHead>
-                                    <TableHead className="text-center">Total</TableHead>
-                                    <TableHead className="text-center">Grade</TableHead>
-                                    <TableHead>Remark</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {selectedReport.rows.map((row: any, i: number) => (
-                                    <TableRow key={i}>
-                                        <TableCell className="font-semibold">{row.subjectName}</TableCell>
-                                        <TableCell className="text-center text-slate-500">{row.ca}</TableCell>
-                                        <TableCell className="text-center text-slate-500">{row.exam}</TableCell>
-                                        <TableCell className="text-center font-bold">{row.total}</TableCell>
-                                        <TableCell className="text-center">
-                                            <Badge variant={row.grade === 'F' ? 'destructive' : 'default'}>{row.grade}</Badge>
-                                        </TableCell>
-                                        <TableCell className="text-xs italic text-slate-600">{row.autoRemark}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                    <CardFooter className="flex flex-col gap-6 p-8 border-t bg-slate-50/30">
-                        <div className="w-full grid md:grid-cols-2 gap-8">
-                            <div className="space-y-2">
-                                <h4 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Class Teacher's Remark</h4>
-                                <div className="p-4 bg-white border rounded-lg italic text-slate-700">
-                                    {selectedReport.classTeacherComment || "No comment provided."}
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <h4 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Headmaster's Remark</h4>
-                                <div className="p-4 bg-white border rounded-lg italic text-slate-700">
-                                    {selectedReport.headmasterComment || "No comment provided."}
-                                </div>
-                            </div>
-                        </div>
-                    </CardFooter>
-                </Card>
+                {/* VISUAL PREVIEW */}
+                <div className="flex justify-center bg-slate-100 p-4 rounded-xl border overflow-auto">
+                    <div className="shadow-2xl ring-1 ring-black/5 scale-[0.8] origin-top md:scale-100">
+                        <ReportCardTemplate
+                            data={selectedReport}
+                            classTeacherComment={selectedReport.classTeacherComment}
+                            headmasterComment={selectedReport.headmasterComment}
+                            caWeight={CA_WEIGHT}
+                            examWeight={EXAM_WEIGHT}
+                        />
+                    </div>
+                </div>
+
+                {/* HIDDEN TEMPLATE FOR CAPTURE */}
+                <div
+                    ref={printRef}
+                    style={{ display: 'none', visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px' }}
+                >
+                    <ReportCardTemplate
+                        data={selectedReport}
+                        classTeacherComment={selectedReport.classTeacherComment}
+                        headmasterComment={selectedReport.headmasterComment}
+                        caWeight={CA_WEIGHT}
+                        examWeight={EXAM_WEIGHT}
+                    />
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-6">
             <div>
                 <h1 className="text-3xl font-bold flex items-center gap-2">
                     <FileText className="text-indigo-600 h-8 w-8" /> My Report Cards
@@ -213,14 +190,14 @@ export default function MyReportsPage() {
                                 </span>
                             </div>
                             <CardTitle className="pt-2 text-xl">{report.term}</CardTitle>
-                            <CardDescription>{report.studentName}</CardDescription>
+                            <CardDescription>{report.student?.firstName} {report.student?.lastName}</CardDescription>
                         </CardHeader>
                         <CardContent className="pt-4 flex justify-between items-center">
                             <div className="text-sm font-medium text-slate-600">
                                 Avg: <span className="text-indigo-600 font-bold">{report.overallAverage}%</span>
                             </div>
                             <Button variant="ghost" size="sm" className="group-hover:translate-x-1 transition-transform">
-                                View Details <ChevronRight className="ml-1 h-4 w-4" />
+                                View Report <ChevronRight className="ml-1 h-4 w-4" />
                             </Button>
                         </CardContent>
                     </Card>
