@@ -244,10 +244,11 @@ service cloud.firestore {
     match /payrollSettings/{settingsId} { allow read, list: if isFinanceStaff(); allow write: if isAdmin(); }
     match /payroll_settings/{docId} { allow read, list: if isSignedIn(); allow write: if isFinanceStaff() || isAdmin(); }
     match /payroll_runs/{runId} { allow read, list: if isFinanceStaff() || isAdmin() || (isSignedIn() && request.auth.uid == resource.data.staffId); allow write: if isFinanceStaff() || isAdmin(); }
+    
     match /payrollRecords/{recordId} { 
       allow read, write: if isFinanceStaff(); 
-      allow get: if isSignedIn() && request.auth.uid == resource.data.staffId; 
-      allow list: if isSignedIn() && (isFinanceStaff() || request.query.where.staffId == request.auth.uid);
+      allow get: if isSignedIn() && (isFinanceStaff() || resource.data.staffId == request.auth.uid); 
+      allow list: if isSignedIn() && (isFinanceStaff() || (request.query.where.staffId == request.auth.uid && request.query.where.schoolId != null));
     }
     
     match /staff_salary_details/{userId} { allow read, list: if isFinanceStaff() || isAdmin() || request.auth.uid == userId; allow write: if isFinanceStaff() || isAdmin(); }

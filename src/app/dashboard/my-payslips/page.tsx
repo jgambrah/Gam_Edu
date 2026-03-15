@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -7,23 +6,32 @@ import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Loader2, FileText } from 'lucide-react';
 import { PayrollRecord } from '@/lib/types';
 import { PayslipDialog } from '../payroll/payslip-dialog';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 export default function MyPayslipsPage() {
   const { user } = useUser();
   const firestore = useFirestore();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const payslipsQuery = useMemoFirebase(
-    () => user ? query(collection(firestore, 'payrollRecords'), where('staffId', '==', user.uid), orderBy('period', 'desc')) : null,
-    [firestore, user]
+    () => (user && schoolId) ? query(
+        collection(firestore!, 'payrollRecords'), 
+        where('schoolId', '==', schoolId),
+        where('staffId', '==', user.uid), 
+        orderBy('period', 'desc')
+    ) : null,
+    [firestore, user, schoolId]
   );
-  const { data: payslips, isLoading } = useCollection<PayrollRecord>(payslipsQuery);
+  const { data: payslips, isLoading: isLoadingPayslips } = useCollection<PayrollRecord>(payslipsQuery);
 
   const [selectedPayslip, setSelectedPayslip] = useState<PayrollRecord | null>(null);
+
+  const isLoading = isLoadingSchool || isLoadingPayslips;
 
   return (
     <div className="space-y-6">
