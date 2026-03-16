@@ -50,7 +50,6 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentSelect } from '@/components/StudentSelect';
 import { billStudentForAttendance, billMultipleStudents } from '@/lib/billing';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
-import { TemporaryResetTool } from '@/components/dashboard/finance/TemporaryResetTool';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -764,7 +763,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     };
 
     const toggleStudent = (uid: string) => {
-        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]);
+        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, id]);
     };
 
     return (
@@ -1148,11 +1147,6 @@ export default function AccountsPage() {
                 {isAdmin ? <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger> : null}
             </TabsList>
             <TabsContent value="billing" className="space-y-6">
-                {/* Financial Reset Tool (Temporary) */}
-                {isAdmin && schoolId && (
-                    <TemporaryResetTool schoolId={schoolId} onResetComplete={forceRefetch} />
-                )}
-
                 <Card>
                     <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
                     <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
