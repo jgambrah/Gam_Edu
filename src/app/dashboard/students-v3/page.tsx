@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { 
   collection, 
   getDocs, 
@@ -30,9 +30,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Route } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { Student, Class, UserRole } from '@/lib/types';
+import type { Student, Class, UserRole, Route as TransportRoute } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
 import { StudentSearchInput } from '@/components/student-search';
 import { StudentDisplay } from '@/components/student-display';
@@ -68,6 +68,15 @@ export default function StudentsV3Page() {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [selectedRouteId, setSelectedRouteId] = useState('');
+  const [usesBus, setUsesBus] = useState(false);
+
+  // Routes Query
+  const routesQuery = useMemoFirebase(() => 
+    (firestore && adminSchoolId) ? query(collection(firestore, 'routes'), where('schoolId', '==', adminSchoolId)) : null,
+    [firestore, adminSchoolId]
+  );
+  const { data: routes } = useCollection<TransportRoute>(routesQuery);
 
   // Reset form state when opening modals
   useEffect(() => {
@@ -76,12 +85,16 @@ export default function StudentsV3Page() {
         setSelectedClassId(''); 
         setSelectedGender(''); 
         setSelectedPhoto(null);
+        setSelectedRouteId('');
+        setUsesBus(false);
     }
     if (editingStudent) { 
         setIsSubmitting(false); 
         setSelectedClassId(editingStudent.classId || ''); 
         setSelectedGender(editingStudent.gender || ''); 
         setSelectedPhoto(null);
+        setSelectedRouteId(editingStudent.routeId || '');
+        setUsesBus(editingStudent.usesBusService || false);
     }
   }, [isAddOpen, editingStudent]);
 
@@ -161,6 +174,11 @@ export default function StudentsV3Page() {
           });
           return;
       }
+
+      if (usesBus && !selectedRouteId) {
+          toast({ variant: 'destructive', title: 'Route Required', description: 'Please select a bus route for this student.' });
+          return;
+      }
       
       if (isSubmitting) return;
       setIsSubmitting(true);
@@ -204,7 +222,8 @@ export default function StudentsV3Page() {
               gender: selectedGender,
               dateOfBirth: values.dateOfBirth,
               address: values.address,
-              usesBusService: values.usesBusService === 'on',
+              usesBusService: usesBus,
+              routeId: usesBus ? selectedRouteId : null,
               usesCanteen: values.usesCanteen === 'on',
               photoURL: photoURL,
               enrollmentStatus: 'Active',
@@ -228,6 +247,12 @@ export default function StudentsV3Page() {
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting || !firestore) return;
+
+    if (usesBus && !selectedRouteId) {
+        toast({ variant: 'destructive', title: 'Route Required', description: 'Please select a bus route for this student.' });
+        return;
+    }
+
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries());
@@ -246,7 +271,8 @@ export default function StudentsV3Page() {
             gender: selectedGender,
             dateOfBirth: values.dateOfBirth,
             address: values.address,
-            usesBusService: values.usesBusService === 'on',
+            usesBusService: usesBus,
+            routeId: usesBus ? selectedRouteId : null,
             usesCanteen: values.usesCanteen === 'on',
             photoURL: photoURL,
         });
@@ -477,16 +503,35 @@ export default function StudentsV3Page() {
                     </div>
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
-                <div className="flex items-center gap-6">
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id="usesBusService" name="usesBusService" />
-                        <Label htmlFor="usesBusService">Uses Bus Service</Label>
+                
+                <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
+                    <h4 className="text-sm font-bold text-slate-700">Services & Subscriptions</h4>
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="usesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
+                            <Label htmlFor="usesBusService">Uses Bus Service</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="usesCanteen" name="usesCanteen" defaultChecked={true} />
+                            <Label htmlFor="usesCanteen">Subscribed to Canteen</Label>
+                        </div>
                     </div>
-                     <div className="flex items-center space-x-2">
-                        <Checkbox id="usesCanteen" name="usesCanteen" defaultChecked={true} />
-                        <Label htmlFor="usesCanteen">Subscribed to Canteen</Label>
-                    </div>
+
+                    {usesBus && (
+                        <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                            <Label>Select Bus Route *</Label>
+                            <Select value={selectedRouteId} onValueChange={setSelectedRouteId}>
+                                <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
+                                <SelectContent>
+                                    {routes?.map(r => (
+                                        <SelectItem key={r.id} value={r.id}>{r.name} (GH₵{r.dailyRate})</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
                 </div>
+
                 <DialogFooter>
                     <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
                         {isSubmitting || isUploadingPhoto ? (
@@ -546,16 +591,35 @@ export default function StudentsV3Page() {
                         </div>
                     </div>
                     <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="editUsesBusService" name="usesBusService" defaultChecked={editingStudent.usesBusService} />
-                            <Label htmlFor="editUsesBusService">Uses Bus Service</Label>
+                    
+                    <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
+                        <h4 className="text-sm font-bold text-slate-700">Services & Subscriptions</h4>
+                        <div className="flex items-center gap-6">
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="editUsesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
+                                <Label htmlFor="editUsesBusService">Uses Bus Service</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="editUsesCanteen" name="usesCanteen" defaultChecked={editingStudent.usesCanteen !== false} />
+                                <Label htmlFor="editUsesCanteen">Uses Canteen</Label>
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="editUsesCanteen" name="usesCanteen" defaultChecked={editingStudent.usesCanteen !== false} />
-                            <Label htmlFor="editUsesCanteen">Uses Canteen</Label>
-                        </div>
+
+                        {usesBus && (
+                            <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                                <Label>Select Bus Route *</Label>
+                                <Select value={selectedRouteId} onValueChange={setSelectedRouteId}>
+                                    <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
+                                    <SelectContent>
+                                        {routes?.map(r => (
+                                            <SelectItem key={r.id} value={r.id}>{r.name} (GH₵{r.dailyRate})</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
                     </div>
+
                     <DialogFooter>
                         <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
                             {isSubmitting || isUploadingPhoto ? (

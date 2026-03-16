@@ -388,6 +388,7 @@ export type Student = {
     graduationYear?: number;
     alumniDetails?: AlumniDetails;
     transportStopId?: string;
+    routeId?: string; // Phase 2: Link to specific bus route
     usesBusService?: boolean;
     usesCanteen?: boolean;
     photoURL?: string; // New field
