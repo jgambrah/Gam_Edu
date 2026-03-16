@@ -10,7 +10,14 @@ import type { DateRange } from 'react-day-picker';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -390,7 +397,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                 name="studentId" 
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Student</FormLabel>
+                        <FormLabel>Student</Label>
                         <StudentSelect students={students || []} value={field.value} onValueChange={field.onChange} />
                         <FormMessage />
                     </FormItem>
@@ -409,7 +416,20 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                                     <SelectTrigger><SelectValue placeholder="Select type"/></SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    {['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal'].map(t => (
+                                    {[
+                                        'Tuition Fee', 
+                                        'Admission Fee',
+                                        'Maintenance Fee',
+                                        'Examination Fee',
+                                        'PTA Levy',
+                                        'Library Fine', 
+                                        'Lab Fee', 
+                                        'Sports Fee', 
+                                        'Canteen Fee', 
+                                        'Transport Fee', 
+                                        'Other', 
+                                        'Correction / Reversal'
+                                    ].map(t => (
                                         <SelectItem key={t} value={t}>{t}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -576,7 +596,18 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                                 <SelectTrigger><SelectValue placeholder="Select fee type"/></SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                {['Tuition Fee', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other'].map(t => (
+                                {[
+                                    'Tuition Fee', 
+                                    'Admission Fee',
+                                    'Maintenance Fee',
+                                    'Examination Fee',
+                                    'PTA Levy',
+                                    'Lab Fee', 
+                                    'Sports Fee', 
+                                    'Canteen Fee', 
+                                    'Transport Fee', 
+                                    'Other'
+                                ].map(t => (
                                     <SelectItem key={t} value={t}>{t}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -1184,9 +1215,9 @@ export default function AccountsPage() {
                                         <DropdownMenuLabel>Start of Term Billing</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         
-                                        {/* Bulk Tuition */}
+                                        {/* Bulk Fees */}
                                         <DropdownMenuItem onClick={() => setActiveForm('bulk')} className="cursor-pointer">
-                                            <FileCog className="mr-2 h-4 w-4 text-blue-600" /> Generate Tuition (Bulk)
+                                            <FileCog className="mr-2 h-4 w-4 text-blue-600" /> Batch Bill Class (General)
                                         </DropdownMenuItem>
                                         
                                         {/* Termly Transport */}
