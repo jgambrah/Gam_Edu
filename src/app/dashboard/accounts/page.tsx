@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -554,14 +555,23 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     [firestore, selectedClassId, schoolId]);
     const { data: classStudents, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
-    // Fetch rate / routes
+    // Fetch rate / routes / canteen config
     useEffect(() => {
         async function fetchRate() {
             if (!firestore || !schoolId) return;
             
             if (chargeType === 'Canteen') {
                 const snap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
-                if (snap.exists()) setRate(snap.data().dailyRate || 0);
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data.pricingModel === 'Class-Based') {
+                        // Rate depends on the selected class
+                        const classRate = selectedClassId ? (data.classRates?.[selectedClassId] || 0) : 0;
+                        setRate(classRate);
+                    } else {
+                        setRate(data.dailyRate || 0);
+                    }
+                }
             } else {
                 // Transport: build the route rate map
                 const q = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
@@ -572,7 +582,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
             }
         }
         fetchRate();
-    }, [firestore, schoolId, chargeType]);
+    }, [firestore, schoolId, chargeType, selectedClassId]);
 
     const handleDailyChargeLevy = async () => {
         if(!firestore || !schoolId || !classStudents) return;
@@ -588,11 +598,15 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
 
                 let billingRate = rate;
                 if (chargeType === 'Transport') {
+                    // Only bill daily if they use the bus AND are on the Daily billing plan
+                    const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
+                    if (!isDailyTransportSubscriber) return;
+
                     // Look up the specific rate for this student's route
                     billingRate = student.routeId ? (routeRates.get(student.routeId) || 0) : 0;
                 }
                 
-                if (billingRate <= 0) return; // Skip if no rate found for this student/route
+                if (billingRate <= 0) return; // Skip if no rate found for this student/route/class
 
                 // DETERMINISTIC ID: Prevents double billing for the same day/student/type
                 const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
@@ -625,7 +639,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     };
 
     const toggleStudent = (uid: string) => {
-        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]);
+        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== id) : [...prev, uid]);
     };
 
     return (
@@ -636,7 +650,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                     <Select value={chargeType} onValueChange={(v: any) => setChargeType(v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="Canteen">Canteen (Rate: GH₵{rate})</SelectItem>
+                            <SelectItem value="Canteen">Canteen {rate > 0 ? `(Rate: GH₵${rate.toFixed(2)})` : ''}</SelectItem>
                             <SelectItem value="Transport">Transport (Route-based)</SelectItem>
                         </SelectContent>
                     </Select>
@@ -683,9 +697,9 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                                         <div className="flex flex-col">
                                             <span className="text-sm font-medium">{s.firstName} {s.lastName}</span>
                                             {chargeType === 'Transport' && (
-                                                <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                                <span className={cn("text-[10px] font-bold flex items-center gap-1", s.transportBillingModel === 'Termly' ? "text-red-400" : "text-indigo-600")}>
                                                     <RouteIcon className="h-2 w-2" />
-                                                    {s.routeId ? (routeRates.get(s.routeId) ? `GH₵${routeRates.get(s.routeId)}/day` : 'No rate set') : 'No route assigned'}
+                                                    {s.transportBillingModel === 'Termly' ? "Termly Plan (Skipped)" : (s.routeId ? `GH₵${routeRates.get(s.routeId) || 0}/day` : 'No route')}
                                                 </span>
                                             )}
                                         </div>
@@ -697,7 +711,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                 </div>
             )}
 
-            <Button onClick={handleDailyChargeLevy} disabled={isSubmitting || selectedStudents.length === 0} className="w-full bg-indigo-600 hover:bg-indigo-700">
+            <Button onClick={handleDailyChargeLevy} disabled={isSubmitting || selectedStudents.length === 0} className="w-full h-12 text-lg font-bold bg-indigo-600 hover:bg-indigo-700">
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <HandCoins className="mr-2 h-4 w-4"/>}
                 Levy {chargeType} Charges
             </Button>
@@ -778,7 +792,9 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                             <p className="text-xs uppercase font-semibold text-slate-500">{balance <= 0 ? "Current Credit" : "Outstanding Balance"}</p>
                             <p className={`text-3xl font-bold ${balance <= 0 ? "text-green-700" : "text-indigo-900"}`}>GH₵{Math.abs(balance).toFixed(2)}</p>
                         </div>
-                        <FormField control={form.control} name="amount" render={({ field }) => (<FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))}/></FormControl><FormMessage /></FormItem>)}/>
+                        <FormField control={form.control} name="amount" render={({ field }) => (
+                            <FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))}/></FormControl><FormMessage /></FormItem>
+                        )}/>
                         <FormField control={form.control} name="method" render={({ field }) => (<FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)}/>
                         <FormField control={form.control} name="notes" render={({ field }) => (<FormItem><FormLabel>Reference / Notes (Optional)</FormLabel><FormControl><Textarea placeholder="Ref or notes..." {...field}/></FormControl><FormMessage /></FormItem>)}/>
                         <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
