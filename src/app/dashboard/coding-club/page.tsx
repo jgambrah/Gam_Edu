@@ -4,13 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LogicLabPage from './logic-lab/page';
 import PythonAcademyPage from './python-academy/page';
-import { Code, Bot, Puzzle, ExternalLink, Maximize } from 'lucide-react';
+import { Code, Bot, Puzzle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 export default function CodingClubPage() {
   return (
-    <div className="space-y-6 h-full flex flex-col">
+    <div className="space-y-6 flex flex-col h-full">
        <Card className="border-t-4 border-t-purple-600 shadow-sm shrink-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
@@ -50,17 +50,13 @@ export default function CodingClubPage() {
                 </div>
                 <div className="flex gap-2">
                     <Button variant="secondary" size="sm" asChild className="h-8 text-[10px] font-black uppercase tracking-widest bg-white text-orange-600 hover:bg-orange-50 border-none shadow-md">
-                        <Link href="https://scratch.mit.edu/projects/editor/" target="_blank">
+                        <Link href="https://turbowarp.org/editor" target="_blank">
                             Open External <ExternalLink className="ml-1 h-3 w-3" />
                         </Link>
                     </Button>
                 </div>
               </CardHeader>
               <CardContent className="flex-1 p-0 relative bg-slate-900">
-                {/* 
-                    Note: Using an embed-friendly Scratch-compatible editor (TurboWarp) 
-                    because the official Scratch site blocks framing via X-Frame-Options.
-                */}
                 <iframe 
                     src="https://turbowarp.org/editor" 
                     className="w-full h-full border-none"
@@ -73,11 +69,11 @@ export default function CodingClubPage() {
            </Card>
         </TabsContent>
 
-        <TabsContent value="logic_lab" className="mt-6 flex-1 overflow-auto">
+        <TabsContent value="logic_lab" className="mt-6 flex-1 flex flex-col overflow-auto min-h-[600px]">
            <LogicLabPage />
         </TabsContent>
 
-         <TabsContent value="python_academy" className="mt-6 flex-1 overflow-auto">
+         <TabsContent value="python_academy" className="mt-6 flex-1 flex flex-col overflow-auto min-h-[600px]">
            <PythonAcademyPage />
         </TabsContent>
       </Tabs>
