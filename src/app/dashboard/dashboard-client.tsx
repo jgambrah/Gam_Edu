@@ -21,6 +21,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { STAFF_ROLES, LibraryItem, Bus, Route } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 // --- Reusable Components ---
 
