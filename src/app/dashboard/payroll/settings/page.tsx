@@ -55,7 +55,8 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
     });
 
     useEffect(() => {
-        if (canteenSettings?.dailyRate) {
+        // Correctly handle 0 as a valid number
+        if (canteenSettings && typeof canteenSettings.dailyRate === 'number') {
             form.setValue('dailyRate', canteenSettings.dailyRate);
         }
     }, [canteenSettings, form]);
@@ -64,12 +65,12 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
-        const data = { dailyRate: values.dailyRate };
+        const data = { dailyRate: values.dailyRate, updatedAt: serverTimestamp() };
         setDoc(settingsRef, data, { merge: true })
             .then(() => {
                 toast({ title: 'Success', description: 'Canteen daily rate has been updated.' });
             })
-            .catch(async (serverError) => {
+            .catch(async (error) => {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
                     operation: 'write',
@@ -98,7 +99,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                                 <FormItem className="flex-grow">
                                     <FormLabel>Daily Canteen Fee (GH₵)</FormLabel>
                                     <FormControl>
-                                        <Input type="number" placeholder="e.g., 5.00" {...field} disabled={isLoading} />
+                                        <Input type="number" step="0.01" placeholder="e.g., 5.00" {...field} disabled={isLoading} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -130,7 +131,8 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
     });
 
     useEffect(() => {
-        if (transportSettings?.dailyRate) {
+        // Correctly handle 0 as a valid number
+        if (transportSettings && typeof transportSettings.dailyRate === 'number') {
             form.setValue('dailyRate', transportSettings.dailyRate);
         }
     }, [transportSettings, form]);
@@ -139,12 +141,12 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
-        const data = { dailyRate: values.dailyRate };
+        const data = { dailyRate: values.dailyRate, updatedAt: serverTimestamp() };
         setDoc(settingsRef, data, { merge: true })
             .then(() => {
                 toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
             })
-            .catch(async (serverError) => {
+            .catch(async (error) => {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
                     operation: 'write',
@@ -173,7 +175,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
                                 <FormItem className="flex-grow">
                                     <FormLabel>Daily Transport Fee (GH₵)</FormLabel>
                                     <FormControl>
-                                        <Input type="number" placeholder="e.g., 10.00" {...field} disabled={isLoading} />
+                                        <Input type="number" step="0.01" placeholder="e.g., 10.00" {...field} disabled={isLoading} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -204,7 +206,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
 
     const handleReprocess = async () => {
         if (!firestore || !dateRange?.from || !schoolId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Please select a valid date range and ensure school context is available.' });
+            toast({ variant: 'destructive', title: 'Error', description: 'Please select a valid date range.' });
             return;
         }
         setIsProcessing(true);
@@ -216,10 +218,9 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
 
             const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
             const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'transport'));
-            const canteenRate = canteenSettingsSnap.data()?.dailyRate || 0;
-            const transportRate = transportSettingsSnap.data()?.dailyRate || 0;
+            const canteenRate = canteenSettingsSnap.exists() ? Number(canteenSettingsSnap.data().dailyRate) : 0;
+            const transportRate = transportSettingsSnap.exists() ? Number(transportSettingsSnap.data().dailyRate) : 0;
             
-            // 1. Fetch ALL attendance for school (Bypass complex index issues)
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
                 where('schoolId', '==', schoolId),
@@ -229,15 +230,14 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             const attendanceSnapshot = await getDocs(attendanceQuery);
             let recordsToProcess = attendanceSnapshot.docs;
             
-            // 2. Filter by Date manually (Javascript)
             recordsToProcess = recordsToProcess.filter(doc => {
                 const data = doc.data();
-                const date = data.date.toDate(); // Convert Timestamp
+                const date = data.date.toDate();
                 return date >= start && date <= end;
             });
 
             if(recordsToProcess.length === 0) {
-                toast({ title: 'Nothing to Process', description: 'No "Present" or "Late" attendance records found in the selected range.' });
+                toast({ title: 'Nothing to Process', description: 'No matching attendance records found.' });
                 setIsProcessing(false);
                 return;
             }
@@ -247,48 +247,38 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             for (const attendanceDoc of recordsToProcess) {
                 const record = attendanceDoc.data();
                 const recordDate = record.date.toDate();
+                const dateKey = format(recordDate, 'yyyy-MM-dd');
 
                 if (canteenRate > 0) {
-                    const canteenRecordId = `canteen-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
+                    const canteenRecordId = `canteen-${record.studentId}-${dateKey}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                     billingBatch.set(financialRecordRef, {
                         billedAmount: canteenRate,
                         studentId: record.studentId, studentName: record.studentName, classId: record.classId,
-                        type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
+                        type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: Timestamp.fromDate(recordDate),
                         createdAt: serverTimestamp(), amountPaid: 0, schoolId,
                     }, { merge: true });
                 }
 
                 if (transportRate > 0 && record.usesBusService) {
-                     const transportRecordId = `transport-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
+                    const transportRecordId = `transport-${record.studentId}-${dateKey}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                     billingBatch.set(financialRecordRef, {
                         billedAmount: transportRate,
                         studentId: record.studentId, studentName: record.studentName, classId: record.classId,
-                        type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
+                        type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: Timestamp.fromDate(recordDate),
                         createdAt: serverTimestamp(), amountPaid: 0, schoolId,
                     }, { merge: true });
                 }
             }
 
-            billingBatch.commit()
-                .then(() => {
-                    toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} attendance records.` });
-                })
-                .catch(async (serverError) => {
-                    const permissionError = new FirestorePermissionError({
-                        path: 'financialRecords',
-                        operation: 'write',
-                    });
-                    errorEmitter.emit('permission-error', permissionError);
-                })
-                .finally(() => {
-                    setIsProcessing(false);
-                });
+            await billingBatch.commit();
+            toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} records.` });
 
-        } catch (error) {
-            console.error('Error in reprocess setup:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Setup failed.' });
+        } catch (error: any) {
+            console.error('Error reprocessing billing:', error);
+            toast({ variant: 'destructive', title: 'Error', description: error.message });
+        } finally {
             setIsProcessing(false);
         }
     };
@@ -297,7 +287,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><RefreshCw/> Retrospective Billing</CardTitle>
-                <CardDescription>Recalculate and apply fees for a past date range. Use this if rates have changed or if billing failed previously.</CardDescription>
+                <CardDescription>Recalculate and apply fees for a past date range.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -335,7 +325,7 @@ export default function FinancialSettingsPage() {
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   
   if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
-    return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted.</CardDescription></CardHeader></Card>;
+    return <Card><CardHeader><CardTitle>Access Denied</CardTitle></CardHeader></Card>;
   }
 
   if (isLoadingSchool) {
@@ -343,7 +333,7 @@ export default function FinancialSettingsPage() {
   }
 
   if (!schoolId) {
-       return <Card><CardHeader><CardTitle>School Not Found</CardTitle><CardDescription>Cannot load settings without a school context.</CardDescription></CardHeader></Card>;
+       return <Card><CardHeader><CardTitle>School Not Found</CardTitle></CardHeader></Card>;
   }
 
   return (

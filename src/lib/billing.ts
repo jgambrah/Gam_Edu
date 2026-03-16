@@ -5,10 +5,10 @@ import type { Firestore } from 'firebase/firestore';
 import type { Student } from '@/lib/types';
 import { format } from 'date-fns';
 
-// Define your daily rates (adjust these to your school's rates)
+// Default rates are now 0 to ensure we only bill what is explicitly set in school settings
 const DAILY_RATES = {
-  CANTEEN: 7.00,  // GHS per day
-  BUS: 3.00,      // GHS per day
+  CANTEEN: 0.00,
+  BUS: 0.00,
 };
 
 interface BillingResult {
@@ -19,7 +19,6 @@ interface BillingResult {
 
 /**
  * Bills a student for canteen and/or bus services when they attend school.
- * Now generates individual records per service for better accounting.
  */
 export async function billStudentForAttendance(
   firestore: Firestore,
@@ -30,34 +29,34 @@ export async function billStudentForAttendance(
 ): Promise<BillingResult> {
   
   try {
-    // Safety checks
     if (!student || !student.uid || !schoolId) {
-      console.error('Invalid student or school data:', student);
       return {
         success: false,
-        message: 'Invalid data provided for billing',
+        message: 'Invalid student or school data',
         amountBilled: 0
       };
     }
 
-    // Determine which services to bill for
     const shouldBillCanteen = student.usesCanteen !== false;
     const shouldBillBus = student.usesBusService === true;
 
-    // If student doesn't use any services, skip billing
     if (!shouldBillCanteen && !shouldBillBus) {
       return {
         success: true,
-        message: 'Student not subscribed to any billable services',
+        message: 'No subscribed services',
         amountBilled: 0
       };
     }
 
-    // Use provided rates or fall back to defaults
-    const canteenRate = providedRates ? providedRates.canteen : DAILY_RATES.CANTEEN;
-    const transportRate = providedRates ? providedRates.transport : DAILY_RATES.BUS;
+    // Explicitly check for undefined to allow 0.00 as a valid rate
+    const canteenRate = (providedRates && providedRates.canteen !== undefined) 
+      ? providedRates.canteen 
+      : DAILY_RATES.CANTEEN;
+      
+    const transportRate = (providedRates && providedRates.transport !== undefined)
+      ? providedRates.transport
+      : DAILY_RATES.BUS;
 
-    // Create unique record ID prefix based on date and student
     const dateStr = format(attendanceDate, 'yyyy-MM-dd');
     const batch = writeBatch(firestore);
     let totalBilled = 0;
@@ -120,12 +119,12 @@ export async function billStudentForAttendance(
 
     return {
         success: true,
-        message: 'No new bills needed (already billed or zero rates)',
+        message: 'No bills generated (rates are 0 or student already billed)',
         amountBilled: 0
     };
 
   } catch (error: any) {
-    console.error('Billing error for student:', student?.uid, error);
+    console.error('Billing error:', error);
     return {
       success: false,
       message: `Billing failed: ${error.message}`,
@@ -134,10 +133,6 @@ export async function billStudentForAttendance(
   }
 }
 
-/**
- * Bulk billing function for multiple students.
- * Fetches rates once to optimize performance.
- */
 export async function billMultipleStudents(
   firestore: Firestore,
   students: Student[],
@@ -151,13 +146,12 @@ export async function billMultipleStudents(
   errors: string[];
 }> {
   
-  // Fetch school settings once
   const canteenRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/canteen`));
   const transportRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/transport`));
   
   const rates = {
-      canteen: canteenRateDoc.exists() ? canteenRateDoc.data().dailyRate : DAILY_RATES.CANTEEN,
-      transport: transportRateDoc.exists() ? transportRateDoc.data().dailyRate : DAILY_RATES.BUS
+      canteen: canteenRateDoc.exists() ? Number(canteenRateDoc.data().dailyRate) : DAILY_RATES.CANTEEN,
+      transport: transportRateDoc.exists() ? Number(transportRateDoc.data().dailyRate) : DAILY_RATES.BUS
   };
 
   let successful = 0;
@@ -167,10 +161,7 @@ export async function billMultipleStudents(
 
   for (let i = 0; i < students.length; i++) {
     const student = students[i];
-    
-    if (onProgress) {
-      onProgress(i + 1, students.length, `${student.firstName} ${student.lastName}`);
-    }
+    if (onProgress) onProgress(i + 1, students.length, `${student.firstName} ${student.lastName}`);
 
     const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, rates);
     
@@ -183,18 +174,7 @@ export async function billMultipleStudents(
       failed++;
       errors.push(`${student.firstName}: ${result.message}`);
     }
-
-    if (i < students.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, 50));
-    }
   }
 
-  return {
-    successful,
-    failed,
-    totalBilled,
-    errors
-  };
+  return { successful, failed, totalBilled, errors };
 }
-
-export { DAILY_RATES };
