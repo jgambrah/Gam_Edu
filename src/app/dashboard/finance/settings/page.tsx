@@ -141,36 +141,34 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                             )}
                         />
 
-                        {pricingModel === 'Flat' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
-                                <FormField
-                                    control={form.control}
-                                    name="dailyRate"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Daily Fee (GH₵)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="termlyRate"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Termly Fee (GH₵)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="dailyRate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Daily Fee (Flat) (GH₵)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="termlyRate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Termly Fee (Flat) (GH₵)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
                         {pricingModel === 'Class-Based' && (
                             <div className="space-y-4 border rounded-xl p-4 bg-slate-50 animate-in fade-in slide-in-from-top-2">
@@ -343,14 +341,14 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             // 3. Fetch Students to know their route and billing model
             const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
             const studentsSnap = await getDocs(studentsQuery);
-            const studentTransportMap = new Map<string, { usesBus: boolean, routeId: string, billingMode: string, canteenMode: string }>();
+            const studentMap = new Map<string, { usesBus: boolean, routeId: string, transportMode: string, canteenMode: string }>();
 
             studentsSnap.docs.forEach(doc => {
                 const data = doc.data();
-                studentTransportMap.set(doc.id, { 
+                studentMap.set(doc.id, { 
                     usesBus: data.usesBusService === true, 
                     routeId: data.routeId || '',
-                    billingMode: data.transportBillingModel || 'Daily',
+                    transportMode: data.transportBillingModel || 'Daily',
                     canteenMode: data.canteenBillingMode || 'Daily'
                 });
             });
@@ -382,40 +380,41 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                 const record = attendanceDoc.data();
                 const recordDate = record.date.toDate();
                 const dateKey = format(recordDate, 'yyyy-MM-dd');
-                const studentInfo = studentTransportMap.get(record.studentId);
+                const studentInfo = studentMap.get(record.studentId);
 
                 // A. Determine the correct Canteen Rate for this specific student's class
-                // ONLY bill daily if mode is 'Daily'
-                let studentCanteenRate = 0;
+                // ONLY bill daily Canteen if their mode is 'Daily'
                 if (studentInfo?.canteenMode === 'Daily') {
+                    let studentCanteenRate = 0;
                     if (canteenModel === 'Flat') {
                         studentCanteenRate = globalCanteenRate;
                     } else if (canteenModel === 'Class-Based') {
                         studentCanteenRate = classCanteenRates[record.classId] || 0;
                     }
-                }
 
-                // Apply Canteen Bill
-                if (studentCanteenRate > 0) {
-                    const canteenRecordId = `canteen-${record.studentId}-${dateKey}`;
-                    const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
-                    billingBatch.set(financialRecordRef, {
-                        billedAmount: studentCanteenRate,
-                        studentId: record.studentId, 
-                        studentName: record.studentName, 
-                        classId: record.classId,
-                        type: 'Canteen Fee', 
-                        description: `Canteen - ${format(recordDate, 'PPP')}`, 
-                        status: 'Unpaid', 
-                        dueDate: Timestamp.fromDate(recordDate),
-                        createdAt: serverTimestamp(), 
-                        amountPaid: 0, 
-                        schoolId,
-                    }, { merge: true });
+                    // Apply Canteen Bill
+                    if (studentCanteenRate > 0) {
+                        const canteenRecordId = `canteen-${record.studentId}-${dateKey}`;
+                        const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                        billingBatch.set(financialRecordRef, {
+                            billedAmount: studentCanteenRate,
+                            studentId: record.studentId, 
+                            studentName: record.studentName, 
+                            classId: record.classId,
+                            type: 'Canteen Fee (Daily)', 
+                            description: `Canteen - ${format(recordDate, 'PPP')}`, 
+                            status: 'Unpaid', 
+                            dueDate: Timestamp.fromDate(recordDate),
+                            createdAt: serverTimestamp(), 
+                            amountPaid: 0, 
+                            schoolId,
+                        }, { merge: true });
+                    }
                 }
 
                 // B. Transport Billing (DYNAMIC ROUTE RATE & MODE CHECK)
-                if (studentInfo?.usesBus && studentInfo?.routeId && studentInfo?.billingMode === 'Daily') {
+                // ONLY bill daily Transport if they use the bus AND their mode is 'Daily'
+                if (studentInfo?.usesBus && studentInfo?.routeId && studentInfo?.transportMode === 'Daily') {
                     const specificTransportRate = routeRatesMap.get(studentInfo.routeId)?.dailyRate || 0;
 
                     if (specificTransportRate > 0) {
