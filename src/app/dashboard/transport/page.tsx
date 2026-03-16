@@ -285,6 +285,7 @@ const routeSchema = z.object({
   busId: z.string().min(1, 'A bus must be selected.'),
   driverId: z.string().min(1, 'A driver must be selected.'),
   dailyRate: z.coerce.number().min(0, 'Daily rate must be at least 0.'),
+  termlyRate: z.coerce.number().min(0, 'Termly rate must be at least 0.').optional(),
   stops: z.array(stopSchema).min(1, 'At least one stop is required.'),
 });
 
@@ -315,11 +316,11 @@ function RouteManagementDialog({
             busId: '',
             driverId: '',
             dailyRate: 0,
+            termlyRate: 0,
             stops: [{ name: '', address: '', order: 1, assignedStudentIds: [] }],
         },
     });
 
-    // CRITICAL FIX: Ensure form resets when editingRoute changes or dialog opens
     useEffect(() => {
         if (open) {
             if (editingRoute) {
@@ -328,6 +329,7 @@ function RouteManagementDialog({
                     busId: editingRoute.busId,
                     driverId: editingRoute.driverId,
                     dailyRate: editingRoute.dailyRate || 0,
+                    termlyRate: editingRoute.termlyRate || 0,
                     stops: editingRoute.stops || [],
                 });
             } else {
@@ -336,6 +338,7 @@ function RouteManagementDialog({
                     busId: '',
                     driverId: '',
                     dailyRate: 0,
+                    termlyRate: 0,
                     stops: [{ name: '', address: '', order: 1, assignedStudentIds: [] }],
                 });
             }
@@ -392,12 +395,15 @@ function RouteManagementDialog({
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <FormField control={form.control} name="name" render={({ field }) => (
-                                <FormItem><FormLabel>Route Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Morning Route A - North" /></FormControl><FormMessage /></FormItem>
+                                <FormItem className="md:col-span-1"><FormLabel>Route Name</FormLabel><FormControl><Input {...field} placeholder="e.g., North Route" /></FormControl><FormMessage /></FormItem>
                             )}/>
                             <FormField control={form.control} name="dailyRate" render={({ field }) => (
                                 <FormItem><FormLabel>Daily Rate (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="15.00" /></FormControl><FormMessage /></FormItem>
+                            )}/>
+                            <FormField control={form.control} name="termlyRate" render={({ field }) => (
+                                <FormItem><FormLabel>Termly Rate (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="800.00" /></FormControl><FormMessage /></FormItem>
                             )}/>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -522,7 +528,8 @@ export default function TransportPage() {
   if (!canAccess) {
     return (
       <Card>
-        <CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is for transport and administrative staff only.</CardDescription></CardHeader>
+        <CardHeader><CardTitle>Access Denied</CardTitle></CardHeader>
+        <CardContent><p>This module is for transport and administrative staff only.</p></CardContent>
       </Card>
     );
   }
@@ -555,7 +562,7 @@ export default function TransportPage() {
         </CardContent>
       </Card>
 
-      {isLoading && selectedRouteId && <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin mx-auto"/></div>}
+      {isLoading && selectedRouteId && <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600"/></div>}
 
       <div className="grid md:grid-cols-2 gap-6">
         {selectedRoute && !isLoading && (
@@ -572,7 +579,10 @@ export default function TransportPage() {
                     <div className="space-y-2">
                         <p className="flex justify-between border-b pb-2"><strong>Assigned Bus:</strong> <span>{assignedBus?.name || 'N/A'}</span></p>
                         <p className="flex justify-between border-b pb-2"><strong>Capacity:</strong> <span>{assignedBus?.capacity || 'N/A'} seats</span></p>
-                        <p className="flex justify-between border-b pb-2"><strong>Daily Rate:</strong> <span className="font-bold text-indigo-600">GH₵{selectedRoute.dailyRate?.toFixed(2) || '0.00'}</span></p>
+                        <div className="grid grid-cols-2 gap-4 border-b pb-2">
+                            <p><strong>Daily Rate:</strong> <span className="font-bold text-indigo-600">GH₵{selectedRoute.dailyRate?.toFixed(2) || '0.00'}</span></p>
+                            <p><strong>Termly Rate:</strong> <span className="font-bold text-emerald-600">GH₵{selectedRoute.termlyRate?.toFixed(2) || '0.00'}</span></p>
+                        </div>
                         <p className="flex justify-between"><strong>Driver:</strong> <span>{assignedDriver?.firstName ? `${assignedDriver.firstName} ${assignedDriver.lastName}`: 'N/A'}</span></p>
                     </div>
                 </CardContent>

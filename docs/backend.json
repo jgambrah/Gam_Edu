@@ -241,6 +241,11 @@
             "type": "string",
             "format": "uri",
             "description": "URL of the student's profile picture."
+        },
+        "transportBillingModel": {
+          "type": "string",
+          "enum": ["Daily", "Termly"],
+          "description": "Specifies how the student should be billed for transport."
         }
       },
       "required": [
@@ -1364,7 +1369,8 @@
         "name": { "type": "string", "description": "e.g., Morning Route A - North" },
         "busId": { "type": "string" },
         "driverId": { "type": "string" },
-        "dailyRate": { "type": "number", "description": "The cost per day for this specific route." }
+        "dailyRate": { "type": "number", "description": "The cost per day for this specific route." },
+        "termlyRate": { "type": "number", "description": "The flat cost per term for this specific route." }
       },
       "required": ["name", "busId", "driverId", "dailyRate"]
     },

@@ -70,6 +70,7 @@ export default function StudentsV3Page() {
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [selectedRouteId, setSelectedRouteId] = useState('');
   const [usesBus, setUsesBus] = useState(false);
+  const [billingModel, setBillingModel] = useState<'Daily' | 'Termly'>('Daily');
 
   // Routes Query
   const routesQuery = useMemoFirebase(() => 
@@ -87,6 +88,7 @@ export default function StudentsV3Page() {
         setSelectedPhoto(null);
         setSelectedRouteId('');
         setUsesBus(false);
+        setBillingModel('Daily');
     }
     if (editingStudent) { 
         setIsSubmitting(false); 
@@ -95,6 +97,7 @@ export default function StudentsV3Page() {
         setSelectedPhoto(null);
         setSelectedRouteId(editingStudent.routeId || '');
         setUsesBus(editingStudent.usesBusService || false);
+        setBillingModel(editingStudent.transportBillingModel || 'Daily');
     }
   }, [isAddOpen, editingStudent]);
 
@@ -115,7 +118,7 @@ export default function StudentsV3Page() {
     try {
         const classQuery = query(collection(firestore, 'classes'), where('schoolId', '==', adminSchoolId));
         const classSnap = await getDocs(classQuery);
-        const classList = classSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Class[];
+        const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown" })) as Class[];
         setClasses(classList);
 
         const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
@@ -224,6 +227,7 @@ export default function StudentsV3Page() {
               address: values.address,
               usesBusService: usesBus,
               routeId: usesBus ? selectedRouteId : null,
+              transportBillingModel: usesBus ? billingModel : null,
               usesCanteen: values.usesCanteen === 'on',
               photoURL: photoURL,
               enrollmentStatus: 'Active',
@@ -273,6 +277,7 @@ export default function StudentsV3Page() {
             address: values.address,
             usesBusService: usesBus,
             routeId: usesBus ? selectedRouteId : null,
+            transportBillingModel: usesBus ? billingModel : null,
             usesCanteen: values.usesCanteen === 'on',
             photoURL: photoURL,
         });
@@ -426,7 +431,7 @@ export default function StudentsV3Page() {
                                     <TableCell>
                                         <div className="flex gap-2">
                                             {s.usesCanteen !== false && <Utensils className="h-4 w-4 text-orange-500" title="Canteen Subscriber"/>}
-                                            {s.usesBusService && <Bus className="h-4 w-4 text-blue-500" title="Bus Subscriber" />}
+                                            {s.usesBusService && <Bus className="h-4 w-4 text-blue-500" title={`Bus Subscriber (${s.transportBillingModel})`} />}
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -518,16 +523,30 @@ export default function StudentsV3Page() {
                     </div>
 
                     {usesBus && (
-                        <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                            <Label>Select Bus Route *</Label>
-                            <Select value={selectedRouteId} onValueChange={setSelectedRouteId}>
-                                <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
-                                <SelectContent>
-                                    {routes?.map(r => (
-                                        <SelectItem key={r.id} value={r.id}>{r.name} (GH₵{r.dailyRate})</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                        <div className="space-y-4 animate-in fade-in slide-in-from-top-2 border-t pt-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Select Bus Route *</Label>
+                                    <Select value={selectedRouteId} onValueChange={setSelectedRouteId}>
+                                        <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
+                                        <SelectContent>
+                                            {routes?.map(r => (
+                                                <SelectItem key={r.id} value={r.id}>{r.name} (D: GH₵{r.dailyRate})</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Billing Model</Label>
+                                    <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
+                                        <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Daily">Daily (Attendance)</SelectItem>
+                                            <SelectItem value="Termly">Termly (Flat Fee)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -606,16 +625,30 @@ export default function StudentsV3Page() {
                         </div>
 
                         {usesBus && (
-                            <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                                <Label>Select Bus Route *</Label>
-                                <Select value={selectedRouteId} onValueChange={setSelectedRouteId}>
-                                    <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
-                                    <SelectContent>
-                                        {routes?.map(r => (
-                                            <SelectItem key={r.id} value={r.id}>{r.name} (GH₵{r.dailyRate})</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 border-t pt-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Select Bus Route *</Label>
+                                        <Select value={selectedRouteId} onValueChange={setSelectedRouteId}>
+                                            <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
+                                            <SelectContent>
+                                                {routes?.map(r => (
+                                                    <SelectItem key={r.id} value={r.id}>{r.name} (D: GH₵{r.dailyRate})</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Billing Model</Label>
+                                        <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
+                                            <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Daily">Daily (Attendance)</SelectItem>
+                                                <SelectItem value="Termly">Termly (Flat Fee)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>

@@ -388,10 +388,11 @@ export type Student = {
     graduationYear?: number;
     alumniDetails?: AlumniDetails;
     transportStopId?: string;
-    routeId?: string; // Phase 2: Link to specific bus route
+    routeId?: string; 
     usesBusService?: boolean;
     usesCanteen?: boolean;
-    photoURL?: string; // New field
+    photoURL?: string; 
+    transportBillingModel?: 'Daily' | 'Termly';
 };
 
 export type Class = {
@@ -512,7 +513,7 @@ export type FinancialRecord = {
     status: 'Paid' | 'Unpaid' | 'Overdue' | 'Pending Reversal' | 'Rejected Reversal';
     dueDate: any;
     createdAt: any;
-    lastPaymentDate?: any; // New field
+    lastPaymentDate?: any; 
     academicYear?: string;
     term?: string;
 };
@@ -670,13 +671,32 @@ export const accountSchema = z.object({
 });
 
 export type ChartOfAccount = {
-    accountId: string;
+    id: string;
+    code: string;
     name: string;
     type: AccountType;
     isControlAccount: boolean;
-    parentAccountId?: string;
+    parentAccountId?: string | null;
     description?: string;
 };
+
+export interface JournalLine {
+  accountId: string;
+  accountName: string;
+  debit: number;
+  credit: number;
+}
+
+export interface JournalEntry {
+  id: string;
+  date: any; 
+  reference?: string; 
+  description: string;
+  lines: JournalLine[];
+  totalAmount: number;
+  createdBy: string;
+  createdAt: any;
+}
 
 export type JournalEntryItem = {
     accountId: string;
@@ -705,7 +725,7 @@ export const journalEntrySchema = z.object({
 // Inventory Schemas
 export const inventoryItemSchema = z.object({
     name: z.string().min(1, "Item name is required."),
-    category: z.enum(['Uniform', 'Book', 'Stationery', 'Other']),
+    category: z.enum(['IT Equipment', 'Furniture', 'Office Supplies', 'Lab Equipment', 'Sports Gear', 'Other']),
     quantity: z.coerce.number().int().min(0),
     location: z.string().min(1, "Location is required."),
     supplier: z.string().optional(),
@@ -720,6 +740,7 @@ export type InventoryItem = z.infer<typeof inventoryItemSchema> & {
     currentHolderId?: string;
     currentHolderName?: string;
     lastCheckedOut?: any;
+    schoolId?: string;
 };
 
 export const checkoutSchema = z.object({
@@ -731,7 +752,7 @@ export type InventoryTransaction = {
     itemId: string;
     transactionType: 'Creation' | 'Check-Out' | 'Check-In' | 'Sale' | 'Adjustment' | 'Audit' | 'RESTOCK';
     timestamp: any;
-    staffId?: string; // Who performed the action
+    staffId?: string; 
     quantityChange?: number;
     notes?: string;
 };
@@ -759,6 +780,7 @@ export type Route = {
     driverId: string;
     stops: Stop[];
     dailyRate: number;
+    termlyRate?: number;
 };
 
 export const studentAssignmentSchema = z.object({
@@ -770,7 +792,7 @@ export const studentAssignmentSchema = z.object({
 export const attendanceRecordSchema = z.object({
   id: z.string().optional(),
   studentId: z.string(),
-  studentName: z.string().optional(), // For display only, not stored
+  studentName: z.string().optional(), 
   classId: z.string(),
   date: z.date(),
   status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
@@ -780,7 +802,7 @@ export const attendanceRecordSchema = z.object({
 
 export type AttendanceRecord = z.infer<typeof attendanceRecordSchema> & {
     id: string;
-    verificationPhotoUrl?: string; // New field
+    verificationPhotoUrl?: string; 
 };
 
 
@@ -788,9 +810,9 @@ export type AttendanceRecord = z.infer<typeof attendanceRecordSchema> & {
 export const auditLogSchema = z.object({
   userId: z.string(),
   userName: z.string(),
-  action: z.string(), // e.g., 'CREATE_STUDENT', 'UPDATE_GRADE'
-  details: z.string(), // e.g., 'Created student John Doe'
-  targetId: z.string().optional(), // ID of the entity that was affected
+  action: z.string(), 
+  details: z.string(), 
+  targetId: z.string().optional(), 
   timestamp: z.date(),
 });
 
@@ -991,21 +1013,23 @@ export interface RichQuizQuestion {
 // The Main "Topic" Container
 export interface LearningMaterial {
     id: string;
-    courseId: string; // e.g. "bs7-integrated-science"
+    courseId: string; 
     strand: string;
     subStrand: string;
     topicTitle: string;
-    content: string; // This is for rich text / html content
+    content: string; 
     attachments: Attachment[];
     videoLinks: VideoLink[];
     practiceQuestions: RichQuizQuestion[];
     createdAt: any;
     updatedAt?: any;
+    subject?: string;
+    classId?: string;
 }
 
 // --- CASH TILL MANAGEMENT ---
 export type TillStatus = 'Open' | 'PendingApproval' | 'Closed';
-export type TillTransactionType = 'Payment' | 'Adjustment';
+export type TillTransactionType = 'Payment' | 'Adjustment' | 'Inflow';
 export type TillTransactionStatus = 'Completed' | 'Pending Adjustment' | 'Rejected';
 
 export type Till = {
@@ -1077,7 +1101,7 @@ export interface Paradox {
 export interface DebateTopic {
   id: string;
   topic: string;
-  context: string; // Background info
+  context: string; 
   createdAt: any;
   targetGroup: string;
 }
@@ -1111,7 +1135,7 @@ export interface ForumReply {
     };
     content: string;
     createdAt: any;
-    isAIMessage?: boolean; // True if the reply is from the AI moderator
+    isAIMessage?: boolean; 
 }
 
 // --- ELA Explorer ---
@@ -1144,7 +1168,7 @@ export type ScienceLesson = {
 export interface ChatMetadata {
     id: string;
     participants: string[];
-    participantDetails: Record<string, { name: string; role: string }>;
+    participantDetails: Record<string, { name: string; role: string; photoURL?: string }>;
     lastMessage: string;
     lastMessageTime: any;
     unreadCount: Record<string, number>;
@@ -1161,7 +1185,7 @@ export interface Lecture {
   id: string;
   title: string;
   description?: string;
-  classId?: string; // Changed from targetGroup
+  classId?: string; 
   scheduledFor?: any;
   teacherName: string;
   teacherId: string;
@@ -1179,11 +1203,13 @@ export interface Lecture {
 
 export interface Account {
   id: string;
-  code: string; // e.g., "1001"
-  name: string; // e.g., "Cash on Hand"
+  code: string; 
+  name: string; 
   type: 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
-  balance: number; // Current running balance
+  balance: number; 
   parentId?: string | null;
+  isControlAccount?: boolean;
+  description?: string;
 }
 
 export interface JournalLine {
@@ -1195,8 +1221,8 @@ export interface JournalLine {
 
 export interface JournalEntry {
   id: string;
-  date: any; // Timestamp
-  reference?: string; // e.g., "INV-001" or "PV-502"
+  date: any; 
+  reference?: string; 
   description: string;
   lines: JournalLine[];
   totalAmount: number;
@@ -1230,7 +1256,7 @@ export interface Supplier {
   phone: string;
   email: string;
   address: string;
-  balance: number; // Amount we owe them
+  balance: number; 
 }
 
 export interface PurchaseOrder {
@@ -1240,7 +1266,7 @@ export interface PurchaseOrder {
   date: any;
   status: 'Draft' | 'Sent' | 'Received' | 'Cancelled';
   items: { 
-    itemId: string; // From Inventory/Shop items
+    itemId: string; 
     name: string; 
     quantity: number; 
     unitCost: number; 
@@ -1254,7 +1280,7 @@ export interface VendorBill {
   id: string;
   supplierId: string;
   supplierName: string;
-  poId: string; // Link to PO
+  poId: string; 
   date: any;
   dueDate: any;
   totalAmount: number;
@@ -1312,20 +1338,20 @@ export interface Payslip {
 export interface StudentPerformance {
   studentId: string;
   studentName: string;
-  attendanceRate: number; // 0-100
-  averageGrade: number;   // 0-100
+  attendanceRate: number; 
+  averageGrade: number;   
   missedAssessments: number;
-  participationScore: number; // Calculated based on behavior records or consistency
+  participationScore: number; 
 }
 
 export interface AiInsight {
   atRiskStudents: {
     studentName: string;
-    reason: string; // e.g. "High grades but dropping attendance"
-    intervention: string; // e.g. "Schedule parent meeting"
+    reason: string; 
+    intervention: string; 
   }[];
-  classTrends: string; // General observation
-  teachingStrategy: string; // Advice for the teacher
+  classTrends: string; 
+  teachingStrategy: string; 
 }
 
 export type ModuleType =
