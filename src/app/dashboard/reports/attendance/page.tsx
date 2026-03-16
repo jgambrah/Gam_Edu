@@ -19,6 +19,7 @@ import { format, startOfDay, endOfDay, isSameDay } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { StudentSearchInput } from '@/components/student-search';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell 
@@ -42,6 +43,7 @@ export default function AttendanceReportsPage() {
         to: endOfDay(new Date()),
     });
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
+    const [searchStudentTerm, setSearchStudentTerm] = useState('');
 
     const isAdmin = ['Administrator', 'Director'].includes(role || '');
     const isTeacher = role === 'Teacher';
@@ -91,6 +93,15 @@ export default function AttendanceReportsPage() {
                 const recordDate = record.date?.toDate ? record.date.toDate() : new Date(record.date);
                 if (recordDate < fromDate || recordDate > toDate) return false;
                 if (selectedClassId !== 'all' && record.classId !== selectedClassId) return false;
+                
+                // Student Name Filter
+                if (searchStudentTerm.trim()) {
+                    const student = studentMap.get(record.studentId);
+                    if (!student) return false;
+                    const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
+                    if (!fullName.includes(searchStudentTerm.toLowerCase().trim())) return false;
+                }
+
                 return true;
             })
             .map(record => ({
@@ -134,7 +145,7 @@ export default function AttendanceReportsPage() {
         const trend = Object.values(dailyGroups).sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
 
         return { filteredData: filtered, summaryStats: summary, trendData: trend, pieData: pie };
-    }, [rawAttendance, students, classes, dateRange, selectedClassId]);
+    }, [rawAttendance, students, classes, dateRange, selectedClassId, searchStudentTerm]);
 
     const isLoading = isSchoolLoading || isRoleLoading || isLoadingClasses || isLoadingAttendance || isLoadingStudents;
 
@@ -170,26 +181,42 @@ export default function AttendanceReportsPage() {
             {/* FILTERS */}
             <Card className="print:hidden">
                 <CardHeader className="pb-3"><CardTitle className="text-sm font-bold uppercase text-slate-500">Filter Parameters</CardTitle></CardHeader>
-                <CardContent className="flex flex-wrap gap-4">
-                     <Popover>
-                        <PopoverTrigger asChild>
-                        <Button variant="outline" className={cn("w-full md:w-[260px] justify-start text-left font-normal border-2 h-11")}>
-                            <CalendarIcon className="mr-2 h-4 w-4 text-indigo-600" />
-                            {dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</> : format(dateRange.from, "LLL dd, y")) : <span>Pick a date range</span>}
-                        </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="range" selected={dateRange} onSelect={setDateRange} numberOfMonths={2} initialFocus />
-                        </PopoverContent>
-                    </Popover>
+                <CardContent className="flex flex-wrap gap-4 items-end">
+                     <div className="space-y-2">
+                        <Label className="text-xs font-bold text-slate-500 uppercase">Period</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                            <Button variant="outline" className={cn("w-full md:w-[260px] justify-start text-left font-normal border-2 h-11")}>
+                                <CalendarIcon className="mr-2 h-4 w-4 text-indigo-600" />
+                                {dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</> : format(dateRange.from, "LLL dd, y")) : <span>Pick a date range</span>}
+                            </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar mode="range" selected={dateRange} onSelect={setDateRange} numberOfMonths={2} initialFocus />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
 
-                    <Select onValueChange={setSelectedClassId} value={selectedClassId}>
-                        <SelectTrigger className="w-full md:w-[200px] border-2 h-11"><SelectValue placeholder="All Classes" /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Classes</SelectItem>
-                            {classes?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold text-slate-500 uppercase">Class</Label>
+                        <Select onValueChange={setSelectedClassId} value={selectedClassId}>
+                            <SelectTrigger className="w-full md:w-[200px] border-2 h-11"><SelectValue placeholder="All Classes" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Classes</SelectItem>
+                                {classes?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-2 flex-1 min-w-[250px]">
+                        <Label className="text-xs font-bold text-slate-500 uppercase">Search Student</Label>
+                        <StudentSearchInput 
+                            value={searchStudentTerm} 
+                            onChange={setSearchStudentTerm} 
+                            className="h-11 border-2"
+                            placeholder="Find a student..."
+                        />
+                    </div>
                 </CardContent>
             </Card>
 
@@ -197,7 +224,7 @@ export default function AttendanceReportsPage() {
                 <>
                     {/* KEY METRIC CARDS */}
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card className="border-l-4 border-l-indigo-500">
+                        <Card className="border-l-4 border-l-indigo-500 shadow-sm">
                             <CardContent className="pt-6">
                                 <div className="flex items-center justify-between">
                                     <div><p className="text-xs font-bold text-slate-500 uppercase">Attendance Rate</p><p className="text-3xl font-black text-indigo-600">{summaryStats.rate}%</p></div>
@@ -205,7 +232,7 @@ export default function AttendanceReportsPage() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="border-l-4 border-l-red-500">
+                        <Card className="border-l-4 border-l-red-500 shadow-sm">
                             <CardContent className="pt-6">
                                 <div className="flex items-center justify-between">
                                     <div><p className="text-xs font-bold text-slate-500 uppercase">Total Absences</p><p className="text-3xl font-black text-red-600">{summaryStats.absent}</p></div>
@@ -213,7 +240,7 @@ export default function AttendanceReportsPage() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="border-l-4 border-l-yellow-500">
+                        <Card className="border-l-4 border-l-yellow-500 shadow-sm">
                             <CardContent className="pt-6">
                                 <div className="flex items-center justify-between">
                                     <div><p className="text-xs font-bold text-slate-500 uppercase">Total Lates</p><p className="text-3xl font-black text-yellow-600">{summaryStats.late}</p></div>
@@ -221,7 +248,7 @@ export default function AttendanceReportsPage() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="border-l-4 border-l-blue-500">
+                        <Card className="border-l-4 border-l-blue-500 shadow-sm">
                             <CardContent className="pt-6">
                                 <div className="flex items-center justify-between">
                                     <div><p className="text-xs font-bold text-slate-500 uppercase">Total Logs</p><p className="text-3xl font-black text-blue-600">{summaryStats.total}</p></div>
@@ -234,7 +261,7 @@ export default function AttendanceReportsPage() {
                     {/* CHARTS */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Daily Trend Chart */}
-                        <Card className="lg:col-span-2">
+                        <Card className="lg:col-span-2 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="text-base font-bold flex items-center gap-2">
                                     <TrendingUp className="h-4 w-4 text-indigo-600"/> Daily Attendance Trend
@@ -261,7 +288,7 @@ export default function AttendanceReportsPage() {
                         </Card>
 
                         {/* Status Distribution */}
-                        <Card>
+                        <Card shadow-sm>
                             <CardHeader>
                                 <CardTitle className="text-base font-bold">Status Distribution</CardTitle>
                                 <CardDescription>Proportional breakdown of attendance.</CardDescription>
