@@ -18,7 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
-import { Loader2, Utensils, Bus, RefreshCw, LayoutGrid, ListChecks } from 'lucide-react';
+import { Loader2, Utensils, Bus, RefreshCw, ListChecks } from 'lucide-react';
 import { useRole } from '@/context/role-context';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
@@ -143,7 +143,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                                     <FormItem className="animate-in fade-in slide-in-from-top-2">
                                         <FormLabel>Standard Daily Fee (GH₵)</FormLabel>
                                         <FormControl>
-                                            <Input type="number" step="0.01" placeholder="e.g., 5.00" {...field} className="h-12 border-2" />
+                                            <Input type="number" step="0.01" placeholder="e.g., 5.00" {...field} value={field.value ?? 0} className="h-12 border-2" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -171,7 +171,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                                                         <FormControl>
                                                             <div className="relative">
                                                                 <span className="absolute left-3 top-2.5 text-slate-400 text-xs font-bold">GH₵</span>
-                                                                <Input type="number" step="0.01" {...field} className="pl-10 bg-white" placeholder="0.00" />
+                                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="pl-10 bg-white" placeholder="0.00" />
                                                             </div>
                                                         </FormControl>
                                                     </FormItem>
@@ -252,7 +252,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
                                 <FormItem className="flex-grow">
                                     <FormLabel>Default Daily Transport Fee (GH₵)</FormLabel>
                                     <FormControl>
-                                        <Input type="number" step="0.01" placeholder="e.g., 10.00" {...field} disabled={isLoading} className="h-12 border-2" />
+                                        <Input type="number" step="0.01" placeholder="e.g., 10.00" {...field} value={field.value ?? 0} disabled={isLoading} className="h-12 border-2" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
