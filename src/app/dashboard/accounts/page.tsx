@@ -740,7 +740,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                     studentId: uid,
                     studentName: `${student.firstName} ${student.lastName}`,
                     classId: selectedClassId,
-                    type: chargeType === 'Canteen' ? 'Canteen Fee' : 'Transport Fee (Daily)',
+                    type: chargeType === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)',
                     description: `${chargeType} Fee - ${format(date, 'PPP')}`,
                     billedAmount: billingRate,
                     amountPaid: 0,

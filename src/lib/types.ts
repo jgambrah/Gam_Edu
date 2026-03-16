@@ -140,6 +140,8 @@ export const assessmentFeedbackSchema = z.object({
 export type Assessment = z.infer<typeof assessmentFeedbackSchema> & {
     id: string;
     createdAt: any;
+    teacherRemark?: string;
+    subjectName?: string;
 };
 
 export const behavioralRecordSchema = z.object({
@@ -212,6 +214,7 @@ export type TimetableEntry = {
   roomId: string;
   day: string;
   timeSlotId: string;
+  schoolId?: string;
 };
 
 // Resource Schemas
@@ -392,6 +395,7 @@ export type Student = {
     usesCanteen?: boolean;
     photoURL?: string; 
     transportBillingModel?: 'Daily' | 'Termly';
+    canteenBillingMode?: 'Daily' | 'Termly' | 'None';
     schoolId?: string;
 };
 
@@ -485,6 +489,8 @@ export const financialRecordSchema = z.object({
     'Lab Fee', 
     'Sports Fee', 
     'Canteen Fee', 
+    'Canteen Fee (Daily)',
+    'Canteen Fee (Termly)',
     'Transport Fee', 
     'Transport Fee (Daily)', 
     'Transport Fee (Termly)', 
@@ -543,6 +549,8 @@ export type FinancialRecord = {
       | 'Lab Fee' 
       | 'Sports Fee' 
       | 'Canteen Fee' 
+      | 'Canteen Fee (Daily)'
+      | 'Canteen Fee (Termly)'
       | 'Transport Fee' 
       | 'Transport Fee (Daily)' 
       | 'Transport Fee (Termly)' 

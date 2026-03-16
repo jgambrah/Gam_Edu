@@ -39,12 +39,14 @@ export async function billStudentForAttendance(
 
     // 1. Check permissions/preferences
     const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
-    const shouldBillCanteen = student.usesCanteen !== false;
+    
+    // Only bill daily Canteen if their mode is 'Daily'
+    const shouldBillCanteen = student.canteenBillingMode === 'Daily' || (student.usesCanteen !== false && !student.canteenBillingMode);
 
     if (!shouldBillCanteen && !isDailyTransportSubscriber) {
       return {
         success: true,
-        message: 'No daily services to bill (skipped Termly subscribers)',
+        message: 'No daily services to bill (skipped Termly or None subscribers)',
         amountBilled: 0
       };
     }
@@ -72,7 +74,7 @@ export async function billStudentForAttendance(
             studentId: student.uid,
             studentName: `${student.firstName} ${student.lastName}`,
             classId: student.classId || '',
-            type: 'Canteen Fee',
+            type: 'Canteen Fee (Daily)',
             description: `Canteen - ${format(attendanceDate, 'PPP')}`,
             billedAmount: canteenRate,
             amountPaid: 0,

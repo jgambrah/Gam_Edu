@@ -166,7 +166,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 studentId: item.studentId,
                 studentName: item.studentName,
                 classId: item.classId,
-                type: item.type === 'Canteen' ? 'Canteen Fee' : 'Transport Fee',
+                type: item.type === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)',
                 description: `${item.type} fee for ${format(date, 'PPP')} (Manual Fix)`,
                 status: 'Unpaid',
                 dueDate: startOfDay(date),
