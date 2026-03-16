@@ -128,7 +128,6 @@ const REFERENCE_DATA = [
 
 function PythonAcademy() {
   const { user } = useUser();
-  const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
@@ -146,7 +145,6 @@ function PythonAcademy() {
   const [aiQuestion, setAiQuestion] = useState("");
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [isReferenceOpen, setIsReferenceOpen] = useState(false);
   
   const speak = (text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -294,15 +292,15 @@ function PythonAcademy() {
   }
   
   return (
-    <div className="bg-[#020617] text-slate-300 p-1 font-sans rounded-3xl overflow-hidden flex flex-col flex-1">
+    <div className="bg-[#020617] text-slate-300 p-1 font-sans rounded-3xl overflow-hidden flex flex-col min-h-[600px]">
       <Script 
           src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js" 
           strategy="lazyOnload"
           onLoad={handleScriptLoad}
         />
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 md:p-6 flex-1 overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 md:p-6 flex-1">
         
-        <aside className="lg:col-span-3 space-y-6 overflow-hidden flex flex-col">
+        <aside className="lg:col-span-3 space-y-6 flex flex-col overflow-hidden">
           <div className="flex items-center gap-3 px-2">
             <div className="bg-yellow-500 p-2 rounded-xl shadow-lg shadow-yellow-500/20"><Code2 className="text-slate-900" /></div>
             <h2 className="text-xl font-black text-white">Academy</h2>
@@ -348,7 +346,7 @@ function PythonAcademy() {
         </aside>
 
         <main className="lg:col-span-6 flex flex-col gap-4 overflow-hidden">
-          <Card className="bg-slate-900 border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col h-[700px]">
+          <Card className="bg-slate-900 border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col min-h-[500px]">
             <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-700">
               <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">● Interpreter Ready</Badge>
               <Button onClick={runAndValidate} disabled={isLoadingPy || isRunning} className="bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black rounded-xl px-8 h-10 transition-all active:scale-95">
@@ -356,7 +354,7 @@ function PythonAcademy() {
               </Button>
             </div>
 
-            <div className="flex-1 relative border-b border-slate-800 bg-[#1e1e1e]">
+            <div className="flex-1 relative border-b border-slate-800 bg-[#1e1e1e] min-h-[300px]">
                 {isLoadingPy ? (
                     <div className="h-full flex flex-col items-center justify-center text-slate-400">
                         <Loader2 className="w-8 h-8 animate-spin mb-4" />
@@ -399,7 +397,7 @@ function PythonAcademy() {
                 )}
             </div>
             
-            <div className="h-48 bg-black">
+            <div className="h-48 bg-black shrink-0">
                 <Tabs defaultValue="console" className="h-full flex flex-col">
                     <div className="px-6 py-2 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
                         <TabsList className="bg-slate-950 p-1">
@@ -477,17 +475,6 @@ function PythonAcademy() {
   );
 }
 
-export default function Page() {
-    const { user, isUserLoading } = useUser();
-    const { role, isRoleLoading } = useRole();
-
-    if (isUserLoading || isRoleLoading) {
-        return (
-            <div className="flex h-64 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-        );
-    }
-    
+export default function PythonAcademyPage() {
     return <PythonAcademy />;
 }

@@ -205,7 +205,7 @@ export default function LogicLabPage() {
   }
   
   return (
-    <div className="flex flex-col flex-1 gap-4 p-1 overflow-hidden">
+    <div className="flex flex-col flex-1 gap-4 p-1">
       
       {/* --- TOP BAR: GAMIFICATION --- */}
       <div className="flex items-center justify-between bg-white p-3 rounded-xl border shadow-sm shrink-0">
@@ -232,7 +232,7 @@ export default function LogicLabPage() {
         </Button>
       </div>
 
-      <div className="flex flex-1 gap-4 min-h-0">
+      <div className="flex flex-1 gap-4 min-h-[600px]">
         {/* SIDEBAR */}
         <Card className="w-1/4 flex flex-col h-full bg-slate-50 border-r-0 rounded-r-none overflow-hidden">
             <div className="p-4 border-b bg-white">
@@ -273,7 +273,7 @@ export default function LogicLabPage() {
         </Card>
 
         {/* WORKSPACE */}
-        <div className="flex-1 flex flex-col gap-4 h-full overflow-hidden">
+        <div className="flex-1 flex flex-col gap-4 h-full">
             <Card className="shrink-0 bg-white border-l-4 border-l-indigo-500 shadow-sm">
                 <CardHeader className="py-3 px-6">
                     <div className="flex justify-between items-start">
@@ -310,7 +310,7 @@ export default function LogicLabPage() {
                 </div>
 
                 <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-                    <div className="flex-1 bg-white rounded-xl border-2 border-dashed border-slate-200 p-4 overflow-y-auto relative font-mono text-sm shadow-inner">
+                    <div className="flex-1 bg-white rounded-xl border-2 border-dashed border-slate-200 p-4 overflow-y-auto relative font-mono text-sm shadow-inner min-h-[300px]">
                         {workspaceBlocks.length === 0 && (
                             <div className="absolute inset-0 flex items-center justify-center text-slate-300 pointer-events-none text-xs italic">Drag and drop blocks here to build your logic</div>
                         )}
