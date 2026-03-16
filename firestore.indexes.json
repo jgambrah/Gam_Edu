@@ -172,6 +172,14 @@
         { "fieldPath": "schoolId", "order": "ASCENDING" },
         { "fieldPath": "period", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "staff",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "role", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
