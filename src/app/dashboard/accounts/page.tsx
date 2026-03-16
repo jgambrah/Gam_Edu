@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -119,38 +118,30 @@ function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, 
     };
 
     return (
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Bulk Termly Transport Billing</DialogTitle>
-                <DialogDescription>Generate upfront bus fares for all students on the "Termly" billing plan.</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                    <Label>Academic Term Name</Label>
-                    <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
-                </div>
-                <div className="space-y-2">
-                    <Label>Payment Due Date</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {format(dueDate, "PPP")}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={dueDate} onSelect={(d) => d && setDueDate(d)} initialFocus />
-                        </PopoverContent>
-                    </Popover>
-                </div>
+        <div className="space-y-4">
+            <div className="space-y-2">
+                <Label>Academic Term Name</Label>
+                <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
             </div>
-            <DialogFooter>
-                <Button onClick={handleBulkTermlyTransport} disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                    Generate Termly Bills
-                </Button>
-            </DialogFooter>
-        </DialogContent>
+            <div className="space-y-2">
+                <Label>Payment Due Date</Label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start text-left font-normal bg-white border-2">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {format(dueDate, "PPP")}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar mode="single" selected={dueDate} onSelect={(d) => d && setDueDate(d)} initialFocus />
+                    </PopoverContent>
+                </Popover>
+            </div>
+            <Button onClick={handleBulkTermlyTransport} disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                Generate Termly Bills
+            </Button>
+        </div>
     );
 }
 
@@ -241,38 +232,30 @@ function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, on
     };
 
     return (
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Bulk Termly Canteen Billing</DialogTitle>
-                <DialogDescription>Generate upfront meal fees for all students on the "Termly" billing plan.</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                    <Label>Academic Term Name</Label>
-                    <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
-                </div>
-                <div className="space-y-2">
-                    <Label>Payment Due Date</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {format(dueDate, "PPP")}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={dueDate} onSelect={(d) => d && setDueDate(d)} initialFocus />
-                        </PopoverContent>
-                    </Popover>
-                </div>
+        <div className="space-y-4">
+            <div className="space-y-2">
+                <Label>Academic Term Name</Label>
+                <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
             </div>
-            <DialogFooter>
-                <Button onClick={handleBulkTermlyCanteen} disabled={isSubmitting} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold">
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                    Generate Termly Bills
-                </Button>
-            </DialogFooter>
-        </DialogContent>
+            <div className="space-y-2">
+                <Label>Payment Due Date</Label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start text-left font-normal bg-white border-2">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {format(dueDate, "PPP")}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar mode="single" selected={dueDate} onSelect={(d) => d && setDueDate(d)} initialFocus />
+                    </PopoverContent>
+                </Popover>
+            </div>
+            <Button onClick={handleBulkTermlyCanteen} disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold">
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                Generate Termly Bills
+            </Button>
+        </div>
     );
 }
 
@@ -689,7 +672,6 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                 if (snap.exists()) {
                     const data = snap.data();
                     if (data.pricingModel === 'Class-Based') {
-                        // Rate depends on the selected class
                         const classRate = selectedClassId ? (data.classRates?.[selectedClassId] || 0) : 0;
                         setRate(classRate);
                     } else {
@@ -697,7 +679,6 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                     }
                 }
             } else {
-                // Transport: build the route rate map
                 const q = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
                 const snap = await getDocs(q);
                 const map = new Map<string, number>();
@@ -722,17 +703,13 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
 
                 let billingRate = rate;
                 if (chargeType === 'Transport') {
-                    // Only bill daily if they use the bus AND are on the Daily billing plan
                     const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
                     if (!isDailyTransportSubscriber) return;
-
-                    // Look up the specific rate for this student's route
                     billingRate = student.routeId ? (routeRates.get(student.routeId) || 0) : 0;
                 }
                 
-                if (billingRate <= 0) return; // Skip if no rate found for this student/route/class
+                if (billingRate <= 0) return;
 
-                // DETERMINISTIC ID: Prevents double billing for the same day/student/type
                 const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
                 const recordRef = doc(firestore, 'financialRecords', recordId);
                 
@@ -864,8 +841,6 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
         setIsSubmitting(true);
         try {
             const batch = writeBatch(firestore);
-            
-            // --- NEW: SENSORIAL RECEIPT NUMBER ---
             const receiptId = await generateNextReceiptId(firestore, schoolId);
             const paymentDocRef = doc(firestore, 'financialRecords', record.id, 'payments', receiptId);
             
@@ -1067,7 +1042,7 @@ export default function AccountsPage() {
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
   
-  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termlyTransport' | 'termlyCanteen' | 'daily' | null>(null); 
+  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termly-transport' | 'termly-canteen' | 'daily' | null>(null); 
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null); 
@@ -1215,12 +1190,12 @@ export default function AccountsPage() {
                                         </DropdownMenuItem>
                                         
                                         {/* Termly Transport */}
-                                        <DropdownMenuItem onClick={() => setActiveForm('termlyTransport')} className="cursor-pointer">
+                                        <DropdownMenuItem onClick={() => setActiveForm('termly-transport')} className="cursor-pointer">
                                             <Bus className="mr-2 h-4 w-4 text-amber-600" /> Generate Termly Transport
                                         </DropdownMenuItem>
                                         
                                         {/* Termly Canteen */}
-                                        <DropdownMenuItem onClick={() => setActiveForm('termlyCanteen')} className="cursor-pointer">
+                                        <DropdownMenuItem onClick={() => setActiveForm('termly-canteen')} className="cursor-pointer">
                                             <Utensils className="mr-2 h-4 w-4 text-green-600" /> Generate Termly Canteen
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
@@ -1229,24 +1204,43 @@ export default function AccountsPage() {
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {activeForm === 'single' ? (
+                        {/* ACTIVE FORMS */}
+                        {activeForm === 'single' && schoolId && (
                             <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4">Create Single Bill</h3>
-                                <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId!} onRecordAdded={forceRefetch} />
+                                <h3 className="font-bold mb-4 text-blue-900">Create Single Bill</h3>
+                                <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />
                             </div>
-                        ) : null}
-                        {activeForm === 'bulk' ? (
-                            <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4">Create Bulk Bill</h3>
-                                <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId!} onRecordsAdded={forceRefetch} />
+                        )}
+                        
+                        {activeForm === 'bulk' && schoolId && (
+                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4 animate-in slide-in-from-top-2">
+                                <h3 className="font-bold mb-4 text-blue-900">Bulk Class Billing (Tuition/Levies)</h3>
+                                <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
-                        ) : null}
-                        {activeForm === 'levy' ? (
+                        )}
+
+                        {activeForm === 'levy' && schoolId && (
                             <div className="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100 mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4 text-indigo-900">Manual Daily Service Levy</h3>
-                                <ManualLevyForm setOpen={() => setActiveForm(null)} classes={classes || []} schoolId={schoolId!} onRecordsAdded={forceRefetch} />
+                                <ManualLevyForm setOpen={() => setActiveForm(null)} classes={classes || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
-                        ) : null}
+                        )}
+
+                        {activeForm === 'termly-transport' && schoolId && (
+                            <div className="bg-amber-50 p-4 rounded-lg border border-amber-100 mb-4 animate-in slide-in-from-top-2">
+                                <h3 className="font-bold mb-4 text-amber-900">Termly Transport Billing</h3>
+                                <p className="text-sm text-amber-700 mb-4">This will bill all students on the 'Termly' transport plan based on their route rates.</p>
+                                <BulkTermlyTransportModal schoolId={schoolId} onComplete={() => { forceRefetch(); setActiveForm(null); }} />
+                            </div>
+                        )}
+
+                        {activeForm === 'termly-canteen' && schoolId && (
+                            <div className="bg-green-50 p-4 rounded-lg border border-green-100 mb-4 animate-in slide-in-from-top-2">
+                                <h3 className="font-bold mb-4 text-green-900">Termly Canteen Billing</h3>
+                                <p className="text-sm text-green-700 mb-4">This will bill all students on the 'Termly' canteen plan.</p>
+                                <BulkTermlyCanteenModal schoolId={schoolId} onComplete={() => { forceRefetch(); setActiveForm(null); }} />
+                            </div>
+                        )}
                         
                         <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-sm"/>
                         {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
@@ -1288,18 +1282,6 @@ export default function AccountsPage() {
                 </Card>
             </TabsContent>
         </Tabs>
-
-        {activeForm === 'termlyTransport' && schoolId && (
-            <Dialog open={true} onOpenChange={() => setActiveForm(null)}>
-                <BulkTermlyTransportModal schoolId={schoolId} onComplete={() => { forceRefetch(); setActiveForm(null); }} />
-            </Dialog>
-        )}
-
-        {activeForm === 'termlyCanteen' && schoolId && (
-            <Dialog open={true} onOpenChange={() => setActiveForm(null)}>
-                <BulkTermlyCanteenModal schoolId={schoolId} onComplete={() => { forceRefetch(); setActiveForm(null); }} />
-            </Dialog>
-        )}
 
         {dialogState.record && dialogState.type === 'payment' ? (<RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={forceRefetch} />) : null}
     </div>
