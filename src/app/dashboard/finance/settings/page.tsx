@@ -86,7 +86,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Utensils /> Canteen Settings</CardTitle>
-                <CardDescription>Set the daily fee for canteen usage, billed based on attendance.</CardDescription>
+                <CardDescription>Set the daily fee for canteen usage, which will be billed automatically based on attendance.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -161,7 +161,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Bus /> Transport Settings</CardTitle>
-                <CardDescription>Set the daily fee for bus usage, billed based on attendance.</CardDescription>
+                <CardDescription>Set the daily fee for bus usage, billed automatically for enrolled students on attendance.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -214,10 +214,29 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             const start = startOfDay(dateRange.from);
             const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
+            // 1. Fetch Global Canteen Rate
             const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
-            const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'transport'));
-            const canteenRate = canteenSettingsSnap.exists() ? Number(canteenSettingsSnap.data().dailyRate) : 0;
-            const transportRate = transportSettingsSnap.exists() ? Number(transportSettingsSnap.data().dailyRate) : 0;
+            const canteenRate = canteenSettingsSnap.data()?.dailyRate || 0;
+
+            // 2. NEW: Fetch ALL Transport Routes for this school to build a Rate Map
+            const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
+            const routesSnap = await getDocs(routesQuery);
+            const routeRatesMap = new Map<string, number>();
+            routesSnap.docs.forEach(doc => {
+                routeRatesMap.set(doc.id, doc.data().dailyRate || 0);
+            });
+
+            // 3. Fetch Students to know their routeId
+            const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
+            const studentsSnap = await getDocs(studentsQuery);
+            const studentRouteMap = new Map<string, { usesBus: boolean, routeId: string }>();
+            studentsSnap.docs.forEach(doc => {
+                const data = doc.data();
+                studentRouteMap.set(doc.id, { 
+                    usesBus: data.usesBusService === true, 
+                    routeId: data.routeId || '' 
+                });
+            });
             
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
@@ -246,27 +265,49 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                 const record = attendanceDoc.data();
                 const recordDate = record.date.toDate();
                 const dateKey = format(recordDate, 'yyyy-MM-dd');
+                const studentInfo = studentRouteMap.get(record.studentId);
 
+                // A. Canteen Billing (Global Rate)
                 if (canteenRate > 0) {
                     const canteenRecordId = `canteen-${record.studentId}-${dateKey}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                     billingBatch.set(financialRecordRef, {
                         billedAmount: canteenRate,
-                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
-                        type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: Timestamp.fromDate(recordDate),
-                        createdAt: serverTimestamp(), amountPaid: 0, schoolId,
+                        studentId: record.studentId, 
+                        studentName: record.studentName, 
+                        classId: record.classId,
+                        type: 'Canteen Fee', 
+                        description: `Canteen - ${format(recordDate, 'PPP')}`, 
+                        status: 'Unpaid', 
+                        dueDate: Timestamp.fromDate(recordDate),
+                        createdAt: serverTimestamp(), 
+                        amountPaid: 0, 
+                        schoolId,
                     }, { merge: true });
                 }
 
-                if (transportRate > 0 && record.usesBusService) {
-                    const transportRecordId = `transport-${record.studentId}-${dateKey}`;
-                    const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
-                    billingBatch.set(financialRecordRef, {
-                        billedAmount: transportRate,
-                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
-                        type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: Timestamp.fromDate(recordDate),
-                        createdAt: serverTimestamp(), amountPaid: 0, schoolId,
-                    }, { merge: true });
+                // B. Transport Billing (DYNAMIC ROUTE RATE)
+                if (studentInfo?.usesBus && studentInfo?.routeId) {
+                    // Get the specific rate for this student's route!
+                    const specificTransportRate = routeRatesMap.get(studentInfo.routeId) || 0;
+
+                    if (specificTransportRate > 0) {
+                        const transportRecordId = `transport-${record.studentId}-${dateKey}`;
+                        const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                        billingBatch.set(financialRecordRef, {
+                            billedAmount: specificTransportRate,
+                            studentId: record.studentId, 
+                            studentName: record.studentName, 
+                            classId: record.classId,
+                            type: 'Transport Fee', 
+                            description: `Transport - ${format(recordDate, 'PPP')}`, 
+                            status: 'Unpaid', 
+                            dueDate: Timestamp.fromDate(recordDate),
+                            createdAt: serverTimestamp(), 
+                            amountPaid: 0, 
+                            schoolId,
+                        }, { merge: true });
+                    }
                 }
             }
 

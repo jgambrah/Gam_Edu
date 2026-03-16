@@ -1,6 +1,6 @@
 'use client';
 
-import { doc, setDoc, getDoc, serverTimestamp, Timestamp, collection, writeBatch } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, Timestamp, collection, writeBatch, query, where, getDocs } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
 import type { Student } from '@/lib/types';
 import { format } from 'date-fns';
@@ -146,13 +146,17 @@ export async function billMultipleStudents(
   errors: string[];
 }> {
   
+  // 1. Fetch Global Canteen Rate
   const canteenRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/canteen`));
-  const transportRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/transport`));
-  
-  const rates = {
-      canteen: canteenRateDoc.exists() ? Number(canteenRateDoc.data().dailyRate) : DAILY_RATES.CANTEEN,
-      transport: transportRateDoc.exists() ? Number(transportRateDoc.data().dailyRate) : DAILY_RATES.BUS
-  };
+  const canteenRate = canteenRateDoc.exists() ? Number(canteenRateDoc.data().dailyRate) : 0;
+
+  // 2. NEW: Fetch ALL Transport Routes for this school to build a Rate Map
+  const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
+  const routesSnap = await getDocs(routesQuery);
+  const routeRatesMap = new Map<string, number>();
+  routesSnap.docs.forEach(doc => {
+      routeRatesMap.set(doc.id, doc.data().dailyRate || 0);
+  });
 
   let successful = 0;
   let failed = 0;
@@ -163,7 +167,13 @@ export async function billMultipleStudents(
     const student = students[i];
     if (onProgress) onProgress(i + 1, students.length, `${student.firstName} ${student.lastName}`);
 
-    const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, rates);
+    // Get the specific transport rate for this student's route
+    const transportRate = student.routeId ? (routeRatesMap.get(student.routeId) || 0) : 0;
+
+    const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, { 
+        canteen: canteenRate, 
+        transport: transportRate 
+    });
     
     if (result.success) {
       if (result.amountBilled > 0) {

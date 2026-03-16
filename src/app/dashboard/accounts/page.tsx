@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -442,6 +441,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     const [date, setDate] = useState<Date>(new Date());
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
     const [rate, setRate] = useState(0);
+    const [routeRates, setRouteRates] = useState<Map<string, number>>(new Map());
 
     // Fetch students for selected class
     const studentsQuery = useMemoFirebase(() => 
@@ -449,13 +449,22 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     [firestore, selectedClassId, schoolId]);
     const { data: classStudents, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
-    // Fetch rate
+    // Fetch rate / routes
     useEffect(() => {
         async function fetchRate() {
             if (!firestore || !schoolId) return;
-            const path = chargeType === 'Canteen' ? 'canteen' : 'transport';
-            const snap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', path));
-            if (snap.exists()) setRate(snap.data().dailyRate || 0);
+            
+            if (chargeType === 'Canteen') {
+                const snap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+                if (snap.exists()) setRate(snap.data().dailyRate || 0);
+            } else {
+                // Transport: build the route rate map
+                const q = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
+                const snap = await getDocs(q);
+                const map = new Map<string, number>();
+                snap.docs.forEach(d => map.set(d.id, d.data().dailyRate || 0));
+                setRouteRates(map);
+            }
         }
         fetchRate();
     }, [firestore, schoolId, chargeType]);
@@ -472,6 +481,14 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                 const student = classStudents.find(s => s.uid === uid);
                 if(!student) return;
 
+                let billingRate = rate;
+                if (chargeType === 'Transport') {
+                    // Look up the specific rate for this student's route
+                    billingRate = student.routeId ? (routeRates.get(student.routeId) || 0) : 0;
+                }
+                
+                if (billingRate <= 0) return; // Skip if no rate found for this student/route
+
                 // DETERMINISTIC ID: Prevents double billing for the same day/student/type
                 const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
                 const recordRef = doc(firestore, 'financialRecords', recordId);
@@ -482,7 +499,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                     classId: selectedClassId,
                     type: `${chargeType} Fee`,
                     description: `${chargeType} Fee - ${format(date, 'PPP')}`,
-                    billedAmount: rate,
+                    billedAmount: billingRate,
                     amountPaid: 0,
                     status: 'Unpaid',
                     dueDate: startOfDay(date),
@@ -503,7 +520,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     };
 
     const toggleStudent = (uid: string) => {
-        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]);
+        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, id]);
     };
 
     return (
@@ -515,7 +532,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="Canteen">Canteen (Rate: GH₵{rate})</SelectItem>
-                            <SelectItem value="Transport">Transport (Rate: GH₵{rate})</SelectItem>
+                            <SelectItem value="Transport">Transport (Route-based)</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -558,7 +575,15 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                                 {classStudents?.map(s => (
                                     <div key={s.uid} className="flex items-center space-x-2 p-2 hover:bg-slate-50 rounded">
                                         <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)} />
-                                        <span className="text-sm">{s.firstName} {s.lastName}</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-medium">{s.firstName} {s.lastName}</span>
+                                            {chargeType === 'Transport' && (
+                                                <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                                    <Route className="h-2 w-2" />
+                                                    {s.routeId ? (routeRates.get(s.routeId) ? `GH₵${routeRates.get(s.routeId)}/day` : 'No rate set') : 'No route assigned'}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -568,7 +593,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
             )}
 
             <Button onClick={handleDailyChargeLevy} disabled={isSubmitting || selectedStudents.length === 0} className="w-full bg-indigo-600 hover:bg-indigo-700">
-                {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HandCoins className="mr-2 h-4 w-4"/>}
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <HandCoins className="mr-2 h-4 w-4"/>}
                 Levy {chargeType} Charges
             </Button>
         </div>
