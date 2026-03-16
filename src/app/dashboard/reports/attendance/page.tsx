@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentSearchInput } from '@/components/student-search';
 import { Label } from '@/components/ui/label';
+import { formatStudentId } from '@/lib/student-utils';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell 
@@ -336,7 +337,7 @@ export default function AttendanceReportsPage() {
                                 <TableRow key={record.id} className="hover:bg-slate-50/50 transition-colors">
                                     <TableCell>
                                         <div className="font-semibold text-slate-800">{record.student?.firstName} {record.student?.lastName}</div>
-                                        <div className="text-[10px] font-mono text-slate-400">{record.studentId}</div>
+                                        <div className="text-[10px] font-mono text-slate-400">{formatStudentId(record.student)}</div>
                                     </TableCell>
                                     <TableCell>{record.className}</TableCell>
                                     <TableCell className="text-sm">{format(record.dateObj, 'PPP')}</TableCell>
