@@ -126,7 +126,7 @@ function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, 
             <div className="space-y-4 py-4">
                 <div className="space-y-2">
                     <Label>Academic Term Name</Label>
-                    <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
+                    <Input value={termName} onChange={e => setTermName(setTermName as any)} placeholder="e.g., First Term 2025" />
                 </div>
                 <div className="space-y-2">
                     <Label>Payment Due Date</Label>
@@ -145,6 +145,128 @@ function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, 
             </div>
             <DialogFooter>
                 <Button onClick={handleBulkTermlyTransport} disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                    Generate Termly Bills
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    );
+}
+
+function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, onComplete: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [termName, setTermName] = useState('First Term');
+    const [dueDate, setDueDate] = useState<Date>(new Date());
+
+    const handleBulkTermlyCanteen = async () => {
+        if (!firestore || !schoolId) return;
+        setIsSubmitting(true);
+        
+        try {
+            // 1. Fetch Canteen Settings
+            const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+            if (!settingsSnap.exists()) {
+                throw new Error("Canteen rates not configured. Please check Financial Settings.");
+            }
+            const settings = settingsSnap.data();
+            const model = settings.pricingModel || 'Flat';
+            const flatRate = settings.termlyRate || 0;
+            const classRates = settings.classTermlyRates || {};
+
+            // 2. Fetch all students whose canteenBillingMode is 'Termly'
+            const studentsSnap = await getDocs(query(
+                collection(firestore, 'students'), 
+                where('schoolId', '==', schoolId), 
+                where('canteenBillingMode', '==', 'Termly')
+            ));
+
+            if (studentsSnap.empty) {
+                toast({ variant: 'destructive', title: "No Students Found", description: "No students on Termly canteen billing mode." });
+                setIsSubmitting(false);
+                return;
+            }
+
+            // 3. Batch create the bills
+            const batch = writeBatch(firestore);
+            let count = 0;
+            const termId = termName.replace(/\s+/g, '');
+
+            studentsSnap.docs.forEach(docSnap => {
+                const student = docSnap.data();
+                let rate = 0;
+                
+                if (model === 'Class-Based') {
+                    rate = classRates[student.classId] || 0;
+                } else {
+                    rate = flatRate;
+                }
+
+                if (rate > 0) {
+                    const termBillId = `canteen-term-${docSnap.id}-${termId}`;
+                    const recordRef = doc(firestore, 'financialRecords', termBillId);
+                    
+                    batch.set(recordRef, {
+                        studentId: docSnap.id,
+                        studentName: `${student.firstName} ${student.lastName}`,
+                        classId: student.classId || '',
+                        type: 'Canteen Fee (Termly)',
+                        description: `Termly Canteen - ${termName}`,
+                        billedAmount: rate,
+                        amountPaid: 0,
+                        status: 'Unpaid',
+                        dueDate: startOfDay(dueDate),
+                        createdAt: serverTimestamp(),
+                        schoolId: schoolId
+                    }, { merge: true });
+                    count++;
+                }
+            });
+
+            if (count === 0) {
+                throw new Error("No bills were generated. Please check if rates are set for the students' classes.");
+            }
+
+            await batch.commit();
+            toast({ title: 'Success', description: `Generated ${count} termly canteen bills.` });
+            onComplete();
+        } catch (e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Error", description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Bulk Termly Canteen Billing</DialogTitle>
+                <DialogDescription>Generate upfront meal fees for all students on the "Termly" billing plan.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label>Academic Term Name</Label>
+                    <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
+                </div>
+                <div className="space-y-2">
+                    <Label>Payment Due Date</Label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {format(dueDate, "PPP")}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={dueDate} onSelect={(d) => d && setDueDate(d)} initialFocus />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+            </div>
+            <DialogFooter>
+                <Button onClick={handleBulkTermlyCanteen} disabled={isSubmitting} className="w-full bg-orange-600 hover:bg-orange-700 text-white">
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
                     Generate Termly Bills
                 </Button>
@@ -639,7 +761,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     };
 
     const toggleStudent = (uid: string) => {
-        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== id) : [...prev, uid]);
+        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]);
     };
 
     return (
@@ -943,7 +1065,7 @@ export default function AccountsPage() {
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
   
-  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termlyTransport' | null>(null); 
+  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termlyTransport' | 'termlyCanteen' | null>(null); 
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null); 
@@ -1046,6 +1168,9 @@ export default function AccountsPage() {
                                 <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}><FileCog className="mr-2 h-4 w-4" /> Bulk Bill</Button>
                                 <Button variant={activeForm === 'levy' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'levy' ? null : 'levy')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"><HandCoins className="mr-2 h-4 w-4" /> Add Daily Charge</Button>
                                 <Button variant={activeForm === 'termlyTransport' ? 'default' : 'outline'} onClick={() => setActiveForm('termlyTransport')} className="border-purple-200 text-purple-700 hover:bg-purple-50"><Bus className="mr-2 h-4 w-4" /> Termly Transport</Button>
+                                <Button variant={activeForm === 'termlyCanteen' ? 'default' : 'outline'} onClick={() => setActiveForm('termlyCanteen')} className="border-orange-200 text-orange-700 hover:bg-orange-50">
+                                    <Utensils className="mr-2 h-4 w-4" /> Termly Canteen
+                                </Button>
                             </div>
                         </div>
                     </CardHeader>
@@ -1113,6 +1238,12 @@ export default function AccountsPage() {
         {activeForm === 'termlyTransport' && schoolId && (
             <Dialog open={true} onOpenChange={() => setActiveForm(null)}>
                 <BulkTermlyTransportModal schoolId={schoolId} onComplete={() => { forceRefetch(); setActiveForm(null); }} />
+            </Dialog>
+        )}
+
+        {activeForm === 'termlyCanteen' && schoolId && (
+            <Dialog open={true} onOpenChange={() => setActiveForm(null)}>
+                <BulkTermlyCanteenModal schoolId={schoolId} onComplete={() => { forceRefetch(); setActiveForm(null); }} />
             </Dialog>
         )}
 
