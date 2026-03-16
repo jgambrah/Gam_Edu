@@ -530,7 +530,9 @@ export default function StudentsV3Page() {
                                         <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
                                         <SelectContent>
                                             {routes?.map(r => (
-                                                <SelectItem key={r.id} value={r.id}>{r.name} (D: GH₵{r.dailyRate})</SelectItem>
+                                                <SelectItem key={r.id} value={r.id}>
+                                                    {r.name} (Daily: GH₵{r.dailyRate || 0}, Termly: GH₵{r.termlyRate || 0})
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -632,7 +634,9 @@ export default function StudentsV3Page() {
                                             <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
                                             <SelectContent>
                                                 {routes?.map(r => (
-                                                    <SelectItem key={r.id} value={r.id}>{r.name} (D: GH₵{r.dailyRate})</SelectItem>
+                                                    <SelectItem key={r.id} value={r.id}>
+                                                        {r.name} (Daily: GH₵{r.dailyRate || 0}, Termly: GH₵{r.termlyRate || 0})
+                                                    </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
