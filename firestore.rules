@@ -96,7 +96,7 @@ service cloud.firestore {
         allow update, delete: if false; 
     }
     
-    match /counters/{counterId} { allow read: if isSignedIn(); allow write: if isAdmin(); }
+    match /counters/{counterId} { allow read: if isSignedIn(); allow write: if isAdmin() || isFinanceStaff(); }
     match /announcements_v2/{announcementId} { allow read, list: if isSignedIn(); allow write: if isAdmin(); }
 
     // =========================================================
