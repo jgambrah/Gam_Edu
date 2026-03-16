@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -13,7 +12,7 @@ import {
   Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, Sparkles, FolderKanban, HeartHandshake, User as UserIcon,
   BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code, ShoppingBag, Wallet, Calculator, ArrowUpRight,
-  AlertCircle, Book, Library, History
+  AlertCircle, Book, Library, History, MapPin, Bus as BusIcon, Route as RouteIcon, Info
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
@@ -21,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { STAFF_ROLES, LibraryItem } from '@/lib/types';
+import { STAFF_ROLES, LibraryItem, Bus, Route } from '@/lib/types';
 
 // --- Reusable Components ---
 
@@ -38,7 +37,9 @@ function StatCard({ title, value, icon: Icon, link, isLoading, badge, trend, col
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <Loader2 className="h-6 w-6 animate-spin" />
+            <div className="h-8 flex items-center">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
           ) : (
             <div className="space-y-1">
               <div className="text-2xl font-bold">{value}</div>
@@ -86,6 +87,144 @@ function ActivityItem({ title, description, time, icon: Icon, iconColor = "text-
         <p className="text-xs text-muted-foreground">{description}</p>
         <p className="text-xs text-muted-foreground">{time}</p>
       </div>
+    </div>
+  );
+}
+
+// --- TRANSPORT DASHBOARD COMPONENT ---
+function TransportDashboard({ profile, schoolId, buses, routes, students }: { profile: any, schoolId: string, buses: Bus[] | null, routes: Route[] | null, students: any[] | null }) {
+  const { user } = useUser();
+  const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Officer';
+
+  const stats = useMemo(() => {
+    const totalBuses = buses?.length || 0;
+    const totalRoutes = routes?.length || 0;
+    const busStudents = students?.filter(s => s.usesBusService === true) || [];
+    const subscriberCount = busStudents.length;
+
+    // Calculate utilization for each route
+    const utilizationData = routes?.map(route => {
+      const bus = buses?.find(b => b.id === route.busId);
+      const capacity = bus?.capacity || 1;
+      const assignedCount = route.stops?.reduce((sum, stop) => sum + (stop.assignedStudentIds?.length || 0), 0) || 0;
+      return {
+        name: route.name,
+        assigned: assignedCount,
+        capacity: capacity,
+        percentage: Math.round((assignedCount / capacity) * 100)
+      };
+    }) || [];
+
+    const totalCapacity = buses?.reduce((sum, b) => sum + (b.capacity || 0), 0) || 0;
+    const overallUtilization = totalCapacity > 0 ? Math.round((subscriberCount / totalCapacity) * 100) : 0;
+
+    return { totalBuses, totalRoutes, subscriberCount, utilizationData, overallUtilization };
+  }, [buses, routes, students]);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Transport Control: {displayName} 🚌</h1>
+        <p className="text-muted-foreground">Manage school fleet, routes, and student logistics.</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="Active Routes" value={stats.totalRoutes} icon={RouteIcon} link="/dashboard/transport" colorClass="text-indigo-600" />
+        <StatCard title="Total Fleet" value={stats.totalBuses} icon={BusIcon} link="/dashboard/transport" colorClass="text-blue-600" />
+        <StatCard title="Bus Subscribers" value={stats.subscriberCount} icon={Users} link="/dashboard/transport" colorClass="text-emerald-600" />
+        <StatCard title="Fleet Utilization" value={`${stats.overallUtilization}%`} icon={TrendingUp} link="/dashboard/transport" colorClass={stats.overallUtilization > 90 ? "text-red-600" : "text-indigo-600"} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><ArrowUpRight className="text-indigo-500 h-5 w-5"/> Route Utilization</CardTitle>
+            <CardDescription>Occupancy levels across all active routes.</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            {stats.utilizationData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats.utilizationData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis fontSize={10} tickLine={false} axisLine={false} unit="%" />
+                  <Tooltip />
+                  <Bar dataKey="percentage" name="Occupancy %" radius={[4, 4, 0, 0]}>
+                    {stats.utilizationData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.percentage > 90 ? '#ef4444' : '#6366f1'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-muted-foreground italic">No route data defined yet.</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-1">
+          <CardHeader><CardTitle className="text-lg">Logistics Actions</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <Link href="/dashboard/transport" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-indigo-100 rounded-lg"><MapPin className="h-4 w-4 text-indigo-600"/></div>
+                    <span className="text-sm font-semibold">Manage Routes</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/transport" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg"><BusIcon className="h-4 w-4 text-blue-600"/></div>
+                    <span className="text-sm font-semibold">Update Fleet</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+            <Link href="/dashboard/transport" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-emerald-100 rounded-lg"><UserCheck className="h-4 w-4 text-emerald-600"/></div>
+                    <span className="text-sm font-semibold">Assign Students</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Fleet Status Board</CardTitle>
+          <CardDescription>Current route assignments and resource status.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {routes?.map((route) => {
+              const bus = buses?.find(b => b.id === route.busId);
+              const assignedCount = route.stops?.reduce((sum, stop) => sum + (stop.assignedStudentIds?.length || 0), 0) || 0;
+              const isNearCapacity = bus && assignedCount >= bus.capacity;
+
+              return (
+                <div key={route.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("p-2 rounded-full", isNearCapacity ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600")}>
+                      <BusIcon className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">{route.name}</p>
+                      <p className="text-xs text-muted-foreground">{bus?.name || 'No Bus'} • {assignedCount} Students</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <Badge variant={isNearCapacity ? "destructive" : "secondary"} className="text-[10px]">
+                      {isNearCapacity ? 'FULL' : 'ACTIVE'}
+                    </Badge>
+                  </div>
+                </div>
+              );
+            })}
+            {(!routes || routes.length === 0) && <p className="text-center py-6 text-muted-foreground italic">No routes registered.</p>}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -661,7 +800,8 @@ export default function DashboardClient() {
   const isParent = role === 'Parent';
   const isFinance = role === 'Accountant';
   const isLibrarian = role === 'Librarian';
-  const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian;
+  const isTransport = role === 'Transport Staff';
+  const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian || isTransport;
 
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaffUser) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaffUser]);
   const { data: students, isLoading: studentsLoading } = useCollection<any>(studentsQuery);
@@ -694,6 +834,13 @@ export default function DashboardClient() {
     return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
   }, [firestore, isFinance, isAdminOrDirector, schoolId]);
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<any>(financialRecordsQuery);
+
+  // Transport Specific Queries
+  const busesQuery = useMemoFirebase(() => (firestore && schoolId && (isTransport || isAdminOrDirector)) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransport, isAdminOrDirector]);
+  const { data: buses, isLoading: busesLoading } = useCollection<Bus>(busesQuery);
+
+  const routesQuery = useMemoFirebase(() => (firestore && schoolId && (isTransport || isAdminOrDirector)) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransport, isAdminOrDirector]);
+  const { data: routes, isLoading: routesLoading } = useCollection<Route>(routesQuery);
   
   const recentActivity = useMemo(() => {
     const activities: any[] = [];
@@ -712,7 +859,7 @@ export default function DashboardClient() {
     })).sort((a, b) => b.students - a.students);
   }, [classes, students]);
 
-  const isLoading = studentsLoading || staffLoading || classesLoading || leaveLoading || announcementsLoading || assignmentsLoading;
+  const isLoading = studentsLoading || staffLoading || classesLoading || leaveLoading || announcementsLoading || assignmentsLoading || busesLoading || routesLoading;
   
   if (isUserLoading || isRoleLoading || isLoadingSchool) {
       return (
@@ -728,6 +875,7 @@ export default function DashboardClient() {
   if (isParent) return <ParentDashboard profile={profile} schoolId={schoolId!} />;
   if (isFinance) return <AccountantDashboard profile={profile} schoolId={schoolId!} financialRecords={financialRecords} />;
   if (isLibrarian) return <LibrarianDashboard profile={profile} schoolId={schoolId!} />;
+  if (isTransport) return <TransportDashboard profile={profile} schoolId={schoolId!} buses={buses} routes={routes} students={students} />;
 
   if (isAdminOrDirector) {
       const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Administrator';
