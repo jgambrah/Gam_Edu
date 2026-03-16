@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -180,13 +179,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 selectedDate,
                 schoolId,
                 (current, total, name) => {
-                    setBillingProgress(`Billing ${current}/${total}: ${name}`);
+                    setBillingProgress(`Process: ${current}/${total} (${name})`);
                 }
             );
             
             toast({
-                title: 'Billing Complete',
-                description: `✅ ${billingResult.successful} billed successfully. ❌ ${billingResult.failed} failed. Total: GH₵${billingResult.totalBilled.toFixed(2)}`
+                title: 'Daily Billing Complete',
+                description: `✅ ${billingResult.successful} billed. ❌ ${billingResult.failed} failed. Total today: GH₵${billingResult.totalBilled.toFixed(2)}`
             });
             
             if (billingResult.errors.length > 0) {
@@ -203,8 +202,11 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     return (
         <Card className="border-none shadow-none bg-transparent">
             <CardHeader className="px-0">
-                <CardTitle>Take Daily Attendance</CardTitle>
-                <CardDescription>Marking 'Present' automatically generates Canteen bills (and Transport bills for subscribers).</CardDescription>
+                <CardTitle>Daily Attendance & Billing</CardTitle>
+                <CardDescription>
+                    Marking students 'Present' or 'Late' will automatically apply 
+                    charges based on your Class-Specific rates.
+                </CardDescription>
             </CardHeader>
             <CardContent className="px-0">
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -254,7 +256,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                         const student = students.find(s => s.uid === field.studentId);
                                         const currentStatus = form.watch(`records.${index}.status`);
                                         const willBillCanteen = (currentStatus === 'Present' || currentStatus === 'Late') && student?.usesCanteen !== false;
-                                        const willBillBus = (currentStatus === 'Present' || currentStatus === 'Late') && student?.usesBusService;
+                                        const willBillBus = (currentStatus === 'Present' || currentStatus === 'Late') && student?.usesBusService && student?.transportBillingModel === 'Daily';
 
                                         const isVisible = !searchTerm || field.studentName.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -271,12 +273,12 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                     <div className="flex gap-2 mt-1">
                                                         {willBillCanteen && (
                                                             <Badge variant="secondary" className="bg-orange-100 text-orange-700 text-[10px] gap-1 border-orange-200">
-                                                                <Utensils className="h-3 w-3"/> Billed
+                                                                <Utensils className="h-3 w-3"/> Auto-Bill
                                                             </Badge>
                                                         )}
                                                         {willBillBus && (
                                                             <Badge variant="secondary" className="bg-blue-100 text-blue-700 text-[10px] gap-1 border-blue-200">
-                                                                <Bus className="h-3 w-3"/> Billed
+                                                                <Bus className="h-3 w-3"/> Auto-Bill
                                                             </Badge>
                                                         )}
                                                         {currentStatus === 'Absent' && (
@@ -332,7 +334,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                             {fields.length > 0 && (
                                 <div className="pt-4 border-t mt-4">
                                     {billingProgress && (
-                                        <div className="text-sm text-muted-foreground text-center mb-2 animate-pulse">{billingProgress}</div>
+                                        <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">{billingProgress}</div>
                                     )}
                                     <Button type="submit" className="w-full h-12 text-lg font-bold bg-indigo-600 hover:bg-indigo-700" disabled={isLoading}>
                                         {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <Check className="mr-2 h-5 w-5"/>}

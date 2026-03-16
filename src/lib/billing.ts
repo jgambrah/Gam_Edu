@@ -37,7 +37,7 @@ export async function billStudentForAttendance(
       };
     }
 
-    // NEW: Check the student's transport billing model
+    // 1. Check permissions/preferences
     const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
     const shouldBillCanteen = student.usesCanteen !== false;
 
@@ -49,7 +49,7 @@ export async function billStudentForAttendance(
       };
     }
 
-    // Explicitly check for undefined to allow 0.00 as a valid rate
+    // 2. Resolve Rates
     const canteenRate = (providedRates && providedRates.canteen !== undefined) 
       ? providedRates.canteen 
       : DAILY_RATES.CANTEEN;
@@ -63,7 +63,7 @@ export async function billStudentForAttendance(
     let totalBilled = 0;
     const billedServices: string[] = [];
 
-    // 1. Process Canteen Bill
+    // 3. Process Canteen Bill (Dynamic Rate)
     if (shouldBillCanteen && canteenRate > 0) {
         const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
         const canteenRef = doc(firestore, 'financialRecords', canteenRecordId);
@@ -86,7 +86,7 @@ export async function billStudentForAttendance(
         billedServices.push('Canteen');
     }
 
-    // 2. Process Transport Bill (Only if 'Daily' model)
+    // 4. Process Transport Bill (Only if 'Daily' model)
     if (isDailyTransportSubscriber && transportRate > 0) {
         const transportRecordId = `transport-${student.uid}-${dateStr}`;
         const transportRef = doc(firestore, 'financialRecords', transportRecordId);
@@ -134,6 +134,9 @@ export async function billStudentForAttendance(
   }
 }
 
+/**
+ * Main function called by the Attendance UI to bill a list of students.
+ */
 export async function billMultipleStudents(
   firestore: Firestore,
   students: Student[],
@@ -171,15 +174,16 @@ export async function billMultipleStudents(
     const student = students[i];
     if (onProgress) onProgress(i + 1, students.length, `${student.firstName} ${student.lastName}`);
 
-    // A. Resolve Canteen Rate per student
+    // A. Resolve Canteen Rate per student based on their class
     let studentCanteenRate = 0;
     if (canteenModel === 'Flat') {
         studentCanteenRate = globalCanteenRate;
     } else {
+        // Apply tiered pricing
         studentCanteenRate = classCanteenRates[student.classId] || 0;
     }
 
-    // B. Resolve Transport Rate per student
+    // B. Resolve Transport Rate per student from their assigned route
     const transportRate = student.routeId ? (routeRatesMap.get(student.routeId) || 0) : 0;
 
     const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, { 
@@ -191,6 +195,8 @@ export async function billMultipleStudents(
       if (result.amountBilled > 0) {
         successful++;
         totalBilled += result.amountBilled;
+      } else {
+        successful++; // Count as successful even if 0 billed (e.g. already billed)
       }
     } else {
       failed++;
