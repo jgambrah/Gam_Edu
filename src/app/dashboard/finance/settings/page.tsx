@@ -16,9 +16,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { useFirestore, useMemoFirebase, useDoc } from '@/firebase';
+import { useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
-import { Loader2, Utensils, Bus, RefreshCw } from 'lucide-react';
+import { Loader2, Utensils, Bus, RefreshCw, LayoutGrid, ListChecks } from 'lucide-react';
 import { useRole } from '@/context/role-context';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
@@ -30,9 +30,13 @@ import { ManualBillingReconciliation } from '@/components/dashboard/finance/manu
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Class } from '@/lib/types';
 
 const canteenRateSchema = z.object({
-    dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
+    pricingModel: z.enum(['Flat', 'Class-Based']),
+    dailyRate: z.coerce.number().min(0, "Rate must be a positive number."),
+    classRates: z.record(z.string(), z.coerce.number().min(0)).optional()
 });
 
 const transportRateSchema = z.object({
@@ -46,17 +50,31 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
+    // Fetch Classes for Class-Based pricing
+    const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+
     const settingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen') : null, [firestore, schoolId]);
-    const { data: canteenSettings, isLoading } = useDoc(settingsRef);
+    const { data: canteenSettings, isLoading: isLoadingSettings } = useDoc(settingsRef);
 
     const form = useForm<z.infer<typeof canteenRateSchema>>({
         resolver: zodResolver(canteenRateSchema),
-        defaultValues: { dailyRate: 0 }
+        defaultValues: { 
+            pricingModel: 'Flat',
+            dailyRate: 0,
+            classRates: {}
+        }
     });
 
+    const pricingModel = form.watch('pricingModel');
+
     useEffect(() => {
-        if (canteenSettings && typeof canteenSettings.dailyRate === 'number') {
-            form.setValue('dailyRate', canteenSettings.dailyRate);
+        if (canteenSettings) {
+            form.reset({
+                pricingModel: canteenSettings.pricingModel || 'Flat',
+                dailyRate: canteenSettings.dailyRate || 0,
+                classRates: canteenSettings.classRates || {}
+            });
         }
     }, [canteenSettings, form]);
 
@@ -64,10 +82,14 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
-        const data = { dailyRate: values.dailyRate, updatedAt: serverTimestamp() };
+        const data = { 
+            ...values,
+            updatedAt: serverTimestamp() 
+        };
+        
         setDoc(settingsRef, data, { merge: true })
             .then(() => {
-                toast({ title: 'Success', description: 'Canteen daily rate has been updated.' });
+                toast({ title: 'Success', description: 'Canteen settings have been updated.' });
             })
             .catch(async (error) => {
                 const permissionError = new FirestorePermissionError({
@@ -83,30 +105,87 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
     };
 
     return (
-        <Card>
+        <Card className="border-t-4 border-t-orange-500">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Utensils /> Canteen Settings</CardTitle>
-                <CardDescription>Set the daily fee for canteen usage, which will be billed automatically based on attendance.</CardDescription>
+                <CardTitle className="flex items-center gap-2 text-xl"><Utensils className="text-orange-500"/> Canteen Billing Logic</CardTitle>
+                <CardDescription>Configure how students are billed for meals when they attend school.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSave)} className="flex items-end gap-4">
+                    <form onSubmit={form.handleSubmit(handleSave)} className="space-y-6">
                         <FormField
                             control={form.control}
-                            name="dailyRate"
+                            name="pricingModel"
                             render={({ field }) => (
-                                <FormItem className="flex-grow">
-                                    <FormLabel>Daily Canteen Fee (GH₵)</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" step="0.01" placeholder="e.g., 5.00" {...field} disabled={isLoading} />
-                                    </FormControl>
+                                <FormItem>
+                                    <FormLabel>Pricing Model</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-white border-2">
+                                                <SelectValue placeholder="Select model" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="Flat">Flat Rate (Same for everyone)</SelectItem>
+                                            <SelectItem value="Class-Based">Class-Based Rate (Custom by Grade)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={isSaving || isLoading}>
+
+                        {pricingModel === 'Flat' && (
+                            <FormField
+                                control={form.control}
+                                name="dailyRate"
+                                render={({ field }) => (
+                                    <FormItem className="animate-in fade-in slide-in-from-top-2">
+                                        <FormLabel>Standard Daily Fee (GH₵)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" step="0.01" placeholder="e.g., 5.00" {...field} className="h-12 border-2" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+
+                        {pricingModel === 'Class-Based' && (
+                            <div className="space-y-4 border rounded-xl p-4 bg-slate-50 animate-in fade-in slide-in-from-top-2">
+                                <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                    <ListChecks className="h-4 w-4"/> Define Class Rates
+                                </h4>
+                                {isLoadingClasses ? (
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin"/> Loading classes...</div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {classes?.map((c) => (
+                                            <FormField
+                                                key={c.id}
+                                                control={form.control}
+                                                name={`classRates.${c.id}`}
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-xs font-bold text-slate-500">{c.name}</FormLabel>
+                                                        <FormControl>
+                                                            <div className="relative">
+                                                                <span className="absolute left-3 top-2.5 text-slate-400 text-xs font-bold">GH₵</span>
+                                                                <Input type="number" step="0.01" {...field} className="pl-10 bg-white" placeholder="0.00" />
+                                                            </div>
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <Button type="submit" disabled={isSaving || isLoadingSettings} className="w-full h-12 text-lg font-bold bg-orange-600 hover:bg-orange-700">
                             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Rate
+                            Update Canteen Logic
                         </Button>
                     </form>
                 </Form>
@@ -158,10 +237,10 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
     };
 
     return (
-        <Card>
+        <Card className="border-t-4 border-t-indigo-500">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Bus /> Transport Settings</CardTitle>
-                <CardDescription>Set the daily fee for bus usage, billed automatically for enrolled students on attendance.</CardDescription>
+                <CardTitle className="flex items-center gap-2"><Bus className="text-indigo-500"/> Transport Settings</CardTitle>
+                <CardDescription>Set the default daily fee for bus usage. Specific route rates will override this.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -171,15 +250,15 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
                             name="dailyRate"
                             render={({ field }) => (
                                 <FormItem className="flex-grow">
-                                    <FormLabel>Daily Transport Fee (GH₵)</FormLabel>
+                                    <FormLabel>Default Daily Transport Fee (GH₵)</FormLabel>
                                     <FormControl>
-                                        <Input type="number" step="0.01" placeholder="e.g., 10.00" {...field} disabled={isLoading} />
+                                        <Input type="number" step="0.01" placeholder="e.g., 10.00" {...field} disabled={isLoading} className="h-12 border-2" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={isSaving || isLoading}>
+                        <Button type="submit" disabled={isSaving || isLoading} className="h-12">
                             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Save Rate
                         </Button>
@@ -326,7 +405,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
     };
     
     return (
-        <Card>
+        <Card className="border-t-4 border-t-slate-800">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><RefreshCw/> Retrospective Billing</CardTitle>
                 <CardDescription>Recalculate and apply fees for a past date range.</CardDescription>
@@ -340,7 +419,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                                 <PopoverTrigger asChild>
                                 <Button
                                     variant={"outline"}
-                                    className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+                                    className={cn("w-full justify-start text-left font-normal h-12 border-2 bg-white", !dateRange && "text-muted-foreground")}
                                 >
                                     <CalendarIcon className="mr-2 h-4 w-4" />
                                     {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date range</span>)}
@@ -351,7 +430,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                                 </PopoverContent>
                             </Popover>
                         </FormItem>
-                        <Button type="button" onClick={handleReprocess} disabled={isProcessing}>
+                        <Button type="button" onClick={handleReprocess} disabled={isProcessing} className="h-12 px-8">
                             {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                             Reprocess
                         </Button>
@@ -367,7 +446,7 @@ export default function FinancialSettingsPage() {
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   
   if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
-    return <Card><CardHeader><CardTitle>Access Denied</CardTitle></CardHeader></Card>;
+    return <Card className="m-6"><CardHeader><CardTitle>Access Denied</CardTitle></CardHeader></Card>;
   }
 
   if (isLoadingSchool) {
@@ -375,18 +454,25 @@ export default function FinancialSettingsPage() {
   }
 
   if (!schoolId) {
-       return <Card><CardHeader><CardTitle>School Not Found</CardTitle></CardHeader></Card>;
+       return <Card className="m-6"><CardHeader><CardTitle>School Not Found</CardTitle></CardHeader></Card>;
   }
 
   return (
-    <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Financial Settings</h1>
+    <div className="space-y-6 p-6 max-w-6xl mx-auto">
+        <div className="flex flex-col gap-1 mb-4">
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight">Financial Settings</h1>
+            <p className="text-muted-foreground font-medium italic">Configure automated billing rates and reprocess history.</p>
+        </div>
+        
         <div className="grid lg:grid-cols-2 gap-6">
             <CanteenSettings schoolId={schoolId} />
             <TransportSettings schoolId={schoolId} />
         </div>
-        <ManualBillingReconciliation schoolId={schoolId} />
-        <RetrospectiveBilling schoolId={schoolId} />
+        
+        <div className="space-y-6">
+            <ManualBillingReconciliation schoolId={schoolId} />
+            <RetrospectiveBilling schoolId={schoolId} />
+        </div>
     </div>
   );
 }
