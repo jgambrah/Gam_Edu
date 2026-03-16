@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -65,7 +64,7 @@ export default function CodingClubPage() {
                 <iframe 
                     src="https://turbowarp.org/editor" 
                     className="w-full h-full border-none"
-                    allowTransparency={true}
+                    allowtransparency="true"
                     allowFullScreen={true}
                     allow="geolocation; microphone; camera; midi; bluetooth"
                     title="Scratch Editor"
