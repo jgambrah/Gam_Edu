@@ -70,6 +70,7 @@ export default function StudentsV3Page() {
   const [selectedRouteId, setSelectedRouteId] = useState('');
   const [usesBus, setUsesBus] = useState(false);
   const [billingModel, setBillingModel] = useState<'Daily' | 'Termly'>('Daily');
+  const [canteenBillingMode, setCanteenBillingMode] = useState<'Daily' | 'Termly' | 'None'>('Daily');
 
   // Routes Query
   const routesQuery = useMemoFirebase(() => 
@@ -88,6 +89,7 @@ export default function StudentsV3Page() {
         setSelectedRouteId('');
         setUsesBus(false);
         setBillingModel('Daily');
+        setCanteenBillingMode('Daily');
     }
     if (editingStudent) { 
         setIsSubmitting(false); 
@@ -97,6 +99,7 @@ export default function StudentsV3Page() {
         setSelectedRouteId(editingStudent.routeId || '');
         setUsesBus(editingStudent.usesBusService || false);
         setBillingModel(editingStudent.transportBillingModel || 'Daily');
+        setCanteenBillingMode(editingStudent.canteenBillingMode || (editingStudent.usesCanteen === false ? 'None' : 'Daily'));
     }
   }, [isAddOpen, editingStudent]);
 
@@ -227,7 +230,8 @@ export default function StudentsV3Page() {
               usesBusService: usesBus,
               routeId: usesBus ? selectedRouteId : null,
               transportBillingModel: usesBus ? billingModel : null,
-              usesCanteen: values.usesCanteen === 'on',
+              canteenBillingMode: canteenBillingMode,
+              usesCanteen: canteenBillingMode !== 'None',
               photoURL: photoURL,
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp(),
@@ -277,7 +281,8 @@ export default function StudentsV3Page() {
             usesBusService: usesBus,
             routeId: usesBus ? selectedRouteId : null,
             transportBillingModel: usesBus ? billingModel : null,
-            usesCanteen: values.usesCanteen === 'on',
+            canteenBillingMode: canteenBillingMode,
+            usesCanteen: canteenBillingMode !== 'None',
             photoURL: photoURL,
         });
 
@@ -429,7 +434,7 @@ export default function StudentsV3Page() {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex gap-2">
-                                            {s.usesCanteen !== false && <Utensils className="h-4 w-4 text-orange-500" title="Canteen Subscriber"/>}
+                                            {s.canteenBillingMode !== 'None' && <Utensils className="h-4 w-4 text-orange-500" title={`Canteen: ${s.canteenBillingMode}`}/>}
                                             {s.usesBusService && <Bus className="h-4 w-4 text-blue-500" title={`Bus Subscriber (${s.transportBillingModel})`} />}
                                         </div>
                                     </TableCell>
@@ -510,14 +515,27 @@ export default function StudentsV3Page() {
                 
                 <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
                     <h4 className="text-sm font-bold text-slate-700">Services & Subscriptions</h4>
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="usesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
-                            <Label htmlFor="usesBusService">Uses Bus Service</Label>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Canteen Mode */}
+                        <div className="space-y-2">
+                            <Label className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen Billing Mode</Label>
+                            <Select value={canteenBillingMode} onValueChange={(val: any) => setCanteenBillingMode(val)}>
+                                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Daily">Daily (Attendance-based)</SelectItem>
+                                    <SelectItem value="Termly">Termly (Flat Fee)</SelectItem>
+                                    <SelectItem value="None">None (Self-Catered)</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="usesCanteen" name="usesCanteen" defaultChecked={true} />
-                            <Label htmlFor="usesCanteen">Subscribed to Canteen</Label>
+
+                        {/* Transport Checkbox */}
+                        <div className="flex items-end pb-2">
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="usesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
+                                <Label htmlFor="usesBusService" className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Uses Bus Service</Label>
+                            </div>
                         </div>
                     </div>
 
@@ -538,7 +556,7 @@ export default function StudentsV3Page() {
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Billing Model</Label>
+                                    <Label>Bus Billing Model</Label>
                                     <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
                                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                                         <SelectContent>
@@ -614,14 +632,27 @@ export default function StudentsV3Page() {
                     
                     <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
                         <h4 className="text-sm font-bold text-slate-700">Services & Subscriptions</h4>
-                        <div className="flex items-center gap-6">
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="editUsesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
-                                <Label htmlFor="editUsesBusService">Uses Bus Service</Label>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Canteen Mode */}
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen Billing Mode</Label>
+                                <Select value={canteenBillingMode} onValueChange={(val: any) => setCanteenBillingMode(val)}>
+                                    <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Daily">Daily (Attendance-based)</SelectItem>
+                                        <SelectItem value="Termly">Termly (Flat Fee)</SelectItem>
+                                        <SelectItem value="None">None (Self-Catered)</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="editUsesCanteen" name="usesCanteen" defaultChecked={editingStudent.usesCanteen !== false} />
-                                <Label htmlFor="editUsesCanteen">Uses Canteen</Label>
+
+                            {/* Transport Checkbox */}
+                            <div className="flex items-end pb-2">
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox id="editUsesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
+                                    <Label htmlFor="editUsesBusService" className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Uses Bus Service</Label>
+                                </div>
                             </div>
                         </div>
 
@@ -642,7 +673,7 @@ export default function StudentsV3Page() {
                                         </Select>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Billing Model</Label>
+                                        <Label>Bus Billing Model</Label>
                                         <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
                                             <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                                             <SelectContent>

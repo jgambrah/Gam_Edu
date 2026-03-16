@@ -36,7 +36,9 @@ import { Class } from '@/lib/types';
 const canteenRateSchema = z.object({
     pricingModel: z.enum(['Flat', 'Class-Based']),
     dailyRate: z.coerce.number().min(0, "Rate must be a positive number."),
-    classRates: z.record(z.string(), z.coerce.number().min(0)).optional()
+    termlyRate: z.coerce.number().min(0, "Rate must be a positive number.").optional(),
+    classRates: z.record(z.string(), z.coerce.number().min(0)).optional(),
+    classTermlyRates: z.record(z.string(), z.coerce.number().min(0)).optional()
 });
 
 const transportRateSchema = z.object({
@@ -62,7 +64,9 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         defaultValues: { 
             pricingModel: 'Flat',
             dailyRate: 0,
-            classRates: {}
+            termlyRate: 0,
+            classRates: {},
+            classTermlyRates: {}
         }
     });
 
@@ -73,7 +77,9 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
             form.reset({
                 pricingModel: canteenSettings.pricingModel || 'Flat',
                 dailyRate: canteenSettings.dailyRate || 0,
-                classRates: canteenSettings.classRates || {}
+                termlyRate: canteenSettings.termlyRate || 0,
+                classRates: canteenSettings.classRates || {},
+                classTermlyRates: canteenSettings.classTermlyRates || {}
             });
         }
     }, [canteenSettings, form]);
@@ -108,7 +114,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         <Card className="border-t-4 border-t-orange-500">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl"><Utensils className="text-orange-500"/> Canteen Billing Logic</CardTitle>
-                <CardDescription>Configure how students are billed for meals when they attend school.</CardDescription>
+                <CardDescription>Configure how students are billed for meals (Daily vs Termly).</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -136,19 +142,34 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                         />
 
                         {pricingModel === 'Flat' && (
-                            <FormField
-                                control={form.control}
-                                name="dailyRate"
-                                render={({ field }) => (
-                                    <FormItem className="animate-in fade-in slide-in-from-top-2">
-                                        <FormLabel>Standard Daily Fee (GH₵)</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" step="0.01" placeholder="e.g., 5.00" {...field} value={field.value ?? 0} className="h-12 border-2" />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
+                                <FormField
+                                    control={form.control}
+                                    name="dailyRate"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Daily Fee (GH₵)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="termlyRate"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Termly Fee (GH₵)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         )}
 
                         {pricingModel === 'Class-Based' && (
@@ -159,24 +180,35 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                                 {isLoadingClasses ? (
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin"/> Loading classes...</div>
                                 ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-6">
                                         {classes?.map((c) => (
-                                            <FormField
-                                                key={c.id}
-                                                control={form.control}
-                                                name={`classRates.${c.id}`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-xs font-bold text-slate-500">{c.name}</FormLabel>
-                                                        <FormControl>
-                                                            <div className="relative">
-                                                                <span className="absolute left-3 top-2.5 text-slate-400 text-xs font-bold">GH₵</span>
-                                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="pl-10 bg-white" placeholder="0.00" />
-                                                            </div>
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
+                                            <div key={c.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 border rounded-lg bg-white shadow-sm">
+                                                <div className="md:col-span-2 text-xs font-black text-indigo-600 uppercase tracking-widest">{c.name}</div>
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`classRates.${c.id}`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-[10px] font-bold text-slate-500 uppercase">Daily Rate (GH₵)</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="bg-white" placeholder="0.00" />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`classTermlyRates.${c.id}`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-[10px] font-bold text-slate-500 uppercase">Termly Rate (GH₵)</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="bg-white" placeholder="0.00" />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
                                         ))}
                                     </div>
                                 )}
@@ -311,14 +343,15 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             // 3. Fetch Students to know their route and billing model
             const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
             const studentsSnap = await getDocs(studentsQuery);
-            const studentTransportMap = new Map<string, { usesBus: boolean, routeId: string, billingMode: string }>();
+            const studentTransportMap = new Map<string, { usesBus: boolean, routeId: string, billingMode: string, canteenMode: string }>();
 
             studentsSnap.docs.forEach(doc => {
                 const data = doc.data();
                 studentTransportMap.set(doc.id, { 
                     usesBus: data.usesBusService === true, 
                     routeId: data.routeId || '',
-                    billingMode: data.transportBillingModel || 'Daily'
+                    billingMode: data.transportBillingModel || 'Daily',
+                    canteenMode: data.canteenBillingMode || 'Daily'
                 });
             });
             
@@ -352,11 +385,14 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                 const studentInfo = studentTransportMap.get(record.studentId);
 
                 // A. Determine the correct Canteen Rate for this specific student's class
+                // ONLY bill daily if mode is 'Daily'
                 let studentCanteenRate = 0;
-                if (canteenModel === 'Flat') {
-                    studentCanteenRate = globalCanteenRate;
-                } else if (canteenModel === 'Class-Based') {
-                    studentCanteenRate = classCanteenRates[record.classId] || 0;
+                if (studentInfo?.canteenMode === 'Daily') {
+                    if (canteenModel === 'Flat') {
+                        studentCanteenRate = globalCanteenRate;
+                    } else if (canteenModel === 'Class-Based') {
+                        studentCanteenRate = classCanteenRates[record.classId] || 0;
+                    }
                 }
 
                 // Apply Canteen Bill
