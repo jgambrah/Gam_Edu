@@ -21,6 +21,7 @@ import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/no
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Badge } from '@/components/ui/badge';
 
 // --- Student Assignment Dialog ---
 
