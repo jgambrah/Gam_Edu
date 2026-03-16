@@ -55,10 +55,11 @@ export function formatStudentBadge(student: Student): string {
 /**
  * Atomically increments and returns the next student ID.
  * @param firestore - The Firestore instance.
+ * @param schoolId - The ID of the school.
  * @returns A formatted student ID string (e.g., "SS-2024-0001").
  */
-export async function generateNextStudentId(firestore: Firestore): Promise<string> {
-  const counterRef = doc(firestore, 'counters', 'students');
+export async function generateNextStudentId(firestore: Firestore, schoolId: string): Promise<string> {
+  const counterRef = doc(firestore, 'counters', `students_${schoolId}`);
   
   const newIdNumber = await runTransaction(firestore, async (transaction) => {
     const counterDoc = await transaction.get(counterRef);
@@ -84,4 +85,39 @@ export async function generateNextStudentId(firestore: Firestore): Promise<strin
   const paddedNumber = String(newIdNumber).padStart(4, '0');
   
   return `SS-${year}-${paddedNumber}`;
+}
+
+/**
+ * Atomically increments and returns the next receipt ID.
+ * @param firestore - The Firestore instance.
+ * @param schoolId - The ID of the school.
+ * @returns A formatted receipt ID string (e.g., "RCT-2024-0001").
+ */
+export async function generateNextReceiptId(firestore: Firestore, schoolId: string): Promise<string> {
+  const counterRef = doc(firestore, 'counters', `receipts_${schoolId}`);
+  
+  const newIdNumber = await runTransaction(firestore, async (transaction) => {
+    const counterDoc = await transaction.get(counterRef);
+    if (!counterDoc.exists()) {
+      // Initialize counter if it doesn't exist
+      transaction.set(counterRef, { 
+        currentId: 1,
+        lastUpdated: serverTimestamp()
+      });
+      return 1;
+    }
+    
+    const newId = (counterDoc.data().currentId || 0) + 1;
+    transaction.update(counterRef, { 
+      currentId: newId,
+      lastUpdated: serverTimestamp()
+    });
+    
+    return newId;
+  });
+  
+  const year = new Date().getFullYear();
+  const paddedNumber = String(newIdNumber).padStart(4, '0');
+  
+  return `RCT-${year}-${paddedNumber}`;
 }

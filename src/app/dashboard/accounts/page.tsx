@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -36,7 +37,7 @@ import { Separator } from '@/components/ui/separator';
 import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, Class, PaymentTransaction } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
 import { StudentSearchInput } from '@/components/student-search';
-import { searchStudent } from '@/lib/student-utils';
+import { searchStudent, generateNextReceiptId } from '@/lib/student-utils';
 import { GenerateReceipt } from './generate-receipt';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -97,7 +98,7 @@ function PaymentHistory({ record }: { record: FinancialRecord }) {
         <div className="p-4 space-y-2">
             {payments.map(p => (
                 <div key={p.id} className="flex justify-between items-center text-xs bg-white p-2 border rounded">
-                    <span>GH₵{p.amount.toFixed(2)} ({p.method}) - {p.paidAt ? format(p.paidAt.toDate(), 'dd MMM yy') : ''}</span>
+                    <span>{p.id}: GH₵{p.amount.toFixed(2)} ({p.method}) - {p.paidAt ? format(p.paidAt.toDate(), 'dd MMM yy') : ''}</span>
                     <GenerateReceipt transaction={record} payment={p} variant="icon" />
                 </div>
             ))}
@@ -595,8 +596,13 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
         setIsSubmitting(true);
         try {
             const batch = writeBatch(firestore);
-            const paymentDocRef = doc(collection(firestore, 'financialRecords', record.id, 'payments'));
+            
+            // --- NEW: SENSORIAL RECEIPT NUMBER ---
+            const receiptId = await generateNextReceiptId(firestore, schoolId);
+            const paymentDocRef = doc(firestore, 'financialRecords', record.id, 'payments', receiptId);
+            
             const paymentData = { 
+                id: receiptId,
                 amount: values.amount, 
                 method: values.method, 
                 notes: values.notes || '', 
@@ -618,12 +624,12 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 if (tillSnap.empty) throw new Error("You must have an OPEN TILL to accept cash.");
                 const activeTill = tillSnap.docs[0];
                 const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
-                batch.set(tillTransRef, { amount: values.amount, studentName: record.studentName, timestamp: serverTimestamp(), type: 'Payment', description: `Cash: ${record.description}`, status: 'Completed', schoolId: schoolId });
+                batch.set(tillTransRef, { amount: values.amount, studentName: record.studentName, timestamp: serverTimestamp(), type: 'Payment', description: `Cash: ${record.description} (Receipt: ${receiptId})`, status: 'Completed', schoolId: schoolId });
                 batch.update(doc(firestore, 'tills', activeTill.id), { currentBalance: increment(values.amount) });
             }
             batch.set(paymentDocRef, paymentData);
             await batch.commit();
-            toast({ title: 'Payment Logged', description: 'Receipt is now available.' });
+            toast({ title: 'Payment Logged', description: `Receipt ${receiptId} generated.` });
             onUpdate(); setOpen(false);
         } catch (e: any) {
             toast({ variant: 'destructive', title: 'Payment Failed', description: e.message });
@@ -916,7 +922,7 @@ export default function AccountsPage() {
                             </div>
                         ) : null}
                         
-                        <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-md"/>
+                        <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-sm"/>
                         {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
                             <div className="space-y-2">
                                 {filteredStudentsWithBills.length === 0 ? (

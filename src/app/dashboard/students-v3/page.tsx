@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -190,7 +191,7 @@ export default function StudentsV3Page() {
           }
 
           // C. Generate Sequential Student ID (Transaction)
-          const newStudentId = await generateNextStudentId(firestore);
+          const newStudentId = await generateNextStudentId(firestore, adminSchoolId);
           
           // D. Save student document with the new ID
           await setDoc(doc(firestore, 'students', result.uid), {
@@ -331,7 +332,7 @@ export default function StudentsV3Page() {
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 
-                <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700" disabled={!adminSchoolId}>
+                <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
                 </Button>
             </div>

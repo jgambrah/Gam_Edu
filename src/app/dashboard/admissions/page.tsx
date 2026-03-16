@@ -288,7 +288,7 @@ function AdminApplicationDashboard() {
                     return;
                 }
                 
-                const newStudentId = await generateNextStudentId(firestore);
+                const newStudentId = await generateNextStudentId(firestore, schoolId);
                 const [firstName, ...lastName] = selectedApp.student.fullName.split(' ');
 
                 const studentData = {
