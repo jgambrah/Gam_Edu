@@ -63,7 +63,7 @@ export default function CodingClubPage() {
                     because the official Scratch site blocks framing via X-Frame-Options.
                 */}
                 <iframe 
-                    src="https://turbowarp.org/editor?embed" 
+                    src="https://turbowarp.org/editor" 
                     className="w-full h-full border-none"
                     allowTransparency={true}
                     allowFullScreen={true}
