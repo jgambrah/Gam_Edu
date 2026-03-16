@@ -289,6 +289,7 @@ const routeSchema = z.object({
   name: z.string().min(1, 'Route name is required.'),
   busId: z.string().min(1, 'A bus must be selected.'),
   driverId: z.string().min(1, 'A driver must be selected.'),
+  dailyRate: z.coerce.number().min(0, 'Daily rate must be at least 0.'),
   stops: z.array(stopSchema).min(1, 'At least one stop is required.'),
 });
 
@@ -306,6 +307,7 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange, schoolId }: 
             name: '',
             busId: '',
             driverId: '',
+            dailyRate: 0,
             stops: [{ name: '', address: '', order: 1, assignedStudentIds: [] }],
         },
     });
@@ -336,9 +338,14 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange, schoolId }: 
                 <DialogHeader><DialogTitle>Create New Route</DialogTitle></DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onAddRoute)} className="space-y-4">
-                        <FormField control={form.control} name="name" render={({ field }) => (
-                            <FormItem><FormLabel>Route Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Morning Route A - North" /></FormControl><FormMessage /></FormItem>
-                        )}/>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name="name" render={({ field }) => (
+                                <FormItem><FormLabel>Route Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Morning Route A - North" /></FormControl><FormMessage /></FormItem>
+                            )}/>
+                            <FormField control={form.control} name="dailyRate" render={({ field }) => (
+                                <FormItem><FormLabel>Daily Rate (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="15.00" /></FormControl><FormMessage /></FormItem>
+                            )}/>
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                             <FormField control={form.control} name="busId" render={({ field }) => (
                                 <FormItem><FormLabel>Assign Bus</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -481,6 +488,7 @@ export default function TransportPage() {
                     <div className="space-y-2">
                         <p className="flex justify-between border-b pb-2"><strong>Assigned Bus:</strong> <span>{assignedBus?.name || 'N/A'}</span></p>
                         <p className="flex justify-between border-b pb-2"><strong>Capacity:</strong> <span>{assignedBus?.capacity || 'N/A'} seats</span></p>
+                        <p className="flex justify-between border-b pb-2"><strong>Daily Rate:</strong> <span className="font-bold text-indigo-600">GH₵{selectedRoute.dailyRate?.toFixed(2) || '0.00'}</span></p>
                         <p className="flex justify-between"><strong>Driver:</strong> <span>{assignedDriver?.firstName ? `${assignedDriver.firstName} ${assignedDriver.lastName}`: 'N/A'}</span></p>
                     </div>
                 </CardContent>

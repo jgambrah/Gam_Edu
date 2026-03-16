@@ -1,3 +1,4 @@
+
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -756,6 +757,7 @@ export type Route = {
     busId: string;
     driverId: string;
     stops: Stop[];
+    dailyRate: number;
 };
 
 export const studentAssignmentSchema = z.object({
