@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { addDoc, collection, doc, updateDoc, writeBatch, query, where } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc, writeBatch, query, where, deleteDoc } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StudentDisplay } from '@/components/student-display';
@@ -149,7 +149,7 @@ function StudentAssignmentDialog({
                                             {s.firstName} {s.lastName} ({s.classId || 'No Class'})
                                         </SelectItem>
                                     ))
-                                )}
+                                ) || <div className="p-4 text-center text-xs">No students.</div>}
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -293,7 +293,19 @@ const routeSchema = z.object({
   stops: z.array(stopSchema).min(1, 'At least one stop is required.'),
 });
 
-function RouteManagementDialog({ open, onOpenChange, onRouteChange, schoolId }: { open: boolean; onOpenChange: (open: boolean) => void; onRouteChange: () => void; schoolId: string }) {
+function RouteManagementDialog({ 
+    open, 
+    onOpenChange, 
+    onRouteChange, 
+    schoolId, 
+    editingRoute = null 
+}: { 
+    open: boolean; 
+    onOpenChange: (open: boolean) => void; 
+    onRouteChange: () => void; 
+    schoolId: string;
+    editingRoute?: Route | null;
+}) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -303,7 +315,13 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange, schoolId }: 
 
     const form = useForm<z.infer<typeof routeSchema>>({
         resolver: zodResolver(routeSchema),
-        defaultValues: {
+        defaultValues: editingRoute ? {
+            name: editingRoute.name,
+            busId: editingRoute.busId,
+            driverId: editingRoute.driverId,
+            dailyRate: editingRoute.dailyRate || 0,
+            stops: editingRoute.stops || [],
+        } : {
             name: '',
             busId: '',
             driverId: '',
@@ -317,16 +335,38 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange, schoolId }: 
         name: "stops"
     });
 
-    const onAddRoute = async (values: z.infer<typeof routeSchema>) => {
+    const onSubmit = async (values: z.infer<typeof routeSchema>) => {
+        if (!firestore || !schoolId) return;
         setIsSubmitting(true);
-        const stopsWithIds = values.stops.map(stop => ({...stop, id: doc(collection(firestore!, 'temp')).id }));
+        
         try {
-            await addDocumentNonBlocking(collection(firestore!, 'routes'), {...values, stops: stopsWithIds, schoolId});
-            toast({ title: 'Route Created' });
+            const stopsWithIds = values.stops.map(stop => ({
+                ...stop, 
+                id: stop.id || doc(collection(firestore, 'temp')).id 
+            }));
+
+            if (editingRoute) {
+                const routeRef = doc(firestore, 'routes', editingRoute.id);
+                await updateDocumentNonBlocking(routeRef, { 
+                    ...values, 
+                    stops: stopsWithIds, 
+                    updatedAt: serverTimestamp() 
+                });
+                toast({ title: 'Route Updated' });
+            } else {
+                await addDocumentNonBlocking(collection(firestore, 'routes'), {
+                    ...values, 
+                    stops: stopsWithIds, 
+                    schoolId,
+                    createdAt: serverTimestamp()
+                });
+                toast({ title: 'Route Created' });
+            }
+            
             onRouteChange();
             onOpenChange(false);
         } catch (e) {
-             toast({ variant: 'destructive', title: 'Error', description: 'Failed to create route.' });
+             toast({ variant: 'destructive', title: 'Error', description: 'Failed to save route.' });
         } finally {
             setIsSubmitting(false);
         }
@@ -334,10 +374,12 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange, schoolId }: 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl">
-                <DialogHeader><DialogTitle>Create New Route</DialogTitle></DialogHeader>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>{editingRoute ? 'Edit Route' : 'Create New Route'}</DialogTitle>
+                </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onAddRoute)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <FormField control={form.control} name="name" render={({ field }) => (
                                 <FormItem><FormLabel>Route Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Morning Route A - North" /></FormControl><FormMessage /></FormItem>
@@ -364,7 +406,7 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange, schoolId }: 
                             <h4 className="font-semibold mb-2">Stops</h4>
                             <div className="space-y-4">
                                 {fields.map((field, index) => (
-                                    <div key={field.id} className="flex gap-2 items-end p-2 border rounded-md">
+                                    <div key={field.id} className="flex gap-2 items-end p-2 border rounded-md bg-slate-50/50">
                                         <FormField control={form.control} name={`stops.${index}.order`} render={({ field }) => (
                                             <FormItem className="w-16"><FormLabel>Order</FormLabel><FormControl><Input type="number" {...field} /></FormControl></FormItem>
                                         )}/>
@@ -372,15 +414,20 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange, schoolId }: 
                                             <FormItem className="flex-1"><FormLabel>Stop Name</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
                                         )}/>
                                         <FormField control={form.control} name={`stops.${index}.address`} render={({ field }) => (
-                                            <FormItem className="flex-1"><FormLabel>Address/Location</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                                            <FormItem className="flex-1"><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
                                         )}/>
-                                        <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4"/></Button>
+                                        <Button type="button" variant="ghost" size="icon" className="text-red-500 hover:text-red-700 h-10 w-10" onClick={() => remove(index)}><Trash2 className="h-4 w-4"/></Button>
                                     </div>
                                 ))}
                             </div>
-                            <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', address: '', order: fields.length + 1, assignedStudentIds: [] })} className="mt-2">Add Stop</Button>
+                            <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', address: '', order: fields.length + 1, assignedStudentIds: [] })} className="mt-4">
+                                <PlusCircle className="h-4 w-4 mr-2"/> Add Stop
+                            </Button>
                         </div>
-                        <Button type="submit" disabled={isSubmitting}>Create Route</Button>
+                        <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
+                            {isSubmitting ? <Loader2 className="animate-spin mr-2"/> : null}
+                            {editingRoute ? 'Save Route Changes' : 'Create Route'}
+                        </Button>
                     </form>
                 </Form>
             </DialogContent>
@@ -394,14 +441,16 @@ export default function TransportPage() {
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+  const { toast } = useToast();
   
   // Dialog states
   const [assignmentDialogOpen, setAssignmentDialogOpen] = useState(false);
   const [busManagementOpen, setBusManagementOpen] = useState(false);
   const [routeManagementOpen, setRouteManagementOpen] = useState(false);
+  const [editingRoute, setEditingRoute] = useState<Route | null>(null);
   
   const canAccess = ['Administrator', 'Director', 'Transport Staff'].includes(role || '');
-  const canManage = ['Administrator', 'Director'].includes(role || '');
+  const canManage = ['Administrator', 'Director', 'Transport Staff'].includes(role || '');
 
   // Data fetching
   const routesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -441,6 +490,23 @@ export default function TransportPage() {
     return students.filter(s => s.usesBusService === true);
   }, [students]);
 
+  const handleEditRoute = (route: Route) => {
+      setEditingRoute(route);
+      setRouteManagementOpen(true);
+  };
+
+  const handleDeleteRoute = async (routeId: string) => {
+      if (!firestore || !confirm("Are you sure you want to delete this route? Students will be unassigned.")) return;
+      try {
+          await deleteDoc(doc(firestore, 'routes', routeId));
+          toast({ title: 'Route Deleted' });
+          setSelectedRouteId(null);
+          refetchRoutes();
+      } catch (e) {
+          toast({ variant: 'destructive', title: 'Error deleting route' });
+      }
+  };
+
   if (!canAccess) {
     return (
       <Card>
@@ -453,16 +519,16 @@ export default function TransportPage() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <CardTitle className="flex items-center gap-2 text-2xl font-bold"><RouteIcon className="h-6 w-6 text-indigo-600"/> Transport Management</CardTitle>
               <CardDescription>Manage bus routes, stops, and student assignments.</CardDescription>
             </div>
             {canManage && (
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                     <Button onClick={() => setAssignmentDialogOpen(true)} disabled={!selectedRoute} className="bg-indigo-600">Assign Students</Button>
                     <Button variant="outline" onClick={() => setBusManagementOpen(true)}>Manage Buses</Button>
-                    <Button variant="outline" onClick={() => setRouteManagementOpen(true)}>Manage Routes</Button>
+                    <Button variant="outline" onClick={() => { setEditingRoute(null); setRouteManagementOpen(true); }}>New Route</Button>
                 </div>
             )}
           </div>
@@ -481,9 +547,15 @@ export default function TransportPage() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {selectedRoute && !isLoading && (
-            <div className="md:col-span-1 space-y-6">
+            <div className="md:col-span-1 space-y-6 animate-in fade-in slide-in-from-left-4">
                 <Card>
-                <CardHeader className="bg-slate-50 border-b"><CardTitle className="flex items-center gap-2 text-lg"><BusIcon className="text-indigo-600 h-5 w-5"/> Bus & Driver</CardTitle></CardHeader>
+                <CardHeader className="bg-slate-50 border-b flex flex-row justify-between items-center py-3">
+                    <CardTitle className="flex items-center gap-2 text-lg"><BusIcon className="text-indigo-600 h-5 w-5"/> Bus & Driver</CardTitle>
+                    <div className="flex gap-1">
+                        <Button variant="ghost" size="sm" onClick={() => handleEditRoute(selectedRoute)}><Edit className="h-4 w-4 mr-1"/> Edit</Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDeleteRoute(selectedRoute.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50"><Trash2 className="h-4 w-4"/></Button>
+                    </div>
+                </CardHeader>
                 <CardContent className="pt-6">
                     <div className="space-y-2">
                         <p className="flex justify-between border-b pb-2"><strong>Assigned Bus:</strong> <span>{assignedBus?.name || 'N/A'}</span></p>
@@ -507,7 +579,7 @@ export default function TransportPage() {
                             {stop.assignedStudentIds?.length > 0 ? (
                                 stop.assignedStudentIds.map(studentId => {
                                     const student = students?.find(s => s.uid === studentId);
-                                    return <div key={studentId} className="flex items-center gap-2 text-sm"><StudentDisplay student={student} variant="compact" /></div>
+                                    return student ? <div key={studentId} className="flex items-center gap-2 text-sm"><StudentDisplay student={student} variant="compact" /></div> : null;
                                 })
                             ) : <p className="text-[10px] text-slate-400 italic">No students assigned to this stop.</p>}
                         </div>
@@ -525,7 +597,7 @@ export default function TransportPage() {
             </CardHeader>
             <CardContent>
                 {isLoading ? (
-                     <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin mx-auto"/></div>
+                     <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600"/></div>
                 ) : (
                     <div className="rounded-md border overflow-hidden">
                         <Table>
@@ -590,6 +662,7 @@ export default function TransportPage() {
                 onOpenChange={setRouteManagementOpen}
                 onRouteChange={refetchRoutes}
                 schoolId={schoolId}
+                editingRoute={editingRoute}
             />
         </>
       )}
