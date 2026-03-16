@@ -147,9 +147,12 @@ export async function billMultipleStudents(
   errors: string[];
 }> {
   
-  // 1. Fetch Global Canteen Rate
-  const canteenRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/canteen`));
-  const canteenRate = canteenRateDoc.exists() ? Number(canteenRateDoc.data().dailyRate) : 0;
+  // 1. Fetch Canteen Settings (Dynamic Model)
+  const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+  const canteenData = canteenSettingsSnap.data();
+  const canteenModel = canteenData?.pricingModel || 'Flat';
+  const globalCanteenRate = canteenData?.dailyRate || 0;
+  const classCanteenRates = canteenData?.classRates || {};
 
   // 2. Fetch ALL Transport Routes for this school to build a Rate Map
   const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
@@ -168,11 +171,19 @@ export async function billMultipleStudents(
     const student = students[i];
     if (onProgress) onProgress(i + 1, students.length, `${student.firstName} ${student.lastName}`);
 
-    // Get the specific transport rate for this student's route
+    // A. Resolve Canteen Rate per student
+    let studentCanteenRate = 0;
+    if (canteenModel === 'Flat') {
+        studentCanteenRate = globalCanteenRate;
+    } else {
+        studentCanteenRate = classCanteenRates[student.classId] || 0;
+    }
+
+    // B. Resolve Transport Rate per student
     const transportRate = student.routeId ? (routeRatesMap.get(student.routeId) || 0) : 0;
 
     const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, { 
-        canteen: canteenRate, 
+        canteen: studentCanteenRate, 
         transport: transportRate 
     });
     

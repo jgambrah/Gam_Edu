@@ -293,9 +293,12 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             const start = startOfDay(dateRange.from);
             const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
-            // 1. Fetch Global Canteen Rate
+            // 1. Fetch Canteen Settings
             const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
-            const canteenRate = canteenSettingsSnap.data()?.dailyRate || 0;
+            const canteenData = canteenSettingsSnap.data();
+            const canteenModel = canteenData?.pricingModel || 'Flat';
+            const globalCanteenRate = canteenData?.dailyRate || 0;
+            const classCanteenRates = canteenData?.classRates || {};
 
             // 2. Fetch ALL Transport Routes for this school to build a Rate Map
             const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
@@ -348,12 +351,20 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                 const dateKey = format(recordDate, 'yyyy-MM-dd');
                 const studentInfo = studentTransportMap.get(record.studentId);
 
-                // A. Canteen Billing (Global Rate)
-                if (canteenRate > 0) {
+                // A. Determine the correct Canteen Rate for this specific student's class
+                let studentCanteenRate = 0;
+                if (canteenModel === 'Flat') {
+                    studentCanteenRate = globalCanteenRate;
+                } else if (canteenModel === 'Class-Based') {
+                    studentCanteenRate = classCanteenRates[record.classId] || 0;
+                }
+
+                // Apply Canteen Bill
+                if (studentCanteenRate > 0) {
                     const canteenRecordId = `canteen-${record.studentId}-${dateKey}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                     billingBatch.set(financialRecordRef, {
-                        billedAmount: canteenRate,
+                        billedAmount: studentCanteenRate,
                         studentId: record.studentId, 
                         studentName: record.studentName, 
                         classId: record.classId,
@@ -368,7 +379,6 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                 }
 
                 // B. Transport Billing (DYNAMIC ROUTE RATE & MODE CHECK)
-                // ONLY bill daily if they use the bus AND their mode is 'Daily'
                 if (studentInfo?.usesBus && studentInfo?.routeId && studentInfo?.billingMode === 'Daily') {
                     const specificTransportRate = routeRatesMap.get(studentInfo.routeId)?.dailyRate || 0;
 

@@ -43,18 +43,23 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
         setSelectedItems([]);
 
         try {
-            // A. Fetch Rates
-            const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+            // A. Fetch Canteen Rates & Model
+            const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+            const canteenData = canteenSettingsSnap.data();
+            const canteenModel = canteenData?.pricingModel || 'Flat';
+            const globalCanteenRate = canteenData?.dailyRate || 0;
+            const classCanteenRates = canteenData?.classRates || {};
+
+            // B. Fetch Transport Rates
             const transportSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'transport'));
-            const canteenRate = canteenSnap.exists() ? Number(canteenSnap.data().dailyRate) : 0;
             const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
 
             const dateStr = format(date, 'yyyy-MM-dd');
             const searchDate = startOfDay(date); 
 
-            console.log(`Scanning for missing bills on ${dateStr}... Rates: Canteen=${canteenRate}, Transport=${transportRate}`);
+            console.log(`Scanning for missing bills on ${dateStr}... Model: ${canteenModel}`);
 
-            // B. Get Attendance (Who was present?)
+            // C. Get Attendance (Who was present?)
             const attendanceQ = query(
                 collection(firestore, 'attendance'),
                 where('schoolId', '==', schoolId),
@@ -69,7 +74,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 return;
             }
 
-            // C. Get Existing Bills (Who already has a bill?)
+            // D. Get Existing Bills (Who already has a bill?)
             const billsQ = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
@@ -80,14 +85,21 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
 
             const detectedMissing: MissingBillItem[] = [];
 
-            // D. Compare
-            let missingCounter = 0; // To ensure unique keys
+            // E. Compare
+            let missingCounter = 0; 
             for (const attDoc of attendanceSnap.docs) {
                 const att = attDoc.data();
                 const studentName = att.studentName || "Unknown Student";
                 
-                // 1. Check Canteen Gap
-                if (canteenRate > 0 && att.usesCanteen !== "false") {
+                // 1. Check Canteen Gap (Dynamic Model)
+                let currentCanteenRate = 0;
+                if (canteenModel === 'Flat') {
+                    currentCanteenRate = globalCanteenRate;
+                } else {
+                    currentCanteenRate = classCanteenRates[att.classId] || 0;
+                }
+
+                if (currentCanteenRate > 0 && att.usesCanteen !== "false") {
                     const expectedCanteenId = `canteen-${att.studentId}-${dateStr}`;
                     
                     if (!existingBillIds.has(expectedCanteenId)) {
@@ -97,15 +109,14 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                             studentName: studentName,
                             classId: att.classId,
                             type: 'Canteen',
-                            amount: canteenRate,
-                            reason: 'Marked Present but no Canteen Bill found'
+                            amount: currentCanteenRate,
+                            reason: `Marked Present. Missing ${canteenModel} Canteen bill.`
                         });
                     }
                 }
 
                 // 2. Check Transport Gap
                 const usesBus = att.usesBusService === "true" || att.usesBusService === true;
-                
                 if (transportRate > 0 && usesBus) {
                     const expectedTransportId = `transport-${att.studentId}-${dateStr}`;
                     if (!existingBillIds.has(expectedTransportId)) {
@@ -123,7 +134,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
             }
 
             setMissingBills(detectedMissing);
-            setSelectedItems(detectedMissing.map(m => m.id)); // Auto-select all
+            setSelectedItems(detectedMissing.map(m => m.id)); 
 
             if (detectedMissing.length === 0) {
                 toast({ title: "All Clean ✅", description: "No missing bills found for this date." });
@@ -200,7 +211,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                         <Label>Select Date to Audit</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}>
+                                <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal h-12 border-2 bg-white", !date && "text-muted-foreground")}>
                                     <CalendarIcon className="mr-2 h-4 w-4" />
                                     {date ? format(date, "PPP") : <span>Pick a date</span>}
                                 </Button>
