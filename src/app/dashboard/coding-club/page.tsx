@@ -1,12 +1,11 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LogicLabPage from './logic-lab/page';
 import PythonAcademyPage from './python-academy/page';
-import { Code, Bot, Puzzle, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Code, Bot, Puzzle } from 'lucide-react';
 
 export default function CodingClubPage() {
   return (
@@ -48,15 +47,12 @@ export default function CodingClubPage() {
                         <CardDescription className="text-orange-100 text-[10px] uppercase font-bold tracking-widest">Integrated Creative Coding</CardDescription>
                     </div>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" asChild className="h-8 text-[10px] font-black uppercase tracking-widest bg-white text-orange-600 hover:bg-orange-50 border-none shadow-md">
-                        <Link href="https://turbowarp.org/editor" target="_blank">
-                            Open External <ExternalLink className="ml-1 h-3 w-3" />
-                        </Link>
-                    </Button>
-                </div>
               </CardHeader>
               <CardContent className="flex-1 p-0 relative bg-slate-900 min-h-[500px]">
+                {/* 
+                    Using TurboWarp because the official Scratch site blocks framing via X-Frame-Options.
+                    Staying inside the app per user request.
+                */}
                 <iframe 
                     src="https://turbowarp.org/editor" 
                     className="w-full h-full border-none absolute inset-0"
@@ -69,11 +65,11 @@ export default function CodingClubPage() {
            </Card>
         </TabsContent>
 
-        <TabsContent value="logic_lab" className="mt-6 flex-1 flex flex-col min-h-[650px]">
+        <TabsContent value="logic_lab" className="mt-6 flex flex-col min-h-[650px]">
            <LogicLabPage />
         </TabsContent>
 
-         <TabsContent value="python_academy" className="mt-6 flex-1 flex flex-col min-h-[650px]">
+         <TabsContent value="python_academy" className="mt-6 flex flex-col min-h-[650px]">
            <PythonAcademyPage />
         </TabsContent>
       </Tabs>
