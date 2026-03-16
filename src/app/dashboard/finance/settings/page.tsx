@@ -218,23 +218,25 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
             const canteenRate = canteenSettingsSnap.data()?.dailyRate || 0;
 
-            // 2. NEW: Fetch ALL Transport Routes for this school to build a Rate Map
+            // 2. Fetch ALL Transport Routes for this school to build a Rate Map
             const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
             const routesSnap = await getDocs(routesQuery);
-            const routeRatesMap = new Map<string, number>();
+            const routeRatesMap = new Map<string, any>();
             routesSnap.docs.forEach(doc => {
-                routeRatesMap.set(doc.id, doc.data().dailyRate || 0);
+                routeRatesMap.set(doc.id, doc.data());
             });
 
-            // 3. Fetch Students to know their routeId
+            // 3. Fetch Students to know their route and billing model
             const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
             const studentsSnap = await getDocs(studentsQuery);
-            const studentRouteMap = new Map<string, { usesBus: boolean, routeId: string }>();
+            const studentTransportMap = new Map<string, { usesBus: boolean, routeId: string, billingMode: string }>();
+
             studentsSnap.docs.forEach(doc => {
                 const data = doc.data();
-                studentRouteMap.set(doc.id, { 
+                studentTransportMap.set(doc.id, { 
                     usesBus: data.usesBusService === true, 
-                    routeId: data.routeId || '' 
+                    routeId: data.routeId || '',
+                    billingMode: data.transportBillingModel || 'Daily'
                 });
             });
             
@@ -265,7 +267,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                 const record = attendanceDoc.data();
                 const recordDate = record.date.toDate();
                 const dateKey = format(recordDate, 'yyyy-MM-dd');
-                const studentInfo = studentRouteMap.get(record.studentId);
+                const studentInfo = studentTransportMap.get(record.studentId);
 
                 // A. Canteen Billing (Global Rate)
                 if (canteenRate > 0) {
@@ -286,20 +288,21 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                     }, { merge: true });
                 }
 
-                // B. Transport Billing (DYNAMIC ROUTE RATE)
-                if (studentInfo?.usesBus && studentInfo?.routeId) {
-                    // Get the specific rate for this student's route!
-                    const specificTransportRate = routeRatesMap.get(studentInfo.routeId) || 0;
+                // B. Transport Billing (DYNAMIC ROUTE RATE & MODE CHECK)
+                // ONLY bill daily if they use the bus AND their mode is 'Daily'
+                if (studentInfo?.usesBus && studentInfo?.routeId && studentInfo?.billingMode === 'Daily') {
+                    const specificTransportRate = routeRatesMap.get(studentInfo.routeId)?.dailyRate || 0;
 
                     if (specificTransportRate > 0) {
                         const transportRecordId = `transport-${record.studentId}-${dateKey}`;
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                        
                         billingBatch.set(financialRecordRef, {
                             billedAmount: specificTransportRate,
                             studentId: record.studentId, 
                             studentName: record.studentName, 
                             classId: record.classId,
-                            type: 'Transport Fee', 
+                            type: 'Transport Fee (Daily)', 
                             description: `Transport - ${format(recordDate, 'PPP')}`, 
                             status: 'Unpaid', 
                             dueDate: Timestamp.fromDate(recordDate),

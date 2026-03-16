@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Smartphone } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Smartphone, Sparkles } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -46,6 +46,111 @@ import { billMultipleStudents, billStudentForAttendance } from '@/lib/billing';
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
 });
+
+function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, onComplete: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [termName, setTermName] = useState('First Term');
+    const [dueDate, setDueDate] = useState<Date>(new Date());
+
+    const handleBulkTermlyTransport = async () => {
+        if (!firestore || !schoolId) return;
+        setIsSubmitting(true);
+        
+        try {
+            // 1. Fetch all routes to get termly rates
+            const routesSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
+            const routeMap = new Map();
+            routesSnap.docs.forEach(d => routeMap.set(d.id, d.data().termlyRate || 0));
+
+            // 2. Fetch all students who use the bus AND are on 'Termly' mode
+            const studentsSnap = await getDocs(query(
+                collection(firestore, 'students'), 
+                where('schoolId', '==', schoolId), 
+                where('usesBusService', '==', true), 
+                where('transportBillingModel', '==', 'Termly')
+            ));
+
+            if (studentsSnap.empty) {
+                toast({ variant: 'destructive', title: "No Students Found", description: "No students on Termly transport billing mode." });
+                setIsSubmitting(false);
+                return;
+            }
+
+            // 3. Batch create the bills
+            const batch = writeBatch(firestore);
+            let count = 0;
+
+            studentsSnap.docs.forEach(docSnap => {
+                const student = docSnap.data();
+                const termlyRate = routeMap.get(student.routeId);
+
+                if (termlyRate > 0) {
+                    const recordRef = doc(collection(firestore, 'financialRecords'));
+                    batch.set(recordRef, {
+                        studentId: docSnap.id,
+                        studentName: `${student.firstName} ${student.lastName}`,
+                        classId: student.classId || '',
+                        type: 'Transport Fee (Termly)',
+                        description: `Termly Bus Fare - ${termName}`,
+                        billedAmount: termlyRate,
+                        amountPaid: 0,
+                        status: 'Unpaid',
+                        dueDate: startOfDay(dueDate),
+                        createdAt: serverTimestamp(),
+                        schoolId: schoolId
+                    });
+                    count++;
+                }
+            });
+
+            await batch.commit();
+            toast({ title: 'Success', description: `Generated ${count} termly transport bills.` });
+            onComplete();
+        } catch (e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Error", description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Bulk Termly Transport Billing</DialogTitle>
+                <DialogDescription>Generate upfront bus fares for all students on the "Termly" billing plan.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label>Academic Term Name</Label>
+                    <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
+                </div>
+                <div className="space-y-2">
+                    <Label>Payment Due Date</Label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {format(dueDate, "PPP")}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={dueDate} onSelect={(d) => d && setDueDate(d)} initialFocus />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+            </div>
+            <DialogFooter>
+                <Button onClick={handleBulkTermlyTransport} disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                    Generate Termly Bills
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    );
+}
 
 function PaymentHistory({ record }: { record: FinancialRecord }) {
     const firestore = useFirestore();
@@ -497,12 +602,12 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                     studentId: uid,
                     studentName: `${student.firstName} ${student.lastName}`,
                     classId: selectedClassId,
-                    type: `${chargeType} Fee`,
+                    type: chargeType === 'Canteen' ? 'Canteen Fee' : 'Transport Fee (Daily)',
                     description: `${chargeType} Fee - ${format(date, 'PPP')}`,
                     billedAmount: billingRate,
                     amountPaid: 0,
                     status: 'Unpaid',
-                    dueDate: startOfDay(date),
+                    dueDate: Timestamp.fromDate(startOfDay(date)),
                     createdAt: serverTimestamp(),
                     schoolId: schoolId
                 }, { merge: true });
@@ -520,7 +625,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     };
 
     const toggleStudent = (uid: string) => {
-        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, id]);
+        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]);
     };
 
     return (
@@ -579,7 +684,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                                             <span className="text-sm font-medium">{s.firstName} {s.lastName}</span>
                                             {chargeType === 'Transport' && (
                                                 <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                                    <Route className="h-2 w-2" />
+                                                    <RouteIcon className="h-2 w-2" />
                                                     {s.routeId ? (routeRates.get(s.routeId) ? `GH₵${routeRates.get(s.routeId)}/day` : 'No rate set') : 'No route assigned'}
                                                 </span>
                                             )}
@@ -822,7 +927,7 @@ export default function AccountsPage() {
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
   
-  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | null>(null); 
+  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termlyTransport' | null>(null); 
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null); 
@@ -924,6 +1029,7 @@ export default function AccountsPage() {
                                 <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}><PlusCircle className="mr-2 h-4 w-4" /> Single Bill</Button>
                                 <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}><FileCog className="mr-2 h-4 w-4" /> Bulk Bill</Button>
                                 <Button variant={activeForm === 'levy' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'levy' ? null : 'levy')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"><HandCoins className="mr-2 h-4 w-4" /> Add Daily Charge</Button>
+                                <Button variant={activeForm === 'termlyTransport' ? 'default' : 'outline'} onClick={() => setActiveForm('termlyTransport')} className="border-purple-200 text-purple-700 hover:bg-purple-50"><Bus className="mr-2 h-4 w-4" /> Termly Transport</Button>
                             </div>
                         </div>
                     </CardHeader>
@@ -987,6 +1093,12 @@ export default function AccountsPage() {
                 </Card>
             </TabsContent>
         </Tabs>
+
+        {activeForm === 'termlyTransport' && schoolId && (
+            <Dialog open={true} onOpenChange={() => setActiveForm(null)}>
+                <BulkTermlyTransportModal schoolId={schoolId} onComplete={() => { forceRefetch(); setActiveForm(null); }} />
+            </Dialog>
+        )}
 
         {dialogState.record && dialogState.type === 'payment' ? (<RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={forceRefetch} />) : null}
     </div>

@@ -37,13 +37,14 @@ export async function billStudentForAttendance(
       };
     }
 
+    // NEW: Check the student's transport billing model
+    const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
     const shouldBillCanteen = student.usesCanteen !== false;
-    const shouldBillBus = student.usesBusService === true;
 
-    if (!shouldBillCanteen && !shouldBillBus) {
+    if (!shouldBillCanteen && !isDailyTransportSubscriber) {
       return {
         success: true,
-        message: 'No subscribed services',
+        message: 'No daily services to bill (skipped Termly subscribers)',
         amountBilled: 0
       };
     }
@@ -85,8 +86,8 @@ export async function billStudentForAttendance(
         billedServices.push('Canteen');
     }
 
-    // 2. Process Transport Bill
-    if (shouldBillBus && transportRate > 0) {
+    // 2. Process Transport Bill (Only if 'Daily' model)
+    if (isDailyTransportSubscriber && transportRate > 0) {
         const transportRecordId = `transport-${student.uid}-${dateStr}`;
         const transportRef = doc(firestore, 'financialRecords', transportRecordId);
         
@@ -94,7 +95,7 @@ export async function billStudentForAttendance(
             studentId: student.uid,
             studentName: `${student.firstName} ${student.lastName}`,
             classId: student.classId || '',
-            type: 'Transport Fee',
+            type: 'Transport Fee (Daily)',
             description: `Transport - ${format(attendanceDate, 'PPP')}`,
             billedAmount: transportRate,
             amountPaid: 0,
@@ -150,7 +151,7 @@ export async function billMultipleStudents(
   const canteenRateDoc = await getDoc(doc(firestore, `schoolSettings/${schoolId}/rates/canteen`));
   const canteenRate = canteenRateDoc.exists() ? Number(canteenRateDoc.data().dailyRate) : 0;
 
-  // 2. NEW: Fetch ALL Transport Routes for this school to build a Rate Map
+  // 2. Fetch ALL Transport Routes for this school to build a Rate Map
   const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
   const routesSnap = await getDocs(routesQuery);
   const routeRatesMap = new Map<string, number>();

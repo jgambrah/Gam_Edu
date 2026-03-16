@@ -1,4 +1,3 @@
-
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -393,6 +392,7 @@ export type Student = {
     usesCanteen?: boolean;
     photoURL?: string; 
     transportBillingModel?: 'Daily' | 'Termly';
+    schoolId?: string;
 };
 
 export type Class = {
@@ -402,6 +402,7 @@ export type Class = {
     teacherId?: string;
     studentIds?: string[];
     capacity?: number;
+    schoolId?: string;
 };
 
 
@@ -433,6 +434,7 @@ export type LeaveRequest = {
   approverName?: string;
   approverNotes?: string;
   createdAt: any;
+  schoolId?: string;
 };
 
 export const managerApprovalSchema = z.object({
@@ -466,13 +468,14 @@ export type PerformanceReview = z.infer<typeof performanceReviewSchema> & {
   reviewerId: string;
   reviewerName: string;
   createdAt: any;
+  schoolId?: string;
 };
 
 
 // Financial Schemas
 export const financialRecordSchema = z.object({
   studentId: z.string().min(1, "A student must be selected."),
-  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal']),
+  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Transport Fee (Daily)', 'Transport Fee (Termly)', 'Other', 'Correction / Reversal']),
   description: z.string().min(1, "Description is required."),
   billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
   dueDate: z.date({ required_error: "Due date is required." }),
@@ -504,7 +507,7 @@ export type FinancialRecord = {
     studentId: string;
     studentName: string;
     classId: string;
-    type: 'Tuition Fee' | 'Library Fine' | 'Lab Fee' | 'Sports Fee' | 'Canteen Fee' | 'Transport Fee' | 'Other' | 'Correction / Reversal';
+    type: 'Tuition Fee' | 'Library Fine' | 'Lab Fee' | 'Sports Fee' | 'Canteen Fee' | 'Transport Fee' | 'Transport Fee (Daily)' | 'Transport Fee (Termly)' | 'Other' | 'Correction / Reversal';
     description: string;
     billedAmount: number;
     amountPaid: number;
@@ -516,6 +519,7 @@ export type FinancialRecord = {
     lastPaymentDate?: any; 
     academicYear?: string;
     term?: string;
+    schoolId?: string;
 };
 
 export type PaymentTransaction = {
@@ -526,6 +530,7 @@ export type PaymentTransaction = {
     paidAt: any;
     processedById: string;
     processedByName: string;
+    schoolId?: string;
 };
 
 export type Staff = {
@@ -534,6 +539,7 @@ export type Staff = {
     lastName: string;
     role: UserRole;
     email: string;
+    schoolId?: string;
 };
 
 // Payroll Schemas
@@ -630,6 +636,7 @@ export type PayrollRecord = {
         paye: number;
     },
     createdAt: any;
+    schoolId?: string;
 }
 
 // Accounts Payable Schemas
@@ -657,6 +664,7 @@ export type AccountsPayableRecord = z.infer<typeof payableSchema> & {
     createdAt: any;
     paidAt?: any;
     paymentAccountId?: string;
+    schoolId?: string;
 };
 
 // General Ledger Schemas
@@ -678,6 +686,7 @@ export type ChartOfAccount = {
     isControlAccount: boolean;
     parentAccountId?: string | null;
     description?: string;
+    schoolId?: string;
 };
 
 export interface JournalLine {
@@ -696,6 +705,7 @@ export interface JournalEntry {
   totalAmount: number;
   createdBy: string;
   createdAt: any;
+  schoolId?: string;
 }
 
 export type JournalEntryItem = {
@@ -755,6 +765,7 @@ export type InventoryTransaction = {
     staffId?: string; 
     quantityChange?: number;
     notes?: string;
+    schoolId?: string;
 };
 
 // Transport Schemas
@@ -763,6 +774,7 @@ export type Bus = {
     name: string;
     capacity: number;
     assignedDriverId?: string;
+    schoolId?: string;
 };
   
 export type Stop = {
@@ -781,6 +793,7 @@ export type Route = {
     stops: Stop[];
     dailyRate: number;
     termlyRate?: number;
+    schoolId?: string;
 };
 
 export const studentAssignmentSchema = z.object({
@@ -803,6 +816,7 @@ export const attendanceRecordSchema = z.object({
 export type AttendanceRecord = z.infer<typeof attendanceRecordSchema> & {
     id: string;
     verificationPhotoUrl?: string; 
+    schoolId?: string;
 };
 
 
@@ -818,6 +832,7 @@ export const auditLogSchema = z.object({
 
 export type AuditLog = z.infer<typeof auditLogSchema> & {
   id: string;
+  schoolId?: string;
 };
 
 // Staff Attendance
@@ -830,6 +845,7 @@ export type StaffAttendance = {
     verificationPhotoUrl: string;
     latitude?: number;
     longitude?: number;
+    schoolId?: string;
 }
 
 // Maths Club Schemas
@@ -849,6 +865,7 @@ export const mathProblemSchema = z.object({
 export type MathProblem = z.infer<typeof mathProblemSchema> & {
     id: string;
     explanation?: string;
+    schoolId?: string;
 };
 
 export type UserResult = {
@@ -860,6 +877,7 @@ export type UserResult = {
     time_taken_seconds: number;
     date_completed: any;
     correct_count: number;
+    schoolId?: string;
 };
 
 export type GlobalLeaderboardEntry = {
@@ -868,6 +886,7 @@ export type GlobalLeaderboardEntry = {
     profilePictureUrl?: string;
     total_correct_answers: number;
     total_quizzes_completed: number;
+    schoolId?: string;
 };
 
 // Science Club Schemas
@@ -887,6 +906,7 @@ export const scienceProblemSchema = z.object({
 export type ScienceProblem = z.infer<typeof scienceProblemSchema> & {
     id: string;
     explanation?: string;
+    schoolId?: string;
 };
 
 export type ScienceResult = {
@@ -898,6 +918,7 @@ export type ScienceResult = {
     time_taken_seconds: number;
     date_completed: any;
     correct_count: number;
+    schoolId?: string;
 };
 
 export type ScienceLeaderboardEntry = {
@@ -908,6 +929,7 @@ export type ScienceLeaderboardEntry = {
     total_correct_answers: number;
     points?: number;
     quizzesPlayed?: number;
+    schoolId?: string;
 };
 
 export type DailyFact = {
@@ -916,6 +938,7 @@ export type DailyFact = {
     text?: string;
     createdAt: any;
     postedBy: string;
+    schoolId?: string;
 };
 
 // ELA Club Schemas
@@ -931,6 +954,7 @@ export const elaGrammarDrillSchema = z.object({
 export type ElaGrammarDrill = z.infer<typeof elaGrammarDrillSchema> & {
     id: string;
     explanation?: string;
+    schoolId?: string;
 };
 
 const elaQuestionSchema = z.object({
@@ -952,6 +976,7 @@ export const elaReadingPassageSchema = z.object({
 
 export type ElaReadingPassage = z.infer<typeof elaReadingPassageSchema> & {
     id: string;
+    schoolId?: string;
 };
 
 export const elaWritingChallengeSchema = z.object({
@@ -965,6 +990,7 @@ export type ElaWritingChallenge = z.infer<typeof elaWritingChallengeSchema> & {
     id: string;
     createdBy: string;
     createdAt: any;
+    schoolId?: string;
 };
 
 export type ElaUserSubmission = {
@@ -977,6 +1003,7 @@ export type ElaUserSubmission = {
     status: 'Submitted' | 'Graded';
     teacher_score?: number | null;
     teacher_feedback?: string | null;
+    schoolId?: string;
 };
 
 export type ElaLeaderboardEntry = {
@@ -985,6 +1012,7 @@ export type ElaLeaderboardEntry = {
     profilePictureUrl?: string;
     total_correct_answers: number;
     total_challenges_completed: number;
+    schoolId?: string;
 };
 
 
@@ -1025,6 +1053,7 @@ export interface LearningMaterial {
     updatedAt?: any;
     subject?: string;
     classId?: string;
+    schoolId?: string;
 }
 
 // --- CASH TILL MANAGEMENT ---
@@ -1047,6 +1076,7 @@ export type Till = {
         approvedAt: any | null;
         rejectionReason?: string;
     };
+    schoolId?: string;
 };
 
 export type TillTransaction = {
@@ -1060,6 +1090,7 @@ export type TillTransaction = {
     description: string; 
     type: TillTransactionType;
     status: TillTransactionStatus;
+    schoolId?: string;
 };
 
 
@@ -1096,6 +1127,7 @@ export interface Paradox {
   difficulty: 'Easy' | 'Medium' | 'Hard';
   createdAt: any;
   targetGroup: string;
+  schoolId?: string;
 }
 
 export interface DebateTopic {
@@ -1104,6 +1136,7 @@ export interface DebateTopic {
   context: string; 
   createdAt: any;
   targetGroup: string;
+  schoolId?: string;
 }
 
 export interface DebateMessage {
@@ -1124,6 +1157,7 @@ export interface ForumThread {
     aiModeratorEnabled: boolean;
     lastReplyAt?: any;
     replyCount?: number;
+    schoolId?: string;
 }
 
 export interface ForumReply {
@@ -1149,6 +1183,7 @@ export type ElaLesson = {
     keyTerms: string[];
     quizQuestion: string;
     quizAnswer: string;
+    schoolId?: string;
 }
     
 // --- Science Explorer ---
@@ -1162,6 +1197,7 @@ export type ScienceLesson = {
     keyTerms: string[];
     quizQuestion: string;
     quizAnswer: string;
+    schoolId?: string;
 }
 
 // --- Direct Messages ---
@@ -1172,6 +1208,7 @@ export interface ChatMetadata {
     lastMessage: string;
     lastMessageTime: any;
     unreadCount: Record<string, number>;
+    schoolId?: string;
 }
 
 export interface Message {
@@ -1197,6 +1234,7 @@ export interface Lecture {
   breakoutActive?: boolean;
   breakoutDuration?: number;
   breakoutEndTime?: any;
+  schoolId?: string;
 }
 
 // --- ACCOUNTING TYPES ---
@@ -1210,6 +1248,7 @@ export interface Account {
   parentId?: string | null;
   isControlAccount?: boolean;
   description?: string;
+  schoolId?: string;
 }
 
 export interface JournalLine {
@@ -1228,6 +1267,7 @@ export interface JournalEntry {
   totalAmount: number;
   createdBy: string;
   createdAt: any;
+  schoolId?: string;
 }
 
 export interface PaymentVoucher {
@@ -1246,6 +1286,7 @@ export interface PaymentVoucher {
   date: any;
   createdBy: string;
   linkedBillId?: string;
+  schoolId?: string;
 }
 
 // --- PROCUREMENT & AP ---
@@ -1257,6 +1298,7 @@ export interface Supplier {
   email: string;
   address: string;
   balance: number; 
+  schoolId?: string;
 }
 
 export interface PurchaseOrder {
@@ -1274,6 +1316,7 @@ export interface PurchaseOrder {
   }[];
   totalAmount: number;
   expectedDate?: any;
+  schoolId?: string;
 }
 
 export interface VendorBill {
@@ -1287,6 +1330,7 @@ export interface VendorBill {
   amountPaid: number;
   status: 'Unpaid' | 'Partial' | 'Paid';
   items: any[];
+  schoolId?: string;
 }
 
 
@@ -1314,6 +1358,7 @@ export interface StaffSalaryDetails {
   accountNumber: string;
   tin: string;
   ssnitNumber: string;
+  schoolId?: string;
 }
 
 export interface Payslip {
@@ -1333,6 +1378,7 @@ export interface Payslip {
   totalCostToCompany: number;
   status: 'Draft' | 'Paid';
   date: any;
+  schoolId?: string;
 }
 
 export interface StudentPerformance {
@@ -1342,6 +1388,7 @@ export interface StudentPerformance {
   averageGrade: number;   
   missedAssessments: number;
   participationScore: number; 
+  schoolId?: string;
 }
 
 export interface AiInsight {

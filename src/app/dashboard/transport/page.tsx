@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -443,7 +442,7 @@ function RouteManagementDialog({
                             </Button>
                         </div>
                         <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
-                            {isSubmitting ? <Loader2 className="animate-spin mr-2"/> : null}
+                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                             {editingRoute ? 'Save Route Changes' : 'Create Route'}
                         </Button>
                     </form>
@@ -638,11 +637,14 @@ export default function TransportPage() {
                                             <TableCell><StudentDisplay student={student} variant="list" /></TableCell>
                                             <TableCell className="text-xs">{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</TableCell>
                                             <TableCell>
-                                                {isAssigned ? (
-                                                    <Badge variant="default" className="bg-green-100 text-green-700 border-green-200">Assigned</Badge>
-                                                ) : (
-                                                    <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 animate-pulse">Waiting</Badge>
-                                                )}
+                                                <div className="flex flex-col gap-1">
+                                                    {isAssigned ? (
+                                                        <Badge variant="default" className="bg-green-100 text-green-700 border-green-200">Assigned</Badge>
+                                                    ) : (
+                                                        <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 animate-pulse">Waiting</Badge>
+                                                    )}
+                                                    <span className="text-[9px] font-bold uppercase text-slate-400">{student.transportBillingModel || 'Daily'} Billing</span>
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     );
