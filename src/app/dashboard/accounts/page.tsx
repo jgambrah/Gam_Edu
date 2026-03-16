@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Smartphone, Sparkles, Route as RouteIcon, ChevronDown } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Smartphone, Sparkles, Route as RouteIcon, ChevronDown } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -40,7 +40,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
 
-import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, Class, PaymentTransaction } from '@/lib/types';
+import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, Class, PaymentTransaction, Till, TillTransaction, Route, Stop, Bus } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent, generateNextReceiptId } from '@/lib/student-utils';
@@ -48,7 +48,7 @@ import { GenerateReceipt } from './generate-receipt';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentSelect } from '@/components/StudentSelect';
-import { billMultipleStudents, billStudentForAttendance } from '@/lib/billing';
+import { billStudentForAttendance, billMultipleStudents } from '@/lib/billing';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
@@ -67,12 +67,10 @@ function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, 
         setIsSubmitting(true);
         
         try {
-            // 1. Fetch all routes to get termly rates
             const routesSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
             const routeMap = new Map();
             routesSnap.docs.forEach(d => routeMap.set(d.id, d.data().termlyRate || 0));
 
-            // 2. Fetch all students who use the bus AND are on 'Termly' mode
             const studentsSnap = await getDocs(query(
                 collection(firestore, 'students'), 
                 where('schoolId', '==', schoolId), 
@@ -86,7 +84,6 @@ function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, 
                 return;
             }
 
-            // 3. Batch create the bills
             const batch = writeBatch(firestore);
             let count = 0;
 
@@ -164,7 +161,6 @@ function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, on
         setIsSubmitting(true);
         
         try {
-            // 1. Fetch Canteen Settings
             const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
             if (!settingsSnap.exists()) {
                 throw new Error("Canteen rates not configured. Please check Financial Settings.");
@@ -174,7 +170,6 @@ function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, on
             const flatRate = settings.termlyRate || 0;
             const classRates = settings.classTermlyRates || {};
 
-            // 2. Fetch all students whose canteenBillingMode is 'Termly'
             const studentsSnap = await getDocs(query(
                 collection(firestore, 'students'), 
                 where('schoolId', '==', schoolId), 
@@ -187,7 +182,6 @@ function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, on
                 return;
             }
 
-            // 3. Batch create the bills
             const batch = writeBatch(firestore);
             let count = 0;
             const termId = termName.replace(/\s+/g, '');
@@ -397,7 +391,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                 name="studentId" 
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Student</Label>
+                        <FormLabel>Student</FormLabel>
                         <StudentSelect students={students || []} value={field.value} onValueChange={field.onChange} />
                         <FormMessage />
                     </FormItem>
@@ -687,13 +681,11 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     const [rate, setRate] = useState(0);
     const [routeRates, setRouteRates] = useState<Map<string, number>>(new Map());
 
-    // Fetch students for selected class
     const studentsQuery = useMemoFirebase(() => 
         (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId)) : null,
     [firestore, selectedClassId, schoolId]);
     const { data: classStudents, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
-    // Fetch rate / routes / canteen config
     useEffect(() => {
         async function fetchRate() {
             if (!firestore || !schoolId) return;
@@ -831,7 +823,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                                             {chargeType === 'Transport' && (
                                                 <span className={cn("text-[10px] font-bold flex items-center gap-1", s.transportBillingModel === 'Termly' ? "text-red-400" : "text-indigo-600")}>
                                                     <RouteIcon className="h-2 w-2" />
-                                                    {s.transportBillingModel === 'Termly' ? "Termly Plan (Skipped)" : (s.routeId ? `GH₵${routeRates.get(s.routeId) || 0}/day` : 'No rate set')}
+                                                    {s.transportBillingModel === 'Termly' ? "Termly Plan (Skipped)" : (s.routeId ? (routeRates.get(s.routeId) ? `GH₵${routeRates.get(s.routeId)}/day` : 'No rate set') : 'No route assigned')}
                                                 </span>
                                             )}
                                         </div>
@@ -1172,7 +1164,6 @@ export default function AccountsPage() {
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <CardTitle>Student Accounts</CardTitle>
                             <div className="flex items-center gap-3 flex-wrap">
-                                {/* EVERYDAY TASKS (Primary Actions) */}
                                 <Button 
                                     variant={activeForm === 'single' ? 'default' : 'default'} 
                                     className="bg-blue-600 hover:bg-blue-700 shadow-sm"
@@ -1204,7 +1195,6 @@ export default function AccountsPage() {
                                     <HandCoins className="mr-2 h-4 w-4" /> Manual Levy
                                 </Button>
 
-                                {/* TERMLY BATCH OPERATIONS (Hidden in Dropdown for Safety) */}
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="outline" className="bg-slate-50 border-slate-300 text-slate-700">
@@ -1215,17 +1205,14 @@ export default function AccountsPage() {
                                         <DropdownMenuLabel>Start of Term Billing</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         
-                                        {/* Bulk Fees */}
                                         <DropdownMenuItem onClick={() => setActiveForm('bulk')} className="cursor-pointer">
                                             <FileCog className="mr-2 h-4 w-4 text-blue-600" /> Batch Bill Class (General)
                                         </DropdownMenuItem>
                                         
-                                        {/* Termly Transport */}
                                         <DropdownMenuItem onClick={() => setActiveForm('termly-transport')} className="cursor-pointer">
-                                            <Bus className="mr-2 h-4 w-4 text-amber-600" /> Generate Termly Transport
+                                            <BusIcon className="mr-2 h-4 w-4 text-amber-600" /> Generate Termly Transport
                                         </DropdownMenuItem>
                                         
-                                        {/* Termly Canteen */}
                                         <DropdownMenuItem onClick={() => setActiveForm('termly-canteen')} className="cursor-pointer">
                                             <Utensils className="mr-2 h-4 w-4 text-green-600" /> Generate Termly Canteen
                                         </DropdownMenuItem>
@@ -1235,7 +1222,6 @@ export default function AccountsPage() {
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {/* ACTIVE FORMS */}
                         {activeForm === 'single' && schoolId && (
                             <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4 text-blue-900">Create Single Bill</h3>
