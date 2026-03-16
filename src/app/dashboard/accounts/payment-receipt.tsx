@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -38,6 +39,7 @@ export function PaymentReceipt({
           <h1 className="text-lg font-bold uppercase">{schoolProfile?.name}</h1>
           <div className="border-b border-black border-dashed my-2"></div>
           <h2 className="text-sm font-bold tracking-widest">OFFICIAL RECEIPT</h2>
+          <p className="text-[10px] font-bold">#{payment.id}</p>
           <div className="border-b border-black border-dashed my-2"></div>
         </div>
         <div className="space-y-1 mb-3">
@@ -86,8 +88,8 @@ export function PaymentReceipt({
         </div>
         <div className="text-right">
           <h2 className="text-2xl font-bold uppercase text-gray-400 tracking-wider">Receipt</h2>
-          <p className="text-[10px] font-mono text-gray-500 mt-1">
-            #{payment.id.slice(0, 8).toUpperCase()}
+          <p className="text-[10px] font-mono text-gray-500 mt-1 uppercase">
+            #{payment.id}
           </p>
         </div>
       </header>
