@@ -21,7 +21,7 @@ export default function CodingClubPage() {
         </CardHeader>
       </Card>
 
-      <Tabs defaultValue="scratch" className="w-full flex-1 flex flex-col">
+      <Tabs defaultValue="scratch" className="w-full flex-1 flex flex-col min-h-0">
         <TabsList className="grid w-full grid-cols-3 shrink-0">
           <TabsTrigger value="scratch">
             <Puzzle className="mr-2 h-4 w-4" /> Scratch Playground
@@ -34,10 +34,14 @@ export default function CodingClubPage() {
           </TabsTrigger>
         </TabsList>
 
-        {/* SCRATCH - needs overflow:hidden for the iframe to fill correctly */}
-        <TabsContent value="scratch" className="mt-6 flex-1 flex flex-col overflow-hidden min-h-[600px]">
+        {/* SCRATCH */}
+        <TabsContent
+          value="scratch"
+          className="mt-4 flex-1 flex flex-col overflow-hidden data-[state=inactive]:hidden"
+          style={{ minHeight: '600px' }}
+        >
           <Card className="flex-1 flex flex-col overflow-hidden border-2 border-orange-100 shadow-xl rounded-[2rem] bg-white">
-            <CardHeader className="bg-orange-500 text-white py-3 px-6 flex flex-row justify-between items-center shrink-0">
+            <CardHeader className="bg-orange-500 text-white py-3 px-6 flex flex-row items-center shrink-0">
               <div className="flex items-center gap-3">
                 <div className="bg-white/20 p-2 rounded-xl">
                   <Puzzle className="h-5 w-5 text-white" />
@@ -54,8 +58,7 @@ export default function CodingClubPage() {
               <iframe
                 src="https://turbowarp.org/editor"
                 className="w-full h-full border-none"
-                allowtransparency="true"
-                allowFullScreen={true}
+                allowFullScreen
                 allow="geolocation; microphone; camera; midi; bluetooth"
                 title="Scratch Editor"
               />
@@ -63,13 +66,21 @@ export default function CodingClubPage() {
           </Card>
         </TabsContent>
 
-        {/* LOGIC LAB - needs overflow:auto so it can scroll freely */}
-        <TabsContent value="logic_lab" className="mt-6 flex-1 overflow-auto min-h-[700px]">
+        {/* LOGIC LAB */}
+        <TabsContent
+          value="logic_lab"
+          className="mt-4 data-[state=inactive]:hidden"
+          style={{ minHeight: '700px' }}
+        >
           <LogicLabPage />
         </TabsContent>
 
-        {/* PYTHON ACADEMY - same treatment */}
-        <TabsContent value="python_academy" className="mt-6 flex-1 overflow-auto min-h-[700px]">
+        {/* PYTHON ACADEMY */}
+        <TabsContent
+          value="python_academy"
+          className="mt-4 data-[state=inactive]:hidden"
+          style={{ minHeight: '700px' }}
+        >
           <PythonAcademyPage />
         </TabsContent>
       </Tabs>
