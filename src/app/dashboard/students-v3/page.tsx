@@ -212,10 +212,10 @@ export default function StudentsV3Page() {
           }
 
           // C. Generate Sequential Student ID (Transaction)
-          const newStudentId = await generateNextStudentId(firestore, adminSchoolId);
+          const newStudentId = await generateNextStudentId(firestore!, adminSchoolId);
           
           // D. Save student document with the new ID
-          await setDoc(doc(firestore, 'students', result.uid), {
+          await setDoc(doc(firestore!, 'students', result.uid), {
               uid: result.uid,
               studentId: newStudentId, 
               firstName: values.firstName,
