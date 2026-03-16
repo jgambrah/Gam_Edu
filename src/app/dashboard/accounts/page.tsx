@@ -11,13 +11,13 @@ import type { DateRange } from 'react-day-picker';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Smartphone, Sparkles, Route as RouteIcon } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Smartphone, Sparkles, Route as RouteIcon, ChevronDown } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -1122,17 +1122,17 @@ export default function AccountsPage() {
   }, [records]);
 
   const studentFinancials = useMemo(() => {
-      if (!records || !students) return [];
-      const recordsByStudent: Record<string, FinancialRecord[]> = {};
-      records.forEach(r => { if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = []; recordsByStudent[r.studentId].push(r); });
-      return students.map(student => {
-            const studentRecords = recordsByStudent[student.uid] || [];
-            const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
-            const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-            const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
-            return { student, balance: totalBilled - totalPaid, hasOverdue: activeRecords.some(r => r.status === 'Overdue'), records: studentRecords };
-        }).sort((a, b) => b.balance - a.balance);
-  }, [records, students]);
+    if (!records || !students) return [];
+    const recordsByStudent: Record<string, FinancialRecord[]> = {};
+    records.forEach(r => { if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = []; recordsByStudent[r.studentId].push(r); });
+    return students.map(student => {
+          const studentRecords = recordsByStudent[student.uid] || [];
+          const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
+          const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+          const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
+          return { student, balance: totalBilled - totalPaid, hasOverdue: activeRecords.some(r => r.status === 'Overdue'), records: studentRecords };
+      }).sort((a, b) => b.balance - a.balance);
+}, [records, students]);
 
   const filteredStudentsWithBills = useMemo(() => studentFinancials.filter(sf => searchStudent(sf.student, searchTerm)), [studentFinancials, searchTerm]);
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
@@ -1164,13 +1164,35 @@ export default function AccountsPage() {
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <CardTitle>Student Accounts</CardTitle>
                             <div className="flex gap-2 flex-wrap">
-                                <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}><PlusCircle className="mr-2 h-4 w-4" /> Single Bill</Button>
-                                <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}><FileCog className="mr-2 h-4 w-4" /> Bulk Bill</Button>
-                                <Button variant={activeForm === 'levy' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'levy' ? null : 'levy')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"><HandCoins className="mr-2 h-4 w-4" /> Add Daily Charge</Button>
-                                <Button variant={activeForm === 'termlyTransport' ? 'default' : 'outline'} onClick={() => setActiveForm('termlyTransport')} className="border-purple-200 text-purple-700 hover:bg-purple-50"><Bus className="mr-2 h-4 w-4" /> Termly Transport</Button>
-                                <Button variant={activeForm === 'termlyCanteen' ? 'default' : 'outline'} onClick={() => setActiveForm('termlyCanteen')} className="border-orange-200 text-orange-700 hover:bg-orange-50">
-                                    <Utensils className="mr-2 h-4 w-4" /> Termly Canteen
+                                {/* Everyday Tasks */}
+                                <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
                                 </Button>
+                                <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}>
+                                    <FileCog className="mr-2 h-4 w-4" /> Bulk Bill
+                                </Button>
+                                <Button variant={activeForm === 'levy' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'levy' ? null : 'levy')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                                    <HandCoins className="mr-2 h-4 w-4" /> Manual Levy
+                                </Button>
+
+                                {/* Termly Operations Dropdown */}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="border-slate-300">
+                                            Termly Operations <ChevronDown className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-[200px]">
+                                        <DropdownMenuLabel>Termly Batch Billing</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={() => setActiveForm('termlyTransport')}>
+                                            <Bus className="mr-2 h-4 w-4 text-purple-600" /> Termly Transport
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setActiveForm('termlyCanteen')}>
+                                            <Utensils className="mr-2 h-4 w-4 text-orange-600" /> Termly Canteen
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
                         </div>
                     </CardHeader>
