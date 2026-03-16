@@ -51,8 +51,13 @@ export function StatementDocument({ student, records, dateRange, summary, school
       {/* Header */}
       <header className="flex items-center justify-between pb-4 border-b-2 border-black">
         <div className="flex items-center gap-4">
-          {schoolProfile?.logoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
+          {schoolProfile?.logoBase64 ? (
+            <img 
+              src={schoolProfile.logoBase64} 
+              alt="School Logo" 
+              className="w-20 h-20 object-contain"
+            />
+          ) : schoolProfile?.logoUrl ? (
             <img 
               src={schoolProfile.logoUrl} 
               alt="School Logo" 

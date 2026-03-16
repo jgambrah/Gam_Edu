@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -15,6 +14,29 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DateRange } from 'react-day-picker';
 
+// Helper to get base64
+async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
+    try {
+        const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
+            ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
+            : imageUrl;
+
+        const res = await fetch(fetchUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
+        const blob = await res.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error: any) {
+        console.error("❌ getBase64ImageFromUrl failed:", error.message);
+        return "";
+    }
+}
+
 interface GenerateStatementProps {
     student?: Student;
     records: FinancialRecord[];
@@ -28,6 +50,7 @@ interface GenerateStatementProps {
 
 export function GenerateStatement({ student, records, dateRange, summary }: GenerateStatementProps) {
     const [loading, setLoading] = useState(false);
+    const [logoBase64, setLogoBase64] = useState<string>('');
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     const printRef = useRef<HTMLDivElement>(null);
@@ -39,6 +62,13 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
 
+    // Convert logo to base64 when profile is loaded
+    useEffect(() => {
+        if (schoolProfile?.logoUrl) {
+            getBase64ImageFromUrl(schoolProfile.logoUrl).then(setLogoBase64);
+        }
+    }, [schoolProfile]);
+
     const isLoadingData = isLoadingProfile;
 
     const handleDownloadPdf = async () => {
@@ -47,7 +77,12 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
 
         try {
             const element = printRef.current;
-            const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+            const canvas = await html2canvas(element, { 
+                scale: 2, 
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
             const imgData = canvas.toDataURL('image/png');
             
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -91,7 +126,7 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
                                 records={records}
                                 dateRange={dateRange}
                                 summary={summary}
-                                schoolProfile={schoolProfile}
+                                schoolProfile={{...schoolProfile, logoBase64}}
                             />
                         </div>
                     )}

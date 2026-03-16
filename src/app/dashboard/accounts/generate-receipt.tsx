@@ -13,6 +13,29 @@ import { PaymentReceipt } from './payment-receipt';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Helper to get base64
+async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
+    try {
+        const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
+            ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
+            : imageUrl;
+
+        const res = await fetch(fetchUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
+        const blob = await res.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error: any) {
+        console.error("❌ getBase64ImageFromUrl failed:", error.message);
+        return "";
+    }
+}
+
 interface GenerateReceiptProps {
     transaction: FinancialRecord;
     payment: PaymentTransaction;
@@ -22,6 +45,7 @@ interface GenerateReceiptProps {
 
 export function GenerateReceipt({ transaction, payment, variant = 'icon' }: GenerateReceiptProps) {
     const [loading, setLoading] = useState(false);
+    const [logoBase64, setLogoBase64] = useState<string>('');
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     const printRef = useRef<HTMLDivElement>(null);
@@ -38,6 +62,13 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
         [firestore, transaction.studentId]
     );
     const { data: student, isLoading: isLoadingStudent } = useDoc<Student>(studentRef);
+
+    // Convert logo to base64 when profile is loaded
+    useEffect(() => {
+        if (schoolProfile?.logoUrl) {
+            getBase64ImageFromUrl(schoolProfile.logoUrl).then(setLogoBase64);
+        }
+    }, [schoolProfile]);
 
     const isLoadingData = isLoadingProfile || isLoadingStudent;
 
@@ -97,7 +128,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                         </div>
                     ) : (
                          <div ref={printRef}>
-                            {student && <PaymentReceipt transaction={transaction} payment={payment} student={student} schoolProfile={schoolProfile} />}
+                            {student && <PaymentReceipt transaction={transaction} payment={payment} student={student} schoolProfile={{...schoolProfile, logoBase64}} />}
                         </div>
                     )}
                 </div>

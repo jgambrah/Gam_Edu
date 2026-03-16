@@ -27,6 +27,14 @@ export function PaymentReceipt({
     return (
       <div className="bg-white text-black font-mono p-2" style={{ width: '80mm', fontSize: '12px' }}>
         <div className="text-center mb-2">
+          {/* Logo for thermal */}
+          {schoolProfile?.logoBase64 && (
+             <img 
+                src={schoolProfile.logoBase64} 
+                alt="" 
+                className="w-12 h-12 mx-auto mb-1 object-contain"
+             />
+          )}
           <h1 className="text-lg font-bold uppercase">{schoolProfile?.name}</h1>
           <div className="border-b border-black border-dashed my-2"></div>
           <h2 className="text-sm font-bold tracking-widest">OFFICIAL RECEIPT</h2>
@@ -55,8 +63,14 @@ export function PaymentReceipt({
     >
       <header className="flex items-center justify-between pb-4 border-b-2 border-black">
         <div className="flex items-center gap-4">
-          {schoolProfile?.logoUrl ? (
+          {schoolProfile?.logoBase64 ? (
             <img 
+              src={schoolProfile.logoBase64} 
+              alt="School Logo" 
+              className="w-16 h-16 object-contain"
+            />
+          ) : schoolProfile?.logoUrl ? (
+             <img 
               src={schoolProfile.logoUrl} 
               alt="School Logo" 
               className="w-16 h-16 object-contain"
