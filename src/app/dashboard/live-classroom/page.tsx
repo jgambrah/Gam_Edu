@@ -159,6 +159,19 @@ const TutorSession: React.FC = () => {
     }
 
     setIsConnecting(true);
+
+    // --- SAAS CREDIT DEDUCTION ---
+    const deductionSuccess = await saasService.deductCredits(5, 'Live Classroom Session Start');
+    if (!deductionSuccess) {
+        toast({
+            variant: "destructive",
+            title: "Insufficient Credits",
+            description: "Your school is out of AI Sparks. Please contact your administrator.",
+        });
+        setIsConnecting(false);
+        return;
+    }
+    // --- END SAAS CREDIT DEDUCTION ---
     
     try {
       const ai = new GoogleGenAI({ apiKey });

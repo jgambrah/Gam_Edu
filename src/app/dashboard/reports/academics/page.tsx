@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
+import { collection, query, where, doc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,10 +18,11 @@ import { useUser } from '@/firebase/provider';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const getGradeForScore = (score: number): 'A' | 'B' | 'C' | 'D' | 'F' | 'N/A' => {
-    if (score >= 90) return 'A';
-    if (score >= 80) return 'B';
-    if (score >= 70) return 'C';
-    if (score >= 60) return 'D';
+    if (score >= 80) return 'A';
+    if (score >= 70) return 'B';
+    if (score >= 60) return 'C';
+    if (score >= 50) return 'D';
+    if (score >= 40) return 'E';
     if (score > 0) return 'F';
     return 'N/A';
 };
@@ -66,17 +68,39 @@ export default function AcademicReportsPage() {
     const assessmentsQuery = useMemoFirebase(() => (firestore && selectedClassId && selectedSubjectId && schoolId && canAccess) ? query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('subjectId', '==', selectedSubjectId)) : null, [firestore, selectedClassId, selectedSubjectId, schoolId, canAccess]);
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
-    // Report Data Calculation
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
+
+    const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
+    const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
+
+    // Report Data Calculation (WEIGHTED)
     const reportData = useMemo(() => {
         if (!students || !assessments || students.length === 0) return null;
 
         const studentAverages = students.map(student => {
-            const studentAssessments = assessments.filter(a => a.studentId === student.uid && a.score != null && a.maxScore != null);
+            const studentAssessments = assessments.filter(a => a.studentId === student.uid);
+            
             if (studentAssessments.length === 0) return { studentName: `${student.firstName} ${student.lastName}`, average: 0 };
-            const totalScore = studentAssessments.reduce((sum, a) => sum + a.score!, 0);
-            const totalMaxScore = studentAssessments.reduce((sum, a) => sum + a.maxScore!, 0);
-            const average = totalMaxScore > 0 ? (totalScore / totalMaxScore) * 100 : 0;
-            return { studentName: `${student.firstName} ${student.lastName}`, average: parseFloat(average.toFixed(2)) };
+
+            // Calculate Weighted Total (CA vs Exam)
+            const cas = studentAssessments.filter(a => a.assessmentType?.includes('CA'));
+            const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
+            const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+            const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
+
+            const exams = studentAssessments.filter(a => a.assessmentType?.includes('Exam'));
+            const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
+            const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
+            const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
+
+            // Final Weighted Score (0-100)
+            const total100 = weightedCA + weightedExam;
+
+            return { 
+                studentName: `${student.firstName} ${student.lastName}`, 
+                average: parseFloat(total100.toFixed(1)) 
+            };
         });
 
         const validAverages = studentAverages.filter(s => s.average > 0);
@@ -87,8 +111,12 @@ export default function AcademicReportsPage() {
             return acc;
         }, {} as Record<string, number>);
 
-        return { studentAverages, classAverage: parseFloat(classAverage.toFixed(2)), chartData: Object.entries(gradeDistribution).map(([name, count]) => ({ name, count })) };
-    }, [students, assessments]);
+        return { 
+            studentAverages, 
+            classAverage: parseFloat(classAverage.toFixed(1)), 
+            chartData: ['A', 'B', 'C', 'D', 'E', 'F'].map(g => ({ name: g, count: gradeDistribution[g] || 0 })) 
+        };
+    }, [students, assessments, CA_WEIGHT, EXAM_WEIGHT]);
 
     const isLoading = isSchoolLoading || isRoleLoading || isLoadingClasses || isLoadingSubjects;
 
@@ -114,7 +142,7 @@ export default function AcademicReportsPage() {
             <div className="flex items-center justify-between print:hidden">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-2"><FileText /> Academic Reports</h1>
-                    <p className="text-muted-foreground">Analyze student performance and grade distributions.</p>
+                    <p className="text-muted-foreground">Analyze student performance using weighted grading logic ({CA_WEIGHT}% CA / {EXAM_WEIGHT}% Exam).</p>
                 </div>
                 <div className="flex gap-2">
                     <Button asChild variant="outline"><Link href="/dashboard/reports/enrollment">Enrollment</Link></Button>
@@ -145,8 +173,8 @@ export default function AcademicReportsPage() {
                 <div className="grid md:grid-cols-5 gap-6">
                     <Card className="md:col-span-3">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><BarChart2/> Overview</CardTitle>
-                            <CardDescription>Class Average: <span className="font-bold text-primary">{reportData.classAverage}%</span></CardDescription>
+                            <CardTitle className="flex items-center gap-2"><BarChart2/> Grade Distribution</CardTitle>
+                            <CardDescription>Class Weighted Average: <span className="font-bold text-primary">{reportData.classAverage}%</span></CardDescription>
                         </CardHeader>
                         <CardContent>
                             <ResponsiveContainer width="100%" height={300}>
@@ -155,10 +183,10 @@ export default function AcademicReportsPage() {
                         </CardContent>
                     </Card>
                     <Card className="md:col-span-2">
-                        <CardHeader><CardTitle>Student Scores</CardTitle></CardHeader>
+                        <CardHeader><CardTitle>Weighted Performance</CardTitle></CardHeader>
                         <CardContent>
-                            <Table><TableHeader><TableRow><TableHead>Student Name</TableHead><TableHead className="text-right">Average (%)</TableHead></TableRow></TableHeader>
-                                <TableBody>{reportData.studentAverages.map(s => (<TableRow key={s.studentName}><TableCell>{s.studentName}</TableCell><TableCell className="text-right">{s.average > 0 ? s.average : 'N/A'}</TableCell></TableRow>))}</TableBody>
+                            <Table><TableHeader><TableRow><TableHead>Student Name</TableHead><TableHead className="text-right">Weighted Avg (%)</TableHead></TableRow></TableHeader>
+                                <TableBody>{reportData.studentAverages.map(s => (<TableRow key={s.studentName}><TableCell>{s.studentName}</TableCell><TableCell className="text-right font-bold">{s.average > 0 ? `${s.average}%` : 'N/A'}</TableCell></TableRow>))}</TableBody>
                             </Table>
                         </CardContent>
                     </Card>
