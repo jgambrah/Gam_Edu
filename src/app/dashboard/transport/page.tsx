@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useRole } from '@/context/role-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { addDoc, collection, doc, updateDoc, writeBatch, query, where, deleteDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc, writeBatch, query, where, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StudentDisplay } from '@/components/student-display';
@@ -49,12 +49,10 @@ function StudentAssignmentDialog({
   const firestore = useFirestore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // LOGIC: Find students who are assigned to ANY route in the entire school
   const globallyAssignedIds = useMemo(() => {
     return allRoutes?.flatMap(r => r.stops?.flatMap(stop => stop.assignedStudentIds || []) || []) || [];
   }, [allRoutes]);
   
-  // LOGIC: Only show students who use the bus AND are not already assigned elsewhere
   const availableStudents = useMemo(() => {
     return students.filter(s => s.usesBusService === true && !globallyAssignedIds.includes(s.uid));
   }, [students, globallyAssignedIds]);
@@ -67,12 +65,9 @@ function StudentAssignmentDialog({
     setIsSubmitting(true);
     const routeRef = doc(firestore!, 'routes', route.id);
     
-    // Create a new array of stops with the student added
     const newStops = route.stops.map(stop => {
-        // Remove student from any other stop in THIS route (just in case)
         const filteredStudents = stop.assignedStudentIds.filter(id => id !== values.studentId);
         if (stop.id === values.stopId) {
-            // Add to the new stop
             return { ...stop, assignedStudentIds: [...filteredStudents, values.studentId] };
         }
         return { ...stop, assignedStudentIds: filteredStudents };
@@ -149,7 +144,7 @@ function StudentAssignmentDialog({
                                             {s.firstName} {s.lastName} ({s.classId || 'No Class'})
                                         </SelectItem>
                                     ))
-                                ) || <div className="p-4 text-center text-xs">No students.</div>}
+                                )}
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -315,13 +310,7 @@ function RouteManagementDialog({
 
     const form = useForm<z.infer<typeof routeSchema>>({
         resolver: zodResolver(routeSchema),
-        defaultValues: editingRoute ? {
-            name: editingRoute.name,
-            busId: editingRoute.busId,
-            driverId: editingRoute.driverId,
-            dailyRate: editingRoute.dailyRate || 0,
-            stops: editingRoute.stops || [],
-        } : {
+        defaultValues: {
             name: '',
             busId: '',
             driverId: '',
@@ -329,6 +318,29 @@ function RouteManagementDialog({
             stops: [{ name: '', address: '', order: 1, assignedStudentIds: [] }],
         },
     });
+
+    // CRITICAL FIX: Ensure form resets when editingRoute changes or dialog opens
+    useEffect(() => {
+        if (open) {
+            if (editingRoute) {
+                form.reset({
+                    name: editingRoute.name,
+                    busId: editingRoute.busId,
+                    driverId: editingRoute.driverId,
+                    dailyRate: editingRoute.dailyRate || 0,
+                    stops: editingRoute.stops || [],
+                });
+            } else {
+                form.reset({
+                    name: '',
+                    busId: '',
+                    driverId: '',
+                    dailyRate: 0,
+                    stops: [{ name: '', address: '', order: 1, assignedStudentIds: [] }],
+                });
+            }
+        }
+    }, [editingRoute, open, form]);
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
@@ -390,13 +402,13 @@ function RouteManagementDialog({
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <FormField control={form.control} name="busId" render={({ field }) => (
-                                <FormItem><FormLabel>Assign Bus</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormItem><FormLabel>Assign Bus</FormLabel><Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl><SelectTrigger><SelectValue placeholder="Select a bus" /></SelectTrigger></FormControl>
                                     <SelectContent>{buses?.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
                                 </Select><FormMessage /></FormItem>
                             )}/>
                             <FormField control={form.control} name="driverId" render={({ field }) => (
-                                <FormItem><FormLabel>Assign Driver</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormItem><FormLabel>Assign Driver</FormLabel><Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl><SelectTrigger><SelectValue placeholder="Select a driver" /></SelectTrigger></FormControl>
                                     <SelectContent>{drivers?.map(d => <SelectItem key={d.uid} value={d.uid}>{d.firstName} {d.lastName}</SelectItem>)}</SelectContent>
                                 </Select><FormMessage /></FormItem>
