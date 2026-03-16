@@ -43,6 +43,7 @@ import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatem
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentSelect } from '@/components/StudentSelect';
 import { billMultipleStudents, billStudentForAttendance } from '@/lib/billing';
+import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -98,7 +99,7 @@ function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, 
                         billedAmount: termlyRate,
                         amountPaid: 0,
                         status: 'Unpaid',
-                        dueDate: startOfDay(dueDate),
+                        dueDate: Timestamp.fromDate(startOfDay(dueDate)),
                         createdAt: serverTimestamp(),
                         schoolId: schoolId
                     });
@@ -126,7 +127,7 @@ function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, 
             <div className="space-y-4 py-4">
                 <div className="space-y-2">
                     <Label>Academic Term Name</Label>
-                    <Input value={termName} onChange={e => setTermName(setTermName as any)} placeholder="e.g., First Term 2025" />
+                    <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
                 </div>
                 <div className="space-y-2">
                     <Label>Payment Due Date</Label>
@@ -144,7 +145,7 @@ function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, 
                 </div>
             </div>
             <DialogFooter>
-                <Button onClick={handleBulkTermlyTransport} disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700">
+                <Button onClick={handleBulkTermlyTransport} disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
                     Generate Termly Bills
                 </Button>
@@ -216,7 +217,7 @@ function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, on
                         billedAmount: rate,
                         amountPaid: 0,
                         status: 'Unpaid',
-                        dueDate: startOfDay(dueDate),
+                        dueDate: Timestamp.fromDate(startOfDay(dueDate)),
                         createdAt: serverTimestamp(),
                         schoolId: schoolId
                     }, { merge: true });
@@ -266,7 +267,7 @@ function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, on
                 </div>
             </div>
             <DialogFooter>
-                <Button onClick={handleBulkTermlyCanteen} disabled={isSubmitting} className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                <Button onClick={handleBulkTermlyCanteen} disabled={isSubmitting} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold">
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
                     Generate Termly Bills
                 </Button>
@@ -372,7 +373,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
           amountPaid: 0, 
           status: 'Unpaid', 
           createdAt: serverTimestamp(), 
-          dueDate: values.dueDate || new Date(), 
+          dueDate: Timestamp.fromDate(values.dueDate || new Date()), 
           schoolId: schoolId 
       };
       await addDoc(collection(firestore, 'financialRecords'), newRecord);
@@ -542,6 +543,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 amountPaid: 0, 
                 status: isPast(values.dueDate) ? 'Overdue' : 'Unpaid', 
                 createdAt: serverTimestamp(), 
+                dueDate: Timestamp.fromDate(values.dueDate),
                 schoolId: schoolId 
             });
         });
@@ -821,7 +823,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                                             {chargeType === 'Transport' && (
                                                 <span className={cn("text-[10px] font-bold flex items-center gap-1", s.transportBillingModel === 'Termly' ? "text-red-400" : "text-indigo-600")}>
                                                     <RouteIcon className="h-2 w-2" />
-                                                    {s.transportBillingModel === 'Termly' ? "Termly Plan (Skipped)" : (s.routeId ? `GH₵${routeRates.get(s.routeId) || 0}/day` : 'No route')}
+                                                    {s.transportBillingModel === 'Termly' ? "Termly Plan (Skipped)" : (s.routeId ? `GH₵${routeRates.get(s.routeId) || 0}/day` : 'No rate set')}
                                                 </span>
                                             )}
                                         </div>
@@ -1065,7 +1067,7 @@ export default function AccountsPage() {
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
   
-  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termlyTransport' | 'termlyCanteen' | null>(null); 
+  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termlyTransport' | 'termlyCanteen' | 'daily' | null>(null); 
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null); 
@@ -1163,33 +1165,63 @@ export default function AccountsPage() {
                     <CardHeader>
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <CardTitle>Student Accounts</CardTitle>
-                            <div className="flex gap-2 flex-wrap">
-                                {/* Everyday Tasks */}
-                                <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
+                            <div className="flex items-center gap-3 flex-wrap">
+                                {/* EVERYDAY TASKS (Primary Actions) */}
+                                <Button 
+                                    variant={activeForm === 'single' ? 'default' : 'default'} 
+                                    className="bg-blue-600 hover:bg-blue-700 shadow-sm"
+                                    onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}
+                                >
                                     <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
                                 </Button>
-                                <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}>
-                                    <FileCog className="mr-2 h-4 w-4" /> Bulk Bill
-                                </Button>
-                                <Button variant={activeForm === 'levy' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'levy' ? null : 'levy')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+
+                                <Dialog open={activeForm === 'daily'} onOpenChange={(open) => setActiveForm(open ? 'daily' : null)}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 shadow-sm">
+                                            <RefreshCw className="mr-2 h-4 w-4" /> Sync Daily Bills
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                                        <DialogHeader>
+                                            <DialogTitle>Daily Billing Sync</DialogTitle>
+                                            <DialogDescription>Scan attendance records and generate missing invoices.</DialogDescription>
+                                        </DialogHeader>
+                                        {schoolId && <ManualBillingReconciliation schoolId={schoolId} />}
+                                    </DialogContent>
+                                </Dialog>
+
+                                <Button 
+                                    variant={activeForm === 'levy' ? 'default' : 'outline'} 
+                                    className="border-orange-200 text-orange-700 hover:bg-orange-50 shadow-sm"
+                                    onClick={() => setActiveForm(activeForm === 'levy' ? null : 'levy')}
+                                >
                                     <HandCoins className="mr-2 h-4 w-4" /> Manual Levy
                                 </Button>
 
-                                {/* Termly Operations Dropdown */}
+                                {/* TERMLY BATCH OPERATIONS (Hidden in Dropdown for Safety) */}
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" className="border-slate-300">
-                                            Termly Operations <ChevronDown className="ml-2 h-4 w-4" />
+                                        <Button variant="outline" className="bg-slate-50 border-slate-300 text-slate-700">
+                                            Termly Batch Operations <ChevronDown className="ml-2 h-4 w-4 text-slate-500" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-[200px]">
-                                        <DropdownMenuLabel>Termly Batch Billing</DropdownMenuLabel>
+                                    <DropdownMenuContent align="end" className="w-56">
+                                        <DropdownMenuLabel>Start of Term Billing</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={() => setActiveForm('termlyTransport')}>
-                                            <Bus className="mr-2 h-4 w-4 text-purple-600" /> Termly Transport
+                                        
+                                        {/* Bulk Tuition */}
+                                        <DropdownMenuItem onClick={() => setActiveForm('bulk')} className="cursor-pointer">
+                                            <FileCog className="mr-2 h-4 w-4 text-blue-600" /> Generate Tuition (Bulk)
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => setActiveForm('termlyCanteen')}>
-                                            <Utensils className="mr-2 h-4 w-4 text-orange-600" /> Termly Canteen
+                                        
+                                        {/* Termly Transport */}
+                                        <DropdownMenuItem onClick={() => setActiveForm('termlyTransport')} className="cursor-pointer">
+                                            <Bus className="mr-2 h-4 w-4 text-amber-600" /> Generate Termly Transport
+                                        </DropdownMenuItem>
+                                        
+                                        {/* Termly Canteen */}
+                                        <DropdownMenuItem onClick={() => setActiveForm('termlyCanteen')} className="cursor-pointer">
+                                            <Utensils className="mr-2 h-4 w-4 text-green-600" /> Generate Termly Canteen
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
