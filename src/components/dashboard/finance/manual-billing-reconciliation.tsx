@@ -79,7 +79,8 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 return;
             }
 
-            // E. Get Existing Bills (Who already has a bill?)
+            // E. Get Existing Bills (Who already has a bill on this DAY?)
+            // We search by schoolId and dueDate (which is standardized to midnight)
             const billsQ = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
@@ -106,6 +107,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                     
                     if (currentCanteenRate > 0) {
                         const expectedCanteenId = `canteen-${att.studentId}-${dateStr}`;
+                        // If the ID isn't in our "existing" set, it's missing
                         if (!existingBillIds.has(expectedCanteenId)) {
                             detectedMissing.push({
                                 id: `${expectedCanteenId}-${missingCounter++}`,
@@ -168,6 +170,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
         const itemsToProcess = missingBills.filter(item => selectedItems.includes(item.id));
         
         itemsToProcess.forEach(item => {
+            // Strip the unique counter from the ID to get the deterministic ID
             const cleanId = item.id.substring(0, item.id.lastIndexOf('-'));
             const ref = doc(firestore, 'financialRecords', cleanId);
             batch.set(ref, {
@@ -178,7 +181,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 type: item.type === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)',
                 description: `${item.type} - ${format(date, 'PPP')}`,
                 status: 'Unpaid',
-                dueDate: Timestamp.fromDate(startOfDay(date)),
+                dueDate: Timestamp.fromDate(startOfDay(date)), // Standardized midnight
                 createdAt: serverTimestamp(),
                 amountPaid: 0,
                 schoolId: schoolId,

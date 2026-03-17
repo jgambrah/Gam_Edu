@@ -1,6 +1,6 @@
 'use client';
 
-import { doc, setDoc, getDoc, serverTimestamp, Timestamp, collection, writeBatch, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, Timestamp, collection, writeBatch, query, where, getDocs } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
 import type { Student } from '@/lib/types';
 import { format, startOfDay } from 'date-fns';
@@ -19,6 +19,7 @@ interface BillingResult {
 
 /**
  * Bills a student for canteen and/or bus services when they attend school.
+ * Uses startOfDay for timestamps to ensure compatibility with sync tools.
  */
 export async function billStudentForAttendance(
   firestore: Firestore,
@@ -37,15 +38,16 @@ export async function billStudentForAttendance(
       };
     }
 
-    // 0. NORMALIZE DATE: Critical for sync tool to "see" these bills
+    // NORMALIZE DATE: Use midnight for all financial dueDates
     const normalizedDate = startOfDay(attendanceDate);
     const dateStr = format(normalizedDate, 'yyyy-MM-dd');
 
-    // 1. Check permissions/preferences
-    const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
-    
-    // Only bill daily Canteen if their mode is 'Daily'
+    // 1. Check preferences
+    // Only bill daily Canteen if their mode is 'Daily' (or not set, assuming default daily)
     const shouldBillCanteen = student.canteenBillingMode === 'Daily' || (student.usesCanteen !== false && !student.canteenBillingMode);
+    
+    // Only bill daily Transport if they use the bus AND their mode is 'Daily'
+    const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
 
     if (!shouldBillCanteen && !isDailyTransportSubscriber) {
       return {
@@ -68,7 +70,7 @@ export async function billStudentForAttendance(
     let totalBilled = 0;
     const billedServices: string[] = [];
 
-    // 3. Process Canteen Bill (Dynamic Rate)
+    // 3. Process Canteen Bill (Using Deterministic ID)
     if (shouldBillCanteen && canteenRate > 0) {
         const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
         const canteenRef = doc(firestore, 'financialRecords', canteenRecordId);
@@ -83,7 +85,7 @@ export async function billStudentForAttendance(
             amountPaid: 0,
             waiverAmount: 0,
             status: 'Unpaid',
-            dueDate: Timestamp.fromDate(normalizedDate),
+            dueDate: Timestamp.fromDate(normalizedDate), // Standardized to Start of Day
             createdAt: serverTimestamp(),
             schoolId: schoolId,
         }, { merge: true });
@@ -91,7 +93,7 @@ export async function billStudentForAttendance(
         billedServices.push('Canteen');
     }
 
-    // 4. Process Transport Bill (Only if 'Daily' model)
+    // 4. Process Transport Bill (Using Deterministic ID)
     if (isDailyTransportSubscriber && transportRate > 0) {
         const transportRecordId = `transport-${student.uid}-${dateStr}`;
         const transportRef = doc(firestore, 'financialRecords', transportRecordId);
@@ -106,7 +108,7 @@ export async function billStudentForAttendance(
             amountPaid: 0,
             waiverAmount: 0,
             status: 'Unpaid',
-            dueDate: Timestamp.fromDate(normalizedDate),
+            dueDate: Timestamp.fromDate(normalizedDate), // Standardized to Start of Day
             createdAt: serverTimestamp(),
             schoolId: schoolId,
         }, { merge: true });
@@ -179,16 +181,15 @@ export async function billMultipleStudents(
     const student = students[i];
     if (onProgress) onProgress(i + 1, students.length, `${student.firstName} ${student.lastName}`);
 
-    // A. Resolve Canteen Rate per student based on their class
+    // A. Resolve Canteen Rate
     let studentCanteenRate = 0;
     if (canteenModel === 'Flat') {
         studentCanteenRate = globalCanteenRate;
     } else {
-        // Apply tiered pricing
         studentCanteenRate = classCanteenRates[student.classId] || 0;
     }
 
-    // B. Resolve Transport Rate per student from their assigned route
+    // B. Resolve Transport Rate
     const transportRate = student.routeId ? (routeRatesMap.get(student.routeId) || 0) : 0;
 
     const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, { 
@@ -201,7 +202,7 @@ export async function billMultipleStudents(
         successful++;
         totalBilled += result.amountBilled;
       } else {
-        successful++; // Count as successful even if 0 billed (e.g. already billed)
+        successful++; 
       }
     } else {
       failed++;
