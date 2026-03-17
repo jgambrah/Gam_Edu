@@ -25,7 +25,6 @@ import { Badge } from '@/components/ui/badge';
 import { StudentDisplay } from '@/components/student-display';
 import { billMultipleStudents } from '@/lib/billing';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Schema matches your data structure
 const attendanceRecordSchema = z.object({
@@ -200,7 +199,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     }
 
     return (
-        <Card className="border-none shadow-none bg-transparent h-[calc(100vh-120px)] flex flex-col relative overflow-hidden">
+        <Card className="border-none shadow-none bg-transparent h-full flex flex-col relative">
             <CardHeader className="px-0 flex-shrink-0">
                 <CardTitle>Daily Attendance & Billing</CardTitle>
                 <CardDescription>
@@ -208,7 +207,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     charges based on your Class-Specific rates.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-0 flex-1 flex flex-col min-h-0">
+            <CardContent className="px-0 flex-1 flex flex-col pb-0">
                 <div className="flex flex-col md:flex-row gap-4 mb-6 flex-shrink-0">
                     {!propClassId && (
                         <div className="flex-1">
@@ -245,13 +244,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     </div>
                 )}
 
-                {isLoading && !studentsLoaded && <div className="flex justify-center p-8 flex-1 items-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}
+                {isLoading && !studentsLoaded && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>}
 
                 {studentsLoaded && (
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-                            {/* SCROLLABLE LIST CONTAINER */}
-                            <div className="flex-1 overflow-y-auto space-y-3 pb-4 pr-2">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 relative">
+                            {/* EXPLICITLY SCROLLABLE AREA */}
+                            <div className="space-y-3 overflow-y-auto flex-1 pb-4" style={{ maxHeight: 'calc(100vh - 280px)' }}>
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
                                     const currentStatus = form.watch(`records.${index}.status`);
@@ -331,31 +330,36 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                             </div>
                                         </div>
                                     </Card>
-                                    );
+                                );
                                 })}
-                            </div>
-                            
-                            {/* NON-SCROLLABLE FOOTER BUTTON */}
-                            <div className="pt-4 border-t bg-white mt-auto flex-shrink-0">
-                                {billingProgress && (
-                                    <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">
-                                        {billingProgress}
-                                    </div>
-                                )}
-                                <Button
-                                    type="submit"
-                                    className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading
-                                        ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/>
-                                        : <Check className="mr-2 h-6 w-6"/>
-                                    }
-                                    Confirm Attendance & Generate Bills
-                                </Button>
+                                {fields.length > 0 && <div className="h-28" />}
                             </div>
                         </form>
                     </Form>
+                )}
+
+                {/* FIXED BUTTON — lives outside all overflow containers */}
+                {studentsLoaded && fields.length > 0 && (
+                    <div className="fixed bottom-0 left-0 right-0 z-[9999] px-6 pb-6 pt-3 bg-white border-t shadow-[0_-4px_12px_rgba(0,0,0,0.12)]">
+                        <div className="max-w-4xl mx-auto">
+                            {billingProgress && (
+                                <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">
+                                    {billingProgress}
+                                </div>
+                            )}
+                            <Button
+                                onClick={form.handleSubmit(onSubmit)}
+                                className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md"
+                                disabled={isLoading}
+                            >
+                                {isLoading
+                                    ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/>
+                                    : <Check className="mr-2 h-6 w-6"/>
+                                }
+                                Confirm Attendance & Generate Bills
+                            </Button>
+                        </div>
+                    </div>
                 )}
             </CardContent>
         </Card>
