@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useFirestore } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
 import { format, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -50,20 +50,25 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
             const globalCanteenRate = canteenData?.dailyRate || 0;
             const classCanteenRates = canteenData?.classRates || {};
 
-            // B. Fetch Transport Rates
-            const transportSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'transport'));
-            const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
+            // B. Fetch Transport Routes Map (For route-specific rates)
+            const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
+            const routesSnap = await getDocs(routesQuery);
+            const routeRatesMap = new Map<string, number>();
+            routesSnap.docs.forEach(d => routeRatesMap.set(d.id, d.data().dailyRate || 0));
+
+            // C. Fetch Student Metadata (For subscription models)
+            const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
+            const studentsSnap = await getDocs(studentsQuery);
+            const studentMap = new Map(studentsSnap.docs.map(d => [d.id, d.data()]));
 
             const dateStr = format(date, 'yyyy-MM-dd');
             const searchDate = startOfDay(date); 
 
-            console.log(`Scanning for missing bills on ${dateStr}... Model: ${canteenModel}`);
-
-            // C. Get Attendance (Who was present?)
+            // D. Get Attendance (Who was present?)
             const attendanceQ = query(
                 collection(firestore, 'attendance'),
                 where('schoolId', '==', schoolId),
-                where('date', '==', searchDate),
+                where('date', '==', Timestamp.fromDate(searchDate)),
                 where('status', 'in', ['Present', 'Late'])
             );
             const attendanceSnap = await getDocs(attendanceQ);
@@ -74,61 +79,65 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 return;
             }
 
-            // D. Get Existing Bills (Who already has a bill?)
+            // E. Get Existing Bills (Who already has a bill?)
             const billsQ = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
-                where('dueDate', '==', searchDate) 
+                where('dueDate', '==', Timestamp.fromDate(searchDate)) 
             );
             const billsSnap = await getDocs(billsQ);
             const existingBillIds = new Set(billsSnap.docs.map(d => d.id));
 
             const detectedMissing: MissingBillItem[] = [];
 
-            // E. Compare
+            // F. Compare
             let missingCounter = 0; 
             for (const attDoc of attendanceSnap.docs) {
                 const att = attDoc.data();
-                const studentName = att.studentName || "Unknown Student";
-                
-                // 1. Check Canteen Gap (Dynamic Model)
-                let currentCanteenRate = 0;
-                if (canteenModel === 'Flat') {
-                    currentCanteenRate = globalCanteenRate;
-                } else {
-                    currentCanteenRate = classCanteenRates[att.classId] || 0;
-                }
+                const studentMeta = studentMap.get(att.studentId);
+                if (!studentMeta) continue;
 
-                if (currentCanteenRate > 0 && att.usesCanteen !== "false") {
-                    const expectedCanteenId = `canteen-${att.studentId}-${dateStr}`;
+                const studentName = att.studentName || `${studentMeta.firstName} ${studentMeta.lastName}`;
+                
+                // 1. Check Canteen Gap
+                const canteenMode = studentMeta.canteenBillingMode || 'Daily';
+                if (canteenMode === 'Daily' && studentMeta.usesCanteen !== false) {
+                    let currentCanteenRate = canteenModel === 'Flat' ? globalCanteenRate : (classCanteenRates[att.classId] || 0);
                     
-                    if (!existingBillIds.has(expectedCanteenId)) {
-                        detectedMissing.push({
-                            id: `${expectedCanteenId}-${missingCounter++}`,
-                            studentId: att.studentId,
-                            studentName: studentName,
-                            classId: att.classId,
-                            type: 'Canteen',
-                            amount: currentCanteenRate,
-                            reason: `Marked Present. Missing ${canteenModel} Canteen bill.`
-                        });
+                    if (currentCanteenRate > 0) {
+                        const expectedCanteenId = `canteen-${att.studentId}-${dateStr}`;
+                        if (!existingBillIds.has(expectedCanteenId)) {
+                            detectedMissing.push({
+                                id: `${expectedCanteenId}-${missingCounter++}`,
+                                studentId: att.studentId,
+                                studentName: studentName,
+                                classId: att.classId,
+                                type: 'Canteen',
+                                amount: currentCanteenRate,
+                                reason: `Daily subscriber present. Missing bill.`
+                            });
+                        }
                     }
                 }
 
                 // 2. Check Transport Gap
-                const usesBus = att.usesBusService === "true" || att.usesBusService === true;
-                if (transportRate > 0 && usesBus) {
-                    const expectedTransportId = `transport-${att.studentId}-${dateStr}`;
-                    if (!existingBillIds.has(expectedTransportId)) {
-                        detectedMissing.push({
-                            id: `${expectedTransportId}-${missingCounter++}`,
-                            studentId: att.studentId,
-                            studentName: studentName,
-                            classId: att.classId,
-                            type: 'Transport',
-                            amount: transportRate,
-                            reason: 'Bus User Present but no Transport Bill found'
-                        });
+                const transportMode = studentMeta.transportBillingModel || 'Daily';
+                if (transportMode === 'Daily' && studentMeta.usesBusService === true) {
+                    const specificTransportRate = studentMeta.routeId ? (routeRatesMap.get(studentMeta.routeId) || 0) : 0;
+                    
+                    if (specificTransportRate > 0) {
+                        const expectedTransportId = `transport-${att.studentId}-${dateStr}`;
+                        if (!existingBillIds.has(expectedTransportId)) {
+                            detectedMissing.push({
+                                id: `${expectedTransportId}-${missingCounter++}`,
+                                studentId: att.studentId,
+                                studentName: studentName,
+                                classId: att.classId,
+                                type: 'Transport',
+                                amount: specificTransportRate,
+                                reason: 'Daily bus subscriber present. Missing bill.'
+                            });
+                        }
                     }
                 }
             }
@@ -167,13 +176,13 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 studentName: item.studentName,
                 classId: item.classId,
                 type: item.type === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)',
-                description: `${item.type} fee for ${format(date, 'PPP')} (Manual Fix)`,
+                description: `${item.type} - ${format(date, 'PPP')}`,
                 status: 'Unpaid',
-                dueDate: startOfDay(date),
+                dueDate: Timestamp.fromDate(startOfDay(date)),
                 createdAt: serverTimestamp(),
                 amountPaid: 0,
                 schoolId: schoolId,
-            });
+            }, { merge: true });
         });
 
         try {
@@ -200,7 +209,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                     <AlertCircle className="h-5 w-5"/> Missing Bill Detector
                 </CardTitle>
                 <CardDescription>
-                    Scan a specific date to find students who attended school but were not billed correctly due to system errors.
+                    Scan a specific date to find students who attended school but were not billed correctly.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">

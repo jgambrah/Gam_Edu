@@ -3,7 +3,7 @@
 import { doc, setDoc, getDoc, serverTimestamp, Timestamp, collection, writeBatch, query, where, getDocs } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
 import type { Student } from '@/lib/types';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 
 // Default rates are now 0 to ensure we only bill what is explicitly set in school settings
 const DAILY_RATES = {
@@ -37,6 +37,10 @@ export async function billStudentForAttendance(
       };
     }
 
+    // 0. NORMALIZE DATE: Critical for sync tool to "see" these bills
+    const normalizedDate = startOfDay(attendanceDate);
+    const dateStr = format(normalizedDate, 'yyyy-MM-dd');
+
     // 1. Check permissions/preferences
     const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
     
@@ -60,7 +64,6 @@ export async function billStudentForAttendance(
       ? providedRates.transport
       : DAILY_RATES.BUS;
 
-    const dateStr = format(attendanceDate, 'yyyy-MM-dd');
     const batch = writeBatch(firestore);
     let totalBilled = 0;
     const billedServices: string[] = [];
@@ -75,12 +78,12 @@ export async function billStudentForAttendance(
             studentName: `${student.firstName} ${student.lastName}`,
             classId: student.classId || '',
             type: 'Canteen Fee (Daily)',
-            description: `Canteen - ${format(attendanceDate, 'PPP')}`,
+            description: `Canteen - ${format(normalizedDate, 'PPP')}`,
             billedAmount: canteenRate,
             amountPaid: 0,
             waiverAmount: 0,
             status: 'Unpaid',
-            dueDate: Timestamp.fromDate(attendanceDate),
+            dueDate: Timestamp.fromDate(normalizedDate),
             createdAt: serverTimestamp(),
             schoolId: schoolId,
         }, { merge: true });
@@ -98,12 +101,12 @@ export async function billStudentForAttendance(
             studentName: `${student.firstName} ${student.lastName}`,
             classId: student.classId || '',
             type: 'Transport Fee (Daily)',
-            description: `Transport - ${format(attendanceDate, 'PPP')}`,
+            description: `Transport - ${format(normalizedDate, 'PPP')}`,
             billedAmount: transportRate,
             amountPaid: 0,
             waiverAmount: 0,
             status: 'Unpaid',
-            dueDate: Timestamp.fromDate(attendanceDate),
+            dueDate: Timestamp.fromDate(normalizedDate),
             createdAt: serverTimestamp(),
             schoolId: schoolId,
         }, { merge: true });
