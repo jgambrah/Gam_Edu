@@ -29,9 +29,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Route } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { Student, Class, UserRole, Route as TransportRoute } from '@/lib/types';
+import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
 import { StudentSearchInput } from '@/components/student-search';
 import { StudentDisplay } from '@/components/student-display';
@@ -51,7 +51,6 @@ export default function StudentsV3Page() {
   
   const [isLoading, setIsLoading] = useState(true);
   const [statusMsg, setStatusMsg] = useState("Initializing...");
-  const [isInitializing, setIsInitializing] = useState(false);
   
   // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -63,21 +62,13 @@ export default function StudentsV3Page() {
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
 
-  // Form State
+  // Form State (Subscription Focused)
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
-  const [selectedRouteId, setSelectedRouteId] = useState('');
   const [usesBus, setUsesBus] = useState(false);
   const [billingModel, setBillingModel] = useState<'Daily' | 'Termly'>('Daily');
   const [canteenBillingMode, setCanteenBillingMode] = useState<'Daily' | 'Termly' | 'None'>('Daily');
-
-  // Routes Query
-  const routesQuery = useMemoFirebase(() => 
-    (firestore && adminSchoolId) ? query(collection(firestore, 'routes'), where('schoolId', '==', adminSchoolId)) : null,
-    [firestore, adminSchoolId]
-  );
-  const { data: routes } = useCollection<TransportRoute>(routesQuery);
 
   // Reset form state when opening modals
   useEffect(() => {
@@ -86,7 +77,6 @@ export default function StudentsV3Page() {
         setSelectedClassId(''); 
         setSelectedGender(''); 
         setSelectedPhoto(null);
-        setSelectedRouteId('');
         setUsesBus(false);
         setBillingModel('Daily');
         setCanteenBillingMode('Daily');
@@ -96,7 +86,6 @@ export default function StudentsV3Page() {
         setSelectedClassId(editingStudent.classId || ''); 
         setSelectedGender(editingStudent.gender || ''); 
         setSelectedPhoto(null);
-        setSelectedRouteId(editingStudent.routeId || '');
         setUsesBus(editingStudent.usesBusService || false);
         setBillingModel(editingStudent.transportBillingModel || 'Daily');
         setCanteenBillingMode(editingStudent.canteenBillingMode || (editingStudent.usesCanteen === false ? 'None' : 'Daily'));
@@ -125,7 +114,6 @@ export default function StudentsV3Page() {
 
         const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
         const studentSnap = await getDocs(studentQuery);
-        console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
         
         const studentList = studentSnap.docs.map(d => ({ 
             id: d.id, 
@@ -137,7 +125,7 @@ export default function StudentsV3Page() {
     } catch (err: any) {
         console.error("Load Error:", err);
         setStatusMsg("Error loading data");
-        toast({ variant: 'destructive', title: "Error", description: err.message });
+        toast({ variant: 'destructive', title: "Error", description: "Could not fetch student database." });
     } finally {
         setIsLoading(false);
     }
@@ -167,24 +155,15 @@ export default function StudentsV3Page() {
     }
   };
 
-  // --- ADD STUDENT LOGIC (With ID Generation) ---
+  // --- ADD STUDENT LOGIC ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       
       if (!adminSchoolId) {
-          toast({ 
-              variant: 'destructive', 
-              title: "System Error", 
-              description: "School ID not found. Please refresh the page and try again." 
-          });
+          toast({ variant: 'destructive', title: "System Error", description: "School context missing." });
           return;
       }
 
-      if (usesBus && !selectedRouteId) {
-          toast({ variant: 'destructive', title: 'Route Required', description: 'Please select a bus route for this student.' });
-          return;
-      }
-      
       if (isSubmitting) return;
       setIsSubmitting(true);
       
@@ -196,7 +175,6 @@ export default function StudentsV3Page() {
       const password = "password123"; 
 
       try {
-          // A. Create Auth User
           const result = await createNewUser(
               email, 
               password, 
@@ -207,16 +185,13 @@ export default function StudentsV3Page() {
             
           if ('error' in result) throw new Error(result.error);
 
-          // B. Upload Photo if selected
           let photoURL = null;
           if (selectedPhoto) {
               photoURL = await uploadProfilePhoto(result.uid, selectedPhoto);
           }
 
-          // C. Generate Sequential Student ID (Transaction)
           const newStudentId = await generateNextStudentId(firestore!, adminSchoolId);
           
-          // D. Save student document with the new ID
           await setDoc(doc(firestore!, 'students', result.uid), {
               uid: result.uid,
               studentId: newStudentId, 
@@ -228,7 +203,6 @@ export default function StudentsV3Page() {
               dateOfBirth: values.dateOfBirth,
               address: values.address,
               usesBusService: usesBus,
-              routeId: usesBus ? selectedRouteId : null,
               transportBillingModel: usesBus ? billingModel : null,
               canteenBillingMode: canteenBillingMode,
               usesCanteen: canteenBillingMode !== 'None',
@@ -255,11 +229,6 @@ export default function StudentsV3Page() {
     e.preventDefault();
     if (!editingStudent || isSubmitting || !firestore) return;
 
-    if (usesBus && !selectedRouteId) {
-        toast({ variant: 'destructive', title: 'Route Required', description: 'Please select a bus route for this student.' });
-        return;
-    }
-
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries());
@@ -279,14 +248,13 @@ export default function StudentsV3Page() {
             dateOfBirth: values.dateOfBirth,
             address: values.address,
             usesBusService: usesBus,
-            routeId: usesBus ? selectedRouteId : null,
             transportBillingModel: usesBus ? billingModel : null,
             canteenBillingMode: canteenBillingMode,
             usesCanteen: canteenBillingMode !== 'None',
             photoURL: photoURL,
         });
 
-        toast({ title: "Updated", description: "Student saved." });
+        toast({ title: "Updated", description: "Student profile saved." });
         setEditingStudent(null);
         loadData();
     } catch (error: any) {
@@ -309,41 +277,15 @@ export default function StudentsV3Page() {
   };
 
   const handleSendBill = async (student: Student) => {
-    const parentPhone = "0240000000"; 
-    if (!parentPhone) {
-        toast({ variant: 'destructive', title: "No Parent Linked", description: "Cannot send SMS. No phone number found for this student's parent." });
-        return;
-    }
-
-    const amountDue = 500; 
-    const schoolName = "GAM Edu"; 
-
-    if (confirm(`Send SMS bill reminder of GHS ${amountDue} to ${student.firstName}'s parent?`)) {
-        const msg = `Dear Parent, fees of GHS ${amountDue} for ${student.firstName} are due. Please pay via MoMo to 0550000000. - ${schoolName}`;
-        
-        const res = await sendSMSAction(parentPhone, msg);
-        if (res.success) {
-            toast({ title: "SMS Sent!", description: "The bill reminder has been sent." });
-        } else {
-            toast({ variant: 'destructive', title: "SMS Failed", description: res.error });
-        }
-    }
+    // This is a placeholder for bill reminder logic
+    toast({ title: "Feature coming soon", description: "Direct SMS reminders are being integrated." });
   };
   
   const filteredStudents = students.filter(s => {
     const term = searchTerm.toLowerCase().trim();
-    
-    // 1. Check Class Filter
-    let matchesClass = true;
-    if (classFilter === 'unassigned') {
-      matchesClass = !s.classId || s.classId.trim() === '';
-    } else if (classFilter !== 'all') {
-      matchesClass = s.classId === classFilter;
-    }
-
-    // 2. Check Search Term
+    let matchesClass = classFilter === 'all' || s.classId === classFilter;
+    if (classFilter === 'unassigned') matchesClass = !s.classId;
     const matchesSearch = searchStudent(s, term);
-
     return matchesSearch && matchesClass;
   });
 
@@ -400,7 +342,7 @@ export default function StudentsV3Page() {
             ) : filteredStudents.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <WifiOff className="h-10 w-10 text-slate-300" />
-                    <p className="font-medium">No students visible.</p>
+                    <p className="font-medium">No students found.</p>
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -461,7 +403,7 @@ export default function StudentsV3Page() {
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader><DialogTitle>Enrol New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
+            <DialogHeader><DialogTitle>Enrol New Student</DialogTitle><DialogDescription>Enter basic details and subscription preferences.</DialogDescription></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
                  <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                     <div className="relative h-24 w-24 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center overflow-hidden">
@@ -530,41 +472,28 @@ export default function StudentsV3Page() {
                             </Select>
                         </div>
 
-                        {/* Transport Checkbox */}
-                        <div className="flex items-end pb-2">
-                            <div className="flex items-center space-x-2">
+                        {/* Transport Toggle */}
+                        <div className="space-y-2">
+                            <Label className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Bus Subscription</Label>
+                            <div className="flex items-center space-x-2 h-10">
                                 <Checkbox id="usesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
-                                <Label htmlFor="usesBusService" className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Uses Bus Service</Label>
+                                <Label htmlFor="usesBusService" className="cursor-pointer font-medium text-slate-600">Uses School Bus</Label>
                             </div>
                         </div>
                     </div>
 
                     {usesBus && (
                         <div className="space-y-4 animate-in fade-in slide-in-from-top-2 border-t pt-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Select Bus Route *</Label>
-                                    <Select value={selectedRouteId} onValueChange={setSelectedRouteId}>
-                                        <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
-                                        <SelectContent>
-                                            {routes?.map(r => (
-                                                <SelectItem key={r.id} value={r.id}>
-                                                    {r.name} (Daily: GH₵{r.dailyRate || 0}, Termly: GH₵{r.termlyRate || 0})
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Bus Billing Model</Label>
-                                    <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
-                                        <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Daily">Daily (Attendance)</SelectItem>
-                                            <SelectItem value="Termly">Termly (Flat Fee)</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                            <div className="space-y-2">
+                                <Label>Bus Billing Model</Label>
+                                <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
+                                    <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Daily">Daily (Attendance-based)</SelectItem>
+                                        <SelectItem value="Termly">Termly (Fixed Fee)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-[10px] text-slate-500">Specific route and stop assignment is handled in the <strong>Transport module</strong>.</p>
                             </div>
                         </div>
                     )}
@@ -574,7 +503,7 @@ export default function StudentsV3Page() {
                     <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
                         {isSubmitting || isUploadingPhoto ? (
                             <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> {isUploadingPhoto ? "Uploading Photo..." : "Saving..."}</>
-                        ) : "Create Account"}
+                        ) : "Enrol Student"}
                     </Button>
                 </DialogFooter>
             </form>
@@ -583,7 +512,7 @@ export default function StudentsV3Page() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle><DialogDescription>Modify the student's profile.</DialogDescription></DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Edit Student Profile</DialogTitle></DialogHeader>
             {editingStudent && (
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
                     <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
@@ -634,7 +563,6 @@ export default function StudentsV3Page() {
                         <h4 className="text-sm font-bold text-slate-700">Services & Subscriptions</h4>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Canteen Mode */}
                             <div className="space-y-2">
                                 <Label className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen Billing Mode</Label>
                                 <Select value={canteenBillingMode} onValueChange={(val: any) => setCanteenBillingMode(val)}>
@@ -647,41 +575,26 @@ export default function StudentsV3Page() {
                                 </Select>
                             </div>
 
-                            {/* Transport Checkbox */}
-                            <div className="flex items-end pb-2">
-                                <div className="flex items-center space-x-2">
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Bus Subscription</Label>
+                                <div className="flex items-center space-x-2 h-10">
                                     <Checkbox id="editUsesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
-                                    <Label htmlFor="editUsesBusService" className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Uses Bus Service</Label>
+                                    <Label htmlFor="editUsesBusService" className="cursor-pointer font-medium text-slate-600">Uses School Bus</Label>
                                 </div>
                             </div>
                         </div>
 
                         {usesBus && (
                             <div className="space-y-4 animate-in fade-in slide-in-from-top-2 border-t pt-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label>Select Bus Route *</Label>
-                                        <Select value={selectedRouteId} onValueChange={setSelectedRouteId}>
-                                            <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a route..." /></SelectTrigger>
-                                            <SelectContent>
-                                                {routes?.map(r => (
-                                                    <SelectItem key={r.id} value={r.id}>
-                                                        {r.name} (Daily: GH₵{r.dailyRate || 0}, Termly: GH₵{r.termlyRate || 0})
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Bus Billing Model</Label>
-                                        <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
-                                            <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="Daily">Daily (Attendance)</SelectItem>
-                                                <SelectItem value="Termly">Termly (Flat Fee)</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label>Bus Billing Model</Label>
+                                    <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
+                                        <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Daily">Daily (Attendance-based)</SelectItem>
+                                            <SelectItem value="Termly">Termly (Fixed Fee)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
                         )}
@@ -690,7 +603,7 @@ export default function StudentsV3Page() {
                     <DialogFooter>
                         <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
                             {isSubmitting || isUploadingPhoto ? (
-                                <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> {isUploadingPhoto ? "Uploading Photo..." : "Saving..."}</>
+                                <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Saving...</>
                             ) : "Save Changes"}
                         </Button>
                     </DialogFooter>
