@@ -148,7 +148,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             return;
         }
         setIsLoading(true);
-        setBillingProgress(null);
+        setBillingProgress("Saving attendance...");
         
         try {
             const batch = writeBatch(firestore);
@@ -179,7 +179,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     selectedDate,
                     schoolId,
                     (current, total, name) => {
-                        setBillingProgress(`Process: ${current}/${total} (${name})`);
+                        setBillingProgress(`Billing: ${current}/${total} (${name})`);
                     }
                 );
                 
@@ -187,10 +187,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     title: 'Daily Billing Complete',
                     description: `✅ ${billingResult.successful} billed. ❌ ${billingResult.failed} failed. Total today: GH₵${billingResult.totalBilled.toFixed(2)}`
                 });
-                
-                if (billingResult.errors.length > 0) {
-                    console.error("Billing Errors:", billingResult.errors);
-                }
             } else {
                 toast({ title: 'Billing Skipped', description: 'No students were marked as present or late.'});
             }
@@ -253,7 +249,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 {studentsLoaded && (
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 relative">
-                            <div className="space-y-3 pb-24">
+                            <div className="space-y-3 pb-4">
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
                                     const currentStatus = form.watch(`records.${index}.status`);
@@ -335,21 +331,32 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                     </Card>
                                 );
                                 })}
+                                {fields.length > 0 && <div className="h-28" />}
                             </div>
-                            
-                            {fields.length > 0 && (
-                                <div className="pt-4 border-t mt-6 bg-white sticky bottom-0 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 rounded-b-xl">
-                                    {billingProgress && (
-                                        <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">{billingProgress}</div>
-                                    )}
-                                    <Button type="submit" className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md" disabled={isLoading}>
-                                        {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <Check className="mr-2 h-6 w-6"/>}
-                                        Confirm Attendance & Generate Bills
-                                    </Button>
-                                </div>
-                            )}
                         </form>
                     </Form>
+                )}
+
+                {/* FIXED BUTTON — lives outside all overflow containers */}
+                {studentsLoaded && fields.length > 0 && (
+                    <div className="fixed bottom-0 left-0 right-0 md:left-64 z-[9999] px-4 pb-4 pt-3 bg-white border-t shadow-[0_-4px_12px_rgba(0,0,0,0.12)]">
+                        {billingProgress && (
+                            <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">
+                                {billingProgress}
+                            </div>
+                        )}
+                        <Button
+                            onClick={form.handleSubmit(onSubmit)}
+                            className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md"
+                            disabled={isLoading}
+                        >
+                            {isLoading
+                                ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/>
+                                : <Check className="mr-2 h-6 w-6"/>
+                            }
+                            Confirm Attendance & Generate Bills
+                        </Button>
+                    </div>
                 )}
             </CardContent>
         </Card>
