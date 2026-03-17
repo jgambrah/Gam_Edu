@@ -188,7 +188,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 </CardDescription>
             </CardHeader>
 
-            <CardContent className="px-0 flex-1 flex flex-col">
+            <CardContent className="px-0 flex-1 flex flex-col overflow-hidden">
                 <div className="flex flex-col md:flex-row gap-4 mb-6 flex-shrink-0">
                     {!propClassId && (
                         <div className="flex-1">
@@ -214,11 +214,11 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 </div>
 
                 {studentsLoaded && (
-                    <div className="relative w-full md:max-w-sm mb-4 flex-shrink-0">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <div className="relative w-full md:max-w-sm mb-4 flex-shrink-0 px-1">
+                        <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input 
                             placeholder="Search student name..." 
-                            className="pl-9 bg-white" 
+                            className="pl-10 bg-white" 
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
@@ -229,10 +229,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
                 {studentsLoaded && (
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col border rounded-xl overflow-hidden bg-slate-50">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col overflow-hidden rounded-xl border bg-slate-50 relative">
                             
-                            {/* SCROLLABLE LIST CONTAINER */}
-                            <div className="overflow-y-auto p-4 space-y-3" style={{ maxHeight: 'calc(100vh - 350px)', minHeight: '300px' }}>
+                            {/* SCROLLABLE LIST AREA */}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-24 scroll-smooth">
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
                                     const currentStatus = form.watch(`records.${index}.status`);
@@ -252,7 +252,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                             <input type="hidden" {...form.register(`records.${index}.classId`)} defaultValue={field.classId} />
                                             
                                             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center">
-                                                
                                                 <div className="lg:col-span-1">
                                                     {student && <StudentDisplay student={student} variant="list" />}
                                                     <div className="flex flex-wrap gap-1 mt-2">
@@ -306,10 +305,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 })}
                             </div>
                             
-                            {/* PINNED FOOTER */}
+                            {/* STICKY FOOTER */}
                             {fields.length > 0 && (
-                                <div className="p-4 bg-white border-t flex flex-col items-center justify-center shrink-0">
-                                    <div className="w-full">
+                                <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm border-t z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                                    <div className="max-w-4xl mx-auto">
                                         {billingProgress && <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">{billingProgress}</div>}
                                         <Button type="submit" className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md" disabled={isLoading}>
                                             {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <Check className="mr-2 h-6 w-6"/>}
