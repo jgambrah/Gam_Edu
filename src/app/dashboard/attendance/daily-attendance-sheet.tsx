@@ -180,7 +180,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     }
 
     return (
-        <Card className="border-none shadow-none bg-transparent h-full flex flex-col relative">
+        <Card className="border-none shadow-none bg-transparent flex flex-col relative">
             <CardHeader className="px-0 flex-shrink-0">
                 <CardTitle>Daily Attendance & Billing</CardTitle>
                 <CardDescription>
@@ -229,10 +229,9 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
                 {studentsLoaded && (
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col border rounded-xl overflow-hidden bg-slate-50">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col border rounded-xl overflow-visible bg-slate-50 relative">
                             
-                            {/* SCROLLABLE LIST CONTAINER */}
-                            <div className="overflow-y-auto p-4 space-y-3" style={{ maxHeight: 'calc(100vh - 350px)', minHeight: '300px' }}>
+                            <div className="p-4 space-y-3 pb-24">
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
                                     const currentStatus = form.watch(`records.${index}.status`);
@@ -325,10 +324,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 })}
                             </div>
                             
-                            {/* PINNED FOOTER */}
+                            {/* STICKY FOOTER */}
                             {fields.length > 0 && (
-                                <div className="p-4 bg-white border-t flex flex-col items-center justify-center shrink-0">
-                                    <div className="w-full">
+                                <div className="sticky bottom-0 p-4 bg-white/95 backdrop-blur-sm border-t shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-20 flex flex-col items-center justify-center -mx-4 mb-[-16px] rounded-b-xl">
+                                    <div className="w-full max-w-4xl">
                                         {billingProgress && (
                                             <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">
                                                 {billingProgress}
