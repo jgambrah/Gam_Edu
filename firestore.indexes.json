@@ -33,6 +33,14 @@
       ]
     },
     {
+      "collectionGroup": "payrollRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "period", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "tills",
       "queryScope": "COLLECTION",
       "fields": [

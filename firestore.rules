@@ -10,10 +10,6 @@ service cloud.firestore {
     function isSignedIn() { return request.auth != null; }
     function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
 
-    function getUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-    }
-
     function getUserRole() {
       return exists(/databases/$(database)/documents/staff/$(request.auth.uid))
         ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
@@ -35,7 +31,7 @@ service cloud.firestore {
     function isStaff() { return exists(/databases/$(database)/documents/staff/$(request.auth.uid)); }
     function isParent() { return exists(/databases/$(database)/documents/parents/$(request.auth.uid)); }
     
-    // Module Specific Helpers - Updated to include Platform Admins
+    // Module Specific Helpers
     function isFinanceStaff() { return isAdmin() || getUserRole() == 'Accountant'; }
     function isDirector() { return isAdmin(); }
     function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian'; }
