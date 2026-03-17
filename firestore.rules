@@ -34,10 +34,12 @@ service cloud.firestore {
     function isStudent() { return exists(/databases/$(database)/documents/students/$(request.auth.uid)); }
     function isStaff() { return exists(/databases/$(database)/documents/staff/$(request.auth.uid)); }
     function isParent() { return exists(/databases/$(database)/documents/parents/$(request.auth.uid)); }
-    function isFinanceStaff() { return getUserRole() in ['Accountant', 'Administrator', 'Director', 'Admin']; }
-    function isDirector() { return getUserRole() == 'Director'; }
-    function isLibrarian() { return getUserRole() == 'Librarian'; }
-    function isTransportStaff() { return getUserRole() == 'Transport Staff'; }
+    
+    // Module Specific Helpers - Updated to include Platform Admins
+    function isFinanceStaff() { return isAdmin() || getUserRole() == 'Accountant'; }
+    function isDirector() { return isAdmin(); }
+    function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian'; }
+    function isTransportStaff() { return isAdmin() || getUserRole() == 'Transport Staff'; }
 
     // =========================================================
     // 2. SAAS CORE
@@ -56,7 +58,7 @@ service cloud.firestore {
          get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.schoolId == schoolId)
       );
       allow update: if isSignedIn() && 
-        getUserRole() == 'Director' &&
+        isDirector() &&
         get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId;
     }
     
@@ -327,7 +329,8 @@ service cloud.firestore {
     match /think_tank_debates/{debateId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /think_tank_crosswords/{puzzleId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /think_tank_submissions/{submissionId} { allow read: if isSignedIn(); allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow update: if isTeacher() || isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid); allow delete: if isTeacher() || isAdmin(); }
-    match /think_tank_responses/{responseId} { allow read: if isSignedIn(); allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid; }
+    // allow delete: if isTeacher() || isAdmin();
+    match /think_tank_responses/{responseId} { allow read: if isSignedIn(); allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid; allow update, delete: if isSignedIn() && request.resource.data.userId == request.auth.uid; }
 
     match /scratch_assets/{assetId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
     match /coding_curriculum/{lessonId} { allow read: if isSignedIn(); allow write: if isTeacher() || isAdmin(); }
