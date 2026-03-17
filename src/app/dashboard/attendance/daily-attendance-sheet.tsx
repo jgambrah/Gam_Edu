@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -26,6 +26,7 @@ import { StudentDisplay } from '@/components/student-display';
 import { billMultipleStudents } from '@/lib/billing';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
+// Schema matches your data structure
 const attendanceRecordSchema = z.object({
   id: z.string().optional(),
   studentId: z.string(),
@@ -49,7 +50,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const firestore = useFirestore();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
-    
     const [isLoading, setIsLoading] = useState(false);
     const [students, setStudents] = useState<Student[]>([]);
     const [studentsLoaded, setStudentsLoaded] = useState(false);
@@ -57,12 +57,16 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     
     const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    
     const [billingProgress, setBillingProgress] = useState<string | null>(null);
 
+    // Fetch Classes
     const classesQuery = useMemoFirebase(() => {
         if (!user || !firestore || !schoolId) return null;
         let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-        if (role === 'Teacher') q = query(q, where('teacherId', '==', user.uid));
+        if (role === 'Teacher') {
+          q = query(q, where('teacherId', '==', user.uid));
+        }
         return q;
     }, [firestore, user, role, schoolId]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
@@ -72,7 +76,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         defaultValues: { records: [] },
     });
 
-    const { fields, replace } = useFieldArray({ control: form.control, name: "records" });
+    const { fields, replace } = useFieldArray({
+        control: form.control,
+        name: "records",
+    });
 
     const handleLoadStudents = useCallback(async () => {
         if (!selectedClassId || !firestore || !schoolId) return;
@@ -80,9 +87,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         setStudentsLoaded(false);
 
         try {
-            const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId));
+            const studentQuery = query(
+                collection(firestore, 'students'), 
+                where('schoolId', '==', schoolId),
+                where('classId', '==', selectedClassId)
+            );
             const studentSnapshot = await getDocs(studentQuery);
-            const studentList = studentSnapshot.docs.map(d => ({ ...d.data(), uid: d.id, id: d.id })) as Student[];
+            const studentList = studentSnapshot.docs.map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id })) as Student[];
             setStudents(studentList);
 
             if (studentList.length === 0) {
@@ -93,12 +104,18 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 return;
             }
 
-            const attendanceQuery = query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('date', '==', startOfDay(selectedDate)));
+            const attendanceQuery = query(
+                collection(firestore, 'attendance'),
+                where('schoolId', '==', schoolId),
+                where('classId', '==', selectedClassId),
+                where('date', '==', startOfDay(selectedDate))
+            );
             const attendanceSnapshot = await getDocs(attendanceQuery);
-            const existingRecords = attendanceSnapshot.docs.map(d => ({ id: d.id, ...d.data() })) as AttendanceRecord[];
+            const existingRecords = attendanceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as AttendanceRecord[];
 
             const formRecords = studentList.map(student => {
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
+                
                 return {
                     id: existingRecord?.id,
                     studentId: student.uid,
@@ -126,17 +143,20 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     }, [selectedClassId, selectedDate, handleLoadStudents]);
     
     async function onSubmit(data: AttendanceFormData) {
-        if (!firestore || !schoolId) return;
+        if (!firestore || !schoolId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Cannot proceed without school context.' });
+            return;
+        }
         setIsLoading(true);
-        setBillingProgress("Saving attendance...");
+        setBillingProgress(null);
         
         try {
             const batch = writeBatch(firestore);
             
-            // 1. Save Attendance Records
             data.records.forEach(record => {
                 const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
                 const { usesBusService, usesCanteen, id, ...dataToSave } = record; 
+                
                 batch.set(recordRef, {
                     ...dataToSave,
                     date: startOfDay(selectedDate),
@@ -147,7 +167,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             await batch.commit();
             toast({ title: 'Attendance Saved!', description: 'Now processing financial records...' });
 
-            // 2. Process Automated Billing
             const studentsToBill = data.records
                 .filter(r => r.status === 'Present' || r.status === 'Late')
                 .map(r => students.find(s => s.uid === r.studentId))
@@ -160,7 +179,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     selectedDate,
                     schoolId,
                     (current, total, name) => {
-                        setBillingProgress(`Billing: ${current}/${total} (${name})`);
+                        setBillingProgress(`Process: ${current}/${total} (${name})`);
                     }
                 );
                 
@@ -168,6 +187,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     title: 'Daily Billing Complete',
                     description: `✅ ${billingResult.successful} billed. ❌ ${billingResult.failed} failed. Total today: GH₵${billingResult.totalBilled.toFixed(2)}`
                 });
+                
+                if (billingResult.errors.length > 0) {
+                    console.error("Billing Errors:", billingResult.errors);
+                }
             } else {
                 toast({ title: 'Billing Skipped', description: 'No students were marked as present or late.'});
             }
@@ -184,11 +207,11 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             <CardHeader className="px-0 flex-shrink-0">
                 <CardTitle>Daily Attendance & Billing</CardTitle>
                 <CardDescription>
-                    Marking students 'Present' or 'Late' will automatically apply charges based on your Class-Specific rates.
+                    Marking students 'Present' or 'Late' will automatically apply 
+                    charges based on your Class-Specific rates.
                 </CardDescription>
             </CardHeader>
-
-            <CardContent className="px-0 flex-1 flex flex-col overflow-hidden">
+            <CardContent className="px-0 flex-1 flex flex-col pb-0">
                 <div className="flex flex-col md:flex-row gap-4 mb-6 flex-shrink-0">
                     {!propClassId && (
                         <div className="flex-1">
@@ -214,11 +237,11 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 </div>
 
                 {studentsLoaded && (
-                    <div className="relative w-full md:max-w-sm mb-4 flex-shrink-0 px-1">
-                        <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <div className="relative w-full md:max-w-sm mb-4 flex-shrink-0">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input 
                             placeholder="Search student name..." 
-                            className="pl-10 bg-white" 
+                            className="pl-9 bg-white" 
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
@@ -229,92 +252,100 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
                 {studentsLoaded && (
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col overflow-hidden rounded-xl border bg-slate-50 relative">
-                            
-                            {/* SCROLLABLE LIST AREA */}
-                            <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-24 scroll-smooth">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 relative">
+                            <div className="space-y-3 pb-24">
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
                                     const currentStatus = form.watch(`records.${index}.status`);
                                     
                                     const canteenMode = (student as any)?.canteenBillingMode || 'Daily';
-                                    const transportMode = (student as any)?.transportBillingMode || 'Daily';
+                                    const transportMode = (student as any)?.transportBillingModel || 'Daily';
                                     
                                     const willBillCanteen = (currentStatus === 'Present' || currentStatus === 'Late') && (student?.usesCanteen !== false) && canteenMode === 'Daily';
                                     const willBillBus = (currentStatus === 'Present' || currentStatus === 'Late') && student?.usesBusService && transportMode === 'Daily';
 
                                     const isVisible = !searchTerm || field.studentName.toLowerCase().includes(searchTerm.toLowerCase());
+
                                     if (!isVisible) return null;
 
                                     return (
-                                        <Card key={field.id} className={`p-4 transition-colors border shadow-sm ${currentStatus === 'Absent' ? 'bg-red-50/50 border-red-100' : 'bg-white'}`}>
-                                            <input type="hidden" {...form.register(`records.${index}.studentId`)} defaultValue={field.studentId} />
-                                            <input type="hidden" {...form.register(`records.${index}.classId`)} defaultValue={field.classId} />
-                                            
-                                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center">
-                                                <div className="lg:col-span-1">
-                                                    {student && <StudentDisplay student={student} variant="list" />}
-                                                    <div className="flex flex-wrap gap-1 mt-2">
-                                                        {willBillCanteen && <Badge variant="outline" className="bg-orange-50 text-orange-700 text-[10px] border-orange-200"><Utensils className="h-3 w-3 mr-1"/> Bill Canteen</Badge>}
-                                                        {willBillBus && <Badge variant="outline" className="bg-blue-50 text-blue-700 text-[10px] border-blue-200"><Bus className="h-3 w-3 mr-1"/> Bill Bus</Badge>}
-                                                        {currentStatus === 'Absent' && <span className="text-[10px] text-red-500 font-bold uppercase tracking-wider">No charges</span>}
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="lg:col-span-2">
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`records.${index}.status`}
-                                                        render={({ field: formField }) => (
-                                                            <FormItem className="space-y-0">
-                                                                <FormControl>
-                                                                    <RadioGroup onValueChange={formField.onChange} defaultValue={formField.value} className="flex flex-wrap gap-2">
-                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Present' ? 'border-green-500 bg-green-50' : 'bg-white border-slate-200'}`}>
-                                                                            <RadioGroupItem value="Present" id={`p-${index}`}/><Label htmlFor={`p-${index}`} className="cursor-pointer font-bold text-green-700">Present</Label>
-                                                                        </div>
-                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Late' ? 'border-orange-500 bg-orange-50' : 'bg-white border-slate-200'}`}>
-                                                                            <RadioGroupItem value="Late" id={`l-${index}`}/><Label htmlFor={`l-${index}`} className="cursor-pointer font-bold text-orange-600">Late</Label>
-                                                                        </div>
-                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Absent' ? 'border-red-500 bg-red-50' : 'bg-white border-slate-200'}`}>
-                                                                            <RadioGroupItem value="Absent" id={`a-${index}`}/><Label htmlFor={`a-${index}`} className="cursor-pointer font-bold text-red-600">Absent</Label>
-                                                                        </div>
-                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Excused' ? 'border-slate-500 bg-slate-100' : 'bg-white border-slate-200'}`}>
-                                                                            <RadioGroupItem value="Excused" id={`e-${index}`}/><Label htmlFor={`e-${index}`} className="cursor-pointer font-bold text-slate-500">Excused</Label>
-                                                                        </div>
-                                                                    </RadioGroup>
-                                                                </FormControl>
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                </div>
-
-                                                <div className="lg:col-span-1">
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`records.${index}.notes`}
-                                                        render={({ field: formField }) => (
-                                                            <FormItem className="space-y-0">
-                                                                <FormControl><Input placeholder="Optional notes..." {...formField} className="bg-white border-slate-200" /></FormControl>
-                                                            </FormItem>
-                                                        )}
-                                                    />
+                                    <Card key={field.id} className={`p-4 transition-colors border shadow-sm ${currentStatus === 'Absent' ? 'bg-red-50/50 border-red-100' : 'bg-white'}`}>
+                                        <input type="hidden" {...form.register(`records.${index}.studentId`)} defaultValue={field.studentId} />
+                                        <input type="hidden" {...form.register(`records.${index}.classId`)} defaultValue={field.classId} />
+                                        
+                                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center">
+                                            <div className="lg:col-span-1">
+                                                {student && <StudentDisplay student={student} variant="list" />}
+                                                <div className="flex flex-wrap gap-1 mt-2">
+                                                    {willBillCanteen && (
+                                                        <Badge variant="outline" className="bg-orange-50 text-orange-700 text-[10px] border-orange-200">
+                                                            <Utensils className="h-3 w-3 mr-1"/> Bill Canteen
+                                                        </Badge>
+                                                    )}
+                                                    {willBillBus && (
+                                                        <Badge variant="outline" className="bg-blue-50 text-blue-700 text-[10px] border-blue-200">
+                                                            <Bus className="h-3 w-3 mr-1"/> Bill Bus
+                                                        </Badge>
+                                                    )}
+                                                    {currentStatus === 'Absent' && (
+                                                        <span className="text-[10px] text-red-500 font-bold uppercase tracking-wider">No charges</span>
+                                                    )}
                                                 </div>
                                             </div>
-                                        </Card>
-                                    );
+                                            
+                                            <div className="lg:col-span-2">
+                                            <FormField
+                                                control={form.control}
+                                                name={`records.${index}.status`}
+                                                render={({ field: formField }) => (
+                                                    <FormItem className="space-y-0"><FormControl>
+                                                        <RadioGroup 
+                                                            onValueChange={formField.onChange} 
+                                                            defaultValue={formField.value} 
+                                                            className="flex flex-wrap gap-2"
+                                                        >
+                                                            <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Present' ? 'border-green-500 bg-green-50' : 'bg-white border-slate-200'}`}>
+                                                                <RadioGroupItem value="Present" id={`p-${index}`}/><Label htmlFor={`p-${index}`} className="cursor-pointer font-bold text-green-700">Present</Label>
+                                                            </div>
+                                                            <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Late' ? 'border-orange-500 bg-orange-50' : 'bg-white border-slate-200'}`}>
+                                                                <RadioGroupItem value="Late" id={`l-${index}`}/><Label htmlFor={`l-${index}`} className="cursor-pointer font-bold text-orange-600">Late</Label>
+                                                            </div>
+                                                            <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Absent' ? 'border-red-500 bg-red-50' : 'bg-white border-slate-200'}`}>
+                                                                <RadioGroupItem value="Absent" id={`a-${index}`}/><Label htmlFor={`a-${index}`} className="cursor-pointer font-bold text-red-600">Absent</Label>
+                                                            </div>
+                                                            <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Excused' ? 'border-slate-500 bg-slate-100' : 'bg-white border-slate-200'}`}>
+                                                                <RadioGroupItem value="Excused" id={`e-${index}`}/><Label htmlFor={`e-${index}`} className="cursor-pointer font-bold text-slate-500">Excused</Label>
+                                                            </div>
+                                                        </RadioGroup>
+                                                    </FormControl></FormItem>
+                                                )}
+                                            />
+                                            </div>
+
+                                            <div className="lg:col-span-1">
+                                            <FormField
+                                                control={form.control}
+                                                name={`records.${index}.notes`}
+                                                render={({ field: formField }) => (
+                                                    <FormItem className="space-y-0"><FormControl><Input placeholder="Optional notes..." {...formField} className="bg-white border-slate-200" /></FormControl></FormItem>
+                                                )}
+                                            />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                );
                                 })}
                             </div>
                             
-                            {/* STICKY FOOTER */}
                             {fields.length > 0 && (
-                                <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm border-t z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-                                    <div className="max-w-4xl mx-auto">
-                                        {billingProgress && <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">{billingProgress}</div>}
-                                        <Button type="submit" className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md" disabled={isLoading}>
-                                            {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <Check className="mr-2 h-6 w-6"/>}
-                                            Confirm Attendance & Generate Bills
-                                        </Button>
-                                    </div>
+                                <div className="pt-4 border-t mt-6 bg-white sticky bottom-0 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 rounded-b-xl">
+                                    {billingProgress && (
+                                        <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">{billingProgress}</div>
+                                    )}
+                                    <Button type="submit" className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md" disabled={isLoading}>
+                                        {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <Check className="mr-2 h-6 w-6"/>}
+                                        Confirm Attendance & Generate Bills
+                                    </Button>
                                 </div>
                             )}
                         </form>
