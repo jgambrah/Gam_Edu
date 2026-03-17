@@ -196,9 +196,11 @@ export default function ReportCardManager() {
                 studentTotals[stu.uid] = grandTotal;
             });
 
-            // 3. Ranks (COMPETITION RANKING LOGIC)
+            // 3. Ranks (Standard Competition Ranking)
             const myTotal = studentTotals[selectedStudentId] || 0;
-            const classPositionNum = Object.values(studentTotals).filter(t => t > myTotal).length + 1;
+            // Count how many students have a score strictly higher than mine
+            const higherCount = Object.values(studentTotals).filter(t => t > myTotal).length;
+            const classPositionNum = higherCount + 1;
             const classPosition = formatOrdinal(classPositionNum);
 
             const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
@@ -228,8 +230,9 @@ export default function ReportCardManager() {
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
 
-                // Subject Rank (COMPETITION RANKING)
-                const subjectRankNum = subjectStats[sub.id].totalScores.filter(s => s > total100).length + 1;
+                // Subject Rank (Standard Competition Ranking)
+                const subjectHigherCount = subjectStats[sub.id].totalScores.filter(s => s > total100).length;
+                const subjectRankNum = subjectHigherCount + 1;
                 const mySubjectRank = formatOrdinal(subjectRankNum);
 
                 const subjectAverage = subjectStats[sub.id].totalScores.length > 0 

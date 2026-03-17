@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Added useUser
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { 
@@ -27,12 +27,12 @@ import { GenerateReportCard } from './report-card-pdf';
 import { Assessment, FinancialRecord, Class, Student, Subject } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent } from '@/lib/student-utils';
-import { useCurrentSchool } from '@/hooks/use-current-school'; // SAAS IMPORT
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
     if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
-    if (percentage >= 70) return { grade: 'B', 'remark': 'Very Good' };
+    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
     if (percentage >= 60) return { grade: 'C', remark: 'Good' };
     if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
     return { grade: 'F', remark: 'Fail' };
@@ -91,7 +91,7 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
 // --- SUB-COMPONENT: Student Academics Detail ---
 function StudentGradesDetail({ 
     student, 
-    allAssessments, // All assessments for the CLASS
+    allAssessments, 
     allSubjects,
     rank, 
     totalStudents,
@@ -108,7 +108,6 @@ function StudentGradesDetail({
 }) {
     // 1. GLOBAL STATS (The Fix: Calculate Weighted Averages for the whole class)
     const globalSubjectStats = useMemo(() => {
-        // Step A: Group ALL assessments by Subject -> Student
         const grouping: Record<string, Record<string, { ca: number, caMax: number, exam: number, examMax: number }>> = {};
 
         allAssessments.forEach((a: Assessment) => {
@@ -130,7 +129,6 @@ function StudentGradesDetail({
              }
         });
 
-        // Step B: Calculate Weighted Totals for everyone to get Class Avg & Rank
         const stats: Record<string, { average: number, studentScores: Record<string, number> }> = {};
         
         Object.keys(grouping).forEach(subId => {
@@ -195,7 +193,7 @@ function StudentGradesDetail({
                 const studentScore = subStats.studentScores[student.uid];
                 if (studentScore !== undefined) {
                     const allScores = Object.values(subStats.studentScores);
-                    // COMPETITION RANKING
+                    // Standard Competition Ranking
                     const higherCount = allScores.filter(s => s > studentScore + 0.001).length;
                     subRank = formatOrdinal(higherCount + 1);
                 }
@@ -377,7 +375,6 @@ export default function GradebookManager() {
 
   const isLoading = isUserLoading || isRoleLoading || isLoadingSchool || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial || isLoadingSubjects));
   
-  // FIX: New handler to explicitly close form after refetch is initiated
   const handleGradeSubmissionSuccess = () => {
     forceRefetch();
     setActiveForm(null); 
@@ -466,7 +463,7 @@ export default function GradebookManager() {
                 <Accordion type="single" collapsible className="w-full">
                     {[...studentStats].sort((a,b) => b.average - a.average).map((student) => {
                         const financials = studentFinancials[student.uid] || { balance: 0 };
-                        // COMPETITION RANKING
+                        // Standard Competition Ranking
                         const higherCount = studentStats.filter(s => s.average > student.average + 0.001).length;
                         const rankNum = higherCount + 1;
                         const rank = formatOrdinal(rankNum);
@@ -480,7 +477,7 @@ export default function GradebookManager() {
                                             <div className={`flex items-center justify-center w-10 h-10 rounded-full text-xs font-bold ${rankNum <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
                                                 {rank}
                                             </div>
-                                            <StudentDisplay student={student} variant="list" />
+                                            <StudentDisplay student={student} variant="list" showAvatar />
                                         </div>
 
                                         <div className="flex items-center gap-3">

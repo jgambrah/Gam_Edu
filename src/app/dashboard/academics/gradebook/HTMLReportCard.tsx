@@ -122,7 +122,7 @@ export const HTMLReportCard = ({
                 const studentScore = subStats.studentScores[student.uid];
                 if (studentScore !== undefined) {
                     const allScores = Object.values(subStats.studentScores);
-                    // COMPETITION RANKING
+                    // Standard Competition Ranking
                     const higherCount = allScores.filter(s => s > studentScore + 0.001).length;
                     subRank = formatOrdinal(higherCount + 1);
                 }
