@@ -322,6 +322,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     </Form>
                 )}
             </CardContent>
-        </Accordion>
+        </Card>
     );
 }
