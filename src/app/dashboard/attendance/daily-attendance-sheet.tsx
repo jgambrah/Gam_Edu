@@ -229,14 +229,16 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
                 {studentsLoaded && (
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 relative pb-24">
-                            <div className="space-y-3">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col border rounded-xl overflow-hidden bg-slate-50">
+                            
+                            {/* SCROLLABLE LIST CONTAINER */}
+                            <div className="overflow-y-auto p-4 space-y-3" style={{ maxHeight: 'calc(100vh - 350px)', minHeight: '300px' }}>
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
                                     const currentStatus = form.watch(`records.${index}.status`);
                                     
-                                    const canteenMode = student?.canteenBillingMode || 'Daily';
-                                    const transportMode = student?.transportBillingModel || 'Daily';
+                                    const canteenMode = (student as any)?.canteenBillingMode || 'Daily';
+                                    const transportMode = (student as any)?.transportBillingMode || 'Daily';
                                     
                                     const willBillCanteen = (currentStatus === 'Present' || currentStatus === 'Late') && (student?.usesCanteen !== false) && canteenMode === 'Daily';
                                     const willBillBus = (currentStatus === 'Present' || currentStatus === 'Late') && student?.usesBusService && transportMode === 'Daily';
@@ -264,7 +266,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                             </Badge>
                                                         )}
                                                         {currentStatus === 'Absent' && (
-                                                            <span className="text-[10px] text-red-500 font-bold uppercase tracking-wider">No charges applied</span>
+                                                            <span className="text-[10px] text-red-500 font-bold uppercase tracking-wider">No charges</span>
                                                         )}
                                                     </div>
                                                 </div>
@@ -281,19 +283,19 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                                         defaultValue={formField.value} 
                                                                         className="flex flex-wrap gap-2"
                                                                     >
-                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer transition-all ${formField.value === 'Present' ? 'border-green-500 bg-green-50' : 'bg-white border-slate-200 hover:border-green-200'}`}>
+                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Present' ? 'border-green-500 bg-green-50' : 'bg-white border-slate-200'}`}>
                                                                             <RadioGroupItem value="Present" id={`p-${index}`}/>
                                                                             <Label htmlFor={`p-${index}`} className="cursor-pointer font-bold text-green-700">Present</Label>
                                                                         </div>
-                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer transition-all ${formField.value === 'Late' ? 'border-orange-500 bg-orange-50' : 'bg-white border-slate-200 hover:border-orange-200'}`}>
+                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Late' ? 'border-orange-500 bg-orange-50' : 'bg-white border-slate-200'}`}>
                                                                             <RadioGroupItem value="Late" id={`l-${index}`}/>
                                                                             <Label htmlFor={`l-${index}`} className="cursor-pointer font-bold text-orange-600">Late</Label>
                                                                         </div>
-                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer transition-all ${formField.value === 'Absent' ? 'border-red-500 bg-red-50' : 'bg-white border-slate-200 hover:border-red-200'}`}>
+                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Absent' ? 'border-red-500 bg-red-50' : 'bg-white border-slate-200'}`}>
                                                                             <RadioGroupItem value="Absent" id={`a-${index}`}/>
                                                                             <Label htmlFor={`a-${index}`} className="cursor-pointer font-bold text-red-600">Absent</Label>
                                                                         </div>
-                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer transition-all ${formField.value === 'Excused' ? 'border-slate-500 bg-slate-100' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
+                                                                        <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Excused' ? 'border-slate-500 bg-slate-100' : 'bg-white border-slate-200'}`}>
                                                                             <RadioGroupItem value="Excused" id={`e-${index}`}/>
                                                                             <Label htmlFor={`e-${index}`} className="cursor-pointer font-bold text-slate-500">Excused</Label>
                                                                         </div>
@@ -323,15 +325,16 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 })}
                             </div>
                             
+                            {/* PINNED FOOTER */}
                             {fields.length > 0 && (
-                                <div className="sticky bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-10 flex flex-col items-center justify-center -mx-6">
-                                    <div className="max-w-4xl w-full mx-auto px-6">
+                                <div className="p-4 bg-white border-t flex flex-col items-center justify-center shrink-0">
+                                    <div className="w-full">
                                         {billingProgress && (
-                                            <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse bg-indigo-50 py-1 rounded-full w-fit mx-auto px-4">
+                                            <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">
                                                 {billingProgress}
                                             </div>
                                         )}
-                                        <Button type="submit" className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg transition-transform active:scale-95" disabled={isLoading}>
+                                        <Button type="submit" className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md" disabled={isLoading}>
                                             {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <Check className="mr-2 h-6 w-6"/>}
                                             Confirm Attendance & Generate Bills
                                         </Button>
