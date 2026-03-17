@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -180,7 +180,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     }
 
     return (
-        <Card className="border-none shadow-none bg-transparent flex flex-col relative">
+        <Card className="border-none shadow-none bg-transparent h-full flex flex-col relative">
             <CardHeader className="px-0 flex-shrink-0">
                 <CardTitle>Daily Attendance & Billing</CardTitle>
                 <CardDescription>
@@ -229,9 +229,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
                 {studentsLoaded && (
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col border rounded-xl overflow-visible bg-slate-50 relative">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col border rounded-xl overflow-hidden bg-slate-50">
                             
-                            <div className="p-4 space-y-3 pb-24">
+                            {/* SCROLLABLE LIST CONTAINER */}
+                            <div className="overflow-y-auto p-4 space-y-3" style={{ maxHeight: 'calc(100vh - 350px)', minHeight: '300px' }}>
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
                                     const currentStatus = form.watch(`records.${index}.status`);
@@ -251,22 +252,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                             <input type="hidden" {...form.register(`records.${index}.classId`)} defaultValue={field.classId} />
                                             
                                             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center">
+                                                
                                                 <div className="lg:col-span-1">
                                                     {student && <StudentDisplay student={student} variant="list" />}
                                                     <div className="flex flex-wrap gap-1 mt-2">
-                                                        {willBillCanteen && (
-                                                            <Badge variant="outline" className="bg-orange-50 text-orange-700 text-[10px] border-orange-200">
-                                                                <Utensils className="h-3 w-3 mr-1"/> Bill Canteen
-                                                            </Badge>
-                                                        )}
-                                                        {willBillBus && (
-                                                            <Badge variant="outline" className="bg-blue-50 text-blue-700 text-[10px] border-blue-200">
-                                                                <Bus className="h-3 w-3 mr-1"/> Bill Bus
-                                                            </Badge>
-                                                        )}
-                                                        {currentStatus === 'Absent' && (
-                                                            <span className="text-[10px] text-red-500 font-bold uppercase tracking-wider">No charges</span>
-                                                        )}
+                                                        {willBillCanteen && <Badge variant="outline" className="bg-orange-50 text-orange-700 text-[10px] border-orange-200"><Utensils className="h-3 w-3 mr-1"/> Bill Canteen</Badge>}
+                                                        {willBillBus && <Badge variant="outline" className="bg-blue-50 text-blue-700 text-[10px] border-blue-200"><Bus className="h-3 w-3 mr-1"/> Bill Bus</Badge>}
+                                                        {currentStatus === 'Absent' && <span className="text-[10px] text-red-500 font-bold uppercase tracking-wider">No charges</span>}
                                                     </div>
                                                 </div>
                                                 
@@ -277,26 +269,18 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                         render={({ field: formField }) => (
                                                             <FormItem className="space-y-0">
                                                                 <FormControl>
-                                                                    <RadioGroup 
-                                                                        onValueChange={formField.onChange} 
-                                                                        defaultValue={formField.value} 
-                                                                        className="flex flex-wrap gap-2"
-                                                                    >
+                                                                    <RadioGroup onValueChange={formField.onChange} defaultValue={formField.value} className="flex flex-wrap gap-2">
                                                                         <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Present' ? 'border-green-500 bg-green-50' : 'bg-white border-slate-200'}`}>
-                                                                            <RadioGroupItem value="Present" id={`p-${index}`}/>
-                                                                            <Label htmlFor={`p-${index}`} className="cursor-pointer font-bold text-green-700">Present</Label>
+                                                                            <RadioGroupItem value="Present" id={`p-${index}`}/><Label htmlFor={`p-${index}`} className="cursor-pointer font-bold text-green-700">Present</Label>
                                                                         </div>
                                                                         <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Late' ? 'border-orange-500 bg-orange-50' : 'bg-white border-slate-200'}`}>
-                                                                            <RadioGroupItem value="Late" id={`l-${index}`}/>
-                                                                            <Label htmlFor={`l-${index}`} className="cursor-pointer font-bold text-orange-600">Late</Label>
+                                                                            <RadioGroupItem value="Late" id={`l-${index}`}/><Label htmlFor={`l-${index}`} className="cursor-pointer font-bold text-orange-600">Late</Label>
                                                                         </div>
                                                                         <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Absent' ? 'border-red-500 bg-red-50' : 'bg-white border-slate-200'}`}>
-                                                                            <RadioGroupItem value="Absent" id={`a-${index}`}/>
-                                                                            <Label htmlFor={`a-${index}`} className="cursor-pointer font-bold text-red-600">Absent</Label>
+                                                                            <RadioGroupItem value="Absent" id={`a-${index}`}/><Label htmlFor={`a-${index}`} className="cursor-pointer font-bold text-red-600">Absent</Label>
                                                                         </div>
                                                                         <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Excused' ? 'border-slate-500 bg-slate-100' : 'bg-white border-slate-200'}`}>
-                                                                            <RadioGroupItem value="Excused" id={`e-${index}`}/>
-                                                                            <Label htmlFor={`e-${index}`} className="cursor-pointer font-bold text-slate-500">Excused</Label>
+                                                                            <RadioGroupItem value="Excused" id={`e-${index}`}/><Label htmlFor={`e-${index}`} className="cursor-pointer font-bold text-slate-500">Excused</Label>
                                                                         </div>
                                                                     </RadioGroup>
                                                                 </FormControl>
@@ -311,9 +295,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                         name={`records.${index}.notes`}
                                                         render={({ field: formField }) => (
                                                             <FormItem className="space-y-0">
-                                                                <FormControl>
-                                                                    <Input placeholder="Optional notes..." {...formField} className="bg-white border-slate-200" />
-                                                                </FormControl>
+                                                                <FormControl><Input placeholder="Optional notes..." {...formField} className="bg-white border-slate-200" /></FormControl>
                                                             </FormItem>
                                                         )}
                                                     />
@@ -324,15 +306,11 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 })}
                             </div>
                             
-                            {/* STICKY FOOTER */}
+                            {/* PINNED FOOTER */}
                             {fields.length > 0 && (
-                                <div className="sticky bottom-0 p-4 bg-white/95 backdrop-blur-sm border-t shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-20 flex flex-col items-center justify-center -mx-4 mb-[-16px] rounded-b-xl">
-                                    <div className="w-full max-w-4xl">
-                                        {billingProgress && (
-                                            <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">
-                                                {billingProgress}
-                                            </div>
-                                        )}
+                                <div className="p-4 bg-white border-t flex flex-col items-center justify-center shrink-0">
+                                    <div className="w-full">
+                                        {billingProgress && <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">{billingProgress}</div>}
                                         <Button type="submit" className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md" disabled={isLoading}>
                                             {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <Check className="mr-2 h-6 w-6"/>}
                                             Confirm Attendance & Generate Bills
@@ -344,6 +322,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     </Form>
                 )}
             </CardContent>
-        </Card>
+        </Accordion>
     );
 }
