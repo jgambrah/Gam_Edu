@@ -58,6 +58,13 @@ function getGradeAndRemark(score: number) {
     return { grade: 'F', autoRemark: 'Fail' };
 }
 
+// Professional Ordinal Formatter (1st, 2nd, 3rd...)
+function formatOrdinal(n: number): string {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
 export default function ReportCardManager() {
     const { user } = useUser();
     const { role } = useRole();
@@ -189,9 +196,10 @@ export default function ReportCardManager() {
                 studentTotals[stu.uid] = grandTotal;
             });
 
-            // 3. Ranks
-            const sortedStudentTotals = Object.entries(studentTotals).sort(([,a], [,b]) => b - a);
-            const classPosition = sortedStudentTotals.findIndex(([uid]) => uid === selectedStudentId) + 1;
+            // 3. Ranks (COMPETITION RANKING LOGIC)
+            const myTotal = studentTotals[selectedStudentId] || 0;
+            const classPositionNum = Object.values(studentTotals).filter(t => t > myTotal).length + 1;
+            const classPosition = formatOrdinal(classPositionNum);
 
             const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
             const reportRows: any[] = [];
@@ -220,9 +228,9 @@ export default function ReportCardManager() {
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
 
-                const sortedScores = [...subjectStats[sub.id].totalScores].sort((a, b) => b - a);
-                const rankIndex = sortedScores.indexOf(total100);
-                const mySubjectRank = rankIndex >= 0 ? rankIndex + 1 : sortedScores.length;
+                // Subject Rank (COMPETITION RANKING)
+                const subjectRankNum = subjectStats[sub.id].totalScores.filter(s => s > total100).length + 1;
+                const mySubjectRank = formatOrdinal(subjectRankNum);
 
                 const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
                     ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 

@@ -38,6 +38,13 @@ function getGrade(percentage: number) {
     return { grade: 'F', remark: 'Fail' };
 }
 
+// Professional Ordinal Formatter
+function formatOrdinal(n: number): string {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
 // --- SUB-COMPONENT: Fee History ---
 function FeeHistoryDetail({ student, financialRecords }: { student: Student; financialRecords: FinancialRecord[] }) {
     
@@ -94,7 +101,7 @@ function StudentGradesDetail({
     student: Student; 
     allAssessments: Assessment[];
     allSubjects: Subject[];
-    rank: number;
+    rank: number | string;
     totalStudents: number;
     term: string;
     year: string;
@@ -181,16 +188,18 @@ function StudentGradesDetail({
 
             const subStats = globalSubjectStats[subId];
             let classAvg = subStats ? subStats.average : 0;
-            let subRank = 0;
+            let subRank: string | number = 'N/A';
             let totalSubStudents = 0;
 
             if (subStats && subStats.studentScores) {
-                const allScores = Object.values(subStats.studentScores).sort((a,b) => b - a);
                 const studentScore = subStats.studentScores[student.uid];
                 if (studentScore !== undefined) {
-                    subRank = allScores.findIndex(s => Math.abs(s - studentScore) < 0.001) + 1;
+                    const allScores = Object.values(subStats.studentScores);
+                    // COMPETITION RANKING
+                    const higherCount = allScores.filter(s => s > studentScore + 0.001).length;
+                    subRank = formatOrdinal(higherCount + 1);
                 }
-                totalSubStudents = allScores.length;
+                totalSubStudents = Object.keys(subStats.studentScores).length;
             }
 
             return { 
@@ -200,7 +209,7 @@ function StudentGradesDetail({
                 examWeighted, 
                 totalPercent, 
                 classAvg, 
-                rank: subRank > 0 ? subRank : 'N/A',
+                rank: subRank,
                 totalSubStudents,
                 ...getGrade(totalPercent) 
             };
@@ -270,7 +279,7 @@ function StudentGradesDetail({
                                 <TableCell className="text-center">{row.examWeighted > 0 ? row.examWeighted.toFixed(1) : '-'}</TableCell>
                                 <TableCell className="text-center font-bold">{row.totalPercent > 0 ? `${row.totalPercent.toFixed(1)}%` : '-'}</TableCell>
                                 <TableCell className="text-center text-muted-foreground">{row.classAvg > 0 ? `${row.classAvg.toFixed(1)}%` : '-'}</TableCell>
-                                <TableCell className="text-center">{row.rank > 0 ? `${row.rank}/${row.totalSubStudents}` : '-'}</TableCell>
+                                <TableCell className="text-center">{row.rank !== 'N/A' ? `${row.rank}/${row.totalSubStudents}` : '-'}</TableCell>
                                 <TableCell><Badge variant={row.grade === 'F' ? 'destructive' : row.grade === 'N/A' ? 'outline' : 'default'}>{row.grade}</Badge></TableCell>
                                 <TableCell className="text-muted-foreground text-sm">{row.totalPercent > 0 ? row.remark : ''}</TableCell>
                             </TableRow>
@@ -341,18 +350,16 @@ export default function GradebookManager() {
 
   // --- DERIVED DATA ---
   
-  const rankedStudents = useMemo(() => {
+  const studentStats = useMemo(() => {
       if (!students || !assessments) return [];
       
-      const studentsWithScore = students.map(s => {
+      return students.map(s => {
           const myAssessments = assessments.filter(a => a.studentId === s.uid);
           const total = myAssessments.reduce((acc, curr) => acc + (curr.score || 0), 0);
           const max = myAssessments.reduce((acc, curr) => acc + (curr.maxScore || 100), 0);
           const average = max > 0 ? (total / max) * 100 : 0;
           return { ...s, average };
       });
-
-      return studentsWithScore.sort((a, b) => b.average - a.average);
   }, [students, assessments]);
 
   const studentFinancials = useMemo(() => {
@@ -455,11 +462,14 @@ export default function GradebookManager() {
                         <p>Compiling results...</p>
                     </div>
                 ) :
-                rankedStudents.length > 0 ? (
+                studentStats.length > 0 ? (
                 <Accordion type="single" collapsible className="w-full">
-                    {rankedStudents.map((student, index) => {
+                    {[...studentStats].sort((a,b) => b.average - a.average).map((student) => {
                         const financials = studentFinancials[student.uid] || { balance: 0 };
-                        const rank = index + 1;
+                        // COMPETITION RANKING
+                        const higherCount = studentStats.filter(s => s.average > student.average + 0.001).length;
+                        const rankNum = higherCount + 1;
+                        const rank = formatOrdinal(rankNum);
                         
                         return (
                             <AccordionItem value={student.uid} key={student.uid} className="px-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
@@ -467,7 +477,7 @@ export default function GradebookManager() {
                                     <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full pr-4 gap-2'>
                                         
                                         <div className="flex items-center gap-3">
-                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
+                                            <div className={`flex items-center justify-center w-10 h-10 rounded-full text-xs font-bold ${rankNum <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
                                                 {rank}
                                             </div>
                                             <StudentDisplay student={student} variant="list" />
@@ -498,7 +508,7 @@ export default function GradebookManager() {
                                                 allAssessments={assessments || []} 
                                                 allSubjects={allSubjects || []}
                                                 rank={rank}
-                                                totalStudents={rankedStudents.length}
+                                                totalStudents={studentStats.length}
                                                 term={selectedTerm}
                                                 year={selectedYear}
                                             />

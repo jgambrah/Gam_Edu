@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -14,6 +13,13 @@ function getGrade(percentage: number) {
     if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
     if (percentage > 0) return { grade: 'F', remark: 'Fail' };
     return { grade: 'N/A', remark: '' };
+}
+
+// Professional Ordinal Formatter
+function formatOrdinal(n: number): string {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
 
@@ -109,16 +115,18 @@ export const HTMLReportCard = ({
 
             const subStats = globalSubjectStats[subId];
             let classAvg = subStats ? subStats.average : 0;
-            let subRank = 0;
+            let subRank: string | number = 'N/A';
             let totalSubStudents = 0;
 
             if (subStats && subStats.studentScores) {
-                const allScores = Object.values(subStats.studentScores).sort((a,b) => b - a);
                 const studentScore = subStats.studentScores[student.uid];
                 if (studentScore !== undefined) {
-                    subRank = allScores.findIndex(s => Math.abs(s - studentScore) < 0.001) + 1;
+                    const allScores = Object.values(subStats.studentScores);
+                    // COMPETITION RANKING
+                    const higherCount = allScores.filter(s => s > studentScore + 0.001).length;
+                    subRank = formatOrdinal(higherCount + 1);
                 }
-                totalSubStudents = allScores.length;
+                totalSubStudents = Object.keys(subStats.studentScores).length;
             }
 
             return { 
@@ -128,7 +136,7 @@ export const HTMLReportCard = ({
                 examWeighted, 
                 totalPercent, 
                 classAvg, 
-                rank: subRank > 0 ? subRank : 'N/A',
+                rank: subRank,
                 totalSubStudents,
                 ...getGrade(totalPercent) 
             };
@@ -212,7 +220,7 @@ export const HTMLReportCard = ({
                                 <td className="p-2 border-r border-black text-center">{row.examWeighted > 0 ? row.examWeighted.toFixed(1) : '-'}</td>
                                 <td className="p-2 border-r border-black text-center font-bold">{row.totalPercent > 0 ? `${row.totalPercent.toFixed(1)}%` : '-'}</td>
                                 <td className="p-2 border-r border-black text-center text-gray-500">{row.classAvg > 0 ? `${row.classAvg.toFixed(1)}%` : '-'}</td>
-                                <td className="p-2 border-r border-black text-center">{row.rank !== 'N/A' && row.rank > 0 ? `${row.rank}/${row.totalSubStudents}` : '-'}</td>
+                                <td className="p-2 border-r border-black text-center">{row.rank !== 'N/A' ? `${row.rank}/${row.totalSubStudents}` : '-'}</td>
                                 <td className="p-2 border-r border-black text-center font-bold">{row.grade}</td>
                                 <td className="p-2">{row.remark}</td>
                             </tr>
