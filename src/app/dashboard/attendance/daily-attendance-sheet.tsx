@@ -28,7 +28,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // Schema matches your data structure
 const attendanceRecordSchema = z.object({
-  id: z.string().optional(),
+  attendanceId: z.string().optional(), // Changed to attendanceId to avoid RHF conflicts
   studentId: z.string(),
   studentName: z.string(), 
   status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
@@ -104,6 +104,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 return;
             }
 
+            // Fetch existing attendance for this class and date
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
                 where('schoolId', '==', schoolId),
@@ -113,14 +114,17 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const attendanceSnapshot = await getDocs(attendanceQuery);
             const existingRecords = attendanceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as AttendanceRecord[];
 
+            // Map students to form records, prioritizing existing data
             const formRecords = studentList.map(student => {
+                // Check if this specific student already has a record for today
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
                 
                 return {
-                    id: existingRecord?.id,
+                    attendanceId: existingRecord?.id, // Capture the document ID if it exists!
                     studentId: student.uid,
                     studentName: `${student.firstName} ${student.lastName}`,
                     classId: selectedClassId,
+                    // Default to the existing status, or 'Present' if no record exists yet
                     status: (existingRecord?.status || 'Present') as "Present" | "Absent" | "Late" | "Excused",
                     notes: existingRecord?.notes || '',
                     usesBusService: String(student.usesBusService || false),
@@ -154,8 +158,12 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const batch = writeBatch(firestore);
             
             data.records.forEach(record => {
-                const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-                const { usesBusService, usesCanteen, id, ...dataToSave } = record; 
+                // Use attendanceId if it exists to perform an update, otherwise create a new doc
+                const recordRef = record.attendanceId 
+                    ? doc(firestore, 'attendance', record.attendanceId) 
+                    : doc(collection(firestore, 'attendance'));
+                
+                const { usesBusService, usesCanteen, attendanceId, ...dataToSave } = record; 
                 
                 batch.set(recordRef, {
                     ...dataToSave,
@@ -267,6 +275,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
                                     return (
                                     <Card key={field.id} className={`p-4 transition-colors border shadow-sm ${currentStatus === 'Absent' ? 'bg-red-50/50 border-red-100' : 'bg-white'}`}>
+                                        <input type="hidden" {...form.register(`records.${index}.attendanceId`)} />
                                         <input type="hidden" {...form.register(`records.${index}.studentId`)} defaultValue={field.studentId} />
                                         <input type="hidden" {...form.register(`records.${index}.classId`)} defaultValue={field.classId} />
                                         
