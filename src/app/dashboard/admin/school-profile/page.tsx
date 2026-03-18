@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -12,9 +12,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Building2, Save, Loader2, Phone, Mail, Globe, Upload, CheckCircle2, AlertCircle, GraduationCap } from 'lucide-react';
+import { 
+  Building2, Save, Loader2, Phone, Mail, Globe, 
+  Upload, CheckCircle2, AlertCircle, GraduationCap,
+  CalendarDays
+} from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 export default function SchoolProfilePage() {
   const firestore = useFirestore();
@@ -45,6 +52,10 @@ export default function SchoolProfilePage() {
   // Academic Settings State
   const [caWeight, setCaWeight] = useState<number>(30);
   const [examWeight, setExamWeight] = useState<number>(70);
+  
+  // Term Dates State
+  const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
+  const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
 
   // Load data when fetched
   useEffect(() => {
@@ -58,6 +69,14 @@ export default function SchoolProfilePage() {
         setLogoUrl(profile.logoUrl || '');
         setCaWeight(profile.caWeight ?? 30);
         setExamWeight(profile.examWeight ?? 70);
+        
+        // Load Term Dates
+        if (profile.termStartDate) {
+            setTermStartDate(profile.termStartDate.toDate());
+        }
+        if (profile.termEndDate) {
+            setTermEndDate(profile.termEndDate.toDate());
+        }
     }
   }, [profile]);
 
@@ -115,6 +134,8 @@ export default function SchoolProfilePage() {
     try {
         const brandingData = {
             name, motto, address, phone, email, website, logoUrl,
+            termStartDate: termStartDate ? Timestamp.fromDate(termStartDate) : null,
+            termEndDate: termEndDate ? Timestamp.fromDate(termEndDate) : null,
             updatedAt: serverTimestamp()
         };
 
@@ -248,6 +269,52 @@ export default function SchoolProfilePage() {
                             <div className="space-y-2">
                                 <Label className="flex items-center gap-2"><Globe className="h-3 w-3"/> Website</Label>
                                 <Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* ACADEMIC TERM DATES */}
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-2">
+                            <CalendarDays className="h-5 w-5 text-indigo-600"/>
+                            <h3 className="text-lg font-bold text-slate-800">Current Academic Term</h3>
+                        </div>
+                        <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100">
+                            <div className="flex items-center gap-2 mb-4 text-indigo-700">
+                                <AlertCircle className="h-4 w-4"/>
+                                <p className="text-sm font-medium">Set the official start and end dates for the current term. This ensures consistent attendance calculations on student reports.</p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label className="font-bold text-slate-700">Term Start Date</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="outline" className="w-full text-left font-normal bg-white h-12 border-2 rounded-xl">
+                                                {termStartDate ? format(termStartDate, "PPP") : <span>Pick a date</span>}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar mode="single" selected={termStartDate} onSelect={setTermStartDate} initialFocus />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="font-bold text-slate-700">Term End Date</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="outline" className="w-full text-left font-normal bg-white h-12 border-2 rounded-xl">
+                                                {termEndDate ? format(termEndDate, "PPP") : <span>Pick a date</span>}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar mode="single" selected={termEndDate} onSelect={setTermEndDate} initialFocus />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
                             </div>
                         </div>
                     </div>

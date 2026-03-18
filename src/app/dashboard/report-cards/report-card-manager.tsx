@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck, Lock } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -120,6 +120,16 @@ export default function ReportCardManager() {
 
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
     const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
+
+    // --- NEW: Sync Term Dates from School Settings ---
+    useEffect(() => {
+        if (schoolProfile?.termStartDate) {
+            setTermStartDate(schoolProfile.termStartDate.toDate());
+        }
+        if (schoolProfile?.termEndDate) {
+            setTermEndDate(schoolProfile.termEndDate.toDate());
+        }
+    }, [schoolProfile]);
 
     // Load existing report remarks if available
     useEffect(() => {
@@ -400,6 +410,8 @@ export default function ReportCardManager() {
         }
     };
 
+    const isGlobalDateSet = !!schoolProfile?.termStartDate && !!schoolProfile?.termEndDate;
+
     return (
         <div className="p-6 space-y-6 max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -413,7 +425,14 @@ export default function ReportCardManager() {
 
             {/* Filter Section */}
             <Card className="border-t-4 border-t-indigo-600 shadow-md print:hidden">
-                <CardHeader><CardTitle className="text-lg">Report Configuration</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle className="text-lg">Report Configuration</CardTitle>
+                    {isGlobalDateSet && (
+                        <CardDescription className="flex items-center gap-1 text-emerald-600 font-bold">
+                            <Lock className="h-3 w-3" /> Attendance window synced from School Profile.
+                        </CardDescription>
+                    )}
+                </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-400 uppercase">Academic Year</Label>
@@ -449,7 +468,7 @@ export default function ReportCardManager() {
                         <Label className="text-xs font-black text-slate-400 uppercase">Attendance Start</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="w-full text-left font-normal bg-white rounded-xl">
+                                <Button variant="outline" className="w-full text-left font-normal bg-white rounded-xl" disabled={isGlobalDateSet}>
                                     {termStartDate ? format(termStartDate, "PPP") : <span>Pick date</span>}
                                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
                                 </Button>
@@ -463,7 +482,7 @@ export default function ReportCardManager() {
                         <Label className="text-xs font-black text-slate-400 uppercase">Attendance End</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="w-full text-left font-normal bg-white rounded-xl">
+                                <Button variant="outline" className="w-full text-left font-normal bg-white rounded-xl" disabled={isGlobalDateSet}>
                                     {termEndDate ? format(termEndDate, "PPP") : <span>Pick date</span>}
                                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
                                 </Button>
