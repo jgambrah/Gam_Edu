@@ -603,9 +603,19 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
   const { user } = useUser();
   const myStudentIds = profile?.studentIds || [];
   
-  const myStudents = students?.filter(s => myStudentIds.includes(s.uid)) || [];
-  const myBills = financialRecords?.filter((r: any) => myStudentIds.includes(r.studentId)) || [];
-  const activeBills = myBills.filter((r: any) => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
+  const myStudents = useMemo(() => {
+    if (!students) return [];
+    return students.filter(s => myStudentIds.includes(s.uid));
+  }, [students, myStudentIds]);
+
+  const activeBills = useMemo(() => {
+    if (!financialRecords) return [];
+    return financialRecords.filter((r: any) => 
+        myStudentIds.includes(r.studentId) && 
+        r.status !== 'Pending Reversal' && 
+        r.status !== 'Rejected Reversal'
+    );
+  }, [financialRecords, myStudentIds]);
   
   const totalBilled = activeBills.reduce((acc: number, r: any) => acc + r.billedAmount, 0);
   const totalPaid = activeBills.reduce((acc: number, r: any) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
@@ -660,14 +670,25 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
            <Card>
               <CardHeader>
                   <CardTitle>My Children</CardTitle>
-                  <CardDescription>Quick summary of your children's status.</CardDescription>
+                  <CardDescription>
+                    {isLoading 
+                      ? "Loading children's profiles..." 
+                      : `You have ${myStudents.length} child${myStudents.length !== 1 ? 'ren' : ''} enrolled.`
+                    }
+                  </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {isLoading ? <div className="flex justify-center py-4"><Loader2 className="animate-spin"/></div> : null}
+                {isLoading && <div className="flex justify-center py-4"><Loader2 className="animate-spin"/></div>}
                 
-                {!isLoading && myStudents.length === 0 && (
+                {!isLoading && myStudents.length === 0 && myStudentIds.length === 0 && (
                     <p className="text-muted-foreground p-4 bg-slate-50 rounded-lg text-center border-2 border-dashed">
                         No children linked to your account. Please contact the administrator.
+                    </p>
+                )}
+
+                {!isLoading && myStudents.length === 0 && myStudentIds.length > 0 && (
+                    <p className="text-muted-foreground p-4 text-center text-sm italic">
+                        Synchronizing children's profiles...
                     </p>
                 )}
 
@@ -708,7 +729,12 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
             <Card>
                 <CardHeader>
                     <CardTitle>Student Bills</CardTitle>
-                    <CardDescription>Financial records for {myStudents.length} children.</CardDescription>
+                    <CardDescription>
+                      {isLoading 
+                        ? "Loading children's records..." 
+                        : `Financial records for ${myStudents.length} child${myStudents.length !== 1 ? 'ren' : ''}.`
+                      }
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                     {myStudents.map((student: any) => {
@@ -842,11 +868,11 @@ export default function DashboardClient() {
   const studentsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     if (isStaffUser) return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
-    if (isParent && profile?.studentIds?.length > 0) {
+    if (isParent && !isRoleLoading && profile?.studentIds?.length > 0) {
         return query(collection(firestore, 'students'), where('uid', 'in', profile.studentIds));
     }
     return null;
-  }, [firestore, schoolId, isStaffUser, isParent, profile?.studentIds]);
+  }, [firestore, schoolId, isStaffUser, isParent, isRoleLoading, profile?.studentIds]);
   const { data: students, isLoading: studentsLoading } = useCollection<any>(studentsQuery);
 
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && isAdminOrDirector) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId, isAdminOrDirector]);
@@ -875,11 +901,11 @@ export default function DashboardClient() {
   const financialRecordsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     if (isFinance || isAdminOrDirector) return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
-    if (isParent && profile?.studentIds?.length > 0) {
+    if (isParent && !isRoleLoading && profile?.studentIds?.length > 0) {
         return query(collection(firestore, 'financialRecords'), where('studentId', 'in', profile.studentIds), orderBy('createdAt', 'desc'));
     }
     return null;
-  }, [firestore, isFinance, isAdminOrDirector, isParent, schoolId, profile?.studentIds]);
+  }, [firestore, isFinance, isAdminOrDirector, isParent, isRoleLoading, schoolId, profile?.studentIds]);
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<any>(financialRecordsQuery);
 
   // Transport Specific Queries
@@ -919,7 +945,7 @@ export default function DashboardClient() {
 
   if (isTeacher) return <TeacherDashboard profile={profile} />;
   if (isStudent) return <StudentDashboard profile={profile} schoolId={schoolId!} />;
-  if (isParent) return <ParentDashboard profile={profile} schoolId={schoolId!} students={students} financialRecords={financialRecords} announcements={announcements} isLoading={isLoading} announcementsLoading={announcementsLoading} />;
+  if (isParent) return <ParentDashboard profile={profile} schoolId={schoolId!} students={students} financialRecords={financialRecords} announcements={announcements} isLoading={studentsLoading || paymentsLoading} announcementsLoading={announcementsLoading} />;
   if (isFinance) return <AccountantDashboard profile={profile} schoolId={schoolId!} financialRecords={financialRecords} />;
   if (isLibrarian) return <LibrarianDashboard profile={profile} schoolId={schoolId!} />;
   if (isTransport) return <TransportDashboard profile={profile} schoolId={schoolId!} buses={buses} routes={routes} students={students} />;
