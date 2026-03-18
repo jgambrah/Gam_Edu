@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase, useDoc, useUser } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc } from 'firebase/firestore';
@@ -21,6 +21,7 @@ import { format, startOfDay, endOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import ReportCardTemplate from './components/ReportCardTemplate';
 
 // --- HELPERS ---
@@ -565,7 +566,7 @@ export default function ReportCardManager() {
                                 <CardTitle className="flex items-center gap-2 text-lg">
                                     <Eye className="h-5 w-5 text-indigo-400"/> Interactive Document Preview
                                 </CardTitle>
-                                <CardDescription className="text-slate-400">Exact replica of the A4 printable document.</CardDescription>
+                                <CardTitle className="text-slate-400">Exact replica of the A4 printable document.</CardTitle>
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="text-right">
