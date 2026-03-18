@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
-import { collection, query, where, getDocs, doc, getDoc, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, orderBy, writeBatch, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { format, startOfDay } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
 import { StudentDisplay } from '@/components/student-display';
-import { searchStudent } from '@/lib/student-utils';
+import { searchStudent, generateNextReceiptId } from '@/lib/student-utils';
 
 // Types
 import { Student, Class, Route, FinancialRecord } from '@/lib/types';
@@ -87,7 +87,7 @@ export default function BulkPaymentsPage() {
             }
 
             // 3. Query Students
-            let studentQ = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId || schoolId));
+            let studentQ = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
             if (classId !== 'all') {
                 studentQ = query(studentQ, where('classId', '==', classId));
             }
@@ -109,7 +109,7 @@ export default function BulkPaymentsPage() {
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
                 where('type', '==', billType),
-                where('dueDate', '==', startOfDay(date))
+                where('dueDate', '==', Timestamp.fromDate(startOfDay(date)))
             );
             const billsSnap = await getDocs(billsQuery);
             const billsMap = new Map<string, FinancialRecord>();
@@ -168,10 +168,87 @@ export default function BulkPaymentsPage() {
     }, [rows]);
 
     const handleSubmitAll = async () => {
-        toast({ title: "Submit Triggered", description: "Step 2 will implement the payment posting logic." });
-    };
+        if (!firestore || !user || !schoolId || totalAmount <= 0) return;
+        
+        setIsSubmitting(true);
+        const batch = writeBatch(firestore);
+        const dateStr = format(startOfDay(date), 'yyyy-MM-dd');
+        const validPayments = rows.filter(r => r.paymentAmount > 0);
 
-    const adminSchoolId = schoolId;
+        try {
+            // 1. Check for open till
+            const tillQ = query(
+                collection(firestore, 'tills'), 
+                where('accountantId', '==', user.uid), 
+                where('status', '==', 'Open'),
+                where('schoolId', '==', schoolId)
+            );
+            const tillSnap = await getDocs(tillQ);
+            if (tillSnap.empty) {
+                throw new Error("You must open your cash till before processing payments.");
+            }
+            const activeTill = tillSnap.docs[0];
+
+            let processedCount = 0;
+
+            for (const row of validPayments) {
+                const recordId = row.recordId || `${serviceType.toLowerCase()}-${row.student.uid}-${dateStr}`;
+                const recordRef = doc(firestore, 'financialRecords', recordId);
+                const receiptId = await generateNextReceiptId(firestore, schoolId);
+                const paymentRef = doc(firestore, 'financialRecords', recordId, 'payments', receiptId);
+
+                // A. Update the Bill
+                const isFullyPaid = row.paymentAmount >= row.currentBalance;
+                batch.update(recordRef, {
+                    amountPaid: increment(row.paymentAmount),
+                    status: isFullyPaid ? 'Paid' : 'Unpaid',
+                    lastPaymentDate: serverTimestamp(),
+                });
+
+                // B. Log Individual Receipt
+                batch.set(paymentRef, {
+                    id: receiptId,
+                    amount: row.paymentAmount,
+                    method: 'Cash',
+                    paidAt: serverTimestamp(),
+                    processedById: user.uid,
+                    processedByName: user.displayName || user.email,
+                    studentId: row.student.uid,
+                    description: `${serviceType} Fee - ${format(date, 'PPP')}`,
+                    schoolId: schoolId,
+                    notes: 'Bulk Entry'
+                });
+
+                processedCount++;
+            }
+
+            // 2. Update Till Balance
+            batch.update(doc(firestore, 'tills', activeTill.id), {
+                currentBalance: increment(totalAmount)
+            });
+
+            // 3. Add SINGLE transaction record to till
+            const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
+            batch.set(tillTransRef, {
+                amount: totalAmount,
+                timestamp: serverTimestamp(),
+                type: 'Payment',
+                description: `Bulk ${serviceType} Collection (${classId === 'all' ? 'School' : classId}) - ${processedCount} Students`,
+                status: 'Completed',
+                schoolId: schoolId,
+            });
+
+            await batch.commit();
+            toast({ title: "Success!", description: `Recorded ${processedCount} payments totaling GH₵${totalAmount.toFixed(2)}.` });
+            loadGrid(); // Refresh the grid
+
+        } catch (error: any) {
+            console.error("Batch Submission Error:", error);
+            toast({ variant: 'destructive', title: "Processing Failed", description: error.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     if (!canAccess) {
         return <div className="p-8 text-center text-red-500">Access Denied. Financial staff only.</div>;

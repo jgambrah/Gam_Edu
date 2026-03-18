@@ -370,7 +370,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: '/dashboard/finance/bulk-payments',
-        title: 'Bulk Payments',
+        title: 'Bulk Daily Receipts',
         icon: Coins,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
