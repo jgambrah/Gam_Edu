@@ -53,7 +53,8 @@ import {
   Rabbit,
   Rocket,
   FileQuestion,
-  Sparkles
+  Sparkles,
+  Coins
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -365,6 +366,12 @@ export const navItems: NavItem[] = [
         path: '/dashboard/accounts',
         title: 'Student Billing',
         icon: Banknote,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/finance/bulk-payments',
+        title: 'Bulk Payments',
+        icon: Coins,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
       {
