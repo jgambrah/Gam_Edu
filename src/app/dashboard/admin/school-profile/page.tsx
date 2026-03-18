@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
-  CalendarDays
+  CalendarDays, CalendarIcon
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';

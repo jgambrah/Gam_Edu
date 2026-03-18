@@ -11,15 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck, Lock } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck, Lock, AlertCircle } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { format, startOfDay, endOfDay } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -78,10 +76,6 @@ export default function ReportCardManager() {
     const [academicYear, setAcademicYear] = useState('2024-2025');
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
-    // Attendance Period
-    const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
-    const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
-
     // Comments State
     const [classTeacherComment, setClassTeacherComment] = useState('');
     const [headmasterComment, setHeadmasterComment] = useState('');
@@ -121,15 +115,10 @@ export default function ReportCardManager() {
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
     const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
 
-    // --- NEW: Sync Term Dates from School Settings ---
-    useEffect(() => {
-        if (schoolProfile?.termStartDate) {
-            setTermStartDate(schoolProfile.termStartDate.toDate());
-        }
-        if (schoolProfile?.termEndDate) {
-            setTermEndDate(schoolProfile.termEndDate.toDate());
-        }
-    }, [schoolProfile]);
+    // --- EXTRACT CENTRAL TERM DATES ---
+    const termStartMs = schoolProfile?.termStartDate ? schoolProfile.termStartDate.toDate().getTime() : 0;
+    const termEndMs = schoolProfile?.termEndDate ? schoolProfile.termEndDate.toDate().getTime() : Infinity;
+    const areDatesMissing = !schoolProfile?.termStartDate || !schoolProfile?.termEndDate;
 
     // Load existing report remarks if available
     useEffect(() => {
@@ -155,6 +144,16 @@ export default function ReportCardManager() {
 
     const generateReport = async () => {
         if (!firestore || !schoolId || !classId || !selectedStudentId) return;
+        
+        if (areDatesMissing) {
+            toast({
+                variant: 'destructive',
+                title: "Incomplete Configuration",
+                description: "Please ask the Administrator to configure the Term Dates in School Settings."
+            });
+            return;
+        }
+
         setIsGenerating(true);
         setProcessedReport(null);
 
@@ -208,7 +207,6 @@ export default function ReportCardManager() {
 
             // 3. Ranks (Standard Competition Ranking)
             const myTotal = studentTotals[selectedStudentId] || 0;
-            // Count how many students have a score strictly higher than mine
             const higherCount = Object.values(studentTotals).filter(t => t > myTotal).length;
             const classPositionNum = higherCount + 1;
             const classPosition = formatOrdinal(classPositionNum);
@@ -240,7 +238,6 @@ export default function ReportCardManager() {
                 const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
                 const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
 
-                // Subject Rank (Standard Competition Ranking)
                 const subjectHigherCount = subjectStats[sub.id].totalScores.filter(s => s > total100).length;
                 const subjectRankNum = subjectHigherCount + 1;
                 const mySubjectRank = formatOrdinal(subjectRankNum);
@@ -264,26 +261,34 @@ export default function ReportCardManager() {
 
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
-            // 4. Attendance
+            // 4. Attendance (USING CENTRAL TERM DATES)
             const attendanceRef = collection(firestore, 'attendance');
             const attQuery = query(attendanceRef, where('schoolId', '==', schoolId), where('classId', '==', classId));
             const attSnap = await getDocs(attQuery);
-            const allAtt = attSnap.docs.map(d => d.data());
+            const allClassAttendance = attSnap.docs.map(d => d.data());
 
-            let studentPresentDays = 0;
-            let totalClassDays = 0;
+            // Filter attendance to ONLY include records within the global Term Dates
+            const termAttendance = allClassAttendance.filter(a => {
+                if (!a.date) return false;
+                const recordTime = a.date.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime();
+                return recordTime >= termStartMs && recordTime <= termEndMs;
+            });
 
-            if (termStartDate && termEndDate) {
-                const start = startOfDay(termStartDate).getTime();
-                const end = endOfDay(termEndDate).getTime();
-                const termAtt = allAtt.filter(a => {
-                    const d = a.date?.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime();
-                    return d >= start && d <= end;
-                });
-                const uniqueDays = new Set(termAtt.map(a => format(a.date?.toDate ? a.date.toDate() : new Date(a.date), 'yyyy-MM-dd')));
-                totalClassDays = uniqueDays.size;
-                studentPresentDays = termAtt.filter(a => a.studentId === selectedStudentId && (a.status === 'Present' || a.status === 'Late')).length;
-            }
+            // A. Calculate Total Unique Days the class met IN THIS TERM
+            const uniqueDays = new Set(
+                termAttendance.map(a => {
+                    const d = a.date.toDate ? a.date.toDate() : new Date(a.date);
+                    return format(d, 'yyyy-MM-dd');
+                })
+            );
+            const totalClassDays = uniqueDays.size;
+
+            // B. Calculate Student's Present/Late days IN THIS TERM
+            const myAttendance = termAttendance.filter(a => 
+                a.studentId === selectedStudentId && 
+                (a.status === 'Present' || a.status === 'Late')
+            );
+            const studentPresentDays = myAttendance.length;
 
             // 5. Assets & Final Structure
             let finalLogoStr = '';
@@ -410,8 +415,6 @@ export default function ReportCardManager() {
         }
     };
 
-    const isGlobalDateSet = !!schoolProfile?.termStartDate && !!schoolProfile?.termEndDate;
-
     return (
         <div className="p-6 space-y-6 max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -426,14 +429,23 @@ export default function ReportCardManager() {
             {/* Filter Section */}
             <Card className="border-t-4 border-t-indigo-600 shadow-md print:hidden">
                 <CardHeader>
-                    <CardTitle className="text-lg">Report Configuration</CardTitle>
-                    {isGlobalDateSet && (
-                        <CardDescription className="flex items-center gap-1 text-emerald-600 font-bold">
-                            <Lock className="h-3 w-3" /> Attendance window synced from School Profile.
-                        </CardDescription>
-                    )}
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <CardTitle className="text-lg">Report Configuration</CardTitle>
+                            <CardDescription>Select a student and academic period.</CardDescription>
+                        </div>
+                        {schoolProfile && (
+                            <Badge variant="outline" className={cn("px-3 py-1", areDatesMissing ? "text-red-600 border-red-200 bg-red-50" : "text-emerald-600 border-emerald-200 bg-emerald-50")}>
+                                {areDatesMissing ? (
+                                    <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Term Dates Not Set</span>
+                                ) : (
+                                    <span className="flex items-center gap-1"><Lock className="h-3 w-3"/> Attendance: {format(termStartMs, 'dd MMM')} - {format(termEndMs, 'dd MMM')}</span>
+                                )}
+                            </Badge>
+                        )}
+                    </div>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-400 uppercase">Academic Year</Label>
                         <Select value={academicYear} onValueChange={setAcademicYear}>
@@ -464,42 +476,25 @@ export default function ReportCardManager() {
                             <SelectContent>{students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs font-black text-slate-400 uppercase">Attendance Start</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" className="w-full text-left font-normal bg-white rounded-xl" disabled={isGlobalDateSet}>
-                                    {termStartDate ? format(termStartDate, "PPP") : <span>Pick date</span>}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                                <Calendar mode="single" selected={termStartDate} onSelect={setTermStartDate} initialFocus />
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs font-black text-slate-400 uppercase">Attendance End</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" className="w-full text-left font-normal bg-white rounded-xl" disabled={isGlobalDateSet}>
-                                    {termEndDate ? format(termEndDate, "PPP") : <span>Pick date</span>}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                                <Calendar mode="single" selected={termEndDate} onSelect={setTermEndDate} initialFocus />
-                            </PopoverContent>
-                        </Popover>
-                    </div>
                 </CardContent>
                 <CardFooter className="justify-end bg-slate-50 pt-4 border-t">
-                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600 hover:bg-indigo-700 px-8 h-12 rounded-xl font-bold">
+                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId || areDatesMissing} className="bg-indigo-600 hover:bg-indigo-700 px-8 h-12 rounded-xl font-bold">
                         {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>}
-                        Generate Master Preview
+                        {areDatesMissing ? "Configuration Required" : "Generate Master Preview"}
                     </Button>
                 </CardFooter>
             </Card>
+
+            {areDatesMissing && (
+                <Alert variant="destructive" className="bg-red-50 border-red-200">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Term Dates Missing</AlertTitle>
+                    <AlertDescription>
+                        The official term dates have not been set in the School Profile. This is required to calculate student attendance correctly. 
+                        Please ask an Administrator to update the <strong>School Profile Settings</strong>.
+                    </AlertDescription>
+                </Alert>
+            )}
 
             {processedReport && (
                 <div className="space-y-6 animate-in slide-in-from-top-4 duration-500">
