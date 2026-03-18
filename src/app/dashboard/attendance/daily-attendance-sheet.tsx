@@ -15,7 +15,7 @@ import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { type Student, type AttendanceRecord, type Class } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
@@ -28,7 +28,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // Schema matches your data structure
 const attendanceRecordSchema = z.object({
-  attendanceId: z.string().optional(), // Changed to attendanceId to avoid RHF conflicts
+  id: z.string().optional(),
   studentId: z.string(),
   studentName: z.string(), 
   status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
@@ -120,7 +120,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
                 
                 return {
-                    attendanceId: existingRecord?.id, // Capture the document ID if it exists!
+                    id: existingRecord?.id, // Capture the document ID if it exists!
                     studentId: student.uid,
                     studentName: `${student.firstName} ${student.lastName}`,
                     classId: selectedClassId,
@@ -156,20 +156,24 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         
         try {
             const batch = writeBatch(firestore);
+            const dateStr = format(selectedDate, 'yyyy-MM-dd');
             
             data.records.forEach(record => {
-                // Use attendanceId if it exists to perform an update, otherwise create a new doc
-                const recordRef = record.attendanceId 
-                    ? doc(firestore, 'attendance', record.attendanceId) 
-                    : doc(collection(firestore, 'attendance'));
+                // Generate a deterministic ID: attendance-{schoolId}-{classId}-{studentId}-{YYYY-MM-DD}
+                const deterministicId = `att-${schoolId}-${selectedClassId}-${record.studentId}-${dateStr}`;
                 
-                const { usesBusService, usesCanteen, attendanceId, ...dataToSave } = record; 
+                // Always use this specific ID. Firestore will overwrite it if it exists, or create it if it doesn't.
+                const recordRef = doc(firestore, 'attendance', deterministicId);
+                
+                const { usesBusService, usesCanteen, id, ...dataToSave } = record; 
                 
                 batch.set(recordRef, {
                     ...dataToSave,
                     date: startOfDay(selectedDate),
                     schoolId: schoolId,
-                }, { merge: true });
+                    updatedAt: serverTimestamp(), // Track when it was last modified
+                    updatedBy: user?.uid // Track WHO last modified it (Teacher vs Admin)
+                }, { merge: true }); // Merge ensures we don't accidentally delete other fields if they exist
             });
 
             await batch.commit();
@@ -257,7 +261,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 {studentsLoaded && (
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 relative">
-                            {/* EXPLICITLY SCROLLABLE AREA */}
                             <div className="space-y-3 overflow-y-auto flex-1 pb-4" style={{ maxHeight: 'calc(100vh - 280px)' }}>
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
@@ -275,7 +278,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
                                     return (
                                     <Card key={field.id} className={`p-4 transition-colors border shadow-sm ${currentStatus === 'Absent' ? 'bg-red-50/50 border-red-100' : 'bg-white'}`}>
-                                        <input type="hidden" {...form.register(`records.${index}.attendanceId`)} />
+                                        <input type="hidden" {...form.register(`records.${index}.id`)} />
                                         <input type="hidden" {...form.register(`records.${index}.studentId`)} defaultValue={field.studentId} />
                                         <input type="hidden" {...form.register(`records.${index}.classId`)} defaultValue={field.classId} />
                                         
