@@ -26,38 +26,52 @@ export default function MyGradesPage() {
     const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
     const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0] || 'First Term');
 
-    // 1. Determine Target Students
-    const studentIds = useMemo(() => {
-        if (role === 'Student' && user) return [user.uid];
-        if (role === 'Parent' && profile?.studentIds) return profile.studentIds;
-        return [];
-    }, [role, user, profile]);
+    // 1. Get the Parent's linked students or the Student's own ID
+    const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
 
     // 2. Data Fetching
     const assessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || studentIds.length === 0) return null;
+        if (!firestore || !schoolId || !role) return null;
         
-        // Optimizing for security rules: use equality for single student lookups
-        const baseQuery = query(
-            collection(firestore, 'assessments'),
-            where('schoolId', '==', schoolId),
-            where('academicYear', '==', selectedYear),
-            where('term', '==', selectedTerm)
-        );
+        const baseQuery = collection(firestore, 'assessments');
 
-        if (studentIds.length === 1) {
-            return query(baseQuery, where('studentId', '==', studentIds[0]), orderBy('createdAt', 'desc'));
+        if (role === 'Student') {
+            // Student sees only their own grades
+            return query(
+                baseQuery,
+                where('schoolId', '==', schoolId),
+                where('studentId', '==', user?.uid),
+                where('academicYear', '==', selectedYear),
+                where('term', '==', selectedTerm),
+                orderBy('createdAt', 'desc')
+            );
+        } 
+        
+        if (role === 'Parent') {
+            // Parent sees grades for ALL their linked children
+            if (parentStudentIds.length === 0) return null; // No children linked yet
+            
+            return query(
+                baseQuery,
+                where('schoolId', '==', schoolId),
+                where('studentId', 'in', parentStudentIds),
+                where('academicYear', '==', selectedYear),
+                where('term', '==', selectedTerm),
+                orderBy('createdAt', 'desc')
+            );
         }
 
-        return query(baseQuery, where('studentId', 'in', studentIds), orderBy('createdAt', 'desc'));
-    }, [firestore, schoolId, studentIds, selectedYear, selectedTerm]);
+        return null; // Fallback
+    }, [firestore, schoolId, role, user, parentStudentIds, selectedYear, selectedTerm]);
 
     const { data: assessments, isLoading: loadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     const studentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || studentIds.length === 0) return null;
-        return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', studentIds));
-    }, [firestore, schoolId, studentIds]);
+        if (!firestore || !schoolId || !role) return null;
+        const targetIds = role === 'Student' ? [user?.uid] : parentStudentIds;
+        if (targetIds.length === 0) return null;
+        return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', targetIds));
+    }, [firestore, schoolId, parentStudentIds, role, user?.uid]);
 
     const { data: students } = useCollection<Student>(studentsQuery);
 

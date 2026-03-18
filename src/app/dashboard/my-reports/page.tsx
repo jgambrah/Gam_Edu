@@ -27,22 +27,37 @@ export default function MyReportsPage() {
     const [isExporting, setIsExporting] = useState(false);
     const printRef = useRef<HTMLDivElement>(null);
 
-    const targetStudentIds = useMemo(() => {
-        if (role === 'Student' && user) return [user.uid];
-        if (role === 'Parent' && profile?.studentIds) return profile.studentIds;
-        return [];
-    }, [role, user, profile]);
+    const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
 
     const reportsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || targetStudentIds.length === 0 || roleLoading) return null;
-        return query(
-            collection(firestore, 'report-cards'),
-            where('schoolId', '==', schoolId),
-            where('studentId', 'in', targetStudentIds),
-            where('status', '==', 'Published'),
-            orderBy('publishedAt', 'desc')
-        );
-    }, [firestore, schoolId, targetStudentIds, roleLoading]);
+        if (!firestore || !schoolId || !role || roleLoading) return null;
+
+        const baseQuery = collection(firestore, 'report-cards');
+
+        if (role === 'Student') {
+            return query(
+                baseQuery,
+                where('schoolId', '==', schoolId),
+                where('studentId', '==', user?.uid),
+                where('status', '==', 'Published'),
+                orderBy('publishedAt', 'desc')
+            );
+        } 
+        
+        if (role === 'Parent') {
+            if (parentStudentIds.length === 0) return null;
+            
+            return query(
+                baseQuery,
+                where('schoolId', '==', schoolId),
+                where('studentId', 'in', parentStudentIds),
+                where('status', '==', 'Published'),
+                orderBy('publishedAt', 'desc')
+            );
+        }
+
+        return null;
+    }, [firestore, schoolId, role, user, parentStudentIds, roleLoading]);
 
     const { data: reports, isLoading: reportsLoading } = useCollection<any>(reportsQuery);
 
@@ -86,7 +101,6 @@ export default function MyReportsPage() {
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth(); // 210
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, 297);
             pdf.save(`${selectedReport.student?.firstName || 'Student'}_Report_${selectedReport.term}.pdf`);

@@ -64,14 +64,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "assessmentDate", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "assessments",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
         { "fieldPath": "studentId", "order": "ASCENDING" },
         { "fieldPath": "academicYear", "order": "ASCENDING" },
         { "fieldPath": "term", "order": "ASCENDING" },
@@ -92,16 +84,6 @@
       "fields": [
         { "fieldPath": "schoolId", "order": "ASCENDING" },
         { "fieldPath": "classId", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "report-cards",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "classId", "order": "ASCENDING" },
-        { "fieldPath": "academicYear", "order": "ASCENDING" },
-        { "fieldPath": "term", "order": "ASCENDING" }
       ]
     },
     {
