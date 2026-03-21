@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  GraduationCap,
   LogOut,
   ChevronRight,
   Building2,
@@ -31,6 +30,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import RoleSwitcher from './role-switcher';
+import { AppLogo } from '@/components/icons/app-logo';
 
 function isNavItemVisible(item: NavItem, role: UserRole | null) {
   if (item.roles === 'all') return true;
@@ -70,7 +70,6 @@ function NavLink({
   );
 }
 
-// This is the new reusable content component
 export function AppSidebarContent() {
   const pathname = usePathname();
   const router = useRouter();
@@ -101,10 +100,13 @@ export function AppSidebarContent() {
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center gap-2 p-2">
-          <GraduationCap className="h-8 w-8 text-primary" />
-          <span className="text-lg font-semibold text-primary">GAM Edu</span>
-        </div>
+        <Link href="/dashboard" className="flex items-center gap-3 p-2 group transition-all">
+          <AppLogo className="h-9 w-9 shadow-lg shadow-indigo-200 rounded-xl group-hover:scale-105 transition-transform" />
+          <div className="flex flex-col">
+            <span className="text-lg font-black text-slate-900 leading-none tracking-tighter">GAM EDU</span>
+            <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Management</span>
+          </div>
+        </Link>
       </SidebarHeader>
 
       <UiSidebarContent>
@@ -205,7 +207,6 @@ export function AppSidebarContent() {
   );
 }
 
-// The default export is now the static desktop sidebar
 export default function AppSidebar() {
   return (
     <Sidebar>

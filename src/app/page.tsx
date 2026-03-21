@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, School, CheckCircle2, Globe, Brain, Shield, Users, BookOpen, Star } from 'lucide-react';
+import { AppLogo } from '@/components/icons/app-logo';
 
 const TESTIMONIALS = [
   {
@@ -101,11 +101,12 @@ export default function LoginPage() {
               Trusted by 50+ Modern Schools
             </div>
             
-            <div className="flex items-center gap-3 text-2xl font-bold mb-4">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <School className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-3 mb-6">
+              <AppLogo className="h-14 w-14 shadow-2xl" />
+              <div className="flex flex-col">
+                <span className="text-3xl font-black tracking-tighter leading-none">GAM EDU</span>
+                <span className="text-xs font-bold text-blue-400 uppercase tracking-widest mt-1">Smarter Learning</span>
               </div>
-              GAM Edu
             </div>
             
             <h1 className="text-3xl lg:text-4xl font-extrabold leading-tight mb-3 tracking-tight">
@@ -150,10 +151,10 @@ export default function LoginPage() {
         <div className="w-full max-w-md space-y-6">
           
           <div className="lg:hidden text-center mb-6">
-             <div className="inline-flex bg-blue-600 p-3 rounded-xl mb-3">
-               <School className="h-8 w-8 text-white" />
+             <div className="inline-flex mb-3">
+               <AppLogo className="h-16 w-16 shadow-xl rounded-2xl" />
              </div>
-             <h1 className="text-2xl font-bold text-slate-900">GAM Edu</h1>
+             <h1 className="text-2xl font-black tracking-tighter text-slate-900">GAM EDU</h1>
           </div>
 
           <Card className="shadow-xl border-0 ring-1 ring-slate-200">
