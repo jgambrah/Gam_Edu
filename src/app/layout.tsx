@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   description: "AI-Powered School Management & Learning Platform",
   manifest: "/manifest.json",
   
+  // ✅ FIX: Force iOS to use this specific image for the Home Screen button
+  icons: {
+    apple: '/icon-512x512.png',
+  },
+
   // iOS Specific Settings
   appleWebApp: {
     capable: true,
