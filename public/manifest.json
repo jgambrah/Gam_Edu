@@ -1,21 +1,24 @@
 {
-  "name": "GAM Edu SaaS",
+  "name": "GAM Edu - School Management",
   "short_name": "GAM Edu",
-  "description": "School Management & AI Tutor Platform",
+  "description": "Intelligent School Management System",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon-192x192.svg",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "maskable any"
     },
     {
-      "src": "/icon-512x512.svg",
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "maskable any"
     }
   ]
 }
