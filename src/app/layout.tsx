@@ -17,9 +17,10 @@ export const metadata: Metadata = {
   description: "AI-Powered School Management & Learning Platform",
   manifest: "/manifest.json",
   
-  // ✅ FIX: Force iOS to use this specific image for the Home Screen button
+  // ✅ THE FIX: Force iOS and Android to use these specific image files for the Home Screen Icon
   icons: {
-    apple: '/icon-512x512.png',
+    icon: '/icon-512x512.png', // Default icon for Android/Web
+    apple: '/icon-512x512.png', // CRITICAL: The specific icon iOS uses instead of a screenshot
   },
 
   // iOS Specific Settings
