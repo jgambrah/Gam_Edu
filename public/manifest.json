@@ -2,10 +2,10 @@
   "name": "GAM Edu - School Management",
   "short_name": "GAM Edu",
   "description": "Intelligent School Management System",
-  "start_url": "/dashboard",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2563eb",
+  "background_color": "#4f46e5",
+  "theme_color": "#4f46e5",
   "orientation": "portrait",
   "icons": [
     {

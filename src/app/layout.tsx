@@ -5,7 +5,7 @@ import { PWARegister } from "@/components/PWARegister";
 
 // 1. Viewport Settings (Color, Scale, etc.)
 export const viewport: Viewport = {
-  themeColor: "#2563eb",
+  themeColor: "#4f46e5",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

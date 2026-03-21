@@ -100,30 +100,30 @@ export default function LoginPage() {
     <>
       {/* --- FAKE SPLASH SCREEN (Mobile/PWA Only) --- */}
       {showSplash && (
-        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-900 text-white animate-out fade-out duration-500 delay-1000 fill-mode-forwards">
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-indigo-950 text-white animate-out fade-out duration-500 delay-1000 fill-mode-forwards">
           <AppLogo className="h-24 w-24 mb-6 shadow-2xl animate-pulse" />
           <div className="flex flex-col items-center">
             <h1 className="text-4xl font-black tracking-tighter uppercase mb-2">GAM EDU</h1>
-            <p className="text-xs font-bold text-blue-400 uppercase tracking-[0.3em] opacity-80">Smarter Learning</p>
+            <p className="text-xs font-bold text-indigo-400 uppercase tracking-[0.3em] opacity-80">Smarter Learning</p>
           </div>
         </div>
       )}
 
-      {/* --- EXISTING LOGIN PAGE --- */}
+      {/* --- LOGIN PAGE --- */}
       <div className={`min-h-screen w-full lg:grid lg:grid-cols-2 ${showSplash ? 'opacity-0' : 'opacity-100 transition-opacity duration-500'}`}>
         
         {/* LEFT SIDE: MARKETING */}
         <div className="hidden lg:flex flex-col bg-slate-900 text-white p-8 lg:p-12 relative h-screen overflow-y-auto no-scrollbar">
           
           {/* Background Gradients */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
 
           <div className="relative z-10 flex flex-col h-full">
             
             {/* Top Badge */}
             <div className="flex-shrink-0 mb-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/50 border border-blue-700 text-blue-200 text-xs font-medium mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-900/50 border border-indigo-700 text-indigo-200 text-xs font-medium mb-4">
                 <Star className="h-3 w-3 fill-current text-yellow-400" />
                 Trusted by 50+ Modern Schools
               </div>
@@ -132,12 +132,12 @@ export default function LoginPage() {
                 <AppLogo className="h-14 w-14 shadow-2xl" />
                 <div className="flex flex-col">
                   <span className="text-3xl font-black tracking-tighter leading-none">GAM EDU</span>
-                  <span className="text-xs font-bold text-blue-400 uppercase tracking-widest mt-1">Smarter Learning</span>
+                  <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest mt-1">Smarter Learning</span>
                 </div>
               </div>
               
               <h1 className="text-3xl lg:text-4xl font-extrabold leading-tight mb-3 tracking-tight">
-                The Intelligent OS for <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Future-Ready Schools</span>.
+                The Intelligent OS for <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Future-Ready Schools</span>.
               </h1>
               <p className="text-slate-400 text-base mb-8 max-w-lg leading-relaxed">
                 Replace 10 different tools with one AI-powered platform. Manage admissions, finance, learning, and communication seamlessly.
@@ -160,7 +160,7 @@ export default function LoginPage() {
                   </div>
                   <p className="font-medium text-slate-200 italic text-sm mb-4 leading-relaxed">"{currentTestimonial.text}"</p>
                   <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs shadow-lg">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs shadow-lg">
                           {currentTestimonial.initials}
                       </div>
                       <div>
@@ -208,7 +208,7 @@ export default function LoginPage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label htmlFor="password">Password</Label>
-                      <Link href="/password-reset" className="text-xs text-blue-600 hover:underline font-medium">
+                      <Link href="/password-reset" className="text-xs text-indigo-600 hover:underline font-medium">
                         Forgot password?
                       </Link>
                     </div>
@@ -221,7 +221,7 @@ export default function LoginPage() {
                       className="bg-slate-50 border-slate-200 focus:bg-white"
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-11 text-base font-semibold shadow-lg shadow-blue-900/10 transition-all" disabled={loading}>
+                  <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 h-11 text-base font-semibold shadow-lg shadow-indigo-900/10 transition-all" disabled={loading}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign In"}
                   </Button>
                 </form>
@@ -231,7 +231,7 @@ export default function LoginPage() {
                   School not registered?
                 </div>
                 <Link href="/register-school" className="w-full">
-                  <Button variant="outline" className="w-full border-blue-200 bg-white hover:bg-blue-50 text-blue-700 font-bold border h-10">
+                  <Button variant="outline" className="w-full border-indigo-200 bg-white hover:bg-indigo-50 text-indigo-700 font-bold border h-10">
                     <Globe className="mr-2 h-4 w-4"/> Request School Demo
                   </Button>
                 </Link>
@@ -251,8 +251,8 @@ export default function LoginPage() {
 function FeatureRow({ icon: Icon, title, desc }: { icon: any, title: string, desc: string }) {
   return (
     <div className="flex items-start gap-4 p-3 hover:bg-white/5 rounded-xl transition-all border border-transparent hover:border-white/10 group">
-      <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors">
-        <Icon className="h-5 w-5 text-blue-400 group-hover:text-blue-300" />
+      <div className="h-10 w-10 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/20 transition-colors">
+        <Icon className="h-5 w-5 text-indigo-400 group-hover:text-indigo-300" />
       </div>
       <div>
         <h3 className="font-bold text-white text-sm">{title}</h3>
