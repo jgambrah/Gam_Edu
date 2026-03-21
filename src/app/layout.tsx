@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import './globals.css';
 import Providers from './providers'; // Import the new client-side provider component
+import { PWARegister } from "@/components/PWARegister";
 
 // 1. Viewport Settings (Color, Scale, etc.)
 export const viewport: Viewport = {
@@ -41,6 +42,7 @@ export default function RootLayout({
       <head>
       </head>
       <body className="antialiased">
+        <PWARegister />
         <Providers>
             {children}
         </Providers>
