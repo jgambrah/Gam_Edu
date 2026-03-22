@@ -4,7 +4,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, limit, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, doc, documentId } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, 
   PlusCircle, FilePen, BookOpen, Calendar,
@@ -604,7 +604,7 @@ function ParentDashboard({ profile, students, announcements, isLoading, announce
   
   // Robust field mapping for linked students
   const myStudentIds = useMemo(() => {
-    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || [];
+    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [];
   }, [profile]);
   
   const myStudents = useMemo(() => {
@@ -654,40 +654,8 @@ function ParentDashboard({ profile, students, announcements, isLoading, announce
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT SIDE: CHILDREN LIST */}
+        {/* LEFT SIDE: ANNOUNCEMENTS */}
         <div className="lg:col-span-2 space-y-6">
-           <Card>
-              <CardHeader>
-                  <CardTitle>My Children</CardTitle>
-                  <CardDescription>
-                    {isLoading 
-                      ? "Loading children's profiles..." 
-                      : `You have ${myStudents.length} child${myStudents.length !== 1 ? 'ren' : ''} enrolled.`
-                    }
-                  </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {isLoading && <div className="flex justify-center py-4"><Loader2 className="animate-spin text-primary"/></div>}
-                
-                {!isLoading && myStudents.length === 0 && (
-                    <div className="p-8 text-center border-2 border-dashed rounded-2xl bg-slate-50">
-                        <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                        <p className="text-slate-600 font-medium">No children linked to your account.</p>
-                        <p className="text-xs text-slate-400 mt-1">Please contact the school administrator to link your children's profiles.</p>
-                    </div>
-                )}
-
-                {!isLoading && myStudents.map((student: any) => (
-                  <Link href="/dashboard/my-children" key={student.uid}>
-                    <div className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 transition-all mb-2 group shadow-sm">
-                      <StudentDisplay student={student} variant="list" showAvatar />
-                      <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </Link>
-                ))}
-              </CardContent>
-          </Card>
-          
           <Card>
               <CardHeader><CardTitle>Recent Announcements</CardTitle></CardHeader>
               <CardContent>
@@ -857,7 +825,8 @@ export default function DashboardClient() {
     if (!firestore || !schoolId) return null;
     if (isStaffUser) return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
     if (isParent && !isRoleLoading && parentStudentIds.length > 0) {
-        return query(collection(firestore, 'students'), where('uid', 'in', parentStudentIds));
+        // Fetch students whose document ID is in the list
+        return query(collection(firestore, 'students'), where(documentId(), 'in', parentStudentIds.slice(0, 30)));
     }
     return null;
   }, [firestore, schoolId, isStaffUser, isParent, isRoleLoading, parentStudentIdsStr]);
@@ -886,7 +855,6 @@ export default function DashboardClient() {
   const leaveRequestsQuery = useMemoFirebase(() => (firestore && isStaffUser && schoolId) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, isStaffUser, schoolId]);
   const { data: leaveRequests, isLoading: leaveLoading } = useCollection<any>(leaveRequestsQuery);
   
-  // ✅ THE FIX: Only fetch financial records for Staff/Admins. Parents are blocked from collection-level listing.
   const financialRecordsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     if (isFinance || isAdminOrDirector) {
