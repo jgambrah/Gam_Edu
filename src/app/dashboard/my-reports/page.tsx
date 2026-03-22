@@ -28,7 +28,10 @@ export default function MyReportsPage() {
     const [isExporting, setIsExporting] = useState(false);
     const printRef = useRef<HTMLDivElement>(null);
 
-    const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
+    const parentStudentIds = useMemo(() => {
+        return profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+    }, [profile]);
+    const parentStudentIdsStr = parentStudentIds.join(',');
 
     const reportsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !role || roleLoading) return null;
@@ -58,7 +61,7 @@ export default function MyReportsPage() {
         }
 
         return null;
-    }, [firestore, schoolId, role, user?.uid, parentStudentIds.join(','), roleLoading]);
+    }, [firestore, schoolId, role, user?.uid, parentStudentIdsStr, roleLoading]);
 
     const { data: reports, isLoading: reportsLoading } = useCollection<any>(reportsQuery);
 
@@ -74,7 +77,6 @@ export default function MyReportsPage() {
         
         setIsExporting(true);
         try {
-            // Temporarily position element for capture
             element.style.display = 'block';
             element.style.visibility = 'visible';
             element.style.position = 'fixed';
@@ -82,7 +84,6 @@ export default function MyReportsPage() {
             element.style.left = '0';
             element.style.zIndex = '-1';
 
-            // Short delay to ensure browser renders the hidden element
             await new Promise(resolve => setTimeout(resolve, 500));
 
             const canvas = await html2canvas(element, { 
@@ -94,14 +95,13 @@ export default function MyReportsPage() {
                 windowHeight: 1123,
             });
 
-            // Re-hide element
             element.style.display = 'none';
             element.style.visibility = 'hidden';
             element.style.position = 'absolute';
 
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth(); // 210
+            const pdfWidth = pdf.internal.pageSize.getWidth();
             
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, 297);
             pdf.save(`${selectedReport.student?.firstName || 'Student'}_Report_${selectedReport.term}.pdf`);
@@ -149,7 +149,6 @@ export default function MyReportsPage() {
                     </div>
                 </div>
 
-                {/* VISUAL PREVIEW */}
                 <div className="flex justify-center bg-slate-100 p-4 rounded-xl border overflow-auto">
                     <div className="shadow-2xl ring-1 ring-black/5 scale-[0.8] origin-top md:scale-100">
                         <ReportCardTemplate
@@ -162,7 +161,6 @@ export default function MyReportsPage() {
                     </div>
                 </div>
 
-                {/* HIDDEN TEMPLATE FOR CAPTURE */}
                 <div
                     ref={printRef}
                     style={{ display: 'none', visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px' }}

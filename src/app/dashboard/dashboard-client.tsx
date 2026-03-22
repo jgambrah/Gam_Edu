@@ -601,7 +601,7 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
 // --- PARENT DASHBOARD ---
 function ParentDashboard({ profile, schoolId, students, financialRecords, announcements, isLoading, announcementsLoading }: { profile: any, schoolId: string, students: any[] | null, financialRecords: any[] | null, announcements: any[] | null, isLoading: boolean, announcementsLoading: boolean }) {
   const { user } = useUser();
-  const myStudentIds = profile?.studentIds || [];
+  const myStudentIds = profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
   
   const myStudents = useMemo(() => {
     if (!students) return [];
@@ -865,14 +865,17 @@ export default function DashboardClient() {
   const isTransport = role === 'Transport Staff';
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian || isTransport;
 
+  const parentStudentIds = useMemo(() => profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [], [profile]);
+  const parentStudentIdsStr = parentStudentIds.join(',');
+
   const studentsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     if (isStaffUser) return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
-    if (isParent && !isRoleLoading && profile?.studentIds?.length > 0) {
-        return query(collection(firestore, 'students'), where('uid', 'in', profile.studentIds));
+    if (isParent && !isRoleLoading && parentStudentIds.length > 0) {
+        return query(collection(firestore, 'students'), where('uid', 'in', parentStudentIds));
     }
     return null;
-  }, [firestore, schoolId, isStaffUser, isParent, isRoleLoading, profile?.studentIds?.join(',')]);
+  }, [firestore, schoolId, isStaffUser, isParent, isRoleLoading, parentStudentIdsStr]);
   const { data: students, isLoading: studentsLoading } = useCollection<any>(studentsQuery);
 
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && isAdminOrDirector) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId, isAdminOrDirector]);
@@ -901,11 +904,11 @@ export default function DashboardClient() {
   const financialRecordsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     if (isFinance || isAdminOrDirector) return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
-    if (isParent && !isRoleLoading && profile?.studentIds?.length > 0) {
-        return query(collection(firestore, 'financialRecords'), where('studentId', 'in', profile.studentIds), orderBy('createdAt', 'desc'));
+    if (isParent && !isRoleLoading && parentStudentIds.length > 0) {
+        return query(collection(firestore, 'financialRecords'), where('studentId', 'in', parentStudentIds), orderBy('createdAt', 'desc'));
     }
     return null;
-  }, [firestore, isFinance, isAdminOrDirector, isParent, isRoleLoading, schoolId, profile?.studentIds?.join(',')]);
+  }, [firestore, isFinance, isAdminOrDirector, isParent, isRoleLoading, schoolId, parentStudentIdsStr]);
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<any>(financialRecordsQuery);
 
   // Transport Specific Queries

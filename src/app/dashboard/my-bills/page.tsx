@@ -176,13 +176,14 @@ function MyBillsPageContent() {
     const firestore = useFirestore();
 
     const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null, [firestore, user?.uid, role]);
-    const { data: parentData } = useDoc<{ studentIds: string[] }>(parentDocRef);
+    const { data: parentData, isLoading: isParentLoading } = useDoc<any>(parentDocRef);
     
     const { data: studentForStudentRole } = useCollection<Student>(
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
     );
     
-    const studentIds = useMemo(() => parentData?.studentIds || [], [parentData?.studentIds?.join(',')]);
+    const studentIds = useMemo(() => parentData?.studentIds || parentData?.students || parentData?.childrenIds || parentData?.linkedStudentIds || [], [parentData]);
+    const studentIdsStr = studentIds.join(',');
     
     if (role === 'Student') {
         const student = studentForStudentRole?.[0];

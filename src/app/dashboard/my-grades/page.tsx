@@ -27,8 +27,11 @@ export default function MyGradesPage() {
     const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
     const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0] || 'First Term');
 
-    // 1. Get the Parent's linked students or the Student's own ID
-    const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
+    // 1. Resolve Parent's linked students
+    const parentStudentIds = useMemo(() => {
+        return profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+    }, [profile]);
+    const parentStudentIdsStr = parentStudentIds.join(',');
 
     // 2. Data Fetching
     const assessmentsQuery = useMemoFirebase(() => {
@@ -50,7 +53,7 @@ export default function MyGradesPage() {
         
         if (role === 'Parent') {
             // Parent sees grades for ALL their linked children
-            if (parentStudentIds.length === 0) return null; // No children linked yet
+            if (parentStudentIds.length === 0) return null; 
             
             return query(
                 baseQuery,
@@ -62,17 +65,17 @@ export default function MyGradesPage() {
             );
         }
 
-        return null; // Fallback
-    }, [firestore, schoolId, role, user?.uid, parentStudentIds.join(','), selectedYear, selectedTerm]);
+        return null;
+    }, [firestore, schoolId, role, user?.uid, parentStudentIdsStr, selectedYear, selectedTerm]);
 
     const { data: assessments, isLoading: loadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !role) return null;
         const targetIds = role === 'Student' ? [user?.uid] : parentStudentIds;
-        if (targetIds.length === 0) return null;
+        if (targetIds.length === 0 || !targetIds[0]) return null;
         return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', targetIds));
-    }, [firestore, schoolId, parentStudentIds.join(','), role, user?.uid]);
+    }, [firestore, schoolId, parentStudentIdsStr, role, user?.uid]);
 
     const { data: students } = useCollection<Student>(studentsQuery);
 
