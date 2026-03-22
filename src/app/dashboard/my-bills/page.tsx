@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, Suspense } from 'react';
@@ -6,7 +5,7 @@ import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser 
 import { collection, doc, query, where, Timestamp, documentId, orderBy } from 'firebase/firestore';
 import { Student, FinancialRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, FileText, ShieldAlert } from 'lucide-react';
+import { Loader2, FileText, ShieldAlert, Users } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -184,9 +183,8 @@ function MyBillsPageContent() {
 
     // Robust field mapping for linked students
     const studentIds = useMemo(() => {
-        return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+        return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [];
     }, [profile]);
-    const studentIdsStr = studentIds.join(',');
     
     const { data: studentForStudentRole } = useCollection<Student>(
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
@@ -10,7 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, Download, Printer, ChevronRight } from 'lucide-react';
+import { Loader2, FileText, Download, Printer, ChevronRight, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -29,7 +28,7 @@ export default function MyReportsPage() {
     const printRef = useRef<HTMLDivElement>(null);
 
     const parentStudentIds = useMemo(() => {
-        return profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+        return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [];
     }, [profile]);
     const parentStudentIdsStr = parentStudentIds.join(',');
 
@@ -124,7 +123,7 @@ export default function MyReportsPage() {
             <div className="p-6">
                 <Card className="border-2 border-dashed bg-slate-50/50">
                     <CardContent className="py-20 flex flex-col items-center gap-4 text-muted-foreground">
-                        <FileText className="h-12 w-12 opacity-20" />
+                        <Users className="h-12 w-12 text-slate-300" />
                         <p className="text-lg font-medium">No published reports found.</p>
                         <p className="text-sm">Reports will appear here once they are released by the school administration.</p>
                     </CardContent>

@@ -39,10 +39,8 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       try {
         // --- 0. SUPER ADMIN CHECK ---
-        // If this is the CEO, assign Director role immediately to prevent "No Role"
         if (currentUser.email?.toLowerCase() === SUPER_ADMIN_EMAIL || currentUser.uid === SUPER_ADMIN_UID) {
           setRole('Director');
-          // Try to get a profile but don't fail if missing
           const staffRef = doc(firestore, 'staff', currentUser.uid);
           const staffSnap = await getDoc(staffRef);
           if (staffSnap.exists()) {
@@ -54,7 +52,9 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // --- 1. PRIMARY: STAFF COLLECTION ---
+        // --- 1. CHECK SPECIFIC COLLECTIONS FIRST (Detailed Profiles) ---
+        
+        // Try Staff
         const staffRef = doc(firestore, 'staff', currentUser.uid);
         const staffSnap = await getDoc(staffRef);
         if (staffSnap.exists()) {
@@ -64,9 +64,28 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           setLoading(false);
           return;
         }
+
+        // Try Students
+        const studentRef = doc(firestore, 'students', currentUser.uid);
+        const studentSnap = await getDoc(studentRef);
+        if (studentSnap.exists()) {
+          setRole('Student');
+          setProfile(studentSnap.data());
+          setLoading(false);
+          return;
+        }
+
+        // Try Parents (CRITICAL for studentIds)
+        const parentRef = doc(firestore, 'parents', currentUser.uid);
+        const parentSnap = await getDoc(parentRef);
+        if (parentSnap.exists()) {
+          setRole('Parent');
+          setProfile(parentSnap.data());
+          setLoading(false);
+          return;
+        }
         
-        // --- 2. SECONDARY: USERS MAPPING (FAST LOOKUP) ---
-        // Check central user mapping if specific staff record is missing
+        // --- 2. FALLBACK: USERS MAPPING ---
         const userRef = doc(firestore, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
@@ -79,27 +98,6 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
              }
         }
 
-        // --- 3. TERTIARY: STUDENTS ---
-        const studentRef = doc(firestore, 'students', currentUser.uid);
-        const studentSnap = await getDoc(studentRef);
-        if (studentSnap.exists()) {
-          setRole('Student');
-          setProfile(studentSnap.data());
-          setLoading(false);
-          return;
-        }
-
-        // --- 4. QUATERNARY: PARENTS ---
-        const parentRef = doc(firestore, 'parents', currentUser.uid);
-        const parentSnap = await getDoc(parentRef);
-        if (parentSnap.exists()) {
-          setRole('Parent');
-          setProfile(parentSnap.data());
-          setLoading(false);
-          return;
-        }
-
-        // Fallback if no profile found anywhere
         setRole(null);
         setProfile(null);
 
@@ -117,7 +115,6 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     } else if (user) {
       fetchRole(user);
     } else {
-      // No user is logged in
       setRole(null);
       setProfile(null);
       setLoading(false);
