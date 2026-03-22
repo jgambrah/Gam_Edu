@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -14,10 +13,11 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
 import ForcePasswordChange from '@/components/auth/ForcePasswordChange';
 import { AiChat } from '@/components/ai-chat';
+import { PushNotificationManager } from '@/components/PushNotificationManager';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
-  const { profile, loading: isRoleLoading } = useRole();
+  const { role, profile, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
   const router = useRouter();
@@ -82,6 +82,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   // Mandatory Password Change Check
   const needsPasswordChange = profile?.requirePasswordChange === true;
 
+  // Determine collection name for push tokens
+  let collectionName = 'staff';
+  if (profile?.role === 'Student') collectionName = 'students';
+  if (profile?.role === 'Parent') collectionName = 'parents';
+
   return (
     <div className="flex h-screen overflow-hidden">
       <AppSidebar />
@@ -113,6 +118,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       <AiChat />
+      <PushNotificationManager collectionName={collectionName} />
       <SchoolSetupWizard />
     </div>
   );
