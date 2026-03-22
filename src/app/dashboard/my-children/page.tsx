@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Suspense, useState, useMemo } from 'react';
@@ -20,11 +19,13 @@ import { cn } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { StudentDisplay } from '@/components/student-display';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function AttendanceHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
     const { role } = useRole();
     const { user } = useUser();
+    const { schoolId } = useCurrentSchool();
     
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: startOfDay(new Date(new Date().setDate(new Date().getDate() - 30))),
@@ -33,21 +34,23 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
 
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const isTargetStudent = user?.uid === studentId;
-    const hasPermission = isStaff || isTargetStudent || role === 'Parent';
+    const isParent = role === 'Parent';
+    const hasPermission = isStaff || isTargetStudent || isParent;
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !dateRange?.from || !studentId || !hasPermission) return null;
+        if (!firestore || !schoolId || !dateRange?.from || !studentId || !hasPermission) return null;
         
         const start = Timestamp.fromDate(startOfDay(dateRange.from));
         const end = dateRange.to ? Timestamp.fromDate(endOfDay(dateRange.to)) : Timestamp.fromDate(endOfDay(dateRange.from));
 
         return query(
             collection(firestore, 'attendance'),
+            where('schoolId', '==', schoolId),
             where('studentId', '==', studentId),
             where('date', '>=', start),
             where('date', '<=', end)
         );
-    }, [firestore, studentId, dateRange, hasPermission]);
+    }, [firestore, schoolId, studentId, dateRange, hasPermission]);
     
     const { data: records, isLoading } = useCollection<AttendanceRecord>(attendanceQuery);
 
@@ -110,19 +113,22 @@ function BehavioralHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
     const { role } = useRole();
     const { user } = useUser();
+    const { schoolId } = useCurrentSchool();
 
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const isTargetStudent = user?.uid === studentId;
-    const hasPermission = isStaff || isTargetStudent || role === 'Parent';
+    const isParent = role === 'Parent';
+    const hasPermission = isStaff || isTargetStudent || isParent;
 
     const recordsQuery = useMemoFirebase(() => {
-        if (!firestore || !studentId || !hasPermission) return null;
+        if (!firestore || !schoolId || !studentId || !hasPermission) return null;
         return query(
             collection(firestore, 'behavioral_records'), 
+            where('schoolId', '==', schoolId),
             where('studentId', '==', studentId), 
             orderBy('date', 'desc')
         );
-    }, [firestore, studentId, hasPermission]);
+    }, [firestore, schoolId, studentId, hasPermission]);
     const { data: records, isLoading } = useCollection<BehavioralRecord>(recordsQuery);
 
     const getIcon = (type: BehavioralRecord['incidentType']) => {
@@ -249,7 +255,6 @@ function MyChildrenPageContent() {
     const studentIds = useMemo(() => {
         return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
     }, [profile]);
-    const studentIdsStr = studentIds.join(',');
     
     const { data: studentForStudentRole, isLoading: isStudentLoading } = useCollection<Student>(
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
@@ -299,7 +304,7 @@ function MyChildrenPageContent() {
     if (role === 'Parent') {
         if (!studentIds || studentIds.length === 0) {
             return (
-                <div className="p-12 text-center border-2 border-dashed rounded-3xl bg-slate-50 max-w-2xl mx-auto">
+                <div className="p-12 text-center border-2 border-dashed rounded-3xl bg-slate-50 max-w-2xl mx-auto mt-10">
                     <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
                     <h3 className="text-xl font-bold text-slate-800">No Children Linked</h3>
                     <p className="text-slate-500 mt-2">We couldn't find any students associated with your parent account.</p>
