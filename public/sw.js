@@ -2,8 +2,8 @@
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-// 2. Initialize Firebase in the Worker 
-// YOU MUST REPLACE THESE WITH YOUR ACTUAL config.ts VALUES
+// 2. Initialize Firebase in the Worker
+// PLEASE REPLACE THESE WITH YOUR ACTUAL config.ts VALUES
 firebase.initializeApp({
   apiKey: "REPLACE_WITH_YOUR_API_KEY",
   authDomain: "REPLACE_WITH_YOUR_AUTH_DOMAIN",
@@ -19,26 +19,25 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[sw.js] Received background message ', payload);
   
-  const notificationTitle = payload.notification.title || 'GAM Edu';
+  const notificationTitle = payload.notification?.title || 'GAM Edu';
   const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/icon-192x192.png', // Your app icon
-    badge: '/icon-192x192.png', // Small icon for Android status bar
-    data: payload.data // Pass URL to open when clicked
+    body: payload.notification?.body || 'New message received',
+    icon: '/icon-192x192.png',
+    badge: '/icon-192x192.png',
+    data: payload.data
   };
 
   return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-// 4. Notification Click Handler (When user taps the notification)
+// 4. Notification Click Handler
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  // Open the URL sent in the data payload, or default to dashboard
   const urlToOpen = event.notification.data?.url || '/dashboard';
   event.waitUntil(clients.openWindow(urlToOpen));
 });
 
-// --- EXISTING CACHING LOGIC ---
+// --- CACHING LOGIC ---
 const CACHE_NAME = 'gam-edu-cache-v1';
 const URLS_TO_CACHE = [
   '/',
@@ -49,44 +48,26 @@ const URLS_TO_CACHE = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache');
-      return cache.addAll(URLS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(URLS_TO_CACHE))
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then((cacheNames) => Promise.all(
+      cacheNames.map((name) => {
+        if (name !== CACHE_NAME) return caches.delete(name);
+      })
+    ))
   );
   self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
-  
-  // Skip cross-origin requests (like Firebase API calls)
   if (!event.request.url.startsWith(self.location.origin)) return;
-
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request).then((response) => {
-        if (response) {
-          return response;
-        }
-      });
-    })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });

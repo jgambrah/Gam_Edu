@@ -94,7 +94,9 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <TrialBanner />
         <Header />
         <main className="relative flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-          {children}
+          <div className="pb-24">
+            {children}
+          </div>
           
           {/* Overlay for expired trial */}
           {isLocked && !pathname.includes('/dashboard/subscription') && (
