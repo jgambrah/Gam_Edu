@@ -33,8 +33,8 @@ service cloud.firestore {
     
     // Parent Data Helper
     function getParentStudentIds() {
-      let parentDoc = get(/databases/$(database)/documents/parents/$(request.auth.uid));
-      return parentDoc != null ? parentDoc.data.studentIds : [];
+      let parentPath = /databases/$(database)/documents/parents/$(request.auth.uid);
+      return exists(parentPath) ? get(parentPath).data.studentIds : [];
     }
 
     // Module Specific Helpers
@@ -268,7 +268,21 @@ service cloud.firestore {
     match /journal_entries/{entryId} { allow read, list: if isFinanceStaff() || isAdmin(); allow create: if isFinanceStaff() || isAdmin(); allow update: if false; }
     match /payment_vouchers/{voucherId} { allow read, write, list: if isFinanceStaff() || isAdmin(); }
     match /payrollSettings/{settingsId} { allow read, list: if isFinanceStaff(); allow write: if isAdmin(); }
-    // ... remaining rules OMITTED for brevity ...
+    
+    match /payroll_settings/{docId} { allow read, list: if isSignedIn(); allow write: if isFinanceStaff() || isAdmin(); }
+    match /payroll_runs/{runId} { allow read, list: if isFinanceStaff() || isAdmin() || (isSignedIn() && request.auth.uid == resource.data.staffId); allow write: if isFinanceStaff() || isAdmin(); }
+    
+    match /payrollRecords/{recordId} { 
+      allow read, write: if isFinanceStaff() || isAdmin(); 
+      allow get: if isSignedIn() && (isFinanceStaff() || isAdmin() || resource.data.staffId == request.auth.uid); 
+      allow list: if isSignedIn() && (isFinanceStaff() || isAdmin() || (request.query.where.staffId == request.auth.uid && request.query.where.schoolId != null));
+    }
+    
+    match /staff_salary_details/{userId} { allow read, list: if isFinanceStaff() || isAdmin() || request.auth.uid == userId; allow write: if isFinanceStaff() || isAdmin(); }
+    match /routes/{routeId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isFinanceStaff() || isTransportStaff(); }
+    match /buses/{busId} { allow read, list: if isSignedIn(); allow write: if isAdmin() || isFinanceStaff() || isTransportStaff(); }
+    match /admissionApplications/{applicationId} { allow read, write, list: if isAdmin(); allow create: if isSignedIn(); allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid; }
+
     match /{document=**} {
       allow read, write: if isAdmin();
     }
