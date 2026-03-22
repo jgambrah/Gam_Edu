@@ -13,7 +13,7 @@ import {
   Clock, CheckCircle2, UserCheck, BookMarked, Landmark, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, Sparkles, FolderKanban, HeartHandshake, User as UserIcon,
   BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code, ShoppingBag, Wallet, Calculator, ArrowUpRight,
-  AlertCircle, Book, Library, History, MapPin, Bus as BusIcon, Route as RouteIcon, Info
+  AlertCircle, Book, Library, History, MapPin, Bus as BusIcon, Route as RouteIcon, Info, MessageSquare
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
@@ -849,7 +849,7 @@ export default function DashboardClient() {
 
   // Defensive field mapping for linked students
   const parentStudentIds = useMemo(() => {
-    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || [];
+    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [];
   }, [profile]);
   const parentStudentIdsStr = parentStudentIds.join(',');
 
