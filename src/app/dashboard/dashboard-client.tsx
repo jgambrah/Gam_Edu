@@ -616,7 +616,7 @@ function ParentDashboard({ profile, students, announcements, isLoading, announce
       </div>
 
       {/* STAT CARDS */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 mb-6">
         <StatCard 
           title="Live Grades" 
           value="View Now" 
@@ -629,13 +629,6 @@ function ParentDashboard({ profile, students, announcements, isLoading, announce
           value="Download" 
           icon={FileText}
           link="/dashboard/my-reports"
-          isLoading={isLoading}
-        />
-        <StatCard 
-          title="Communication" 
-          value="View" 
-          icon={MessageSquare}
-          link="/dashboard/communication"
           isLoading={isLoading}
         />
       </div>
