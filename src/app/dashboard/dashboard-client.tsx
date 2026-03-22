@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -607,29 +606,17 @@ function ParentDashboard({ profile, students, announcements, isLoading, announce
     return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [];
   }, [profile]);
   
-  const myStudents = useMemo(() => {
-    if (!students || !myStudentIds.length) return [];
-    return students.filter(s => myStudentIds.includes(s.uid) || myStudentIds.includes(s.id));
-  }, [students, myStudentIds]);
-
   const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Parent';
 
   return (
     <>
       <div className="flex flex-col gap-1 mb-6">
         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Welcome, {displayName}! 🏡</h1>
-        <p className="text-muted-foreground">Keep track of your children's school activities and academic records.</p>
+        <p className="text-muted-foreground mt-1">Keep track of your children's school activities and academic records.</p>
       </div>
 
       {/* STAT CARDS */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
-        <StatCard 
-          title="My Children" 
-          value={myStudents.length} 
-          icon={Users} 
-          link="/dashboard/my-children"
-          isLoading={isLoading}
-        />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
         <StatCard 
           title="Live Grades" 
           value="View Now" 
@@ -684,6 +671,13 @@ function ParentDashboard({ profile, students, announcements, isLoading, announce
                     <CardTitle className="text-indigo-900 text-lg">Parent Resources</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-3">
+                    <Link href="/dashboard/my-children" className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 hover:border-indigo-200 transition-all mb-2 shadow-sm bg-white">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-indigo-100 rounded-lg"><UserIcon className="h-4 w-4 text-indigo-600"/></div>
+                            <span className="font-semibold text-sm text-slate-700">Children's Profiles</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-slate-300"/>
+                    </Link>
                     <Link href="/dashboard/my-bills" className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 hover:border-indigo-200 transition-all mb-2 shadow-sm bg-white">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-emerald-100 rounded-lg"><Banknote className="h-4 w-4 text-emerald-600"/></div>
