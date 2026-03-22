@@ -1,3 +1,44 @@
+// 1. Import Firebase Scripts for the Background Worker
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
+
+// 2. Initialize Firebase in the Worker 
+// YOU MUST REPLACE THESE WITH YOUR ACTUAL config.ts VALUES
+firebase.initializeApp({
+  apiKey: "REPLACE_WITH_YOUR_API_KEY",
+  authDomain: "REPLACE_WITH_YOUR_AUTH_DOMAIN",
+  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
+  storageBucket: "REPLACE_WITH_YOUR_STORAGE_BUCKET",
+  messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
+  appId: "REPLACE_WITH_YOUR_APP_ID"
+});
+
+const messaging = firebase.messaging();
+
+// 3. Background Message Handler (When app is closed)
+messaging.onBackgroundMessage((payload) => {
+  console.log('[sw.js] Received background message ', payload);
+  
+  const notificationTitle = payload.notification.title || 'GAM Edu';
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/icon-192x192.png', // Your app icon
+    badge: '/icon-192x192.png', // Small icon for Android status bar
+    data: payload.data // Pass URL to open when clicked
+  };
+
+  return self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// 4. Notification Click Handler (When user taps the notification)
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  // Open the URL sent in the data payload, or default to dashboard
+  const urlToOpen = event.notification.data?.url || '/dashboard';
+  event.waitUntil(clients.openWindow(urlToOpen));
+});
+
+// --- EXISTING CACHING LOGIC ---
 const CACHE_NAME = 'gam-edu-cache-v1';
 const URLS_TO_CACHE = [
   '/',
@@ -6,7 +47,6 @@ const URLS_TO_CACHE = [
   '/icon-512x512.png'
 ];
 
-// 1. Install Event (Caches basic assets)
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -17,7 +57,6 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// 2. Activate Event (Cleans up old caches)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -34,7 +73,6 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// 3. Fetch Event (Network First, then Cache Fallback)
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
@@ -48,7 +86,6 @@ self.addEventListener('fetch', (event) => {
         if (response) {
           return response;
         }
-        // If offline and not in cache, you could return an offline.html here
       });
     })
   );
