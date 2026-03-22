@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import ReportCardTemplate from './components/ReportCardTemplate';
+import { notifyParents } from '@/app/actions/notifications';
 
 // --- HELPERS ---
 
@@ -57,7 +58,6 @@ function getGradeAndRemark(score: number) {
     return { grade: 'F', autoRemark: 'Fail' };
 }
 
-// Professional Ordinal Formatter (1st, 2nd, 3rd...)
 function formatOrdinal(n: number): string {
     const s = ["th", "st", "nd", "rd"];
     const v = n % 100;
@@ -116,12 +116,10 @@ export default function ReportCardManager() {
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
     const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
 
-    // --- EXTRACT CENTRAL TERM DATES ---
     const termStartMs = schoolProfile?.termStartDate ? schoolProfile.termStartDate.toDate().getTime() : 0;
     const termEndMs = schoolProfile?.termEndDate ? schoolProfile.termEndDate.toDate().getTime() : Infinity;
     const areDatesMissing = !schoolProfile?.termStartDate || !schoolProfile?.termEndDate;
 
-    // Load existing report remarks if available
     useEffect(() => {
         if (!selectedStudentId || !academicYear || !term || !firestore || !schoolId) return;
         const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
@@ -147,11 +145,7 @@ export default function ReportCardManager() {
         if (!firestore || !schoolId || !classId || !selectedStudentId) return;
         
         if (areDatesMissing) {
-            toast({
-                variant: 'destructive',
-                title: "Incomplete Configuration",
-                description: "Please ask the Administrator to configure the Term Dates in School Settings."
-            });
+            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Please ask the Administrator to configure the Term Dates." });
             return;
         }
 
@@ -159,7 +153,6 @@ export default function ReportCardManager() {
         setProcessedReport(null);
 
         try {
-            // 1. Fetch Assessments
             const assessmentsRef = collection(firestore, 'assessments');
             const q = query(
                 assessmentsRef, 
@@ -171,7 +164,6 @@ export default function ReportCardManager() {
             const snap = await getDocs(q);
             const allAssessments = snap.docs.map(d => d.data());
 
-            // 2. Statistical Analysis
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             const studentTotals: Record<string, number> = {};
 
@@ -206,7 +198,6 @@ export default function ReportCardManager() {
                 studentTotals[stu.uid] = grandTotal;
             });
 
-            // 3. Ranks (Standard Competition Ranking)
             const myTotal = studentTotals[selectedStudentId] || 0;
             const higherCount = Object.values(studentTotals).filter(t => t > myTotal).length;
             const classPositionNum = higherCount + 1;
@@ -262,20 +253,17 @@ export default function ReportCardManager() {
 
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
-            // 4. Attendance (USING CENTRAL TERM DATES)
             const attendanceRef = collection(firestore, 'attendance');
             const attQuery = query(attendanceRef, where('schoolId', '==', schoolId), where('classId', '==', classId));
             const attSnap = await getDocs(attQuery);
             const allClassAttendance = attSnap.docs.map(d => d.data());
 
-            // Filter attendance to ONLY include records within the global Term Dates
             const termAttendance = allClassAttendance.filter(a => {
                 if (!a.date) return false;
                 const recordTime = a.date.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime();
                 return recordTime >= termStartMs && recordTime <= termEndMs;
             });
 
-            // A. Calculate Total Unique Days the class met IN THIS TERM
             const uniqueDays = new Set(
                 termAttendance.map(a => {
                     const d = a.date.toDate ? a.date.toDate() : new Date(a.date);
@@ -284,14 +272,12 @@ export default function ReportCardManager() {
             );
             const totalClassDays = uniqueDays.size;
 
-            // B. Calculate Student's Present/Late days IN THIS TERM
             const myAttendance = termAttendance.filter(a => 
                 a.studentId === selectedStudentId && 
                 (a.status === 'Present' || a.status === 'Late')
             );
             const studentPresentDays = myAttendance.length;
 
-            // 5. Assets & Final Structure
             let finalLogoStr = '';
             if (schoolProfile?.logoUrl) {
                 finalLogoStr = await getBase64ImageFromUrl(schoolProfile.logoUrl);
@@ -366,7 +352,17 @@ export default function ReportCardManager() {
                 headmasterComment,
                 generatedBy: user?.uid
             }, { merge: true });
+            
             toast({ title: "Report Published", description: "This result is now visible in the student portal." });
+
+            // --- TRIGGER PUSH NOTIFICATION ---
+            notifyParents(
+                [selectedStudentId!],
+                "Terminal Report Published",
+                `The official report card for ${processedReport.student?.firstName} (${term}) is now available.`,
+                "/dashboard/my-reports"
+            );
+
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Publishing failed." });
         } finally {
@@ -427,7 +423,6 @@ export default function ReportCardManager() {
                 </div>
             </div>
 
-            {/* Filter Section */}
             <Card className="border-t-4 border-t-indigo-600 shadow-md print:hidden">
                 <CardHeader>
                     <div className="flex justify-between items-start">
@@ -492,7 +487,6 @@ export default function ReportCardManager() {
                     <AlertTitle>Term Dates Missing</AlertTitle>
                     <AlertDescription>
                         The official term dates have not been set in the School Profile. This is required to calculate student attendance correctly. 
-                        Please ask an Administrator to update the <strong>School Profile Settings</strong>.
                     </AlertDescription>
                 </Alert>
             )}
@@ -559,7 +553,6 @@ export default function ReportCardManager() {
                         </CardFooter>
                     </Card>
 
-                    {/* LIVE PREVIEW SCROLL AREA */}
                     <Card className="border shadow-2xl overflow-hidden rounded-[2rem]">
                         <CardHeader className="bg-slate-900 text-white flex flex-row justify-between items-center px-8">
                             <div>
@@ -594,7 +587,6 @@ export default function ReportCardManager() {
                 </div>
             )}
 
-            {/* HIDDEN TEMPLATE FOR CAPTURE */}
             <div
                 ref={printRef}
                 style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px' }}

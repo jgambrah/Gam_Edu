@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, FileSpreadsheet } from 'lucide-react';
 import { format } from 'date-fns';
+import { notifyParents } from '@/app/actions/notifications';
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
@@ -40,7 +41,7 @@ export default function GradebookPage() {
 
     // State for scores and remarks
     const [scores, setScores] = useState<Record<string, number | ''>>({});
-    const [remarks, setRemarks] = useState<Record<string, string>>({}); // NEW: Teacher remarks
+    const [remarks, setRemarks] = useState<Record<string, string>>({}); 
     const [isSaving, setIsSaving] = useState(false);
 
     // Data Fetching
@@ -74,6 +75,7 @@ export default function GradebookPage() {
         try {
             const batch = writeBatch(firestore);
             let count = 0;
+            const affectedStudentIds: string[] = [];
 
             const subjectName = subjects?.find(s => s.id === subjectId)?.name || 'Unknown Subject';
             const today = new Date();
@@ -95,11 +97,12 @@ export default function GradebookPage() {
                         assessmentDate: serverTimestamp(),
                         score: Number(score),
                         maxScore: Number(maxScore),
-                        teacherRemark: remarks[studentId] || "", // NEW: Save the remark
+                        teacherRemark: remarks[studentId] || "", 
                         createdAt: serverTimestamp(),
                         gradedAt: serverTimestamp(),
                     });
                     count++;
+                    affectedStudentIds.push(studentId);
                 }
             });
 
@@ -110,8 +113,16 @@ export default function GradebookPage() {
             }
 
             await batch.commit();
-            toast({ title: "Success", description: `Saved ${count} scores and remarks successfully.` });
+            toast({ title: "Success", description: `Saved ${count} scores successfully.` });
             
+            // --- TRIGGER PUSH NOTIFICATIONS ---
+            notifyParents(
+                affectedStudentIds,
+                "New Grades Posted",
+                `Marks for ${subjectName} have been updated in the portal.`,
+                "/dashboard/my-grades"
+            );
+
             // Clear inputs for next entry
             setScores({});
             setRemarks({});

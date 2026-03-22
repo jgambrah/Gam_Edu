@@ -5,7 +5,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-comp
 // 2. Initialize Firebase in the Worker
 // PLEASE REPLACE THESE WITH YOUR ACTUAL config.ts VALUES
 firebase.initializeApp({
-  apiKey: AIzaSyBwTYgwwcHA5C1UdHGBvhyVoE_-sULCyHI,
+  apiKey:AIzaSyBwTYgwwcHA5C1UdHGBvhyVoE_-sULCyHI 
   authDomain: gamedu-69888475-f5783.firebaseapp.com,
   projectId: gamedu-69888475-f5783,
   storageBucket: gamedu-69888475-f5783.firebasestorage.app,
