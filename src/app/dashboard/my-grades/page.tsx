@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -62,7 +63,7 @@ export default function MyGradesPage() {
         }
 
         return null; // Fallback
-    }, [firestore, schoolId, role, user, parentStudentIds, selectedYear, selectedTerm]);
+    }, [firestore, schoolId, role, user?.uid, parentStudentIds.join(','), selectedYear, selectedTerm]);
 
     const { data: assessments, isLoading: loadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
@@ -71,7 +72,7 @@ export default function MyGradesPage() {
         const targetIds = role === 'Student' ? [user?.uid] : parentStudentIds;
         if (targetIds.length === 0) return null;
         return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', targetIds));
-    }, [firestore, schoolId, parentStudentIds, role, user?.uid]);
+    }, [firestore, schoolId, parentStudentIds.join(','), role, user?.uid]);
 
     const { data: students } = useCollection<Student>(studentsQuery);
 

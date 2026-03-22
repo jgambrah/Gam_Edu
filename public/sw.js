@@ -5,12 +5,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-comp
 // 2. Initialize Firebase in the Worker
 // PLEASE REPLACE THESE WITH YOUR ACTUAL config.ts VALUES
 firebase.initializeApp({
-  apiKey: "REPLACE_WITH_YOUR_API_KEY",
-  authDomain: "REPLACE_WITH_YOUR_AUTH_DOMAIN",
-  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
-  storageBucket: "REPLACE_WITH_YOUR_STORAGE_BUCKET",
-  messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
-  appId: "REPLACE_WITH_YOUR_APP_ID"
+  apiKey: AIzaSyBwTYgwwcHA5C1UdHGBvhyVoE_-sULCyHI,
+  authDomain: gamedu-69888475-f5783.firebaseapp.com,
+  projectId: gamedu-69888475-f5783,
+  storageBucket: gamedu-69888475-f5783.firebasestorage.app,
+  messagingSenderId: 667443968578,
+  appId: 1:667443968578:web:bfddf34703726808e60bdb
 });
 
 const messaging = firebase.messaging();

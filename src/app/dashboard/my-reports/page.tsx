@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
@@ -57,7 +58,7 @@ export default function MyReportsPage() {
         }
 
         return null;
-    }, [firestore, schoolId, role, user, parentStudentIds, roleLoading]);
+    }, [firestore, schoolId, role, user?.uid, parentStudentIds.join(','), roleLoading]);
 
     const { data: reports, isLoading: reportsLoading } = useCollection<any>(reportsQuery);
 

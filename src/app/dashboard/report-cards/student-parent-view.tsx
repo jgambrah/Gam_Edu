@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, where, Timestamp, documentId } from 'firebase/firestore';
+import { collection, doc, query, where, Timestamp, documentId, orderBy } from 'firebase/firestore';
 import { ReportCard, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, FileText, AlertTriangle, ShieldAlert } from 'lucide-react';

@@ -872,7 +872,7 @@ export default function DashboardClient() {
         return query(collection(firestore, 'students'), where('uid', 'in', profile.studentIds));
     }
     return null;
-  }, [firestore, schoolId, isStaffUser, isParent, isRoleLoading, profile?.studentIds]);
+  }, [firestore, schoolId, isStaffUser, isParent, isRoleLoading, profile?.studentIds?.join(',')]);
   const { data: students, isLoading: studentsLoading } = useCollection<any>(studentsQuery);
 
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && isAdminOrDirector) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', STAFF_ROLES)) : null, [firestore, schoolId, isAdminOrDirector]);
@@ -905,7 +905,7 @@ export default function DashboardClient() {
         return query(collection(firestore, 'financialRecords'), where('studentId', 'in', profile.studentIds), orderBy('createdAt', 'desc'));
     }
     return null;
-  }, [firestore, isFinance, isAdminOrDirector, isParent, isRoleLoading, schoolId, profile?.studentIds]);
+  }, [firestore, isFinance, isAdminOrDirector, isParent, isRoleLoading, schoolId, profile?.studentIds?.join(',')]);
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<any>(financialRecordsQuery);
 
   // Transport Specific Queries

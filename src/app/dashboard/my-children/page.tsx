@@ -234,7 +234,7 @@ function MyChildrenPageContent() {
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
     );
     
-    const studentIds = useMemo(() => parentData?.studentIds || [], [parentData]);
+    const studentIds = useMemo(() => parentData?.studentIds || [], [parentData?.studentIds?.join(',')]);
     
     const isLoading = isUserLoading || isRoleLoading || isParentLoading || isStudentLoading;
 
