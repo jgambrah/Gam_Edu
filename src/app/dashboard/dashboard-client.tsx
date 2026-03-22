@@ -601,15 +601,19 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
 // --- PARENT DASHBOARD ---
 function ParentDashboard({ profile, schoolId, students, financialRecords, announcements, isLoading, announcementsLoading }: { profile: any, schoolId: string, students: any[] | null, financialRecords: any[] | null, announcements: any[] | null, isLoading: boolean, announcementsLoading: boolean }) {
   const { user } = useUser();
-  const myStudentIds = profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+  
+  // Robust field mapping for linked students
+  const myStudentIds = useMemo(() => {
+    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+  }, [profile]);
   
   const myStudents = useMemo(() => {
-    if (!students) return [];
-    return students.filter(s => myStudentIds.includes(s.uid));
+    if (!students || !myStudentIds.length) return [];
+    return students.filter(s => myStudentIds.includes(s.uid) || myStudentIds.includes(s.id));
   }, [students, myStudentIds]);
 
   const activeBills = useMemo(() => {
-    if (!financialRecords) return [];
+    if (!financialRecords || !myStudentIds.length) return [];
     return financialRecords.filter((r: any) => 
         myStudentIds.includes(r.studentId) && 
         r.status !== 'Pending Reversal' && 
@@ -617,7 +621,7 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
     );
   }, [financialRecords, myStudentIds]);
   
-  const totalBilled = activeBills.reduce((acc: number, r: any) => acc + r.billedAmount, 0);
+  const totalBilled = activeBills.reduce((acc: number, r: any) => acc + (r.billedAmount || 0), 0);
   const totalPaid = activeBills.reduce((acc: number, r: any) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
   const totalOutstanding = totalBilled - totalPaid;
 
@@ -641,12 +645,12 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
         />
         <StatCard 
           title="Total Outstanding" 
-          value={`GH₵ ${totalOutstanding.toFixed(2)}`} 
+          value={`GH₵ ${Math.max(0, totalOutstanding).toFixed(2)}`} 
           icon={DollarSign}
           link="/dashboard/my-bills"
           isLoading={isLoading}
-          badge={totalOutstanding > 0 ? "Action Required" : undefined}
-          colorClass={totalOutstanding > 0 ? "text-red-600" : "text-emerald-600"}
+          badge={totalOutstanding > 0.01 ? "Action Required" : undefined}
+          colorClass={totalOutstanding > 0.01 ? "text-red-600" : "text-emerald-600"}
         />
         <StatCard 
           title="Live Grades" 
@@ -678,25 +682,21 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
                   </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {isLoading && <div className="flex justify-center py-4"><Loader2 className="animate-spin"/></div>}
+                {isLoading && <div className="flex justify-center py-4"><Loader2 className="animate-spin text-primary"/></div>}
                 
-                {!isLoading && myStudents.length === 0 && myStudentIds.length === 0 && (
-                    <p className="text-muted-foreground p-4 bg-slate-50 rounded-lg text-center border-2 border-dashed">
-                        No children linked to your account. Please contact the administrator.
-                    </p>
-                )}
-
-                {!isLoading && myStudents.length === 0 && myStudentIds.length > 0 && (
-                    <p className="text-muted-foreground p-4 text-center text-sm italic">
-                        Synchronizing children's profiles...
-                    </p>
+                {!isLoading && myStudents.length === 0 && (
+                    <div className="p-8 text-center border-2 border-dashed rounded-2xl bg-slate-50">
+                        <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                        <p className="text-slate-600 font-medium">No children linked to your account.</p>
+                        <p className="text-xs text-slate-400 mt-1">Please contact the school administrator to link your children's profiles.</p>
+                    </div>
                 )}
 
                 {!isLoading && myStudents.map((student: any) => (
                   <Link href="/dashboard/my-children" key={student.uid}>
-                    <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50 transition-colors mb-2">
+                    <div className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 transition-all mb-2 group shadow-sm">
                       <StudentDisplay student={student} variant="list" showAvatar />
-                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
                     </div>
                   </Link>
                 ))}
@@ -708,7 +708,7 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
               <CardContent>
                 {announcementsLoading ? <div className="flex justify-center p-4"><Loader2 className="animate-spin h-6 w-6"/></div> : null}
                 {!announcementsLoading && (!announcements || announcements.length === 0) && (
-                    <p className="text-muted-foreground text-center py-4">No recent announcements.</p>
+                    <p className="text-muted-foreground text-center py-4 italic">No recent announcements.</p>
                 )}
                 {announcements?.slice(0, 3).map((a: any) => (
                    <ActivityItem 
@@ -726,35 +726,32 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
 
         {/* RIGHT SIDE: BILLS SUMMARY */}
          <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Student Bills</CardTitle>
-                    <CardDescription>
-                      {isLoading 
-                        ? "Loading children's records..." 
-                        : `Financial records for ${myStudents.length} child${myStudents.length !== 1 ? 'ren' : ''}.`
-                      }
+            <Card className="shadow-lg border-indigo-100">
+                <CardHeader className="bg-indigo-50/50">
+                    <CardTitle className="text-indigo-900">Student Accounts</CardTitle>
+                    <CardDescription className="text-indigo-600 font-medium">
+                      Summary of outstanding balances.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="pt-6 space-y-3">
                     {myStudents.map((student: any) => {
                         const studentBills = activeBills.filter((b:any) => b.studentId === student.uid);
-                        const sBilled = studentBills.reduce((acc: number, r: any) => acc + r.billedAmount, 0);
+                        const sBilled = studentBills.reduce((acc: number, r: any) => acc + (r.billedAmount || 0), 0);
                         const sPaid = studentBills.reduce((acc: number, r: any) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
                         const sBalance = sBilled - sPaid;
 
                         return (
                             <Link href="/dashboard/my-bills" key={student.uid}>
-                                <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-slate-50 mb-2">
-                                    <span className="font-medium text-sm">{student.firstName}'s Account</span>
-                                    <span className={`font-bold ${sBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                                        GH₵{sBalance.toFixed(2)}
+                                <div className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 hover:border-indigo-200 transition-all mb-2 shadow-sm bg-white">
+                                    <span className="font-semibold text-sm text-slate-700">{student.firstName}'s Account</span>
+                                    <span className={cn("font-black", sBalance > 0.01 ? 'text-red-600' : 'text-green-600')}>
+                                        GH₵{Math.max(0, sBalance).toFixed(2)}
                                     </span>
                                 </div>
                             </Link>
                         )
                     })}
-                    {myStudents.length === 0 && !isLoading && <p className="text-muted-foreground text-sm text-center py-4">No children linked.</p>}
+                    {myStudents.length === 0 && !isLoading && <p className="text-muted-foreground text-sm text-center py-8 opacity-50 italic">No linked students found.</p>}
                 </CardContent>
             </Card>
          </div>
@@ -865,7 +862,10 @@ export default function DashboardClient() {
   const isTransport = role === 'Transport Staff';
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian || isTransport;
 
-  const parentStudentIds = useMemo(() => profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [], [profile]);
+  // Defensive field mapping for linked students
+  const parentStudentIds = useMemo(() => {
+    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+  }, [profile]);
   const parentStudentIdsStr = parentStudentIds.join(',');
 
   const studentsQuery = useMemoFirebase(() => {

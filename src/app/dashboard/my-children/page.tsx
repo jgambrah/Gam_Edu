@@ -6,7 +6,7 @@ import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@
 import { collection, doc, query, where, orderBy, Timestamp } from 'firebase/firestore';
 import { Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2 } from 'lucide-react';
+import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2, Users } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/role-context';
@@ -33,7 +33,7 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
 
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const isTargetStudent = user?.uid === studentId;
-    const hasPermission = isStaff || isTargetStudent;
+    const hasPermission = isStaff || isTargetStudent || role === 'Parent';
 
     const attendanceQuery = useMemoFirebase(() => {
         if (!firestore || !dateRange?.from || !studentId || !hasPermission) return null;
@@ -70,7 +70,7 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
                     <Button
                         id="date"
                         variant={"outline"}
-                        className={cn("w-[300px] justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+                        className={cn("w-full sm:w-[300px] justify-start text-left font-normal border-2", !dateRange && "text-muted-foreground")}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Filter by Date</span>)}
@@ -81,22 +81,26 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
                     </PopoverContent>
                 </Popover>
             </div>
-            {isLoading ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin" /></div> : (
-                <Table>
-                    <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Status</TableHead><TableHead>Notes</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {records?.sort((a,b) => b.date.toDate().getTime() - a.date.toDate().getTime()).map(rec => (
-                            <TableRow key={rec.id}>
-                                <TableCell>{format(rec.date.toDate(), 'PPP')}</TableCell>
-                                <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
-                                <TableCell>{rec.notes || '-'}</TableCell>
-                            </TableRow>
-                        ))}
-                        {(!records || records.length === 0) && (
-                            <TableRow><TableCell colSpan={3} className="text-center p-4 text-muted-foreground italic">No attendance records found for this period.</TableCell></TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+            {isLoading ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-primary" /></div> : (
+                <div className="border rounded-xl overflow-hidden bg-white shadow-sm">
+                    <Table>
+                        <TableHeader className="bg-slate-50">
+                            <TableRow><TableHead>Date</TableHead><TableHead>Status</TableHead><TableHead>Notes</TableHead></TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {records?.sort((a,b) => b.date.toDate().getTime() - a.date.toDate().getTime()).map(rec => (
+                                <TableRow key={rec.id}>
+                                    <TableCell className="font-medium">{format(rec.date.toDate(), 'PPP')}</TableCell>
+                                    <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
+                                    <TableCell className="text-slate-500 text-xs italic">{rec.notes || '-'}</TableCell>
+                                </TableRow>
+                            ))}
+                            {(!records || records.length === 0) && (
+                                <TableRow><TableCell colSpan={3} className="text-center py-12 text-muted-foreground italic">No attendance records found for this period.</TableCell></TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             )}
         </div>
     );
@@ -109,7 +113,7 @@ function BehavioralHistory({ studentId }: { studentId: string }) {
 
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const isTargetStudent = user?.uid === studentId;
-    const hasPermission = isStaff || isTargetStudent;
+    const hasPermission = isStaff || isTargetStudent || role === 'Parent';
 
     const recordsQuery = useMemoFirebase(() => {
         if (!firestore || !studentId || !hasPermission) return null;
@@ -134,19 +138,35 @@ function BehavioralHistory({ studentId }: { studentId: string }) {
 
     return (
         <div className="space-y-4">
-             {isLoading ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin" /></div> : (
+             {isLoading ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-primary" /></div> : (
                 <div className="space-y-3">
                     {records?.map(rec => (
-                        <div key={rec.id} className="border p-4 rounded-lg bg-white shadow-sm">
-                            <div className="flex justify-between items-start">
-                                <p className="font-semibold flex items-center gap-2">{getIcon(rec.incidentType)} {rec.incidentType}</p>
-                                <p className="text-xs text-muted-foreground">{format(rec.date.toDate(), 'PPP')}</p>
-                            </div>
-                            <p className="text-sm mt-2">{rec.description}</p>
-                            {rec.actionTaken && <p className="text-xs text-blue-600 mt-2 bg-blue-50 p-2 rounded">Action Taken: {rec.actionTaken}</p>}
-                        </div>
+                        <Card key={rec.id} className="border shadow-sm bg-white overflow-hidden">
+                            <CardHeader className="bg-slate-50 py-3 flex flex-row justify-between items-center">
+                                <div className="flex items-center gap-2">
+                                    {getIcon(rec.incidentType)}
+                                    <span className="font-bold text-slate-800 text-sm">{rec.incidentType}</span>
+                                </div>
+                                <span className="text-[10px] uppercase font-bold text-slate-400">
+                                    {format(rec.date.toDate(), 'PPP')}
+                                </span>
+                            </CardHeader>
+                            <CardContent className="pt-4">
+                                <p className="text-sm text-slate-700 leading-relaxed">{rec.description}</p>
+                                {rec.actionTaken && (
+                                    <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 flex items-start gap-2">
+                                        <BadgeInfo className="h-4 w-4 shrink-0 mt-0.5 text-blue-500"/>
+                                        <p><strong>Action Taken:</strong> {rec.actionTaken}</p>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
                     ))}
-                    {(!records || records.length === 0) && <p className="text-center text-muted-foreground p-8 italic">No behavioral records found.</p>}
+                    {(!records || records.length === 0) && (
+                        <div className="text-center py-16 text-muted-foreground bg-slate-50 rounded-2xl border-2 border-dashed">
+                            <p className="italic">No behavioral records logged for this child.</p>
+                        </div>
+                    )}
                 </div>
              )}
         </div>
@@ -157,28 +177,26 @@ function StudentDetailView({ student }: { student: Student }) {
     const studentId = student.id || student.uid;
 
     return (
-        <Card className="border-none shadow-none bg-transparent">
-            <CardHeader className="px-0">
-                <CardTitle className="text-xl">Information Hub: {student.firstName} {student.lastName}</CardTitle>
-                <CardDescription>Class ID: {student.classId}</CardDescription>
-            </CardHeader>
-            <CardContent className="px-0">
-                <Tabs defaultValue="attendance">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="attendance"><CalendarCheck className="mr-2 h-4 w-4" />Attendance Log</TabsTrigger>
-                        <TabsTrigger value="behavioral"><ShieldAlert className="mr-2 h-4 w-4" />Behavioral Log</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="attendance" className="mt-4">
-                        <AttendanceHistory studentId={studentId} />
-                    </TabsContent>
+        <div className="space-y-6">
+            <Tabs defaultValue="attendance" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-xl">
+                    <TabsTrigger value="attendance" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <CalendarCheck className="mr-2 h-4 w-4" /> Attendance Log
+                    </TabsTrigger>
+                    <TabsTrigger value="behavioral" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <ShieldAlert className="mr-2 h-4 w-4" /> Behavioral Log
+                    </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="attendance" className="mt-6">
+                    <AttendanceHistory studentId={studentId} />
+                </TabsContent>
 
-                    <TabsContent value="behavioral" className="mt-4">
-                       <BehavioralHistory studentId={studentId} />
-                    </TabsContent>
-                </Tabs>
-            </CardContent>
-        </Card>
+                <TabsContent value="behavioral" className="mt-6">
+                   <BehavioralHistory studentId={studentId} />
+                </TabsContent>
+            </Tabs>
+        </div>
     );
 }
 
@@ -194,9 +212,9 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
 
     if (isLoading) {
         return (
-            <div className="flex items-center p-4 border-b">
-                <Loader2 className="h-5 w-5 animate-spin"/>
-                <span className="ml-2 text-muted-foreground">Loading child...</span>
+            <div className="flex items-center p-6 border-b">
+                <Loader2 className="h-5 w-5 animate-spin text-primary"/>
+                <span className="ml-3 text-sm font-medium text-slate-500">Synchronizing child profile...</span>
             </div>
         );
     }
@@ -205,17 +223,17 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
         return (
              <div className="p-4 border-b text-red-500 bg-red-50 rounded-md my-2">
                 <ShieldAlert className="h-4 w-4 inline mr-2" />
-                <span>Student record ({studentUid}) could not be found.</span>
+                <span>Student record missing from database.</span>
             </div>
         );
     }
 
     return (
-        <AccordionItem value={studentUid} key={studentUid} className="border rounded-lg mb-2 px-4 overflow-hidden">
-            <AccordionTrigger className="hover:no-underline">
+        <AccordionItem value={studentUid} key={studentUid} className="border rounded-2xl mb-4 overflow-hidden shadow-sm bg-white">
+            <AccordionTrigger className="hover:no-underline px-6 py-5 hover:bg-slate-50 transition-all">
                 <StudentDisplay student={student} variant="list" showAvatar/>
             </AccordionTrigger>
-            <AccordionContent className="pt-2 border-t">
+            <AccordionContent className="p-6 bg-slate-50/30 border-t">
                 <StudentDetailView student={student} />
             </AccordionContent>
         </AccordionItem>
@@ -224,35 +242,36 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
 
 function MyChildrenPageContent() {
     const { user, isUserLoading } = useUser();
-    const { role, isRoleLoading } = useRole();
+    const { role, profile, loading: isRoleLoading } = useRole();
     const firestore = useFirestore();
 
-    const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null, [firestore, user?.uid, role]);
-    const { data: parentData, isLoading: isParentLoading } = useDoc<any>(parentDocRef);
+    // Robust field mapping for linked students
+    const studentIds = useMemo(() => {
+        return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+    }, [profile]);
+    const studentIdsStr = studentIds.join(',');
     
     const { data: studentForStudentRole, isLoading: isStudentLoading } = useCollection<Student>(
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
     );
     
-    const studentIds = useMemo(() => parentData?.studentIds || parentData?.students || parentData?.childrenIds || parentData?.linkedStudentIds || [], [parentData]);
-    const studentIdsStr = studentIds.join(',');
-    
-    const isLoading = isUserLoading || isRoleLoading || isParentLoading || isStudentLoading;
+    const isLoading = isUserLoading || isRoleLoading || isStudentLoading;
 
     if (isLoading) {
         return (
-          <Card className="min-h-[400px] flex items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </Card>
+          <div className="flex h-[400px] items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          </div>
         );
     }
 
     if (role !== 'Parent' && role !== 'Student') {
         return (
-            <Card>
-                <CardHeader>
+            <Card className="max-w-md mx-auto">
+                <CardHeader className="text-center">
+                    <ShieldAlert className="h-12 w-12 text-red-500 mx-auto mb-2" />
                     <CardTitle>Access Denied</CardTitle>
-                    <CardDescription>This page is for parents and students only.</CardDescription>
+                    <CardDescription>This information is only available to parents and students.</CardDescription>
                 </CardHeader>
             </Card>
         );
@@ -262,56 +281,60 @@ function MyChildrenPageContent() {
         const student = studentForStudentRole?.[0];
         if (!student) {
             return (
-                <Card>
-                    <CardContent className="p-8 text-center text-muted-foreground">
-                        Your student profile could not be loaded.
-                    </CardContent>
-                </Card>
+                <div className="p-12 text-center border-2 border-dashed rounded-3xl bg-slate-50">
+                    <User className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                    <p className="text-slate-600 font-medium">Your student profile could not be loaded.</p>
+                </div>
             );
         }
-        return <StudentDetailView student={student} />
+        return (
+            <div className="max-w-4xl mx-auto space-y-6">
+                <div className="bg-white p-6 rounded-3xl border-2 border-indigo-50 shadow-xl">
+                    <StudentDetailView student={student} />
+                </div>
+            </div>
+        );
     }
 
     if (role === 'Parent') {
         if (!studentIds || studentIds.length === 0) {
             return (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-2xl font-bold"><User className="text-primary" /> My Children</CardTitle>
-                        <CardDescription>Select a child to view their academic and behavioral logs.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-8 text-center text-muted-foreground">
-                        No children linked to your account.
-                    </CardContent>
-                </Card>
+                <div className="p-12 text-center border-2 border-dashed rounded-3xl bg-slate-50 max-w-2xl mx-auto">
+                    <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                    <h3 className="text-xl font-bold text-slate-800">No Children Linked</h3>
+                    <p className="text-slate-500 mt-2">We couldn't find any students associated with your parent account.</p>
+                    <p className="text-sm text-indigo-600 mt-4 font-bold">Please contact the school office to verify your account link.</p>
+                </div>
             );
         }
         
         return (
-            <Card className="shadow-md">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl font-bold"><User className="text-primary" /> My Children</CardTitle>
-                    <CardDescription>Select a child to view their academic and behavioral logs.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Accordion type="single" collapsible defaultValue={studentIds[0]}>
-                        {studentIds.map(uid => (
-                            <StudentAccordionItem key={uid} studentUid={uid} />
-                        ))}
-                    </Accordion>
-                </CardContent>
-            </Card>
+            <div className="max-w-4xl mx-auto space-y-6">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-3xl font-black text-slate-900 flex items-center gap-3 tracking-tight">
+                        <User className="text-indigo-600 h-8 w-8" /> My Children
+                    </h1>
+                    <p className="text-slate-500">Quick access to attendance and conduct reports.</p>
+                </div>
+
+                <Accordion type="single" collapsible defaultValue={studentIds[0]} className="w-full">
+                    {studentIds.map(uid => (
+                        <StudentAccordionItem key={uid} studentUid={uid} />
+                    ))}
+                </Accordion>
+            </div>
         );
     }
 
-    // Default fallback
-    return <p>An unexpected error occurred.</p>;
+    return null;
 }
 
 export default function MyChildrenPage() {
     return (
-      <Suspense fallback={<Loader2 className="mx-auto my-8 h-16 w-16 animate-spin" />}>
-        <MyChildrenPageContent />
-      </Suspense>
+      <div className="p-4 md:p-6 pb-20">
+        <Suspense fallback={<div className="flex justify-center p-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>}>
+            <MyChildrenPageContent />
+        </Suspense>
+      </div>
     );
 }

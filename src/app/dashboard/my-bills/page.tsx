@@ -40,7 +40,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
 
     const overallSummary = useMemo(() => {
         if (!records) return { totalBilled: 0, totalPaid: 0, totalWaivers: 0, balance: 0 };
-        const totalBilled = records.reduce((acc, r) => acc + r.billedAmount, 0);
+        const totalBilled = records.reduce((acc, r) => acc + (r.billedAmount || 0), 0);
         const totalPaid = records.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
         const totalWaivers = records.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
         const balance = totalBilled - totalPaid - totalWaivers;
@@ -72,11 +72,11 @@ function StudentBillView({ studentId }: { studentId: string }) {
     };
 
     if (isLoading) {
-        return <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+        return <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
     }
     
     if (!records || records.length === 0) {
-        return <p className="text-center text-muted-foreground p-4">No financial records found for the selected period.</p>;
+        return <p className="text-center text-muted-foreground p-4 italic">No financial records found.</p>;
     }
 
     return (
@@ -97,20 +97,27 @@ function StudentBillView({ studentId }: { studentId: string }) {
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Waivers</CardTitle></CardHeader>
                     <CardContent><p className="text-2xl font-bold">GH₵{overallSummary.totalWaivers.toFixed(2)}</p></CardContent>
                 </Card>
-                 <Card className={cn(overallSummary.balance > 0 ? "border-destructive" : "border-green-500")}>
+                 <Card className={cn(overallSummary.balance > 0.01 ? "border-destructive" : "border-green-500")}>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Outstanding Balance</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">GH₵{overallSummary.balance.toFixed(2)}</p></CardContent>
+                    <CardContent><p className="text-2xl font-bold">GH₵{Math.max(0, overallSummary.balance).toFixed(2)}</p></CardContent>
                 </Card>
             </div>
-            <div className="overflow-x-auto w-full">
+            <div className="overflow-x-auto w-full border rounded-xl overflow-hidden">
                 <Table>
-                    <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead>Due Date</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                    <TableHeader className="bg-slate-50">
+                        <TableRow>
+                            <TableHead>Description</TableHead>
+                            <TableHead className="text-right">Amount</TableHead>
+                            <TableHead>Due Date</TableHead>
+                            <TableHead>Status</TableHead>
+                        </TableRow>
+                    </TableHeader>
                     <TableBody>
                         {filteredRecords.map(rec => (
                             <TableRow key={rec.id}>
-                                <TableCell>{rec.description}</TableCell>
-                                <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
-                                <TableCell>{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                <TableCell className="font-medium">{rec.description}</TableCell>
+                                <TableCell className="text-right font-bold">GH₵{(rec.billedAmount || 0).toFixed(2)}</TableCell>
+                                <TableCell className="text-xs">{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
                                 <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
                             </TableRow>
                         ))}
@@ -142,7 +149,7 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
     if (isLoading) {
         return (
             <div className="flex items-center p-4 border-b">
-                <Loader2 className="h-5 w-5 animate-spin"/>
+                <Loader2 className="h-5 w-5 animate-spin text-primary"/>
                 <span className="ml-2 text-muted-foreground">Loading child...</span>
             </div>
         );
@@ -152,17 +159,17 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
         return (
              <div className="p-4 border-b text-red-500 bg-red-50 rounded-md my-2">
                 <ShieldAlert className="h-4 w-4 inline mr-2" />
-                <span>Student Record ({studentUid}) not found in the database.</span>
+                <span>Student record could not be found.</span>
             </div>
         );
     }
 
     return (
-        <AccordionItem value={student.uid || studentUid} key={student.uid || studentUid}>
-            <AccordionTrigger>
+        <AccordionItem value={student.uid || studentUid} key={student.uid || studentUid} className="border rounded-xl mb-3 overflow-hidden shadow-sm bg-white">
+            <AccordionTrigger className="px-4 py-5 hover:no-underline hover:bg-slate-50 transition-all">
                 <StudentDisplay student={student} variant="list" showAvatar/>
             </AccordionTrigger>
-            <AccordionContent className="p-1">
+            <AccordionContent className="p-4 bg-slate-50/50 border-t">
                 <StudentBillView studentId={student.uid || studentUid} />
             </AccordionContent>
         </AccordionItem>
@@ -172,18 +179,18 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
 
 function MyBillsPageContent() {
     const { user } = useUser();
-    const { role } = useRole();
+    const { role, profile, loading: isRoleLoading } = useRole();
     const firestore = useFirestore();
 
-    const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null, [firestore, user?.uid, role]);
-    const { data: parentData, isLoading: isParentLoading } = useDoc<any>(parentDocRef);
+    // Robust field mapping for linked students
+    const studentIds = useMemo(() => {
+        return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+    }, [profile]);
+    const studentIdsStr = studentIds.join(',');
     
     const { data: studentForStudentRole } = useCollection<Student>(
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
     );
-    
-    const studentIds = useMemo(() => parentData?.studentIds || parentData?.students || parentData?.childrenIds || parentData?.linkedStudentIds || [], [parentData]);
-    const studentIdsStr = studentIds.join(',');
     
     if (role === 'Student') {
         const student = studentForStudentRole?.[0];
@@ -212,36 +219,34 @@ function MyBillsPageContent() {
     if (role === 'Parent') {
         if (!studentIds || studentIds.length === 0) {
             return (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><FileText /> My Bills</CardTitle>
-                        <CardDescription>A summary of your financial records with the school.</CardDescription>
+                <Card className="border-2 border-dashed bg-slate-50">
+                    <CardHeader className="text-center">
+                        <Users className="h-12 w-12 text-slate-300 mx-auto mb-2" />
+                        <CardTitle>No Children Linked</CardTitle>
+                        <CardDescription>We couldn't find any children associated with your account.</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-8 text-center text-muted-foreground">
-                        No children linked to your account.
+                    <CardContent className="text-center pb-8">
+                        <p className="text-sm text-slate-500">Please contact the school office to link your children to your parent account.</p>
                     </CardContent>
                 </Card>
             );
         }
         
         return (
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl font-bold">
-                        <FileText className="text-primary" /> My Children's Bills
-                    </CardTitle>
-                    <CardDescription>
-                        Financial records for {studentIds.length} {studentIds.length === 1 ? 'child' : 'children'}.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Accordion type="single" collapsible defaultValue={studentIds[0]}>
-                        {studentIds.map(uid => (
-                            <StudentAccordionItem key={uid} studentUid={uid} />
-                        ))}
-                    </Accordion>
-                </CardContent>
-            </Card>
+            <div className="space-y-6">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-3xl font-bold flex items-center gap-3 text-slate-900 tracking-tight">
+                        <FileText className="text-indigo-600 h-8 w-8" /> My Children's Bills
+                    </h1>
+                    <p className="text-slate-500">Official financial statements and outstanding dues.</p>
+                </div>
+
+                <Accordion type="single" collapsible defaultValue={studentIds[0]} className="w-full">
+                    {studentIds.map(uid => (
+                        <StudentAccordionItem key={uid} studentUid={uid} />
+                    ))}
+                </Accordion>
+            </div>
         );
     }
 
@@ -263,13 +268,15 @@ export default function MyBillsPage() {
     const isLoading = isUserLoading || isRoleLoading;
     
     return (
-      <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+      <Suspense fallback={<div className="flex justify-center p-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>}>
         {isLoading ? (
-          <Card className="min-h-[300px] flex items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </Card>
+          <div className="flex justify-center p-20">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          </div>
         ) : (
-          <MyBillsPageContent />
+          <div className="p-4 md:p-6 max-w-5xl mx-auto">
+            <MyBillsPageContent />
+          </div>
         )}
       </Suspense>
     );
