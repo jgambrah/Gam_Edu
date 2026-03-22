@@ -41,6 +41,7 @@ export async function notifyParents(studentIds: string[], title: string, body: s
 
     // 1. Find all parents linked to these students
     // We query the 'parents' collection where 'studentIds' array contains any of the target students
+    // Note: If you renamed this field to 'linkedStudentIds' etc., ensure this query matches your DB.
     const parentsQuery = db.collection('parents').where('studentIds', 'array-contains-any', studentIds);
     const parentsSnap = await parentsQuery.get();
 

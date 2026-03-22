@@ -353,15 +353,18 @@ export default function ReportCardManager() {
                 generatedBy: user?.uid
             }, { merge: true });
             
-            toast({ title: "Report Published", description: "This result is now visible in the student portal." });
+            toast({ 
+                title: "Report Published! 🚀", 
+                description: "Parents and Students can now view this report on their dashboard." 
+            });
 
-            // --- TRIGGER PUSH NOTIFICATION ---
-            notifyParents(
-                [selectedStudentId!],
-                "Terminal Report Published 📜",
-                `The official report card for ${processedReport.student?.firstName} (${term}) is now available. Tap to view.`,
-                "/dashboard/my-reports"
-            ).catch(err => console.error("Notification failed:", err));
+            // --- SEND PUSH NOTIFICATION ---
+            await notifyParents(
+                [selectedStudentId!], // Array of 1 student
+                "Report Card Available 🎓",
+                `The Terminal Report for ${processedReport.student?.firstName} is now available. Tap to view and download.`,
+                "/dashboard/my-reports" // URL to open
+            );
 
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Publishing failed." });
