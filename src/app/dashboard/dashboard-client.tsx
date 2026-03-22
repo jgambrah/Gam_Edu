@@ -599,12 +599,12 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
 }
 
 // --- PARENT DASHBOARD ---
-function ParentDashboard({ profile, schoolId, students, financialRecords, announcements, isLoading, announcementsLoading }: { profile: any, schoolId: string, students: any[] | null, financialRecords: any[] | null, announcements: any[] | null, isLoading: boolean, announcementsLoading: boolean }) {
+function ParentDashboard({ profile, students, announcements, isLoading, announcementsLoading }: { profile: any, students: any[] | null, announcements: any[] | null, isLoading: boolean, announcementsLoading: boolean }) {
   const { user } = useUser();
   
   // Robust field mapping for linked students
   const myStudentIds = useMemo(() => {
-    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || [];
   }, [profile]);
   
   const myStudents = useMemo(() => {
@@ -612,26 +612,13 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
     return students.filter(s => myStudentIds.includes(s.uid) || myStudentIds.includes(s.id));
   }, [students, myStudentIds]);
 
-  const activeBills = useMemo(() => {
-    if (!financialRecords || !myStudentIds.length) return [];
-    return financialRecords.filter((r: any) => 
-        myStudentIds.includes(r.studentId) && 
-        r.status !== 'Pending Reversal' && 
-        r.status !== 'Rejected Reversal'
-    );
-  }, [financialRecords, myStudentIds]);
-  
-  const totalBilled = activeBills.reduce((acc: number, r: any) => acc + (r.billedAmount || 0), 0);
-  const totalPaid = activeBills.reduce((acc: number, r: any) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
-  const totalOutstanding = totalBilled - totalPaid;
-
   const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Parent';
 
   return (
     <>
       <div className="flex flex-col gap-1 mb-6">
         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Welcome, {displayName}! 🏡</h1>
-        <p className="text-muted-foreground">Keep track of your children's school activities and fees.</p>
+        <p className="text-muted-foreground">Keep track of your children's school activities and academic records.</p>
       </div>
 
       {/* STAT CARDS */}
@@ -642,15 +629,6 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
           icon={Users} 
           link="/dashboard/my-children"
           isLoading={isLoading}
-        />
-        <StatCard 
-          title="Total Outstanding" 
-          value={`GH₵ ${Math.max(0, totalOutstanding).toFixed(2)}`} 
-          icon={DollarSign}
-          link="/dashboard/my-bills"
-          isLoading={isLoading}
-          badge={totalOutstanding > 0.01 ? "Action Required" : undefined}
-          colorClass={totalOutstanding > 0.01 ? "text-red-600" : "text-emerald-600"}
         />
         <StatCard 
           title="Live Grades" 
@@ -664,6 +642,13 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
           value="Download" 
           icon={FileText}
           link="/dashboard/my-reports"
+          isLoading={isLoading}
+        />
+        <StatCard 
+          title="Communication" 
+          value="View" 
+          icon={MessageSquare}
+          link="/dashboard/communication"
           isLoading={isLoading}
         />
       </div>
@@ -724,34 +709,34 @@ function ParentDashboard({ profile, schoolId, students, financialRecords, announ
           </Card>
         </div>
 
-        {/* RIGHT SIDE: BILLS SUMMARY */}
+        {/* RIGHT SIDE: QUICK LINKS */}
          <div className="space-y-6">
             <Card className="shadow-lg border-indigo-100">
                 <CardHeader className="bg-indigo-50/50">
-                    <CardTitle className="text-indigo-900">Student Accounts</CardTitle>
-                    <CardDescription className="text-indigo-600 font-medium">
-                      Summary of outstanding balances.
-                    </CardDescription>
+                    <CardTitle className="text-indigo-900 text-lg">Parent Resources</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-3">
-                    {myStudents.map((student: any) => {
-                        const studentBills = activeBills.filter((b:any) => b.studentId === student.uid);
-                        const sBilled = studentBills.reduce((acc: number, r: any) => acc + (r.billedAmount || 0), 0);
-                        const sPaid = studentBills.reduce((acc: number, r: any) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
-                        const sBalance = sBilled - sPaid;
-
-                        return (
-                            <Link href="/dashboard/my-bills" key={student.uid}>
-                                <div className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 hover:border-indigo-200 transition-all mb-2 shadow-sm bg-white">
-                                    <span className="font-semibold text-sm text-slate-700">{student.firstName}'s Account</span>
-                                    <span className={cn("font-black", sBalance > 0.01 ? 'text-red-600' : 'text-green-600')}>
-                                        GH₵{Math.max(0, sBalance).toFixed(2)}
-                                    </span>
-                                </div>
-                            </Link>
-                        )
-                    })}
-                    {myStudents.length === 0 && !isLoading && <p className="text-muted-foreground text-sm text-center py-8 opacity-50 italic">No linked students found.</p>}
+                    <Link href="/dashboard/my-bills" className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 hover:border-indigo-200 transition-all mb-2 shadow-sm bg-white">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-emerald-100 rounded-lg"><Banknote className="h-4 w-4 text-emerald-600"/></div>
+                            <span className="font-semibold text-sm text-slate-700">Fee Statements</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-slate-300"/>
+                    </Link>
+                    <Link href="/dashboard/calendar" className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 hover:border-indigo-200 transition-all mb-2 shadow-sm bg-white">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-blue-100 rounded-lg"><Calendar className="h-4 w-4 text-blue-600"/></div>
+                            <span className="font-semibold text-sm text-slate-700">School Calendar</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-slate-300"/>
+                    </Link>
+                    <Link href="/dashboard/help" className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 hover:border-indigo-200 transition-all mb-2 shadow-sm bg-white">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-amber-100 rounded-lg"><Info className="h-4 w-4 text-amber-600"/></div>
+                            <span className="font-semibold text-sm text-slate-700">Parent Handbook</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-slate-300"/>
+                    </Link>
                 </CardContent>
             </Card>
          </div>
@@ -864,7 +849,7 @@ export default function DashboardClient() {
 
   // Defensive field mapping for linked students
   const parentStudentIds = useMemo(() => {
-    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || [];
   }, [profile]);
   const parentStudentIdsStr = parentStudentIds.join(',');
 
@@ -901,14 +886,15 @@ export default function DashboardClient() {
   const leaveRequestsQuery = useMemoFirebase(() => (firestore && isStaffUser && schoolId) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, isStaffUser, schoolId]);
   const { data: leaveRequests, isLoading: leaveLoading } = useCollection<any>(leaveRequestsQuery);
   
+  // ✅ THE FIX: Only fetch financial records for Staff/Admins. Parents are blocked from collection-level listing.
   const financialRecordsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
-    if (isFinance || isAdminOrDirector) return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
-    if (isParent && !isRoleLoading && parentStudentIds.length > 0) {
-        return query(collection(firestore, 'financialRecords'), where('studentId', 'in', parentStudentIds), orderBy('createdAt', 'desc'));
+    if (isFinance || isAdminOrDirector) {
+        return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
     }
+    // Return null for Parents to avoid calling the collection path directly
     return null;
-  }, [firestore, isFinance, isAdminOrDirector, isParent, isRoleLoading, schoolId, parentStudentIdsStr]);
+  }, [firestore, isFinance, isAdminOrDirector, schoolId]);
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<any>(financialRecordsQuery);
 
   // Transport Specific Queries
@@ -922,7 +908,11 @@ export default function DashboardClient() {
     const activities: any[] = [];
     if (students) activities.push(...students.map(s => ({ id: `student-${(s as any).id}`, type: 'Student', title: 'New Student', description: `${(s as any).firstName} ${(s as any).lastName}`, time: (s as any).createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
     if (announcements) activities.push(...announcements.map((a: any) => ({ id: `announcement-${a.id}`, type: 'News', title: 'Announcement', description: a.title, time: a.publishedAt, icon: Bell, iconColor: 'text-purple-600' })));
-    if (financialRecords) activities.push(...financialRecords.map((p: any) => ({ id: `payment-${p.id}`, type: 'Payment', title: 'Payment', description: `GH₵${p.amountPaid}`, time: p.createdAt, icon: CheckCircle2, iconColor: 'text-emerald-600' })));
+    
+    // Only show financial activity if we fetched the records (Staff only)
+    if (financialRecords) {
+        activities.push(...financialRecords.map((p: any) => ({ id: `payment-${p.id}`, type: 'Payment', title: 'Payment', description: `GH₵${p.amountPaid}`, time: p.createdAt, icon: CheckCircle2, iconColor: 'text-emerald-600' })));
+    }
     
     return activities.sort((a,b) => (b.time?.seconds || 0) - (a.time?.seconds || 0)).slice(0, 5);
   }, [students, announcements, financialRecords]);
@@ -935,7 +925,7 @@ export default function DashboardClient() {
     })).sort((a, b) => b.students - a.students);
   }, [classes, students]);
 
-  const isLoading = studentsLoading || staffLoading || classesLoading || leaveLoading || announcementsLoading || assignmentsLoading || busesLoading || routesLoading || paymentsLoading;
+  const isLoading = studentsLoading || staffLoading || classesLoading || leaveLoading || announcementsLoading || assignmentsLoading || busesLoading || routesLoading || (isStaffUser && paymentsLoading);
   
   if (isUserLoading || isRoleLoading || isLoadingSchool) {
       return (
@@ -948,7 +938,7 @@ export default function DashboardClient() {
 
   if (isTeacher) return <TeacherDashboard profile={profile} />;
   if (isStudent) return <StudentDashboard profile={profile} schoolId={schoolId!} />;
-  if (isParent) return <ParentDashboard profile={profile} schoolId={schoolId!} students={students} financialRecords={financialRecords} announcements={announcements} isLoading={studentsLoading || paymentsLoading} announcementsLoading={announcementsLoading} />;
+  if (isParent) return <ParentDashboard profile={profile} announcements={announcements} isLoading={studentsLoading} announcementsLoading={announcementsLoading} />;
   if (isFinance) return <AccountantDashboard profile={profile} schoolId={schoolId!} financialRecords={financialRecords} />;
   if (isLibrarian) return <LibrarianDashboard profile={profile} schoolId={schoolId!} />;
   if (isTransport) return <TransportDashboard profile={profile} schoolId={schoolId!} buses={buses} routes={routes} students={students} />;
