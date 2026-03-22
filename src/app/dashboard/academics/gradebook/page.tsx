@@ -75,13 +75,13 @@ export default function GradebookPage() {
         try {
             const batch = writeBatch(firestore);
             let count = 0;
-            const affectedStudentIds: string[] = [];
+            const updatedStudentIds: string[] = [];
 
             const subjectName = subjects?.find(s => s.id === subjectId)?.name || 'Unknown Subject';
             const today = new Date();
 
             Object.entries(scores).forEach(([studentId, score]) => {
-                if (score !== '' && !isNaN(Number(score))) {
+                if (score !== '' && score !== null && !isNaN(Number(score))) {
                     const newAssessmentRef = doc(collection(firestore, 'assessments'));
                     batch.set(newAssessmentRef, {
                         studentId,
@@ -102,7 +102,7 @@ export default function GradebookPage() {
                         gradedAt: serverTimestamp(),
                     });
                     count++;
-                    affectedStudentIds.push(studentId);
+                    updatedStudentIds.push(studentId);
                 }
             });
 
@@ -112,16 +112,18 @@ export default function GradebookPage() {
                 return;
             }
 
+            // 1. Save to Database
             await batch.commit();
             toast({ title: "Success", description: `Saved ${count} scores successfully.` });
             
-            // --- TRIGGER PUSH NOTIFICATIONS ---
+            // 2. Send Push Notification to Parents
+            // Do this asynchronously so the UI doesn't hang
             notifyParents(
-                affectedStudentIds,
-                "New Grades Posted",
-                `Marks for ${subjectName} have been updated in the portal.`,
+                updatedStudentIds,
+                "New Grades Posted 📊",
+                `New ${assessmentType} marks for ${subjectName} have been updated in the portal.`,
                 "/dashboard/my-grades"
-            );
+            ).catch(err => console.error("Notification failed silently:", err));
 
             // Clear inputs for next entry
             setScores({});

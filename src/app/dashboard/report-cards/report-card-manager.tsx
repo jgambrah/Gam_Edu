@@ -358,10 +358,10 @@ export default function ReportCardManager() {
             // --- TRIGGER PUSH NOTIFICATION ---
             notifyParents(
                 [selectedStudentId!],
-                "Terminal Report Published",
-                `The official report card for ${processedReport.student?.firstName} (${term}) is now available.`,
+                "Terminal Report Published 📜",
+                `The official report card for ${processedReport.student?.firstName} (${term}) is now available. Tap to view.`,
                 "/dashboard/my-reports"
-            );
+            ).catch(err => console.error("Notification failed:", err));
 
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Publishing failed." });
