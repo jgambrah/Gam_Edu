@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -598,14 +599,8 @@ function StudentDashboard({ profile, schoolId }: { profile: any, schoolId: strin
 }
 
 // --- PARENT DASHBOARD ---
-function ParentDashboard({ profile, students, announcements, isLoading, announcementsLoading }: { profile: any, students: any[] | null, announcements: any[] | null, isLoading: boolean, announcementsLoading: boolean }) {
+function ParentDashboard({ profile, announcements, isLoading, announcementsLoading }: { profile: any, announcements: any[] | null, isLoading: boolean, announcementsLoading: boolean }) {
   const { user } = useUser();
-  
-  // Robust field mapping for linked students
-  const myStudentIds = useMemo(() => {
-    return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [];
-  }, [profile]);
-  
   const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Parent';
 
   return (
@@ -933,11 +928,10 @@ export default function DashboardClient() {
                     <ChevronRight className="h-4 w-4 text-slate-300"/>
                 </Link>
                 <Link href="/dashboard/announcements" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 rounded-lg"><Bell className="h-4 w-4 text-blue-600"/></div>
-                        <span className="text-sm font-semibold">Post News</span>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-slate-300"/>
+                    <div className="p-2 bg-blue-100 rounded-lg"><Bell className="h-4 w-4 text-blue-600"/></div>
+                    <span className="text-sm font-semibold">Post News</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-300"/>
                 </Link>
                 <Link href="/dashboard/finance/accounting" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
                     <div className="flex items-center gap-3">

@@ -1,73 +1,57 @@
-// 1. Import Firebase Scripts for the Background Worker
-importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
+// Firebase Service Worker for Push Notifications
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
-// 2. Initialize Firebase in the Worker
-// PLEASE REPLACE THESE WITH YOUR ACTUAL config.ts VALUES
+// Initialize the Firebase app in the service worker by passing in the messagingSenderId.
+// NOTE: These values must be hardcoded here or fetched from a manifest because 
+// process.env is not available in the service worker context.
 firebase.initializeApp({
-  apiKey:AIzaSyBwTYgwwcHA5C1UdHGBvhyVoE_-sULCyHI 
-  authDomain: gamedu-69888475-f5783.firebaseapp.com,
-  projectId: gamedu-69888475-f5783,
-  storageBucket: gamedu-69888475-f5783.firebasestorage.app,
-  messagingSenderId: 667443968578,
-  appId: 1:667443968578:web:bfddf34703726808e60bdb
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 });
 
 const messaging = firebase.messaging();
 
-// 3. Background Message Handler (When app is closed)
+// Handle background messages
 messaging.onBackgroundMessage((payload) => {
   console.log('[sw.js] Received background message ', payload);
   
-  const notificationTitle = payload.notification?.title || 'GAM Edu';
+  const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: payload.notification?.body || 'New message received',
-    icon: '/icon-192x192.png',
-    badge: '/icon-192x192.png',
-    data: payload.data
+    body: payload.notification.body,
+    icon: '/icon-512x512.png',
+    badge: '/icon-512x512.png',
+    data: {
+        // Deep link URL passed from the server
+        url: payload.data?.url || '/dashboard'
+    }
   };
 
-  return self.registration.showNotification(notificationTitle, notificationOptions);
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-// 4. Notification Click Handler
+// Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const urlToOpen = event.notification.data?.url || '/dashboard';
-  event.waitUntil(clients.openWindow(urlToOpen));
-});
+  const urlToOpen = event.notification.data.url;
 
-// --- CACHING LOGIC ---
-const CACHE_NAME = 'gam-edu-cache-v1';
-const URLS_TO_CACHE = [
-  '/',
-  '/manifest.json',
-  '/icon-192x192.png',
-  '/icon-512x512.png'
-];
-
-self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(URLS_TO_CACHE))
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => Promise.all(
-      cacheNames.map((name) => {
-        if (name !== CACHE_NAME) return caches.delete(name);
-      })
-    ))
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  if (!event.request.url.startsWith(self.location.origin)) return;
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // Check if there is already a window open with this URL
+      for (var i = 0; i < windowClients.length; i++) {
+        var client = windowClients[i];
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // If not, open a new window
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
   );
 });
