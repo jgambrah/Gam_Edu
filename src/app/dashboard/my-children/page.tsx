@@ -22,7 +22,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function AttendanceHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
-    const { role } = useRole();
+    const { role, profile, loading: isRoleLoading } = useRole();
     const { user } = useUser();
     const { schoolId } = useCurrentSchool();
     
@@ -34,10 +34,16 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const isTargetStudent = user?.uid === studentId;
     const isParent = role === 'Parent';
-    const hasPermission = isStaff || isTargetStudent || isParent;
+    
+    // Tighter permission check: Verify studentId is in parent's linked list
+    const parentStudentIds = useMemo(() => {
+        return profile?.studentIds || profile?.student_ids || profile?.students || [];
+    }, [profile]);
+
+    const hasPermission = isStaff || isTargetStudent || (isParent && parentStudentIds.includes(studentId));
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !dateRange?.from || !studentId || !hasPermission) return null;
+        if (!firestore || !schoolId || !dateRange?.from || !studentId || !hasPermission || isRoleLoading) return null;
         
         const start = Timestamp.fromDate(startOfDay(dateRange.from));
         const end = dateRange.to ? Timestamp.fromDate(endOfDay(dateRange.to)) : Timestamp.fromDate(endOfDay(dateRange.from));
@@ -49,7 +55,7 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
             where('date', '>=', start),
             where('date', '<=', end)
         );
-    }, [firestore, schoolId, studentId, dateRange, hasPermission]);
+    }, [firestore, schoolId, studentId, dateRange, hasPermission, isRoleLoading]);
     
     const { data: records, isLoading } = useCollection<AttendanceRecord>(attendanceQuery);
 
@@ -62,7 +68,7 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
         }
     };
     
-    if (!hasPermission) return null;
+    if (!hasPermission && !isRoleLoading) return null;
 
     return (
         <div className="space-y-4">
@@ -110,24 +116,29 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
 
 function BehavioralHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
-    const { role } = useRole();
+    const { role, profile, loading: isRoleLoading } = useRole();
     const { user } = useUser();
     const { schoolId } = useCurrentSchool();
 
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const isTargetStudent = user?.uid === studentId;
     const isParent = role === 'Parent';
-    const hasPermission = isStaff || isTargetStudent || isParent;
+
+    const parentStudentIds = useMemo(() => {
+        return profile?.studentIds || profile?.student_ids || profile?.students || [];
+    }, [profile]);
+
+    const hasPermission = isStaff || isTargetStudent || (isParent && parentStudentIds.includes(studentId));
 
     const recordsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !studentId || !hasPermission) return null;
+        if (!firestore || !schoolId || !studentId || !hasPermission || isRoleLoading) return null;
         return query(
             collection(firestore, 'behavioral_records'), 
             where('schoolId', '==', schoolId),
             where('studentId', '==', studentId), 
             orderBy('date', 'desc')
         );
-    }, [firestore, schoolId, studentId, hasPermission]);
+    }, [firestore, schoolId, studentId, hasPermission, isRoleLoading]);
     const { data: records, isLoading } = useCollection<BehavioralRecord>(recordsQuery);
 
     const getIcon = (type: BehavioralRecord['incidentType']) => {
@@ -139,7 +150,7 @@ function BehavioralHistory({ studentId }: { studentId: string }) {
         }
     };
     
-    if (!hasPermission) return null;
+    if (!hasPermission && !isRoleLoading) return null;
 
     return (
         <div className="space-y-4">
@@ -153,7 +164,7 @@ function BehavioralHistory({ studentId }: { studentId: string }) {
                                     <span className="font-bold text-slate-800 text-sm">{rec.incidentType}</span>
                                 </div>
                                 <span className="text-[10px] uppercase font-bold text-slate-400">
-                                    {format(rec.date.toDate(), 'PPP')}
+                                    {rec.date?.toDate ? format(rec.date.toDate(), 'PPP') : 'N/A'}
                                 </span>
                             </CardHeader>
                             <CardContent className="pt-4">

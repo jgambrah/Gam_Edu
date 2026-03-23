@@ -50,8 +50,9 @@ export default function AttendanceReportsPage() {
     const isTeacher = role === 'Teacher';
     const canAccess = !isRoleLoading && (isAdmin || isTeacher);
 
+    // Guard against unauthorized access
     useEffect(() => {
-        if (!isRoleLoading && role === 'Student') {
+        if (!isRoleLoading && (role === 'Student' || role === 'Parent')) {
             router.replace('/dashboard');
         }
     }, [role, isRoleLoading, router]);
@@ -115,7 +116,12 @@ export default function AttendanceReportsPage() {
 
         // B. Summary Stats
         const counts = { Present: 0, Absent: 0, Late: 0, Excused: 0 };
-        filtered.forEach(r => { counts[r.status as keyof typeof counts] = (counts[r.status as keyof typeof counts] || 0) + 1; });
+        filtered.forEach(r => { 
+            const statusKey = r.status as keyof typeof counts;
+            if (counts.hasOwnProperty(statusKey)) {
+                counts[statusKey]++;
+            }
+        });
         
         const total = filtered.length;
         const rate = total > 0 ? ((counts.Present + counts.Late) / total) * 100 : 0;
@@ -152,7 +158,7 @@ export default function AttendanceReportsPage() {
 
     if (isLoading) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin h-8 w-8 text-primary"/></div>;
 
-    if (role === 'Student') {
+    if (!canAccess) {
         return (
             <div className="p-8 flex justify-center">
                 <Card className="max-w-md w-full border-red-100 bg-red-50/50">
@@ -289,7 +295,7 @@ export default function AttendanceReportsPage() {
                         </Card>
 
                         {/* Status Distribution */}
-                        <Card shadow-sm>
+                        <Card className="shadow-sm">
                             <CardHeader>
                                 <CardTitle className="text-base font-bold">Status Distribution</CardTitle>
                                 <CardDescription>Proportional breakdown of attendance.</CardDescription>

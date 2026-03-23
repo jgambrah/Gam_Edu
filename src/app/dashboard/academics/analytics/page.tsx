@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -131,7 +130,7 @@ export default function LearningAnalyticsPage() {
       return <div className="p-10 flex justify-center"><Loader2 className="animate-spin" /></div>;
   }
 
-  if (role === 'Student') {
+  if (role === 'Student' || role === 'Parent') {
     return (
       <div className="p-6">
         <Card>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Suspense, useEffect } from 'react';
@@ -12,9 +11,12 @@ export default function AttendancePage() {
   const { role, loading } = useRole();
   const router = useRouter();
 
+  // Protect the attendance-taking page from non-staff
   useEffect(() => {
-    if (!loading && role === 'Student') {
-      router.replace('/dashboard/my-children');
+    if (!loading) {
+      if (role === 'Student' || role === 'Parent') {
+        router.replace('/dashboard/my-children');
+      }
     }
   }, [role, loading, router]);
 
@@ -26,13 +28,16 @@ export default function AttendancePage() {
     );
   }
 
-  if (role === 'Student') {
+  // Final check before rendering
+  const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant'].includes(role || '');
+
+  if (!isStaff) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Access Denied</CardTitle>
           <CardDescription>
-            This page is for staff only. You can view your attendance logs in the "My Information" section.
+            This page is for school staff only. Parents and students can view attendance logs in the "My Children" section.
           </CardDescription>
         </CardHeader>
       </Card>
