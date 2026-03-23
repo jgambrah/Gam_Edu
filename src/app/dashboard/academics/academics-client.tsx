@@ -454,7 +454,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
 
 
 export default function AcademicsPageContent() {
-  const { role } = useRole();
+  const { role, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
   const { user } = useUser();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -465,48 +465,39 @@ export default function AcademicsPageContent() {
   // Use the new hook to get schoolId
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
+  const isStaff = !isRoleLoading && (
+    role === 'Teacher' || role === 'Administrator' || 
+    role === 'Director' || role === 'Accountant'
+  );
+
   const classesQuery = useMemoFirebase(() => {
-    if (!firestore || !user || !schoolId) return null;
+    if (!firestore || !user || !schoolId || !isStaff) return null;
     let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
     if (role === 'Teacher') {
         q = query(q, where('teacherId', '==', user.uid));
     }
     return q;
-  }, [firestore, user, role, schoolId]);
+  }, [firestore, user, role, schoolId, isStaff]);
 
   const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
   
-  const teachersQuery = useMemoFirebase(() => (firestore && schoolId && canManageClasses) ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canManageClasses]);
+  const teachersQuery = useMemoFirebase(() => (firestore && schoolId && canManageClasses && isStaff) ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canManageClasses, isStaff]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Teacher>(teachersQuery);
   
-  const studentsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
-  const timetableQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const timetableQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
   const { data: timetable, isLoading: isLoadingTimetable } = useCollection<TimetableEntry>(timetableQuery);
   
-  const subjectsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const subjectsQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
   
-  const isLoading = isLoadingSchool || isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
+  const isLoading = isLoadingSchool || isRoleLoading || isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
 
-  const classStats = useMemo(() => {
-    if (!classes || !students || !teachers) return {};
-    return classes.reduce((acc, c) => {
-        const enrolledStudents = students.filter(s => s.classId === c.id);
-        const maleCount = enrolledStudents.filter(s => s.gender === 'Male').length;
-        const femaleCount = enrolledStudents.filter(s => s.gender === 'Female').length;
-        const teacher = teachers.find(t => t.uid === c.teacherId);
-        
-        acc[c.id] = {
-            studentCount: enrolledStudents.length,
-            genderRatio: `M: ${maleCount} / F: ${femaleCount}`,
-            teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Not Assigned',
-        };
-        return acc;
-    }, {} as Record<string, { studentCount: number; genderRatio: string; teacherName: string; }>);
-  }, [classes, students, teachers]);
-
+  if (!isRoleLoading && !isStaff) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">
@@ -556,9 +547,8 @@ export default function AcademicsPageContent() {
                         <CardDescription>{c.description || 'No description available.'}</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-2 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2"><Users className="h-4 w-4"/><span>{classStats[c.id]?.studentCount || 0} / {c.capacity || 0} Students</span></div>
-                        <div className="flex items-center gap-2"><User className="h-4 w-4"/><span>{classStats[c.id]?.teacherName || 'Not Assigned'}</span></div>
-                        <div className="flex items-center gap-2"><Ratio className="h-4 w-4"/><span>{classStats[c.id]?.genderRatio}</span></div>
+                        <div className="flex items-center gap-2"><Users className="h-4 w-4"/><span>{students?.filter(s => s.classId === c.id).length || 0} / {c.capacity || 0} Students</span></div>
+                        <div className="flex items-center gap-2"><User className="h-4 w-4"/><span>{teachers?.find(t => t.uid === c.teacherId) ? `${teachers.find(t => t.uid === c.teacherId)?.firstName} ${teachers.find(t => t.uid === c.teacherId)?.lastName}` : 'Not Assigned'}</span></div>
                       </CardContent>
                     </Card>
                   </DialogTrigger>
