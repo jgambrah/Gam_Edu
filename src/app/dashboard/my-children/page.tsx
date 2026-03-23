@@ -5,14 +5,13 @@ import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@
 import { collection, doc, query, where, orderBy, Timestamp } from 'firebase/firestore';
 import { Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2, Users } from 'lucide-react';
+import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2, Users, Calendar as CalendarIcon } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/role-context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
@@ -251,7 +250,6 @@ function MyChildrenPageContent() {
     const { role, profile, loading: isRoleLoading } = useRole();
     const firestore = useFirestore();
 
-    // Robust field mapping for linked students
     const studentIds = useMemo(() => {
         return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
     }, [profile]);
@@ -307,7 +305,7 @@ function MyChildrenPageContent() {
                 <div className="p-12 text-center border-2 border-dashed rounded-3xl bg-slate-50 max-w-2xl mx-auto mt-10">
                     <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
                     <h3 className="text-xl font-bold text-slate-800">No Children Linked</h3>
-                    <p className="text-slate-500 mt-2">We couldn't find any students associated with your parent account.</p>
+                    <p className="text-slate-50 mt-2">We couldn't find any students associated with your parent account.</p>
                     <p className="text-sm text-indigo-600 mt-4 font-bold">Please contact the school office to verify your account link.</p>
                 </div>
             );
@@ -317,7 +315,7 @@ function MyChildrenPageContent() {
             <div className="max-w-4xl mx-auto space-y-6">
                 <div className="flex flex-col gap-1">
                     <h1 className="text-3xl font-black text-slate-900 flex items-center gap-3 tracking-tight">
-                        <User className="text-indigo-600 h-8 w-8" /> My Children
+                        <Users className="text-indigo-600 h-8 w-8" /> My Children
                     </h1>
                     <p className="text-slate-500">Quick access to attendance and conduct reports.</p>
                 </div>
