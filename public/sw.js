@@ -5,13 +5,10 @@ self.addEventListener('push', function(event) {
       body: data.notification.body,
       icon: '/icon-512x512.png',
       badge: '/icon-512x512.png',
-      data: {
-        url: data.data?.url || '/'
-      },
       vibrate: [100, 50, 100],
-      actions: [
-        { action: 'open', title: 'View Now' }
-      ]
+      data: {
+        url: data.data?.url || '/dashboard'
+      }
     };
 
     event.waitUntil(

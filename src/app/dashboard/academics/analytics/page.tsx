@@ -29,7 +29,7 @@ export default function LearningAnalyticsPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
-  const { role, loading: roleLoading } = useRole();
+  const { role, loading: isRoleLoading } = useRole();
   const router = useRouter();
   
   const [selectedClassId, setSelectedClassId] = useState<string>('');
@@ -38,36 +38,42 @@ export default function LearningAnalyticsPage() {
 
   const isAdmin = ['Administrator', 'Director'].includes(role || '');
   const isTeacher = role === 'Teacher';
-  const canAccess = !roleLoading && (isAdmin || isTeacher);
+  const canAccess = !isRoleLoading && (isAdmin || isTeacher);
 
   // --- ACCESS GUARD ---
   useEffect(() => {
-    if (!roleLoading && role === 'Student') {
+    if (!isRoleLoading && role === 'Student') {
       router.replace('/dashboard');
     }
-  }, [role, roleLoading, router]);
+  }, [role, isRoleLoading, router]);
 
   // 1. Fetch Classes for the current school
-  const classesQuery = useMemoFirebase(() => (firestore && schoolId && canAccess) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canAccess]);
+  const classesQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
+    return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+  }, [firestore, schoolId, isRoleLoading, canAccess]);
   const { data: classes, isLoading: classesLoading } = useCollection<Class>(classesQuery);
 
   // 2. Fetch Data (Dependent on selected Class)
-  const studentsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId && schoolId && canAccess) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, 
-  [firestore, selectedClassId, schoolId, canAccess]);
+  const studentsQuery = useMemoFirebase(() => {
+    if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+    return query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
+  }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
   const { data: students, isLoading: studentsLoading } = useCollection<Student>(studentsQuery);
 
-  const assessmentsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId && schoolId && canAccess) ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, 
-  [firestore, selectedClassId, schoolId, canAccess]);
+  const assessmentsQuery = useMemoFirebase(() => {
+    if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+    return query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
+  }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
   const { data: assessments, isLoading: assessmentsLoading } = useCollection<Assessment>(assessmentsQuery);
 
-  const attendanceQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId && schoolId && canAccess) ? query(collection(firestore, 'attendance'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, 
-  [firestore, selectedClassId, schoolId, canAccess]);
+  const attendanceQuery = useMemoFirebase(() => {
+    if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+    return query(collection(firestore, 'attendance'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
+  }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
   const { data: attendance, isLoading: attendanceLoading } = useCollection<AttendanceRecord>(attendanceQuery);
 
-  const isLoading = schoolLoading || roleLoading || classesLoading || (selectedClassId && (studentsLoading || assessmentsLoading || attendanceLoading));
+  const isLoading = schoolLoading || isRoleLoading || classesLoading || (selectedClassId && (studentsLoading || assessmentsLoading || attendanceLoading));
 
   // --- DATA AGGREGATION ENGINE ---
   const { studentStats, scatterData } = useMemo(() => {
@@ -126,7 +132,7 @@ export default function LearningAnalyticsPage() {
       }
   };
 
-  if (roleLoading) {
+  if (isRoleLoading) {
       return <div className="p-10 flex justify-center"><Loader2 className="animate-spin" /></div>;
   }
 

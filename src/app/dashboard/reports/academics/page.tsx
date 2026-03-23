@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -39,7 +38,7 @@ export default function AcademicReportsPage() {
 
     const isAdmin = ['Administrator', 'Director'].includes(role || '');
     const isTeacher = role === 'Teacher';
-    const canAccess = isAdmin || isTeacher;
+    const canAccess = !isRoleLoading && (isAdmin || isTeacher);
 
     useEffect(() => {
         if (!isRoleLoading && role === 'Student') {
@@ -49,23 +48,32 @@ export default function AcademicReportsPage() {
 
     // Data Fetching with schoolId and role guard
     const classesQuery = useMemoFirebase(() => {
-        if (!user || !firestore || !schoolId || !canAccess) return null;
+        if (!user || !firestore || !schoolId || isRoleLoading || !canAccess) return null;
         let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
         if (role === 'Teacher') {
             q = query(q, where('teacherId', '==', user.uid));
         }
         return q;
-    }, [firestore, user, role, schoolId, canAccess]);
+    }, [firestore, user, role, schoolId, isRoleLoading, canAccess]);
 
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-    const subjectsQuery = useMemoFirebase(() => (firestore && schoolId && canAccess) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canAccess]);
+    const subjectsQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
+        return query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId, isRoleLoading, canAccess]);
     const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
-    const studentsQuery = useMemoFirebase(() => (firestore && selectedClassId && schoolId && canAccess) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, [firestore, selectedClassId, schoolId, canAccess]);
+    const studentsQuery = useMemoFirebase(() => {
+        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+        return query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
+    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
-    const assessmentsQuery = useMemoFirebase(() => (firestore && selectedClassId && selectedSubjectId && schoolId && canAccess) ? query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('subjectId', '==', selectedSubjectId)) : null, [firestore, selectedClassId, selectedSubjectId, schoolId, canAccess]);
+    const assessmentsQuery = useMemoFirebase(() => {
+        if (!firestore || !selectedClassId || !selectedSubjectId || !schoolId || isRoleLoading || !canAccess) return null;
+        return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('subjectId', '==', selectedSubjectId));
+    }, [firestore, selectedClassId, selectedSubjectId, schoolId, isRoleLoading, canAccess]);
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);

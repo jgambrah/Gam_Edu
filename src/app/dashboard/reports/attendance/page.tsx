@@ -59,23 +59,23 @@ export default function AttendanceReportsPage() {
 
     // 1. Fetch Classes (Guarded)
     const classesQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !canAccess) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
         return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, canAccess]);
+    }, [firestore, schoolId, isRoleLoading, canAccess]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection(classesQuery);
 
     // 2. Fetch Attendance (Guarded)
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !canAccess) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
         return query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, canAccess]);
+    }, [firestore, schoolId, isRoleLoading, canAccess]);
     const { data: rawAttendance, isLoading: isLoadingAttendance } = useCollection(attendanceQuery);
     
     // 3. Fetch Students (Guarded)
     const studentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !canAccess) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
         return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, canAccess]);
+    }, [firestore, schoolId, isRoleLoading, canAccess]);
     const { data: students, isLoading: isLoadingStudents } = useCollection(studentsQuery);
 
     // --- DATA TRANSFORMATION ---
