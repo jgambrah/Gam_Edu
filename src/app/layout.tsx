@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   
   // ✅ THE FIX: Force iOS and Android to use these specific image files for the Home Screen Icon
   icons: {
-    icon: '/icon-512x512.png', // Default icon for Android/Web
-    apple: '/icon-512x512.png', // CRITICAL: The specific icon iOS uses instead of a screenshot
+    icon: '/icons/icon-512x512.png', // Updated to /icons/ folder
+    apple: '/icons/icon-512x512.png', // Updated to /icons/ folder
   },
 
   // iOS Specific Settings
