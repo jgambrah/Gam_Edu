@@ -630,7 +630,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     name="billedAmount" 
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Amount per Student (GH₵)</FormLabel>
+                            <FormLabel>Amount per Student (GH₵)</Label>
                             <FormControl>
                                 <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} />
                             </FormControl>
