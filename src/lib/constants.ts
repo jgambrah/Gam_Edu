@@ -88,6 +88,32 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Parent'],
   },
   {
+    path: '/dashboard/communication',
+    title: 'Communication',
+    icon: MessageSquare,
+    roles: 'all',
+    subItems: [
+        {
+            path: '/dashboard/forum',
+            title: 'Forum',
+            icon: MessageSquare,
+            roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+        },
+        {
+            path: '/dashboard/messages',
+            title: 'Direct Messages',
+            icon: MessageCircle,
+            roles: 'all',
+        },
+        {
+            path: '/dashboard/communication/sms',
+            title: 'Bulk SMS',
+            icon: MessageSquare,
+            roles: ['Director', 'Administrator'],
+        }
+    ]
+  },
+  {
     path: '/dashboard/people',
     title: 'People Management',
     icon: Users,
@@ -289,32 +315,6 @@ export const navItems: NavItem[] = [
             icon: Clapperboard,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
-    ]
-  },
-  {
-    path: '/dashboard/communication',
-    title: 'Communication',
-    icon: MessageSquare,
-    roles: 'all',
-    subItems: [
-        {
-            path: '/dashboard/forum',
-            title: 'Forum',
-            icon: MessageSquare,
-            roles: 'all',
-        },
-        {
-            path: '/dashboard/messages',
-            title: 'Direct Messages',
-            icon: MessageCircle,
-            roles: 'all',
-        },
-        {
-            path: '/dashboard/communication/sms',
-            title: 'Bulk SMS',
-            icon: MessageSquare,
-            roles: ['Director', 'Administrator'],
-        }
     ]
   },
    {

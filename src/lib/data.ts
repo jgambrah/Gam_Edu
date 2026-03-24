@@ -52,7 +52,8 @@ import {
   Rocket,
   FileQuestion,
   Sparkles,
-  Coins
+  Coins,
+  MessageSquare
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -93,16 +94,36 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Parent'],
   },
   {
-    path: '/dashboard/messages',
-    title: 'Direct Messages',
-    icon: MessageCircle,
+    path: '/dashboard/communication',
+    title: 'Communication',
+    icon: MessageSquare,
     roles: 'all',
+    subItems: [
+        {
+            path: '/dashboard/forum',
+            title: 'Forum',
+            icon: MessageSquare,
+            roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+        },
+        {
+            path: '/dashboard/messages',
+            title: 'Direct Messages',
+            icon: MessageCircle,
+            roles: 'all',
+        },
+        {
+            path: '/dashboard/communication/sms',
+            title: 'Bulk SMS',
+            icon: MessageSquare,
+            roles: ['Director', 'Administrator'],
+        }
+    ]
   },
   {
     path: '/dashboard/people',
     title: 'People Management',
     icon: Users,
-    roles: ['Director', 'Administrator', 'Parent'],
+    roles: ['Director', 'Administrator'],
     subItems: [
         {
             path: '/dashboard/admissions',
@@ -133,12 +154,6 @@ export const navItems: NavItem[] = [
             title: 'Alumni',
             icon: UserCheckIcon,
             roles: ['Director', 'Administrator'],
-        },
-        {
-            path: '/dashboard/student-registration',
-            title: 'Apply for Admission',
-            icon: PenLine,
-            roles: ['Parent'],
         },
     ]
   },
