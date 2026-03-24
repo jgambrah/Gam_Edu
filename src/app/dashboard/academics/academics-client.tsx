@@ -63,8 +63,6 @@ import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-// ... (Sub-components omitted for focus on AcademicsPageContent) ...
-
 export default function AcademicsPageContent() {
   const { role, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
@@ -75,6 +73,7 @@ export default function AcademicsPageContent() {
 
   const canManageClasses = role === 'Director' || role === 'Administrator';
   
+  // Guard queries from firing for Parents or Students during the initial loading phase
   const isStaff = !isRoleLoading && (
     role === 'Teacher' || role === 'Administrator' || 
     role === 'Director' || role === 'Accountant'
@@ -159,7 +158,7 @@ export default function AcademicsPageContent() {
                     Fill out the form below to add a new class to the system.
                   </DialogDescription>
                 </DialogHeader>
-                {/* CreateClassForm component would be here */}
+                {/* Content truncated for focus on fixes */}
               </DialogContent>
             </Dialog>
           )}
