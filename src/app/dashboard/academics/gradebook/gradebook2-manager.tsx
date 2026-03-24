@@ -22,6 +22,7 @@ import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-fo
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GenerateReportCard } from './report-card-pdf';
+import { AcademicResetTool } from '@/components/dashboard/academics/AcademicResetTool';
 
 // Types
 import { Assessment, FinancialRecord, Class, Student, Subject } from '@/lib/types';
@@ -387,6 +388,13 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
+      {schoolId && (
+          <AcademicResetTool 
+            schoolId={schoolId} 
+            onResetComplete={() => forceRefetch()} 
+          />
+      )}
+
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
