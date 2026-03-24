@@ -8,7 +8,7 @@ import {
   GraduationCap, Users, School, Banknote, Loader2, 
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
-  Calculator, User as UserIcon, Activity, BookOpen, Clock, CheckCircle2, Star, PlusCircle
+  Calculator, User as UserIcon, Activity, BookOpen, Clock, CheckCircle2, Star, PlusCircle, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
