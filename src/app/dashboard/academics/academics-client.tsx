@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -123,7 +122,7 @@ function CreateClassForm({ schoolId, setOpen, teachers }: { schoolId: string, se
         teacherId: values.teacherId || '',
         studentIds: [],
         capacity: values.capacity,
-        schoolId: schoolId, // Stamp with school ID
+        schoolId: schoolId,
       };
       setDocumentNonBlocking(doc(firestore, 'classes', classId), classData, { merge: true });
 
@@ -461,8 +460,6 @@ export default function AcademicsPageContent() {
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
 
   const canManageClasses = role === 'Director' || role === 'Administrator';
-
-  // Use the new hook to get schoolId
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const isStaff = !isRoleLoading && (
