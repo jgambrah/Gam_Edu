@@ -311,7 +311,7 @@ function PaymentHistory({ record }: { record: FinancialRecord }) {
         <div className="p-4 space-y-2">
             {payments.map(p => (
                 <div key={p.id} className="flex justify-between items-center text-xs bg-white p-2 border rounded">
-                    <span>{p.id}: GH₵{p.amount.toFixed(2)} ({p.method}) - {p.paidAt ? format(p.paidAt.toDate(), 'dd MMM yy') : ''}</span>
+                    <span>{p.id}: GH₵{p.amount.toFixed(2)} ({p.method}) - {p.paidAt?.toDate ? format(p.paidAt.toDate(), 'dd MMM yy') : ''}</span>
                     <GenerateReceipt transaction={record} payment={p} variant="icon" />
                 </div>
             ))}
@@ -421,7 +421,6 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                                         'Lab Fee', 
                                         'Sports Fee', 
                                         'Canteen Fee', 
-                                        'Transport Fee', 
                                         'Other', 
                                         'Correction / Reversal'
                                     ].map(t => (
@@ -600,7 +599,6 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                                     'Lab Fee', 
                                     'Sports Fee', 
                                     'Canteen Fee', 
-                                    'Transport Fee', 
                                     'Other'
                                 ].map(t => (
                                     <SelectItem key={t} value={t}>{t}</SelectItem>
@@ -630,7 +628,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     name="billedAmount" 
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Amount per Student (GH₵)</Label>
+                            <FormLabel>Amount per Student (GH₵)</FormLabel>
                             <FormControl>
                                 <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} />
                             </FormControl>
@@ -764,7 +762,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     };
 
     const toggleStudent = (uid: string) => {
-        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, id]);
+        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]);
     };
 
     return (
@@ -824,7 +822,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                                             {chargeType === 'Transport' && (
                                                 <span className={cn("text-[10px] font-bold flex items-center gap-1", s.transportBillingModel === 'Termly' ? "text-red-400" : "text-indigo-600")}>
                                                     <RouteIcon className="h-2 w-2" />
-                                                    {s.transportBillingModel === 'Termly' ? "Termly Plan (Skipped)" : (s.routeId ? (routeRates.get(s.routeId) ? `GH₵${routeRates.get(s.routeId)}/day` : 'No rate set') : 'No route assigned')}
+                                                    {s.transportBillingModel === 'Termly' ? "Termly Plan (Skipped)" : (s.routeId ? (routeRates.get(s.routeId) ? `GH₵${routeRates.get(s.routeId)}` : 'No rate set') : 'No route assigned')}
                                                 </span>
                                             )}
                                         </div>
@@ -916,7 +914,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                             <p className={`text-3xl font-bold ${balance <= 0 ? "text-green-700" : "text-indigo-900"}`}>GH₵{Math.abs(balance).toFixed(2)}</p>
                         </div>
                         <FormField control={form.control} name="amount" render={({ field }) => (
-                            <FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))}/></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))}/></FormControl><FormMessage /></FormItem>
                         )}/>
                         <FormField control={form.control} name="method" render={({ field }) => (<FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)}/>
                         <FormField control={form.control} name="notes" render={({ field }) => (<FormItem><FormLabel>Reference / Notes (Optional)</FormLabel><FormControl><Textarea placeholder="Ref or notes..." {...field}/></FormControl><FormMessage /></FormItem>)}/>
@@ -1017,7 +1015,7 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
                               <React.Fragment key={rec.id}>
                                   <TableRow>
                                       <TableCell>
-                                          <p className="text-[10px] text-muted-foreground">{format(rec.createdAt.toDate(), 'dd MMM yy')}</p>
+                                          <p className="text-[10px] text-muted-foreground">{rec.createdAt?.toDate ? format(rec.createdAt.toDate(), 'dd MMM yy') : 'Pending...'}</p>
                                           <span className="font-medium">{rec.description}</span>
                                           <p className="text-[10px] uppercase font-bold text-slate-400">{rec.type}</p>
                                       </TableCell>
@@ -1174,7 +1172,7 @@ export default function AccountsPage() {
                             <CardTitle>Student Accounts</CardTitle>
                             <div className="flex items-center gap-3 flex-wrap">
                                 <Button 
-                                    variant={activeForm === 'single' ? 'default' : 'default'} 
+                                    variant="default" 
                                     className="bg-blue-600 hover:bg-blue-700 shadow-sm"
                                     onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}
                                 >
