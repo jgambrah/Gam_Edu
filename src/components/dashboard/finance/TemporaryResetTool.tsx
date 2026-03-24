@@ -17,7 +17,7 @@ interface TemporaryResetToolProps {
 
 /**
  * @fileOverview A temporary, destructive tool to wipe all financial records for a school.
- * To be removed after one-time use.
+ * This handles batching logic to overcome Firestore's 500-doc limit.
  */
 export function TemporaryResetTool({ schoolId, onResetComplete }: TemporaryResetToolProps) {
   const [confirmText, setConfirmText] = useState('');
@@ -42,9 +42,9 @@ export function TemporaryResetTool({ schoolId, onResetComplete }: TemporaryReset
           where('schoolId', '==', schoolId),
           limit(500)
         );
-
+        
         const snapshot = await getDocs(q);
-
+        
         if (snapshot.empty) {
           hasMore = false;
           break;
@@ -55,18 +55,22 @@ export function TemporaryResetTool({ schoolId, onResetComplete }: TemporaryReset
           batch.delete(doc.ref);
         });
 
+        // We must await the commit here to ensure the next batch 
+        // doesn't retrieve the same documents.
         await batch.commit();
         totalDeleted += snapshot.size;
-
+        
         toast({ title: "Deleting...", description: `Removed ${totalDeleted} records so far.` });
       }
 
-      toast({
-        title: "Reset Complete",
-        description: `Successfully deleted a total of ${totalDeleted} financial records. All student balances for this school are now 0.`,
+      toast({ 
+        title: "Reset Complete", 
+        description: `Successfully deleted a total of ${totalDeleted} financial records. All student balances for this school are now 0.` 
       });
-
+      
       setConfirmText('');
+      
+      // Force a refresh of the parent component's data
       if (onResetComplete) onResetComplete();
 
     } catch (error: any) {
@@ -78,26 +82,29 @@ export function TemporaryResetTool({ schoolId, onResetComplete }: TemporaryReset
   };
 
   return (
-    <Card className="border-red-600 bg-red-50/50 mt-8 mb-8 border-2 shadow-lg">
+    <Card className="border-red-600 bg-red-50/50 border-2 shadow-lg mb-6">
       <CardHeader>
         <CardTitle className="text-red-700 flex items-center gap-2">
           <AlertTriangle className="h-6 w-6" />
           DANGER: Financial Reset Tool (TEMPORARY)
         </CardTitle>
         <CardDescription className="text-red-600 font-medium">
-          This tool will permanently delete ALL financial records, bills, and payment history for this school. 
+          This tool will permanently delete ALL financial records, bills, and payment history for this school ID. 
           This action is irreversible and should only be used to correct catastrophic data entry errors.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="confirm-reset" className="text-red-800 font-bold uppercase text-xs">Type "RESET" to confirm permanent deletion</Label>
+          <Label htmlFor="confirm-reset" className="text-red-800 font-bold uppercase text-[10px] tracking-widest">
+            Type "RESET" to confirm permanent deletion
+          </Label>
           <Input 
             id="confirm-reset"
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             placeholder="Type RESET here"
             className="border-red-300 focus:ring-red-500 bg-white"
+            autoComplete="off"
           />
         </div>
         <Button 
