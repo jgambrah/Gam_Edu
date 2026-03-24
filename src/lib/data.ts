@@ -70,6 +70,12 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
+    path: '/dashboard/my-children',
+    title: 'My Children',
+    icon: Users,
+    roles: ['Parent', 'Student'],
+  },
+  {
     path: '/dashboard/my-bills',
     title: 'My Bills',
     icon: Banknote,
@@ -86,6 +92,12 @@ export const navItems: NavItem[] = [
     title: 'My Report Cards',
     icon: FileText,
     roles: ['Student', 'Parent'],
+  },
+  {
+    path: '/dashboard/messages',
+    title: 'Direct Messages',
+    icon: MessageCircle,
+    roles: 'all',
   },
   {
     path: '/dashboard/people',
@@ -109,7 +121,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/students-v3',
             title: 'Students',
             icon: GraduationCap,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
             path: '/dashboard/parents-v2',
@@ -289,32 +301,6 @@ export const navItems: NavItem[] = [
             icon: Clapperboard,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
-    ]
-  },
-  {
-    path: '/dashboard/communication',
-    title: 'Communication',
-    icon: MessageSquare,
-    roles: 'all',
-    subItems: [
-        {
-            path: '/dashboard/forum',
-            title: 'Forum',
-            icon: MessageSquare,
-            roles: 'all',
-        },
-        {
-            path: '/dashboard/messages',
-            title: 'Direct Messages',
-            icon: MessageCircle,
-            roles: 'all',
-        },
-        {
-            path: '/dashboard/communication/sms',
-            title: 'Bulk SMS',
-            icon: MessageSquare,
-            roles: ['Director', 'Administrator'],
-        }
     ]
   },
    {

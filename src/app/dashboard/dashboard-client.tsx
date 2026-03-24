@@ -18,6 +18,7 @@ import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600" }: any) {
   return (
@@ -178,7 +179,108 @@ function TeacherDashboard({ profile, classes, isLoading }: any) {
     );
 }
 
-function StudentParentDashboard({ profile }: any) {
+function ParentDashboard({ profile, children, financials, announcements, isLoading }: any) {
+    const { user } = useUser();
+    const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Parent';
+
+    const totalOutstanding = useMemo(() => {
+        if (!financials) return 0;
+        return financials.reduce((sum: number, r: any) => {
+            if (r.status === 'Pending Reversal' || r.status === 'Rejected Reversal') return sum;
+            const balance = (r.billedAmount || 0) - (r.amountPaid || 0) - (r.waiverAmount || 0);
+            return sum + Math.max(0, balance);
+        }, 0);
+    }, [financials]);
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Parent Portal: {displayName} 👋</h1>
+                <p className="text-muted-foreground">Monitor your children's academic and financial status.</p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="My Children" value={children?.length || 0} icon={Users} link="/dashboard/my-children" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Total Outstanding" value={`GH₵${totalOutstanding.toFixed(2)}`} icon={Banknote} link="/dashboard/my-bills" isLoading={isLoading} color="text-red-600" />
+                <StatCard title="Live Grades" value="View All" icon={TrendingUp} link="/dashboard/my-grades" isLoading={isLoading} color="text-indigo-600" />
+                <StatCard title="Report Cards" value="View All" icon={FileText} link="/dashboard/my-reports" isLoading={isLoading} color="text-emerald-600" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Children List */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <Users className="h-5 w-5 text-indigo-600"/> My Children
+                        </CardTitle>
+                        <CardDescription>Quick links to financial statements.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        {isLoading ? (
+                            <div className="space-y-3">
+                                <Skeleton className="h-16 w-full rounded-xl" />
+                                <Skeleton className="h-16 w-full rounded-xl" />
+                            </div>
+                        ) : children && children.length > 0 ? (
+                            children.map((child: any) => (
+                                <Link key={child.uid} href={`/dashboard/my-bills`} className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold uppercase">
+                                            {child.firstName?.[0]}{child.lastName?.[0]}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-800">{child.firstName} {child.lastName}</p>
+                                            <p className="text-xs text-slate-500 uppercase font-bold">{child.classId || 'No Class'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs font-bold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">View Bills</span>
+                                        <ChevronRight className="h-4 w-4 text-slate-300"/>
+                                    </div>
+                                </Link>
+                            ))
+                        ) : (
+                            <p className="text-center py-10 text-muted-foreground italic text-sm">No children linked to your account.</p>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* Recent Announcements */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <Megaphone className="h-5 w-5 text-blue-600"/> Recent Announcements
+                        </CardTitle>
+                        <CardDescription>Stay updated with school news.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {isLoading ? (
+                            <div className="space-y-3">
+                                <Skeleton className="h-12 w-full rounded-lg" />
+                                <Skeleton className="h-12 w-full rounded-lg" />
+                            </div>
+                        ) : announcements && announcements.length > 0 ? (
+                            announcements.map((ann: any) => (
+                                <div key={ann.id} className="border-b last:border-0 pb-3 last:pb-0">
+                                    <p className="font-semibold text-sm text-slate-800">{ann.title}</p>
+                                    <p className="text-xs text-slate-500 line-clamp-1 mt-1">{ann.content}</p>
+                                    <p className="text-[10px] text-slate-400 mt-1">{ann.publishedAt ? format(ann.publishedAt.toDate(), 'PPP') : 'Just now'}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-center py-10 text-muted-foreground italic text-sm">No recent announcements.</p>
+                        )}
+                        <Button variant="outline" className="w-full text-xs font-bold" asChild>
+                            <Link href="/dashboard/announcements">View All Announcements</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
+function StudentDashboard({ profile }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Member';
 
@@ -255,6 +357,7 @@ export default function DashboardClient() {
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
   const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant'].includes(role || '');
+  const isParent = role === 'Parent';
 
   // Staff-only data fetching
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
@@ -266,10 +369,32 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  const annQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'announcements_v2'), where('schoolId', '==', schoolId), limit(5)) : null, [firestore, schoolId]);
-  const { data: announcements } = useCollection(annQuery);
+  // Parent-specific data fetching
+  const parentStudentsQuery = useMemoFirebase(() => 
+    (firestore && schoolId && isParent && profile?.studentIds?.length) 
+      ? query(collection(firestore, 'students'), where('uid', 'in', profile.studentIds)) 
+      : null, 
+  [firestore, schoolId, isParent, profile?.studentIds]);
+  const { data: parentStudents, isLoading: loadingParentStudents } = useCollection(parentStudentsQuery);
 
-  const isLoading = roleLoading || schoolLoading || (isStaff && (loadingStudents || loadingStaff || loadingClasses));
+  const parentFinancialsQuery = useMemoFirebase(() => 
+    (firestore && schoolId && isParent && profile?.studentIds?.length) 
+      ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('studentId', 'in', profile.studentIds)) 
+      : null, 
+  [firestore, schoolId, isParent, profile?.studentIds]);
+  const { data: parentFinancials, isLoading: loadingParentFinancials } = useCollection(parentFinancialsQuery);
+
+  const annQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || !role) return null;
+    let q = query(collection(firestore, 'announcements_v2'), where('schoolId', '==', schoolId), orderBy('publishedAt', 'desc'), limit(5));
+    if (!isStaff && role) {
+        q = query(q, where('audience', 'array-contains-any', ['Everybody', role]));
+    }
+    return q;
+  }, [firestore, schoolId, role, isStaff]);
+  const { data: announcements, isLoading: loadingAnnouncements } = useCollection(annQuery);
+
+  const isLoading = roleLoading || schoolLoading || (isStaff && (loadingStudents || loadingStaff || loadingClasses)) || (isParent && (loadingParentStudents || loadingParentFinancials));
 
   if (isLoading) {
     return <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>;
@@ -283,5 +408,9 @@ export default function DashboardClient() {
     return <TeacherDashboard profile={profile} classes={classes} isLoading={isLoading} />;
   }
 
-  return <StudentParentDashboard profile={profile} />;
+  if (role === 'Parent') {
+    return <ParentDashboard profile={profile} children={parentStudents} financials={parentFinancials} announcements={announcements} isLoading={isLoading} />;
+  }
+
+  return <StudentDashboard profile={profile} />;
 }
