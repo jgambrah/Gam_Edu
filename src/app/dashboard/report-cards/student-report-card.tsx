@@ -1,4 +1,3 @@
-
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -13,6 +12,7 @@ import { useMemo } from 'react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Printer } from 'lucide-react';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
