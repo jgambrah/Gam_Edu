@@ -14,11 +14,18 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        // Fetch the image from the source URL
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Upstream returned ${response.status}`);
+        // Fetch the image from the source URL with a timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            console.error(`Upstream Image Proxy Error: ${response.status} ${response.statusText}`);
+            return new NextResponse(`Upstream returned ${response.status}`, { status: response.status });
+        }
         
-        // Convert to buffer for the response
         const buffer = await response.arrayBuffer();
         const contentType = response.headers.get('content-type') || 'image/png';
         
@@ -26,11 +33,15 @@ export async function GET(request: NextRequest) {
             headers: {
                 'Content-Type': contentType,
                 'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
-                'Access-Control-Allow-Origin': '*',      // Explicitly allow all for internal proxy
+                'Access-Control-Allow-Origin': '*',
             },
         });
     } catch (err: any) {
         console.error('Image Proxy Error:', err.message);
-        return new NextResponse('Failed to fetch image', { status: 500 });
+        // Map common errors to safer responses to prevent 502s
+        if (err.name === 'AbortError') {
+            return new NextResponse('Image fetch timed out', { status: 504 });
+        }
+        return new NextResponse('Internal Image Proxy Error', { status: 500 });
     }
 }

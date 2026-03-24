@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -23,28 +22,24 @@ export default function MyGradesPage() {
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const firestore = useFirestore();
 
-    // Default to the current/latest available academic year
     const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
     const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0] || 'First Term');
 
-    // 1. Resolve Parent's linked students
     const parentStudentIds = useMemo(() => {
         return profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
     }, [profile]);
     const parentStudentIdsStr = parentStudentIds.join(',');
 
-    // 2. Data Fetching
     const assessmentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !role) return null;
         
         const baseQuery = collection(firestore, 'assessments');
 
-        if (role === 'Student') {
-            // Student sees only their own grades
+        if (role === 'Student' && user) {
             return query(
                 baseQuery,
                 where('schoolId', '==', schoolId),
-                where('studentId', '==', user?.uid),
+                where('studentId', '==', user.uid),
                 where('academicYear', '==', selectedYear),
                 where('term', '==', selectedTerm),
                 orderBy('createdAt', 'desc')
@@ -52,7 +47,6 @@ export default function MyGradesPage() {
         } 
         
         if (role === 'Parent') {
-            // Parent sees grades for ALL their linked children
             if (parentStudentIds.length === 0) return null; 
             
             return query(
@@ -85,7 +79,6 @@ export default function MyGradesPage() {
 
     const { data: subjects } = useCollection<Subject>(subjectsQuery);
 
-    // 3. Mapping Logic
     const enrichedAssessments = useMemo(() => {
         if (!assessments) return [];
         return assessments.map(a => {

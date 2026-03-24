@@ -8,7 +8,7 @@ import {
   GraduationCap, Users, School, Banknote, Loader2, 
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
-  Calculator, User as UserIcon, Activity, BookOpen, Clock, CheckCircle2, Star, PlusCircle, Sparkles
+  Clock, CheckCircle2, Star, PlusCircle, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -207,7 +207,6 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Children List */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
@@ -245,7 +244,6 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
                     </CardContent>
                 </Card>
 
-                {/* Recent Announcements */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
@@ -359,7 +357,6 @@ export default function DashboardClient() {
   const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant'].includes(role || '');
   const isParent = role === 'Parent';
 
-  // Staff-only data fetching
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
   const { data: students, isLoading: loadingStudents } = useCollection(studentsQuery);
 
@@ -369,7 +366,6 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  // Parent-specific data fetching
   const parentStudentsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isParent && profile?.studentIds?.length) 
       ? query(collection(firestore, 'students'), where('uid', 'in', profile.studentIds)) 
