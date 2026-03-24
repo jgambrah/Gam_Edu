@@ -1,14 +1,14 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, limit, doc } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, 
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
-  Calculator, User as UserIcon, Activity, BookOpen, Clock, CheckCircle2, Star
+  Calculator, User as UserIcon, Activity, BookOpen, Clock, CheckCircle2, Star, PlusCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -89,7 +89,7 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
                             </div>
                             <ChevronRight className="h-4 w-4 text-slate-300"/>
                         </Link>
-                        <Link href="/dashboard/finance/accounting" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                        <Link href="/dashboard/accounts" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-emerald-100 rounded-lg"><Banknote className="h-4 w-4 text-emerald-600"/></div>
                                 <span className="text-sm font-semibold">Financial Ledger</span>

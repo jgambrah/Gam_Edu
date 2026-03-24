@@ -16,7 +16,7 @@ import {
   FileText,
   CalendarDays,
   ClipboardList,
-  FilePen,
+  PenLine,
   UserCheck as UserCheckIcon,
   Plane,
   Star,
@@ -26,7 +26,6 @@ import {
   BookCopy,
   BarChart,
   CalendarCheck,
-  UserCog as StaffIcon, // Using UserCog for Staff
   Shield,
   Code,
   Sigma,
@@ -34,7 +33,7 @@ import {
   BookOpenCheck,
   Activity,
   FolderKanban,
-  PenSquare,
+  SquarePen,
   TrendingUp,
   Gamepad2,
   AlertCircle,
@@ -97,7 +96,7 @@ export const navItems: NavItem[] = [
         {
             path: '/dashboard/admissions',
             title: 'Admissions',
-            icon: FilePen,
+            icon: PenLine,
             roles: ['Director', 'Administrator'],
         },
         {
@@ -127,7 +126,7 @@ export const navItems: NavItem[] = [
         {
             path: '/dashboard/student-registration',
             title: 'Apply for Admission',
-            icon: FilePen,
+            icon: PenLine,
             roles: ['Parent'],
         },
     ]
@@ -189,7 +188,7 @@ export const navItems: NavItem[] = [
         {
             path: '/dashboard/academics/gradebook/manual-entry',
             title: 'Bulk Grade Entry',
-            icon: PenSquare,
+            icon: SquarePen,
             roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
