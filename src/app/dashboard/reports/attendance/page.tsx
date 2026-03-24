@@ -191,6 +191,69 @@ export default function AttendanceReportsPage() {
                     <Card className="border-l-4 border-l-blue-500"><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-xs font-bold text-slate-500 uppercase">Total</p><p className="text-3xl font-black text-blue-600">{summaryStats.total}</p></div><Users className="h-8 w-8 text-blue-100" /></div></CardContent></Card>
                 </div>
             )}
+
+            {/* DETAILED LOGS & CHARTS */}
+            <div className="grid md:grid-cols-5 gap-6 mt-6">
+                
+                {/* PIE CHART */}
+                <Card className="md:col-span-2">
+                    <CardHeader><CardTitle>Attendance Distribution</CardTitle></CardHeader>
+                    <CardContent>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <PieChart>
+                                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                                    {pieData.map((entry: any, index: number) => (
+                                        <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.name as keyof typeof STATUS_COLORS] || '#8884d8'} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
+
+                {/* DETAILED TABLE */}
+                <Card className="md:col-span-3">
+                    <CardHeader><CardTitle>Detailed Log ({filteredData.length} records)</CardTitle></CardHeader>
+                    <CardContent>
+                        <div className="max-h-[500px] overflow-y-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Student</TableHead>
+                                        <TableHead>Class</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Status</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredData.map((record: any) => (
+                                        <TableRow key={record.id}>
+                                            <TableCell>
+                                                <div className="font-medium">{record.student?.firstName} {record.student?.lastName}</div>
+                                                <div className="text-xs text-muted-foreground">{record.student?.email}</div>
+                                            </TableCell>
+                                            <TableCell>{record.className}</TableCell>
+                                            <TableCell>{format(record.date.toDate ? record.date.toDate() : new Date(record.date), 'PPP')}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={record.status === 'Present' ? 'default' : record.status === 'Late' ? 'secondary' : 'destructive'}>
+                                                    {record.status}
+                                                </Badge>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {filteredData.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={4} className="text-center py-10 text-muted-foreground italic">No records match your filters.</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
