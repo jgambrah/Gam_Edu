@@ -45,7 +45,7 @@ import { useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissi
 import { useToast } from '@/hooks/use-toast';
 import React, { useState, useMemo } from 'react';
 import { collection, doc, query, where, updateDoc, deleteDoc } from 'firebase/firestore';
-import { Loader2, PlusCircle, User, Users, Ratio, BookOpen, UserCircle, Trash2 } from 'lucide-react';
+import { Loader2, PlusCircle, User, Users, BookOpen, UserCircle, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/context/role-context';
 import {

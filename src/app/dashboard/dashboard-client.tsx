@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, limit, doc } from 'firebase/firestore';
 import { 
@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { cn } from '@/lib/utils';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600" }: any) {
   return (
@@ -282,8 +283,4 @@ export default function DashboardClient() {
   }
 
   return <StudentParentDashboard profile={profile} />;
-}
-
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ');
 }
