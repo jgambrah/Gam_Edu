@@ -1,9 +1,9 @@
+
 import type { Metadata, Viewport } from "next";
 import './globals.css';
-import Providers from './providers'; // Import the new client-side provider component
+import Providers from './providers'; 
 import { PWARegister } from "@/components/PWARegister";
 
-// 1. Viewport Settings (Color, Scale, etc.)
 export const viewport: Viewport = {
   themeColor: "#4f46e5",
   width: "device-width",
@@ -11,26 +11,19 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-// 2. SEO & PWA Metadata (Title, Description, Icons)
 export const metadata: Metadata = {
   title: "GAM Edu - School Management System",
   description: "AI-Powered School Management & Learning Platform",
   manifest: "/manifest.json",
-  
-  // ✅ THE FIX: Force iOS and Android to use these specific image files for the Home Screen Icon
   icons: {
-    icon: '/icons/icon-512x512.png', // Updated to /icons/ folder
-    apple: '/icons/icon-512x512.png', // Updated to /icons/ folder
+    icon: '/icons/icon-512x512.png',
+    apple: '/icons/icon-512x512.png',
   },
-
-  // iOS Specific Settings
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "GAM Edu",
   },
-  
-  // Open Graph
   openGraph: {
     title: "GAM Edu Portal",
     description: "Login to access your student or staff dashboard.",

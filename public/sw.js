@@ -1,3 +1,5 @@
+
+/* eslint-disable no-restricted-globals */
 self.addEventListener('push', function(event) {
   if (event.data) {
     const data = event.data.json();
@@ -27,7 +29,7 @@ self.addEventListener('notificationclick', function(event) {
             client = clientList[i];
           }
         }
-        return client.focus().then(c => c.navigate(event.notification.data.url));
+        return client.focus();
       }
       return clients.openWindow(event.notification.data.url);
     })

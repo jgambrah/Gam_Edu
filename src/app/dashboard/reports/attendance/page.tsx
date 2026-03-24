@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -57,21 +58,21 @@ export default function AttendanceReportsPage() {
         }
     }, [role, isRoleLoading, router]);
 
-    // 1. Fetch Classes (Guarded)
+    // 1. Fetch Classes (Guarded strictly)
     const classesQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
         return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
     }, [firestore, schoolId, isRoleLoading, canAccess]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection(classesQuery);
 
-    // 2. Fetch Attendance (Guarded)
+    // 2. Fetch Attendance (Guarded strictly)
     const attendanceQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
         return query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId));
     }, [firestore, schoolId, isRoleLoading, canAccess]);
     const { data: rawAttendance, isLoading: isLoadingAttendance } = useCollection(attendanceQuery);
     
-    // 3. Fetch Students (Guarded)
+    // 3. Fetch Students (Guarded strictly)
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
         return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
