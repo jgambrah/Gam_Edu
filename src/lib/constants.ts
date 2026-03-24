@@ -70,6 +70,12 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
+    path: '/dashboard/my-children',
+    title: 'My Children',
+    icon: Users,
+    roles: ['Parent'],
+  },
+  {
     path: '/dashboard/my-bills',
     title: 'My Bills',
     icon: Banknote,
