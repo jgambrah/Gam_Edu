@@ -356,11 +356,14 @@ export default function DashboardClient() {
 
   const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant'].includes(role || '');
   const isParent = role === 'Parent';
+  
+  // Security Rule Guard: Only authorized roles can list the staff collection
+  const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
   const { data: students, isLoading: loadingStudents } = useCollection(studentsQuery);
 
-  const staffQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
+  const staffQuery = useMemoFirebase(() => (firestore && schoolId && canListStaff) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canListStaff]);
   const { data: staff, isLoading: loadingStaff } = useCollection(staffQuery);
 
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
