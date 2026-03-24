@@ -79,18 +79,29 @@ function ClassDetailView({
     students, 
     timetable, 
     subjects, 
-    teachers 
+    teachers,
+    currentUserProfile 
 }: { 
     selectedClass: Class, 
     onBack: () => void, 
     students: Student[], 
     timetable: TimetableEntry[], 
     subjects: Subject[], 
-    teachers: any[] 
+    teachers: any[],
+    currentUserProfile: any
 }) {
     const classStudents = useMemo(() => students.filter(s => s.classId === selectedClass.id), [students, selectedClass.id]);
     const classTimetable = useMemo(() => timetable.filter(t => t.classId === selectedClass.id), [timetable, selectedClass.id]);
-    const teacher = useMemo(() => teachers.find(t => t.uid === selectedClass.teacherId), [teachers, selectedClass.teacherId]);
+    
+    // Resolve teacher name (check list or current profile)
+    const teacher = useMemo(() => {
+        const found = teachers?.find(t => t.uid === selectedClass.teacherId);
+        if (found) return found;
+        if (currentUserProfile && selectedClass.teacherId === currentUserProfile.uid) {
+            return currentUserProfile;
+        }
+        return null;
+    }, [teachers, selectedClass.teacherId, currentUserProfile]);
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
@@ -172,7 +183,7 @@ function ClassDetailView({
                             <TimetableDisplay 
                                 timetable={classTimetable}
                                 subjects={subjects}
-                                teachers={teachers}
+                                teachers={teachers && teachers.length > 0 ? teachers : (teacher ? [teacher] : [])}
                                 rooms={[]} 
                                 timeSlots={[]} 
                             />
@@ -185,7 +196,7 @@ function ClassDetailView({
 }
 
 export default function AcademicsPageContent() {
-  const { role, loading: isRoleLoading } = useRole();
+  const { role, profile, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
   const { user } = useUser();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
@@ -196,6 +207,7 @@ export default function AcademicsPageContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canManageClasses = role === 'Director' || role === 'Administrator';
+  const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
   const isStaff = !isRoleLoading && (
     role === 'Teacher' || role === 'Administrator' || 
     role === 'Director' || role === 'Accountant'
@@ -217,11 +229,12 @@ export default function AcademicsPageContent() {
   }, [firestore, user, role, schoolId, isStaff]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
   
+  // Guard teachers query to prevent permission errors
   const teachersQuery = useMemoFirebase(() => 
-    (firestore && schoolId && isStaff)
+    (firestore && schoolId && canListStaff)
       ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId)) 
       : null, 
-  [firestore, schoolId, isStaff]);
+  [firestore, schoolId, canListStaff]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection(teachersQuery);
 
   const studentsQuery = useMemoFirebase(() => 
@@ -277,7 +290,7 @@ export default function AcademicsPageContent() {
     );
   }
 
-  const isLoading = isLoadingSchool || isRoleLoading || isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
+  const isLoading = isLoadingSchool || isRoleLoading || isLoadingClasses || (canListStaff && isLoadingTeachers) || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
 
   if (selectedClass) {
       return (
@@ -288,6 +301,7 @@ export default function AcademicsPageContent() {
             timetable={timetable || []}
             subjects={subjects || []}
             teachers={teachers || []}
+            currentUserProfile={profile}
           />
       );
   }
@@ -354,34 +368,39 @@ export default function AcademicsPageContent() {
             </div>
           ) : classes && classes.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {classes.map((c) => (
-                <Card 
-                    key={c.id} 
-                    className="cursor-pointer hover:border-indigo-500 hover:ring-2 hover:ring-indigo-100 transition-all h-full group"
-                    onClick={() => setSelectedClass(c)}
-                >
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <CardTitle className="text-xl font-bold text-slate-800">{c.name}</CardTitle>
-                        <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 transition-transform group-hover:translate-x-1" />
-                    </div>
-                    <CardDescription className="line-clamp-1">{c.description || 'No description available.'}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600"><Users className="h-4 w-4"/></div>
-                        <span className="font-medium text-slate-700">{students?.filter(s => s.classId === c.id).length || 0} / {c.capacity || 0} Enrolled</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-emerald-50 rounded-lg text-emerald-600"><User className="h-4 w-4"/></div>
-                        <span className="font-medium text-slate-700">Teacher: {teachers?.find(t => t.uid === c.teacherId) ? `${teachers.find(t => t.uid === c.teacherId)?.firstName} ${teachers.find(t => t.uid === c.teacherId)?.lastName}` : 'Not Assigned'}</span>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="bg-slate-50/50 border-t py-3 text-xs font-bold text-indigo-600 uppercase tracking-widest">
-                      View Dashboard
-                  </CardFooter>
-                </Card>
-              ))}
+              {classes.map((c) => {
+                const classTeacher = teachers?.find(t => t.uid === c.teacherId) || 
+                                   (profile && c.teacherId === profile.uid ? profile : null);
+                
+                return (
+                  <Card 
+                      key={c.id} 
+                      className="cursor-pointer hover:border-indigo-500 hover:ring-2 hover:ring-indigo-100 transition-all h-full group"
+                      onClick={() => setSelectedClass(c)}
+                  >
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                          <CardTitle className="text-xl font-bold text-slate-800">{c.name}</CardTitle>
+                          <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 transition-transform group-hover:translate-x-1" />
+                      </div>
+                      <CardDescription className="line-clamp-1">{c.description || 'No description available.'}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600"><Users className="h-4 w-4"/></div>
+                          <span className="font-medium text-slate-700">{students?.filter(s => s.classId === c.id).length || 0} / {c.capacity || 0} Enrolled</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-emerald-50 rounded-lg text-emerald-600"><User className="h-4 w-4"/></div>
+                          <span className="font-medium text-slate-700">Teacher: {classTeacher ? `${classTeacher.firstName} ${classTeacher.lastName}` : 'Not Assigned'}</span>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="bg-slate-50/50 border-t py-3 text-xs font-bold text-indigo-600 uppercase tracking-widest">
+                        View Dashboard
+                    </CardFooter>
+                  </Card>
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-20 bg-slate-50 rounded-2xl border-2 border-dashed">
