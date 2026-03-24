@@ -1,10 +1,10 @@
 {
-  "name": "GAM Edu School Management",
+  "name": "GAM Edu",
   "short_name": "GAM Edu",
   "description": "AI-Powered School Management & Learning Platform",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#4f46e5",
+  "background_color": "#ffffff",
   "theme_color": "#4f46e5",
   "icons": [
     {
