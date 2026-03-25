@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, getDocs, writeBatch, doc } from 'firebase/firestore';
@@ -24,7 +24,7 @@ const ASSESSMENT_TYPES = [
 ];
 
 export default function GradebookPage() {
-    const { user } = useAuth();
+    const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
