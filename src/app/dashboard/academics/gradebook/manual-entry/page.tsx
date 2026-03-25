@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,7 +13,6 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, FileSpreadsheet } from 'lucide-react';
-import { format } from 'date-fns';
 import { notifyParents } from '@/app/actions/notifications';
 
 const ASSESSMENT_TYPES = [
@@ -24,13 +23,8 @@ const ASSESSMENT_TYPES = [
     'End of Term Exam (Exam)'
 ];
 
-/**
- * Bulk Grade Entry Page
- * Route: /dashboard/academics/gradebook/manual-entry
- * Provides a grid for entering scores for an entire class at once.
- */
-export default function BulkGradeEntryPage() {
-    const { user } = useUser();
+export default function GradebookPage() {
+    const { user } = useAuth();
     const { role } = useRole();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
@@ -49,7 +43,7 @@ export default function BulkGradeEntryPage() {
     const [remarks, setRemarks] = useState<Record<string, string>>({}); 
     const [isSaving, setIsSaving] = useState(false);
 
-    // Data Fetching (School-Aware)
+    // Data Fetching
     const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: classes } = useCollection<any>(classesQuery);
 
@@ -61,99 +55,101 @@ export default function BulkGradeEntryPage() {
 
     const handleScoreChange = (studentId: string, val: string) => {
         const num = val === '' ? '' : Number(val);
-        if (typeof num === 'number' && !isNaN(num) && num > maxScore) return; 
+        if (typeof num === 'number' && num > maxScore) return; // Prevent over-scoring
         setScores(prev => ({ ...prev, [studentId]: num }));
     };
 
     const handleSaveBatch = async () => {
-        if (!firestore || !schoolId || !user) {
-            toast({ variant: 'destructive', title: "Error", description: "System not ready. Please refresh." });
+        console.log("Save button clicked!"); // Debug 1
+
+        if (!firestore) {
+            toast({ variant: 'destructive', title: "System Error", description: "Database not connected." });
+            return;
+        }
+        if (!schoolId) {
+            toast({ variant: 'destructive', title: "System Error", description: "School ID missing. Please refresh." });
+            return;
+        }
+        if (!user) {
+            toast({ variant: 'destructive', title: "System Error", description: "User not logged in." });
             return;
         }
         
         if (!classId || !subjectId) {
-            toast({ variant: 'destructive', title: "Error", description: "Select Class and Subject." });
+            toast({ variant: 'destructive', title: "Missing Information", description: "Please select both a Class and a Subject." });
+            console.log("Missing Class or Subject:", { classId, subjectId }); // Debug 2
             return;
         }
+
+        console.log("Current Scores State:", scores); // Debug 3
 
         setIsSaving(true);
         try {
             const batch = writeBatch(firestore);
             let count = 0;
-            const updatedStudentIds: string[] = [];
-
-            const subjectName = subjects?.find(s => s.id === subjectId)?.name || 'Unknown Subject';
-            const today = new Date();
+            const updatedStudentIds: string[] = []; // Track who got graded
 
             Object.entries(scores).forEach(([studentId, score]) => {
+                // Ensure score is not empty string and is a valid number
                 if (score !== '' && score !== null && !isNaN(Number(score))) {
                     const newAssessmentRef = doc(collection(firestore, 'assessments'));
                     batch.set(newAssessmentRef, {
                         studentId,
                         classId,
                         subjectId,
-                        subjectName, 
-                        schoolId,
+                        schoolId, 
                         teacherId: user.uid,
                         term,
                         academicYear,
                         assessmentType,
-                        assessmentName: `${assessmentType} - ${format(today, 'dd/MM/yy')}`,
-                        assessmentDate: serverTimestamp(),
                         score: Number(score),
                         maxScore: Number(maxScore),
                         teacherRemark: remarks[studentId] || "", 
-                        createdAt: serverTimestamp(),
-                        gradedAt: serverTimestamp(),
+                        createdAt: new Date(),
                     });
                     count++;
-                    updatedStudentIds.push(studentId);
+                    updatedStudentIds.push(studentId); // For notifications
                 }
             });
 
+            console.log(`Prepared ${count} records for batch commit.`); // Debug 4
+
             if (count === 0) {
-                toast({ variant: 'destructive', title: "Empty", description: "No valid scores entered." });
+                toast({ variant: 'destructive', title: "No Data", description: "You have not entered any valid scores to save." });
                 setIsSaving(false);
                 return;
             }
 
-            // 1. Save to Database
             await batch.commit();
+            console.log("Batch commit successful!"); // Debug 5
+            
             toast({ title: "Success", description: `Saved ${count} scores successfully.` });
             
-            // 2. Send Push Notification to Parents
+            // Send Push Notification to Parents (Fire and forget)
             notifyParents(
                 updatedStudentIds,
                 "New Grades Posted 📊",
-                `New ${assessmentType} marks for ${subjectName} have been updated in the portal.`,
+                `New ${assessmentType} marks have been entered. Tap to view your child's live grades.`,
                 "/dashboard/my-grades"
             ).catch(err => console.error("Notification failed silently:", err));
 
-            // Clear inputs for next entry
+            // Clear scores and remarks for next entry
             setScores({});
             setRemarks({});
 
         } catch (error: any) {
-            console.error("Gradebook Save Error:", error);
-            toast({ variant: 'destructive', title: "Error", description: error.message || "Failed to save data." });
+            console.error("Save Batch Error:", error); // Debug 6
+            toast({ variant: 'destructive', title: "Database Error", description: error.message });
         } finally {
             setIsSaving(false);
         }
     };
 
-    const isStaff = role === 'Teacher' || role === 'Administrator' || role === 'Director';
-
-    if (!isStaff) {
-        return <div className="p-8 text-center text-muted-foreground">Access Restricted. Staff only.</div>;
-    }
-
     return (
         <div className="p-6 space-y-6">
             <div>
-                <h1 className="text-3xl font-bold flex items-center gap-2">
-                    <FileSpreadsheet className="text-blue-600 h-8 w-8"/> Bulk Grade Entry
-                </h1>
-                <p className="text-muted-foreground">Batch enter continuous assessments, exam scores, and teacher remarks.</p>
+                <h1 className="text-3xl font-bold flex items-center gap-2"><FileSpreadsheet className="text-blue-600"/> Gradebook Entry</h1>
+                <p className="text-muted-foreground">Batch enter continuous assessments and exam scores.</p>
             </div>
 
             <Card className="border-t-4 border-t-blue-600 shadow-sm">
@@ -216,53 +212,50 @@ export default function BulkGradeEntryPage() {
                         <CardTitle>Student Roster</CardTitle>
                         <Button onClick={handleSaveBatch} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
                             {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
-                            Save All Data
+                            Save All Scores
                         </Button>
                     </CardHeader>
                     <CardContent>
                         {loadingStudents ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-blue-600"/></div> : (
-                            <div className="rounded-md border overflow-hidden">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow className="bg-slate-50">
-                                            <TableHead>Student Name</TableHead>
-                                            <TableHead className="w-[150px]">Score (/{maxScore})</TableHead>
-                                            <TableHead>Teacher Remark (Optional)</TableHead>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Student Name</TableHead>
+                                        <TableHead className="w-[150px]">Score (/{maxScore})</TableHead>
+                                        <TableHead>Teacher Remark (Optional)</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {students?.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No students in this class.</TableCell></TableRow>}
+                                    {students?.map((s:any) => (
+                                        <TableRow key={s.id}>
+                                            <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
+                                            <TableCell>
+                                                <Input 
+                                                    type="number" 
+                                                    min="0" max={maxScore}
+                                                    value={scores[s.uid] ?? ''} 
+                                                    onChange={e => handleScoreChange(s.uid, e.target.value)}
+                                                    className={`font-bold ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input 
+                                                    type="text" 
+                                                    placeholder="e.g. Needs to focus"
+                                                    value={remarks[s.uid] ?? ''} 
+                                                    onChange={e => setRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
+                                                />
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {students?.length === 0 && <TableRow><TableCell colSpan={3} className="text-center py-8">No students in this class.</TableCell></TableRow>}
-                                        {students?.map((s:any) => (
-                                            <TableRow key={s.id}>
-                                                <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
-                                                <TableCell>
-                                                    <Input 
-                                                        type="number" 
-                                                        min="0" 
-                                                        max={maxScore}
-                                                        value={scores[s.uid] ?? ''} 
-                                                        onChange={e => handleScoreChange(s.uid, e.target.value)}
-                                                        className={`font-bold ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Input 
-                                                        type="text" 
-                                                        placeholder="e.g. Needs to focus"
-                                                        value={remarks[s.uid] ?? ''} 
-                                                        onChange={e => setRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
-                                                    />
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </div>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         )}
                     </CardContent>
                 </Card>
             ) : (
-                <div className="p-12 text-center text-muted-foreground border-2 border-dashed rounded-xl bg-slate-50/50">
+                <div className="p-12 text-center text-muted-foreground border-2 border-dashed rounded-xl">
                     Please select a Class and Subject to load the roster.
                 </div>
             )}

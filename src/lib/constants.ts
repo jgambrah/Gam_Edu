@@ -212,14 +212,8 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
-            path: '/dashboard/academics/gradebook',
-            title: 'Gradebook',
-            icon: TrendingUp,
-            roles: ['Teacher', 'Administrator', 'Director'],
-        },
-        {
             path: '/dashboard/academics/gradebook/manual-entry',
-            title: 'Bulk Grade Entry',
+            title: 'Gradebook',
             icon: SquarePen,
             roles: ['Teacher', 'Administrator', 'Director'],
         },
