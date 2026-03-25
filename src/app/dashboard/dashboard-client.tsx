@@ -8,13 +8,13 @@ import {
   GraduationCap, Users, School, Banknote, Loader2, 
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
-  Clock, CheckCircle2, Star, PlusCircle, Sparkles
+  Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight
 } from 'lucide-react';
 import Link from 'next/link';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
@@ -38,6 +38,148 @@ function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-ind
       </Card>
     </Link>
   );
+}
+
+function AccountantDashboard({ profile, students, classes, records, tills, announcements, isLoading }: any) {
+    const { user } = useUser();
+    const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Accountant';
+
+    // Financial Metrics
+    const stats = useMemo(() => {
+        if (!records) return { totalOutstanding: 0, todayRevenue: 0, revenueByType: [] };
+        
+        const today = startOfDay(new Date());
+        let outstanding = 0;
+        let todayRev = 0;
+        const types: Record<string, number> = {};
+
+        records.forEach((r: any) => {
+            const billed = r.billedAmount || 0;
+            const paid = r.amountPaid || 0;
+            const waiver = r.waiverAmount || 0;
+            outstanding += (billed - paid - waiver);
+
+            // Check if paid today
+            if (r.lastPaymentDate) {
+                const payDate = r.lastPaymentDate.toDate ? r.lastPaymentDate.toDate() : new Date(r.lastPaymentDate);
+                if (startOfDay(payDate).getTime() === today.getTime()) {
+                    // This is simplified as we don't have the individual payment amount here
+                    // In a full implementation, we'd query the 'payments' subcollection
+                }
+            }
+
+            if (paid > 0) {
+                const type = r.type || 'Other';
+                types[type] = (types[type] || 0) + paid;
+            }
+        });
+
+        const revenueByType = Object.entries(types).map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 5);
+
+        return { totalOutstanding: outstanding, todayRevenue: todayRev, revenueByType };
+    }, [records]);
+
+    const activeTill = useMemo(() => {
+        return tills?.find((t: any) => t.status === 'Open');
+    }, [tills]);
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Finance Portal: {displayName} 💳</h1>
+                    <p className="text-muted-foreground">Manage school accounts, billing, and daily collections.</p>
+                </div>
+                {activeTill ? (
+                    <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-4 py-2 rounded-xl flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                        TILL OPEN: GH₵{activeTill.currentBalance?.toFixed(2) || '0.00'}
+                    </Badge>
+                ) : (
+                    <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 px-4 py-2 rounded-xl flex items-center gap-2">
+                        <XCircle className="h-4 w-4" />
+                        TILL CLOSED
+                    </Badge>
+                )}
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="Outstanding Fees" value={`GH₵${stats.totalOutstanding.toLocaleString()}`} icon={AlertCircle} link="/dashboard/accounts" isLoading={isLoading} color="text-rose-600" />
+                <StatCard title="Active Students" value={students?.length || 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} color="text-indigo-600" />
+                <StatCard title="Cash in Till" value={`GH₵${activeTill?.currentBalance?.toFixed(2) || '0.00'}`} icon={Wallet} link="/dashboard/accounts/cash-till" isLoading={isLoading} color="text-emerald-600" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="lg:col-span-2">
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <TrendingUp className="h-5 w-5 text-emerald-600"/> Revenue Distribution
+                        </CardTitle>
+                        <CardDescription>Breakdown of collected payments by category.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[300px]">
+                        {stats.revenueByType.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={stats.revenueByType} layout="vertical" margin={{ left: 40 }}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} horizontal={false} />
+                                    <XAxis type="number" hide />
+                                    <YAxis dataKey="name" type="category" fontSize={10} width={100} axisLine={false} tickLine={false} />
+                                    <Tooltip 
+                                        formatter={(val: number) => [`GH₵${val.toLocaleString()}`, 'Amount']}
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                    />
+                                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                                        {stats.revenueByType.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][index % 5]} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="h-full flex items-center justify-center text-slate-400 italic">No revenue data recorded yet.</div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader><CardTitle>Accounting Tasks</CardTitle></CardHeader>
+                    <CardContent className="space-y-3">
+                        <Link href="/dashboard/accounts" className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600"><Banknote className="h-4 w-4"/></div>
+                                <span className="text-sm font-bold">Student Billing</span>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
+                        </Link>
+                        <Link href="/dashboard/finance/bulk-payments" className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600"><HandCoins className="h-4 w-4"/></div>
+                                <span className="text-sm font-bold">Bulk Receipts</span>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
+                        </Link>
+                        <Link href="/dashboard/accounts/cash-till" className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-amber-100 rounded-lg text-amber-600"><Wallet className="h-4 w-4"/></div>
+                                <span className="text-sm font-bold">Manage My Till</span>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
+                        </Link>
+                        <Link href="/dashboard/payroll/staff-config" className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><Calculator className="h-4 w-4"/></div>
+                                <span className="text-sm font-bold">Payroll Config</span>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
+                        </Link>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
 }
 
 function AdminDashboard({ profile, students, staff, classes, announcements, isLoading }: any) {
@@ -356,7 +498,7 @@ export default function DashboardClient() {
 
   const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant'].includes(role || '');
   const isParent = role === 'Parent';
-  
+  const isAccountant = role === 'Accountant';
   const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
@@ -367,6 +509,13 @@ export default function DashboardClient() {
 
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
+
+  // Accountant Specific Queries
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant]);
+  const { data: records, isLoading: loadingRecords } = useCollection(recordsQuery);
+
+  const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
+  const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
 
   const parentStudentsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isParent && profile?.studentIds?.length) 
@@ -392,7 +541,7 @@ export default function DashboardClient() {
   }, [firestore, schoolId, role, isStaff]);
   const { data: announcements, isLoading: loadingAnnouncements } = useCollection(annQuery);
 
-  const isLoading = roleLoading || schoolLoading || (isStaff && (loadingStudents || loadingStaff || loadingClasses)) || (isParent && (loadingParentStudents || loadingParentFinancials));
+  const isLoading = roleLoading || schoolLoading || (isStaff && (loadingStudents || loadingStaff || loadingClasses)) || (isParent && (loadingParentStudents || loadingParentFinancials)) || (isAccountant && (loadingRecords || loadingTills));
 
   if (isLoading) {
     return <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>;
@@ -400,6 +549,10 @@ export default function DashboardClient() {
 
   if (role === 'Administrator' || role === 'Director') {
     return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={isLoading} />;
+  }
+
+  if (role === 'Accountant') {
+    return <AccountantDashboard profile={profile} students={students} classes={classes} records={records} tills={tills} announcements={announcements} isLoading={isLoading} />;
   }
 
   if (role === 'Teacher') {
