@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, getDocs, writeBatch, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -141,7 +141,7 @@ export default function GradebookPage() {
         <div className="p-6 space-y-6">
             <div>
                 <h1 className="text-3xl font-bold flex items-center gap-2">
-                    <FileSpreadsheet className="text-blue-600"/> Gradebook Entry
+                    <FileSpreadsheet className="text-blue-600" /> Gradebook Entry
                 </h1>
                 <p className="text-muted-foreground">Batch enter continuous assessments and exam scores.</p>
             </div>
