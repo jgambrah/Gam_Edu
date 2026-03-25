@@ -45,7 +45,7 @@ import { useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissi
 import { useToast } from '@/hooks/use-toast';
 import React, { useState, useMemo } from 'react';
 import { collection, doc, query, where, updateDoc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
-import { Loader2, PlusCircle, User, Users, BookOpen, UserCircle, Trash2, ArrowLeft, CalendarCheck, Clock, ShieldCheck, ChevronRight } from 'lucide-react';
+import { Loader2, PlusCircle, User, Users, BookOpen, UserCircle, Trash2, ArrowLeft, CalendarCheck, Clock, ShieldCheck, ChevronRight, Edit, Baby, Venus, Mars } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/context/role-context';
 import {
@@ -59,17 +59,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DailyAttendanceSheet } from '../attendance/daily-attendance-sheet';
 import { Subject, TimetableEntry, Student, Class } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { TimetableDisplay } from '../timetable/timetable-display';
 import { StudentDisplay } from '@/components/student-display';
 import { Badge } from '@/components/ui/badge';
 
-const createClassSchema = z.object({
+const classSchema = z.object({
   name: z.string().min(1, "Class name is required"),
   description: z.string().optional(),
-  teacherId: z.string().min(1, "A teacher must be assigned"),
+  teacherId: z.string().optional(),
   capacity: z.coerce.number().min(1, "Capacity must be at least 1"),
 });
 
@@ -93,6 +92,13 @@ function ClassDetailView({
     const classStudents = useMemo(() => students.filter(s => s.classId === selectedClass.id), [students, selectedClass.id]);
     const classTimetable = useMemo(() => timetable.filter(t => t.classId === selectedClass.id), [timetable, selectedClass.id]);
     
+    // Gender Statistics
+    const stats = useMemo(() => {
+        const males = classStudents.filter(s => s.gender === 'Male').length;
+        const females = classStudents.filter(s => s.gender === 'Female').length;
+        return { males, females, total: classStudents.length };
+    }, [classStudents]);
+
     // Resolve teacher name (check list or current profile)
     const teacher = useMemo(() => {
         const found = teachers?.find(t => t.uid === selectedClass.teacherId);
@@ -110,8 +116,14 @@ function ClassDetailView({
                     <ArrowLeft className="h-4 w-4" /> Back to Classes
                 </Button>
                 <div className="flex gap-2">
-                    <Badge variant="outline" className="bg-white px-3 py-1 border-2">
-                        Class Capacity: {classStudents.length} / {selectedClass.capacity || 0}
+                    <Badge variant="outline" className="bg-white px-3 py-1 border-2 flex items-center gap-2">
+                        <Users className="h-3 w-3" /> {stats.total} / {selectedClass.capacity || 0}
+                    </Badge>
+                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-100 flex items-center gap-1">
+                        <Mars className="h-3 w-3" /> {stats.males} Boys
+                    </Badge>
+                    <Badge variant="secondary" className="bg-pink-50 text-pink-700 border-pink-100 flex items-center gap-1">
+                        <Venus className="h-3 w-3" /> {stats.females} Girls
                     </Badge>
                 </div>
             </div>
@@ -128,16 +140,16 @@ function ClassDetailView({
                     </div>
                 </CardHeader>
                 <CardContent className="p-0 border-t">
-                    <Tabs defaultValue="attendance" className="w-full">
+                    <Tabs defaultValue="roster" className="w-full">
                         <div className="px-6 bg-slate-50/50 border-b">
                             <TabsList className="bg-transparent h-12 p-0 gap-6">
-                                <TabsTrigger value="roster" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none bg-transparent">
+                                <TabsTrigger value="roster" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none bg-transparent font-bold">
                                     <Users className="h-4 w-4 mr-2" /> Student Roster
                                 </TabsTrigger>
-                                <TabsTrigger value="attendance" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none bg-transparent">
+                                <TabsTrigger value="attendance" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none bg-transparent font-bold">
                                     <CalendarCheck className="h-4 w-4 mr-2" /> Daily Attendance
                                 </TabsTrigger>
-                                <TabsTrigger value="timetable" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none bg-transparent">
+                                <TabsTrigger value="timetable" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none bg-transparent font-bold">
                                     <Clock className="h-4 w-4 mr-2" /> Timetable
                                 </TabsTrigger>
                             </TabsList>
@@ -149,6 +161,7 @@ function ClassDetailView({
                                     <TableHeader className="bg-slate-50">
                                         <TableRow>
                                             <TableHead>Student</TableHead>
+                                            <TableHead>Gender</TableHead>
                                             <TableHead>Email</TableHead>
                                             <TableHead className="text-right">Action</TableHead>
                                         </TableRow>
@@ -157,6 +170,11 @@ function ClassDetailView({
                                         {classStudents.map(student => (
                                             <TableRow key={student.uid}>
                                                 <TableCell><StudentDisplay student={student} variant="list" showAvatar /></TableCell>
+                                                <TableCell>
+                                                    <Badge variant="ghost" className={cn("text-[10px] font-bold uppercase", student.gender === 'Male' ? "text-blue-600" : "text-pink-600")}>
+                                                        {student.gender || 'N/A'}
+                                                    </Badge>
+                                                </TableCell>
                                                 <TableCell className="text-slate-500 text-xs">{student.email}</TableCell>
                                                 <TableCell className="text-right">
                                                     <Button variant="ghost" size="sm" asChild>
@@ -167,7 +185,7 @@ function ClassDetailView({
                                         ))}
                                         {classStudents.length === 0 && (
                                             <TableRow>
-                                                <TableCell colSpan={3} className="text-center py-12 text-muted-foreground italic">No students assigned to this class.</TableCell>
+                                                <TableCell colSpan={4} className="text-center py-12 text-muted-foreground italic">No students assigned to this class.</TableCell>
                                             </TableRow>
                                         )}
                                     </TableBody>
@@ -203,7 +221,8 @@ export default function AcademicsPageContent() {
   const { toast } = useToast();
   
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingClass, setEditingClass] = useState<Class | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canManageClasses = role === 'Director' || role === 'Administrator';
@@ -213,10 +232,30 @@ export default function AcademicsPageContent() {
     role === 'Director' || role === 'Accountant'
   );
 
-  const form = useForm<z.infer<typeof createClassSchema>>({
-    resolver: zodResolver(createClassSchema),
+  const form = useForm<z.infer<typeof classSchema>>({
+    resolver: zodResolver(classSchema),
     defaultValues: { name: '', description: '', teacherId: '', capacity: 30 },
   });
+
+  // Handle Edit Click
+  const handleEditClick = (e: React.MouseEvent, c: Class) => {
+      e.stopPropagation(); // Don't open detail view
+      setEditingClass(c);
+      form.reset({
+          name: c.name,
+          description: c.description || '',
+          teacherId: c.teacherId || '',
+          capacity: c.capacity || 30
+      });
+      setIsDialogOpen(true);
+  };
+
+  // Handle Create Click
+  const handleCreateClick = () => {
+      setEditingClass(null);
+      form.reset({ name: '', description: '', teacherId: '', capacity: 30 });
+      setIsDialogOpen(true);
+  };
 
   // Queries
   const classesQuery = useMemoFirebase(() => {
@@ -258,23 +297,42 @@ export default function AcademicsPageContent() {
   [firestore, schoolId, isStaff]);
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
-  const onCreateSubmit = async (values: z.infer<typeof createClassSchema>) => {
+  const onSubmit = async (values: z.infer<typeof classSchema>) => {
     if (!firestore || !schoolId) return;
     setIsSubmitting(true);
     try {
-        await addDoc(collection(firestore, 'classes'), {
-            ...values,
-            schoolId,
-            createdAt: serverTimestamp(),
-        });
-        toast({ title: "Class Created", description: `"${values.name}" has been added.` });
-        setCreateDialogOpen(false);
+        if (editingClass) {
+            await updateDoc(doc(firestore, 'classes', editingClass.id), {
+                ...values,
+                updatedAt: serverTimestamp(),
+            });
+            toast({ title: "Class Updated", description: `"${values.name}" has been modified.` });
+        } else {
+            await addDoc(collection(firestore, 'classes'), {
+                ...values,
+                schoolId,
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: "Class Created", description: `"${values.name}" has been added.` });
+        }
+        setIsDialogOpen(false);
         form.reset();
     } catch (e) {
-        toast({ variant: 'destructive', title: "Error", description: "Failed to create class." });
+        toast({ variant: 'destructive', title: "Error", description: "Failed to save class." });
     } finally {
         setIsSubmitting(false);
     }
+  };
+
+  const handleDeleteClass = async (e: React.MouseEvent, id: string) => {
+      e.stopPropagation();
+      if (!confirm("Permanently delete this class? This will not delete students but they will lose their class assignment.")) return;
+      try {
+          await deleteDoc(doc(firestore!, 'classes', id));
+          toast({ title: "Class Deleted" });
+      } catch (e) {
+          toast({ variant: "destructive", title: "Delete Failed" });
+      }
   };
 
   if (!isRoleLoading && !isStaff) {
@@ -317,22 +375,22 @@ export default function AcademicsPageContent() {
             </CardDescription>
           </div>
           {canManageClasses && schoolId && (
-            <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-indigo-600 hover:bg-indigo-700">
+                <Button className="bg-indigo-600 hover:bg-indigo-700" onClick={handleCreateClick}>
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create Class
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Create a New Class</DialogTitle>
+                  <DialogTitle>{editingClass ? 'Edit Class' : 'Create a New Class'}</DialogTitle>
                   <DialogDescription>
-                    Fill out the form below to add a new class to the system.
+                    Fill out the form below to {editingClass ? 'modify the' : 'add a new'} class.
                   </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onCreateSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField control={form.control} name="name" render={({ field }) => (
                             <FormItem><FormLabel>Class Name</FormLabel><FormControl><Input placeholder="e.g. BS 3" {...field}/></FormControl><FormMessage/></FormItem>
                         )}/>
@@ -341,6 +399,7 @@ export default function AcademicsPageContent() {
                                 <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl><SelectTrigger><SelectValue placeholder="Select teacher..."/></SelectTrigger></FormControl>
                                     <SelectContent>
+                                        <SelectItem value="unassigned">None (Unassigned)</SelectItem>
                                         {teachers?.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
@@ -351,7 +410,7 @@ export default function AcademicsPageContent() {
                             <FormItem><FormLabel>Target Capacity</FormLabel><FormControl><Input type="number" {...field}/></FormControl><FormMessage/></FormItem>
                         )}/>
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : "Create Class"}
+                            {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : (editingClass ? "Save Changes" : "Create Class")}
                         </Button>
                     </form>
                 </Form>
@@ -372,27 +431,51 @@ export default function AcademicsPageContent() {
                 const classTeacher = teachers?.find(t => t.uid === c.teacherId) || 
                                    (profile && c.teacherId === profile.uid ? profile : null);
                 
+                const classStudents = students?.filter(s => s.classId === c.id) || [];
+                const maleCount = classStudents.filter(s => s.gender === 'Male').length;
+                const femaleCount = classStudents.filter(s => s.gender === 'Female').length;
+
                 return (
                   <Card 
                       key={c.id} 
                       className="cursor-pointer hover:border-indigo-500 hover:ring-2 hover:ring-indigo-100 transition-all h-full group"
                       onClick={() => setSelectedClass(c)}
                   >
-                    <CardHeader>
+                    <CardHeader className="relative">
                       <div className="flex justify-between items-start">
                           <CardTitle className="text-xl font-bold text-slate-800">{c.name}</CardTitle>
-                          <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 transition-transform group-hover:translate-x-1" />
+                          <div className="flex items-center gap-1">
+                              {canManageClasses && (
+                                  <>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-600" onClick={(e) => handleEditClick(e, c)}>
+                                        <Edit className="h-4 w-4"/>
+                                    </Button>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={(e) => handleDeleteClass(e, c.id)}>
+                                        <Trash2 className="h-4 w-4"/>
+                                    </Button>
+                                  </>
+                              )}
+                              <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 transition-transform group-hover:translate-x-1" />
+                          </div>
                       </div>
                       <CardDescription className="line-clamp-1">{c.description || 'No description available.'}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                           <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600"><Users className="h-4 w-4"/></div>
-                          <span className="font-medium text-slate-700">{students?.filter(s => s.classId === c.id).length || 0} / {c.capacity || 0} Enrolled</span>
+                          <span className="font-medium text-slate-700">{classStudents.length} / {c.capacity || 0} Enrolled</span>
                       </div>
                       <div className="flex items-center gap-2">
                           <div className="p-1.5 bg-emerald-50 rounded-lg text-emerald-600"><User className="h-4 w-4"/></div>
                           <span className="font-medium text-slate-700">Teacher: {classTeacher ? `${classTeacher.firstName} ${classTeacher.lastName}` : 'Not Assigned'}</span>
+                      </div>
+                      <div className="flex gap-2 pt-1">
+                          <Badge variant="outline" className="text-[10px] uppercase tracking-tighter text-blue-600 border-blue-100">
+                              {maleCount} Boys
+                          </Badge>
+                          <Badge variant="outline" className="text-[10px] uppercase tracking-tighter text-pink-600 border-pink-100">
+                              {femaleCount} Girls
+                          </Badge>
                       </div>
                     </CardContent>
                     <CardFooter className="bg-slate-50/50 border-t py-3 text-xs font-bold text-indigo-600 uppercase tracking-widest">
