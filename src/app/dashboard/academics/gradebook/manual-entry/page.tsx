@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, FileSpreadsheet } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
+import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
@@ -33,8 +34,8 @@ export default function GradebookPage() {
     // State for filtering
     const [classId, setClassId] = useState('');
     const [subjectId, setSubjectId] = useState('');
-    const [term, setTerm] = useState('First Term');
-    const [academicYear, setAcademicYear] = useState('2024-2025');
+    const [term, setTerm] = useState(MOCK_TERMS[0]);
+    const [academicYear, setAcademicYear] = useState(MOCK_ACADEMIC_YEARS[4]); // 2024-2025 default
     const [assessmentType, setAssessmentType] = useState(ASSESSMENT_TYPES[0]);
     const [maxScore, setMaxScore] = useState(100);
 
@@ -60,8 +61,6 @@ export default function GradebookPage() {
     };
 
     const handleSaveBatch = async () => {
-        console.log("Save button clicked!"); // Debug 1
-
         if (!firestore) {
             toast({ variant: 'destructive', title: "System Error", description: "Database not connected." });
             return;
@@ -77,11 +76,8 @@ export default function GradebookPage() {
         
         if (!classId || !subjectId) {
             toast({ variant: 'destructive', title: "Missing Information", description: "Please select both a Class and a Subject." });
-            console.log("Missing Class or Subject:", { classId, subjectId }); // Debug 2
             return;
         }
-
-        console.log("Current Scores State:", scores); // Debug 3
 
         setIsSaving(true);
         try {
@@ -112,8 +108,6 @@ export default function GradebookPage() {
                 }
             });
 
-            console.log(`Prepared ${count} records for batch commit.`); // Debug 4
-
             if (count === 0) {
                 toast({ variant: 'destructive', title: "No Data", description: "You have not entered any valid scores to save." });
                 setIsSaving(false);
@@ -121,7 +115,6 @@ export default function GradebookPage() {
             }
 
             await batch.commit();
-            console.log("Batch commit successful!"); // Debug 5
             
             toast({ title: "Success", description: `Saved ${count} scores successfully.` });
             
@@ -138,7 +131,7 @@ export default function GradebookPage() {
             setRemarks({});
 
         } catch (error: any) {
-            console.error("Save Batch Error:", error); // Debug 6
+            console.error("Save Batch Error:", error);
             toast({ variant: 'destructive', title: "Database Error", description: error.message });
         } finally {
             setIsSaving(false);
@@ -159,23 +152,34 @@ export default function GradebookPage() {
                 <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     <div className="space-y-2">
                         <Label>Academic Year</Label>
-                        <Input value={academicYear} onChange={e => setAcademicYear(e.target.value)} />
+                        <Select value={academicYear} onValueChange={setAcademicYear}>
+                            <SelectTrigger className="bg-white border-2">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {MOCK_ACADEMIC_YEARS.map(year => (
+                                    <SelectItem key={year} value={year}>{year}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div className="space-y-2">
                         <Label>Term</Label>
                         <Select value={term} onValueChange={setTerm}>
-                            <SelectTrigger><SelectValue/></SelectTrigger>
+                            <SelectTrigger className="bg-white border-2">
+                                <SelectValue />
+                            </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="First Term">First Term</SelectItem>
-                                <SelectItem value="Second Term">Second Term</SelectItem>
-                                <SelectItem value="Third Term">Third Term</SelectItem>
+                                {MOCK_TERMS.map(t => (
+                                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
                         <Label>Class</Label>
                         <Select value={classId} onValueChange={setClassId}>
-                            <SelectTrigger><SelectValue placeholder="Select Class"/></SelectTrigger>
+                            <SelectTrigger className="bg-white border-2"><SelectValue placeholder="Select Class"/></SelectTrigger>
                             <SelectContent>
                                 {classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
@@ -184,7 +188,7 @@ export default function GradebookPage() {
                     <div className="space-y-2">
                         <Label>Subject</Label>
                         <Select value={subjectId} onValueChange={setSubjectId}>
-                            <SelectTrigger><SelectValue placeholder="Select Subject"/></SelectTrigger>
+                            <SelectTrigger className="bg-white border-2"><SelectValue placeholder="Select Subject"/></SelectTrigger>
                             <SelectContent>
                                 {subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                             </SelectContent>
@@ -193,7 +197,7 @@ export default function GradebookPage() {
                     <div className="space-y-2">
                         <Label>Type</Label>
                         <Select value={assessmentType} onValueChange={setAssessmentType}>
-                            <SelectTrigger><SelectValue/></SelectTrigger>
+                            <SelectTrigger className="bg-white border-2"><SelectValue/></SelectTrigger>
                             <SelectContent>
                                 {ASSESSMENT_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                             </SelectContent>
@@ -201,21 +205,24 @@ export default function GradebookPage() {
                     </div>
                     <div className="space-y-2">
                         <Label>Max Score</Label>
-                        <Input type="number" value={maxScore} onChange={e => setMaxScore(Number(e.target.value))} />
+                        <Input type="number" value={maxScore} onChange={e => setMaxScore(Number(e.target.value))} className="bg-white border-2" />
                     </div>
                 </CardContent>
             </Card>
 
             {classId && subjectId ? (
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle>Student Roster</CardTitle>
-                        <Button onClick={handleSaveBatch} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
+                <Card className="shadow-lg">
+                    <CardHeader className="flex flex-row items-center justify-between border-b bg-slate-50/50">
+                        <div>
+                            <CardTitle>Student Roster</CardTitle>
+                            <CardDescription>Enter marks for the selected class and subject.</CardDescription>
+                        </div>
+                        <Button onClick={handleSaveBatch} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 h-12 px-8 font-bold">
                             {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
                             Save All Scores
                         </Button>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-6">
                         {loadingStudents ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-blue-600"/></div> : (
                             <Table>
                                 <TableHeader>
@@ -231,18 +238,21 @@ export default function GradebookPage() {
                                         <TableRow key={s.id}>
                                             <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
                                             <TableCell>
-                                                <Input 
-                                                    type="number" 
-                                                    min="0" max={maxScore}
-                                                    value={scores[s.uid] ?? ''} 
-                                                    onChange={e => handleScoreChange(s.uid, e.target.value)}
-                                                    className={`font-bold ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
-                                                />
+                                                <div className="relative">
+                                                    <Input 
+                                                        type="number" 
+                                                        min="0" max={maxScore}
+                                                        value={scores[s.uid] ?? ''} 
+                                                        onChange={e => handleScoreChange(s.uid, e.target.value)}
+                                                        className={`font-bold pr-10 ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
+                                                    />
+                                                    <span className="absolute right-3 top-2 text-[10px] text-muted-foreground uppercase font-bold">PTS</span>
+                                                </div>
                                             </TableCell>
                                             <TableCell>
                                                 <Input 
                                                     type="text" 
-                                                    placeholder="e.g. Needs to focus"
+                                                    placeholder="e.g. Excellent progress"
                                                     value={remarks[s.uid] ?? ''} 
                                                     onChange={e => setRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
                                                 />
@@ -255,8 +265,14 @@ export default function GradebookPage() {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="p-12 text-center text-muted-foreground border-2 border-dashed rounded-xl">
-                    Please select a Class and Subject to load the roster.
+                <div className="p-20 text-center text-muted-foreground border-4 border-dashed rounded-[2.5rem] bg-slate-50 flex flex-col items-center gap-4">
+                    <div className="bg-white p-4 rounded-full shadow-sm">
+                        <FileSpreadsheet className="h-12 w-12 text-slate-300" />
+                    </div>
+                    <div>
+                        <p className="text-lg font-bold text-slate-600">Gradebook Ready</p>
+                        <p className="text-sm">Please select a Class and Subject to load the student roster.</p>
+                    </div>
                 </div>
             )}
         </div>
