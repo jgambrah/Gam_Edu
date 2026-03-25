@@ -50,7 +50,6 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentSelect } from '@/components/StudentSelect';
 import { billStudentForAttendance, billMultipleStudents } from '@/lib/billing';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
-import { TemporaryResetTool } from '@/components/dashboard/finance/TemporaryResetTool';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -205,7 +204,7 @@ function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, on
                         studentId: docSnap.id,
                         studentName: `${student.firstName} ${student.lastName}`,
                         classId: student.classId || '',
-                        type: 'Canteen Fee (Termly)',
+                        type: 'Canteen Fee (Daily)',
                         description: `Termly Canteen - ${termName}`,
                         billedAmount: rate,
                         amountPaid: 0,
@@ -599,6 +598,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                                     'Lab Fee', 
                                     'Sports Fee', 
                                     'Canteen Fee', 
+                                    'Transport Fee', 
                                     'Other'
                                 ].map(t => (
                                     <SelectItem key={t} value={t}>{t}</SelectItem>
@@ -1147,13 +1147,6 @@ export default function AccountsPage() {
             </TabsList>
             <TabsContent value="billing" className="space-y-6">
                 
-                {schoolId && (
-                    <TemporaryResetTool 
-                        schoolId={schoolId} 
-                        onResetComplete={forceRefetch} 
-                    />
-                )}
-
                 <Card>
                     <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
                     <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
