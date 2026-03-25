@@ -151,7 +151,7 @@ function TeacherDashboard({ profile, classes, isLoading }: any) {
                             <div className="bg-emerald-100 p-2 rounded-lg text-emerald-600"><PlusCircle className="h-5 w-5"/></div>
                             <span className="font-bold text-sm">Create Quiz</span>
                         </Link>
-                        <Link href="/dashboard/academics/gradebook" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3">
+                        <Link href="/dashboard/academics/gradebook/manual-entry" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3">
                             <div className="bg-orange-100 p-2 rounded-lg text-orange-600"><TrendingUp className="h-5 w-5"/></div>
                             <span className="font-bold text-sm">Gradebook</span>
                         </Link>
@@ -357,7 +357,6 @@ export default function DashboardClient() {
   const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant'].includes(role || '');
   const isParent = role === 'Parent';
   
-  // Security Rule Guard: Only authorized roles can list the staff collection
   const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);

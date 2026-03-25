@@ -123,7 +123,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/people',
     title: 'People Management',
     icon: Users,
-    roles: ['Director', 'Administrator'],
+    roles: ['Director', 'Administrator', 'Teacher'],
     subItems: [
         {
             path: '/dashboard/admissions',
@@ -161,7 +161,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/academics',
     title: 'Academics',
     icon: BookOpen,
-    roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+    roles: ['Director', 'Administrator', 'Teacher'],
     subItems: [
         {
             path: '/dashboard/attendance',
@@ -185,7 +185,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/assignments',
             title: 'Assignments & Quizzes',
             icon: BookMarked,
-            roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+            roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
             path: '/dashboard/lesson-planning',
@@ -197,7 +197,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/academics/learning-materials',
             title: 'Learning Materials',
             icon: FolderKanban,
-            roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+            roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
             path: '/dashboard/assessments',
@@ -219,27 +219,27 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/report-cards',
-            title: 'Report Cards',
+            title: 'Report Card Manager',
             icon: FileText,
-            roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
+            roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
             path: '/dashboard/timetable',
             title: 'Timetable',
             icon: CalendarDays,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+            roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
             path: '/dashboard/smart-schedule',
             title: 'Smart Schedule',
             icon: CalendarCheck,
-            roles: ['Student', 'Teacher'],
+            roles: ['Teacher'],
         },
         {
             path: '/dashboard/calendar',
             title: 'School Calendar',
             icon: CalendarDays,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+            roles: ['Teacher', 'Administrator', 'Director'],
         },
     ]
   },

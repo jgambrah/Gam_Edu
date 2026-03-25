@@ -25,10 +25,10 @@ const ASSESSMENT_TYPES = [
 ];
 
 export default function GradebookPage() {
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
-    const { schoolId } = useCurrentSchool();
+    const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const { toast } = useToast();
 
     // State for filtering
@@ -56,7 +56,7 @@ export default function GradebookPage() {
 
     const handleScoreChange = (studentId: string, val: string) => {
         const num = val === '' ? '' : Number(val);
-        if (typeof num === 'number' && num > maxScore) return; // Prevent over-scoring
+        if (typeof num === 'number' && num > maxScore) return; 
         setScores(prev => ({ ...prev, [studentId]: num }));
     };
 
@@ -70,7 +70,7 @@ export default function GradebookPage() {
             return;
         }
         if (!user) {
-            toast({ variant: 'destructive', title: "System Error", description: "User not logged in." });
+            toast({ variant: 'destructive', title: "Auth Error", description: "You must be logged in to save scores." });
             return;
         }
         
@@ -83,10 +83,9 @@ export default function GradebookPage() {
         try {
             const batch = writeBatch(firestore);
             let count = 0;
-            const updatedStudentIds: string[] = []; // Track who got graded
+            const updatedStudentIds: string[] = []; 
 
             Object.entries(scores).forEach(([studentId, score]) => {
-                // Ensure score is not empty string and is a valid number
                 if (score !== '' && score !== null && !isNaN(Number(score))) {
                     const newAssessmentRef = doc(collection(firestore, 'assessments'));
                     batch.set(newAssessmentRef, {
@@ -101,10 +100,10 @@ export default function GradebookPage() {
                         score: Number(score),
                         maxScore: Number(maxScore),
                         teacherRemark: remarks[studentId] || "", 
-                        createdAt: new Date(),
+                        createdAt: serverTimestamp(),
                     });
                     count++;
-                    updatedStudentIds.push(studentId); // For notifications
+                    updatedStudentIds.push(studentId);
                 }
             });
 
@@ -118,7 +117,6 @@ export default function GradebookPage() {
             
             toast({ title: "Success", description: `Saved ${count} scores successfully.` });
             
-            // Send Push Notification to Parents (Fire and forget)
             notifyParents(
                 updatedStudentIds,
                 "New Grades Posted 📊",
@@ -126,7 +124,6 @@ export default function GradebookPage() {
                 "/dashboard/my-grades"
             ).catch(err => console.error("Notification failed silently:", err));
 
-            // Clear scores and remarks for next entry
             setScores({});
             setRemarks({});
 
@@ -138,10 +135,14 @@ export default function GradebookPage() {
         }
     };
 
+    const isGlobalLoading = isUserLoading || schoolLoading;
+
     return (
         <div className="p-6 space-y-6">
             <div>
-                <h1 className="text-3xl font-bold flex items-center gap-2"><FileSpreadsheet className="text-blue-600"/> Gradebook Entry</h1>
+                <h1 className="text-3xl font-bold flex items-center gap-2">
+                    <FileSpreadsheet className="text-blue-600"/> Gradebook Entry
+                </h1>
                 <p className="text-muted-foreground">Batch enter continuous assessments and exam scores.</p>
             </div>
 
@@ -217,9 +218,13 @@ export default function GradebookPage() {
                             <CardTitle>Student Roster</CardTitle>
                             <CardDescription>Enter marks for the selected class and subject.</CardDescription>
                         </div>
-                        <Button onClick={handleSaveBatch} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 h-12 px-8 font-bold">
+                        <Button 
+                            onClick={handleSaveBatch} 
+                            disabled={isSaving || isGlobalLoading} 
+                            className="bg-blue-600 hover:bg-blue-700 h-12 px-8 font-bold"
+                        >
                             {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
-                            Save All Scores
+                            {isGlobalLoading ? 'Checking Auth...' : 'Save All Scores'}
                         </Button>
                     </CardHeader>
                     <CardContent className="pt-6">

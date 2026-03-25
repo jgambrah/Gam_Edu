@@ -18,11 +18,14 @@ export async function GET(request: NextRequest) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-        const response = await fetch(url, { signal: controller.signal });
+        const response = await fetch(url, { 
+            signal: controller.signal,
+            cache: 'no-store' // Ensure we get the fresh image for PDF generation
+        });
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            console.error(`Upstream Image Proxy Error: ${response.status} ${response.statusText}`);
+            console.error(`Upstream Image Proxy Error: ${response.status} ${response.statusText} for URL: ${url}`);
             return new NextResponse(`Upstream returned ${response.status}`, { status: response.status });
         }
         
@@ -32,16 +35,15 @@ export async function GET(request: NextRequest) {
         return new NextResponse(buffer, {
             headers: {
                 'Content-Type': contentType,
-                'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+                'Cache-Control': 'public, max-age=3600', 
                 'Access-Control-Allow-Origin': '*',
             },
         });
     } catch (err: any) {
         console.error('Image Proxy Error:', err.message);
-        // Map common errors to safer responses to prevent 502s
         if (err.name === 'AbortError') {
-            return new NextResponse('Image fetch timed out', { status: 504 });
+            return new NextResponse('Image fetch timed out after 10 seconds', { status: 504 });
         }
-        return new NextResponse('Internal Image Proxy Error', { status: 500 });
+        return new NextResponse(`Internal Image Proxy Error: ${err.message}`, { status: 500 });
     }
 }
