@@ -3,13 +3,14 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
-import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment, setDoc, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment, setDoc, getDocs, writeBatch } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
   Save, Loader2, CornerDownRight, Trash2, Receipt, BarChart, TrendingUp, BookOpen, PlusCircle, BookMarked, Printer, Eye, ShieldCheck, Download
 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { z } from 'zod';
 
 // UI
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -19,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -330,6 +331,118 @@ function PaymentVoucherForm({
     );
 }
 
+// --- SUB-COMPONENT: Chart of Accounts Logic ---
+function ChartOfAccounts({ accounts, schoolId, onAccountsChanged }: { accounts: Account[], schoolId: string, onAccountsChanged: () => void }) {
+    const [isFormOpen, setFormOpen] = useState(false);
+    const sortedAccounts = useMemo(() => {
+        const controlAccounts = accounts.filter(a => a.isControlAccount).sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+        const subAccounts = accounts.filter(a => !a.isControlAccount);
+        const result: Account[] = [];
+        controlAccounts.forEach(control => {
+            result.push(control);
+            const children = subAccounts.filter(sub => sub.parentAccountId === control.id).sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+            result.push(...children);
+        });
+        return result;
+    }, [accounts]);
+    return (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div><CardTitle className="flex items-center gap-2"><BookMarked /> Chart of Accounts</CardTitle><CardDescription>The foundational structure of the school's financial ledger.</CardDescription></div>
+                <Dialog open={isFormOpen} onOpenChange={setFormOpen}><DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> New Account</Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Create New Ledger Account</DialogTitle></DialogHeader><AccountForm setOpen={setFormOpen} onAccountAdded={onAccountsChanged} accounts={accounts} schoolId={schoolId} /></DialogContent></Dialog>
+            </CardHeader>
+            <CardContent><Table><TableHeader><TableRow><TableHead>Code</TableHead><TableHead>Account Name</TableHead><TableHead>Type</TableHead><TableHead>Parent</TableHead><TableHead>Description</TableHead></TableRow></TableHeader><TableBody>{sortedAccounts.map(acc => (<TableRow key={acc.id} className={cn(acc.isControlAccount && 'bg-muted/50 font-bold')}><TableCell>{acc.code}</TableCell><TableCell>{acc.name}</TableCell><TableCell>{acc.type}</TableCell><TableCell>{accounts.find(p => p.id === acc.parentAccountId)?.name || '-'}</TableCell><TableCell>{acc.description}</TableCell></TableRow>))}</TableBody></Table></CardContent>
+        </Card>
+    );
+}
+
+// --- SUB-COMPONENT: Account Form Logic ---
+function AccountForm({ setOpen, onAccountAdded, accounts, schoolId }: { setOpen: (open: boolean) => void; onAccountAdded: () => void; accounts: Account[]; schoolId: string }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const controlAccounts = accounts.filter(acc => acc.isControlAccount);
+    const form = useForm<z.infer<typeof accountSchema>>({ resolver: zodResolver(accountSchema), defaultValues: { parentAccountId: 'None' } });
+    async function onSubmit(values: z.infer<typeof accountSchema>) {
+        if (!firestore) return;
+        setIsSubmitting(true);
+        try {
+            const isControl = values.parentAccountId === 'None';
+            const newAccRef = doc(collection(firestore, 'accounts'));
+            const data = { ...values, isControlAccount: isControl, parentAccountId: isControl ? null : values.parentAccountId, schoolId, balance: 0, createdAt: serverTimestamp() };
+            await setDoc(newAccRef, data);
+            toast({ title: 'Success' });
+            onAccountAdded();
+            setOpen(false);
+        } catch (e) { toast({ variant: 'destructive', title: 'Error' }); } finally { setIsSubmitting(false); }
+    }
+    return (
+        <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4"><FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Account Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="type" render={({ field }) => (<FormItem><FormLabel>Account Type</Label><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{ACCOUNT_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent></Select></FormItem>)} /><FormField control={form.control} name="parentAccountId" render={({ field }) => (<FormItem><FormLabel>Parent Account</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="None">None (Control)</SelectItem>{controlAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}</SelectContent></Select></FormItem>)} /><Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create Account</Button></form></Form>
+    );
+}
+
+// --- SUB-COMPONENT: Journal Entry Form Logic ---
+function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Account[], schoolId: string, onEntryAdded: () => void }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const postableAccounts = accounts.filter(acc => !acc.isControlAccount);
+    const form = useForm<z.infer<typeof journalEntrySchema>>({ resolver: zodResolver(journalEntrySchema), defaultValues: { description: '', amount: 0, debitAccountId: '', creditAccountId: '' } });
+    async function onSubmit(values: z.infer<typeof journalEntrySchema>) {
+        if (!firestore || !user) return;
+        setIsSubmitting(true);
+        try {
+            const debitAcc = accounts.find(a => a.id === values.debitAccountId);
+            const creditAcc = accounts.find(a => a.id === values.creditAccountId);
+            const entryData = {
+                date: serverTimestamp(),
+                description: values.description,
+                lines: [
+                    { accountId: values.debitAccountId, accountName: debitAcc?.name || '', debit: values.amount, credit: 0 },
+                    { accountId: values.creditAccountId, accountName: creditAcc?.name || '', debit: 0, credit: values.amount },
+                ],
+                totalAmount: values.amount,
+                createdBy: user.uid,
+                createdAt: serverTimestamp(),
+                schoolId: schoolId,
+            };
+            await addDoc(collection(firestore, 'journal_entries'), entryData);
+            toast({ title: 'Success', description: 'Journal entry has been recorded.' });
+            onEntryAdded();
+            form.reset();
+        } catch (error) { toast({ variant: 'destructive', title: 'Error' }); } finally { setIsSubmitting(false); }
+    }
+    return (
+        <Card><CardHeader><CardTitle>Manual Journal Entry</CardTitle></CardHeader><CardContent><Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4"><FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="e.g., Office supplies purchase" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="amount" render={({ field }) => (<FormItem><FormLabel>Amount</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>)} /><div className="grid grid-cols-2 gap-4"><FormField control={form.control} name="debitAccountId" render={({ field }) => (<FormItem><FormLabel>Debit Account</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Choose account to debit" /></SelectTrigger></FormControl><SelectContent>{postableAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="creditAccountId" render={({ field }) => (<FormItem><FormLabel>Credit Account</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Choose account to credit" /></SelectTrigger></FormControl><SelectContent>{postableAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /></div><Button type="submit" disabled={isSubmitting} className="w-full h-12">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Record Entry</Button></form></Form></CardContent></Card>
+    );
+}
+
+// --- SUB-COMPONENT: General Ledger Logic ---
+function GeneralLedger({ accounts, journals }: { accounts: Account[], journals: JournalEntry[] }) {
+    const [selectedAccountId, setSelectedAccountId] = useState<string>('all');
+    const ledgerData = useMemo(() => {
+        if (!journals || !accounts || selectedAccountId === 'all') return [];
+        const account = accounts.find(a => a.id === selectedAccountId);
+        if (!account) return [];
+        const lines: any[] = [];
+        let runningBalance = 0;
+        const sortedJournals = [...journals].sort((a,b) => a.date.seconds - b.date.seconds);
+        sortedJournals.forEach(journal => {
+            const line = journal.lines.find(l => l.accountId === selectedAccountId);
+            if (line) {
+                let change = ['Asset', 'Expense'].includes(account.type) ? (line.debit - line.credit) : (line.credit - line.debit);
+                runningBalance += change;
+                lines.push({ id: journal.id, date: journal.date, description: journal.description, debit: line.debit, credit: line.credit, balance: runningBalance });
+            }
+        });
+        return lines;
+    }, [journals, selectedAccountId, accounts]);
+    return (
+        <div className="space-y-4"><div className="flex gap-4 items-center"><div className="w-[300px]"><Select value={selectedAccountId} onValueChange={setSelectedAccountId}><SelectTrigger><SelectValue placeholder="Select Account to View" /></SelectTrigger><SelectContent>{accounts.sort((a,b) => (a.code || '').localeCompare(b.code || '')).map(a => (<SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>))}</SelectContent></Select></div></div>{selectedAccountId !== 'all' ? (<Card><CardHeader><CardTitle>Ledger Details</CardTitle></CardHeader><CardContent><Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead className="text-right">Debit</TableHead><TableHead className="text-right">Credit</TableHead><TableHead className="text-right">Balance</TableHead></TableRow></TableHeader><TableBody>{ledgerData.map((row) => (<TableRow key={row.id}><TableCell>{format(row.date.toDate(), 'dd/MM/yyyy')}</TableCell><TableCell>{row.description}</TableCell><TableCell className="text-right">{row.debit > 0 ? row.debit.toFixed(2) : '-'}</TableCell><TableCell className="text-right">{row.credit > 0 ? row.credit.toFixed(2) : '-'}</TableCell><TableCell className="text-right font-bold">GH₵{row.balance.toFixed(2)}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>) : <div className="text-center py-12 border-2 border-dashed rounded-lg text-muted-foreground">Select an account to view ledger</div>}</div>
+    );
+}
+
 // --- MAIN PAGE ---
 export default function AccountingPage() {
     const { role } = useRole();
@@ -339,7 +452,6 @@ export default function AccountingPage() {
 
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [selectedPV, setSelectedPV] = useState<any>(null);
-    const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
 
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: accounts, isLoading: accountsLoading, forceRefetch: forceRefetchAccounts } = useCollection<Account>(accountsQuery);
@@ -463,67 +575,5 @@ export default function AccountingPage() {
                 }
             `}</style>
         </div>
-    );
-}
-
-// --- Chart of Accounts Logic ---
-function ChartOfAccounts({ accounts, schoolId, onAccountsChanged }: { accounts: Account[], schoolId: string, onAccountsChanged: () => void }) {
-    const [isFormOpen, setFormOpen] = useState(false);
-    const sortedAccounts = useMemo(() => {
-        const controlAccounts = accounts.filter(a => a.isControlAccount).sort((a, b) => (a.code || '').localeCompare(b.code || ''));
-        const subAccounts = accounts.filter(a => !a.isControlAccount);
-        const result: Account[] = [];
-        controlAccounts.forEach(control => {
-            result.push(control);
-            const children = subAccounts.filter(sub => sub.parentAccountId === control.id).sort((a, b) => (a.code || '').localeCompare(b.code || ''));
-            result.push(...children);
-        });
-        return result;
-    }, [accounts]);
-    return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-                <div><CardTitle className="flex items-center gap-2"><BookMarked /> Chart of Accounts</CardTitle><CardDescription>The foundational structure of the school's financial ledger.</CardDescription></div>
-                <Dialog open={isFormOpen} onOpenChange={setFormOpen}><DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> New Account</Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Create New Ledger Account</DialogTitle></DialogHeader><AccountForm setOpen={setFormOpen} onAccountAdded={onAccountsChanged} accounts={accounts} schoolId={schoolId} /></DialogContent></Dialog>
-            </CardHeader>
-            <CardContent><Table><TableHeader><TableRow><TableHead>Code</TableHead><TableHead>Account Name</TableHead><TableHead>Type</TableHead><TableHead>Parent</TableHead><TableHead>Description</TableHead></TableRow></TableHeader><TableBody>{sortedAccounts.map(acc => (<TableRow key={acc.id} className={cn(acc.isControlAccount && 'bg-muted/50 font-bold')}><TableCell>{acc.code}</TableCell><TableCell>{acc.name}</TableCell><TableCell>{acc.type}</TableCell><TableCell>{accounts.find(p => p.id === acc.parentAccountId)?.name || '-'}</TableCell><TableCell>{acc.description}</TableCell></TableRow>))}</TableBody></Table></CardContent>
-        </Card>
-    );
-}
-
-// --- Journal Entry Form Logic ---
-function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Account[], schoolId: string, onEntryAdded: () => void }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const postableAccounts = accounts.filter(acc => !acc.isControlAccount);
-    const form = useForm<z.infer<typeof journalEntrySchema>>({ resolver: zodResolver(journalEntrySchema), defaultValues: { description: '', amount: 0, debitAccountId: '', creditAccountId: '' } });
-    async function onSubmit(values: z.infer<typeof journalEntrySchema>) {
-        if (!firestore || !user) return;
-        setIsSubmitting(true);
-        try {
-            const debitAcc = accounts.find(a => a.id === values.debitAccountId);
-            const creditAcc = accounts.find(a => a.id === values.creditAccountId);
-            const entryData = {
-                date: serverTimestamp(),
-                description: values.description,
-                lines: [
-                    { accountId: values.debitAccountId, accountName: debitAcc?.name || '', debit: values.amount, credit: 0 },
-                    { accountId: values.creditAccountId, accountName: creditAcc?.name || '', debit: 0, credit: values.amount },
-                ],
-                totalAmount: values.amount,
-                createdBy: user.uid,
-                createdAt: serverTimestamp(),
-                schoolId: schoolId,
-            };
-            await addDoc(collection(firestore, 'journal_entries'), entryData);
-            toast({ title: 'Success', description: 'Journal entry has been recorded.' });
-            onEntryAdded();
-            form.reset();
-        } catch (error) { toast({ variant: 'destructive', title: 'Error' }); } finally { setIsSubmitting(false); }
-    }
-    return (
-        <Card><CardHeader><CardTitle>Manual Journal Entry</CardTitle></CardHeader><CardContent><Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4"><FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="e.g., Office supplies purchase" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="amount" render={({ field }) => (<FormItem><FormLabel>Amount</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>)} /><div className="grid grid-cols-2 gap-4"><FormField control={form.control} name="debitAccountId" render={({ field }) => (<FormItem><FormLabel>Debit Account</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Choose account to debit" /></SelectTrigger></FormControl><SelectContent>{postableAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="creditAccountId" render={({ field }) => (<FormItem><FormLabel>Credit Account</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Choose account to credit" /></SelectTrigger></FormControl><SelectContent>{postableAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /></div><Button type="submit" disabled={isSubmitting} className="w-full h-12">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Record Entry</Button></form></Form></CardContent></Card>
     );
 }
