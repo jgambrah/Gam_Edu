@@ -53,7 +53,8 @@ import {
   Rocket,
   FileQuestion,
   Sparkles,
-  Coins
+  Coins,
+  Receipt
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -367,6 +368,12 @@ export const navItems: NavItem[] = [
         icon: Book,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
+      {
+        path: '/dashboard/finance/payment-vouchers',
+        title: 'Payment Vouchers',
+        icon: Receipt,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
        {
         path: '/dashboard/payroll/staff-config',
         title: 'Staff Payroll Config',
@@ -495,4 +502,23 @@ export const navItems: NavItem[] = [
     icon: FileQuestion,
     roles: 'all',
   },
+];
+
+export const MOCK_ACADEMIC_YEARS = [
+  '2020-2021',
+  '2021-2022',
+  '2022-2023',
+  '2023-2024',
+  '2024-2025',
+  '2025-2026',
+  '2026-2027',
+  '2027-2028',
+  '2028-2029',
+  '2029-2030',
+];
+
+export const MOCK_TERMS = [
+  'First Term',
+  'Second Term',
+  'Third Term',
 ];
