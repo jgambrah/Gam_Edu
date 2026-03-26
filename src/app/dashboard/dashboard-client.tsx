@@ -9,7 +9,7 @@ import {
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
   Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
-  XCircle, AlertCircle
+  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -20,6 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Route, Bus } from '@/lib/types';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600" }: any) {
   return (
@@ -39,6 +40,82 @@ function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-ind
       </Card>
     </Link>
   );
+}
+
+function TransportStaffDashboard({ profile, routes, buses, students, announcements, isLoading }: any) {
+    const { user } = useUser();
+    const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Staff';
+
+    const busSubscribers = useMemo(() => {
+        return students?.filter((s: any) => s.usesBusService === true).length || 0;
+    }, [students]);
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Transport Portal: {displayName} 🚌</h1>
+                <p className="text-muted-foreground">Manage school bus operations and student transport safety.</p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <StatCard title="Active Routes" value={routes?.length || 0} icon={RouteIcon} link="/dashboard/transport" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Fleet Status" value={`${buses?.length || 0} Buses`} icon={BusIcon} link="/dashboard/transport" isLoading={isLoading} color="text-indigo-600" />
+                <StatCard title="Bus Subscribers" value={busSubscribers} icon={Users} link="/dashboard/transport" isLoading={isLoading} color="text-emerald-600" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="border-t-4 border-t-blue-500">
+                    <CardHeader><CardTitle>Route Operations</CardTitle></CardHeader>
+                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Link href="/dashboard/transport" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3 transition-all group">
+                            <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><Navigation className="h-5 w-5"/></div>
+                            <span className="font-bold text-sm">Manage Routes</span>
+                        </Link>
+                        <Link href="/dashboard/transport" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3 transition-all group">
+                            <div className="bg-indigo-100 p-2 rounded-lg text-indigo-600"><MapPin className="h-5 w-5"/></div>
+                            <span className="font-bold text-sm">Stop Assignments</span>
+                        </Link>
+                        <Link href="/dashboard/attendance/staff" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3 transition-all group">
+                            <div className="bg-emerald-100 p-2 rounded-lg text-emerald-600"><CalendarCheck className="h-5 w-5"/></div>
+                            <span className="font-bold text-sm">My Attendance</span>
+                        </Link>
+                        <Link href="/dashboard/leave-management" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3 transition-all group">
+                            <div className="bg-orange-100 p-2 rounded-lg text-orange-600"><Clock className="h-5 w-5"/></div>
+                            <span className="font-bold text-sm">My Leave</span>
+                        </Link>
+                    </CardContent>
+                </Card>
+
+                <Card className="border-t-4 border-t-slate-800">
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <Megaphone className="h-5 w-5 text-blue-600"/> Latest Announcements
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {isLoading ? (
+                            <div className="space-y-3">
+                                <Skeleton className="h-12 w-full rounded-lg" />
+                                <Skeleton className="h-12 w-full rounded-lg" />
+                            </div>
+                        ) : announcements && announcements.length > 0 ? (
+                            announcements.map((ann: any) => (
+                                <div key={ann.id} className="border-b last:border-0 pb-3 last:pb-0">
+                                    <p className="font-semibold text-sm text-slate-800">{ann.title}</p>
+                                    <p className="text-[10px] text-slate-400 mt-1">{ann.publishedAt ? format(ann.publishedAt.toDate(), 'PPP') : 'Just now'}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-center py-10 text-muted-foreground italic text-sm">No recent announcements.</p>
+                        )}
+                        <Button variant="outline" className="w-full text-xs font-bold" asChild>
+                            <Link href="/dashboard/announcements">View All</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
 }
 
 function AccountantDashboard({ profile, students, classes, records, tills, announcements, isLoading }: any) {
@@ -64,8 +141,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             if (r.lastPaymentDate) {
                 const payDate = r.lastPaymentDate.toDate ? r.lastPaymentDate.toDate() : new Date(r.lastPaymentDate);
                 if (startOfDay(payDate).getTime() === today.getTime()) {
-                    // This is simplified as we don't have the individual payment amount here
-                    // In a full implementation, we'd query the 'payments' subcollection
+                    // Simplified tracking
                 }
             }
 
@@ -497,9 +573,10 @@ export default function DashboardClient() {
   const firestore = useFirestore();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
-  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant'].includes(role || '');
+  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff'].includes(role || '');
   const isParent = role === 'Parent';
   const isAccountant = role === 'Accountant';
+  const isTransportStaff = role === 'Transport Staff';
   const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
@@ -517,6 +594,13 @@ export default function DashboardClient() {
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
+
+  // Transport Specific Queries
+  const routesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
+  const { data: routes, isLoading: loadingRoutes } = useCollection<Route>(routesQuery);
+
+  const busesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
+  const { data: buses, isLoading: loadingBuses } = useCollection<Bus>(busesQuery);
 
   const parentStudentsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isParent && profile?.studentIds?.length) 
@@ -542,7 +626,7 @@ export default function DashboardClient() {
   }, [firestore, schoolId, role, isStaff]);
   const { data: announcements, isLoading: loadingAnnouncements } = useCollection(annQuery);
 
-  const isLoading = roleLoading || schoolLoading || (isStaff && (loadingStudents || loadingStaff || loadingClasses)) || (isParent && (loadingParentStudents || loadingParentFinancials)) || (isAccountant && (loadingRecords || loadingTills));
+  const isLoading = roleLoading || schoolLoading || (isStaff && (loadingStudents || loadingStaff || loadingClasses)) || (isParent && (loadingParentStudents || loadingParentFinancials)) || (isAccountant && (loadingRecords || loadingTills)) || (isTransportStaff && (loadingRoutes || loadingBuses));
 
   if (isLoading) {
     return <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>;
@@ -554,6 +638,10 @@ export default function DashboardClient() {
 
   if (role === 'Accountant') {
     return <AccountantDashboard profile={profile} students={students} classes={classes} records={records} tills={tills} announcements={announcements} isLoading={isLoading} />;
+  }
+
+  if (role === 'Transport Staff') {
+    return <TransportStaffDashboard profile={profile} routes={routes} buses={buses} students={students} announcements={announcements} isLoading={isLoading} />;
   }
 
   if (role === 'Teacher') {
