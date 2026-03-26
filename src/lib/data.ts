@@ -117,7 +117,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/people',
     title: 'People Management',
     icon: Users,
-    roles: ['Director', 'Administrator', 'Teacher'],
+    roles: ['Director', 'Administrator'],
     subItems: [
         {
             path: '/dashboard/admissions',
@@ -135,7 +135,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/students-v3',
             title: 'Students',
             icon: GraduationCap,
-            roles: ['Director', 'Administrator', 'Teacher'],
+            roles: ['Director', 'Administrator'],
         },
         {
             path: '/dashboard/parents-v2',
