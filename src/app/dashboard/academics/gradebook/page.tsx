@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -34,8 +34,8 @@ export default function GradebookPage() {
     // State for filtering
     const [classId, setClassId] = useState('');
     const [subjectId, setSubjectId] = useState('');
-    const [term, setTerm] = useState(MOCK_TERMS[0]);
-    const [academicYear, setAcademicYear] = useState(MOCK_ACADEMIC_YEARS[4]); 
+    const [term, setTerm] = useState(MOCK_TERMS[0] || 'First Term');
+    const [academicYear, setAcademicYear] = useState(MOCK_ACADEMIC_YEARS[4] || '2024-2025'); 
     const [assessmentType, setAssessmentType] = useState(ASSESSMENT_TYPES[0]);
     const [maxScore, setMaxScore] = useState(100);
 
