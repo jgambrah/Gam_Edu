@@ -5,6 +5,7 @@ import {
   UserCog,
   GraduationCap,
   BookOpen,
+  MessageSquare,
   MessageCircle,
   Library,
   Banknote,
@@ -52,8 +53,7 @@ import {
   Rocket,
   FileQuestion,
   Sparkles,
-  Coins,
-  MessageSquare
+  Coins
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -336,12 +336,6 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
         },
         {
-            path: '/dashboard/my-payslips',
-            title: 'My Payslips',
-            icon: FileText,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
-        },
-        {
             path: '/dashboard/staff/performance',
             title: 'Performance',
             icon: Star,
@@ -501,78 +495,4 @@ export const navItems: NavItem[] = [
     icon: FileQuestion,
     roles: 'all',
   },
-];
-
-export const MOCK_ACADEMIC_YEARS = [
-  '2020-2021', 
-  '2021-2022', 
-  '2022-2023', 
-  '2023-2024', 
-  '2024-2025', 
-  '2025-2026', 
-  '2026-2027', 
-  '2027-2028', 
-  '2028-2029', 
-  '2029-2030'
-];
-export const MOCK_TERMS = ['First Term', 'Second Term', 'Third Term'];
-
-export const MOCK_SUBJECTS = [
-  { id: 'math', name: 'Mathematics' },
-  { id: 'science', name: 'Integrated Science' },
-  { id: 'english', name: 'English Language' },
-  { id: 'social', name: 'Social Studies' },
-  { id: 'rme', name: 'R.M.E' },
-  { id: 'ict', name: 'I.C.T' },
-  { id: 'french', name: 'French' },
-  { id: 'gl', name: 'Ghanaian Language' },
-];
-
-export const MOCK_CHART_OF_ACCOUNTS: ChartOfAccount[] = [
-  { id: '1000', code: '1000', name: 'Assets', type: 'Asset', isControlAccount: true },
-  { id: '1100', code: '1100', name: 'Cash at Bank', type: 'Asset', isControlAccount: false, parentAccountId: '1000' },
-  { id: '1200', code: '1200', name: 'Cash in Hand', type: 'Asset', isControlAccount: false, parentAccountId: '1000' },
-  { id: '2000', code: '2000', name: 'Liabilities', type: 'Liability', isControlAccount: true },
-  { id: '3000', code: '3000', name: 'Equity', type: 'Equity', isControlAccount: true },
-  { id: '4000', code: '4000', name: 'Revenue', type: 'Revenue', isControlAccount: true },
-  { id: '4100', code: '4100', name: 'Tuition Fees', type: 'Revenue', isControlAccount: false, parentAccountId: '4000' },
-  { id: '5000', code: '5000', name: 'Expenses', type: 'Expense', isControlAccount: true },
-  { id: '5100', code: '5100', name: 'Salaries', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
-  { id: '5200', code: '5200', name: 'Rent', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
-];
-
-export const MOCK_JOURNAL_ENTRIES: any[] = [];
-
-export const MOCK_PUBLIC_HOLIDAYS = [
-  { id: '1', name: 'New Year Day', date: new Date(2024, 0, 1) },
-  { id: '2', name: 'Constitution Day', date: new Date(2024, 0, 7) },
-  { id: '3', name: 'Independence Day', date: new Date(2024, 2, 6) },
-  { id: '4', name: 'Good Friday', date: new Date(2024, 2, 29) },
-  { id: '5', name: 'Easter Monday', date: new Date(2024, 3, 1) },
-  { id: '6', name: 'Eidul-Fitr', date: new Date(2024, 3, 11) },
-  { id: '7', name: 'May Day', date: new Date(2024, 4, 1) },
-  { id: '8', name: 'Eidul-Adha', date: new Date(2024, 5, 17) },
-  { id: '9', name: 'Founders’ Day', date: new Date(2024, 7, 4) },
-  { id: '10', name: 'Kwame Nkrumah Memorial Day', date: new Date(2024, 8, 21) },
-  { id: '11', name: 'Farmer’s Day', date: new Date(2024, 11, 6) },
-  { id: '12', name: 'Christmas Day', date: new Date(2024, 11, 25) },
-  { id: '13', name: 'Boxing Day', date: new Date(2024, 11, 26) },
-];
-
-export const MOCK_CROSSWORD_PUZZLES = [
-  {
-    id: '1',
-    title: 'Science Basics',
-    topic: 'Science',
-    grid: [
-      ['C', 'E', 'L', 'L'],
-      ['O', '', '', ''],
-      ['R', '', '', ''],
-      ['E', '', '', '']
-    ],
-    clues: {
-      across: [{ number: 1, clue: 'Basic unit of life', answer: 'CELL', row: 0, col: 0 }],
-      down: [{ number: 1, clue: 'The center of an atom', answer: 'CORE', row: 0, col: 0 }]
-    }
-  }
 ];

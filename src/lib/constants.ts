@@ -342,12 +342,6 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
         },
         {
-            path: '/dashboard/my-payslips',
-            title: 'My Payslips',
-            icon: FileText,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
-        },
-        {
             path: '/dashboard/staff/performance',
             title: 'Performance',
             icon: Star,
