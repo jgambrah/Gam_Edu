@@ -58,11 +58,21 @@ export default function ParentsPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingParent, setEditingParent] = useState<ParentMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
+  // ✅ FIX: Controlled selection state — persists across searches
+  const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
+
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [studentSearch, setStudentSearch] = useState('');
   const [showOnlyUnlinked, setShowOnlyUnlinked] = useState(false);
+
+  // Toggle a student in/out of the selection without affecting others
+  const toggleStudentSelection = (uid: string) => {
+    setSelectedStudentIds(prev =>
+      prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]
+    );
+  };
 
   // --- 1. FETCH DATA ---
   const loadData = useCallback(async () => {
@@ -96,12 +106,22 @@ export default function ParentsPage() {
   }, [loadData, adminSchoolId]);
 
   useEffect(() => {
-    if (isAddOpen || editingParent) {
+    if (isAddOpen) {
         setIsSubmitting(false);
         setStudentSearch('');
-        setShowOnlyUnlinked(true); // Default to helping them find unlinked students
+        setShowOnlyUnlinked(true);
+        setSelectedStudentIds([]); // ✅ Clear selection when opening Add modal
     }
-  }, [isAddOpen, editingParent]);
+  }, [isAddOpen]);
+
+  useEffect(() => {
+    if (editingParent) {
+        setIsSubmitting(false);
+        setStudentSearch('');
+        setShowOnlyUnlinked(true);
+        setSelectedStudentIds(editingParent.studentIds || []); // ✅ Pre-populate with existing linked students
+    }
+  }, [editingParent]);
   
   // --- 2. ADD PARENT ---
   const handleAddParent = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -111,7 +131,8 @@ export default function ParentsPage() {
       
       const formData = new FormData(e.currentTarget);
       const values = Object.fromEntries(formData.entries()) as any;
-      const studentIds = formData.getAll('studentIds') as string[];
+      // ✅ Use selectedStudentIds from state instead of form checkboxes
+      const studentIds = selectedStudentIds;
       const password = "password123";
 
       try {
@@ -155,7 +176,8 @@ export default function ParentsPage() {
 
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries()) as any;
-    const studentIds = formData.getAll('studentIds') as string[];
+    // ✅ Use selectedStudentIds from state instead of form checkboxes
+    const studentIds = selectedStudentIds;
 
     try {
         const parentRef = doc(firestore, 'parents', editingParent.id);
@@ -210,10 +232,11 @@ export default function ParentsPage() {
   const filteredStudentsForModal = useMemo(() => {
       let list = students.filter(s => searchStudent(s, studentSearch));
       if (showOnlyUnlinked) {
-          list = list.filter(s => !s.parentId || (editingParent && s.parentId === editingParent.uid));
+          // ✅ Show unlinked students + already-selected students (so they stay visible when filtering)
+          list = list.filter(s => !s.parentId || selectedStudentIds.includes(s.uid) || (editingParent && s.parentId === editingParent.uid));
       }
       return list;
-  }, [students, studentSearch, showOnlyUnlinked, editingParent]);
+  }, [students, studentSearch, showOnlyUnlinked, editingParent, selectedStudentIds]);
 
   const overallLoading = isLoadingSchoolId || isLoadingData;
 
@@ -291,7 +314,7 @@ export default function ParentsPage() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Add New Parent</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Add New Parent</DialogTitle></DialogHeader>
             <form onSubmit={handleAddParent} className="space-y-4 mt-4">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="Jane"/></div>
@@ -305,7 +328,12 @@ export default function ParentsPage() {
                 
                 <div className="space-y-3 pt-2 border-t mt-4">
                     <div className="flex items-center justify-between">
-                        <Label className="text-indigo-600 font-bold">Link Students</Label>
+                        <Label className="text-indigo-600 font-bold">
+                            Link Students
+                            {selectedStudentIds.length > 0 && (
+                                <span className="ml-2 text-xs font-normal text-pink-600">({selectedStudentIds.length} selected)</span>
+                            )}
+                        </Label>
                         <div className="flex items-center space-x-2 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100">
                             <Checkbox 
                                 id="unlinked-only-add" 
@@ -319,12 +347,18 @@ export default function ParentsPage() {
                     <div className="max-h-48 overflow-y-auto space-y-1 rounded-xl border-2 p-2 mt-2 bg-slate-50/50">
                         {filteredStudentsForModal.length > 0 ? (
                             filteredStudentsForModal.map(s => (
-                                <div key={s.id} className="flex items-center justify-between p-2.5 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all cursor-pointer" onClick={() => {
-                                    const checkbox = document.getElementById(`add-${s.id}`) as HTMLInputElement;
-                                    if(checkbox) checkbox.click();
-                                }}>
+                                <div
+                                    key={s.id}
+                                    className="flex items-center justify-between p-2.5 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all cursor-pointer"
+                                    onClick={() => toggleStudentSelection(s.uid)}
+                                >
                                     <div className="flex items-center space-x-3">
-                                        <Checkbox id={`add-${s.id}`} name="studentIds" value={s.uid} onClick={(e) => e.stopPropagation()} />
+                                        <Checkbox
+                                            id={`add-${s.id}`}
+                                            checked={selectedStudentIds.includes(s.uid)}
+                                            onCheckedChange={() => toggleStudentSelection(s.uid)}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
                                         <div className="flex flex-col">
                                             <Label htmlFor={`add-${s.id}`} className="cursor-pointer font-bold text-slate-700">{s.firstName} {s.lastName}</Label>
                                             <span className="text-[10px] text-slate-400 font-mono">ID: {s.uid.slice(0,8)}</span>
@@ -353,7 +387,7 @@ export default function ParentsPage() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingParent} onOpenChange={(open) => !open && setEditingParent(null)}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Edit Parent Details</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Edit Parent Details</DialogTitle></DialogHeader>
             {editingParent && (
                 <form onSubmit={handleUpdateParent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -369,7 +403,12 @@ export default function ParentsPage() {
 
                      <div className="space-y-3 pt-2 border-t mt-4">
                         <div className="flex items-center justify-between">
-                            <Label className="text-indigo-600 font-bold">Linked Students</Label>
+                            <Label className="text-indigo-600 font-bold">
+                                Linked Students
+                                {selectedStudentIds.length > 0 && (
+                                    <span className="ml-2 text-xs font-normal text-pink-600">({selectedStudentIds.length} selected)</span>
+                                )}
+                            </Label>
                             <div className="flex items-center space-x-2 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100">
                                 <Checkbox 
                                     id="unlinked-only-edit" 
@@ -383,16 +422,16 @@ export default function ParentsPage() {
                         <div className="max-h-48 overflow-y-auto space-y-1 rounded-xl border-2 p-2 mt-2 bg-slate-50/50">
                             {filteredStudentsForModal.length > 0 ? (
                                 filteredStudentsForModal.map(s => (
-                                    <div key={s.id} className="flex items-center justify-between p-2.5 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all cursor-pointer" onClick={() => {
-                                        const checkbox = document.getElementById(`edit-${s.id}`) as HTMLInputElement;
-                                        if(checkbox) checkbox.click();
-                                    }}>
+                                    <div
+                                        key={s.id}
+                                        className="flex items-center justify-between p-2.5 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all cursor-pointer"
+                                        onClick={() => toggleStudentSelection(s.uid)}
+                                    >
                                         <div className="flex items-center space-x-3">
                                             <Checkbox 
                                                 id={`edit-${s.id}`} 
-                                                name="studentIds" 
-                                                value={s.uid} 
-                                                defaultChecked={editingParent.studentIds?.includes(s.uid)} 
+                                                checked={selectedStudentIds.includes(s.uid)}
+                                                onCheckedChange={() => toggleStudentSelection(s.uid)}
                                                 onClick={(e) => e.stopPropagation()}
                                             />
                                             <div className="flex flex-col">
