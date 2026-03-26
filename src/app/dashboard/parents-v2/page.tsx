@@ -5,6 +5,7 @@ import { useAuth, useFirestore } from '@/firebase';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
+import { cn } from '@/lib/utils';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -86,7 +87,6 @@ export default function ParentsPage() {
         console.error("Load Data Error:", err);
         toast({ variant: 'destructive', title: "Error", description: "Failed to load school data." });
     } finally {
-        setIsLoadingData(true);
         setIsLoadingData(false);
     }
   }, [firestore, adminSchoolId, toast]);
