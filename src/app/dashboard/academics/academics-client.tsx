@@ -64,6 +64,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { TimetableDisplay } from '../timetable/timetable-display';
 import { StudentDisplay } from '@/components/student-display';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 const classSchema = z.object({
   name: z.string().min(1, "Class name is required"),
