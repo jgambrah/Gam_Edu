@@ -1,9 +1,8 @@
-
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc, deleteField } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
 
@@ -17,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake } from 'lucide-react';
+import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake, Filter, UserCheck } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
@@ -32,7 +31,7 @@ type ParentMember = {
   phone?: string;
   address?: string;
   studentIds?: string[];
-  schoolId?: string; // New Field
+  schoolId?: string;
 };
 
 type Student = {
@@ -40,12 +39,12 @@ type Student = {
     uid: string;
     firstName: string;
     lastName: string;
-    schoolId?: string; // Also expect schoolId here
+    parentId?: string;
+    schoolId?: string;
 };
 
 // --- MAIN PAGE COMPONENT ---
 export default function ParentsPage() {
-  const { user } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool();
@@ -62,15 +61,13 @@ export default function ParentsPage() {
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [studentSearch, setStudentSearch] = useState('');
+  const [showOnlyUnlinked, setShowOnlyUnlinked] = useState(false);
 
-  // --- 1. FETCH DATA (PARENTS & STUDENTS) (FILTERED BY SCHOOL) ---
+  // --- 1. FETCH DATA ---
   const loadData = useCallback(async () => {
-    if (!firestore || !adminSchoolId) {
-        return; 
-    }
+    if (!firestore || !adminSchoolId) return;
     
     setIsLoadingData(true);
-
     try {
         const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
         const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
@@ -89,21 +86,20 @@ export default function ParentsPage() {
         console.error("Load Data Error:", err);
         toast({ variant: 'destructive', title: "Error", description: "Failed to load school data." });
     } finally {
+        setIsLoadingData(true);
         setIsLoadingData(false);
     }
   }, [firestore, adminSchoolId, toast]);
 
-  // Trigger data load when school ID becomes available
   useEffect(() => {
       if(adminSchoolId) loadData();
   }, [loadData, adminSchoolId]);
 
-
-  // Reset form state when opening modals
   useEffect(() => {
     if (isAddOpen || editingParent) {
         setIsSubmitting(false);
         setStudentSearch('');
+        setShowOnlyUnlinked(true); // Default to helping them find unlinked students
     }
   }, [isAddOpen, editingParent]);
   
@@ -119,12 +115,6 @@ export default function ParentsPage() {
       const password = "password123";
 
       try {
-          if (studentIds.length > 0) {
-            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds), where('schoolId', '==', adminSchoolId));
-            const conflictSnap = await getDocs(conflictQuery);
-            if (!conflictSnap.empty) throw new Error("One or more selected students are already linked to another parent.");
-          }
-
           const result = await createNewUser(values.email, password, 'Parent', { firstName: values.firstName, lastName: values.lastName }, adminSchoolId);
           if ('error' in result) throw new Error(result.error);
 
@@ -168,15 +158,15 @@ export default function ParentsPage() {
     const studentIds = formData.getAll('studentIds') as string[];
 
     try {
-        if (studentIds.length > 0) {
-            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds), where('schoolId', '==', adminSchoolId));
-            const conflictSnap = await getDocs(conflictQuery);
-            const actualConflicts = conflictSnap.docs.filter(doc => doc.id !== editingParent.id);
-            if (actualConflicts.length > 0) throw new Error("One or more selected students are already linked to another parent.");
-        }
-
         const parentRef = doc(firestore, 'parents', editingParent.id);
-        await updateDoc(parentRef, { ...values, studentIds, updatedAt: serverTimestamp() });
+        await updateDoc(parentRef, { 
+            firstName: values.firstName,
+            lastName: values.lastName,
+            phone: values.phone,
+            address: values.address,
+            studentIds, 
+            updatedAt: serverTimestamp() 
+        });
 
         const oldStudentIds = editingParent.studentIds || [];
         const studentsToUnlink = oldStudentIds.filter(id => !studentIds.includes(id));
@@ -191,14 +181,13 @@ export default function ParentsPage() {
             await updateDoc(studentRef, { parentId: editingParent.uid });
         }
 
-
         toast({ title: "Updated", description: "Parent details saved." });
         setEditingParent(null);
         loadData();
 
     } catch (error: any) {
         console.error("Error updating parent:", error);
-        toast({ variant: 'destructive', title: "Error", description: error.message });
+        toast({ variant: 'destructive', title: "Error updating parent", description: error.message });
     } finally {
         setIsSubmitting(false);
     }
@@ -212,16 +201,21 @@ export default function ParentsPage() {
         toast({ title: "Deleted", description: "Parent profile removed." });
         loadData();
     } catch (e: any) {
-        console.error("Error deleting parent:", e);
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
-  const overallLoading = isLoadingSchoolId || isLoadingData;
+  const filteredParents = useMemo(() => parents.filter(p => searchStudent(p, searchTerm)), [parents, searchTerm]);
+  
+  const filteredStudentsForModal = useMemo(() => {
+      let list = students.filter(s => searchStudent(s, studentSearch));
+      if (showOnlyUnlinked) {
+          list = list.filter(s => !s.parentId || (editingParent && s.parentId === editingParent.uid));
+      }
+      return list;
+  }, [students, studentSearch, showOnlyUnlinked, editingParent]);
 
-  // Client-side filtering for display
-  const filteredParents = parents.filter(p => searchStudent(p, searchTerm));
-  const filteredStudentsForModal = students.filter(s => searchStudent(s, studentSearch));
+  const overallLoading = isLoadingSchoolId || isLoadingData;
 
   return (
     <div className="space-y-6 p-6">
@@ -262,17 +256,28 @@ export default function ParentsPage() {
             ) : (
                 <div className="rounded-md border">
                     <Table>
-                        <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Linked Students</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>Linked Students</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
                         <TableBody>
                             {filteredParents.map((p) => (
                                 <TableRow key={p.id}>
                                     <TableCell className="font-medium">{p.firstName} {p.lastName}</TableCell>
                                     <TableCell>{p.email}</TableCell>
-                                    <TableCell>{p.studentIds?.length || 0}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="secondary" className="font-bold">
+                                            {p.studentIds?.length || 0} Students
+                                        </Badge>
+                                    </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)}><Edit className="h-4 w-4 text-blue-600"/></Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => setEditingParent(p)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -286,7 +291,7 @@ export default function ParentsPage() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Add New Parent</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Add New Parent</DialogTitle></DialogHeader>
             <form onSubmit={handleAddParent} className="space-y-4 mt-4">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="Jane"/></div>
@@ -298,31 +303,57 @@ export default function ParentsPage() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="Residential Address" /></div>
                 
-                <div className="space-y-2 pt-2">
-                    <Label>Link Students (Optional)</Label>
-                    <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
-                    <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2 bg-slate-50">
+                <div className="space-y-3 pt-2 border-t mt-4">
+                    <div className="flex items-center justify-between">
+                        <Label className="text-indigo-600 font-bold">Link Students</Label>
+                        <div className="flex items-center space-x-2 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100">
+                            <Checkbox 
+                                id="unlinked-only-add" 
+                                checked={showOnlyUnlinked} 
+                                onCheckedChange={(v) => setShowOnlyUnlinked(!!v)} 
+                            />
+                            <Label htmlFor="unlinked-only-add" className="text-xs cursor-pointer text-indigo-700 font-black uppercase tracking-tighter">Only Unlinked</Label>
+                        </div>
+                    </div>
+                    <StudentSearchInput value={studentSearch} onChange={setStudentSearch} placeholder="Search students to link..." />
+                    <div className="max-h-48 overflow-y-auto space-y-1 rounded-xl border-2 p-2 mt-2 bg-slate-50/50">
                         {filteredStudentsForModal.length > 0 ? (
                             filteredStudentsForModal.map(s => (
-                                <div key={s.id} className="flex items-center space-x-2 p-2 hover:bg-white rounded">
-                                    <Checkbox id={`add-${s.id}`} name="studentIds" value={s.uid} />
-                                    <Label htmlFor={`add-${s.id}`} className="cursor-pointer font-normal">{s.firstName} {s.lastName}</Label>
+                                <div key={s.id} className="flex items-center justify-between p-2.5 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all cursor-pointer" onClick={() => {
+                                    const checkbox = document.getElementById(`add-${s.id}`) as HTMLInputElement;
+                                    if(checkbox) checkbox.click();
+                                }}>
+                                    <div className="flex items-center space-x-3">
+                                        <Checkbox id={`add-${s.id}`} name="studentIds" value={s.uid} onClick={(e) => e.stopPropagation()} />
+                                        <div className="flex flex-col">
+                                            <Label htmlFor={`add-${s.id}`} className="cursor-pointer font-bold text-slate-700">{s.firstName} {s.lastName}</Label>
+                                            <span className="text-[10px] text-slate-400 font-mono">ID: {s.uid.slice(0,8)}</span>
+                                        </div>
+                                    </div>
+                                    {s.parentId ? (
+                                        <Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-500 border-slate-200">Linked</Badge>
+                                    ) : (
+                                        <Badge variant="outline" className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 font-bold uppercase tracking-widest">Unlinked</Badge>
+                                    )}
                                 </div>
                             ))
                         ) : (
-                            <p className="text-sm text-center text-muted-foreground p-2">No students match your search or no students have been added yet.</p>
+                            <div className="py-10 text-center flex flex-col items-center gap-2 opacity-40">
+                                <Search className="h-8 w-8 text-slate-300" />
+                                <p className="text-xs font-bold uppercase tracking-widest">No matching students</p>
+                            </div>
                         )}
                     </div>
                 </div>
 
-                <DialogFooter><Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Parent Account"}</Button></DialogFooter>
+                <DialogFooter className="pt-4 border-t"><Button type="submit" className="w-full h-12 text-lg font-bold bg-pink-500 hover:bg-pink-600" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Parent Account"}</Button></DialogFooter>
             </form>
         </DialogContent>
       </Dialog>
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingParent} onOpenChange={(open) => !open && setEditingParent(null)}>
-        <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Edit Parent Details</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Edit Parent Details</DialogTitle></DialogHeader>
             {editingParent && (
                 <form onSubmit={handleUpdateParent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -336,28 +367,56 @@ export default function ParentsPage() {
                     </div>
                     <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingParent.address} /></div>
 
-                     <div className="space-y-2 pt-2">
-                        <Label>Link Students</Label>
-                        <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
-                        <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2 bg-slate-50">
+                     <div className="space-y-3 pt-2 border-t mt-4">
+                        <div className="flex items-center justify-between">
+                            <Label className="text-indigo-600 font-bold">Linked Students</Label>
+                            <div className="flex items-center space-x-2 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100">
+                                <Checkbox 
+                                    id="unlinked-only-edit" 
+                                    checked={showOnlyUnlinked} 
+                                    onCheckedChange={(v) => setShowOnlyUnlinked(!!v)} 
+                                />
+                                <Label htmlFor="unlinked-only-edit" className="text-xs cursor-pointer text-indigo-700 font-black uppercase tracking-tighter">Only Unlinked</Label>
+                            </div>
+                        </div>
+                        <StudentSearchInput value={studentSearch} onChange={setStudentSearch} placeholder="Search students to link..." />
+                        <div className="max-h-48 overflow-y-auto space-y-1 rounded-xl border-2 p-2 mt-2 bg-slate-50/50">
                             {filteredStudentsForModal.length > 0 ? (
                                 filteredStudentsForModal.map(s => (
-                                    <div key={s.id} className="flex items-center space-x-2 p-2 hover:bg-white rounded">
-                                        <Checkbox 
-                                            id={`edit-${s.id}`} 
-                                            name="studentIds" 
-                                            value={s.uid} 
-                                            defaultChecked={editingParent.studentIds?.includes(s.uid)} 
-                                        />
-                                        <Label htmlFor={`edit-${s.id}`} className="cursor-pointer font-normal">{s.firstName} {s.lastName}</Label>
+                                    <div key={s.id} className="flex items-center justify-between p-2.5 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all cursor-pointer" onClick={() => {
+                                        const checkbox = document.getElementById(`edit-${s.id}`) as HTMLInputElement;
+                                        if(checkbox) checkbox.click();
+                                    }}>
+                                        <div className="flex items-center space-x-3">
+                                            <Checkbox 
+                                                id={`edit-${s.id}`} 
+                                                name="studentIds" 
+                                                value={s.uid} 
+                                                defaultChecked={editingParent.studentIds?.includes(s.uid)} 
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                            <div className="flex flex-col">
+                                                <Label htmlFor={`edit-${s.id}`} className="cursor-pointer font-bold text-slate-700">{s.firstName} {s.lastName}</Label>
+                                                <span className="text-[10px] text-slate-400 font-mono">ID: {s.uid.slice(0,8)}</span>
+                                            </div>
+                                        </div>
+                                        {s.parentId ? (
+                                            <Badge variant="outline" className={cn("text-[10px]", s.parentId === editingParent.uid ? "bg-green-100 text-green-700 border-green-200" : "bg-slate-100 text-slate-500 border-slate-200")}>
+                                                {s.parentId === editingParent.uid ? "Assigned Here" : "Linked Elsewhere"}
+                                            </Badge>
+                                        ) : (
+                                            <Badge variant="outline" className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 font-bold uppercase tracking-widest">Unlinked</Badge>
+                                        )}
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-sm text-center text-muted-foreground p-2">No students match search.</p>
+                                <div className="py-10 text-center opacity-40">
+                                    <p className="text-xs font-bold uppercase tracking-widest">No matching students</p>
+                                </div>
                             )}
                         </div>
                     </div>
-                    <DialogFooter><Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}</Button></DialogFooter>
+                    <DialogFooter className="pt-4 border-t"><Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}</Button></DialogFooter>
                 </form>
             )}
         </DialogContent>
