@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useState, useMemo, useRef } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, doc, writeBatch, serverTimestamp, orderBy } from 'firebase/firestore';
@@ -20,8 +20,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Receipt, Printer, Landmark, Banknote, ShieldCheck } from 'lucide-react';
+import { Loader2, Plus, Receipt, Printer, Landmark, Banknote, ShieldCheck, Eye, ArrowLeft, Download } from 'lucide-react';
 import { Account, JournalLine } from '@/lib/types';
+import { Separator } from '@/components/ui/separator';
+import { AppLogo } from '@/components/icons/app-logo';
 
 // --- PHASE 1: TAX CONSTANTS ---
 const GHANA_WHT_RATES = [
@@ -50,6 +52,90 @@ const pvSchema = z.object({
 });
 
 type PVFormValues = z.infer<typeof pvSchema>;
+
+// --- SUB-COMPONENT: VOUCHER DOCUMENT ---
+function VoucherDocument({ pv, schoolProfile }: { pv: any, schoolProfile: any }) {
+    return (
+        <div className="bg-white text-black p-8 border shadow-sm rounded-lg font-sans max-w-3xl mx-auto" id="printable-voucher">
+            <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-6">
+                <div className="flex items-center gap-4">
+                    {schoolProfile?.logoUrl ? (
+                        <img src={schoolProfile.logoUrl} className="h-16 w-16 object-contain" alt="Logo" />
+                    ) : (
+                        <AppLogo className="h-16 w-16 text-indigo-600" />
+                    )}
+                    <div>
+                        <h1 className="text-2xl font-black uppercase tracking-tight">{schoolProfile?.name || 'SCHOOL NAME'}</h1>
+                        <p className="text-xs text-slate-500 font-medium">{schoolProfile?.address || 'ADDRESS'}</p>
+                    </div>
+                </div>
+                <div className="text-right">
+                    <h2 className="text-3xl font-black text-slate-300 uppercase tracking-widest">Voucher</h2>
+                    <p className="text-sm font-bold text-slate-900 mt-1">{pv.pvNumber}</p>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8 mb-8 text-sm">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pay To:</p>
+                    <p className="text-lg font-bold text-slate-900">{pv.payee}</p>
+                </div>
+                <div className="text-right space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date Processed:</p>
+                    <p className="text-sm font-bold text-slate-900">
+                        {pv.createdAt?.toDate ? format(pv.createdAt.toDate(), 'PPP p') : 'Pending'}
+                    </p>
+                </div>
+            </div>
+
+            <div className="space-y-4 mb-8">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Particulars / Description:</p>
+                    <p className="text-slate-800 font-medium">{pv.description}</p>
+                </div>
+            </div>
+
+            <table className="w-full text-sm mb-8">
+                <thead className="bg-slate-900 text-white">
+                    <tr>
+                        <th className="text-left p-3 rounded-tl-xl">Financial Breakdown</th>
+                        <th className="text-right p-3 rounded-tr-xl">Amount (GH₵)</th>
+                    </tr>
+                </thead>
+                <tbody className="border-x border-b rounded-b-xl overflow-hidden">
+                    <tr className="border-b">
+                        <td className="p-3 font-medium">Gross Amount</td>
+                        <td className="p-3 text-right font-mono">{pv.grossAmount?.toFixed(2)}</td>
+                    </tr>
+                    <tr className="border-b text-emerald-600 font-medium">
+                        <td className="p-3">VAT Added</td>
+                        <td className="p-3 text-right font-mono">+{pv.vatAmount?.toFixed(2)}</td>
+                    </tr>
+                    <tr className="border-b text-rose-600 font-medium">
+                        <td className="p-3">Withholding Tax (WHT) Deducted</td>
+                        <td className="p-3 text-right font-mono">-{pv.whtAmount?.toFixed(2)}</td>
+                    </tr>
+                    <tr className="bg-indigo-50 font-black text-indigo-900">
+                        <td className="p-3 text-lg uppercase">Net Amount Payable</td>
+                        <td className="p-3 text-right text-2xl font-mono">GH₵{pv.netPayable?.toFixed(2)}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div className="grid grid-cols-2 gap-12 mt-16 pt-8 border-t border-dashed">
+                <div className="text-center">
+                    <div className="border-b border-black h-8 mb-2"></div>
+                    <p className="text-[10px] font-black uppercase text-slate-400">Prepared By</p>
+                    <p className="text-xs font-bold">{pv.preparedByName}</p>
+                </div>
+                <div className="text-center">
+                    <div className="border-b border-black h-8 mb-2"></div>
+                    <p className="text-[10px] font-black uppercase text-slate-400">Authorized Official</p>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 // --- PHASE 2: FORM COMPONENT ---
 function PaymentVoucherForm({ 
@@ -101,7 +187,7 @@ function PaymentVoucherForm({
             const batch = writeBatch(firestore);
             const timestamp = serverTimestamp();
             
-            // 1. Generate PV Number
+            // 1. Generate PV Number (e.g., PV-20250122-001)
             const pvNumber = `PV-${format(new Date(), 'yyyyMMdd')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
             
             const pvRef = doc(collection(firestore, 'payment_vouchers'));
@@ -275,12 +361,16 @@ export default function PaymentVouchersPage() {
     const { toast } = useToast();
 
     const [isAddOpen, setIsAddOpen] = useState(false);
+    const [selectedPV, setSelectedPV] = useState<any>(null);
 
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: accounts, isLoading: accountsLoading } = useCollection<Account>(accountsQuery);
 
     const pvQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'payment_vouchers'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
     const { data: vouchers, isLoading: pvLoading, forceRefetch } = useCollection<any>(pvQuery);
+
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
@@ -336,11 +426,9 @@ export default function PaymentVouchersPage() {
                                     <TableHead>PV Number</TableHead>
                                     <TableHead>Date</TableHead>
                                     <TableHead>Payee</TableHead>
-                                    <TableHead className="text-right">Gross</TableHead>
-                                    <TableHead className="text-right">VAT</TableHead>
-                                    <TableHead className="text-right">WHT</TableHead>
-                                    <TableHead className="text-right font-bold">Net Payable</TableHead>
+                                    <TableHead className="text-right">Net Payable</TableHead>
                                     <TableHead className="text-center">Status</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -356,14 +444,33 @@ export default function PaymentVouchersPage() {
                                                 <span className="text-[10px] text-slate-400 truncate max-w-[150px]">{pv.description}</span>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="text-right text-xs">GH₵{pv.grossAmount?.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right text-xs text-emerald-600">+{pv.vatAmount?.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right text-xs text-rose-600">-{pv.whtAmount?.toFixed(2)}</TableCell>
                                         <TableCell className="text-right font-black text-indigo-700">GH₵{pv.netPayable?.toFixed(2)}</TableCell>
                                         <TableCell className="text-center">
                                             <Badge className="bg-indigo-50 text-indigo-700 border-indigo-100 uppercase text-[9px] font-black">
                                                 {pv.status}
                                             </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <Button variant="ghost" size="sm" onClick={() => setSelectedPV(pv)}>
+                                                        <Eye className="h-4 w-4 mr-1"/> View
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                                                    <DialogHeader>
+                                                        <DialogTitle>Payment Voucher Detail</DialogTitle>
+                                                    </DialogHeader>
+                                                    <div className="p-4 bg-slate-100 rounded-xl overflow-hidden">
+                                                        <VoucherDocument pv={pv} schoolProfile={schoolProfile} />
+                                                    </div>
+                                                    <DialogFooter className="print:hidden">
+                                                        <Button variant="outline" onClick={() => window.print()}>
+                                                            <Printer className="mr-2 h-4 w-4"/> Print
+                                                        </Button>
+                                                    </DialogFooter>
+                                                </DialogContent>
+                                            </Dialog>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -372,6 +479,24 @@ export default function PaymentVouchersPage() {
                     )}
                 </CardContent>
             </Card>
+            
+            <style jsx global>{`
+                @media print {
+                    body * { visibility: hidden !important; }
+                    #printable-voucher, #printable-voucher * { visibility: visible !important; }
+                    #printable-voucher {
+                        position: fixed !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 210mm !important;
+                        height: auto !important;
+                        margin: 0 !important;
+                        padding: 40px !important;
+                        border: none !important;
+                        box-shadow: none !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
