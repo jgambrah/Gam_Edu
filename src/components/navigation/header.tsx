@@ -1,6 +1,6 @@
-
 'use client';
 
+import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogOut, Settings, PanelLeft } from 'lucide-react';
+import { LogOut, Settings, PanelLeft, RefreshCw } from 'lucide-react';
 import { navItems } from '@/lib/data';
 import { useFirebase, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -23,6 +23,7 @@ import CreditBalance from '@/components/CreditBalance';
 import { AppSidebarContent } from './sidebar';
 
 export default function Header() {
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { auth } = useFirebase();
@@ -41,6 +42,12 @@ export default function Header() {
         router.push('/');
       }, 100);
     }
+  };
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    // Force a hard reload of the current URL
+    window.location.reload();
   };
 
   const getInitials = (email?: string | null) => {
@@ -68,6 +75,17 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
+        <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleRefresh} 
+            disabled={isRefreshing}
+            title="Refresh Application"
+            className="text-slate-500 hover:text-slate-900"
+        >
+            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+            <span className="sr-only">Refresh</span>
+        </Button>
         <CreditBalance />
         <NotificationBell />
         <DropdownMenu>
