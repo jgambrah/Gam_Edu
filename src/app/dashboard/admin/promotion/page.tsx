@@ -34,6 +34,9 @@ export default function PromotionPage() {
   const [destinationClassId, setDestinationClassId] = useState<string>('');
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Custom Confirmation State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const canAccess = ['Administrator', 'Director'].includes(role || '');
 
@@ -75,7 +78,8 @@ export default function PromotionPage() {
     else setSelectedStudentIds(students.map(s => s.uid));
   };
 
-  const handlePromote = async () => {
+  // STEP A: Trigger the Dialog
+  const triggerPromotion = () => {
     if (!firestore || !schoolId || !sourceClassId || !destinationClassId) return;
     
     const studentsToMove = students?.filter(s => selectedStudentIds.includes(s.uid)) || [];
@@ -84,9 +88,15 @@ export default function PromotionPage() {
         return;
     }
 
-    const actionText = destinationClassId === 'GRADUATE' ? 'graduate' : 'promote';
-    if (!confirm(`Are you sure you want to ${actionText} ${studentsToMove.length} students?`)) return;
+    setIsConfirmOpen(true);
+  };
 
+  // STEP B: The Actual Database Action
+  const executePromotion = async () => {
+    if (!firestore || !schoolId || !sourceClassId || !destinationClassId) return;
+    
+    const studentsToMove = students?.filter(s => selectedStudentIds.includes(s.uid)) || [];
+    
     setIsProcessing(true);
     try {
         const batch = writeBatch(firestore);
@@ -122,10 +132,11 @@ export default function PromotionPage() {
                 : `Successfully moved ${count} students to their next class.` 
         });
         
-        // Clear state to prevent accidental double-processing
+        // Clear state
         setSourceClassId('');
         setDestinationClassId('');
         setSelectedStudentIds([]);
+        setIsConfirmOpen(false);
         
     } catch (error: any) {
         console.error("Promotion Error:", error);
@@ -150,6 +161,8 @@ export default function PromotionPage() {
         </div>
     );
   }
+
+  const studentsToMoveCount = students?.filter(s => selectedStudentIds.includes(s.uid)).length || 0;
 
   return (
     <div className="space-y-6 p-6 max-w-6xl mx-auto">
@@ -212,7 +225,7 @@ export default function PromotionPage() {
             <Button 
               className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-tighter rounded-2xl shadow-lg shadow-indigo-100 disabled:opacity-50"
               disabled={!sourceClassId || !destinationClassId || selectedStudentIds.length === 0 || isProcessing}
-              onClick={handlePromote}
+              onClick={triggerPromotion}
             >
               {isProcessing ? <Loader2 className="animate-spin mr-2"/> : <CheckCircle2 className="mr-2 h-5 w-5"/>}
               Complete Transfer
@@ -298,6 +311,42 @@ export default function PromotionPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* --- TITAN-GRADE CONFIRMATION MODAL --- */}
+      {isConfirmOpen && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[40px] p-10 max-w-md w-full shadow-2xl border-4 border-slate-900 space-y-6 text-center">
+            <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto text-indigo-600 border-2 border-indigo-100">
+              <AlertTriangle size={40} className="animate-pulse" />
+            </div>
+            
+            <div>
+              <h2 className="text-2xl font-black uppercase italic text-black">
+                  Confirm <span className="text-indigo-600">{destinationClassId === 'GRADUATE' ? 'Graduation' : 'Promotion'}</span>
+              </h2>
+              <p className="text-xs font-bold text-slate-400 uppercase mt-2 leading-relaxed">
+                Are you sure you want to process {studentsToMoveCount} students? This batch operation will update the school records immediately.
+              </p>
+            </div>
+
+            <div className="flex gap-4 pt-4">
+              <button 
+                onClick={() => setIsConfirmOpen(false)}
+                className="flex-1 py-4 font-black text-slate-400 uppercase text-xs tracking-widest hover:text-black transition-all"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={executePromotion}
+                disabled={isProcessing}
+                className="flex-[2] bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-indigo-100 hover:bg-black transition-all disabled:opacity-50"
+              >
+                {isProcessing ? "Processing..." : "Yes, Transfer Now"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
