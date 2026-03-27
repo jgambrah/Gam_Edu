@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck, Lock, AlertCircle } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck, Lock, AlertCircle, PenTool } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -318,7 +318,7 @@ export default function ReportCardManager() {
         try {
             const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
             
-            // Capture teacher details if user is a teacher
+            // THE KEY: Capture the signature URL at the moment of signing/saving
             const teacherDetails = isTeacher ? {
                 classTeacherName: `${profile?.firstName} ${profile?.lastName}`,
                 classTeacherSignatureUrl: profile?.signatureUrl || null
@@ -336,7 +336,7 @@ export default function ReportCardManager() {
                 lastUpdatedBy: user?.uid,
                 updatedAt: serverTimestamp()
             }, { merge: true });
-            toast({ title: "Progress Saved", description: "The report and remarks have been stored." });
+            toast({ title: "Draft Saved & Signed", description: "The report data and your signature have been stored." });
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Failed to save progress." });
         } finally {
@@ -350,7 +350,7 @@ export default function ReportCardManager() {
         try {
             const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
             
-            // Capture teacher details if user is a teacher
+            // Capture signature at publish time
             const teacherDetails = isTeacher ? {
                 classTeacherName: `${profile?.firstName} ${profile?.lastName}`,
                 classTeacherSignatureUrl: profile?.signatureUrl || null
@@ -370,11 +370,11 @@ export default function ReportCardManager() {
             }, { merge: true });
             
             toast({ 
-                title: "Report Published! 🚀", 
-                description: "Parents and Students can now view this report on their dashboard." 
+                title: "Report Published & Locked! 🚀", 
+                description: "Parents and Students can now view this verified report." 
             });
 
-            // --- SEND PUSH NOTIFICATION ---
+            // Send Push Notification
             await notifyParents(
                 [selectedStudentId!], 
                 "Report Card Available 🎓",
@@ -559,14 +559,14 @@ export default function ReportCardManager() {
                             </Button>
                             
                             <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl h-11 px-6 font-bold">
-                                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
-                                Save Progress
+                                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PenTool className="mr-2 h-4 w-4"/>}
+                                Sign & Save Draft
                             </Button>
 
                             {isAdminOrDirector && (
                                 <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700 rounded-xl h-11 px-8 font-black shadow-lg shadow-green-900/10">
-                                    {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>}
-                                    Publish to Portal
+                                    {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <ShieldCheck className="mr-2 h-4 w-4"/>}
+                                    Sign & Publish
                                 </Button>
                             )}
                         </CardFooter>
@@ -578,7 +578,7 @@ export default function ReportCardManager() {
                                 <CardTitle className="flex items-center gap-2 text-lg">
                                     <Eye className="h-5 w-5 text-indigo-400"/> Interactive Document Preview
                                 </CardTitle>
-                                <CardTitle className="text-slate-400">Exact replica of the A4 printable document.</CardTitle>
+                                <CardDescription className="text-slate-400">Exact replica of the A4 printable document.</CardDescription>
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="text-right">

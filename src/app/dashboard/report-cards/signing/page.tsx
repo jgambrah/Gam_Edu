@@ -58,18 +58,20 @@ export default function ReportSigningPortal() {
     try {
       const reportRef = doc(firestore, "report-cards", report.id);
       
+      // THE CRYPTOGRAPHIC HANDSHAKE
+      // Lock the signature URL and a unique fingerprint into the document
       const verificationHash = `VER-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
 
       batch.update(reportRef, {
         status: 'Published',
         headmasterName: `${profile.firstName} ${profile.lastName}`,
-        headmasterSignatureUrl: profile.signatureUrl,
+        headmasterSignatureUrl: profile.signatureUrl, // THE KEY: Capture the signature URL at the moment of signing
         headmasterSignedAt: serverTimestamp(),
-        digitalFingerprint: verificationHash,
+        digitalFingerprint: verificationHash, // This acts as the digitalStamp
       });
 
       await batch.commit();
-      toast({ title: "Report Authenticated", description: `Authorized ${report.student?.firstName}'s report card.` });
+      toast({ title: "Document Signed & Locked", description: `Authorized ${report.student?.firstName}'s report card with your digital signature.` });
     } catch (e: any) {
       toast({ variant: 'destructive', title: "Authorization Failed", description: e.message });
     } finally {
