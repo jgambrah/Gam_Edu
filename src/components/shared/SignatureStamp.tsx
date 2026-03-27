@@ -12,9 +12,42 @@ interface Props {
 /**
  * High-grade component for rendering professional digital signatures.
  * Uses mix-blend-multiply to ensure white backgrounds become transparent.
+ * Now includes robust date parsing to prevent "Invalid time value" errors.
  */
 export default function SignatureStamp({ url, name, role, date }: Props) {
-  const formattedDate = date ? (date?.toDate ? format(date.toDate(), 'PPP p') : format(new Date(date), 'PPP p')) : null;
+  
+  const getFormattedDate = (d: any) => {
+    if (!d) return null;
+    
+    try {
+      // 1. Handle Firestore Timestamp objects
+      if (typeof d.toDate === 'function') {
+        return format(d.toDate(), 'PPP p');
+      }
+      
+      // 2. Handle native JS Date objects
+      if (d instanceof Date) {
+        if (isNaN(d.getTime())) return null;
+        return format(d, 'PPP p');
+      }
+
+      // 3. Handle string or number inputs
+      if (typeof d === 'string' || typeof d === 'number') {
+        const parsed = new Date(d);
+        if (!isNaN(parsed.getTime())) {
+          return format(parsed, 'PPP p');
+        }
+      }
+
+      // 4. Fallback for Firestore sentinels or other non-date objects
+      return null;
+    } catch (e) {
+      console.warn("SignatureStamp: Date parsing failed", e);
+      return null;
+    }
+  };
+
+  const formattedDate = getFormattedDate(date);
 
   return (
     <div className="flex flex-col items-center space-y-2 min-w-[200px]">
