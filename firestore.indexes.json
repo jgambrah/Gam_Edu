@@ -134,21 +134,6 @@
       ]
     },
     {
-      "collectionGroup": "payments",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "paidAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "payments",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "paidAt", "order": "DESCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "library",
       "queryScope": "COLLECTION",
       "fields": [
