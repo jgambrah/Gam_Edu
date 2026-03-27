@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +14,11 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogOut, Settings, PanelLeft, RefreshCw } from 'lucide-react';
+import { LogOut, Settings, PanelLeft, RefreshCw, User as UserIcon } from 'lucide-react';
 import { navItems } from '@/lib/data';
 import { useFirebase, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useRole } from '@/context/role-context';
+import { auth } from '@/firebase/client-provider';
 import NotificationBell from './notifications';
 import CreditBalance from '@/components/CreditBalance';
 import { AppSidebarContent } from './sidebar';
@@ -26,8 +27,9 @@ export default function Header() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { auth } = useFirebase();
+  const { auth: authInstance } = useFirebase();
   const { user } = useUser();
+  
   const pageTitle =
     navItems.find((item) => item.path === pathname)?.title ||
     navItems
@@ -36,8 +38,8 @@ export default function Header() {
     'Dashboard';
 
   const handleLogout = async () => {
-    if (auth) {
-      await signOut(auth);
+    if (authInstance) {
+      await signOut(authInstance);
       setTimeout(() => {
         router.push('/');
       }, 100);
@@ -46,7 +48,6 @@ export default function Header() {
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    // Force a hard reload of the current URL
     window.location.reload();
   };
 
@@ -97,15 +98,23 @@ export default function Header() {
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/profile" className="flex items-center w-full cursor-pointer">
+                <UserIcon className="mr-2 h-4 w-4" />
+                <span>My Profile</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/help" className="flex items-center w-full cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Help Center</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>
