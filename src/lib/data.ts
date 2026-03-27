@@ -1,3 +1,4 @@
+
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -54,7 +55,8 @@ import {
   FileQuestion,
   Sparkles,
   Coins,
-  ArrowUpCircle
+  ArrowUpCircle,
+  Database
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -476,6 +478,12 @@ export const navItems: NavItem[] = [
     icon: Shield,
     roles: ['Director', 'Administrator'],
     subItems: [
+        {
+            path: '/dashboard/admin/migration',
+            title: 'Data Import Hub',
+            icon: Database,
+            roles: ['Director', 'Administrator'],
+        },
         {
             path: '/dashboard/audit-log',
             title: 'Audit Log',
