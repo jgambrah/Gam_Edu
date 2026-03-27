@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useUser, useFirestore, useFirebaseApp } from '@/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { PenTool, UploadCloud, Trash2, CheckCircle2, Loader2, ShieldCheck } from 'lucide-react';
+import { PenTool, UploadCloud, Trash2, CheckCircle2, Loader2, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -18,6 +18,9 @@ export default function SignatureManager() {
 
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  
+  // High-Grade Confirmation State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (profile?.signatureUrl) setSignatureUrl(profile.signatureUrl);
@@ -61,7 +64,6 @@ export default function SignatureManager() {
   };
 
   const removeSignature = async () => {
-    if (!confirm("Are you sure? You will not be able to sign reports until you upload a new one.")) return;
     if (!user?.uid || !schoolId || !firestore || !app) return;
 
     try {
@@ -79,6 +81,8 @@ export default function SignatureManager() {
       toast({ title: "Signature Revoked", variant: "default" });
     } catch (e: any) {
       toast({ variant: 'destructive', title: "Error", description: e.message });
+    } finally {
+      setIsConfirmOpen(false);
     }
   };
 
@@ -104,7 +108,7 @@ export default function SignatureManager() {
               <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[9px] font-black uppercase flex items-center gap-1 border border-green-200">
                 <ShieldCheck size={12}/> Verified Active
               </span>
-              <button onClick={removeSignature} className="text-red-400 hover:text-red-600 transition-colors p-1">
+              <button onClick={() => setIsConfirmOpen(true)} className="text-red-400 hover:text-red-600 transition-colors p-1">
                 <Trash2 size={16} />
               </button>
             </div>
@@ -132,6 +136,39 @@ export default function SignatureManager() {
             "Your digital signature is cryptographically linked to your UID. Any document you sign will carry this autograph and a secure digital fingerprint for audit verification."
          </p>
       </div>
+
+      {/* --- TITAN-GRADE CONFIRMATION MODAL --- */}
+      {isConfirmOpen && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[40px] p-10 max-w-md w-full shadow-2xl border-4 border-slate-900 space-y-6 text-center">
+            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto text-red-600 border-2 border-red-100">
+              <AlertTriangle size={40} className="animate-pulse" />
+            </div>
+            
+            <div>
+              <h2 className="text-2xl font-black uppercase italic text-black">Revoke <span className="text-red-600">Signature</span></h2>
+              <p className="text-xs font-bold text-slate-400 uppercase mt-2 leading-relaxed">
+                Are you sure? You will not be able to sign reports until you upload a new autograph.
+              </p>
+            </div>
+
+            <div className="flex gap-4 pt-4">
+              <button 
+                onClick={() => setIsConfirmOpen(false)}
+                className="flex-1 py-4 font-black text-slate-400 uppercase text-xs tracking-widest hover:text-black transition-all"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={removeSignature}
+                className="flex-[2] bg-red-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-red-100 hover:bg-black transition-all"
+              >
+                Yes, Revoke
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

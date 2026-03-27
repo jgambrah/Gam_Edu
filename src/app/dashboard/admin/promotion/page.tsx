@@ -23,6 +23,7 @@ import { Separator } from '@/components/ui/separator';
 /**
  * @fileOverview Class Promotion & Graduation Engine
  * Allows administrators to move students from one class to another or graduate them in bulk.
+ * Replaced native confirm() with Titan-Grade confirmation modal.
  */
 export default function PromotionPage() {
   const { role } = useRole();
