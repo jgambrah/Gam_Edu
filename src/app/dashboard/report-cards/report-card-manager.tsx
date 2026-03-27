@@ -66,7 +66,7 @@ function formatOrdinal(n: number): string {
 
 export default function ReportCardManager() {
     const { user } = useUser();
-    const { role } = useRole();
+    const { role, profile } = useRole();
     const firestore = useFirestore();
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const { toast } = useToast();
@@ -317,8 +317,16 @@ export default function ReportCardManager() {
         setIsSaving(true);
         try {
             const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
+            
+            // Capture teacher details if user is a teacher
+            const teacherDetails = isTeacher ? {
+                classTeacherName: `${profile?.firstName} ${profile?.lastName}`,
+                classTeacherSignatureUrl: profile?.signatureUrl || null
+            } : {};
+
             await setDoc(doc(firestore!, 'report-cards', reportId), {
                 ...processedReport,
+                ...teacherDetails,
                 id: reportId,
                 studentId: selectedStudentId,
                 schoolId,
@@ -341,8 +349,16 @@ export default function ReportCardManager() {
         setIsPublishing(true);
         try {
             const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
+            
+            // Capture teacher details if user is a teacher
+            const teacherDetails = isTeacher ? {
+                classTeacherName: `${profile?.firstName} ${profile?.lastName}`,
+                classTeacherSignatureUrl: profile?.signatureUrl || null
+            } : {};
+
             await setDoc(doc(firestore!, 'report-cards', reportId), {
                 ...processedReport,
+                ...teacherDetails,
                 id: reportId,
                 studentId: selectedStudentId,
                 schoolId,
@@ -360,10 +376,10 @@ export default function ReportCardManager() {
 
             // --- SEND PUSH NOTIFICATION ---
             await notifyParents(
-                [selectedStudentId!], // Array of 1 student
+                [selectedStudentId!], 
                 "Report Card Available 🎓",
                 `The Terminal Report for ${processedReport.student?.firstName} is now available. Tap to view and download.`,
-                "/dashboard/my-reports" // URL to open
+                "/dashboard/my-reports"
             );
 
         } catch (e) {

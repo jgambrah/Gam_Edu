@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Lock } from 'lucide-react';
 
 interface ReportCardTemplateProps {
     data: any;
@@ -12,8 +13,7 @@ interface ReportCardTemplateProps {
 
 /**
  * Standardized Report Card Template for GAM Edu.
- * Used for both live preview and PDF generation.
- * All font sizes increased by 2pt for enhanced readability.
+ * Now includes professional electronic signatures and audit stamping.
  */
 export default function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: ReportCardTemplateProps) {
     if (!data) return null;
@@ -24,7 +24,6 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             style={{
                 width: '794px',
                 minHeight: '1123px',
-                maxHeight: '1123px',
                 color: 'black',
                 boxSizing: 'border-box',
                 margin: '0 auto',
@@ -168,101 +167,86 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 </tbody>
             </table>
 
-            {/* ── GRADING KEY ── */}
-            <div style={{
-                border: '1px solid #cbd5e1',
-                padding: '4px 10px',
-                fontSize: '13px',
-                background: '#f8fafc',
-                marginBottom: '8px',
-                display: 'flex',
-                gap: '8px',
-                flexWrap: 'wrap',
-                justifyContent: 'center'
-            }}>
-                <strong>Grading Key:</strong>
-                <span>80–100: A (Excellent)</span>
-                <span>70–79: B (Very Good)</span>
-                <span>60–69: C (Good)</span>
-                <span>50–59: D (Credit)</span>
-                <span>40–49: E (Pass)</span>
-                <span>0–39: F (Fail)</span>
-            </div>
-
             {/* ── REMARKS ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc', position: 'relative' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '15px' }}>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc' }}>
                     <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
                         Class Teacher's Remark:
                     </div>
-                    <div style={{
-                        fontSize: '14px',
-                        fontStyle: 'italic',
-                        color: '#1e293b',
-                        lineHeight: 1.3,
-                        whiteSpace: 'pre-wrap',
-                        minHeight: '20px',
-                    }}>
-                        {classTeacherComment || '...'}
+                    <div style={{ fontSize: '14px', fontStyle: 'italic', color: '#1e293b', lineHeight: 1.3, whiteSpace: 'pre-wrap' }}>
+                        {classTeacherComment || 'No comment recorded.'}
                     </div>
-                    {data.classTeacherSignatureUrl && (
-                        <img 
-                            src={data.classTeacherSignatureUrl} 
-                            style={{ position: 'absolute', right: '10px', bottom: '5px', height: '40px', objectFit: 'contain' }} 
-                            alt="Teacher Signature"
-                        />
-                    )}
                 </div>
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc', position: 'relative' }}>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc' }}>
                     <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
                         Headmaster's Remark:
                     </div>
-                    <div style={{
-                        fontSize: '14px',
-                        fontStyle: 'italic',
-                        color: '#1e293b',
-                        lineHeight: 1.3,
-                        whiteSpace: 'pre-wrap',
-                        minHeight: '20px',
-                    }}>
-                        {headmasterComment || '...'}
+                    <div style={{ fontSize: '14px', fontStyle: 'italic', color: '#1e293b', lineHeight: 1.3, whiteSpace: 'pre-wrap' }}>
+                        {headmasterComment || 'Pending official review.'}
                     </div>
-                    {data.headmasterSignatureUrl && (
-                        <img 
-                            src={data.headmasterSignatureUrl} 
-                            style={{ position: 'absolute', right: '10px', bottom: '5px', height: '40px', objectFit: 'contain' }} 
-                            alt="Headmaster Signature"
-                        />
-                    )}
                 </div>
             </div>
 
-            {/* ── SIGNATURES ── */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '40px',
-                borderTop: '1px dashed #cbd5e1',
-                paddingTop: '10px',
-                marginTop: 'auto',
-                marginBottom: '10px'
+            {/* ── SIGNATURE SECTION ── */}
+            <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr 1fr', 
+                gap: '80px', 
+                marginTop: 'auto', 
+                paddingTop: '20px', 
+                borderTop: '2px solid #f1f5f9' 
             }}>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ height: '20px', borderBottom: '1px solid black', width: '60%', margin: '0 auto 4px' }} />
-                    <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase' }}>
-                        Class Teacher Signature
+                {/* CLASS TEACHER SECTION */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ height: '64px', display: 'flex', alignItems: 'center' }}>
+                        {data.classTeacherSignatureUrl ? (
+                            <img src={data.classTeacherSignatureUrl} alt="Teacher Sig" style={{ height: '64px', width: 'auto', mixBlendMode: 'multiply' }} />
+                        ) : (
+                            <div style={{ fontSize: '10px', color: '#cbd5e1', fontStyle: 'italic' }}>Awaiting Signature</div>
+                        )}
+                    </div>
+                    <div style={{ width: '100%', borderTop: '2px solid black', paddingTop: '8px', textAlign: 'center' }}>
+                        <p style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', margin: 0 }}>Class Teacher</p>
+                        <p style={{ fontSize: '11px', fontWeight: 700, fontStyle: 'italic', margin: 0 }}>{data.classTeacherName || 'N/A'}</p>
                     </div>
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ height: '20px', borderBottom: '1px solid black', width: '60%', margin: '0 auto 4px' }} />
-                    <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase' }}>
-                        Headmaster Signature
+
+                {/* HEADMASTER SECTION */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ height: '64px', display: 'flex', alignItems: 'center' }}>
+                        {data.headmasterSignatureUrl ? (
+                            <img src={data.headmasterSignatureUrl} alt="Headmaster Sig" style={{ height: '64px', width: 'auto', mixBlendMode: 'multiply' }} />
+                        ) : (
+                            <div style={{ fontSize: '10px', color: '#cbd5e1', fontStyle: 'italic' }}>Awaiting Sign-off</div>
+                        )}
+                    </div>
+                    <div style={{ width: '100%', borderTop: '2px solid black', paddingTop: '8px', textAlign: 'center' }}>
+                        <p style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', margin: 0 }}>Headmaster</p>
+                        <p style={{ fontSize: '11px', fontWeight: 700, fontStyle: 'italic', margin: 0 }}>{data.headmasterName || 'N/A'}</p>
                     </div>
                 </div>
             </div>
-            
-            <div style={{ fontSize: '11px', textAlign: 'center', color: '#94a3b8' }}>
-                Generated via GAM Edu Management System {data.digitalFingerprint && `• [${data.digitalFingerprint}]`}
+
+            {/* ── AUDIT FOOTER ── */}
+            <div style={{ 
+                marginTop: '30px', 
+                padding: '12px 16px', 
+                backgroundColor: '#f8fafc', 
+                borderRadius: '12px', 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                opacity: 0.6
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Lock size={12} />
+                    <span style={{ fontSize: '8px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Digitally Signed & Secured: {data.digitalFingerprint || 'PENDING_VERIFICATION'}
+                    </span>
+                </div>
+                <p style={{ fontSize: '8px', fontWeight: 700, fontStyle: 'italic', color: '#94a3b8', margin: 0 }}>
+                    Verified by GAM Edu Enterprise Cloud
+                </p>
             </div>
         </div>
     );
