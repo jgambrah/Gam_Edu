@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, Clock, Trash2, Search, Settings2, ShieldAlert } from 'lucide-react';
+import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, Clock, Trash2, Search, Settings2, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -38,7 +38,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -204,7 +203,7 @@ function AttendanceManagerDialog({ classes, schoolId, onRefresh }: { classes: an
                         </AlertDialog>
                     ) : (
                         <Button onClick={handleFindRecords} disabled={isLoading || !selectedClassId} className="w-full bg-indigo-600 hover:bg-indigo-700">
-                            {isLoading ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>}
+                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <Search className="mr-2 h-4 w-4 mr-2"/>}
                             Find Records
                         </Button>
                     )}
