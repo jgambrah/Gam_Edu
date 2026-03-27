@@ -93,11 +93,16 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 where('classId', '==', selectedClassId)
             );
             const studentSnapshot = await getDocs(studentQuery);
-            const studentList = studentSnapshot.docs.map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id })) as Student[];
+            
+            // Filter out inactive students for current attendance taking
+            const studentList = studentSnapshot.docs
+                .map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id }))
+                .filter(s => (s as any).enrollmentStatus !== 'Inactive') as Student[];
+            
             setStudents(studentList);
 
             if (studentList.length === 0) {
-                toast({ title: 'No Students', description: 'No students found in this class.' });
+                toast({ title: 'No Active Students', description: 'No active students found in this class.' });
                 replace([]);
                 setStudentsLoaded(true);
                 setIsLoading(false);
@@ -116,15 +121,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
             // Map students to form records, prioritizing existing data
             const formRecords = studentList.map(student => {
-                // Check if this specific student already has a record for today
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
                 
                 return {
-                    id: existingRecord?.id, // Capture the document ID if it exists!
+                    id: existingRecord?.id,
                     studentId: student.uid,
                     studentName: `${student.firstName} ${student.lastName}`,
                     classId: selectedClassId,
-                    // Default to the existing status, or 'Present' if no record exists yet
                     status: (existingRecord?.status || 'Present') as "Present" | "Absent" | "Late" | "Excused",
                     notes: existingRecord?.notes || '',
                     usesBusService: String(student.usesBusService || false),
@@ -159,30 +162,27 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const dateStr = format(selectedDate, 'yyyy-MM-dd');
             
             data.records.forEach(record => {
-                // Generate a deterministic ID: attendance-{schoolId}-{classId}-{studentId}-{YYYY-MM-DD}
                 const deterministicId = `att-${schoolId}-${selectedClassId}-${record.studentId}-${dateStr}`;
-                
-                // Always use this specific ID. Firestore will overwrite it if it exists, or create it if it doesn't.
                 const recordRef = doc(firestore, 'attendance', deterministicId);
-                
                 const { usesBusService, usesCanteen, id, ...dataToSave } = record; 
                 
                 batch.set(recordRef, {
                     ...dataToSave,
                     date: startOfDay(selectedDate),
                     schoolId: schoolId,
-                    updatedAt: serverTimestamp(), // Track when it was last modified
-                    updatedBy: user?.uid // Track WHO last modified it (Teacher vs Admin)
-                }, { merge: true }); // Merge ensures we don't accidentally delete other fields if they exist
+                    updatedAt: serverTimestamp(),
+                    updatedBy: user?.uid
+                }, { merge: true });
             });
 
             await batch.commit();
             toast({ title: 'Attendance Saved!', description: 'Now processing financial records...' });
 
+            // Ensure only active students get billed
             const studentsToBill = data.records
                 .filter(r => r.status === 'Present' || r.status === 'Late')
                 .map(r => students.find(s => s.uid === r.studentId))
-                .filter((s): s is Student => s !== undefined);
+                .filter((s): s is Student => s !== undefined && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus));
 
             if (studentsToBill.length > 0) {
                 const billingResult = await billMultipleStudents(
@@ -200,7 +200,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     description: `✅ ${billingResult.successful} billed. ❌ ${billingResult.failed} failed. Total today: GH₵${billingResult.totalBilled.toFixed(2)}`
                 });
             } else {
-                toast({ title: 'Billing Skipped', description: 'No students were marked as present or late.'});
+                toast({ title: 'Billing Skipped', description: 'No active students were marked as present or late.'});
             }
         } catch (error: any) {
             toast({ variant: 'destructive', title: 'Error', description: error.message });
@@ -215,8 +215,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             <CardHeader className="px-0 flex-shrink-0">
                 <CardTitle>Daily Attendance & Billing</CardTitle>
                 <CardDescription>
-                    Marking students 'Present' or 'Late' will automatically apply 
-                    charges based on your Class-Specific rates.
+                    Only active students are listed. Marking 'Present' or 'Late' automatically generates bills for active subscribers.
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-0 flex-1 flex flex-col pb-0">

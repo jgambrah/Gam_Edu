@@ -31,7 +31,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Class } from '@/lib/types';
+import { Class, Student } from '@/lib/types';
 
 const canteenRateSchema = z.object({
     pricingModel: z.enum(['Flat', 'Class-Based']),
@@ -341,7 +341,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             // 3. Fetch Students to know their route and billing model
             const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
             const studentsSnap = await getDocs(studentsQuery);
-            const studentMap = new Map<string, { usesBus: boolean, routeId: string, transportMode: string, canteenMode: string }>();
+            const studentMap = new Map<string, { usesBus: boolean, routeId: string, transportMode: string, canteenMode: string, status: string }>();
 
             studentsSnap.docs.forEach(doc => {
                 const data = doc.data();
@@ -349,7 +349,8 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                     usesBus: data.usesBusService === true, 
                     routeId: data.routeId || '',
                     transportMode: data.transportBillingModel || 'Daily',
-                    canteenMode: data.canteenBillingMode || 'Daily'
+                    canteenMode: data.canteenBillingMode || 'Daily',
+                    status: data.enrollmentStatus || 'Active'
                 });
             });
             
@@ -378,13 +379,17 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             
             for (const attendanceDoc of recordsToProcess) {
                 const record = attendanceDoc.data();
-                const recordDate = record.date.toDate();
-                const normalizedDate = startOfDay(recordDate); // STANDARD: Midnight
-                const dateKey = format(normalizedDate, 'yyyy-MM-dd');
                 const studentInfo = studentMap.get(record.studentId);
 
-                // A. Determine the correct Canteen Rate
-                if (studentInfo?.canteenMode === 'Daily') {
+                // SKIP: Inactive/Archived students
+                if (!studentInfo || studentInfo.status === 'Inactive') continue;
+
+                const recordDate = record.date.toDate();
+                const dateKey = format(recordDate, 'yyyy-MM-dd');
+
+                // A. Determine the correct Canteen Rate for this specific student's class
+                // ONLY bill daily Canteen if their mode is 'Daily'
+                if (studentInfo.canteenMode === 'Daily') {
                     let studentCanteenRate = 0;
                     if (canteenModel === 'Flat') {
                         studentCanteenRate = globalCanteenRate;
@@ -397,14 +402,14 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                         const canteenRecordId = `canteen-${record.studentId}-${dateKey}`;
                         const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                         billingBatch.set(financialRecordRef, {
+                            billedAmount: studentCanteenRate,
                             studentId: record.studentId, 
                             studentName: record.studentName, 
                             classId: record.classId,
                             type: 'Canteen Fee (Daily)', 
-                            description: `Canteen - ${format(normalizedDate, 'PPP')}`, 
-                            billedAmount: studentCanteenRate,
+                            description: `Canteen - ${format(recordDate, 'PPP')}`, 
                             status: 'Unpaid', 
-                            dueDate: Timestamp.fromDate(normalizedDate),
+                            dueDate: Timestamp.fromDate(recordDate),
                             createdAt: serverTimestamp(), 
                             amountPaid: 0, 
                             schoolId,
@@ -412,8 +417,9 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                     }
                 }
 
-                // B. Transport Billing
-                if (studentInfo?.usesBus && studentInfo?.routeId && studentInfo?.transportMode === 'Daily') {
+                // B. Transport Billing (DYNAMIC ROUTE RATE & MODE CHECK)
+                // ONLY bill daily Transport if they use the bus AND their mode is 'Daily'
+                if (studentInfo.usesBus && studentInfo.routeId && studentInfo.transportMode === 'Daily') {
                     const specificTransportRate = routeRatesMap.get(studentInfo.routeId)?.dailyRate || 0;
 
                     if (specificTransportRate > 0) {
@@ -421,14 +427,14 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                         
                         billingBatch.set(financialRecordRef, {
+                            billedAmount: specificTransportRate,
                             studentId: record.studentId, 
                             studentName: record.studentName, 
                             classId: record.classId,
                             type: 'Transport Fee (Daily)', 
-                            description: `Transport - ${format(normalizedDate, 'PPP')}`, 
-                            billedAmount: specificTransportRate,
+                            description: `Transport - ${format(recordDate, 'PPP')}`, 
                             status: 'Unpaid', 
-                            dueDate: Timestamp.fromDate(normalizedDate),
+                            dueDate: Timestamp.fromDate(recordDate),
                             createdAt: serverTimestamp(), 
                             amountPaid: 0, 
                             schoolId,

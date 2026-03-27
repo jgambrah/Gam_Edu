@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { 
   collection, 
@@ -29,7 +29,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -61,6 +61,7 @@ export default function StudentsV3Page() {
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'Active' | 'Inactive' | 'All'>('Active');
 
   // Form State (Subscription Focused)
   const [selectedClassId, setSelectedClassId] = useState('');
@@ -264,15 +265,27 @@ export default function StudentsV3Page() {
     }
   };
 
-  // --- DELETE STUDENT ---
-  const handleDelete = async (id: string) => {
-    if (!firestore || !confirm("Delete this student profile?")) return;
+  // --- ARCHIVE STUDENT ---
+  const handleArchiveStudent = async (studentId: string, currentStatus: string = 'Active') => {
+    if (!firestore || !adminSchoolId) return;
+    
+    // Toggle status between Active and Inactive
+    const isCurrentlyActive = currentStatus === 'Active' || !currentStatus;
+    const newStatus = isCurrentlyActive ? 'Inactive' : 'Active';
+    const actionText = newStatus === 'Inactive' ? 'archive' : 'restore';
+
+    if (!confirm(`Are you sure you want to ${actionText} this student? They will no longer appear in active class lists or be billed.`)) return;
+
     try {
-        await deleteDoc(doc(firestore, 'students', id));
-        toast({ title: "Deleted", description: "Profile removed." });
-        loadData();
-    } catch (e: any) {
-        toast({ variant: 'destructive', title: "Error", description: e.message });
+        await updateDoc(doc(firestore, 'students', studentId), {
+            enrollmentStatus: newStatus,
+            updatedAt: serverTimestamp()
+        });
+        toast({ title: "Status Updated", description: `Student is now ${newStatus}.` });
+        loadData(); // Refresh the list
+    } catch (error: any) {
+        console.error(error);
+        toast({ variant: 'destructive', title: "Error", description: "Failed to update status." });
     }
   };
 
@@ -281,13 +294,24 @@ export default function StudentsV3Page() {
     toast({ title: "Feature coming soon", description: "Direct SMS reminders are being integrated." });
   };
   
-  const filteredStudents = students.filter(s => {
-    const term = searchTerm.toLowerCase().trim();
-    let matchesClass = classFilter === 'all' || s.classId === classFilter;
-    if (classFilter === 'unassigned') matchesClass = !s.classId;
-    const matchesSearch = searchStudent(s, term);
-    return matchesSearch && matchesClass;
-  });
+  const filteredStudents = useMemo(() => {
+    return students.filter(s => {
+        const term = searchTerm.toLowerCase().trim();
+        
+        // Status filter logic
+        const currentStatus = s.enrollmentStatus || 'Active';
+        const matchesStatus = statusFilter === 'All' ? true : currentStatus === statusFilter;
+        
+        // Class filter logic
+        let matchesClass = classFilter === 'all' || s.classId === classFilter;
+        if (classFilter === 'unassigned') matchesClass = !s.classId;
+        
+        // Search match
+        const matchesSearch = searchStudent(s, term);
+        
+        return matchesStatus && matchesSearch && matchesClass;
+    });
+  }, [students, searchTerm, classFilter, statusFilter]);
 
   const overallLoading = isLoadingSchool || isLoading;
 
@@ -316,22 +340,34 @@ export default function StudentsV3Page() {
         </CardHeader>
         
         <CardContent className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
                 <StudentSearchInput 
                   value={searchTerm} 
                   onChange={setSearchTerm} 
                   className="flex-grow"
                 />
-                <Select value={classFilter} onValueChange={setClassFilter}>
-                    <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Classes</SelectItem>
-                        <SelectItem value="unassigned" className="text-orange-600 font-bold">Unassigned Students</SelectItem>
-                        {classes.map(c => (
-                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                
+                <div className="flex gap-2 w-full md:w-auto">
+                    <Select value={classFilter} onValueChange={setClassFilter}>
+                        <SelectTrigger className="w-full md:w-[200px] border-2"><SelectValue placeholder="All Classes" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Classes</SelectItem>
+                            <SelectItem value="unassigned" className="text-orange-600 font-bold">Unassigned</SelectItem>
+                            {classes.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <Select value={statusFilter} onValueChange={(v: any) => setStatusFilter(v)}>
+                        <SelectTrigger className="w-full md:w-[160px] border-2"><SelectValue placeholder="Status" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Active">Active Only</SelectItem>
+                            <SelectItem value="Inactive">Archived Only</SelectItem>
+                            <SelectItem value="All">Show All</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             {overallLoading ? (
@@ -350,47 +386,64 @@ export default function StudentsV3Page() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Student</TableHead>
+                                <TableHead>Status</TableHead>
                                 <TableHead>Student ID</TableHead>
-                                <TableHead>Email</TableHead>
                                 <TableHead>Class</TableHead>
                                 <TableHead>Services</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredStudents.map((s) => (
-                                <TableRow key={s.id}>
-                                    <TableCell>
-                                        <StudentDisplay student={s} variant="list" showAvatar />
-                                    </TableCell>
-                                    <TableCell className="font-mono text-xs">
-                                        {formatStudentId(s)}
-                                    </TableCell>
-                                    <TableCell>{s.email}</TableCell>
-                                    <TableCell>
-                                        {s.classId ? (
-                                            <Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge>
-                                        ) : (
-                                            <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 font-bold italic">Needs Class</Badge>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex gap-2">
-                                            {s.canteenBillingMode !== 'None' && <Utensils className="h-4 w-4 text-orange-500" title={`Canteen: ${s.canteenBillingMode}`}/>}
-                                            {s.usesBusService && <Bus className="h-4 w-4 text-blue-500" title={`Bus Subscriber (${s.transportBillingModel})`} />}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-1">
-                                            <Button variant="outline" size="sm" onClick={() => handleSendBill(s)}>
-                                                <MessageSquare className="h-4 w-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {filteredStudents.map((s) => {
+                                const currentStatus = s.enrollmentStatus || 'Active';
+                                const isInactive = currentStatus === 'Inactive';
+                                return (
+                                    <TableRow key={s.id} className={cn(isInactive && "opacity-60 bg-slate-50")}>
+                                        <TableCell>
+                                            <StudentDisplay student={s} variant="list" showAvatar />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant={isInactive ? "secondary" : "default"} className={cn(isInactive ? "bg-slate-200 text-slate-600" : "bg-green-100 text-green-700")}>
+                                                {currentStatus}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="font-mono text-xs">
+                                            {formatStudentId(s)}
+                                        </TableCell>
+                                        <TableCell>
+                                            {s.classId ? (
+                                                <Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 font-bold italic">Needs Class</Badge>
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex gap-2">
+                                                {s.canteenBillingMode !== 'None' && <Utensils className="h-4 w-4 text-orange-500" title={`Canteen: ${s.canteenBillingMode}`}/>}
+                                                {s.usesBusService && <Bus className="h-4 w-4 text-blue-500" title={`Bus Subscriber (${s.transportBillingModel})`} />}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-1">
+                                                <Button variant="outline" size="sm" onClick={() => handleSendBill(s)} title="Send Bill Reminder">
+                                                    <MessageSquare className="h-4 w-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                                
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm" 
+                                                    onClick={() => handleArchiveStudent(s.id, s.enrollmentStatus)}
+                                                    className={cn(isInactive ? "text-emerald-600 hover:text-emerald-700" : "text-slate-400 hover:text-slate-600")}
+                                                    title={isInactive ? "Restore Student" : "Archive Student"}
+                                                >
+                                                    {isInactive ? <RotateCcw className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
                         </TableBody>
                     </Table>
                 </div>
@@ -417,7 +470,7 @@ export default function StudentsV3Page() {
                         <Label htmlFor="photo-upload" className="cursor-pointer bg-white border px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 flex items-center gap-2">
                             <Upload className="h-3 w-3"/> Select Profile Photo
                         </Label>
-                        <Input id="photo-upload" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
+                        <input id="photo-upload" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
                         <p className="text-[10px] text-slate-400 mt-2">JPG or PNG, max 2MB.</p>
                     </div>
                  </div>
@@ -529,7 +582,7 @@ export default function StudentsV3Page() {
                             <Label htmlFor="photo-upload-edit" className="cursor-pointer bg-white border px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 flex items-center gap-2">
                                 <Upload className="h-3 w-3"/> Change Profile Photo
                             </Label>
-                            <Input id="photo-upload-edit" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
+                            <input id="photo-upload-edit" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
                         </div>
                     </div>
 
