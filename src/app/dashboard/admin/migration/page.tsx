@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -18,7 +17,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { 
   FileUp, Database, Loader2, Sparkles, CheckCircle2, 
-  AlertTriangle, FileSpreadsheet, FileText, ArrowRight, UserPlus 
+  AlertTriangle, FileSpreadsheet, FileText, ArrowRight, UserPlus,
+  Trash2, Wand2, Filter 
 } from 'lucide-react';
 import { extractStudentsFromText } from '@/ai/flows/extract-students-flow';
 import type { Class } from '@/lib/types';
