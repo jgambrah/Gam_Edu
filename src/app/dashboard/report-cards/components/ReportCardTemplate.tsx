@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Lock } from 'lucide-react';
+import SignatureStamp from '@/components/shared/SignatureStamp';
 
 interface ReportCardTemplateProps {
     data: any;
@@ -197,34 +198,20 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 borderTop: '2px solid #f1f5f9' 
             }}>
                 {/* CLASS TEACHER SECTION */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ height: '64px', display: 'flex', alignItems: 'center' }}>
-                        {data.classTeacherSignatureUrl ? (
-                            <img src={data.classTeacherSignatureUrl} alt="Teacher Sig" style={{ height: '64px', width: 'auto', mixBlendMode: 'multiply' }} />
-                        ) : (
-                            <div style={{ fontSize: '10px', color: '#cbd5e1', fontStyle: 'italic' }}>Awaiting Signature</div>
-                        )}
-                    </div>
-                    <div style={{ width: '100%', borderTop: '2px solid black', paddingTop: '8px', textAlign: 'center' }}>
-                        <p style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', margin: 0 }}>Class Teacher</p>
-                        <p style={{ fontSize: '11px', fontWeight: 700, fontStyle: 'italic', margin: 0 }}>{data.classTeacherName || 'N/A'}</p>
-                    </div>
-                </div>
+                <SignatureStamp 
+                    url={data.classTeacherSignatureUrl} 
+                    name={data.classTeacherName || 'N/A'} 
+                    role="Class Teacher"
+                    date={data.updatedAt}
+                />
 
                 {/* HEADMASTER SECTION */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ height: '64px', display: 'flex', alignItems: 'center' }}>
-                        {data.headmasterSignatureUrl ? (
-                            <img src={data.headmasterSignatureUrl} alt="Headmaster Sig" style={{ height: '64px', width: 'auto', mixBlendMode: 'multiply' }} />
-                        ) : (
-                            <div style={{ fontSize: '10px', color: '#cbd5e1', fontStyle: 'italic' }}>Awaiting Sign-off</div>
-                        )}
-                    </div>
-                    <div style={{ width: '100%', borderTop: '2px solid black', paddingTop: '8px', textAlign: 'center' }}>
-                        <p style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', margin: 0 }}>Headmaster</p>
-                        <p style={{ fontSize: '11px', fontWeight: 700, fontStyle: 'italic', margin: 0 }}>{data.headmasterName || 'N/A'}</p>
-                    </div>
-                </div>
+                <SignatureStamp 
+                    url={data.headmasterSignatureUrl} 
+                    name={data.headmasterName || 'N/A'} 
+                    role="Headmaster"
+                    date={data.headmasterSignedAt}
+                />
             </div>
 
             {/* ── AUDIT FOOTER ── */}
