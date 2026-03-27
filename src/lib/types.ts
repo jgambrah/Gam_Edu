@@ -200,6 +200,9 @@ export type ReportCard = {
     finalPercentage?: number;
     classPosition?: string; // e.g. "1st", "2nd"
     subjectSummaries?: SubjectGradeSummary[]; // New structured field
+    classTeacherSignatureUrl?: string;
+    headmasterSignatureUrl?: string;
+    digitalFingerprint?: string;
 }
 
 // Timetable Schemas
@@ -588,6 +591,7 @@ export type Staff = {
     role: UserRole;
     email: string;
     schoolId?: string;
+    signatureUrl?: string;
 };
 
 // Payroll Schemas

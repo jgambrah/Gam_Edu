@@ -191,7 +191,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
 
             {/* ── REMARKS ── */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc' }}>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc', position: 'relative' }}>
                     <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
                         Class Teacher's Remark:
                     </div>
@@ -205,8 +205,15 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     }}>
                         {classTeacherComment || '...'}
                     </div>
+                    {data.classTeacherSignatureUrl && (
+                        <img 
+                            src={data.classTeacherSignatureUrl} 
+                            style={{ position: 'absolute', right: '10px', bottom: '5px', height: '40px', objectFit: 'contain' }} 
+                            alt="Teacher Signature"
+                        />
+                    )}
                 </div>
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc' }}>
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc', position: 'relative' }}>
                     <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
                         Headmaster's Remark:
                     </div>
@@ -220,6 +227,13 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     }}>
                         {headmasterComment || '...'}
                     </div>
+                    {data.headmasterSignatureUrl && (
+                        <img 
+                            src={data.headmasterSignatureUrl} 
+                            style={{ position: 'absolute', right: '10px', bottom: '5px', height: '40px', objectFit: 'contain' }} 
+                            alt="Headmaster Signature"
+                        />
+                    )}
                 </div>
             </div>
 
@@ -248,7 +262,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             </div>
             
             <div style={{ fontSize: '11px', textAlign: 'center', color: '#94a3b8' }}>
-                Generated via GAM Edu Management System
+                Generated via GAM Edu Management System {data.digitalFingerprint && `• [${data.digitalFingerprint}]`}
             </div>
         </div>
     );

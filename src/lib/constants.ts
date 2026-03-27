@@ -54,7 +54,9 @@ import {
   FileQuestion,
   Sparkles,
   Coins,
-  Receipt
+  Receipt,
+  User as UserIcon,
+  ShieldCheck
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -113,6 +115,12 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         }
     ]
+  },
+  {
+    path: '/dashboard/profile',
+    title: 'My Profile',
+    icon: UserIcon,
+    roles: 'all',
   },
   {
     path: '/dashboard/people',
@@ -223,6 +231,12 @@ export const navItems: NavItem[] = [
             title: 'Report Cards',
             icon: FileText,
             roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
+        },
+        {
+            path: '/dashboard/report-cards/signing',
+            title: 'Authorization Vault',
+            icon: ShieldCheck,
+            roles: ['Director', 'Administrator'],
         },
         {
             path: '/dashboard/timetable',
