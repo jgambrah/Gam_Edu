@@ -223,7 +223,7 @@ export default function HelpPage() {
                     <AccordionItem value="item-1" className="border rounded-2xl px-6 bg-slate-50/50">
                         <AccordionTrigger className="hover:no-underline font-bold text-slate-800">How do I reset a user's password?</AccordionTrigger>
                         <AccordionContent className="text-slate-600 leading-relaxed pb-6 font-medium">
-                            Go to People > Staff Management (or Students), find the user, click 'Edit', and you will see a 'Reset Password' option. Alternatively, they can use the 'Forgot Password' link on the login page to receive a secure link.
+                            Go to People &gt; Staff Management (or Students), find the user, click 'Edit', and you will see a 'Reset Password' option. Alternatively, they can use the 'Forgot Password' link on the login page to receive a secure link.
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-2" className="border rounded-2xl px-6 bg-slate-50/50">
