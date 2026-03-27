@@ -30,7 +30,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -58,6 +58,10 @@ export default function StudentsV3Page() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
+  // Custom Confirmation Dialog State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [archiveTask, setArchiveTask] = useState<{ id: string, currentStatus: string } | null>(null);
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -128,17 +132,21 @@ export default function StudentsV3Page() {
   };
 
   // --- ACTIONS ---
-  const handleArchiveStudent = async (studentId: string, currentStatus: string = 'Active') => {
-    if (!firestore || !adminSchoolId) return;
+  const triggerArchive = (studentId: string, currentStatus: string = 'Active') => {
+    setArchiveTask({ id: studentId, currentStatus });
+    setIsConfirmOpen(true);
+  };
+
+  const executeArchive = async () => {
+    if (!archiveTask || !firestore || !adminSchoolId) return;
     
+    setIsSubmitting(true);
+    const { id, currentStatus } = archiveTask;
     const isCurrentlyActive = currentStatus === 'Active' || !currentStatus;
     const newStatus = isCurrentlyActive ? 'Inactive' : 'Active';
-    const actionText = newStatus === 'Inactive' ? 'archive' : 'restore';
-
-    if (!confirm(`Are you sure you want to ${actionText} this student? They will no longer appear in active class lists or be billed.`)) return;
 
     try {
-        await updateDoc(doc(firestore, 'students', studentId), {
+        await updateDoc(doc(firestore, 'students', id), {
             enrollmentStatus: newStatus,
             updatedAt: serverTimestamp()
         });
@@ -147,6 +155,10 @@ export default function StudentsV3Page() {
     } catch (error: any) {
         console.error(error);
         toast({ variant: 'destructive', title: "Error", description: "Failed to update status." });
+    } finally {
+        setIsSubmitting(false);
+        setIsConfirmOpen(false);
+        setArchiveTask(null);
     }
   };
 
@@ -372,7 +384,7 @@ export default function StudentsV3Page() {
                                                     variant="ghost" 
                                                     size="sm" 
                                                     type="button"
-                                                    onClick={() => handleArchiveStudent(s.id, s.enrollmentStatus)}
+                                                    onClick={() => triggerArchive(s.id, s.enrollmentStatus)}
                                                     className={cn(isInactive ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" : "text-slate-400 hover:text-red-600 hover:bg-red-50")}
                                                     title={isInactive ? "Restore Student" : "Archive Student"}
                                                 >
@@ -570,6 +582,44 @@ export default function StudentsV3Page() {
             )}
         </DialogContent>
       </Dialog>
+
+      {/* --- TITAN-GRADE CONFIRMATION MODAL --- */}
+      {isConfirmOpen && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[40px] p-10 max-w-md w-full shadow-2xl border-4 border-slate-900 space-y-6 text-center">
+            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto text-red-600 border-2 border-red-100">
+              <AlertTriangle size={40} className="animate-pulse" />
+            </div>
+            
+            <div>
+              <h2 className="text-2xl font-black uppercase italic text-black">
+                  Confirm <span className="text-red-600">{archiveTask?.currentStatus === 'Inactive' ? 'Restore' : 'Archive'}</span>
+              </h2>
+              <p className="text-xs font-bold text-slate-400 uppercase mt-2 leading-relaxed">
+                {archiveTask?.currentStatus === 'Inactive' 
+                  ? "Are you sure you want to restore this student? They will reappear in active lists and be subject to billing."
+                  : "Are you sure you want to decommission this record? This student will be removed from active lists and billing immediately."}
+              </p>
+            </div>
+
+            <div className="flex gap-4 pt-4">
+              <button 
+                onClick={() => { setIsConfirmOpen(false); setArchiveTask(null); }}
+                className="flex-1 py-4 font-black text-slate-400 uppercase text-xs tracking-widest hover:text-black transition-all"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={executeArchive}
+                disabled={isSubmitting}
+                className="flex-[2] bg-red-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-red-100 hover:bg-black transition-all disabled:opacity-50"
+              >
+                {isSubmitting ? "Processing..." : "Confirm Action"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
