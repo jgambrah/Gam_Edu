@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
@@ -131,7 +132,7 @@ export default function ReportCardManager() {
                 setClassTeacherComment(data.classTeacherComment || '');
                 setHeadmasterComment(data.headmasterComment || '');
                 if (data.schoolId === schoolId) {
-                    setProcessedReport(prev => prev ? { ...prev, status: data.status } : null);
+                    setProcessedReport(prev => prev ? { ...prev, ...data } : data);
                 }
             } else {
                 setClassTeacherComment('');
@@ -324,7 +325,7 @@ export default function ReportCardManager() {
                 classTeacherSignatureUrl: profile?.signatureUrl || null
             } : {};
 
-            await setDoc(doc(firestore!, 'report-cards', reportId), {
+            const finalData = {
                 ...processedReport,
                 ...teacherDetails,
                 id: reportId,
@@ -335,7 +336,13 @@ export default function ReportCardManager() {
                 headmasterComment,
                 lastUpdatedBy: user?.uid,
                 updatedAt: serverTimestamp()
-            }, { merge: true });
+            };
+
+            await setDoc(doc(firestore!, 'report-cards', reportId), finalData, { merge: true });
+            
+            // UPDATE LOCAL STATE FOR PREVIEW
+            setProcessedReport(finalData);
+            
             toast({ title: "Draft Saved & Signed", description: "The report data and your signature have been stored." });
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Failed to save progress." });
@@ -350,15 +357,21 @@ export default function ReportCardManager() {
         try {
             const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
             
-            // Capture signature at publish time
-            const teacherDetails = isTeacher ? {
-                classTeacherName: `${profile?.firstName} ${profile?.lastName}`,
-                classTeacherSignatureUrl: profile?.signatureUrl || null
-            } : {};
+            const signatureDetails: any = {};
+            if (isTeacher) {
+                signatureDetails.classTeacherName = `${profile?.firstName} ${profile?.lastName}`;
+                signatureDetails.classTeacherSignatureUrl = profile?.signatureUrl || null;
+            }
+            if (isAdminOrDirector) {
+                signatureDetails.headmasterName = `${profile?.firstName} ${profile?.lastName}`;
+                signatureDetails.headmasterSignatureUrl = profile?.signatureUrl || null;
+                signatureDetails.headmasterSignedAt = serverTimestamp();
+                signatureDetails.digitalFingerprint = `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+            }
 
-            await setDoc(doc(firestore!, 'report-cards', reportId), {
+            const finalData = {
                 ...processedReport,
-                ...teacherDetails,
+                ...signatureDetails,
                 id: reportId,
                 studentId: selectedStudentId,
                 schoolId,
@@ -367,7 +380,12 @@ export default function ReportCardManager() {
                 classTeacherComment,
                 headmasterComment,
                 generatedBy: user?.uid
-            }, { merge: true });
+            };
+
+            await setDoc(doc(firestore!, 'report-cards', reportId), finalData, { merge: true });
+            
+            // UPDATE LOCAL STATE FOR PREVIEW
+            setProcessedReport(finalData);
             
             toast({ 
                 title: "Report Published & Locked! 🚀", 

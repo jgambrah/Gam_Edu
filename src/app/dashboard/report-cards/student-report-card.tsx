@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -12,7 +13,8 @@ import { useMemo } from 'react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Printer } from 'lucide-react';
+import { Printer, Lock } from 'lucide-react';
+import SignatureStamp from '@/components/shared/SignatureStamp';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
@@ -106,9 +108,36 @@ export function StudentReportCard({ student, term, year, savedReport }: { studen
                             <p className="text-xs italic text-slate-700">{savedReport.headmasterComment || "No comment."}</p>
                         </div>
                     </div>
+
+                    {/* SIGNATURE SECTION */}
+                    <div className="grid grid-cols-2 gap-12 mt-10 pt-6 border-t border-dashed">
+                        <SignatureStamp 
+                            url={savedReport.classTeacherSignatureUrl} 
+                            name={savedReport.classTeacherName || 'Class Teacher'} 
+                            role="Class Teacher"
+                            date={savedReport.updatedAt}
+                        />
+                        <SignatureStamp 
+                            url={savedReport.headmasterSignatureUrl} 
+                            name={savedReport.headmasterName || 'Headmaster'} 
+                            role="Headmaster"
+                            date={savedReport.headmasterSignedAt}
+                        />
+                    </div>
+
+                    {/* AUDIT FOOTER */}
+                    <div className="mt-8 p-3 bg-slate-50 rounded-xl flex justify-between items-center opacity-60">
+                        <div className="flex items-center gap-2">
+                            <Lock size={10} className="text-slate-400" />
+                            <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">
+                                Secured Digital Transcript: {savedReport.digitalFingerprint || 'VERIFIED'}
+                            </span>
+                        </div>
+                        <p className="text-[8px] font-bold italic text-slate-400 uppercase">Verified by GAM Edu Cloud</p>
+                    </div>
                 </CardContent>
                 <CardFooter className="print:hidden justify-end pt-4">
-                    <Button onClick={() => window.print()} variant="outline">
+                    <Button onClick={() => window.print()} variant="outline" className="rounded-xl font-bold">
                         <Printer className="mr-2 h-4 w-4" /> Print PDF
                     </Button>
                 </CardFooter>
