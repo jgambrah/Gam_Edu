@@ -10,6 +10,14 @@ service cloud.firestore {
     function isSignedIn() { return request.auth != null; }
     function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
 
+    // Super Admin check - prioritized for stability
+    function isSuperAdmin() {
+      return isSignedIn() && (
+        request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || 
+        request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2"
+      );
+    }
+
     function getUserRole() {
       return exists(/databases/$(database)/documents/staff/$(request.auth.uid))
         ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
@@ -19,11 +27,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && (
-        request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || 
-        request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2" ||
-        getUserRole() in ['Director', 'Administrator', 'Admin']
-      );
+      return isSuperAdmin() || (isSignedIn() && getUserRole() in ['Director', 'Administrator', 'Admin']);
     }
 
     function isTeacher() { return isSignedIn() && getUserRole() == 'Teacher'; }
@@ -47,7 +51,7 @@ service cloud.firestore {
     match /schools/{schoolId} {
       allow get: if isSignedIn();
       allow list: if isAdmin();
-      allow write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2"; 
+      allow write: if isSuperAdmin(); 
       allow update: if isSignedIn() && isDirector();
     }
     
@@ -61,7 +65,13 @@ service cloud.firestore {
     }
 
     match /leads/{leadId} {
-      allow read, write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+      allow read, write: if isSuperAdmin();
+    }
+
+    // Global CMS: Tutorials
+    match /tutorials/{tutorialId} {
+      allow read: if isSignedIn();
+      allow write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2"; // CEO Only
     }
 
     // =========================================================
@@ -118,7 +128,7 @@ service cloud.firestore {
     // =========================================================
 
     match /leaveRequests/{requestId} {
-      allow read, write, list: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isAdmin();
+      allow read, write, list: if isSuperAdmin() || isAdmin();
       allow list: if isStaff();
       allow read: if isSignedIn() && (resource.data.staffId == request.auth.uid || resource.data.parentId == request.auth.uid);
       allow create: if isSignedIn();
@@ -279,7 +289,7 @@ service cloud.firestore {
 
     match /financialRecords/{recordId} { 
       allow get: if isSignedIn() && (
-        request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || 
+        isSuperAdmin() || 
         isFinanceStaff() || isAdmin() || isTeacher() ||
         resource.data.studentId == request.auth.uid ||
         parentOwnsStudent(resource.data.studentId)
@@ -560,6 +570,7 @@ service cloud.firestore {
       allow delete: if request.auth.uid == resource.data.userId || isAdmin();
     }
 
+    // ELA Rules
     match /ela_grammar_drills/{drillId} {
       allow read: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
@@ -596,6 +607,7 @@ service cloud.firestore {
       allow write: if isOwner(userId) || isAdmin();
     }
 
+    // Logic/Think Tank
     match /think_tank_paradoxes/{paradoxId} {
       allow read: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
@@ -634,69 +646,7 @@ service cloud.firestore {
       allow write: if isTeacher() || isAdmin();
     }
 
-    match /coding_curriculum/{lessonId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /student_coding_progress/{progressId} {
-      allow read, write: if isSignedIn() && (
-        progressId.startsWith(request.auth.uid) || 
-        resource.data.userId == request.auth.uid || 
-        request.resource.data.userId == request.auth.uid
-      );
-      allow read: if isTeacher() || isAdmin();
-    }
-
-    match /coding-club-projects/{userId} {
-      allow read, write: if isOwner(userId);
-    }
-
-    match /forumThreads/{threadId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
-      allow delete: if isAdmin() || request.auth.uid == resource.data.createdBy.uid;
-      match /replies/{replyId} {
-        allow read: if isSignedIn();
-        allow create: if isSignedIn();
-        allow update, delete: if isAdmin() || request.auth.uid == resource.data.author.uid;
-      }
-    }
-    
-    match /direct_messages/{chatId} { 
-      allow read, update: if isSignedIn() && request.auth.uid in resource.data.participants;
-      allow list: if isSignedIn(); 
-      allow create: if isSignedIn();
-      match /messages/{messageId} { 
-        allow read, write: if isSignedIn(); 
-      } 
-    }
-
-    match /lectures/{lectureId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-      match /messages/{messageId} {
-        allow read, create: if isSignedIn();
-      }
-    }
-
-    match /active_classes/{classId} {
-      allow read, write: if isSignedIn();
-      match /{document=**} {
-        allow read, write: if isSignedIn();
-      }
-    }
-    
-    match /library/{itemId} { 
-      allow read: if isSignedIn(); 
-      allow create: if isLibrarian() || isAdmin() || isTeacher();
-      allow update: if isLibrarian() || isAdmin() || isTeacher() || 
-                    (isStudent() && request.resource.data.status == 'Requested' && request.resource.data.currentHolderId == request.auth.uid) ||
-                    (isStudent() && resource.data.currentHolderId == request.auth.uid && request.resource.data.status == 'Pending Return');
-      allow delete: if isLibrarian() || isAdmin();
-    }
-
+    // GLOBAL FALLBACK
     match /{document=**} {
       allow read, write: if isAdmin();
     }

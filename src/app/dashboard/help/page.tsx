@@ -1,38 +1,21 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { 
     BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, School, 
     UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, 
-    MessageSquare, Activity, FileText, UserCog
+    MessageSquare, Activity, FileText, UserCog, Loader2
 } from 'lucide-react';
-
-
-function VideoEmbed({ videoId, title }: { videoId: string, title: string }) {
-  return (
-    <div className="space-y-2">
-      <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200 aspect-video">
-        <iframe 
-            width="100%" 
-            height="100%" 
-            src={`https://www.youtube.com/embed/${videoId}?rel=0`} 
-            title={title}
-            frameBorder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowFullScreen
-        ></iframe>
-      </div>
-      <p className="font-medium text-center text-sm text-slate-700">{title}</p>
-    </div>
-  );
-}
+import { Badge } from '@/components/ui/badge';
+import type { Tutorial } from '@/lib/types';
 
 function GuideCard({ icon: Icon, title, desc, steps }: any) {
     return (
-        <Card className="hover:shadow-lg transition-all border-t-4 border-t-blue-500">
+        <Card className="hover:shadow-lg transition-all border-t-4 border-t-blue-500 h-full">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-lg">
                     <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><Icon className="h-5 w-5"/></div>
@@ -50,22 +33,30 @@ function GuideCard({ icon: Icon, title, desc, steps }: any) {
 }
 
 export default function HelpPage() {
+  const firestore = useFirestore();
+  
+  const tutorialsQuery = useMemoFirebase(() => 
+    firestore ? query(collection(firestore, 'tutorials'), orderBy('createdAt', 'desc')) : null, 
+  [firestore]);
+  
+  const { data: tutorials, isLoading: tutorialsLoading } = useCollection<Tutorial>(tutorialsQuery);
+
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
       
       {/* HERO SECTION */}
       <div className="text-center space-y-4 mb-8">
-        <h1 className="text-4xl font-bold text-blue-900">How can we help you?</h1>
-        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-          Browse our guides, watch tutorials, or ask our AI Assistant for instant answers.
+        <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">Campus <span className="text-indigo-600">Support</span></h1>
+        <p className="text-lg text-slate-500 max-w-2xl mx-auto font-medium">
+          Master the GAM Edu platform with our comprehensive guides and video tutorials.
         </p>
       </div>
 
       <Tabs defaultValue="guides" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="guides">User Guides</TabsTrigger>
-          <TabsTrigger value="videos">Video Tutorials</TabsTrigger>
-          <TabsTrigger value="faq">FAQ</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 mb-8 bg-slate-100 p-1 rounded-2xl">
+          <TabsTrigger value="guides" className="rounded-xl font-bold py-3">Interactive Guides</TabsTrigger>
+          <TabsTrigger value="videos" className="rounded-xl font-bold py-3">Video Tutorials</TabsTrigger>
+          <TabsTrigger value="faq" className="rounded-xl font-bold py-3">General FAQ</TabsTrigger>
         </TabsList>
 
         {/* TAB 1: USER GUIDES */}
@@ -136,15 +127,6 @@ export default function HelpPage() {
                         "The Administrator or Director can then 'Publish' the report card, which notifies parents and makes it visible in their portal."
                     ]}
                 />
-                 <GuideCard 
-                    icon={BookCopy} 
-                    title="Lesson Planning & Materials" 
-                    desc="Organize your curriculum and share resources with students."
-                    steps={[
-                        "Go to Academics > Lesson Planning to create detailed daily lesson plans. Use the AI Assistant to generate ideas for objectives and activities.",
-                        "Navigate to Academics > Learning Materials to upload course content, videos, and documents organized by subject and topic.",
-                    ]}
-                />
               </AccordionContent>
             </AccordionItem>
             
@@ -174,152 +156,86 @@ export default function HelpPage() {
                 />
               </AccordionContent>
             </AccordionItem>
-
-            <AccordionItem value="item-5">
-              <AccordionTrigger className="text-lg font-bold">Operations</AccordionTrigger>
-              <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
-                 <GuideCard 
-                    icon={Library} 
-                    title="Library Management" 
-                    desc="Catalog books and manage borrowing and returns."
-                    steps={[
-                        "The Librarian adds books to the system via Operations > Library > Add New Item.",
-                        "Students can browse the catalog and request to borrow a book.",
-                        "The Librarian approves requests, which marks the book as 'Borrowed' and sets a due date."
-                    ]}
-                />
-                 <GuideCard 
-                    icon={Bus} 
-                    title="Transport Management" 
-                    desc="Manage bus routes, stops, and assign students."
-                    steps={[
-                        "First, add buses and drivers (staff with 'Transport' role) in the 'Manage Buses' section.",
-                        "Create routes and define the stops for each route.",
-                        "Finally, assign students who use the bus service to their specific stop on a route."
-                    ]}
-                />
-                 <GuideCard 
-                    icon={Boxes} 
-                    title="Inventory" 
-                    desc="Track school assets like laptops, furniture, and projectors."
-                    steps={[
-                        "Add new assets to the system via Operations > Inventory > Add New Item.",
-                        "Check out items to staff members to track who has what.",
-                        "View the transaction history for any item to see its movement."
-                    ]}
-                />
-              </AccordionContent>
-            </AccordionItem>
-            
-            <AccordionItem value="item-6">
-                <AccordionTrigger className="text-lg font-bold">Clubs & Activities</AccordionTrigger>
-                <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
-                    <GuideCard 
-                        icon={Activity} 
-                        title="Engaging Students" 
-                        desc="Explore various clubs designed to make learning interactive and fun."
-                        steps={[
-                            "The Maths Club offers practice problems and a leaderboard to encourage competition.",
-                            "The Science Club provides daily facts and AI-led lessons to spark curiosity.",
-                            "The ELA Club helps improve grammar and reading comprehension through drills and challenges.",
-                            "The Coding Club introduces programming concepts with visual blocks and Python puzzles."
-                        ]}
-                    />
-                </AccordionContent>
-            </AccordionItem>
-            
-            <AccordionItem value="item-7">
-                <AccordionTrigger className="text-lg font-bold">Communication</AccordionTrigger>
-                <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
-                    <GuideCard 
-                        icon={MessageSquare} 
-                        title="Connecting the Community" 
-                        desc="Tools for seamless communication between staff, students, and parents."
-                        steps={[
-                            "Use the Forum to start school-wide discussions on various topics.",
-                            "Direct Messages allow for private, one-on-one conversations between users.",
-                            "Post official news and updates through the Announcements module on the main dashboard."
-                        ]}
-                    />
-                </AccordionContent>
-            </AccordionItem>
-            
-            <AccordionItem value="item-8">
-                <AccordionTrigger className="text-lg font-bold">Reporting & Analytics</AccordionTrigger>
-                <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
-                    <GuideCard 
-                        icon={BarChart} 
-                        title="Data-Driven Insights" 
-                        desc="Generate reports to monitor school performance and make informed decisions."
-                        steps={[
-                            "Academic Reports provide insights into student performance by class and subject.",
-                            "Analyze attendance trends and identify at-risk students with Attendance Reports.",
-                            "View demographic data and enrollment statistics in the Enrollment Reports section.",
-                            "Track inventory and financial statements for comprehensive school management."
-                        ]}
-                    />
-                </AccordionContent>
-            </AccordionItem>
-
-             <AccordionItem value="item-9">
-              <AccordionTrigger className="text-lg font-bold">AI Features</AccordionTrigger>
-              <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
-                 <GuideCard 
-                    icon={Brain} 
-                    title="AI Tutor & Assistant" 
-                    desc="Leverage the power of AI for learning and productivity."
-                    steps={[
-                        "The purple robot icon in the bottom-right opens the AI Assistant. It can answer questions about how to use the app or help you draft documents.",
-                        "Students can access the AI Tutor in the 'Study Club' to get personalized help with their homework on any subject.",
-                        "Your school's AI Credit balance is shown in the dashboard header. Each AI action consumes credits."
-                    ]}
-                />
-              </AccordionContent>
-            </AccordionItem>
-
           </Accordion>
         </TabsContent>
 
-        {/* TAB 2: VIDEOS */}
-        <TabsContent value="videos">
-          <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Video className="text-red-500"/> Video Library</CardTitle>
-                <CardDescription>Watch step-by-step walkthroughs of key features.</CardDescription>
+        {/* TAB 2: VIDEOS (NOW DYNAMIC) */}
+        <TabsContent value="videos" className="space-y-6">
+          <Card className="border-none shadow-xl bg-white rounded-[2rem] overflow-hidden">
+            <CardHeader className="bg-slate-900 text-white p-8">
+                <CardTitle className="flex items-center gap-3 text-2xl font-black uppercase tracking-tight">
+                    <Video className="text-red-500 h-8 w-8"/> Video Training Library
+                </CardTitle>
+                <CardDescription className="text-slate-400 font-medium">Master the platform with these step-by-step visual guides.</CardDescription>
             </CardHeader>
-            <CardContent className="grid md:grid-cols-2 gap-6">
-                <VideoEmbed videoId="m6UOo2YGbIE" title="How To Onboard Your School" />
-                <VideoEmbed videoId="qW1d34A2s1A" title="Using the AI Quiz Generator" />
-                <VideoEmbed videoId="yG-Ua_9mI_0" title="Managing Staff & Payroll" />
-                <VideoEmbed videoId="dQw4w9WgXcQ" title="Parent & Student Portal Overview" />
+            <CardContent className="p-8">
+                {tutorialsLoading ? (
+                    <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-40">
+                        <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
+                        <p className="font-bold uppercase tracking-widest text-xs">Loading training modules...</p>
+                    </div>
+                ) : tutorials && tutorials.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        {tutorials.map(t => (
+                            <div key={t.id} className="group space-y-4">
+                                <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-slate-100 aspect-video bg-black relative group-hover:scale-[1.02] transition-transform duration-500">
+                                    <iframe 
+                                        width="100%" height="100%" 
+                                        src={`https://www.youtube.com/embed/${t.youtubeId}?rel=0&modestbranding=1`} 
+                                        title={t.title} frameBorder="0" allowFullScreen
+                                        className="absolute inset-0"
+                                    ></iframe>
+                                </div>
+                                <div className="px-2">
+                                    <div className="flex justify-between items-start gap-4 mb-2">
+                                        <h3 className="font-black text-xl text-slate-800 leading-tight uppercase italic">{t.title}</h3>
+                                        <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100 font-bold px-3 py-1 rounded-full shrink-0">
+                                            {t.category}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-sm text-slate-500 leading-relaxed font-medium">
+                                        {t.description}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-32 text-slate-300">
+                        <Video className="h-16 w-16 mx-auto mb-4 opacity-10" />
+                        <p className="font-bold uppercase tracking-widest text-xs">No training modules published yet.</p>
+                    </div>
+                )}
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* TAB 3: FAQ */}
         <TabsContent value="faq">
-          <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><FileQuestion className="text-orange-500"/> Frequently Asked Questions</CardTitle>
+          <Card className="rounded-[2rem] shadow-lg border-none">
+            <CardHeader className="p-8 border-b">
+                <CardTitle className="flex items-center gap-2 font-black text-2xl uppercase tracking-tight">
+                    <FileQuestion className="text-orange-500 h-8 w-8"/> Frequently Asked Questions
+                </CardTitle>
             </CardHeader>
-            <CardContent>
-                <Accordion type="single" collapsible>
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger>How do I reset a teacher's password?</AccordionTrigger>
-                        <AccordionContent>
-                            Go to Staff Management, find the teacher, click 'Edit', and you will see a 'Reset Password' option. Alternatively, they can use the 'Forgot Password' link on the login page.
+            <CardContent className="p-8">
+                <Accordion type="single" collapsible className="space-y-4">
+                    <AccordionItem value="item-1" className="border rounded-2xl px-6 bg-slate-50/50">
+                        <AccordionTrigger className="hover:no-underline font-bold text-slate-800">How do I reset a user's password?</AccordionTrigger>
+                        <AccordionContent className="text-slate-600 leading-relaxed pb-6 font-medium">
+                            Go to People > Staff Management (or Students), find the user, click 'Edit', and you will see a 'Reset Password' option. Alternatively, they can use the 'Forgot Password' link on the login page to receive a secure link.
                         </AccordionContent>
                     </AccordionItem>
-                    <AccordionItem value="item-2">
-                        <AccordionTrigger>What happens if I run out of AI Credits?</AccordionTrigger>
-                        <AccordionContent>
-                            The AI features will pause until your credits renew next month. You can upgrade your plan anytime in the Subscription tab to get more credits instantly.
+                    <AccordionItem value="item-2" className="border rounded-2xl px-6 bg-slate-50/50">
+                        <AccordionTrigger className="hover:no-underline font-bold text-slate-800">What happens if I run out of AI Credits?</AccordionTrigger>
+                        <AccordionContent className="text-slate-600 leading-relaxed pb-6 font-medium">
+                            AI features like the Tutor and content generation will pause until your monthly credits renew. You can view your current balance in the header. To get more credits instantly, the Administrator can upgrade your plan in the Subscription tab.
                         </AccordionContent>
                     </AccordionItem>
-                    <AccordionItem value="item-3">
-                        <AccordionTrigger>Is my data secure?</AccordionTrigger>
-                        <AccordionContent>
-                            Yes. We use enterprise-grade encryption. Your school's data is isolated and cannot be seen by other schools on the platform.
+                    <AccordionItem value="item-3" className="border rounded-2xl px-6 bg-slate-50/50">
+                        <AccordionTrigger className="hover:no-underline font-bold text-slate-800">Is my school's data secure?</AccordionTrigger>
+                        <AccordionContent className="text-slate-600 leading-relaxed pb-6 font-medium">
+                            Yes. GAM Edu uses bank-grade encryption and multi-tenant isolation. Your school's data is stored in a secure cloud silo that cannot be accessed by any other school or unauthorized personnel.
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>

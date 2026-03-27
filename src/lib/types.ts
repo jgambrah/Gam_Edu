@@ -47,6 +47,15 @@ export interface CrosswordPuzzle {
   };
 }
 
+export type Tutorial = {
+  id: string;
+  title: string;
+  description: string;
+  youtubeId: string;
+  category: 'General' | 'Finance' | 'Academics' | 'Admin';
+  createdAt: any;
+};
+
 export const assignmentSchema = z.object({
     classId: z.string().min(1, 'Class is required.'),
     title: z.string().min(1, 'Title is required.'),
