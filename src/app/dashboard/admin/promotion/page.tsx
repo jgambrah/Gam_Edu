@@ -18,6 +18,7 @@ import { Student, Class } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 
 /**
  * @fileOverview Class Promotion & Graduation Engine
