@@ -53,7 +53,8 @@ import {
   Rocket,
   FileQuestion,
   Sparkles,
-  Coins
+  Coins,
+  ArrowUpCircle
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -141,6 +142,12 @@ export const navItems: NavItem[] = [
             path: '/dashboard/parents-v2',
             title: 'Parents',
             icon: HeartHandshake,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/admin/promotion',
+            title: 'Class Promotion',
+            icon: ArrowUpCircle,
             roles: ['Director', 'Administrator'],
         },
         {
