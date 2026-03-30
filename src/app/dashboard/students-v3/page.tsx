@@ -112,6 +112,44 @@ export default function StudentsV3Page() {
       if (adminSchoolId) loadData();
   }, [loadData, adminSchoolId]);
   
+  // --- RESET LOGIC ---
+  // Fixes the bug where state (like photos) persists between students
+  useEffect(() => {
+    if (isAddOpen) {
+        setIsSubmitting(false);
+        setSelectedClassId('');
+        setSelectedGender('');
+        setSelectedPhoto(null);
+        setUsesBus(false);
+        setBillingModel('Daily');
+        setCanteenBillingMode('Daily');
+    }
+  }, [isAddOpen]);
+
+  useEffect(() => {
+    if (editingStudent) {
+        setIsSubmitting(false);
+        setSelectedClassId(editingStudent.classId || '');
+        setSelectedGender(editingStudent.gender || '');
+        setSelectedPhoto(null); // Ensure we don't carry over a photo from another session
+        setUsesBus(editingStudent.usesBusService === true);
+        setBillingModel(editingStudent.transportBillingModel || 'Daily');
+        setCanteenBillingMode(editingStudent.canteenBillingMode || 'Daily');
+    }
+  }, [editingStudent]);
+
+  // Handle URL creation/cleanup for previews
+  const photoPreviewUrl = useMemo(() => {
+    if (selectedPhoto) return URL.createObjectURL(selectedPhoto);
+    return null;
+  }, [selectedPhoto]);
+
+  useEffect(() => {
+    return () => {
+        if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+    };
+  }, [photoPreviewUrl]);
+
   // --- UPLOAD HELPER ---
   const uploadProfilePhoto = async (studentUid: string, file: File): Promise<string | null> => {
     if (!adminSchoolId) return null;
@@ -404,15 +442,15 @@ export default function StudentsV3Page() {
 
       <MigrateStudentIds />
 
-      {/* ADD MODAL */}
+      {/* ENROLLMENT MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Enrol New Student</DialogTitle></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
                  <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                     <div className="relative h-24 w-24 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center overflow-hidden">
-                        {selectedPhoto ? (
-                            <img src={URL.createObjectURL(selectedPhoto)} alt="Preview" className="h-full w-full object-cover" />
+                        {photoPreviewUrl ? (
+                            <img src={photoPreviewUrl} alt="Preview" className="h-full w-full object-cover" />
                         ) : (
                             <Camera className="h-8 w-8 text-slate-300" />
                         )}
@@ -501,8 +539,8 @@ export default function StudentsV3Page() {
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
                     <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                         <div className="relative h-24 w-24 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center overflow-hidden shadow-inner">
-                            {selectedPhoto ? (
-                                <img src={URL.createObjectURL(selectedPhoto)} alt="Preview" className="h-full w-full object-cover" />
+                            {photoPreviewUrl ? (
+                                <img src={photoPreviewUrl} alt="Preview" className="h-full w-full object-cover" />
                             ) : editingStudent.photoURL ? (
                                 <img src={editingStudent.photoURL} alt="Current" className="h-full w-full object-cover" />
                             ) : (
