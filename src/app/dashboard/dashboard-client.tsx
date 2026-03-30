@@ -607,12 +607,12 @@ export default function DashboardClient() {
   const routesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
   const { data: routes, isLoading: loadingRoutes } = useCollection<Route>(routesQuery);
 
-  const busesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
+  const busesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: buses, isLoading: loadingBuses } = useCollection<Bus>(busesQuery);
 
   const parentStudentsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isParent && profile?.studentIds?.length) 
-      ? query(collection(firestore, 'students'), where('uid', 'in', profile.studentIds)) 
+      ? query(collection(firestore, 'students'), where('uid', 'in', profile.studentIds), where('enrollmentStatus', '==', 'Active')) 
       : null, 
   [firestore, schoolId, isParent, profile?.studentIds]);
   const { data: parentStudents, isLoading: loadingParentStudents } = useCollection(parentStudentsQuery);

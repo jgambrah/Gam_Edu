@@ -362,8 +362,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 disabled={isLoading}
                             >
                                 {isLoading
-                                    ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/>
-                                    : <Check className="mr-2 h-6 w-6"/>
+                                    ? <Loader2 className="mr-2 h-4 w-6 animate-spin"/>
+                                    : <Check className="mr-2 h-4 w-6"/>
                                 }
                                 Confirm Attendance & Generate Bills
                             </Button>
