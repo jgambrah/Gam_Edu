@@ -18,11 +18,12 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   FileUp, Database, Loader2, Sparkles, CheckCircle2, 
   AlertTriangle, FileSpreadsheet, FileText, ArrowRight, UserPlus,
-  Trash2, Wand2, Filter, BookCopy, GraduationCap, History, Info
+  Trash2, Wand2, Filter, BookCopy, GraduationCap, History, Info, RefreshCw
 } from 'lucide-react';
 import { extractStudentsFromText } from '@/ai/flows/extract-students-flow';
 import type { Class, Subject, Student } from '@/lib/types';
 import { generateNextStudentId } from '@/lib/student-utils';
+import { Progress } from '@/components/ui/progress';
 
 export default function MigrationHubPage() {
   const firestore = useFirestore();
@@ -36,6 +37,7 @@ export default function MigrationHubPage() {
   const [studentCsvData, setStudentCsvData] = useState<any[]>([]);
   const [classMap, setClassMap] = useState<Record<string, string>>({});
   const [isImportingStudents, setIsImportingStudents] = useState(false);
+  const [importProgress, setImportProgress] = useState(0);
   const [isExtracting, setIsExtracting] = useState(false);
   const [rawText, setRawText] = useState('');
   const [showTextPaste, setShowTextPaste] = useState(false);
@@ -105,15 +107,19 @@ export default function MigrationHubPage() {
   const executeStudentImport = async () => {
     if (!firestore || !schoolId || studentCsvData.length === 0) return;
     setIsImportingStudents(true);
+    setImportProgress(0);
     let successCount = 0;
     let failCount = 0;
 
-    toast({ title: "Import Starting", description: "Provisioning accounts. Check console for live logs." });
+    const total = studentCsvData.length;
+
+    toast({ title: "Import Starting", description: `Provisioning ${total} accounts. This may take 2-5 minutes.` });
 
     try {
-      for (const row of studentCsvData) {
+      for (let i = 0; i < studentCsvData.length; i++) {
+        const row = studentCsvData[i];
+        
         // --- DEFENSIVE DATA EXTRACTION ---
-        // Map common CSV header variations
         const email = (row.Email || row.email || row['Email Address'] || '').toString().trim();
         const firstName = (row.FirstName || row.firstName || row['First Name'] || '').toString().trim();
         const lastName = (row.LastName || row.lastName || row['Last Name'] || '').toString().trim();
@@ -123,15 +129,16 @@ export default function MigrationHubPage() {
         const targetClassId = classMap[rawClassName] || null;
 
         if (!email || !firstName) {
-          console.warn("Skipping invalid row (missing email or first name):", row);
           failCount++;
+          setImportProgress(i + 1);
           continue;
         }
 
         // --- AUTH PROVISIONING ---
+        // Note: This step takes the most time because it calls Firebase Auth + Emails
         const result = await createNewUser(
           email.toLowerCase(),
-          "welcome123", // Reverted to default as per instructions
+          "welcome123",
           'Student',
           { firstName, lastName },
           schoolId
@@ -140,6 +147,7 @@ export default function MigrationHubPage() {
         if ('error' in result) {
           console.error(`[Import Failure] ${email}:`, result.error);
           failCount++;
+          setImportProgress(i + 1);
           continue;
         }
 
@@ -162,11 +170,12 @@ export default function MigrationHubPage() {
         });
 
         successCount++;
+        setImportProgress(i + 1);
       }
 
       toast({ 
         title: "Migration Complete", 
-        description: `Success: ${successCount}, Failed: ${failCount}.`,
+        description: `Successfully processed ${total} records. Success: ${successCount}, Failed: ${failCount}.`,
         duration: 10000 
       });
       
@@ -178,6 +187,7 @@ export default function MigrationHubPage() {
       toast({ variant: 'destructive', title: "Import Error", description: e.message });
     } finally {
       setIsImportingStudents(false);
+      setImportProgress(0);
     }
   };
 
@@ -300,6 +310,8 @@ export default function MigrationHubPage() {
     return Array.from(set);
   }, [gradeCsvData]);
 
+  const studentImportPercentage = studentCsvData.length > 0 ? (importProgress / studentCsvData.length) * 100 : 0;
+
   return (
     <div className="space-y-6 p-6 max-w-6xl mx-auto">
       <div className="flex flex-col gap-1 mb-4">
@@ -308,9 +320,9 @@ export default function MigrationHubPage() {
       </div>
 
       <Tabs defaultValue="students" value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-full">
-        <TabsList className="bg-slate-100 p-1 rounded-2xl mb-6">
-          <TabsTrigger value="students" className="rounded-xl px-8 font-bold"><UserPlus className="mr-2 h-4 w-4"/> Import Students</TabsTrigger>
-          <TabsTrigger value="grades" className="rounded-xl px-8 font-bold"><History className="mr-2 h-4 w-4"/> Import Past Grades</TabsTrigger>
+        <TabsList className="bg-slate-100 p-1 rounded-xl mb-6">
+          <TabsTrigger value="students" className="rounded-lg px-8 font-bold"><UserPlus className="mr-2 h-4 w-4"/> Import Students</TabsTrigger>
+          <TabsTrigger value="grades" className="rounded-lg px-8 font-bold"><History className="mr-2 h-4 w-4"/> Import Past Grades</TabsTrigger>
         </TabsList>
 
         {/* --- TAB: STUDENTS --- */}
@@ -406,6 +418,20 @@ export default function MigrationHubPage() {
                 <CardDescription className="text-slate-400 font-bold text-xs uppercase mt-1">Map CSV labels to system Class IDs</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
+                {isImportingStudents && (
+                    <div className="mb-8 space-y-4 p-6 bg-indigo-50 border border-indigo-100 rounded-[2rem] animate-pulse">
+                        <div className="flex justify-between items-end mb-2">
+                            <div>
+                                <p className="text-xs font-black text-indigo-600 uppercase tracking-widest">Migration in Progress</p>
+                                <h4 className="text-lg font-bold text-slate-900">Provisioning Student Accounts...</h4>
+                            </div>
+                            <span className="text-sm font-black text-indigo-600">{importProgress} / {studentCsvData.length}</span>
+                        </div>
+                        <Progress value={studentImportPercentage} className="h-3 bg-white" />
+                        <p className="text-[10px] text-indigo-400 font-bold uppercase italic">Do not close this window until the process finishes.</p>
+                    </div>
+                )}
+
                 {studentCsvData.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-20 text-slate-300">
                     <Database className="h-16 w-16 mb-4 opacity-10" />
@@ -473,8 +499,17 @@ export default function MigrationHubPage() {
                   disabled={isImportingStudents || studentCsvData.length === 0}
                   className="w-full sm:w-auto h-14 px-12 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-indigo-100 transition-all active:scale-95"
                 >
-                  {isImportingStudents ? <Loader2 className="animate-spin mr-2 h-5 w-5"/> : <Database className="mr-2 h-5 w-5"/>}
-                  Start Migration ({studentCsvData.length})
+                  {isImportingStudents ? (
+                      <>
+                        <Loader2 className="animate-spin mr-2 h-5 w-5"/> 
+                        Importing {importProgress} of {studentCsvData.length}...
+                      </>
+                  ) : (
+                      <>
+                        <Database className="mr-2 h-5 w-5"/>
+                        Start Migration ({studentCsvData.length})
+                      </>
+                  )}
                 </Button>
               </CardFooter>
             </Card>
@@ -501,7 +536,7 @@ export default function MigrationHubPage() {
                         <p className="text-[10px] text-orange-700 leading-none">Your CSV file must have these exact headers:</p>
                         <div className="flex flex-wrap gap-1 pt-1">
                             {['Email', 'SubjectName', 'CA', 'Exam', 'Term', 'AcademicYear'].map(h => (
-                                <code key={h} className="bg-white px-1.5 py-0.5 rounded border border-orange-200 text-[10px] font-mono font-bold text-orange-600">{h}</code>
+                                <code key={h} className="bg-white px-1.5 py-0.5 rounded border border-orange-200 text-[10px] font-mono font-bold text-indigo-600">{h}</code>
                             ))}
                         </div>
                     </div>
