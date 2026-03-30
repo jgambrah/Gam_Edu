@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
 import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, doc, setDoc, serverTimestamp, getDocs, writeBatch, limit } from 'firebase/firestore';
@@ -18,7 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   FileUp, Database, Loader2, Sparkles, CheckCircle2, 
   AlertTriangle, FileSpreadsheet, FileText, ArrowRight, UserPlus,
-  Trash2, Wand2, Filter, BookCopy, GraduationCap, History
+  Trash2, Wand2, Filter, BookCopy, GraduationCap, History, Info
 } from 'lucide-react';
 import { extractStudentsFromText } from '@/ai/flows/extract-students-flow';
 import type { Class, Subject, Student } from '@/lib/types';
@@ -299,15 +299,34 @@ export default function MigrationHubPage() {
             <Card className="lg:col-span-1 border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem]">
               <CardHeader>
                 <CardTitle className="text-lg font-black uppercase text-slate-800">1. Source Data</CardTitle>
-                <CardDescription className="text-xs font-medium">Choose your import method.</CardDescription>
+                <CardDescription className="text-xs font-medium text-indigo-600">Prepare your file carefully.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                
+                {/* Column Guide */}
+                <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 space-y-3">
+                    <div className="flex items-center gap-2">
+                        <Info className="h-4 w-4 text-indigo-600" />
+                        <h4 className="text-xs font-black text-indigo-900 uppercase">CSV Header Guide</h4>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-[10px] text-indigo-700 leading-none">Your CSV file must have these exact headers:</p>
+                        <div className="flex flex-wrap gap-1 pt-1">
+                            {['FirstName', 'LastName', 'Email', 'ClassName', 'Gender'].map(h => (
+                                <code key={h} className="bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-[10px] font-mono font-bold text-indigo-600">{h}</code>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="pt-2 border-t border-indigo-100">
+                        <p className="text-[9px] text-indigo-400 italic">Example: John, Doe, john@email.com, Grade 1, Male</p>
+                    </div>
+                </div>
+
                 {!showTextPaste ? (
                   <div className="space-y-4">
                     <div className="border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 transition-all group cursor-pointer relative">
                       <FileSpreadsheet className="h-12 w-12 text-slate-300 group-hover:text-indigo-500 mb-4 transition-colors" />
                       <p className="text-sm font-bold text-slate-600">Drag & Drop CSV File</p>
-                      <p className="text-[10px] text-slate-400 mt-1 uppercase">Headers: FirstName, LastName, Email, ClassName</p>
                       <input 
                         type="file" 
                         accept=".csv" 
@@ -355,7 +374,7 @@ export default function MigrationHubPage() {
                         <p className="text-[10px] text-indigo-400 font-bold uppercase">Ready to Map</p>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => setStudentCsvData([])} className="text-indigo-400"><Trash2 className="h-4 w-4"/></Button>
+                    <Button variant="ghost" size="icon" onClick={() => setStudentCsvData([])} className="text-indigo-400 hover:text-red-500"><Trash2 className="h-4 w-4"/></Button>
                   </div>
                 )}
               </CardContent>
@@ -448,13 +467,32 @@ export default function MigrationHubPage() {
             <Card className="lg:col-span-1 border-t-4 border-t-orange-600 shadow-xl rounded-[2rem]">
               <CardHeader>
                 <CardTitle className="text-lg font-black uppercase text-slate-800">1. Past Results Source</CardTitle>
-                <CardDescription className="text-xs font-medium">Upload historical marks CSV.</CardDescription>
+                <CardDescription className="text-xs font-medium text-orange-600">Link scores to student history.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                
+                {/* Column Guide */}
+                <div className="bg-orange-50 p-4 rounded-2xl border border-orange-100 space-y-3">
+                    <div className="flex items-center gap-2">
+                        <Info className="h-4 w-4 text-orange-600" />
+                        <h4 className="text-xs font-black text-orange-900 uppercase">CSV Header Guide</h4>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-[10px] text-orange-700 leading-none">Your CSV file must have these exact headers:</p>
+                        <div className="flex flex-wrap gap-1 pt-1">
+                            {['Email', 'SubjectName', 'CA', 'Exam', 'Term', 'AcademicYear'].map(h => (
+                                <code key={h} className="bg-white px-1.5 py-0.5 rounded border border-orange-200 text-[10px] font-mono font-bold text-orange-600">{h}</code>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="pt-2 border-t border-orange-100">
+                        <p className="text-[9px] text-orange-400 italic">Example: john@email.com, Math, 25, 45, First Term, 2024-2025</p>
+                    </div>
+                </div>
+
                 <div className="border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 transition-all group cursor-pointer relative">
                   <FileText className="h-12 w-12 text-slate-300 group-hover:text-orange-500 mb-4 transition-colors" />
                   <p className="text-sm font-bold text-slate-600">Upload Grades CSV</p>
-                  <p className="text-[10px] text-slate-400 mt-1 uppercase">Headers: Email, SubjectName, CA, Exam, Term, AcademicYear</p>
                   <input 
                     type="file" 
                     accept=".csv" 
@@ -472,7 +510,7 @@ export default function MigrationHubPage() {
                         <p className="text-[10px] text-orange-400 font-bold uppercase">Ready to Map Subjects</p>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => setGradeCsvData([])} className="text-orange-400"><Trash2 className="h-4 w-4"/></Button>
+                    <Button variant="ghost" size="icon" onClick={() => setGradeCsvData([])} className="text-orange-400 hover:text-red-500"><Trash2 className="h-4 w-4"/></Button>
                   </div>
                 )}
               </CardContent>
