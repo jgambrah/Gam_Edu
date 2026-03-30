@@ -3,6 +3,7 @@
 import React from 'react';
 import { Lock } from 'lucide-react';
 import SignatureStamp from '@/components/shared/SignatureStamp';
+import { format } from 'date-fns';
 
 interface ReportCardTemplateProps {
     data: any;
@@ -14,10 +15,14 @@ interface ReportCardTemplateProps {
 
 /**
  * Standardized Report Card Template for GAM Edu.
- * Now includes professional electronic signatures and audit stamping.
+ * Displays academic results and critical term dates.
  */
 export default function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: ReportCardTemplateProps) {
     if (!data) return null;
+
+    const nextTermReopening = data.nextTermDate 
+        ? format(data.nextTermDate.toDate(), 'PPP') 
+        : "To Be Announced";
 
     return (
         <div
@@ -125,6 +130,20 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 </div>
             </div>
 
+            {/* ── ✅ NEW: REOPENING DATE ALERT ── */}
+            <div style={{
+                background: '#f1f5f9',
+                border: '1px solid #cbd5e1',
+                padding: '8px',
+                textAlign: 'center',
+                marginBottom: '12px',
+                fontWeight: 700,
+                fontSize: '14px'
+            }}>
+                <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: '8px', color: '#64748b' }}>Next Term Reopening:</span>
+                <span style={{ color: '#1e40af' }}>{nextTermReopening}</span>
+            </div>
+
             {/* ── GRADES TABLE ── */}
             <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse', marginBottom: '8px', tableLayout: 'fixed' }}>
                 <colgroup>
@@ -197,7 +216,6 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 paddingTop: '20px', 
                 borderTop: '2px solid #f1f5f9' 
             }}>
-                {/* CLASS TEACHER SECTION */}
                 <SignatureStamp 
                     url={data.classTeacherSignatureUrl} 
                     name={data.classTeacherName || 'N/A'} 
@@ -205,7 +223,6 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     date={data.updatedAt}
                 />
 
-                {/* HEADMASTER SECTION */}
                 <SignatureStamp 
                     url={data.headmasterSignatureUrl} 
                     name={data.headmasterName || 'N/A'} 

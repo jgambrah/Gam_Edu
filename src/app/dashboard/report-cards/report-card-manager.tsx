@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
@@ -6,6 +5,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser 
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc } from 'firebase/firestore';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -18,7 +18,6 @@ import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { format, startOfDay, endOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -300,6 +299,7 @@ export default function ReportCardManager() {
                 schoolAddress: schoolProfile?.address,
                 schoolPhone: schoolProfile?.phone,
                 schoolEmail: schoolProfile?.email,
+                nextTermDate: schoolProfile?.nextTermDate || null, // ✅ NEW: Reopening Date
                 term,
                 academicYear,
                 className: classes?.find((c:any) => c.id === classId)?.name || ''
@@ -319,7 +319,6 @@ export default function ReportCardManager() {
         try {
             const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
             
-            // THE KEY: Capture the signature URL at the moment of signing/saving
             const teacherDetails = isTeacher ? {
                 classTeacherName: `${profile?.firstName} ${profile?.lastName}`,
                 classTeacherSignatureUrl: profile?.signatureUrl || null
@@ -339,8 +338,6 @@ export default function ReportCardManager() {
             };
 
             await setDoc(doc(firestore!, 'report-cards', reportId), finalData, { merge: true });
-            
-            // UPDATE LOCAL STATE FOR PREVIEW
             setProcessedReport(finalData);
             
             toast({ title: "Draft Saved & Signed", description: "The report data and your signature have been stored." });
@@ -383,8 +380,6 @@ export default function ReportCardManager() {
             };
 
             await setDoc(doc(firestore!, 'report-cards', reportId), finalData, { merge: true });
-            
-            // UPDATE LOCAL STATE FOR PREVIEW
             setProcessedReport(finalData);
             
             toast({ 
@@ -392,7 +387,6 @@ export default function ReportCardManager() {
                 description: "Parents and Students can now view this verified report." 
             });
 
-            // Send Push Notification
             await notifyParents(
                 [selectedStudentId!], 
                 "Report Card Available 🎓",

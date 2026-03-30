@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
-  CalendarDays, CalendarIcon
+  CalendarDays, CalendarIcon, ArrowRightCircle
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -56,6 +56,7 @@ export default function SchoolProfilePage() {
   // Term Dates State
   const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
   const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
+  const [nextTermDate, setNextTermDate] = useState<Date | undefined>(undefined);
 
   // Load data when fetched
   useEffect(() => {
@@ -70,12 +71,15 @@ export default function SchoolProfilePage() {
         setCaWeight(profile.caWeight ?? 30);
         setExamWeight(profile.examWeight ?? 70);
         
-        // Load Term Dates
+        // Load Dates from Firestore
         if (profile.termStartDate) {
             setTermStartDate(profile.termStartDate.toDate());
         }
         if (profile.termEndDate) {
             setTermEndDate(profile.termEndDate.toDate());
+        }
+        if (profile.nextTermDate) {
+            setNextTermDate(profile.nextTermDate.toDate());
         }
     }
   }, [profile]);
@@ -136,6 +140,7 @@ export default function SchoolProfilePage() {
             name, motto, address, phone, email, website, logoUrl,
             termStartDate: termStartDate ? Timestamp.fromDate(termStartDate) : null,
             termEndDate: termEndDate ? Timestamp.fromDate(termEndDate) : null,
+            nextTermDate: nextTermDate ? Timestamp.fromDate(nextTermDate) : null,
             updatedAt: serverTimestamp()
         };
 
@@ -282,13 +287,9 @@ export default function SchoolProfilePage() {
                             <h3 className="text-lg font-bold text-slate-800">Current Academic Term</h3>
                         </div>
                         <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100">
-                            <div className="flex items-center gap-2 mb-4 text-indigo-700">
-                                <AlertCircle className="h-4 w-4"/>
-                                <p className="text-sm font-medium">Set the official start and end dates for the current term. This ensures consistent attendance calculations on student reports.</p>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="font-bold text-slate-700">Term Start Date</Label>
+                                    <Label className="font-bold text-slate-700 text-xs uppercase">Term Start Date</Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button variant="outline" className="w-full text-left font-normal bg-white h-12 border-2 rounded-xl">
@@ -302,7 +303,7 @@ export default function SchoolProfilePage() {
                                     </Popover>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="font-bold text-slate-700">Term End Date</Label>
+                                    <Label className="font-bold text-slate-700 text-xs uppercase">Term End Date</Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button variant="outline" className="w-full text-left font-normal bg-white h-12 border-2 rounded-xl">
@@ -312,6 +313,22 @@ export default function SchoolProfilePage() {
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-0" align="start">
                                             <Calendar mode="single" selected={termEndDate} onSelect={setTermEndDate} initialFocus />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="font-bold text-indigo-700 text-xs uppercase flex items-center gap-1">
+                                        <ArrowRightCircle className="h-3 w-3" /> Next Term Reopening
+                                    </Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="outline" className="w-full text-left font-bold bg-white h-12 border-4 border-indigo-100 rounded-xl text-indigo-600">
+                                                {nextTermDate ? format(nextTermDate, "PPP") : <span>To Be Announced</span>}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar mode="single" selected={nextTermDate} onSelect={setNextTermDate} initialFocus />
                                         </PopoverContent>
                                     </Popover>
                                 </div>
