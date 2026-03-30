@@ -207,9 +207,9 @@ export default function StudentsV3Page() {
       
       const formData = new FormData(e.currentTarget);
       const values = Object.fromEntries(formData.entries());
-      const firstName = values.firstName as string;
-      const lastName = values.lastName as string;
-      const email = values.email as string;
+      const firstName = (values.firstName as string) || '';
+      const lastName = (values.lastName as string) || '';
+      const email = (values.email as string) || '';
 
       try {
           const result = await createNewUser(email, "password123", 'Student', { firstName, lastName }, adminSchoolId);
@@ -228,15 +228,15 @@ export default function StudentsV3Page() {
               firstName,
               lastName,
               email,
-              classId: selectedClassId,
-              gender: selectedGender,
-              dateOfBirth: values.dateOfBirth,
-              address: values.address,
+              classId: selectedClassId || null,
+              gender: selectedGender || null,
+              dateOfBirth: (values.dateOfBirth as string) || null,
+              address: (values.address as string) || null,
               usesBusService: usesBus,
               transportBillingModel: usesBus ? billingModel : null,
-              canteenBillingMode: canteenBillingMode,
+              canteenBillingMode: canteenBillingMode || 'Daily',
               usesCanteen: canteenBillingMode !== 'None',
-              photoURL,
+              photoURL: photoURL || null,
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp(),
               schoolId: adminSchoolId
@@ -268,17 +268,17 @@ export default function StudentsV3Page() {
 
         const studentRef = doc(firestore, 'students', editingStudent.id);
         await updateDoc(studentRef, {
-            firstName: values.firstName,
-            lastName: values.lastName,
-            classId: selectedClassId,
-            gender: selectedGender,
-            dateOfBirth: values.dateOfBirth,
-            address: values.address,
+            firstName: (values.firstName as string) || editingStudent.firstName,
+            lastName: (values.lastName as string) || editingStudent.lastName,
+            classId: selectedClassId || null,
+            gender: selectedGender || null,
+            dateOfBirth: (values.dateOfBirth as string) || null,
+            address: (values.address as string) || null,
             usesBusService: usesBus,
             transportBillingModel: usesBus ? billingModel : null,
-            canteenBillingMode: canteenBillingMode,
+            canteenBillingMode: canteenBillingMode || 'Daily',
             usesCanteen: canteenBillingMode !== 'None',
-            photoURL,
+            photoURL: photoURL || null,
         });
 
         toast({ title: "Updated", description: "Student profile saved." });
@@ -488,6 +488,7 @@ export default function StudentsV3Page() {
                         </Select>
                     </div>
                 </div>
+                <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 
                 <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
                     <h4 className="text-sm font-bold text-slate-700">Services & Subscriptions</h4>
@@ -577,6 +578,7 @@ export default function StudentsV3Page() {
                             </Select>
                         </div>
                     </div>
+                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
                     
                     <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
                         <h4 className="text-sm font-bold text-slate-700">Services & Subscriptions</h4>
