@@ -13,10 +13,6 @@ interface ReportCardTemplateProps {
     examWeight: number;
 }
 
-/**
- * Standardized Report Card Template for GAM Edu.
- * Displays academic results, attendance, and persistent digital signatures.
- */
 export default function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: ReportCardTemplateProps) {
     if (!data) return null;
 
@@ -38,7 +34,6 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 overflow: 'hidden',
             }}
         >
-            {/* ── HEADER ── */}
             <div className="flex flex-row items-center justify-between border-b-[3px] border-double border-slate-900 pb-4 mb-4">
                 <div className="w-24 h-24 flex shrink-0 items-center justify-center">
                     {data.logoBase64 ? (
@@ -47,29 +42,21 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                         <div className="w-20 h-20 bg-slate-100 border border-dashed rounded flex items-center justify-center text-[10px] text-slate-400">No Logo</div>
                     )}
                 </div>
-
                 <div className="flex-1 text-center px-4">
-                    <h1 className="text-3xl font-black uppercase tracking-tight leading-none mb-1">
-                        {data.schoolName || 'SCHOOL NAME'}
-                    </h1>
-                    {data.schoolMotto && (
-                        <p className="text-sm italic text-slate-600 font-medium">"{data.schoolMotto}"</p>
-                    )}
+                    <h1 className="text-3xl font-black uppercase tracking-tight leading-none mb-1">{data.schoolName || 'SCHOOL NAME'}</h1>
+                    {data.schoolMotto && <p className="text-sm italic text-slate-600 font-medium">"{data.schoolMotto}"</p>}
                     <p className="text-xs font-bold mt-2 text-slate-800">{data.schoolAddress}</p>
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
                         {[data.schoolPhone, data.schoolEmail].filter(Boolean).join(' | ')}
                     </p>
                 </div>
-
                 <div className="w-24 shrink-0" />
             </div>
 
-            {/* ── TITLE ── */}
             <div className="bg-slate-100 border border-slate-300 py-2 text-center mb-4 uppercase font-black tracking-[0.2em] text-lg">
                 Terminal Report Card
             </div>
 
-            {/* ── STUDENT INFO GRID ── */}
             <div className="grid grid-cols-2 gap-x-12 gap-y-2 mb-4 text-sm border p-4 font-medium bg-slate-50/50 rounded-lg">
                 <div className="flex justify-between border-b border-slate-200 pb-1">
                     <span className="text-slate-500 font-bold uppercase text-[10px]">Student Name</span>
@@ -97,13 +84,11 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 </div>
             </div>
 
-            {/* ── NEXT TERM ALERT ── */}
             <div className="bg-indigo-50 border-2 border-indigo-100 p-3 text-center mb-6 rounded-xl">
                 <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mr-2">Next Term Reopening:</span>
                 <span className="text-base font-black text-indigo-900">{nextTermReopening}</span>
             </div>
 
-            {/* ── GRADES TABLE ── */}
             <table className="w-full text-xs mb-6 border-collapse">
                 <thead>
                     <tr className="bg-slate-900 text-white uppercase font-bold text-[10px]">
@@ -133,7 +118,6 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 </tbody>
             </table>
 
-            {/* ── REMARKS ── */}
             <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="p-4 border rounded-xl bg-slate-50">
                     <h4 className="text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Class Teacher's Remark</h4>
@@ -145,13 +129,10 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 </div>
             </div>
 
-            {/* ── SIGNATURES ── */}
             <div className="grid grid-cols-2 gap-16 pt-10 mt-auto border-t-2 border-slate-100">
                 <div className="text-center flex flex-col items-center">
                     <div className="h-20 flex items-end justify-center mb-2">
-                        {data.teacherSigBase64 ? (
-                            <img src={data.teacherSigBase64} alt="Teacher Sig" className="max-h-16 object-contain mix-blend-multiply" />
-                        ) : data.classTeacherSignatureUrl ? (
+                        {data.classTeacherSignatureUrl ? (
                             <img src={data.classTeacherSignatureUrl} alt="Teacher Sig" className="max-h-16 object-contain mix-blend-multiply" />
                         ) : (
                             <span className="text-slate-200 uppercase font-black text-[10px] mb-4">Awaiting Signature</span>
@@ -164,29 +145,24 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 </div>
 
                 <div className="text-center flex flex-col items-center">
-                    <div className="h-20 flex items-end justify-center mb-2">
+                    <div className="h-20 flex items-end justify-center mb-2 w-full">
                         {data.headmasterSigBase64 ? (
-                            <img src={data.headmasterSigBase64} alt="Headmaster Sig" className="max-h-16 object-contain mix-blend-multiply" />
-                        ) : data.headmasterSignatureUrl ? (
-                            <img src={data.headmasterSignatureUrl} alt="Headmaster Sig" className="max-h-16 object-contain mix-blend-multiply" />
+                            <img src={data.headmasterSigBase64} alt="Headmaster Signature" className="max-h-16 max-w-full object-contain mix-blend-multiply" />
                         ) : (
-                            <span className="text-slate-200 uppercase font-black text-[10px] mb-4">Awaiting Signature</span>
+                            <span className="text-slate-200 uppercase font-black text-[10px] mb-4">No Signature</span>
                         )}
                     </div>
                     <div className="w-full border-t-2 border-slate-900 pt-2">
                         <p className="font-black text-[10px] uppercase text-slate-900">{data.headmasterName || 'Headmaster'}</p>
-                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Authorized Official Stamp</p>
+                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Authorized Official Stamp</p>
                     </div>
                 </div>
             </div>
 
-            {/* ── FOOTER ── */}
             <div className="mt-12 flex items-center justify-between opacity-40">
                 <div className="flex items-center gap-2">
                     <ShieldCheck size={12} className="text-indigo-600" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500">
-                        Fingerprint: {data.digitalFingerprint || 'GAM-EDU-VERIFIED'}
-                    </span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500">Fingerprint: {data.digitalFingerprint || 'GAM-EDU-VERIFIED'}</span>
                 </div>
                 <p className="text-[8px] font-bold italic text-slate-400 uppercase">Powered by GAM IT Solutions</p>
             </div>

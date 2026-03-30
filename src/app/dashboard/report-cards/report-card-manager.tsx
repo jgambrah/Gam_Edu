@@ -25,12 +25,8 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
 
-/**
- * Robust image-to-base64 converter using the internal proxy to bypass CORS.
- */
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
-        // We use the proxy route to ensure we have CORS permission to read the pixels
         const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
             ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
             : imageUrl;
@@ -73,13 +69,11 @@ export default function ReportCardManager() {
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const { toast } = useToast();
 
-    // Selection State
     const [classId, setClassId] = useState('');
     const [term, setTerm] = useState('First Term');
     const [academicYear, setAcademicYear] = useState('2024-2025');
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
-    // Comments State
     const [classTeacherComment, setClassTeacherComment] = useState('');
     const [headmasterComment, setHeadmasterComment] = useState('');
 
@@ -89,15 +83,11 @@ export default function ReportCardManager() {
     const [isExporting, setIsExporting] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
     
-    const [teacherSigBase64, setTeacherSigBase64] = useState('');
-    const [headmasterSigBase64, setHeadmasterSigBase64] = useState('');
-
     const printRef = useRef<HTMLDivElement>(null);
 
     const isAdminOrDirector = ['Administrator', 'Director'].includes(role || '');
     const isTeacher = role === 'Teacher';
 
-    // Data Fetching
     const classesQuery = useMemoFirebase(() => {
         if(!firestore || !user || !schoolId) return null;
         let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
@@ -120,7 +110,7 @@ export default function ReportCardManager() {
     [firestore, schoolId]));
     
     const { data: schoolProfile } = useDoc<any>(useMemoFirebase(() => 
-        (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, 
+        (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
     [firestore, schoolId]));
 
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
@@ -128,9 +118,6 @@ export default function ReportCardManager() {
 
     const areDatesMissing = !schoolProfile?.termStartDate || !schoolProfile?.termEndDate;
 
-    /**
-     * EFFECT: Load existing report draft from Firestore.
-     */
     useEffect(() => {
         if (!selectedStudentId || !academicYear || !term || !firestore || !schoolId) return;
         const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
@@ -142,7 +129,10 @@ export default function ReportCardManager() {
                 setClassTeacherComment(data.classTeacherComment || '');
                 setHeadmasterComment(data.headmasterComment || '');
                 if (data.schoolId === schoolId) {
-                    setProcessedReport(data);
+                    setProcessedReport({
+                        ...data,
+                        headmasterSigBase64: data.headmasterSigBase64 || schoolProfile?.headmasterSignature
+                    });
                 }
             } else {
                 setProcessedReport(null);
@@ -151,47 +141,24 @@ export default function ReportCardManager() {
             }
         };
         fetchExisting();
-    }, [selectedStudentId, academicYear, term, firestore, schoolId]);
+    }, [selectedStudentId, academicYear, term, firestore, schoolId, schoolProfile]);
 
-    /**
-     * EFFECT: Dynamic Image Pre-flight.
-     * Ensures all signatures and logos are converted to Base64 whenever report or profile changes.
-     * This is the "Solid" fix for blank signatures on PDF and vanish-on-refresh bugs.
-     */
     useEffect(() => {
-        async function convertImages() {
+        async function convertLogo() {
             if (!processedReport || !schoolProfile) return;
-
-            // 1. Logo
             if (!processedReport.logoBase64 && schoolProfile.logoUrl) {
                 const b64 = await getBase64ImageFromUrl(schoolProfile.logoUrl);
                 setProcessedReport(prev => prev ? { ...prev, logoBase64: b64 } : null);
             }
-
-            // 2. Teacher Signature
-            const tUrl = processedReport.classTeacherSignatureUrl || profile?.signatureUrl;
-            if (tUrl) {
-                const b64 = await getBase64ImageFromUrl(tUrl);
-                setTeacherSigBase64(b64);
-                setProcessedReport(prev => prev ? { ...prev, teacherSigBase64: b64 } : null);
-            }
-
-            // 3. Headmaster Signature
-            const hUrl = processedReport.headmasterSignatureUrl || schoolProfile.headmasterSignatureUrl;
-            if (hUrl) {
-                const b64 = await getBase64ImageFromUrl(hUrl);
-                setHeadmasterSigBase64(b64);
-                setProcessedReport(prev => prev ? { ...prev, headmasterSigBase64: b64 } : null);
-            }
         }
-        convertImages();
-    }, [processedReport?.id, schoolProfile, profile?.signatureUrl]);
+        convertLogo();
+    }, [processedReport?.id, schoolProfile]);
 
     const generateReport = async () => {
         if (!firestore || !schoolId || !classId || !selectedStudentId) return;
         
         if (areDatesMissing) {
-            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Please ask the Administrator to configure the Term Dates." });
+            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Term dates required." });
             return;
         }
 
@@ -213,9 +180,7 @@ export default function ReportCardManager() {
             const studentTotals: Record<string, number> = {};
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
 
-            subjects?.forEach((sub: any) => { 
-                subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
-            });
+            subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
 
             activeStudents.forEach((stu: any) => {
                 let grandTotal = 0;
@@ -227,12 +192,10 @@ export default function ReportCardManager() {
                         const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
                         const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
                         const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
-
                         const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
                         const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
                         const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
                         const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
-
                         total100 = Math.round(weightedCA + weightedExam);
                     }
                     grandTotal += total100;
@@ -256,33 +219,23 @@ export default function ReportCardManager() {
             subjects?.forEach((sub: any) => {
                 const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
                 if (myAssessments.length === 0) return; 
-
                 const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
                 const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
                 const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
                 const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
-
                 const exams = myAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id && a.assessmentType.includes('Exam'));
                 const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
                 const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
                 const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
-
                 const total100 = Math.round(weightedCA + weightedExam);
                 myGrandTotal += total100;
                 subjectsTaken++;
-
                 const { grade, autoRemark } = getGradeAndRemark(total100);
                 const subjectHigherCount = subjectStats[sub.id].totalScores.filter(s => s > total100).length;
                 const mySubjectRank = formatOrdinal(subjectHigherCount + 1);
-
                 reportRows.push({
-                    subjectName: sub.name,
-                    ca: Math.round(weightedCA),
-                    exam: Math.round(weightedExam),
-                    total: total100,
-                    grade,
-                    autoRemark,
-                    classAverage: subjectStats[sub.id].totalScores.length > 0 ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) : 0,
+                    subjectName: sub.name, ca: Math.round(weightedCA), exam: Math.round(weightedExam), total: total100,
+                    grade, autoRemark, classAverage: subjectStats[sub.id].totalScores.length > 0 ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) : 0,
                     position: mySubjectRank
                 });
             });
@@ -290,27 +243,17 @@ export default function ReportCardManager() {
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
             setProcessedReport({
-                student: targetStudent,
-                studentId: selectedStudentId,
-                rows: reportRows,
-                overallAverage,
-                classPosition,
-                totalStudents: activeStudents.length,
-                schoolName: schoolProfile?.name,
-                schoolMotto: schoolProfile?.motto,
-                schoolAddress: schoolProfile?.address,
-                schoolPhone: schoolProfile?.phone,
-                schoolEmail: schoolProfile?.email,
-                nextTermDate: schoolProfile?.nextTermDate || null,
-                term,
-                academicYear,
+                student: targetStudent, studentId: selectedStudentId, rows: reportRows, overallAverage, classPosition,
+                totalStudents: activeStudents.length, schoolName: schoolProfile?.name, schoolMotto: schoolProfile?.motto,
+                schoolAddress: schoolProfile?.address, schoolPhone: schoolProfile?.phone, schoolEmail: schoolProfile?.email,
+                nextTermDate: schoolProfile?.nextTermDate || null, term, academicYear,
                 className: classes?.find((c:any) => c.id === classId)?.name || '',
-                id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`
+                id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`,
+                headmasterSigBase64: schoolProfile?.headmasterSignature || null
             });
 
         } catch (error: any) {
-            console.error(error);
-            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report data." });
+            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report." });
         } finally {
             setIsGenerating(false);
         }
@@ -320,30 +263,16 @@ export default function ReportCardManager() {
         if (!processedReport || !schoolId || isSaving) return;
         setIsSaving(true);
         try {
-            const teacherDetails = isTeacher ? {
-                classTeacherName: `${profile?.firstName} ${profile?.lastName}`,
-                classTeacherSignatureUrl: profile?.signatureUrl || null
-            } : {};
-
             const finalData = {
                 ...processedReport,
-                ...teacherDetails,
-                schoolId,
-                status: 'Draft',
-                classTeacherComment,
-                headmasterComment,
-                lastUpdatedBy: user?.uid,
-                updatedAt: serverTimestamp()
+                schoolId, status: 'Draft', classTeacherComment, headmasterComment,
+                lastUpdatedBy: user?.uid, updatedAt: serverTimestamp()
             };
-
-            // We do NOT save large Base64 strings to Firestore to avoid 1MB document limit.
-            // We rely on the useEffect hook to regenerate them locally.
-            const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
-
+            const { logoBase64, ...dbFriendlyData } = finalData;
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
-            toast({ title: "Draft Saved", description: "Report data stored successfully." });
+            toast({ title: "Draft Saved" });
         } catch (e) {
-            toast({ variant: 'destructive', title: "Error", description: "Failed to save progress." });
+            toast({ variant: 'destructive', title: "Error" });
         } finally {
             setIsSaving(false);
         }
@@ -353,32 +282,18 @@ export default function ReportCardManager() {
         if (!processedReport || !schoolId || isPublishing) return;
         setIsPublishing(true);
         try {
-            const signatureDetails: any = {
-                headmasterName: schoolProfile?.name ? 'Headmaster' : `${profile?.firstName} ${profile?.lastName}`,
-                headmasterSignatureUrl: schoolProfile?.headmasterSignatureUrl || profile?.signatureUrl || null,
-                headmasterSignedAt: serverTimestamp(),
-                digitalFingerprint: `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
-            };
-
             const finalData = {
                 ...processedReport,
-                ...signatureDetails,
-                status: 'Published',
-                publishedAt: serverTimestamp(),
-                classTeacherComment,
-                headmasterComment
+                status: 'Published', publishedAt: serverTimestamp(),
+                classTeacherComment, headmasterComment,
+                digitalFingerprint: `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
             };
-
-            const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
-
+            const { logoBase64, ...dbFriendlyData } = finalData;
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
-            
-            toast({ title: "Report Published!", description: "Parents can now view this report." });
-
-            await notifyParents([selectedStudentId!], "Report Card Ready 🎓", `Terminal Report for ${processedReport.student?.firstName} is now available.`, "/dashboard/my-reports");
-
+            toast({ title: "Report Published!" });
+            await notifyParents([selectedStudentId!], "Report Card Ready 🎓", `Report for ${processedReport.student?.firstName} is now available.`, "/dashboard/my-reports");
         } catch (e) {
-            toast({ variant: 'destructive', title: "Error", description: "Publishing failed." });
+            toast({ variant: 'destructive', title: "Error" });
         } finally {
             setIsPublishing(false);
         }
@@ -387,40 +302,18 @@ export default function ReportCardManager() {
     const handleDownloadPDF = async () => {
         const element = printRef.current;
         if (!element || !processedReport) return;
-
         setIsExporting(true);
         try {
-            element.style.visibility = 'visible';
-            element.style.position = 'fixed';
-            element.style.top = '0';
-            element.style.left = '0';
-            element.style.zIndex = '-1';
             element.style.display = 'flex';
-
-            // IMPORTANT: Wait for images to settle in the DOM
             await new Promise(resolve => setTimeout(resolve, 800));
-
-            const canvas = await html2canvas(element, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff',
-                windowWidth: 794,
-                windowHeight: 1123,
-            });
-
-            element.style.visibility = 'hidden';
-            element.style.position = 'absolute';
+            const canvas = await html2canvas(element, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: 794, windowHeight: 1123 });
             element.style.display = 'none';
-
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
             pdf.save(`${processedReport.student?.firstName || 'Student'}_Report_${term}.pdf`);
-            
             toast({ title: "Export Complete" });
         } catch (error) {
-            console.error("PDF Export Error:", error);
             toast({ variant: 'destructive', title: "Export Failed" });
         } finally {
             setIsExporting(false);
@@ -527,10 +420,7 @@ export default function ReportCardManager() {
                 </div>
             )}
 
-            <div
-                ref={printRef}
-                style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px', display: 'none' }}
-            >
+            <div ref={printRef} style={{ display: 'none' }}>
                 {processedReport && (
                     <ReportCardTemplate
                         data={processedReport}
