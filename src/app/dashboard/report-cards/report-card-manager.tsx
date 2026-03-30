@@ -25,10 +25,12 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
 
-// --- HELPERS ---
-
+/**
+ * Robust image-to-base64 converter using the internal proxy to bypass CORS.
+ */
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
+        // We use the proxy route to ensure we have CORS permission to read the pixels
         const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
             ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
             : imageUrl;
@@ -108,7 +110,6 @@ export default function ReportCardManager() {
         (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, 
     [firestore, schoolId, classId]));
 
-    // Filter for ACTIVE students in memory to handle legacy records with undefined status
     const activeStudents = useMemo(() => {
         if (!students) return [];
         return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
@@ -127,6 +128,9 @@ export default function ReportCardManager() {
 
     const areDatesMissing = !schoolProfile?.termStartDate || !schoolProfile?.termEndDate;
 
+    /**
+     * EFFECT: Load existing report draft from Firestore.
+     */
     useEffect(() => {
         if (!selectedStudentId || !academicYear || !term || !firestore || !schoolId) return;
         const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
@@ -138,15 +142,50 @@ export default function ReportCardManager() {
                 setClassTeacherComment(data.classTeacherComment || '');
                 setHeadmasterComment(data.headmasterComment || '');
                 if (data.schoolId === schoolId) {
-                    setProcessedReport(prev => prev ? { ...prev, ...data } : data);
+                    setProcessedReport(data);
                 }
             } else {
+                setProcessedReport(null);
                 setClassTeacherComment('');
                 setHeadmasterComment('');
             }
         };
         fetchExisting();
     }, [selectedStudentId, academicYear, term, firestore, schoolId]);
+
+    /**
+     * EFFECT: Dynamic Image Pre-flight.
+     * Ensures all signatures and logos are converted to Base64 whenever report or profile changes.
+     * This is the "Solid" fix for blank signatures on PDF and vanish-on-refresh bugs.
+     */
+    useEffect(() => {
+        async function convertImages() {
+            if (!processedReport || !schoolProfile) return;
+
+            // 1. Logo
+            if (!processedReport.logoBase64 && schoolProfile.logoUrl) {
+                const b64 = await getBase64ImageFromUrl(schoolProfile.logoUrl);
+                setProcessedReport(prev => prev ? { ...prev, logoBase64: b64 } : null);
+            }
+
+            // 2. Teacher Signature
+            const tUrl = processedReport.classTeacherSignatureUrl || profile?.signatureUrl;
+            if (tUrl) {
+                const b64 = await getBase64ImageFromUrl(tUrl);
+                setTeacherSigBase64(b64);
+                setProcessedReport(prev => prev ? { ...prev, teacherSigBase64: b64 } : null);
+            }
+
+            // 3. Headmaster Signature
+            const hUrl = processedReport.headmasterSignatureUrl || schoolProfile.headmasterSignatureUrl;
+            if (hUrl) {
+                const b64 = await getBase64ImageFromUrl(hUrl);
+                setHeadmasterSigBase64(b64);
+                setProcessedReport(prev => prev ? { ...prev, headmasterSigBase64: b64 } : null);
+            }
+        }
+        convertImages();
+    }, [processedReport?.id, schoolProfile, profile?.signatureUrl]);
 
     const generateReport = async () => {
         if (!firestore || !schoolId || !classId || !selectedStudentId) return;
@@ -178,7 +217,6 @@ export default function ReportCardManager() {
                 subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
             });
 
-            // Iterate over ACTIVE students only for class stats
             activeStudents.forEach((stu: any) => {
                 let grandTotal = 0;
                 subjects?.forEach((sub: any) => {
@@ -251,21 +289,6 @@ export default function ReportCardManager() {
 
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
-            // PREPARE BASE64 SIGNATURES FOR PDF
-            let tSigB64 = '';
-            let hSigB64 = '';
-            
-            if (profile?.signatureUrl) {
-                tSigB64 = await getBase64ImageFromUrl(profile.signatureUrl);
-                setTeacherSigBase64(tSigB64);
-            }
-            if (schoolProfile?.headmasterSignatureUrl) {
-                hSigB64 = await getBase64ImageFromUrl(schoolProfile.headmasterSignatureUrl);
-                setHeadmasterSigBase64(hSigB64);
-            }
-
-            const logoB64 = schoolProfile?.logoUrl ? await getBase64ImageFromUrl(schoolProfile.logoUrl) : '';
-
             setProcessedReport({
                 student: targetStudent,
                 studentId: selectedStudentId,
@@ -273,9 +296,6 @@ export default function ReportCardManager() {
                 overallAverage,
                 classPosition,
                 totalStudents: activeStudents.length,
-                logoBase64: logoB64,
-                teacherSigBase64: tSigB64,
-                headmasterSigBase64: hSigB64,
                 schoolName: schoolProfile?.name,
                 schoolMotto: schoolProfile?.motto,
                 schoolAddress: schoolProfile?.address,
@@ -284,7 +304,8 @@ export default function ReportCardManager() {
                 nextTermDate: schoolProfile?.nextTermDate || null,
                 term,
                 academicYear,
-                className: classes?.find((c:any) => c.id === classId)?.name || ''
+                className: classes?.find((c:any) => c.id === classId)?.name || '',
+                id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`
             });
 
         } catch (error: any) {
@@ -299,8 +320,6 @@ export default function ReportCardManager() {
         if (!processedReport || !schoolId || isSaving) return;
         setIsSaving(true);
         try {
-            const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
-            
             const teacherDetails = isTeacher ? {
                 classTeacherName: `${profile?.firstName} ${profile?.lastName}`,
                 classTeacherSignatureUrl: profile?.signatureUrl || null
@@ -309,8 +328,6 @@ export default function ReportCardManager() {
             const finalData = {
                 ...processedReport,
                 ...teacherDetails,
-                id: reportId,
-                studentId: selectedStudentId,
                 schoolId,
                 status: 'Draft',
                 classTeacherComment,
@@ -319,8 +336,11 @@ export default function ReportCardManager() {
                 updatedAt: serverTimestamp()
             };
 
-            await setDoc(doc(firestore!, 'report-cards', reportId), finalData, { merge: true });
-            setProcessedReport(finalData);
+            // We do NOT save large Base64 strings to Firestore to avoid 1MB document limit.
+            // We rely on the useEffect hook to regenerate them locally.
+            const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
+
+            await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             toast({ title: "Draft Saved", description: "Report data stored successfully." });
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Failed to save progress." });
@@ -333,10 +353,8 @@ export default function ReportCardManager() {
         if (!processedReport || !schoolId || isPublishing) return;
         setIsPublishing(true);
         try {
-            const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
-            
             const signatureDetails: any = {
-                headmasterName: schoolProfile?.headmasterName || `${profile?.firstName} ${profile?.lastName}`,
+                headmasterName: schoolProfile?.name ? 'Headmaster' : `${profile?.firstName} ${profile?.lastName}`,
                 headmasterSignatureUrl: schoolProfile?.headmasterSignatureUrl || profile?.signatureUrl || null,
                 headmasterSignedAt: serverTimestamp(),
                 digitalFingerprint: `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
@@ -345,15 +363,15 @@ export default function ReportCardManager() {
             const finalData = {
                 ...processedReport,
                 ...signatureDetails,
-                id: reportId,
                 status: 'Published',
                 publishedAt: serverTimestamp(),
                 classTeacherComment,
                 headmasterComment
             };
 
-            await setDoc(doc(firestore!, 'report-cards', reportId), finalData, { merge: true });
-            setProcessedReport(finalData);
+            const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
+
+            await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             
             toast({ title: "Report Published!", description: "Parents can now view this report." });
 
@@ -379,7 +397,8 @@ export default function ReportCardManager() {
             element.style.zIndex = '-1';
             element.style.display = 'flex';
 
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // IMPORTANT: Wait for images to settle in the DOM
+            await new Promise(resolve => setTimeout(resolve, 800));
 
             const canvas = await html2canvas(element, {
                 scale: 2,
@@ -392,12 +411,14 @@ export default function ReportCardManager() {
 
             element.style.visibility = 'hidden';
             element.style.position = 'absolute';
-            element.style.display = 'block';
+            element.style.display = 'none';
 
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-            pdf.save(`${processedReport.student?.firstName}_Report_${term}.pdf`);
+            pdf.save(`${processedReport.student?.firstName || 'Student'}_Report_${term}.pdf`);
+            
+            toast({ title: "Export Complete" });
         } catch (error) {
             console.error("PDF Export Error:", error);
             toast({ variant: 'destructive', title: "Export Failed" });
@@ -479,7 +500,10 @@ export default function ReportCardManager() {
                         </CardContent>
                         <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
                             <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary"><Download className="mr-2 h-4 w-4"/> {isExporting ? 'Generating...' : 'Save PDF'}</Button>
+                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary">
+                                {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>} 
+                                {isExporting ? 'Generating...' : 'Save PDF'}
+                            </Button>
                             <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800"><Save className="mr-2 h-4 w-4"/> Save Draft</Button>
                             {isAdminOrDirector && (
                                 <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700">
