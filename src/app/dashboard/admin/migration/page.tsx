@@ -108,43 +108,53 @@ export default function MigrationHubPage() {
     let successCount = 0;
     let failCount = 0;
 
-    toast({ title: "Import Starting", description: "Provisioning accounts. Please do not close this tab." });
+    toast({ title: "Import Starting", description: "Provisioning accounts. Check console for live logs." });
 
     try {
       for (const row of studentCsvData) {
-        const { FirstName, LastName, Email, ClassName, Gender } = row as any;
-        const targetClassId = classMap[ClassName] || null;
+        // --- DEFENSIVE DATA EXTRACTION ---
+        // Map common CSV header variations
+        const email = (row.Email || row.email || row['Email Address'] || '').toString().trim();
+        const firstName = (row.FirstName || row.firstName || row['First Name'] || '').toString().trim();
+        const lastName = (row.LastName || row.lastName || row['Last Name'] || '').toString().trim();
+        const rawClassName = (row.ClassName || row.className || row['Class'] || '').toString().trim();
+        const gender = (row.Gender || row.gender || '').toString().trim();
 
-        if (!Email || !FirstName) {
+        const targetClassId = classMap[rawClassName] || null;
+
+        if (!email || !firstName) {
+          console.warn("Skipping invalid row (missing email or first name):", row);
           failCount++;
           continue;
         }
 
+        // --- AUTH PROVISIONING ---
         const result = await createNewUser(
-          Email.trim().toLowerCase(),
-          "password123", 
+          email.toLowerCase(),
+          "welcome123", // Reverted to default as per instructions
           'Student',
-          { firstName: FirstName, lastName: LastName },
+          { firstName, lastName },
           schoolId
         );
 
         if ('error' in result) {
-          console.warn(`Failed to import ${Email}:`, result.error);
+          console.error(`[Import Failure] ${email}:`, result.error);
           failCount++;
           continue;
         }
 
+        // --- FIRESTORE RECORD ---
         const studentId = await generateNextStudentId(firestore, schoolId);
 
         await setDoc(doc(firestore, 'students', result.uid), {
           uid: result.uid,
           studentId: studentId,
-          firstName: FirstName,
-          lastName: LastName,
-          email: Email.trim().toLowerCase(),
-          grade: ClassName,
+          firstName,
+          lastName,
+          email: email.toLowerCase(),
+          grade: rawClassName,
           classId: targetClassId,
-          gender: Gender || '',
+          gender: gender || null,
           schoolId: schoolId,
           enrollmentStatus: 'Active',
           createdAt: serverTimestamp(),
@@ -156,11 +166,14 @@ export default function MigrationHubPage() {
 
       toast({ 
         title: "Migration Complete", 
-        description: `Successfully imported ${successCount} students. ${failCount} failed.`,
+        description: `Success: ${successCount}, Failed: ${failCount}.`,
         duration: 10000 
       });
-      setStudentCsvData([]);
-      setClassMap({});
+      
+      if (successCount > 0) {
+          setStudentCsvData([]);
+          setClassMap({});
+      }
     } catch (e: any) {
       toast({ variant: 'destructive', title: "Import Error", description: e.message });
     } finally {
@@ -191,12 +204,17 @@ export default function MigrationHubPage() {
       let batchCount = 0;
 
       for (const row of gradeCsvData) {
-        const { Email, SubjectName, CA, Exam, Term, AcademicYear } = row as any;
+        const email = (row.Email || row.email || '').toString().trim().toLowerCase();
+        const subjectName = (row.SubjectName || row.subject || '').toString().trim();
+        const ca = (row.CA || row.ca || '0').toString().trim();
+        const exam = (row.Exam || row.exam || '0').toString().trim();
+        const termLabel = (row.Term || row.term || 'First Term').toString().trim();
+        const yearLabel = (row.AcademicYear || row.year || '2024-2025').toString().trim();
         
-        const studentInfo = studentMap.get(Email?.trim().toLowerCase());
-        const targetSubjectId = subjectMap[SubjectName] || null;
+        const studentInfo = studentMap.get(email);
+        const targetSubjectId = subjectMap[subjectName] || null;
 
-        if (!studentInfo || !targetSubjectId || !CA || !Exam) {
+        if (!studentInfo || !targetSubjectId) {
           failCount++;
           continue;
         }
@@ -205,9 +223,9 @@ export default function MigrationHubPage() {
           studentId: studentInfo.uid,
           classId: studentInfo.classId,
           subjectId: targetSubjectId,
-          subjectName: subjects?.find(s => s.id === targetSubjectId)?.name || SubjectName,
-          academicYear: AcademicYear || '2024-2025',
-          term: Term || 'First Term',
+          subjectName: subjects?.find(s => s.id === targetSubjectId)?.name || subjectName,
+          academicYear: yearLabel,
+          term: termLabel,
           schoolId: schoolId,
           createdAt: serverTimestamp(),
           gradedAt: serverTimestamp(),
@@ -221,7 +239,7 @@ export default function MigrationHubPage() {
           ...baseAssessmentData,
           assessmentType: 'Class Exercise (CA)',
           assessmentName: 'Legacy CA Import',
-          score: parseFloat(CA)
+          score: parseFloat(ca) || 0
         });
 
         // Create Exam record
@@ -230,7 +248,7 @@ export default function MigrationHubPage() {
           ...baseAssessmentData,
           assessmentType: 'End of Term Exam (Exam)',
           assessmentName: 'Legacy Exam Import',
-          score: parseFloat(Exam)
+          score: parseFloat(exam) || 0
         });
 
         successCount++;
@@ -267,7 +285,8 @@ export default function MigrationHubPage() {
   const uniqueCsvClasses = useMemo(() => {
     const set = new Set<string>();
     studentCsvData.forEach(row => {
-      if (row.ClassName) set.add(row.ClassName);
+      const val = row.ClassName || row.className || row['Class'];
+      if (val) set.add(val.toString().trim());
     });
     return Array.from(set);
   }, [studentCsvData]);
@@ -275,7 +294,8 @@ export default function MigrationHubPage() {
   const uniqueCsvSubjects = useMemo(() => {
     const set = new Set<string>();
     gradeCsvData.forEach(row => {
-      if (row.SubjectName) set.add(row.SubjectName);
+      const val = row.SubjectName || row.subject;
+      if (val) set.add(val.toString().trim());
     });
     return Array.from(set);
   }, [gradeCsvData]);
@@ -431,9 +451,9 @@ export default function MigrationHubPage() {
                           <TableBody>
                             {studentCsvData.slice(0, 5).map((row, i) => (
                               <TableRow key={i}>
-                                <TableCell className="text-xs font-bold">{row.FirstName} {row.LastName}</TableCell>
-                                <TableCell className="text-xs text-slate-500 font-mono">{row.Email}</TableCell>
-                                <TableCell className="text-xs italic">{row.ClassName}</TableCell>
+                                <TableCell className="text-xs font-bold">{row.FirstName || row.firstName || row['First Name']} {row.LastName || row.lastName || row['Last Name']}</TableCell>
+                                <TableCell className="text-xs text-slate-500 font-mono">{row.Email || row.email || row['Email Address']}</TableCell>
+                                <TableCell className="text-xs italic">{row.ClassName || row.className || row['Class']}</TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
@@ -568,10 +588,10 @@ export default function MigrationHubPage() {
                           <TableBody>
                             {gradeCsvData.slice(0, 5).map((row, i) => (
                               <TableRow key={i}>
-                                <TableCell className="text-xs font-mono">{row.Email}</TableCell>
-                                <TableCell className="text-xs font-bold">{row.SubjectName}</TableCell>
-                                <TableCell className="text-xs">{row.CA}</TableCell>
-                                <TableCell className="text-xs">{row.Exam}</TableCell>
+                                <TableCell className="text-xs font-mono">{row.Email || row.email}</TableCell>
+                                <TableCell className="text-xs font-bold">{row.SubjectName || row.subject}</TableCell>
+                                <TableCell className="text-xs">{row.CA || row.ca}</TableCell>
+                                <TableCell className="text-xs">{row.Exam || row.exam}</TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
