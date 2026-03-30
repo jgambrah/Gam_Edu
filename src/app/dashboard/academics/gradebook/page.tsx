@@ -51,7 +51,16 @@ export default function GradebookPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    const studentsQuery = useMemoFirebase(() => (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, [firestore, schoolId, classId]);
+    const studentsQuery = useMemoFirebase(() => 
+        (firestore && schoolId && classId) 
+            ? query(
+                collection(firestore, 'students'), 
+                where('schoolId', '==', schoolId), 
+                where('classId', '==', classId),
+                where('enrollmentStatus', '==', 'Active')
+            ) 
+            : null, 
+    [firestore, schoolId, classId]);
     const { data: students, isLoading: loadingStudents } = useCollection<any>(studentsQuery);
 
     const handleScoreChange = (studentId: string, val: string) => {
@@ -238,7 +247,7 @@ export default function GradebookPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {students?.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No students in this class.</TableCell></TableRow>}
+                                    {students?.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No active students in this class.</TableCell></TableRow>}
                                     {students?.map((s:any) => (
                                         <TableRow key={s.id}>
                                             <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>

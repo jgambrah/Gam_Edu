@@ -318,9 +318,16 @@ export default function GradebookManager() {
   
   const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-  // 2. Fetch Students for the selected class (SAAS Aware)
+  // 2. Fetch Students for the selected class (SAAS Aware + ACTIVE ONLY)
   const studentsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId)) : null,
+    (firestore && selectedClassId && schoolId) 
+        ? query(
+            collection(firestore, 'students'), 
+            where('schoolId', '==', schoolId), 
+            where('classId', '==', selectedClassId),
+            where('enrollmentStatus', '==', 'Active')
+        ) 
+        : null,
   [firestore, selectedClassId, schoolId]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   

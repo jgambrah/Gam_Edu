@@ -20,7 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Route, Bus } from '@/lib/types';
+import { Route, Bus, Student } from '@/lib/types';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600" }: any) {
   return (
@@ -579,8 +579,16 @@ export default function DashboardClient() {
   const isTransportStaff = role === 'Transport Staff';
   const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
-  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
-  const { data: students, isLoading: loadingStudents } = useCollection(studentsQuery);
+  const studentsQuery = useMemoFirebase(() => 
+    (firestore && schoolId && isStaff) 
+        ? query(
+            collection(firestore, 'students'), 
+            where('schoolId', '==', schoolId),
+            where('enrollmentStatus', '==', 'Active') // <--- THE FIX
+        ) 
+        : null, 
+  [firestore, schoolId, isStaff]);
+  const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && canListStaff) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canListStaff]);
   const { data: staff, isLoading: loadingStaff } = useCollection(staffQuery);

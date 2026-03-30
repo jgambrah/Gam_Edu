@@ -90,14 +90,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const studentQuery = query(
                 collection(firestore, 'students'), 
                 where('schoolId', '==', schoolId),
-                where('classId', '==', selectedClassId)
+                where('classId', '==', selectedClassId),
+                where('enrollmentStatus', '==', 'Active') // <--- THE FIX
             );
             const studentSnapshot = await getDocs(studentQuery);
             
-            // Filter out inactive students for current attendance taking
             const studentList = studentSnapshot.docs
-                .map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id }))
-                .filter(s => (s as any).enrollmentStatus !== 'Inactive') as Student[];
+                .map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id })) as Student[];
             
             setStudents(studentList);
 
@@ -178,11 +177,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             await batch.commit();
             toast({ title: 'Attendance Saved!', description: 'Now processing financial records...' });
 
-            // Ensure only active students get billed
             const studentsToBill = data.records
                 .filter(r => r.status === 'Present' || r.status === 'Late')
                 .map(r => students.find(s => s.uid === r.studentId))
-                .filter((s): s is Student => s !== undefined && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus));
+                .filter((s): s is Student => s !== undefined);
 
             if (studentsToBill.length > 0) {
                 const billingResult = await billMultipleStudents(
@@ -200,7 +198,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     description: `✅ ${billingResult.successful} billed. ❌ ${billingResult.failed} failed. Total today: GH₵${billingResult.totalBilled.toFixed(2)}`
                 });
             } else {
-                toast({ title: 'Billing Skipped', description: 'No active students were marked as present or late.'});
+                toast({ title: 'Billing Skipped', description: 'No students were marked as present or late.'});
             }
         } catch (error: any) {
             toast({ variant: 'destructive', title: 'Error', description: error.message });
