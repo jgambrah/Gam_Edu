@@ -25,6 +25,12 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
 
+// --- HELPERS ---
+
+/**
+ * Fetches an image via the local proxy and converts it to a Base64 data URI.
+ * This is the ONLY way to bypass CORS restrictions for html2canvas PDF generation.
+ */
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
         const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
@@ -69,11 +75,13 @@ export default function ReportCardManager() {
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const { toast } = useToast();
 
+    // Selection State
     const [classId, setClassId] = useState('');
     const [term, setTerm] = useState('First Term');
     const [academicYear, setAcademicYear] = useState('2024-2025');
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
+    // Comments State
     const [classTeacherComment, setClassTeacherComment] = useState('');
     const [headmasterComment, setHeadmasterComment] = useState('');
 
@@ -88,6 +96,7 @@ export default function ReportCardManager() {
     const isAdminOrDirector = ['Administrator', 'Director'].includes(role || '');
     const isTeacher = role === 'Teacher';
 
+    // Data Fetching
     const classesQuery = useMemoFirebase(() => {
         if(!firestore || !user || !schoolId) return null;
         let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
@@ -99,11 +108,6 @@ export default function ReportCardManager() {
     const { data: students } = useCollection<any>(useMemoFirebase(() => 
         (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, 
     [firestore, schoolId, classId]));
-
-    const activeStudents = useMemo(() => {
-        if (!students) return [];
-        return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
-    }, [students]);
 
     const { data: subjects } = useCollection<any>(useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
@@ -118,6 +122,12 @@ export default function ReportCardManager() {
 
     const areDatesMissing = !schoolProfile?.termStartDate || !schoolProfile?.termEndDate;
 
+    // Filter for Active Students
+    const activeStudents = useMemo(() => {
+        if (!students) return [];
+        return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+    }, [students]);
+
     useEffect(() => {
         if (!selectedStudentId || !academicYear || !term || !firestore || !schoolId) return;
         const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
@@ -129,36 +139,21 @@ export default function ReportCardManager() {
                 setClassTeacherComment(data.classTeacherComment || '');
                 setHeadmasterComment(data.headmasterComment || '');
                 if (data.schoolId === schoolId) {
-                    setProcessedReport({
-                        ...data,
-                        headmasterSigBase64: data.headmasterSigBase64 || schoolProfile?.headmasterSignature
-                    });
+                    setProcessedReport(data);
                 }
             } else {
-                setProcessedReport(null);
                 setClassTeacherComment('');
                 setHeadmasterComment('');
             }
         };
         fetchExisting();
-    }, [selectedStudentId, academicYear, term, firestore, schoolId, schoolProfile]);
-
-    useEffect(() => {
-        async function convertLogo() {
-            if (!processedReport || !schoolProfile) return;
-            if (!processedReport.logoBase64 && schoolProfile.logoUrl) {
-                const b64 = await getBase64ImageFromUrl(schoolProfile.logoUrl);
-                setProcessedReport(prev => prev ? { ...prev, logoBase64: b64 } : null);
-            }
-        }
-        convertLogo();
-    }, [processedReport?.id, schoolProfile]);
+    }, [selectedStudentId, academicYear, term, firestore, schoolId]);
 
     const generateReport = async () => {
         if (!firestore || !schoolId || !classId || !selectedStudentId) return;
         
         if (areDatesMissing) {
-            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Term dates required." });
+            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Please ask the Administrator to configure the Term Dates." });
             return;
         }
 
@@ -177,10 +172,13 @@ export default function ReportCardManager() {
             const snap = await getDocs(q);
             const allAssessments = snap.docs.map(d => d.data());
 
+            // --- CALCULATE RANKS ---
             const studentTotals: Record<string, number> = {};
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
 
-            subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
+            subjects?.forEach((sub: any) => { 
+                subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
+            });
 
             activeStudents.forEach((stu: any) => {
                 let grandTotal = 0;
@@ -192,10 +190,12 @@ export default function ReportCardManager() {
                         const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
                         const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
                         const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
+
                         const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
                         const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
                         const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
                         const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
+
                         total100 = Math.round(weightedCA + weightedExam);
                     }
                     grandTotal += total100;
@@ -219,41 +219,77 @@ export default function ReportCardManager() {
             subjects?.forEach((sub: any) => {
                 const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
                 if (myAssessments.length === 0) return; 
+
                 const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
                 const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
                 const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
                 const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
+
                 const exams = myAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id && a.assessmentType.includes('Exam'));
                 const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
                 const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
                 const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
+
                 const total100 = Math.round(weightedCA + weightedExam);
                 myGrandTotal += total100;
                 subjectsTaken++;
+
                 const { grade, autoRemark } = getGradeAndRemark(total100);
                 const subjectHigherCount = subjectStats[sub.id].totalScores.filter(s => s > total100).length;
                 const mySubjectRank = formatOrdinal(subjectHigherCount + 1);
+
                 reportRows.push({
-                    subjectName: sub.name, ca: Math.round(weightedCA), exam: Math.round(weightedExam), total: total100,
-                    grade, autoRemark, classAverage: subjectStats[sub.id].totalScores.length > 0 ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) : 0,
+                    subjectName: sub.name,
+                    ca: Math.round(weightedCA),
+                    exam: Math.round(weightedExam),
+                    total: total100,
+                    grade,
+                    autoRemark,
+                    classAverage: subjectStats[sub.id].totalScores.length > 0 ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) : 0,
                     position: mySubjectRank
                 });
             });
 
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
+            // ✅ FIX: Fetch latest school data for signatures (from 'schools' collection)
+            const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
+            const schoolData = schoolDoc.data();
+
+            // ✅ FIX: Parallel Base64 conversion for logo and all authorized signatures
+            const [logoB64, headmasterSigB64, teacherSigB64] = await Promise.all([
+                schoolProfile?.logoUrl ? getBase64ImageFromUrl(schoolProfile.logoUrl) : Promise.resolve(''),
+                schoolData?.headmasterSignatureUrl ? getBase64ImageFromUrl(schoolData.headmasterSignatureUrl) : Promise.resolve(''),
+                profile?.signatureUrl ? getBase64ImageFromUrl(profile.signatureUrl) : Promise.resolve(''),
+            ]);
+
             setProcessedReport({
-                student: targetStudent, studentId: selectedStudentId, rows: reportRows, overallAverage, classPosition,
-                totalStudents: activeStudents.length, schoolName: schoolProfile?.name, schoolMotto: schoolProfile?.motto,
-                schoolAddress: schoolProfile?.address, schoolPhone: schoolProfile?.phone, schoolEmail: schoolProfile?.email,
-                nextTermDate: schoolProfile?.nextTermDate || null, term, academicYear,
+                student: targetStudent,
+                studentId: selectedStudentId,
+                rows: reportRows,
+                overallAverage,
+                classPosition,
+                totalStudents: activeStudents.length,
+                logoBase64: logoB64,
+                headmasterSigBase64: headmasterSigB64,
+                teacherSigBase64: teacherSigB64,
+                schoolName: schoolProfile?.name,
+                schoolMotto: schoolProfile?.motto,
+                schoolAddress: schoolProfile?.address,
+                schoolPhone: schoolProfile?.phone,
+                schoolEmail: schoolProfile?.email,
+                nextTermDate: schoolProfile?.nextTermDate || null,
+                term,
+                academicYear,
                 className: classes?.find((c:any) => c.id === classId)?.name || '',
                 id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`,
-                headmasterSigBase64: schoolProfile?.headmasterSignature || null
+                classTeacherName: `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim(),
+                classTeacherSignatureUrl: profile?.signatureUrl || null
             });
 
         } catch (error: any) {
-            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report." });
+            console.error(error);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report data." });
         } finally {
             setIsGenerating(false);
         }
@@ -265,14 +301,21 @@ export default function ReportCardManager() {
         try {
             const finalData = {
                 ...processedReport,
-                schoolId, status: 'Draft', classTeacherComment, headmasterComment,
-                lastUpdatedBy: user?.uid, updatedAt: serverTimestamp()
+                schoolId, 
+                status: 'Draft', 
+                classTeacherComment, 
+                headmasterComment,
+                lastUpdatedBy: user?.uid, 
+                updatedAt: serverTimestamp()
             };
-            const { logoBase64, ...dbFriendlyData } = finalData;
+            
+            // Don't save large base64 strings to Firestore to save space
+            const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
+            
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             toast({ title: "Draft Saved" });
         } catch (e) {
-            toast({ variant: 'destructive', title: "Error" });
+            toast({ variant: 'destructive', title: "Error", description: "Failed to save progress." });
         } finally {
             setIsSaving(false);
         }
@@ -282,15 +325,27 @@ export default function ReportCardManager() {
         if (!processedReport || !schoolId || isPublishing) return;
         setIsPublishing(true);
         try {
+            // Re-fetch latest school details for signing
+            const schoolDoc = await getDoc(doc(firestore!, 'schools', schoolId));
+            const schoolData = schoolDoc.data();
+
             const finalData = {
                 ...processedReport,
-                status: 'Published', publishedAt: serverTimestamp(),
-                classTeacherComment, headmasterComment,
+                status: 'Published', 
+                publishedAt: serverTimestamp(),
+                classTeacherComment, 
+                headmasterComment,
+                headmasterName: schoolData?.headmasterName || 'Head of School',
+                headmasterSignatureUrl: schoolData?.headmasterSignatureUrl || null,
+                headmasterSignedAt: serverTimestamp(),
                 digitalFingerprint: `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
             };
-            const { logoBase64, ...dbFriendlyData } = finalData;
+
+            const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
+            
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             toast({ title: "Report Published!" });
+            
             await notifyParents([selectedStudentId!], "Report Card Ready 🎓", `Report for ${processedReport.student?.firstName} is now available.`, "/dashboard/my-reports");
         } catch (e) {
             toast({ variant: 'destructive', title: "Error" });
@@ -302,18 +357,39 @@ export default function ReportCardManager() {
     const handleDownloadPDF = async () => {
         const element = printRef.current;
         if (!element || !processedReport) return;
+
         setIsExporting(true);
         try {
+            element.style.visibility = 'visible';
+            element.style.position = 'fixed';
+            element.style.top = '0';
+            element.style.left = '0';
+            element.style.zIndex = '-1';
             element.style.display = 'flex';
+
             await new Promise(resolve => setTimeout(resolve, 800));
-            const canvas = await html2canvas(element, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: 794, windowHeight: 1123 });
+
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                windowWidth: 794,
+                windowHeight: 1123,
+            });
+
+            element.style.visibility = 'hidden';
+            element.style.position = 'absolute';
             element.style.display = 'none';
+
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-            pdf.save(`${processedReport.student?.firstName || 'Student'}_Report_${term}.pdf`);
+            pdf.save(`${processedReport.student?.firstName}_Report_${term}.pdf`);
+            
             toast({ title: "Export Complete" });
         } catch (error) {
+            console.error("PDF Export Error:", error);
             toast({ variant: 'destructive', title: "Export Failed" });
         } finally {
             setIsExporting(false);
@@ -420,7 +496,10 @@ export default function ReportCardManager() {
                 </div>
             )}
 
-            <div ref={printRef} style={{ display: 'none' }}>
+            <div
+                ref={printRef}
+                style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px', display: 'none' }}
+            >
                 {processedReport && (
                     <ReportCardTemplate
                         data={processedReport}
