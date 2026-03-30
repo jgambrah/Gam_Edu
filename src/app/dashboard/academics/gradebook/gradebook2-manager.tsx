@@ -318,18 +318,23 @@ export default function GradebookManager() {
   
   const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-  // 2. Fetch Students for the selected class (SAAS Aware + ACTIVE ONLY)
+  // 2. Fetch Students for the selected class (SAAS Aware)
   const studentsQuery = useMemoFirebase(() => 
     (firestore && selectedClassId && schoolId) 
         ? query(
             collection(firestore, 'students'), 
             where('schoolId', '==', schoolId), 
-            where('classId', '==', selectedClassId),
-            where('enrollmentStatus', '==', 'Active')
+            where('classId', '==', selectedClassId)
         ) 
         : null,
   [firestore, selectedClassId, schoolId]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+
+  // Filter for ACTIVE students in memory to handle legacy records with undefined status
+  const activeStudents = useMemo(() => {
+      if (!students) return [];
+      return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+  }, [students]);
   
   // 3. Fetch Assessments for the selected class, term, and year (SAAS Aware)
   const assessmentsQuery = useMemoFirebase(() => {
@@ -357,29 +362,29 @@ export default function GradebookManager() {
   // --- DERIVED DATA ---
   
   const studentStats = useMemo(() => {
-      if (!students || !assessments) return [];
+      if (!activeStudents || !assessments) return [];
       
-      return students.map(s => {
+      return activeStudents.map(s => {
           const myAssessments = assessments.filter(a => a.studentId === s.uid);
           const total = myAssessments.reduce((acc, curr) => acc + (curr.score || 0), 0);
           const max = myAssessments.reduce((acc, curr) => acc + (curr.maxScore || 100), 0);
           const average = max > 0 ? (total / max) * 100 : 0;
           return { ...s, average };
       });
-  }, [students, assessments]);
+  }, [activeStudents, assessments]);
 
   const studentFinancials = useMemo(() => {
-    if (!students || !financialRecords) return {};
+    if (!activeStudents || !financialRecords) return {};
     const financials: Record<string, { balance: number }> = {};
 
-    students.forEach(student => {
+    activeStudents.forEach(student => {
         const myRecords = financialRecords.filter(r => r.studentId === student.uid);
         const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
         const paid = myRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
         financials[student.uid] = { balance: billed - paid };
     });
     return financials;
-  }, [students, financialRecords]);
+  }, [activeStudents, financialRecords]);
 
   const isLoading = isUserLoading || isRoleLoading || isLoadingSchool || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial || isLoadingSubjects));
   
@@ -541,8 +546,8 @@ export default function GradebookManager() {
                 ) : (
                     <div className="text-center py-16">
                         <FileText className="mx-auto h-12 w-12 text-slate-300 mb-2"/>
-                        <p className="text-muted-foreground">No students found.</p>
-                        <p className="text-xs text-slate-400">Select a different class or add students.</p>
+                        <p className="text-muted-foreground">No active students found.</p>
+                        <p className="text-xs text-slate-400">Select a different class or check enrollment statuses.</p>
                     </div>
                 )}
             </CardContent>

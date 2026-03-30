@@ -54,6 +54,12 @@ export default function GradebookPage() {
     const studentsQuery = useMemoFirebase(() => (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, [firestore, schoolId, classId]);
     const { data: students, isLoading: loadingStudents } = useCollection<any>(studentsQuery);
 
+    // Filter for ACTIVE students in memory to handle legacy records with undefined status
+    const activeStudents = useMemo(() => {
+        if (!students) return [];
+        return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+    }, [students]);
+
     const handleScoreChange = (studentId: string, val: string) => {
         const num = val === '' ? '' : Number(val);
         if (typeof num === 'number' && num > maxScore) return; 
@@ -238,8 +244,8 @@ export default function GradebookPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {students?.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No students in this class.</TableCell></TableRow>}
-                                    {students?.map((s:any) => (
+                                    {activeStudents.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No active students in this class.</TableCell></TableRow>}
+                                    {activeStudents.map((s:any) => (
                                         <TableRow key={s.id}>
                                             <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
                                             <TableCell>

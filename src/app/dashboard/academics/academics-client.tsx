@@ -90,7 +90,14 @@ function ClassDetailView({
     teachers: any[],
     currentUserProfile: any
 }) {
-    const classStudents = useMemo(() => students.filter(s => s.classId === selectedClass.id), [students, selectedClass.id]);
+    // Filter for ACTIVE students in memory to handle legacy records with undefined status
+    const classStudents = useMemo(() => {
+        return students.filter(s => 
+            s.classId === selectedClass.id && 
+            (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
+        );
+    }, [students, selectedClass.id]);
+
     const classTimetable = useMemo(() => timetable.filter(t => t.classId === selectedClass.id), [timetable, selectedClass.id]);
     
     // Gender Statistics
@@ -186,7 +193,7 @@ function ClassDetailView({
                                         ))}
                                         {classStudents.length === 0 && (
                                             <TableRow>
-                                                <TableCell colSpan={4} className="text-center py-12 text-muted-foreground italic">No students assigned to this class.</TableCell>
+                                                <TableCell colSpan={4} className="text-center py-12 text-muted-foreground italic">No active students assigned to this class.</TableCell>
                                             </TableRow>
                                         )}
                                     </TableBody>
@@ -221,7 +228,7 @@ export default function AcademicsPageContent() {
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const { toast } = useToast();
   
-  const [selectedClass, setSelectedClass] = useState<Class | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingClass, setEditingClass] = useState<Class | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -351,11 +358,15 @@ export default function AcademicsPageContent() {
 
   const isLoading = isLoadingSchool || isRoleLoading || isLoadingClasses || (canListStaff && isLoadingTeachers) || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
 
+  const selectedClass = useMemo(() => {
+      return classes?.find(c => c.id === selectedClassId) || null;
+  }, [classes, selectedClassId]);
+
   if (selectedClass) {
       return (
           <ClassDetailView 
             selectedClass={selectedClass} 
-            onBack={() => setSelectedClass(null)} 
+            onBack={() => setSelectedClassId(null)} 
             students={students || []}
             timetable={timetable || []}
             subjects={subjects || []}
@@ -432,7 +443,10 @@ export default function AcademicsPageContent() {
                 const classTeacher = teachers?.find(t => t.uid === c.teacherId) || 
                                    (profile && c.teacherId === profile.uid ? profile : null);
                 
-                const classStudents = students?.filter(s => s.classId === c.id) || [];
+                const classStudents = students?.filter(s => 
+                    s.classId === c.id && 
+                    (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
+                ) || [];
                 const maleCount = classStudents.filter(s => s.gender === 'Male').length;
                 const femaleCount = classStudents.filter(s => s.gender === 'Female').length;
 
@@ -440,7 +454,7 @@ export default function AcademicsPageContent() {
                   <Card 
                       key={c.id} 
                       className="cursor-pointer hover:border-indigo-500 hover:ring-2 hover:ring-indigo-100 transition-all h-full group"
-                      onClick={() => setSelectedClass(c)}
+                      onClick={() => setSelectedClassId(c.id)}
                   >
                     <CardHeader className="relative">
                       <div className="flex justify-between items-start">
