@@ -108,6 +108,12 @@ export default function ReportCardManager() {
         (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, 
     [firestore, schoolId, classId]));
 
+    // Filter for ACTIVE students in memory to handle legacy records with undefined status
+    const activeStudents = useMemo(() => {
+        if (!students) return [];
+        return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+    }, [students]);
+
     const { data: subjects } = useCollection<any>(useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
     [firestore, schoolId]));
@@ -172,7 +178,8 @@ export default function ReportCardManager() {
                 subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
             });
 
-            students?.forEach((stu: any) => {
+            // Iterate over ACTIVE students only for class stats
+            activeStudents.forEach((stu: any) => {
                 let grandTotal = 0;
                 subjects?.forEach((sub: any) => {
                     const stuSubjAssessments = allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id);
@@ -203,7 +210,7 @@ export default function ReportCardManager() {
             const higherCount = Object.values(studentTotals).filter(t => t > myTotal).length;
             const classPosition = formatOrdinal(higherCount + 1);
 
-            const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
+            const targetStudent = activeStudents.find((s:any) => s.uid === selectedStudentId);
             const reportRows: any[] = [];
             let myGrandTotal = 0;
             let subjectsTaken = 0;
@@ -265,7 +272,7 @@ export default function ReportCardManager() {
                 rows: reportRows,
                 overallAverage,
                 classPosition,
-                totalStudents: students?.length || 0,
+                totalStudents: activeStudents.length,
                 logoBase64: logoB64,
                 teacherSigBase64: tSigB64,
                 headmasterSigBase64: hSigB64,
@@ -441,7 +448,11 @@ export default function ReportCardManager() {
                         <Label>Student</Label>
                         <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
                             <SelectTrigger className="bg-white"><SelectValue placeholder="Choose Student"/></SelectTrigger>
-                            <SelectContent>{students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
+                            <SelectContent>
+                                {activeStudents.map((s:any) => (
+                                    <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>
+                                ))}
+                            </SelectContent>
                         </Select>
                     </div>
                 </CardContent>
