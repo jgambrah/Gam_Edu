@@ -87,6 +87,9 @@ export default function ReportCardManager() {
     const [isExporting, setIsExporting] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
     
+    const [teacherSigBase64, setTeacherSigBase64] = useState('');
+    const [headmasterSigBase64, setHeadmasterSigBase64] = useState('');
+
     const printRef = useRef<HTMLDivElement>(null);
 
     const isAdminOrDirector = ['Administrator', 'Director'].includes(role || '');
@@ -110,14 +113,12 @@ export default function ReportCardManager() {
     [firestore, schoolId]));
     
     const { data: schoolProfile } = useDoc<any>(useMemoFirebase(() => 
-        (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
+        (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, 
     [firestore, schoolId]));
 
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
     const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
 
-    const termStartMs = schoolProfile?.termStartDate ? schoolProfile.termStartDate.toDate().getTime() : 0;
-    const termEndMs = schoolProfile?.termEndDate ? schoolProfile.termEndDate.toDate().getTime() : Infinity;
     const areDatesMissing = !schoolProfile?.termStartDate || !schoolProfile?.termEndDate;
 
     useEffect(() => {
@@ -164,8 +165,8 @@ export default function ReportCardManager() {
             const snap = await getDocs(q);
             const allAssessments = snap.docs.map(d => d.data());
 
-            const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             const studentTotals: Record<string, number> = {};
+            const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
 
             subjects?.forEach((sub: any) => { 
                 subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
@@ -200,8 +201,7 @@ export default function ReportCardManager() {
 
             const myTotal = studentTotals[selectedStudentId] || 0;
             const higherCount = Object.values(studentTotals).filter(t => t > myTotal).length;
-            const classPositionNum = higherCount + 1;
-            const classPosition = formatOrdinal(classPositionNum);
+            const classPosition = formatOrdinal(higherCount + 1);
 
             const targetStudent = students?.find((s:any) => s.uid === selectedStudentId);
             const reportRows: any[] = [];
@@ -227,16 +227,8 @@ export default function ReportCardManager() {
                 subjectsTaken++;
 
                 const { grade, autoRemark } = getGradeAndRemark(total100);
-                const teacherRemarksList = myAssessments.map(a => a.teacherRemark).filter(Boolean);
-                const customTeacherRemark = teacherRemarksList.length > 0 ? teacherRemarksList[teacherRemarksList.length - 1] : "";
-
                 const subjectHigherCount = subjectStats[sub.id].totalScores.filter(s => s > total100).length;
-                const subjectRankNum = subjectHigherCount + 1;
-                const mySubjectRank = formatOrdinal(subjectRankNum);
-
-                const subjectAverage = subjectStats[sub.id].totalScores.length > 0 
-                    ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) 
-                    : 0;
+                const mySubjectRank = formatOrdinal(subjectHigherCount + 1);
 
                 reportRows.push({
                     subjectName: sub.name,
@@ -245,61 +237,44 @@ export default function ReportCardManager() {
                     total: total100,
                     grade,
                     autoRemark,
-                    teacherRemark: customTeacherRemark,
-                    classAverage: subjectAverage,
+                    classAverage: subjectStats[sub.id].totalScores.length > 0 ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) : 0,
                     position: mySubjectRank
                 });
             });
 
             const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
 
-            const attendanceRef = collection(firestore, 'attendance');
-            const attQuery = query(attendanceRef, where('schoolId', '==', schoolId), where('classId', '==', classId));
-            const attSnap = await getDocs(attQuery);
-            const allClassAttendance = attSnap.docs.map(d => d.data());
-
-            const termAttendance = allClassAttendance.filter(a => {
-                if (!a.date) return false;
-                const recordTime = a.date.toDate ? a.date.toDate().getTime() : new Date(a.date).getTime();
-                return recordTime >= termStartMs && recordTime <= termEndMs;
-            });
-
-            const uniqueDays = new Set(
-                termAttendance.map(a => {
-                    const d = a.date.toDate ? a.date.toDate() : new Date(a.date);
-                    return format(d, 'yyyy-MM-dd');
-                })
-            );
-            const totalClassDays = uniqueDays.size;
-
-            const myAttendance = termAttendance.filter(a => 
-                a.studentId === selectedStudentId && 
-                (a.status === 'Present' || a.status === 'Late')
-            );
-            const studentPresentDays = myAttendance.length;
-
-            let finalLogoStr = '';
-            if (schoolProfile?.logoUrl) {
-                finalLogoStr = await getBase64ImageFromUrl(schoolProfile.logoUrl);
+            // PREPARE BASE64 SIGNATURES FOR PDF
+            let tSigB64 = '';
+            let hSigB64 = '';
+            
+            if (profile?.signatureUrl) {
+                tSigB64 = await getBase64ImageFromUrl(profile.signatureUrl);
+                setTeacherSigBase64(tSigB64);
             }
+            if (schoolProfile?.headmasterSignatureUrl) {
+                hSigB64 = await getBase64ImageFromUrl(schoolProfile.headmasterSignatureUrl);
+                setHeadmasterSigBase64(hSigB64);
+            }
+
+            const logoB64 = schoolProfile?.logoUrl ? await getBase64ImageFromUrl(schoolProfile.logoUrl) : '';
 
             setProcessedReport({
                 student: targetStudent,
                 studentId: selectedStudentId,
                 rows: reportRows,
                 overallAverage,
-                totalScore: myGrandTotal,
                 classPosition,
                 totalStudents: students?.length || 0,
-                studentPresentDays,
-                totalClassDays,
-                logoBase64: finalLogoStr,
+                logoBase64: logoB64,
+                teacherSigBase64: tSigB64,
+                headmasterSigBase64: hSigB64,
                 schoolName: schoolProfile?.name,
                 schoolMotto: schoolProfile?.motto,
                 schoolAddress: schoolProfile?.address,
                 schoolPhone: schoolProfile?.phone,
                 schoolEmail: schoolProfile?.email,
-                nextTermDate: schoolProfile?.nextTermDate || null, // ✅ NEW: Reopening Date
+                nextTermDate: schoolProfile?.nextTermDate || null,
                 term,
                 academicYear,
                 className: classes?.find((c:any) => c.id === classId)?.name || ''
@@ -339,8 +314,7 @@ export default function ReportCardManager() {
 
             await setDoc(doc(firestore!, 'report-cards', reportId), finalData, { merge: true });
             setProcessedReport(finalData);
-            
-            toast({ title: "Draft Saved & Signed", description: "The report data and your signature have been stored." });
+            toast({ title: "Draft Saved", description: "Report data stored successfully." });
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Failed to save progress." });
         } finally {
@@ -354,45 +328,29 @@ export default function ReportCardManager() {
         try {
             const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
             
-            const signatureDetails: any = {};
-            if (isTeacher) {
-                signatureDetails.classTeacherName = `${profile?.firstName} ${profile?.lastName}`;
-                signatureDetails.classTeacherSignatureUrl = profile?.signatureUrl || null;
-            }
-            if (isAdminOrDirector) {
-                signatureDetails.headmasterName = `${profile?.firstName} ${profile?.lastName}`;
-                signatureDetails.headmasterSignatureUrl = profile?.signatureUrl || null;
-                signatureDetails.headmasterSignedAt = serverTimestamp();
-                signatureDetails.digitalFingerprint = `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-            }
+            const signatureDetails: any = {
+                headmasterName: schoolProfile?.headmasterName || `${profile?.firstName} ${profile?.lastName}`,
+                headmasterSignatureUrl: schoolProfile?.headmasterSignatureUrl || profile?.signatureUrl || null,
+                headmasterSignedAt: serverTimestamp(),
+                digitalFingerprint: `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
+            };
 
             const finalData = {
                 ...processedReport,
                 ...signatureDetails,
                 id: reportId,
-                studentId: selectedStudentId,
-                schoolId,
                 status: 'Published',
                 publishedAt: serverTimestamp(),
                 classTeacherComment,
-                headmasterComment,
-                generatedBy: user?.uid
+                headmasterComment
             };
 
             await setDoc(doc(firestore!, 'report-cards', reportId), finalData, { merge: true });
             setProcessedReport(finalData);
             
-            toast({ 
-                title: "Report Published & Locked! 🚀", 
-                description: "Parents and Students can now view this verified report." 
-            });
+            toast({ title: "Report Published!", description: "Parents can now view this report." });
 
-            await notifyParents(
-                [selectedStudentId!], 
-                "Report Card Available 🎓",
-                `The Terminal Report for ${processedReport.student?.firstName} is now available. Tap to view and download.`,
-                "/dashboard/my-reports"
-            );
+            await notifyParents([selectedStudentId!], "Report Card Ready 🎓", `Terminal Report for ${processedReport.student?.firstName} is now available.`, "/dashboard/my-reports");
 
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Publishing failed." });
@@ -419,12 +377,10 @@ export default function ReportCardManager() {
             const canvas = await html2canvas(element, {
                 scale: 2,
                 useCORS: true,
-                allowTaint: true,
                 logging: false,
                 backgroundColor: '#ffffff',
                 windowWidth: 794,
                 windowHeight: 1123,
-                imageTimeout: 0,
             });
 
             element.style.visibility = 'hidden';
@@ -448,179 +404,97 @@ export default function ReportCardManager() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-black flex items-center gap-3 text-slate-900 uppercase tracking-tighter">
-                        <GraduationCap className="h-10 w-10 text-indigo-600"/> Terminal Reports
+                        <GraduationCap className="h-10 w-10 text-indigo-600"/> Master Report Engine
                     </h1>
-                    <p className="text-slate-500 font-medium italic">Generate, Review, and Publish Student Results.</p>
+                    <p className="text-slate-500 font-medium italic">Generate and Sign Official Academic Transcripts.</p>
                 </div>
             </div>
 
             <Card className="border-t-4 border-t-indigo-600 shadow-md print:hidden">
                 <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <CardTitle className="text-lg">Report Configuration</CardTitle>
-                            <CardDescription>Select a student and academic period.</CardDescription>
-                        </div>
-                        {schoolProfile && (
-                            <Badge variant="outline" className={cn("px-3 py-1", areDatesMissing ? "text-red-600 border-red-200 bg-red-50" : "text-emerald-600 border-emerald-200 bg-emerald-50")}>
-                                {areDatesMissing ? (
-                                    <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Term Dates Not Set</span>
-                                ) : (
-                                    <span className="flex items-center gap-1"><Lock className="h-3 w-3"/> Attendance: {format(termStartMs, 'dd MMM')} - {format(termEndMs, 'dd MMM')}</span>
-                                )}
-                            </Badge>
-                        )}
-                    </div>
+                    <CardTitle className="text-lg">Filter Student Records</CardTitle>
+                    <CardDescription>Select academic period and student to compile report.</CardDescription>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
-                        <Label className="text-xs font-black text-slate-400 uppercase">Academic Year</Label>
+                        <Label>Academic Year</Label>
                         <Select value={academicYear} onValueChange={setAcademicYear}>
-                            <SelectTrigger className="bg-white rounded-xl"><SelectValue/></SelectTrigger>
+                            <SelectTrigger className="bg-white"><SelectValue/></SelectTrigger>
                             <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs font-black text-slate-400 uppercase">Term</Label>
+                        <Label>Term</Label>
                         <Select value={term} onValueChange={setTerm}>
-                            <SelectTrigger className="bg-white rounded-xl"><SelectValue/></SelectTrigger>
-                            <SelectContent>
-                                {MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                            </SelectContent>
+                            <SelectTrigger className="bg-white"><SelectValue/></SelectTrigger>
+                            <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs font-black text-slate-400 uppercase">Class</Label>
+                        <Label>Class</Label>
                         <Select value={classId} onValueChange={setClassId}>
-                            <SelectTrigger className="bg-white rounded-xl"><SelectValue placeholder="Select Class"/></SelectTrigger>
+                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Class"/></SelectTrigger>
                             <SelectContent>{classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs font-black text-slate-400 uppercase">Student</Label>
+                        <Label>Student</Label>
                         <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
-                            <SelectTrigger className="bg-white rounded-xl"><SelectValue placeholder="Choose Student"/></SelectTrigger>
+                            <SelectTrigger className="bg-white"><SelectValue placeholder="Choose Student"/></SelectTrigger>
                             <SelectContent>{students?.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                 </CardContent>
                 <CardFooter className="justify-end bg-slate-50 pt-4 border-t">
-                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId || areDatesMissing} className="bg-indigo-600 hover:bg-indigo-700 px-8 h-12 rounded-xl font-bold">
-                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>}
-                        {areDatesMissing ? "Configuration Required" : "Generate Master Preview"}
+                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600 hover:bg-indigo-700 px-8 h-12 rounded-xl font-bold">
+                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>} Compile MASTER PREVIEW
                     </Button>
                 </CardFooter>
             </Card>
 
-            {areDatesMissing && (
-                <Alert variant="destructive" className="bg-red-50 border-red-200">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Term Dates Missing</AlertTitle>
-                    <AlertDescription>
-                        The official term dates have not been set in the School Profile. This is required to calculate student attendance correctly. 
-                    </AlertDescription>
-                </Alert>
-            )}
-
             {processedReport && (
                 <div className="space-y-6 animate-in slide-in-from-top-4 duration-500">
                     <Card className="border-t-4 border-t-orange-400 shadow-md">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-orange-800">
-                                <FileCheck className="h-5 w-5"/> Final Sign-off & Remarks
-                            </CardTitle>
-                            <CardDescription>Review the compilation and add final comments.</CardDescription>
-                        </CardHeader>
+                        <CardHeader><CardTitle>Review & Final Remarks</CardTitle></CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700">Class Teacher's Remark</Label>
-                                <Textarea 
-                                    placeholder="Enter overall student performance remark..." 
-                                    value={classTeacherComment} 
-                                    onChange={(e) => setClassTeacherComment(e.target.value)} 
-                                    className="min-h-[100px] rounded-xl" 
-                                    disabled={!isTeacher && !isAdminOrDirector}
-                                />
+                                <Label className="font-bold">Class Teacher's Remark</Label>
+                                <Textarea placeholder="Enter overall performance remark..." value={classTeacherComment} onChange={(e) => setClassTeacherComment(e.target.value)} rows={4} disabled={!isTeacher && !isAdminOrDirector}/>
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700">Headmaster's Remark</Label>
-                                <Textarea 
-                                    placeholder="Enter final headmaster decision/remark..." 
-                                    value={headmasterComment} 
-                                    onChange={(e) => setHeadmasterComment(e.target.value)} 
-                                    className="min-h-[100px] rounded-xl" 
-                                    disabled={!isAdminOrDirector}
-                                />
+                                <Label className="font-bold">Headmaster's Remark</Label>
+                                <Textarea placeholder="Enter headmaster final decision..." value={headmasterComment} onChange={(e) => setHeadmasterComment(e.target.value)} rows={4} disabled={!isAdminOrDirector}/>
                             </div>
                         </CardContent>
                         <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
-                            <Button variant="outline" className="rounded-xl h-11 px-6 font-bold" onClick={() => {
-                                const el = printRef.current;
-                                if (!el) return;
-                                el.style.visibility = 'visible';
-                                el.style.zIndex = '9999';
-                                setTimeout(() => {
-                                    window.print();
-                                    setTimeout(() => { el.style.visibility = 'hidden'; el.style.zIndex = '-1'; }, 1000);
-                                }, 100);
-                            }}>
-                                <Printer className="mr-2 h-4 w-4"/> Print
-                            </Button>
-                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary" className="rounded-xl h-11 px-6 font-bold">
-                                <Download className="mr-2 h-4 w-4"/> {isExporting ? 'Exporting...' : 'Save as PDF'}
-                            </Button>
-                            
-                            <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 text-white rounded-xl h-11 px-6 font-bold">
-                                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PenTool className="mr-2 h-4 w-4"/>}
-                                Sign & Save Draft
-                            </Button>
-
+                            <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print</Button>
+                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary"><Download className="mr-2 h-4 w-4"/> {isExporting ? 'Generating...' : 'Save PDF'}</Button>
+                            <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800"><Save className="mr-2 h-4 w-4"/> Save Draft</Button>
                             {isAdminOrDirector && (
-                                <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700 rounded-xl h-11 px-8 font-black shadow-lg shadow-green-900/10">
-                                    {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <ShieldCheck className="mr-2 h-4 w-4"/>}
-                                    Sign & Publish
+                                <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700">
+                                    {isPublishing ? <Loader2 className="animate-spin h-4 w-4"/> : <ShieldCheck className="mr-2 h-4 w-4"/>} Sign & Publish
                                 </Button>
                             )}
                         </CardFooter>
                     </Card>
 
-                    <Card className="border shadow-2xl overflow-hidden rounded-[2rem]">
-                        <CardHeader className="bg-slate-900 text-white flex flex-row justify-between items-center px-8">
-                            <div>
-                                <CardTitle className="flex items-center gap-2 text-lg">
-                                    <Eye className="h-5 w-5 text-indigo-400"/> Interactive Document Preview
-                                </CardTitle>
-                                <CardDescription className="text-slate-400">Exact replica of the A4 printable document.</CardDescription>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="text-right">
-                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Weighting Applied</p>
-                                    <p className="text-xs font-bold text-indigo-400">{CA_WEIGHT}% CA / {EXAM_WEIGHT}% Exam</p>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-0 bg-slate-200">
-                            <ScrollArea className="h-[900px] w-full">
-                                <div className="p-12 flex justify-center">
-                                    <div className="shadow-2xl ring-1 ring-black/10 bg-white" style={{ width: '794px' }}>
-                                        <ReportCardTemplate
-                                            data={processedReport}
-                                            classTeacherComment={classTeacherComment}
-                                            headmasterComment={headmasterComment}
-                                            caWeight={CA_WEIGHT}
-                                            examWeight={EXAM_WEIGHT}
-                                        />
-                                    </div>
-                                </div>
-                            </ScrollArea>
-                        </CardContent>
-                    </Card>
+                    <div className="flex justify-center bg-slate-200 p-12 rounded-[3rem] border-8 border-white shadow-inner overflow-x-auto">
+                        <div className="shadow-2xl ring-1 ring-black/10 bg-white" style={{ width: '794px' }}>
+                            <ReportCardTemplate
+                                data={processedReport}
+                                classTeacherComment={classTeacherComment}
+                                headmasterComment={headmasterComment}
+                                caWeight={CA_WEIGHT}
+                                examWeight={EXAM_WEIGHT}
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
 
             <div
                 ref={printRef}
-                style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px' }}
+                style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px', display: 'none' }}
             >
                 {processedReport && (
                     <ReportCardTemplate
@@ -636,23 +510,8 @@ export default function ReportCardManager() {
             <style jsx global>{`
                 @media print {
                     body * { visibility: hidden !important; }
-                    #pdf-content,
-                    #pdf-content * { visibility: visible !important; }
-                    #pdf-content {
-                        position: fixed !important;
-                        left: 0 !important;
-                        top: 0 !important;
-                        width: 210mm !important;
-                        height: 297mm !important;
-                        margin: 0 !important;
-                        padding: 24px 32px !important;
-                        visibility: visible !important;
-                        z-index: 9999 !important;
-                    }
-                    @page {
-                        size: A4 portrait;
-                        margin: 0;
-                    }
+                    #pdf-content, #pdf-content * { visibility: visible !important; }
+                    #pdf-content { position: fixed !important; left: 0 !important; top: 0 !important; width: 210mm !important; height: auto !important; margin: 0 !important; padding: 40px !important; border: none !important; box-shadow: none !important; }
                 }
             `}</style>
         </div>

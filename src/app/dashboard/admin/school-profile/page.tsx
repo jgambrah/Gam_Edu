@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
-  CalendarDays, CalendarIcon, ArrowRightCircle
+  CalendarDays, CalendarIcon, ArrowRightCircle, PenTool
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -31,6 +31,7 @@ export default function SchoolProfilePage() {
   
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingSig, setIsUploadingSig] = useState(false);
 
   // Fetch from the specific School Document
   const schoolRef = useMemoFirebase(
@@ -48,6 +49,7 @@ export default function SchoolProfilePage() {
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [headmasterSignatureUrl, setHeadmasterSignatureUrl] = useState('');
 
   // Academic Settings State
   const [caWeight, setCaWeight] = useState<number>(30);
@@ -68,6 +70,7 @@ export default function SchoolProfilePage() {
         setEmail(profile.email || '');
         setWebsite(profile.website || '');
         setLogoUrl(profile.logoUrl || '');
+        setHeadmasterSignatureUrl(profile.headmasterSignatureUrl || '');
         setCaWeight(profile.caWeight ?? 30);
         setExamWeight(profile.examWeight ?? 70);
         
@@ -84,7 +87,7 @@ export default function SchoolProfilePage() {
     }
   }, [profile]);
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'signature') => {
     const file = e.target.files?.[0];
     if (!file || !schoolId) return;
 
@@ -97,27 +100,33 @@ export default function SchoolProfilePage() {
       return;
     }
 
-    setIsUploadingLogo(true);
+    if (type === 'logo') setIsUploadingLogo(true);
+    else setIsUploadingSig(true);
+
     try {
       const storage = getStorage();
-      const logoRef = ref(storage, `schools/${schoolId}/assets/logo`);
-      const snapshot = await uploadBytes(logoRef, file);
+      const path = type === 'logo' ? `schools/${schoolId}/assets/logo` : `schools/${schoolId}/assets/headmaster_sig`;
+      const storageRef = ref(storage, path);
+      const snapshot = await uploadBytes(storageRef, file);
       const url = await getDownloadURL(snapshot.ref);
       
-      setLogoUrl(url);
-      toast({ 
-        title: "Logo Uploaded", 
-        description: "Preview updated. Remember to save changes below." 
-      });
+      if (type === 'logo') {
+          setLogoUrl(url);
+          toast({ title: "Logo Uploaded", description: "Preview updated. Remember to save changes." });
+      } else {
+          setHeadmasterSignatureUrl(url);
+          toast({ title: "Signature Uploaded", description: "Global Headmaster signature updated." });
+      }
     } catch (error: any) {
-      console.error("Logo upload error:", error);
+      console.error(`${type} upload error:`, error);
       toast({ 
         variant: 'destructive', 
         title: "Upload Failed", 
-        description: "Could not save logo. Please try again." 
+        description: `Could not save ${type}. Please try again.` 
       });
     } finally {
-      setIsUploadingLogo(false);
+      if (type === 'logo') setIsUploadingLogo(false);
+      else setIsUploadingSig(false);
     }
   };
 
@@ -137,7 +146,7 @@ export default function SchoolProfilePage() {
     setIsSaving(true);
     try {
         const brandingData = {
-            name, motto, address, phone, email, website, logoUrl,
+            name, motto, address, phone, email, website, logoUrl, headmasterSignatureUrl,
             termStartDate: termStartDate ? Timestamp.fromDate(termStartDate) : null,
             termEndDate: termEndDate ? Timestamp.fromDate(termEndDate) : null,
             nextTermDate: nextTermDate ? Timestamp.fromDate(nextTermDate) : null,
@@ -175,7 +184,7 @@ export default function SchoolProfilePage() {
   if (isLoading || isSchoolLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600 h-8 w-8"/></div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="max-w-4xl mx-auto p-6 space-y-6 pb-24">
         <Card className="border-t-4 border-t-blue-600 shadow-md">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl">
@@ -188,64 +197,48 @@ export default function SchoolProfilePage() {
             <CardContent>
                 <form onSubmit={handleSave} className="space-y-8">
                     
-                    <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* LOGO UPLOAD */}
                         <div className="space-y-3">
                             <Label className="text-sm font-bold text-slate-700">Official School Logo</Label>
-                            <div className="flex flex-col sm:flex-row items-center gap-6 p-6 border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 transition-colors hover:bg-slate-50">
-                                <div className="relative group">
-                                    <div className="h-32 w-32 border-4 border-white rounded-2xl overflow-hidden bg-white shadow-xl flex items-center justify-center shrink-0">
-                                        {logoUrl ? (
-                                            <img 
-                                                key={logoUrl} 
-                                                src={logoUrl} 
-                                                alt="Preview" 
-                                                className="max-h-full max-w-full object-contain"
-                                            />
-                                        ) : (
-                                            <Building2 className="h-12 w-12 text-slate-200" />
-                                        )}
-                                    </div>
-                                    {logoUrl && (
-                                        <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1 shadow-lg border-2 border-white">
-                                            <CheckCircle2 className="h-4 w-4" />
-                                        </div>
-                                    )}
+                            <div className="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 transition-colors hover:bg-slate-50 h-full justify-center">
+                                <div className="relative h-32 w-32 border-4 border-white rounded-2xl overflow-hidden bg-white shadow-xl flex items-center justify-center shrink-0">
+                                    {logoUrl ? <img src={logoUrl} alt="Logo" className="max-h-full max-w-full object-contain"/> : <Building2 className="h-12 w-12 text-slate-200" />}
                                 </div>
-                                <div className="flex-1 space-y-3 text-center sm:text-left">
-                                    <div>
-                                        <h4 className="font-bold text-slate-800">Branding Upload</h4>
-                                        <p className="text-xs text-slate-500">Logo used on all automated receipts and reports.</p>
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <input 
-                                            id="logo-upload" 
-                                            type="file" 
-                                            accept="image/*" 
-                                            onChange={handleLogoUpload}
-                                            disabled={isUploadingLogo}
-                                            className="hidden"
-                                        />
-                                        <Button 
-                                            type="button" 
-                                            variant="outline" 
-                                            onClick={() => document.getElementById('logo-upload')?.click()}
-                                            disabled={isUploadingLogo}
-                                            className="w-full sm:w-fit bg-white border-2 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold"
-                                        >
-                                            {isUploadingLogo ? (
-                                                <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Processing...</>
-                                            ) : (
-                                                <><Upload className="mr-2 h-4 w-4"/> Select Logo File</>
-                                            )}
-                                        </Button>
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Square PNG or JPG recommended, max 2MB</p>
-                                    </div>
+                                <div className="text-center">
+                                    <input id="logo-upload" type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo')} disabled={isUploadingLogo} className="hidden"/>
+                                    <Button type="button" variant="outline" onClick={() => document.getElementById('logo-upload')?.click()} disabled={isUploadingLogo} className="bg-white border-2 font-bold">
+                                        {isUploadingLogo ? <Loader2 className="animate-spin h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Logo
+                                    </Button>
                                 </div>
                             </div>
                         </div>
 
-                        <Separator />
+                        {/* GLOBAL HEADMASTER SIGNATURE */}
+                        <div className="space-y-3">
+                            <Label className="text-sm font-bold text-slate-700">Headmaster's Signature (Global)</Label>
+                            <div className="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 transition-colors hover:bg-slate-50 h-full justify-center">
+                                <div className="relative h-32 w-full border-4 border-white rounded-2xl overflow-hidden bg-white shadow-xl flex items-center justify-center shrink-0">
+                                    {headmasterSignatureUrl ? (
+                                        <img src={headmasterSignatureUrl} alt="Signature" className="max-h-full max-w-full object-contain mix-blend-multiply" />
+                                    ) : (
+                                        <PenTool className="h-12 w-12 text-slate-200" />
+                                    )}
+                                </div>
+                                <div className="text-center">
+                                    <input id="sig-upload" type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'signature')} disabled={isUploadingSig} className="hidden"/>
+                                    <Button type="button" variant="outline" onClick={() => document.getElementById('sig-upload')?.click()} disabled={isUploadingSig} className="bg-white border-2 font-bold">
+                                        {isUploadingSig ? <Loader2 className="animate-spin h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Signature
+                                    </Button>
+                                    <p className="text-[9px] text-slate-400 mt-2 font-black uppercase tracking-widest">Transparent PNG Recommended</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
+                    <Separator />
+
+                    <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label>School Name</Label>
@@ -345,11 +338,6 @@ export default function SchoolProfilePage() {
                         </div>
                         
                         <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                            <div className="flex items-center gap-2 mb-4">
-                                <AlertCircle className="h-4 w-4 text-amber-600"/>
-                                <p className="text-sm font-medium text-slate-600">Define the terminal report ratio (e.g., 30% CA / 70% Exam).</p>
-                            </div>
-
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
@@ -392,7 +380,7 @@ export default function SchoolProfilePage() {
                     </div>
 
                     <div className="pt-4 border-t flex justify-end">
-                        <Button type="submit" disabled={isSaving || isUploadingLogo || (caWeight + examWeight !== 100)} className="bg-blue-600 hover:bg-blue-700 w-[200px] h-12 text-lg font-bold">
+                        <Button type="submit" disabled={isSaving || isUploadingLogo || isUploadingSig || (caWeight + examWeight !== 100)} className="bg-blue-600 hover:bg-blue-700 w-[200px] h-12 text-lg font-bold">
                             {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
                             Save Profile
                         </Button>

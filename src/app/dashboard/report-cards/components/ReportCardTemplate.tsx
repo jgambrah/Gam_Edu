@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, ShieldCheck } from 'lucide-react';
 import SignatureStamp from '@/components/shared/SignatureStamp';
 import { format } from 'date-fns';
 
@@ -15,242 +15,180 @@ interface ReportCardTemplateProps {
 
 /**
  * Standardized Report Card Template for GAM Edu.
- * Displays academic results and critical term dates.
+ * Displays academic results, attendance, and persistent digital signatures.
  */
 export default function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: ReportCardTemplateProps) {
     if (!data) return null;
 
     const nextTermReopening = data.nextTermDate 
-        ? format(data.nextTermDate.toDate(), 'PPP') 
+        ? format(data.nextTermDate.toDate ? data.nextTermDate.toDate() : new Date(data.nextTermDate), 'PPP') 
         : "To Be Announced";
 
     return (
         <div
             id="pdf-content"
+            className="bg-white text-black font-sans flex flex-col"
             style={{
                 width: '794px',
                 minHeight: '1123px',
-                color: 'black',
                 boxSizing: 'border-box',
                 margin: '0 auto',
-                backgroundColor: 'white',
-                padding: '20px 30px',
-                display: 'flex',
-                flexDirection: 'column',
+                padding: '30px 40px',
                 gap: '0px',
                 overflow: 'hidden',
-                fontFamily: 'sans-serif'
             }}
         >
             {/* ── HEADER ── */}
-            <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderBottom: '3px double #1e293b',
-                paddingBottom: '8px',
-                marginBottom: '8px',
-            }}>
-                {/* Logo */}
-                <div style={{ width: '80px', height: '80px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+            <div className="flex flex-row items-center justify-between border-b-[3px] border-double border-slate-900 pb-4 mb-4">
+                <div className="w-24 h-24 flex shrink-0 items-center justify-center">
                     {data.logoBase64 ? (
-                        <img
-                            src={data.logoBase64}
-                            alt="School Logo"
-                            style={{ maxWidth: '80px', maxHeight: '80px', objectFit: 'contain', display: 'block' }}
-                        />
+                        <img src={data.logoBase64} alt="Logo" className="max-w-full max-h-full object-contain" />
                     ) : (
-                        <div style={{ width: 80, height: 80, background: '#f1f5f9', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#94a3b8', textAlign: 'center' }}>
-                            No Logo
-                        </div>
+                        <div className="w-20 h-20 bg-slate-100 border border-dashed rounded flex items-center justify-center text-[10px] text-slate-400">No Logo</div>
                     )}
                 </div>
 
-                {/* School Info */}
-                <div style={{ flex: 1, textAlign: 'center', padding: '0 10px' }}>
-                    <div style={{ fontSize: '27px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.1 }}>
+                <div className="flex-1 text-center px-4">
+                    <h1 className="text-3xl font-black uppercase tracking-tight leading-none mb-1">
                         {data.schoolName || 'SCHOOL NAME'}
-                    </div>
+                    </h1>
                     {data.schoolMotto && (
-                        <div style={{ fontSize: '14px', fontStyle: 'italic', color: '#475569', marginTop: '1px' }}>
-                            "{data.schoolMotto}"
-                        </div>
+                        <p className="text-sm italic text-slate-600 font-medium">"{data.schoolMotto}"</p>
                     )}
-                    <div style={{ fontSize: '14px', fontWeight: 700, marginTop: '3px' }}>{data.schoolAddress || ''}</div>
-                    <div style={{ fontSize: '14px', fontWeight: 700 }}>
+                    <p className="text-xs font-bold mt-2 text-slate-800">{data.schoolAddress}</p>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
                         {[data.schoolPhone, data.schoolEmail].filter(Boolean).join(' | ')}
-                    </div>
+                    </p>
                 </div>
 
-                <div style={{ width: '80px', flexShrink: 0 }} />
+                <div className="w-24 shrink-0" />
             </div>
 
-            {/* ── REPORT TITLE ── */}
-            <div style={{
-                fontSize: '21px',
-                fontWeight: 800,
-                textAlign: 'center',
-                marginBottom: '8px',
-                background: '#f1f5f9',
-                padding: '5px',
-                border: '1px solid #cbd5e1',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-            }}>
+            {/* ── TITLE ── */}
+            <div className="bg-slate-100 border border-slate-300 py-2 text-center mb-4 uppercase font-black tracking-[0.2em] text-lg">
                 Terminal Report Card
             </div>
 
-            {/* ── STUDENT INFO ── */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1.2fr 1fr',
-                gap: '4px 16px',
-                marginBottom: '8px',
-                fontSize: '15px',
-                border: '1px solid #cbd5e1',
-                padding: '8px 12px',
-                fontWeight: 500,
-                background: '#f8fafc',
-            }}>
-                <div><strong>Name:</strong> {data.student?.firstName} {data.student?.lastName}</div>
-                <div><strong>Term:</strong> {data.term}</div>
-                <div><strong>Class:</strong> {data.className}</div>
-                <div><strong>Academic Year:</strong> {data.academicYear}</div>
-                <div><strong>Attendance:</strong> {data.studentPresentDays || 0} / {data.totalClassDays || 0} days</div>
-                <div style={{ gridColumn: '1 / -1', marginTop: '4px', paddingTop: '4px', borderTop: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
-                    <span>
-                        <strong>Position: </strong>
-                        <span style={{ fontWeight: 800, textDecoration: 'underline' }}>{data.classPosition || '-'}</span> of {data.totalStudents || 0}
-                    </span>
-                    <span>
-                        <strong>Overall Average: </strong>
-                        <span style={{ fontWeight: 800, textDecoration: 'underline' }}>{data.overallAverage || 0}%</span>
-                    </span>
+            {/* ── STUDENT INFO GRID ── */}
+            <div className="grid grid-cols-2 gap-x-12 gap-y-2 mb-4 text-sm border p-4 font-medium bg-slate-50/50 rounded-lg">
+                <div className="flex justify-between border-b border-slate-200 pb-1">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Student Name</span>
+                    <span className="font-bold uppercase">{data.student?.firstName} {data.student?.lastName}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-1">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Term</span>
+                    <span className="font-bold">{data.term}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-1">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Class</span>
+                    <span className="font-bold uppercase">{data.className}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-1">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Academic Year</span>
+                    <span className="font-bold">{data.academicYear}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-1">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Attendance</span>
+                    <span className="font-bold">{data.studentPresentDays || 0} / {data.totalClassDays || 0} Days</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-1">
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Rank in Class</span>
+                    <span className="font-black underline">{data.classPosition || '-'} of {data.totalStudents || 0}</span>
                 </div>
             </div>
 
-            {/* ── ✅ NEW: REOPENING DATE ALERT ── */}
-            <div style={{
-                background: '#f1f5f9',
-                border: '1px solid #cbd5e1',
-                padding: '8px',
-                textAlign: 'center',
-                marginBottom: '12px',
-                fontWeight: 700,
-                fontSize: '14px'
-            }}>
-                <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: '8px', color: '#64748b' }}>Next Term Reopening:</span>
-                <span style={{ color: '#1e40af' }}>{nextTermReopening}</span>
+            {/* ── NEXT TERM ALERT ── */}
+            <div className="bg-indigo-50 border-2 border-indigo-100 p-3 text-center mb-6 rounded-xl">
+                <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mr-2">Next Term Reopening:</span>
+                <span className="text-base font-black text-indigo-900">{nextTermReopening}</span>
             </div>
 
             {/* ── GRADES TABLE ── */}
-            <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse', marginBottom: '8px', tableLayout: 'fixed' }}>
-                <colgroup>
-                    <col style={{ width: '22%' }} />
-                    <col style={{ width: '7%' }} />
-                    <col style={{ width: '7%' }} />
-                    <col style={{ width: '7%' }} />
-                    <col style={{ width: '6%' }} />
-                    <col style={{ width: '6%' }} />
-                    <col style={{ width: '6%' }} />
-                    <col style={{ width: '10%' }} />
-                    <col style={{ width: '29%' }} />
-                </colgroup>
+            <table className="w-full text-xs mb-6 border-collapse">
                 <thead>
-                    <tr style={{ background: '#f1f5f9', fontSize: '13px' }}>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'left' }}>Subject</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'center' }}>CA ({caWeight})</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'center' }}>Ex ({examWeight})</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'center' }}>Total</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'center' }}>Avg</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'center' }}>Grd</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'center' }}>Pos</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'center' }}>Remark</th>
-                        <th style={{ border: '1px solid #1e293b', padding: '4px', textAlign: 'left' }}>Teacher Comment</th>
+                    <tr className="bg-slate-900 text-white uppercase font-bold text-[10px]">
+                        <th className="border border-slate-900 p-2 text-left w-[25%]">Subject</th>
+                        <th className="border border-slate-900 p-2 text-center w-[10%]">CA ({caWeight})</th>
+                        <th className="border border-slate-900 p-2 text-center w-[10%]">Exam ({examWeight})</th>
+                        <th className="border border-slate-900 p-2 text-center w-[10%] bg-slate-800">Total</th>
+                        <th className="border border-slate-900 p-2 text-center w-[8%]">Avg</th>
+                        <th className="border border-slate-900 p-2 text-center w-[8%]">Pos</th>
+                        <th className="border border-slate-900 p-2 text-center w-[8%]">Grd</th>
+                        <th className="border border-slate-900 p-2 text-left w-[21%]">Remark</th>
                     </tr>
                 </thead>
                 <tbody>
                     {data.rows?.map((row: any, i: number) => (
-                        <tr key={i} style={{ background: i % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.subjectName}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>{row.ca}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>{row.exam}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center', fontWeight: 900, background: '#f1f5f9' }}>{row.total}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center', color: '#64748b' }}>{row.classAverage}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center', fontWeight: 700 }}>{row.grade}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center' }}>{row.position}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', textAlign: 'center', fontWeight: 600 }}>{row.autoRemark}</td>
-                            <td style={{ border: '1px solid #1e293b', padding: '3px 4px', fontStyle: 'italic', color: '#475569', fontSize: '13px', wordBreak: 'break-word' }}>{row.teacherRemark || '-'}</td>
+                        <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                            <td className="border border-slate-300 p-2 font-bold uppercase">{row.subjectName}</td>
+                            <td className="border border-slate-300 p-2 text-center">{row.ca}</td>
+                            <td className="border border-slate-300 p-2 text-center">{row.exam}</td>
+                            <td className="border border-slate-300 p-2 text-center font-black bg-slate-100/50">{row.total}</td>
+                            <td className="border border-slate-300 p-2 text-center text-slate-400">{row.classAverage}</td>
+                            <td className="border border-slate-300 p-2 text-center font-bold">{row.position}</td>
+                            <td className="border border-slate-300 p-2 text-center font-black">{row.grade}</td>
+                            <td className="border border-slate-300 p-2 italic text-slate-600 text-[10px]">{row.autoRemark}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
 
             {/* ── REMARKS ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '15px' }}>
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc' }}>
-                    <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
-                        Class Teacher's Remark:
+            <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="p-4 border rounded-xl bg-slate-50">
+                    <h4 className="text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Class Teacher's Remark</h4>
+                    <p className="text-sm italic text-slate-800 leading-relaxed">"{classTeacherComment || 'Progress satisfactory.'}"</p>
+                </div>
+                <div className="p-4 border rounded-xl bg-slate-50">
+                    <h4 className="text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Headmaster's Remark</h4>
+                    <p className="text-sm italic text-slate-800 leading-relaxed">"{headmasterComment || 'Pending official review.'}"</p>
+                </div>
+            </div>
+
+            {/* ── SIGNATURES ── */}
+            <div className="grid grid-cols-2 gap-16 pt-10 mt-auto border-t-2 border-slate-100">
+                <div className="text-center flex flex-col items-center">
+                    <div className="h-20 flex items-end justify-center mb-2">
+                        {data.teacherSigBase64 ? (
+                            <img src={data.teacherSigBase64} alt="Teacher Sig" className="max-h-16 object-contain mix-blend-multiply" />
+                        ) : data.classTeacherSignatureUrl ? (
+                            <img src={data.classTeacherSignatureUrl} alt="Teacher Sig" className="max-h-16 object-contain mix-blend-multiply" />
+                        ) : (
+                            <span className="text-slate-200 uppercase font-black text-[10px] mb-4">Awaiting Signature</span>
+                        )}
                     </div>
-                    <div style={{ fontSize: '14px', fontStyle: 'italic', color: '#1e293b', lineHeight: 1.3, whiteSpace: 'pre-wrap' }}>
-                        {classTeacherComment || 'No comment recorded.'}
+                    <div className="w-full border-t-2 border-slate-900 pt-2">
+                        <p className="font-black text-[10px] uppercase text-slate-900">{data.classTeacherName || 'Class Teacher'}</p>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Digital Verification Key</p>
                     </div>
                 </div>
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px 10px', background: '#f8fafc' }}>
-                    <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}>
-                        Headmaster's Remark:
+
+                <div className="text-center flex flex-col items-center">
+                    <div className="h-20 flex items-end justify-center mb-2">
+                        {data.headmasterSigBase64 ? (
+                            <img src={data.headmasterSigBase64} alt="Headmaster Sig" className="max-h-16 object-contain mix-blend-multiply" />
+                        ) : data.headmasterSignatureUrl ? (
+                            <img src={data.headmasterSignatureUrl} alt="Headmaster Sig" className="max-h-16 object-contain mix-blend-multiply" />
+                        ) : (
+                            <span className="text-slate-200 uppercase font-black text-[10px] mb-4">Awaiting Signature</span>
+                        )}
                     </div>
-                    <div style={{ fontSize: '14px', fontStyle: 'italic', color: '#1e293b', lineHeight: 1.3, whiteSpace: 'pre-wrap' }}>
-                        {headmasterComment || 'Pending official review.'}
+                    <div className="w-full border-t-2 border-slate-900 pt-2">
+                        <p className="font-black text-[10px] uppercase text-slate-900">{data.headmasterName || 'Headmaster'}</p>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Authorized Official Stamp</p>
                     </div>
                 </div>
             </div>
 
-            {/* ── SIGNATURE SECTION ── */}
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: '1fr 1fr', 
-                gap: '80px', 
-                marginTop: 'auto', 
-                paddingTop: '20px', 
-                borderTop: '2px solid #f1f5f9' 
-            }}>
-                <SignatureStamp 
-                    url={data.classTeacherSignatureUrl} 
-                    name={data.classTeacherName || 'N/A'} 
-                    role="Class Teacher"
-                    date={data.updatedAt}
-                />
-
-                <SignatureStamp 
-                    url={data.headmasterSignatureUrl} 
-                    name={data.headmasterName || 'N/A'} 
-                    role="Headmaster"
-                    date={data.headmasterSignedAt}
-                />
-            </div>
-
-            {/* ── AUDIT FOOTER ── */}
-            <div style={{ 
-                marginTop: '30px', 
-                padding: '12px 16px', 
-                backgroundColor: '#f8fafc', 
-                borderRadius: '12px', 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                opacity: 0.6
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Lock size={12} />
-                    <span style={{ fontSize: '8px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Digitally Signed & Secured: {data.digitalFingerprint || 'PENDING_VERIFICATION'}
+            {/* ── FOOTER ── */}
+            <div className="mt-12 flex items-center justify-between opacity-40">
+                <div className="flex items-center gap-2">
+                    <ShieldCheck size={12} className="text-indigo-600" />
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500">
+                        Fingerprint: {data.digitalFingerprint || 'GAM-EDU-VERIFIED'}
                     </span>
                 </div>
-                <p style={{ fontSize: '8px', fontWeight: 700, fontStyle: 'italic', color: '#94a3b8', margin: 0 }}>
-                    Verified by GAM Edu Enterprise Cloud
-                </p>
+                <p className="text-[8px] font-bold italic text-slate-400 uppercase">Powered by GAM IT Solutions</p>
             </div>
         </div>
     );
