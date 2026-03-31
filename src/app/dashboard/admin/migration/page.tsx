@@ -68,6 +68,7 @@ export default function MigrationHubPage() {
   const [gradeCsvData, setGradeCsvData] = useState<any[]>([]);
   const [subjectMap, setSubjectMap] = useState<Record<string, string>>({});
   const [isImportingGrades, setIsImportingGrades] = useState(false);
+  const [gradeImportProgress, setGradeImportProgress] = useState(0);
 
   // Data State - Parents
   const [parentCsvData, setParentCsvData] = useState<any[]>([]);
@@ -318,23 +319,28 @@ export default function MigrationHubPage() {
   const executeGradeImport = async () => {
     if (!firestore || !schoolId || gradeCsvData.length === 0) return;
     setIsImportingGrades(true);
+    setGradeImportProgress(0);
     
     let successCount = 0;
     let failCount = 0;
 
+    const totalRows = gradeCsvData.length;
+
     try {
+      // 1. Fetch all students for the school once
       const studentsSnapshot = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
       const studentMap = new Map<string, any>();
       studentsSnapshot.docs.forEach(doc => {
         const data = doc.data();
-        studentMap.set(data.email?.toLowerCase(), { uid: doc.id, classId: data.classId, firstName: data.firstName, lastName: data.lastName });
+        studentMap.set(data.email?.toLowerCase().trim(), { uid: doc.id, classId: data.classId, firstName: data.firstName, lastName: data.lastName });
       });
 
-      const batch = writeBatch(firestore);
+      let batch = writeBatch(firestore);
       let batchCount = 0;
 
-      for (const row of gradeCsvData) {
-        const email = getRowValue(row, ['Email', 'Email Address', 'Student Email']).toLowerCase();
+      for (let i = 0; i < gradeCsvData.length; i++) {
+        const row = gradeCsvData[i];
+        const email = getRowValue(row, ['Email', 'Email Address', 'Student Email']).toLowerCase().trim();
         const subjectName = getRowValue(row, ['SubjectName', 'Subject', 'Topic']);
         const ca = getRowValue(row, ['CA', 'Continuous Assessment', 'Test']);
         const exam = getRowValue(row, ['Exam', 'Examination', 'Final']);
@@ -344,14 +350,17 @@ export default function MigrationHubPage() {
         const studentInfo = studentMap.get(email);
         const targetSubjectId = subjectMap[subjectName] || null;
 
+        // "Solid" check: Skip if we can't find the student or the subject isn't mapped
         if (!studentInfo || !targetSubjectId) {
+          console.warn(`[Grade Skip] Student or Subject missing mapping at row ${i+1}`, { email, subjectName });
           failCount++;
+          setGradeImportProgress(i + 1);
           continue;
         }
 
         const baseAssessmentData = {
           studentId: studentInfo.uid,
-          classId: studentInfo.classId,
+          classId: studentInfo.classId || 'unassigned',
           subjectId: targetSubjectId,
           subjectName: subjects?.find(s => s.id === targetSubjectId)?.name || subjectName,
           academicYear: yearLabel,
@@ -363,48 +372,58 @@ export default function MigrationHubPage() {
           maxScore: 100
         };
 
+        // Create CA Document
         const caRef = doc(collection(firestore, 'assessments'));
         batch.set(caRef, {
           ...baseAssessmentData,
           assessmentType: 'Class Exercise (CA)',
           assessmentName: 'Legacy CA Import',
-          score: parseFloat(ca) || 0
+          score: parseFloat(ca) || 0 // Graceful 0 for empty scores
         });
 
+        // Create Exam Document
         const examRef = doc(collection(firestore, 'assessments'));
         batch.set(examRef, {
           ...baseAssessmentData,
           assessmentType: 'End of Term Exam (Exam)',
           assessmentName: 'Legacy Exam Import',
-          score: parseFloat(exam) || 0
+          score: parseFloat(exam) || 0 // Graceful 0 for empty scores
         });
 
         successCount++;
-        batchCount += 2;
+        batchCount += 2; // Two documents per row
+        setGradeImportProgress(i + 1);
 
+        // Firestore batch limit is 500 operations
         if (batchCount >= 450) {
           await batch.commit();
+          batch = writeBatch(firestore);
           batchCount = 0;
         }
       }
 
+      // Commit final batch if needed
       if (batchCount > 0) {
         await batch.commit();
       }
 
       toast({ 
         title: "Grades Imported", 
-        description: `Successfully imported ${successCount} subject records. ${failCount} failed lookup.`,
+        description: `Successfully imported ${successCount} subject records. ${failCount} failed mapping.`,
         duration: 8000
       });
-      setGradeCsvData([]);
-      setSubjectMap({});
+      
+      if (successCount > 0) {
+          setGradeCsvData([]);
+          setSubjectMap({});
+      }
 
     } catch (error: any) {
-      console.error(error);
+      console.error("Grade Import Error:", error);
       toast({ variant: 'destructive', title: "Import Failed", description: error.message });
     } finally {
       setIsImportingGrades(false);
+      setGradeImportProgress(0);
     }
   };
 
@@ -430,6 +449,7 @@ export default function MigrationHubPage() {
 
   const studentImportPercentage = studentCsvData.length > 0 ? (studentImportProgress / studentCsvData.length) * 100 : 0;
   const parentImportPercentage = parentCsvData.length > 0 ? (parentImportProgress / parentCsvData.length) * 100 : 0;
+  const gradeImportPercentage = gradeCsvData.length > 0 ? (gradeImportProgress / gradeCsvData.length) * 100 : 0;
 
   return (
     <div className="space-y-6 p-6 max-w-6xl mx-auto">
@@ -671,6 +691,16 @@ export default function MigrationHubPage() {
                 <CardDescription className="text-slate-400 font-bold text-xs mt-1">Reconcile subjects with system data</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
+                {isImportingGrades && (
+                    <div className="mb-8 space-y-4">
+                        <div className="flex justify-between items-end mb-2">
+                            <p className="text-xs font-black text-orange-600 uppercase">Importing Academic History...</p>
+                            <span className="text-sm font-black text-orange-600">{gradeImportProgress} / {gradeCsvData.length}</span>
+                        </div>
+                        <Progress value={gradeImportPercentage} className="h-3 bg-orange-100" />
+                    </div>
+                )}
+
                 {gradeCsvData.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-20 text-slate-300">
                     <BookCopy className="h-16 w-16 mb-4 opacity-10" />
