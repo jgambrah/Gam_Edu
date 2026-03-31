@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -189,7 +190,7 @@ function PaymentVoucherForm({
             const batch = writeBatch(firestore);
             const timestamp = serverTimestamp();
             const pvNumber = `PV-${format(new Date(), 'yyyyMMdd')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
-            const pvRef = doc(collection(firestore, 'payment_vouchers'));
+            const pvRef = doc(collection(firestore, 'paymentVouchers'));
             const { wht, vat, net } = calculations;
 
             batch.set(pvRef, {
@@ -313,216 +314,6 @@ function PaymentVoucherForm({
     );
 }
 
-// --- SUB-COMPONENT: Account Form ---
-function AccountForm({ setOpen, onAccountAdded, accounts, schoolId }: { setOpen: (open: boolean) => void; onAccountAdded: () => void; accounts: Account[]; schoolId: string }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const controlAccounts = accounts.filter(acc => acc.isControlAccount);
-    
-    const form = useForm<z.infer<typeof accountSchema>>({ 
-        resolver: zodResolver(accountSchema), 
-        defaultValues: { parentAccountId: 'None' } 
-    });
-
-    async function onSubmit(values: z.infer<typeof accountSchema>) {
-        if (!firestore || !schoolId) return;
-        setIsSubmitting(true);
-        try {
-            const isControl = values.parentAccountId === 'None';
-            const newAccRef = doc(collection(firestore, 'accounts'));
-            const data = { 
-                ...values, 
-                isControlAccount: isControl, 
-                parentAccountId: isControl ? null : values.parentAccountId, 
-                schoolId, 
-                balance: 0, 
-                createdAt: serverTimestamp() 
-            };
-            await setDoc(newAccRef, data);
-            toast({ title: 'Success' });
-            onAccountAdded();
-            setOpen(false);
-        } catch (e) { 
-            toast({ variant: 'destructive', title: 'Error' }); 
-        } finally { 
-            setIsSubmitting(false); 
-        }
-    }
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Account Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="e.g. Petty Cash" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Account Type</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {ACCOUNT_TYPES.map(type => (
-                                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="parentAccountId"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Parent Account (Optional)</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="None (Control Account)" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="None">None (Control)</SelectItem>
-                                    {controlAccounts.map(acc => (
-                                        <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button type="submit" disabled={isSubmitting} className="w-full">
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create Account"}
-                </Button>
-            </form>
-        </Form>
-    );
-}
-
-// --- SUB-COMPONENT: Journal Entry Form ---
-function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Account[], schoolId: string, onEntryAdded: () => void }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const postableAccounts = accounts.filter(acc => !acc.isControlAccount);
-    
-    const form = useForm<z.infer<typeof journalEntrySchema>>({ 
-        resolver: zodResolver(journalEntrySchema), 
-        defaultValues: { description: '', amount: 0, debitAccountId: '', creditAccountId: '' } 
-    });
-
-    async function onSubmit(values: z.infer<typeof journalEntrySchema>) {
-        if (!firestore || !user || !schoolId) return;
-        setIsSubmitting(true);
-        try {
-            const debitAcc = accounts.find(a => a.id === values.debitAccountId);
-            const creditAcc = accounts.find(a => a.id === values.creditAccountId);
-            const entryData = {
-                date: serverTimestamp(),
-                description: values.description,
-                lines: [
-                    { accountId: values.debitAccountId, accountName: debitAcc?.name || '', debit: values.amount, credit: 0 },
-                    { accountId: values.creditAccountId, accountName: creditAcc?.name || '', debit: 0, credit: values.amount },
-                ],
-                totalAmount: values.amount,
-                createdBy: user.uid,
-                createdAt: serverTimestamp(),
-                schoolId: schoolId,
-            };
-            await addDoc(collection(firestore, 'journal_entries'), entryData);
-            toast({ title: 'Success', description: 'Journal entry recorded.' });
-            onEntryAdded();
-            form.reset();
-        } catch (error) { 
-            toast({ variant: 'destructive', title: 'Error' }); 
-        } finally { 
-            setIsSubmitting(false); 
-        }
-    }
-
-    return (
-        <Card>
-            <CardHeader><CardTitle>Manual Journal Entry</CardTitle></CardHeader>
-            <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField control={form.control} name="description" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Description</FormLabel>
-                                <FormControl><Textarea placeholder="e.g., Office supplies purchase" {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <FormField control={form.control} name="amount" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Amount</FormLabel>
-                                <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <div className="grid grid-cols-2 gap-4">
-                            <FormField control={form.control} name="debitAccountId" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Debit Account</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger><SelectValue placeholder="Choose account to debit" /></SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {postableAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
-                            <FormField control={form.control} name="creditAccountId" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Credit Account</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger><SelectValue placeholder="Choose account to credit" /></SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {postableAccounts.map(acc => <SelectItem key={acc.id} value={acc.id}>{acc.name} ({acc.code})</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
-                        </div>
-                        <Button type="submit" disabled={isSubmitting} className="w-full h-12">
-                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Record Entry"}
-                        </Button>
-                    </form>
-                </Form>
-            </CardContent>
-        </Card>
-    );
-}
-
 // --- MAIN PAGE ---
 export default function AccountingPage() {
     const { role } = useRole();
@@ -539,7 +330,7 @@ export default function AccountingPage() {
     const journalsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId), orderBy('date', 'desc')) : null, [firestore, schoolId]);
     const { data: journals, isLoading: jLoading, forceRefetch: forceRefetchJournals } = useCollection<JournalEntry>(journalsQuery);
 
-    const pvQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'payment_vouchers'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+    const pvQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'paymentVouchers'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
     const { data: vouchers, isLoading: pvLoading, forceRefetch: forceRefetchPVs } = useCollection<any>(pvQuery);
 
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
@@ -703,7 +494,9 @@ export default function AccountingPage() {
                                                     <TableCell className="text-right">
                                                         <Dialog>
                                                             <DialogTrigger asChild>
-                                                                <Button variant="ghost" size="sm" onClick={() => setSelectedPV(pv)}><Eye className="h-4 w-4 mr-1"/> View</Button>
+                                                                <Button variant="ghost" size="sm" onClick={() => setSelectedPV(pv)}>
+                                                                    <Eye className="h-4 w-4 mr-1"/> View
+                                                                </Button>
                                                             </DialogTrigger>
                                                             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                                                                 <DialogHeader><DialogTitle>Voucher Detail</DialogTitle></DialogHeader>

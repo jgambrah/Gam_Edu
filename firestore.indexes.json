@@ -2,91 +2,28 @@
 {
   "indexes": [
     {
+      "collectionGroup": "paymentVouchers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "journal_entries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "attendance",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "schoolId", "order": "ASCENDING" },
         { "fieldPath": "studentId", "order": "ASCENDING" },
         { "fieldPath": "date", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "behavioral_records",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "studentId", "order": "ASCENDING" },
-        { "fieldPath": "date", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "vendors",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "name", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "accountsPayable",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "payrollRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "payrollRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "staffId", "order": "ASCENDING" },
-        { "fieldPath": "period", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "payrollRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "period", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "tills",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "accountantId", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "dateClosed", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "tills",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "accountantId", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "schoolId", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "assessments",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "studentId", "order": "ASCENDING" },
-        { "fieldPath": "academicYear", "order": "ASCENDING" },
-        { "fieldPath": "term", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     },
     {
@@ -105,113 +42,6 @@
       "fields": [
         { "fieldPath": "schoolId", "order": "ASCENDING" },
         { "fieldPath": "studentId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "quizAttempts",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "studentId", "order": "ASCENDING" },
-        { "fieldPath": "completedAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "ela_user_submissions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "userId", "order": "ASCENDING" },
-        { "fieldPath": "date_submitted", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "ela_leaderboard",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "total_correct_answers", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "library",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "staff",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "role", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "payment_vouchers",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "journal_entries",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "date", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "announcements_v2",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "publishedAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "staff_attendance",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "staffId", "order": "ASCENDING" },
-        { "fieldPath": "timestamp", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "journal_entries",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "date", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "forumThreads",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "lastReplyAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "school_shop_items",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
-        { "fieldPath": "name", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "inventory",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "schoolId", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     }

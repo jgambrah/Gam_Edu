@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
@@ -190,7 +191,7 @@ function PaymentVoucherForm({
             // 1. Generate PV Number (e.g., PV-20250122-001)
             const pvNumber = `PV-${format(new Date(), 'yyyyMMdd')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
             
-            const pvRef = doc(collection(firestore, 'payment_vouchers'));
+            const pvRef = doc(collection(firestore, 'paymentVouchers'));
             const { wht, vat, net } = calculations;
 
             batch.set(pvRef, {
@@ -366,7 +367,7 @@ export default function PaymentVouchersPage() {
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: accounts, isLoading: accountsLoading } = useCollection<Account>(accountsQuery);
 
-    const pvQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'payment_vouchers'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+    const pvQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'paymentVouchers'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
     const { data: vouchers, isLoading: pvLoading, forceRefetch } = useCollection<any>(pvQuery);
 
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
