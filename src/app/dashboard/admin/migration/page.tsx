@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
 import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where, doc, setDoc, serverTimestamp, getDocs, writeBatch, limit, arrayUnion } from 'firebase/firestore';
+import { collection, query, where, doc, setDoc, serverTimestamp, getDocs, writeBatch, limit, arrayUnion, updateDoc } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -26,6 +26,26 @@ import { generateNextStudentId } from '@/lib/student-utils';
 import { Progress } from '@/components/ui/progress';
 
 type MigrationTab = 'students' | 'grades' | 'parents';
+
+/**
+ * Robust value extractor that handles common CSV variations and missing data.
+ */
+function getRowValue(row: any, keys: string[]): string {
+  const rowKeys = Object.keys(row);
+  for (const searchKey of keys) {
+    // 1. Try exact match
+    if (row[searchKey] !== undefined && row[searchKey] !== null) {
+      return row[searchKey].toString().trim();
+    }
+    // 2. Try case-insensitive and space-insensitive match
+    const normalizedSearch = searchKey.toLowerCase().replace(/[\s_]/g, '');
+    const foundKey = rowKeys.find(k => k.toLowerCase().replace(/[\s_]/g, '') === normalizedSearch);
+    if (foundKey && row[foundKey] !== undefined && row[foundKey] !== null) {
+      return row[foundKey].toString().trim();
+    }
+  }
+  return '';
+}
 
 export default function MigrationHubPage() {
   const firestore = useFirestore();
@@ -104,7 +124,7 @@ export default function MigrationHubPage() {
         setRawText('');
         toast({ title: "AI Extraction Complete", description: `Recovered ${result.data.length} students from text.` });
       } else {
-        throw new Error(result.error);
+        throw new Error(result.error || 'AI extraction failed');
       }
     } catch (error: any) {
       toast({ variant: 'destructive', title: "AI Failed", description: error.message });
@@ -128,22 +148,23 @@ export default function MigrationHubPage() {
       for (let i = 0; i < studentCsvData.length; i++) {
         const row = studentCsvData[i];
         
-        const email = (row.Email || row.email || row['Email Address'] || '').toString().trim();
-        const firstName = (row.FirstName || row.firstName || row['First Name'] || '').toString().trim();
-        const lastName = (row.LastName || row.lastName || row['Last Name'] || '').toString().trim();
-        const rawClassName = (row.ClassName || row.className || row['Class'] || '').toString().trim();
-        const gender = (row.Gender || row.gender || '').toString().trim();
+        const email = getRowValue(row, ['Email', 'Email Address', 'User Email']).toLowerCase();
+        const firstName = getRowValue(row, ['FirstName', 'First Name', 'Given Name']);
+        const lastName = getRowValue(row, ['LastName', 'Last Name', 'Surname']);
+        const rawClassName = getRowValue(row, ['ClassName', 'Class', 'Grade']);
+        const gender = getRowValue(row, ['Gender', 'Sex']);
 
         const targetClassId = classMap[rawClassName] || null;
 
         if (!email || !firstName) {
+          console.warn(`[Import Skip] Missing mandatory data at row ${i + 1}`, { email, firstName });
           failCount++;
           setStudentImportProgress(i + 1);
           continue;
         }
 
         const result = await createNewUser(
-          email.toLowerCase(),
+          email,
           "password123",
           'Student',
           { firstName, lastName },
@@ -164,7 +185,7 @@ export default function MigrationHubPage() {
           studentId: studentId,
           firstName,
           lastName,
-          email: email.toLowerCase(),
+          email: email,
           grade: rawClassName,
           classId: targetClassId,
           gender: gender || null,
@@ -220,21 +241,22 @@ export default function MigrationHubPage() {
       for (let i = 0; i < parentCsvData.length; i++) {
         const row = parentCsvData[i];
         
-        const email = (row.Email || row.email || '').toString().trim();
-        const firstName = (row.FirstName || row.firstName || '').toString().trim();
-        const lastName = (row.LastName || row.lastName || '').toString().trim();
-        const phone = (row.Phone || row.phone || '').toString().trim();
-        const address = (row.Address || row.address || '').toString().trim();
-        const studentEmail = (row.StudentEmail || row.studentEmail || row['Child Email'] || '').toString().trim().toLowerCase();
+        const email = getRowValue(row, ['Email', 'Email Address', 'Parent Email']).toLowerCase();
+        const firstName = getRowValue(row, ['FirstName', 'First Name', 'Parent FirstName']);
+        const lastName = getRowValue(row, ['LastName', 'Last Name', 'Parent LastName']);
+        const phone = getRowValue(row, ['Phone', 'PhoneNumber', 'Mobile', 'Contact']);
+        const address = getRowValue(row, ['Address', 'Home Address', 'Location']);
+        const studentEmail = getRowValue(row, ['StudentEmail', 'Child Email', 'Student Email', 'Link Email']).toLowerCase();
 
         if (!email || !firstName) {
+          console.warn(`[Parent Skip] Row ${i + 1} missing required fields`, { email, firstName });
           failCount++;
           setParentImportProgress(i + 1);
           continue;
         }
 
         const result = await createNewUser(
-          email.toLowerCase(),
+          email,
           "password123",
           'Parent',
           { firstName, lastName },
@@ -253,7 +275,7 @@ export default function MigrationHubPage() {
           uid: result.uid,
           firstName,
           lastName,
-          email: email.toLowerCase(),
+          email: email,
           phone: phone || null,
           address: address || null,
           schoolId: schoolId,
@@ -276,7 +298,7 @@ export default function MigrationHubPage() {
 
       toast({ 
         title: "Parent Migration Complete", 
-        description: `Successfully processed ${total} records. Success: ${successCount}, Failed: ${failCount}.`,
+        description: `Processed ${total} records. Success: ${successCount}, Failed: ${failCount}.`,
         duration: 10000 
       });
       
@@ -312,12 +334,12 @@ export default function MigrationHubPage() {
       let batchCount = 0;
 
       for (const row of gradeCsvData) {
-        const email = (row.Email || row.email || '').toString().trim().toLowerCase();
-        const subjectName = (row.SubjectName || row.subject || '').toString().trim();
-        const ca = (row.CA || row.ca || '0').toString().trim();
-        const exam = (row.Exam || row.exam || '0').toString().trim();
-        const termLabel = (row.Term || row.term || 'First Term').toString().trim();
-        const yearLabel = (row.AcademicYear || row.year || '2024-2025').toString().trim();
+        const email = getRowValue(row, ['Email', 'Email Address', 'Student Email']).toLowerCase();
+        const subjectName = getRowValue(row, ['SubjectName', 'Subject', 'Topic']);
+        const ca = getRowValue(row, ['CA', 'Continuous Assessment', 'Test']);
+        const exam = getRowValue(row, ['Exam', 'Examination', 'Final']);
+        const termLabel = getRowValue(row, ['Term', 'Semester']) || 'First Term';
+        const yearLabel = getRowValue(row, ['AcademicYear', 'Year', 'Session']) || '2024-2025';
         
         const studentInfo = studentMap.get(email);
         const targetSubjectId = subjectMap[subjectName] || null;
@@ -391,8 +413,8 @@ export default function MigrationHubPage() {
   const uniqueCsvClasses = useMemo(() => {
     const set = new Set<string>();
     studentCsvData.forEach(row => {
-      const val = row.ClassName || row.className || row['Class'];
-      if (val) set.add(val.toString().trim());
+      const val = getRowValue(row, ['ClassName', 'Class', 'Grade']);
+      if (val) set.add(val);
     });
     return Array.from(set);
   }, [studentCsvData]);
@@ -400,8 +422,8 @@ export default function MigrationHubPage() {
   const uniqueCsvSubjects = useMemo(() => {
     const set = new Set<string>();
     gradeCsvData.forEach(row => {
-      const val = row.SubjectName || row.subject;
-      if (val) set.add(val.toString().trim());
+      const val = getRowValue(row, ['SubjectName', 'Subject', 'Topic']);
+      if (val) set.add(val);
     });
     return Array.from(set);
   }, [gradeCsvData]);
@@ -537,7 +559,7 @@ export default function MigrationHubPage() {
                         <h4 className="text-xs font-black text-pink-900 uppercase">CSV Header Guide</h4>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-[10px] text-pink-700 leading-none">Required: FirstName, LastName, Email, Phone, Address, StudentEmail</p>
+                        <p className="text-[10px] text-pink-700 leading-none">Accepted: FirstName, LastName, Email, Phone, Address, StudentEmail</p>
                     </div>
                 </div>
 
@@ -559,7 +581,7 @@ export default function MigrationHubPage() {
             <Card className="lg:col-span-2 border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
               <CardHeader className="bg-slate-900 text-white p-8">
                 <CardTitle className="text-xl font-black uppercase tracking-tight">2. Verification & Linking</CardTitle>
-                <CardDescription className="text-slate-400 font-bold text-xs mt-1">Parents will be linked to students by email</CardDescription>
+                <CardDescription className="text-slate-400 font-bold text-xs mt-1">Parents will be linked to students by student email address</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
                 {isImportingParents && (
@@ -583,14 +605,14 @@ export default function MigrationHubPage() {
                       <TableHeader className="bg-slate-50">
                         <TableRow>
                           <TableHead className="text-[10px] font-black uppercase">Parent Name</TableHead>
-                          <TableHead className="text-[10px] font-black uppercase">Student Email (Link)</TableHead>
+                          <TableHead className="text-[10px] font-black uppercase">Student Link</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {parentCsvData.slice(0, 5).map((row, i) => (
                           <TableRow key={i}>
-                            <TableCell className="text-xs font-bold">{row.FirstName} {row.LastName}</TableCell>
-                            <TableCell className="text-xs italic text-pink-600">{row.StudentEmail || row.studentEmail || 'No Link'}</TableCell>
+                            <TableCell className="text-xs font-bold">{getRowValue(row, ['FirstName', 'First Name'])} {getRowValue(row, ['LastName', 'Last Name'])}</TableCell>
+                            <TableCell className="text-xs italic text-pink-600">{getRowValue(row, ['StudentEmail', 'Student Email', 'Child Email']) || 'No Link'}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -602,7 +624,7 @@ export default function MigrationHubPage() {
               <CardFooter className="bg-slate-50 p-8 border-t">
                 <Button onClick={executeParentImport} disabled={isImportingParents || parentCsvData.length === 0} className="w-full h-14 bg-pink-600 hover:bg-pink-700 text-white font-black uppercase tracking-widest rounded-2xl shadow-xl">
                   {isImportingParents ? <Loader2 className="animate-spin mr-2"/> : <UserPlus className="mr-2"/>}
-                  Import Parents & Create Links ({parentCsvData.length})
+                  Import Parents & Link Students ({parentCsvData.length})
                 </Button>
               </CardFooter>
             </Card>
