@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { 
   FileUp, Database, Loader2, Sparkles, CheckCircle2, 
-  AlertTriangle, FileSpreadsheet, FileText, ArrowRight, UserPlus,
+  AlertCircle, FileSpreadsheet, FileText, ArrowRight, UserPlus,
   Trash2, Wand2, Filter, BookCopy, GraduationCap, History, Info, RefreshCw, HeartHandshake, Banknote, Wallet
 } from 'lucide-react';
 import { extractStudentsFromText } from '@/ai/flows/extract-students-flow';
@@ -538,7 +538,7 @@ export default function MigrationHubPage() {
               <CardFooter className="bg-slate-50 p-8 border-t">
                 <Button onClick={executeParentImport} disabled={isImportingParents || parentCsvData.length === 0} className="w-full h-14 bg-pink-600 text-white font-black uppercase">Migrate Parents ({parentCsvData.length})</Button>
               </CardFooter>
-            </div>
+            </Card>
           </div>
         </TabsContent>
 
