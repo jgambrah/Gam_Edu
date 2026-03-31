@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
-import { collection, query, where, getDocs, doc, getDoc, orderBy, writeBatch, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where, getDocs, doc, getDoc, writeBatch, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { format, startOfDay } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Calendar as CalendarIcon, Search, DollarSign, Users, Bus, Utensils, CheckCircle2, Save } from 'lucide-react';
+import { Loader2, Calendar as CalendarIcon, Search, DollarSign, Bus, Utensils, CheckCircle2, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -126,7 +126,6 @@ export default function BulkPaymentsPage() {
                     prefill = student.routeId ? (routeRatesMap.get(student.routeId) || 0) : 0;
                 }
 
-                // Balance for THIS specific bill
                 const currentBalance = existingBill 
                     ? (existingBill.billedAmount - (existingBill.amountPaid || 0) - (existingBill.waiverAmount || 0))
                     : prefill; 
@@ -176,7 +175,6 @@ export default function BulkPaymentsPage() {
         const validPayments = rows.filter(r => r.paymentAmount > 0);
 
         try {
-            // 1. Check for open till
             const tillQ = query(
                 collection(firestore, 'tills'), 
                 where('accountantId', '==', user.uid), 
@@ -185,7 +183,7 @@ export default function BulkPaymentsPage() {
             );
             const tillSnap = await getDocs(tillQ);
             if (tillSnap.empty) {
-                throw new Error("You must open your cash till before processing payments.");
+                throw new Error("Please OPEN YOUR TILL before processing cash payments.");
             }
             const activeTill = tillSnap.docs[0];
 
@@ -197,15 +195,32 @@ export default function BulkPaymentsPage() {
                 const receiptId = await generateNextReceiptId(firestore, schoolId);
                 const paymentRef = doc(firestore, 'financialRecords', recordId, 'payments', receiptId);
 
-                // A. Update the Bill
                 const isFullyPaid = row.paymentAmount >= row.currentBalance;
-                batch.update(recordRef, {
-                    amountPaid: increment(row.paymentAmount),
-                    status: isFullyPaid ? 'Paid' : 'Unpaid',
-                    lastPaymentDate: serverTimestamp(),
-                });
+                
+                // If the record doesn't exist (student marked present but not billed), we create it
+                if (!row.recordId) {
+                    batch.set(recordRef, {
+                        studentId: row.student.uid,
+                        studentName: `${row.student.firstName} ${row.student.lastName}`,
+                        classId: row.student.classId || '',
+                        type: serviceType === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)',
+                        description: `${serviceType} Fee - ${format(date, 'PPP')}`,
+                        billedAmount: row.paymentAmount,
+                        amountPaid: row.paymentAmount,
+                        status: 'Paid',
+                        dueDate: Timestamp.fromDate(startOfDay(date)),
+                        createdAt: serverTimestamp(),
+                        schoolId: schoolId,
+                        lastPaymentDate: serverTimestamp(),
+                    });
+                } else {
+                    batch.update(recordRef, {
+                        amountPaid: increment(row.paymentAmount),
+                        status: isFullyPaid ? 'Paid' : 'Unpaid',
+                        lastPaymentDate: serverTimestamp(),
+                    });
+                }
 
-                // B. Log Individual Receipt
                 batch.set(paymentRef, {
                     id: receiptId,
                     amount: row.paymentAmount,
@@ -216,31 +231,29 @@ export default function BulkPaymentsPage() {
                     studentId: row.student.uid,
                     description: `${serviceType} Fee - ${format(date, 'PPP')}`,
                     schoolId: schoolId,
-                    notes: 'Bulk Entry'
+                    notes: 'Bulk Daily Entry'
                 });
 
                 processedCount++;
             }
 
-            // 2. Update Till Balance
             batch.update(doc(firestore, 'tills', activeTill.id), {
                 currentBalance: increment(totalAmount)
             });
 
-            // 3. Add SINGLE transaction record to till
             const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
             batch.set(tillTransRef, {
                 amount: totalAmount,
                 timestamp: serverTimestamp(),
                 type: 'Payment',
-                description: `Bulk ${serviceType} Collection (${classId === 'all' ? 'School' : classId}) - ${processedCount} Students`,
+                description: `Bulk ${serviceType} Collection - ${processedCount} Students`,
                 status: 'Completed',
                 schoolId: schoolId,
             });
 
             await batch.commit();
             toast({ title: "Success!", description: `Recorded ${processedCount} payments totaling GH₵${totalAmount.toFixed(2)}.` });
-            loadGrid(); // Refresh the grid
+            loadGrid();
 
         } catch (error: any) {
             console.error("Batch Submission Error:", error);
@@ -269,7 +282,6 @@ export default function BulkPaymentsPage() {
                 </Card>
             </div>
 
-            {/* FILTERS */}
             <Card className="shadow-sm border-2">
                 <CardHeader className="pb-3 border-b bg-slate-50/50">
                     <CardTitle className="text-sm font-bold uppercase text-slate-500">Filter Records</CardTitle>
@@ -331,7 +343,6 @@ export default function BulkPaymentsPage() {
                 </CardContent>
             </Card>
 
-            {/* DATA GRID */}
             <Card className="shadow-lg border-none overflow-hidden rounded-2xl bg-white min-h-[400px]">
                 <CardContent className="p-0">
                     {isLoadingGrid ? (
@@ -403,7 +414,6 @@ export default function BulkPaymentsPage() {
                 </CardContent>
             </Card>
 
-            {/* FIXED FOOTER SUBMIT BAR */}
             {!isLoadingGrid && filteredRows.length > 0 && (
                 <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-white border-t-4 border-t-slate-900 p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50 animate-in slide-in-from-bottom-full duration-500">
                     <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6">

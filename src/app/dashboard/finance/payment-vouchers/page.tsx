@@ -27,18 +27,21 @@ import { Account, JournalLine } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
 import { AppLogo } from '@/components/icons/app-logo';
 
-// --- CONSTANTS: GHANA TAX ---
+// --- CONSTANTS: GHANA TAX 2025/2026 ---
 const GHANA_WHT_RATES = [
   { id: 'wht-none',          label: 'None (0%)',                        rate: 0 },
-  { id: 'wht-goods',         label: 'Goods / Supply (3%)',              rate: 0.03 },
-  { id: 'wht-services',      label: 'Services (7.5%)',                  rate: 0.075 },
-  { id: 'wht-rent',          label: 'Rent (8%)',                        rate: 0.08 },
-  { id: 'wht-consultancy',   label: 'Consultancy/Professional (7.5%)',  rate: 0.075 },
+  { id: 'wht-goods',         label: 'Supply of Goods (3%)',             rate: 0.03 },
+  { id: 'wht-works',         label: 'Supply of Works (5%)',             rate: 0.05 },
+  { id: 'wht-services',      label: 'Supply of Services (7.5%)',        rate: 0.075 },
+  { id: 'wht-rent-res',      label: 'Residential Rent (8%)',            rate: 0.08 },
+  { id: 'wht-div-int',       label: 'Dividends / Interest (8%)',        rate: 0.08 },
+  { id: 'wht-mgmt-nonres',   label: 'Mgmt Fees / Non-Res / Rent (15%)', rate: 0.15 },
+  { id: 'wht-allowances',    label: 'Director Allowances (20%)',        rate: 0.20 },
 ];
 
 const GHANA_VAT_RATES = [
-  { id: 'vat-none',      label: 'No VAT (0%)',                    rate: 0 },
-  { id: 'vat-standard',  label: 'Consolidated (20%)',             rate: 0.20 }, 
+  { id: 'vat-none',          label: 'No VAT (0%)',                      rate: 0 },
+  { id: 'vat-consolidated',  label: 'Consolidated Standard Rate (20%)', rate: 0.20 },
 ];
 
 // --- SCHEMA ---
@@ -123,7 +126,6 @@ function VoucherDocument({ pv, schoolProfile }: { pv: any, schoolProfile: any })
                 </tbody>
             </table>
 
-            {/* THREE-POINT SIGNATURE SECTION */}
             <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-dashed">
                 <div className="text-center">
                     <div className="border-b border-black h-8 mb-2"></div>
@@ -187,7 +189,7 @@ function PaymentVoucherForm({
     }, [watchGross, watchWHTId, watchVATId]);
 
     const expenseAccounts = accounts.filter(a => ['Expense', 'Asset'].includes(a.type) && !a.isControlAccount);
-    const assetAccounts = accounts.filter(a => ['Asset'].includes(a.type) && !a.isControlAccount);
+    const bankAccounts = accounts.filter(a => ['Asset'].includes(a.type) && !a.isControlAccount);
 
     async function onSubmit(values: PVFormValues) {
         if (!firestore || !user || !schoolId) return;
@@ -312,7 +314,7 @@ function PaymentVoucherForm({
                     <Label>Credit Account (Bank/Cash)</Label>
                     <Select onValueChange={(v) => form.setValue('creditAccountId', v)}>
                         <SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger>
-                        <SelectContent>{assetAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
+                        <SelectContent>{bankAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
             </div>

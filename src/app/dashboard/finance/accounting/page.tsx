@@ -299,7 +299,6 @@ function VoucherDocument({ pv, schoolProfile }: { pv: any, schoolProfile: any })
                 </tbody>
             </table>
 
-            {/* THREE-POINT SIGNATURE SECTION */}
             <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-dashed">
                 <div className="text-center">
                     <div className="border-b border-black h-8 mb-2"></div>
@@ -511,7 +510,6 @@ export default function AccountingPage() {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [selectedPV, setSelectedPV] = useState<any>(null);
     const [isExporting, setIsExporting] = useState(false);
-    const printRef = useRef<HTMLDivElement>(null);
 
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: accounts, isLoading: accountsLoading, forceRefetch: forceRefetchAccounts } = useCollection<Account>(accountsQuery);
