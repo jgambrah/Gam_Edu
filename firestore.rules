@@ -1,3 +1,4 @@
+
 rules_version = '2';
 
 service cloud.firestore {
@@ -66,12 +67,6 @@ service cloud.firestore {
 
     match /leads/{leadId} {
       allow read, write: if isSuperAdmin();
-    }
-
-    // Global CMS: Tutorials
-    match /tutorials/{tutorialId} {
-      allow read: if isSignedIn();
-      allow write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2"; // CEO Only
     }
 
     // =========================================================
@@ -341,6 +336,15 @@ service cloud.firestore {
       allow write: if isFinanceStaff() || isAdmin();
     }
     
+    {
+      "collectionGroup": "journal_entries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "schoolId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    
     match /products/{productId} {
       allow read, list: if isSignedIn();
       allow write: if isFinanceStaff();
@@ -377,7 +381,7 @@ service cloud.firestore {
     }
 
     match /payment_vouchers/{voucherId} {
-      allow read, write, list: if isFinanceStaff() || isAdmin();
+      allow read, list, write: if isFinanceStaff() || isAdmin();
     }
 
     match /payrollSettings/{settingsId} {
