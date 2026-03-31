@@ -217,7 +217,6 @@ export default function ReportCardManager() {
                 });
             });
 
-            // SOVEREIGN SIGNATURE RECONCILIATION
             const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
             const schoolData = schoolDoc.data();
 
@@ -358,10 +357,8 @@ export default function ReportCardManager() {
         <div className="p-6 space-y-6 max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-black flex items-center gap-3 text-slate-900 uppercase tracking-tighter">
-                        <GraduationCap className="h-10 w-10 text-indigo-600"/> Master Report Engine
-                    </h1>
-                    <p className="text-slate-500 font-medium italic">Generate and Sign Official Academic Transcripts.</p>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">Report Card Manager</h1>
+                    <p className="text-slate-500 font-medium italic">Sign and publish terminal results.</p>
                 </div>
             </div>
 
@@ -402,7 +399,7 @@ export default function ReportCardManager() {
                 </CardContent>
                 <CardFooter className="justify-end bg-slate-50 pt-4 border-t">
                     <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600 hover:bg-indigo-700 px-8 h-12 rounded-xl font-bold">
-                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>} Compile MASTER PREVIEW
+                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>} Compile Report
                     </Button>
                 </CardFooter>
             </Card>
@@ -410,15 +407,15 @@ export default function ReportCardManager() {
             {processedReport && (
                 <div className="space-y-6 animate-in slide-in-from-top-4 duration-500">
                     <Card className="border-t-4 border-t-orange-400 shadow-md">
-                        <CardHeader><CardTitle>Review & Final Remarks</CardTitle></CardHeader>
+                        <CardHeader><CardTitle>Final Remarks</CardTitle></CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label className="font-bold">Class Teacher's Remark</Label>
-                                <Textarea placeholder="Enter overall performance remark..." value={classTeacherComment} onChange={(e) => setClassTeacherComment(e.target.value)} rows={4} disabled={!isTeacher && !isAdminOrDirector}/>
+                                <Textarea placeholder="Overall performance remark..." value={classTeacherComment} onChange={(e) => setClassTeacherComment(e.target.value)} rows={4} disabled={!isTeacher && !isAdminOrDirector}/>
                             </div>
                             <div className="space-y-2">
                                 <Label className="font-bold">Headmaster's Remark</Label>
-                                <Textarea placeholder="Enter headmaster final decision..." value={headmasterComment} onChange={(e) => setHeadmasterComment(e.target.value)} rows={4} disabled={!isAdminOrDirector}/>
+                                <Textarea placeholder="Headmaster final decision..." value={headmasterComment} onChange={(e) => setHeadmasterComment(e.target.value)} rows={4} disabled={!isAdminOrDirector}/>
                             </div>
                         </CardContent>
                         <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">

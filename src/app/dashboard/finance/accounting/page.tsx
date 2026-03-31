@@ -30,19 +30,19 @@ import { AppLogo } from '@/components/icons/app-logo';
 import { Account, JournalLine, journalEntrySchema, ACCOUNT_TYPES, accountSchema } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
-// --- CONSTANTS: GHANA TAX ---
+// --- CONSTANTS: GHANA TAX (REFINED WITH UNIQUE IDS) ---
 const GHANA_WHT_RATES = [
-  { label: 'None (0%)', rate: 0 },
-  { label: 'Goods / Supply (3%)', rate: 0.03 },
-  { label: 'Services (7.5%)', rate: 0.075 },
-  { label: 'Rent (8%)', rate: 0.08 },
-  { label: 'Consultancy/Professional (7.5%)', rate: 0.075 },
+  { id: 'wht-none',          label: 'None (0%)',                        rate: 0 },
+  { id: 'wht-goods',         label: 'Goods / Supply (3%)',              rate: 0.03 },
+  { id: 'wht-services',      label: 'Services (7.5%)',                  rate: 0.075 },
+  { id: 'wht-rent',          label: 'Rent (8%)',                        rate: 0.08 },
+  { id: 'wht-consultancy',   label: 'Consultancy/Professional (7.5%)',  rate: 0.075 },
 ];
 
 const GHANA_VAT_RATES = [
-  { label: 'No VAT (0%)', rate: 0 },
-  { label: 'Standard VAT + Levies (21.9%)', rate: 0.219 }, 
-  { label: 'Flat Rate Scheme (4%)', rate: 0.04 },
+  { id: 'vat-none',      label: 'No VAT (0%)',                    rate: 0 },
+  { id: 'vat-standard',  label: 'Standard VAT + Levies (21.9%)',  rate: 0.219 }, 
+  { id: 'vat-flat',      label: 'Flat Rate Scheme (4%)',          rate: 0.04 },
 ];
 
 const pvSchema = z.object({
@@ -342,8 +342,11 @@ function PaymentVoucherForm({
 
     const calculations = useMemo(() => {
         const gross = parseFloat(String(watchGross)) || 0;
-        const wht = gross * (parseFloat(String(watchWHT)) || 0);
-        const vat = gross * (parseFloat(String(watchVAT)) || 0);
+        const whtRateVal = GHANA_WHT_RATES.find(r => r.id === String(watchWHT))?.rate ?? 0;
+        const vatRateVal = GHANA_VAT_RATES.find(r => r.id === String(watchVAT))?.rate ?? 0;
+        
+        const wht = gross * whtRateVal;
+        const vat = gross * vatRateVal;
         const net = (gross + vat) - wht;
         return { wht, vat, net };
     }, [watchGross, watchWHT, watchVAT]);
@@ -438,19 +441,19 @@ function PaymentVoucherForm({
                 </div>
                 <div className="space-y-2">
                     <Label>WHT Rate</Label>
-                    <Select onValueChange={(v) => form.setValue('whtRate', parseFloat(v))} defaultValue="0">
+                    <Select onValueChange={(id) => form.setValue('whtRate', id as any)} defaultValue="wht-none">
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                            {GHANA_WHT_RATES.map(r => <SelectItem key={r.label} value={String(r.rate)}>{r.label}</SelectItem>)}
+                            {GHANA_WHT_RATES.map(r => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
                 <div className="space-y-2">
                     <Label>VAT Rate</Label>
-                    <Select onValueChange={(v) => form.setValue('vatRate', parseFloat(v))} defaultValue="0">
+                    <Select onValueChange={(id) => form.setValue('vatRate', id as any)} defaultValue="vat-none">
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                            {GHANA_VAT_RATES.map(r => <SelectItem key={r.label} value={String(r.rate)}>{r.label}</SelectItem>)}
+                            {GHANA_VAT_RATES.map(r => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -581,7 +584,9 @@ export default function AccountingPage() {
 
                 <TabsContent value="journal" className="mt-4">
                     <div className="max-w-3xl mx-auto">
-                        <JournalEntryForm accounts={accounts || []} schoolId={schoolId!} onEntryAdded={forceRefetchJournals} />
+                        {accounts && schoolId && (
+                            <JournalEntryForm accounts={accounts} schoolId={schoolId} onEntryAdded={forceRefetchJournals} />
+                        )}
                     </div>
                 </TabsContent>
 

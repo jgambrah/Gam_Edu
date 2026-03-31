@@ -25,19 +25,19 @@ import { Account, JournalLine } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
 import { AppLogo } from '@/components/icons/app-logo';
 
-// --- PHASE 1: TAX CONSTANTS ---
+// --- CONSTANTS: GHANA TAX (REFINED WITH UNIQUE IDS) ---
 const GHANA_WHT_RATES = [
-  { label: 'None (0%)', rate: 0 },
-  { label: 'Goods / Supply (3%)', rate: 0.03 },
-  { label: 'Services (7.5%)', rate: 0.075 },
-  { label: 'Rent (8%)', rate: 0.08 },
-  { label: 'Consultancy/Professional (7.5%)', rate: 0.075 },
+  { id: 'wht-none',          label: 'None (0%)',                        rate: 0 },
+  { id: 'wht-goods',         label: 'Goods / Supply (3%)',              rate: 0.03 },
+  { id: 'wht-services',      label: 'Services (7.5%)',                  rate: 0.075 },
+  { id: 'wht-rent',          label: 'Rent (8%)',                        rate: 0.08 },
+  { id: 'wht-consultancy',   label: 'Consultancy/Professional (7.5%)',  rate: 0.075 },
 ];
 
 const GHANA_VAT_RATES = [
-  { label: 'No VAT (0%)', rate: 0 },
-  { label: 'Standard VAT + Levies (21.9%)', rate: 0.219 }, 
-  { label: 'Flat Rate Scheme (4%)', rate: 0.04 },
+  { id: 'vat-none',      label: 'No VAT (0%)',                    rate: 0 },
+  { id: 'vat-standard',  label: 'Standard VAT + Levies (21.9%)',  rate: 0.219 }, 
+  { id: 'vat-flat',      label: 'Flat Rate Scheme (4%)',          rate: 0.04 },
 ];
 
 // --- SCHEMA ---
@@ -45,8 +45,8 @@ const pvSchema = z.object({
     payee: z.string().min(1, "Payee name is required."),
     description: z.string().min(1, "Particulars are required."),
     grossAmount: z.coerce.number().min(0.01, "Amount must be positive."),
-    whtRate: z.coerce.number(),
-    vatRate: z.coerce.number(),
+    whtRate: z.string(), // Holds the ID
+    vatRate: z.string(), // Holds the ID
     debitAccountId: z.string().min(1, "Select an expense or asset account."),
     creditAccountId: z.string().min(1, "Select a bank or cash account."),
 });
@@ -137,7 +137,7 @@ function VoucherDocument({ pv, schoolProfile }: { pv: any, schoolProfile: any })
     );
 }
 
-// --- PHASE 2: FORM COMPONENT ---
+// --- FORM COMPONENT ---
 function PaymentVoucherForm({ 
     setOpen, 
     accounts, 
@@ -157,8 +157,8 @@ function PaymentVoucherForm({
     const form = useForm<PVFormValues>({
         resolver: zodResolver(pvSchema),
         defaultValues: {
-            whtRate: 0,
-            vatRate: 0,
+            whtRate: 'wht-none',
+            vatRate: 'vat-none',
             grossAmount: 0,
         }
     });
@@ -169,8 +169,11 @@ function PaymentVoucherForm({
 
     const calculations = useMemo(() => {
         const gross = parseFloat(String(watchGross)) || 0;
-        const wht = gross * (parseFloat(String(watchWHT)) || 0);
-        const vat = gross * (parseFloat(String(watchVAT)) || 0);
+        const whtRateVal = GHANA_WHT_RATES.find(r => r.id === watchWHT)?.rate ?? 0;
+        const vatRateVal = GHANA_VAT_RATES.find(r => r.id === watchVAT)?.rate ?? 0;
+        
+        const wht = gross * whtRateVal;
+        const vat = gross * vatRateVal;
         const net = (gross + vat) - wht;
         return { wht, vat, net };
     }, [watchGross, watchWHT, watchVAT]);
@@ -178,7 +181,6 @@ function PaymentVoucherForm({
     const expenseAccounts = accounts.filter(a => ['Expense', 'Asset'].includes(a.type) && !a.isControlAccount);
     const assetAccounts = accounts.filter(a => ['Asset'].includes(a.type) && !a.isControlAccount);
 
-    // --- PHASE 3: SUBMISSION LOGIC ---
     async function onSubmit(values: PVFormValues) {
         if (!firestore || !user || !schoolId) return;
         setIsSubmitting(true);
@@ -186,10 +188,7 @@ function PaymentVoucherForm({
         try {
             const batch = writeBatch(firestore);
             const timestamp = serverTimestamp();
-            
-            // 1. Generate PV Number (e.g., PV-20250122-001)
             const pvNumber = `PV-${format(new Date(), 'yyyyMMdd')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
-            
             const pvRef = doc(collection(firestore, 'paymentVouchers'));
             const { wht, vat, net } = calculations;
 
@@ -210,48 +209,20 @@ function PaymentVoucherForm({
                 createdAt: timestamp
             });
 
-            // 2. Double-Entry Journal
             const journalLines: JournalLine[] = [];
-            
-            // Debit the primary account (Expense or Asset)
             const debitAcc = accounts.find(a => a.id === values.debitAccountId);
-            journalLines.push({
-                accountId: values.debitAccountId,
-                accountName: debitAcc?.name || 'Account',
-                debit: values.grossAmount,
-                credit: 0
-            });
+            journalLines.push({ accountId: values.debitAccountId, accountName: debitAcc?.name || 'Account', debit: values.grossAmount, credit: 0 });
 
-            // Credit the Bank/Cash account (The check/transfer amount)
             const creditAcc = accounts.find(a => a.id === values.creditAccountId);
-            journalLines.push({
-                accountId: values.creditAccountId,
-                accountName: creditAcc?.name || 'Cash/Bank',
-                debit: 0,
-                credit: net
-            });
+            journalLines.push({ accountId: values.creditAccountId, accountName: creditAcc?.name || 'Cash/Bank', debit: 0, credit: net });
 
-            // Tax Lines
             if (wht > 0) {
-                const whtAcc = accounts.find(a => a.name.toLowerCase().includes('withholding tax')) || 
-                               accounts.find(a => a.type === 'Liability' && a.name.includes('Tax'));
-                journalLines.push({
-                    accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT',
-                    accountName: whtAcc?.name || 'WHT Payable',
-                    debit: 0,
-                    credit: wht
-                });
+                const whtAcc = accounts.find(a => a.name.toLowerCase().includes('withholding tax')) || accounts.find(a => a.type === 'Liability');
+                journalLines.push({ accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT', accountName: whtAcc?.name || 'WHT Payable', debit: 0, credit: wht });
             }
-
             if (vat > 0) {
-                const vatAcc = accounts.find(a => a.name.toLowerCase().includes('vat input')) || 
-                               accounts.find(a => a.type === 'Asset' && a.name.includes('VAT'));
-                journalLines.push({
-                    accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT',
-                    accountName: vatAcc?.name || 'VAT Input',
-                    debit: vat,
-                    credit: 0
-                });
+                const vatAcc = accounts.find(a => a.name.toLowerCase().includes('vat input')) || accounts.find(a => a.type === 'Asset');
+                journalLines.push({ accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT', accountName: vatAcc?.name || 'VAT Input', debit: vat, credit: 0 });
             }
 
             const journalRef = doc(collection(firestore, 'journal_entries'));
@@ -260,7 +231,7 @@ function PaymentVoucherForm({
                 reference: pvNumber,
                 description: `PV ${pvNumber}: ${values.description} to ${values.payee}`,
                 lines: journalLines,
-                totalAmount: values.grossAmount + vat, // Balanced debits
+                totalAmount: values.grossAmount + vat,
                 createdBy: user.uid,
                 createdAt: timestamp,
                 schoolId: schoolId
@@ -283,12 +254,10 @@ function PaymentVoucherForm({
                 <div className="space-y-2">
                     <Label>Payee Name</Label>
                     <Input {...form.register('payee')} placeholder="Vendor or Staff Name" />
-                    {form.formState.errors.payee && <p className="text-xs text-red-500">{form.formState.errors.payee.message}</p>}
                 </div>
                 <div className="space-y-2">
                     <Label>Description / Particulars</Label>
                     <Input {...form.register('description')} placeholder="Reason for payment" />
-                    {form.formState.errors.description && <p className="text-xs text-red-500">{form.formState.errors.description.message}</p>}
                 </div>
             </div>
 
@@ -299,28 +268,27 @@ function PaymentVoucherForm({
                 </div>
                 <div className="space-y-2">
                     <Label>WHT Rate</Label>
-                    <Select onValueChange={(v) => form.setValue('whtRate', parseFloat(v))} defaultValue="0">
+                    <Select onValueChange={(id) => form.setValue('whtRate', id)} defaultValue="wht-none">
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                            {GHANA_WHT_RATES.map(r => <SelectItem key={r.label} value={String(r.rate)}>{r.label}</SelectItem>)}
+                            {GHANA_WHT_RATES.map(r => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
                 <div className="space-y-2">
                     <Label>VAT Rate</Label>
-                    <Select onValueChange={(v) => form.setValue('vatRate', parseFloat(v))} defaultValue="0">
+                    <Select onValueChange={(id) => form.setValue('vatRate', id)} defaultValue="vat-none">
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                            {GHANA_VAT_RATES.map(r => <SelectItem key={r.label} value={String(r.rate)}>{r.label}</SelectItem>)}
+                            {GHANA_VAT_RATES.map(r => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
             </div>
 
-            {/* LIVE CALCULATIONS PREVIEW */}
-            <div className="grid grid-cols-3 gap-2 py-4 border-y border-dashed">
-                <div className="text-center"><p className="text-[10px] uppercase text-slate-400 font-bold">VAT Added</p><p className="text-sm font-bold text-emerald-600">+GH₵{calculations.vat.toFixed(2)}</p></div>
-                <div className="text-center"><p className="text-[10px] uppercase text-slate-400 font-bold">WHT Deducted</p><p className="text-sm font-bold text-rose-600">-GH₵{calculations.wht.toFixed(2)}</p></div>
+            <div className="grid grid-cols-3 gap-2 py-4 border-y border-dashed text-center">
+                <div><p className="text-[10px] uppercase text-slate-400 font-bold">VAT Added</p><p className="text-sm font-bold text-emerald-600">+GH₵{calculations.vat.toFixed(2)}</p></div>
+                <div><p className="text-[10px] uppercase text-slate-400 font-bold">WHT Deducted</p><p className="text-sm font-bold text-rose-600">-GH₵{calculations.wht.toFixed(2)}</p></div>
                 <div className="text-center bg-indigo-50 rounded-lg py-1"><p className="text-[10px] uppercase text-indigo-400 font-bold">Net Payable</p><p className="text-sm font-black text-indigo-700">GH₵{calculations.net.toFixed(2)}</p></div>
             </div>
 
@@ -329,31 +297,27 @@ function PaymentVoucherForm({
                     <Label>Debit Account (Expense/Asset)</Label>
                     <Select onValueChange={(v) => form.setValue('debitAccountId', v)}>
                         <SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger>
-                        <SelectContent>
-                            {expenseAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}
-                        </SelectContent>
+                        <SelectContent>{expenseAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
                 <div className="space-y-2">
                     <Label>Credit Account (Bank/Cash)</Label>
                     <Select onValueChange={(v) => form.setValue('creditAccountId', v)}>
                         <SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger>
-                        <SelectContent>
-                            {assetAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}
-                        </SelectContent>
+                        <SelectContent>{assetAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
             </div>
 
             <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 font-bold">
-                {isSubmitting ? <Loader2 className="animate-spin mr-2"/> : <Receipt className="mr-2 h-4 w-4"/>}
+                {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Receipt className="mr-2 h-4 w-4"/>}
                 Process Payment Voucher
             </Button>
         </form>
     );
 }
 
-// --- PHASE 4: MAIN PAGE ---
+// --- MAIN PAGE ---
 export default function PaymentVouchersPage() {
     const { role } = useRole();
     const firestore = useFirestore();
@@ -382,7 +346,7 @@ export default function PaymentVouchersPage() {
         <div className="space-y-6 p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                         <Receipt className="h-8 w-8 text-indigo-600"/> Payment Vouchers
                     </h1>
                     <p className="text-muted-foreground font-medium italic">Process payments with automatic Ghana tax calculations.</p>
