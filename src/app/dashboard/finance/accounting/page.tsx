@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 // UI
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -440,14 +440,18 @@ function PaymentVoucherForm({
                     <Label>WHT Rate</Label>
                     <Select onValueChange={(v) => form.setValue('whtRate', parseFloat(v))} defaultValue="0">
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                        <SelectContent>{GHANA_WHT_RATES.map(r => <SelectItem key={r.label} value={String(r.rate)}>{r.label}</SelectItem>)}</SelectContent>
+                        <SelectContent>
+                            {GHANA_WHT_RATES.map(r => <SelectItem key={r.label} value={String(r.rate)}>{r.label}</SelectItem>)}
+                        </SelectContent>
                     </Select>
                 </div>
                 <div className="space-y-2">
                     <Label>VAT Rate</Label>
                     <Select onValueChange={(v) => form.setValue('vatRate', parseFloat(v))} defaultValue="0">
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                        <SelectContent>{GHANA_VAT_RATES.map(r => <SelectItem key={r.label} value={String(r.rate)}>{r.label}</SelectItem>)}</SelectContent>
+                        <SelectContent>
+                            {GHANA_VAT_RATES.map(r => <SelectItem key={r.label} value={String(r.rate)}>{r.label}</SelectItem>)}
+                        </SelectContent>
                     </Select>
                 </div>
             </div>
@@ -695,3 +699,75 @@ export default function AccountingPage() {
     );
 }
 
+LOOK INTO IT PROPERLY AND FIX IT IN ONE BLOCK AND DON'T FORGET MY PREVIOUS FIX TOO. PLEASE FOCUS AND DELIVER ACCORDINGLY. THANK YOU. THE LOGO AND ALL OTHER SIGNATURES ON THE REPORT CARD SHOULD ALSO BE TREATED SAME IF THEY HAVE CORS ISSUES AS WELL. I WANT THE DOWNLOAD OF THE REPORT CARD TO BE VERY SOLID WITH NO MISSING CONTENT. THANKS. ALSO REMEMBER THAT THE LOGO AND ALL OTHER CONTENT ON THE REPORT CARD SHOULD BE SCALED WELL AND FIT ON A4 FOR PRINTING OR AS PDF. THE TABLE TOO SHOULD BE SCALED AND FIT WELL ON A4 AS WELL. THE ENTIRE REPORT CARD SHOULD FIT WELL ON A4. THANKS. 
+
+The main reason why content vanishes during html2canvas generation is CORS. Browser security prevents cross-origin images (from Firebase Storage) from being drawn to a canvas. 
+The Fix
+1. Convert EVERY external image to a Base64 string at the time the report is being "Compiled" (generated).
+2. Store these Base64 strings in the report's temporary state so they're already "local" when html2canvas runs.
+3. Use a proxy route (/api/proxy-image) to fetch the images securely from the server side, bypassing browser CORS.
+
+Update src/app/dashboard/report-cards/report-card-manager.tsx
+Modify the compileMASTERPREVIEW function to perform this conversion.
+
+jsx// Helper to get base64 via your proxy
+async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
+    try {
+        const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
+            ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
+            : imageUrl;
+
+        const res = await fetch(fetchUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
+        const blob = await res.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error: any) {
+        console.error("❌ getBase64ImageFromUrl failed:", error.message);
+        return "";
+    }
+}
+
+// Inside generateReport function:
+const generateReport = async () => {
+    // ... setup and calculations ...
+
+    // Fetch school doc for headmaster info
+    const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
+    const schoolData = schoolDoc.data();
+
+    // CONVERT EVERYTHING TO BASE64 AT THIS POINT
+    const [logoB64, hSigB64, tSigB64] = await Promise.all([
+        schoolProfile?.logoUrl ? getBase64ImageFromUrl(schoolProfile.logoUrl) : Promise.resolve(''),
+        schoolData?.headmasterSignatureUrl ? getBase64ImageFromUrl(schoolData.headmasterSignatureUrl) : Promise.resolve(''),
+        profile?.signatureUrl ? getBase64ImageFromUrl(profile.signatureUrl) : Promise.resolve(''),
+    ]);
+
+    setProcessedReport({
+        // ... calculation data ...
+        logoBase64: logoB64,
+        headmasterSigBase64: hSigB64,
+        teacherSigBase64: tSigB64,
+        // ... labels and metadata ...
+    });
+};
+Update src/app/dashboard/report-cards/components/ReportCardTemplate.tsx
+Ensure it prefers the Base64 data for the <img> sources.
+
+jsx<div className="h-20 flex items-end justify-center mb-2">
+    {data.headmasterSigBase64 ? (
+        <img src={data.headmasterSigBase64} alt="Headmaster Sig" className="max-h-16 object-contain mix-blend-multiply" />
+    ) : (
+        <span className="text-slate-200 uppercase font-black text-[10px] mb-4">Awaiting Signature</span>
+    )}
+</div>
+Why this makes it "Solid"
+- html2canvas loves Base64: It doesn't trigger security blocks.
+- No cross-origin errors: The /api/proxy-image route handles the cross-origin fetch on the server.
+- One-time load: You load/convert the images once during "Compile", so clicking "Download PDF" multiple times won't hit the network again.
+This is the standard enterprise way to handle PDFs with external images.
