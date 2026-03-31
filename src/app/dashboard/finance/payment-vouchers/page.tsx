@@ -9,6 +9,8 @@ import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +27,7 @@ import { Account, JournalLine } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
 import { AppLogo } from '@/components/icons/app-logo';
 
-// --- CONSTANTS: GHANA TAX (REFINED WITH UNIQUE IDS) ---
+// --- CONSTANTS: GHANA TAX ---
 const GHANA_WHT_RATES = [
   { id: 'wht-none',          label: 'None (0%)',                        rate: 0 },
   { id: 'wht-goods',         label: 'Goods / Supply (3%)',              rate: 0.03 },
@@ -36,8 +38,7 @@ const GHANA_WHT_RATES = [
 
 const GHANA_VAT_RATES = [
   { id: 'vat-none',      label: 'No VAT (0%)',                    rate: 0 },
-  { id: 'vat-standard',  label: 'Standard VAT + Levies (21.9%)',  rate: 0.219 }, 
-  { id: 'vat-flat',      label: 'Flat Rate Scheme (4%)',          rate: 0.04 },
+  { id: 'vat-standard',  label: 'Consolidated (20%)',             rate: 0.20 }, 
 ];
 
 // --- SCHEMA ---
@@ -45,8 +46,8 @@ const pvSchema = z.object({
     payee: z.string().min(1, "Payee name is required."),
     description: z.string().min(1, "Particulars are required."),
     grossAmount: z.coerce.number().min(0.01, "Amount must be positive."),
-    whtRate: z.string(), // Holds the ID
-    vatRate: z.string(), // Holds the ID
+    whtRateId: z.string(),
+    vatRateId: z.string(),
     debitAccountId: z.string().min(1, "Select an expense or asset account."),
     creditAccountId: z.string().min(1, "Select a bank or cash account."),
 });
@@ -122,15 +123,22 @@ function VoucherDocument({ pv, schoolProfile }: { pv: any, schoolProfile: any })
                 </tbody>
             </table>
 
-            <div className="grid grid-cols-2 gap-12 mt-16 pt-8 border-t border-dashed">
+            {/* THREE-POINT SIGNATURE SECTION */}
+            <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-dashed">
                 <div className="text-center">
                     <div className="border-b border-black h-8 mb-2"></div>
-                    <p className="text-[10px] font-black uppercase text-slate-400">Prepared By</p>
-                    <p className="text-xs font-bold">{pv.preparedByName}</p>
+                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-tighter leading-tight">Accountant</p>
+                    <p className="text-[8px] font-bold text-slate-500">Prepared By: {pv.preparedByName}</p>
                 </div>
                 <div className="text-center">
                     <div className="border-b border-black h-8 mb-2"></div>
-                    <p className="text-[10px] font-black uppercase text-slate-400">Authorized Official</p>
+                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-tighter leading-tight">Internal Auditor</p>
+                    <p className="text-[8px] font-bold text-slate-500">Vetted & Cleared</p>
+                </div>
+                <div className="text-center">
+                    <div className="border-b border-black h-8 mb-2"></div>
+                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-tighter leading-tight">Director</p>
+                    <p className="text-[8px] font-bold text-slate-500">Authorized Official</p>
                 </div>
             </div>
         </div>
@@ -157,26 +165,26 @@ function PaymentVoucherForm({
     const form = useForm<PVFormValues>({
         resolver: zodResolver(pvSchema),
         defaultValues: {
-            whtRate: 'wht-none',
-            vatRate: 'vat-none',
+            whtRateId: 'wht-none',
+            vatRateId: 'vat-none',
             grossAmount: 0,
         }
     });
 
     const watchGross = form.watch('grossAmount');
-    const watchWHT = form.watch('whtRate');
-    const watchVAT = form.watch('vatRate');
+    const watchWHTId = form.watch('whtRateId');
+    const watchVATId = form.watch('vatRateId');
 
     const calculations = useMemo(() => {
         const gross = parseFloat(String(watchGross)) || 0;
-        const whtRateVal = GHANA_WHT_RATES.find(r => r.id === watchWHT)?.rate ?? 0;
-        const vatRateVal = GHANA_VAT_RATES.find(r => r.id === watchVAT)?.rate ?? 0;
+        const whtRateVal = GHANA_WHT_RATES.find(r => r.id === watchWHTId)?.rate ?? 0;
+        const vatRateVal = GHANA_VAT_RATES.find(r => r.id === watchVATId)?.rate ?? 0;
         
         const wht = gross * whtRateVal;
         const vat = gross * vatRateVal;
         const net = (gross + vat) - wht;
         return { wht, vat, net };
-    }, [watchGross, watchWHT, watchVAT]);
+    }, [watchGross, watchWHTId, watchVATId]);
 
     const expenseAccounts = accounts.filter(a => ['Expense', 'Asset'].includes(a.type) && !a.isControlAccount);
     const assetAccounts = accounts.filter(a => ['Asset'].includes(a.type) && !a.isControlAccount);
@@ -268,7 +276,7 @@ function PaymentVoucherForm({
                 </div>
                 <div className="space-y-2">
                     <Label>WHT Rate</Label>
-                    <Select onValueChange={(id) => form.setValue('whtRate', id)} defaultValue="wht-none">
+                    <Select onValueChange={(id) => form.setValue('whtRateId', id)} defaultValue="wht-none">
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                         <SelectContent>
                             {GHANA_WHT_RATES.map(r => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
@@ -277,7 +285,7 @@ function PaymentVoucherForm({
                 </div>
                 <div className="space-y-2">
                     <Label>VAT Rate</Label>
-                    <Select onValueChange={(id) => form.setValue('vatRate', id)} defaultValue="vat-none">
+                    <Select onValueChange={(id) => form.setValue('vatRateId', id)} defaultValue="vat-none">
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                         <SelectContent>
                             {GHANA_VAT_RATES.map(r => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
@@ -326,6 +334,7 @@ export default function PaymentVouchersPage() {
 
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [selectedPV, setSelectedPV] = useState<any>(null);
+    const [isExporting, setIsExporting] = useState(false);
 
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: accounts, isLoading: accountsLoading } = useCollection<Account>(accountsQuery);
@@ -338,6 +347,25 @@ export default function PaymentVouchersPage() {
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
+    const handleDownloadPDF = async (pv: any) => {
+        const element = document.getElementById('printable-voucher');
+        if (!element) return;
+        
+        setIsExporting(true);
+        try {
+            const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            pdf.save(`Voucher_${pv.pvNumber}.pdf`);
+            toast({ title: "Voucher Downloaded" });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Export Failed" });
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     if (!canAccess) return <Card className="m-6"><CardHeader><CardTitle>Access Denied</CardTitle></CardHeader></Card>;
 
     const isLoading = schoolLoading || accountsLoading || pvLoading;
@@ -349,7 +377,7 @@ export default function PaymentVouchersPage() {
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                         <Receipt className="h-8 w-8 text-indigo-600"/> Payment Vouchers
                     </h1>
-                    <p className="text-muted-foreground font-medium italic">Process payments with automatic Ghana tax calculations.</p>
+                    <p className="text-muted-foreground font-medium italic">Archive of school expenditures and statutory tax records.</p>
                 </div>
                 <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
                     <DialogTrigger asChild>
@@ -431,6 +459,10 @@ export default function PaymentVouchersPage() {
                                                     <DialogFooter className="print:hidden">
                                                         <Button variant="outline" onClick={() => window.print()}>
                                                             <Printer className="mr-2 h-4 w-4"/> Print
+                                                        </Button>
+                                                        <Button onClick={() => handleDownloadPDF(pv)} disabled={isExporting} className="bg-indigo-600">
+                                                            {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>}
+                                                            Save PDF
                                                         </Button>
                                                     </DialogFooter>
                                                 </DialogContent>

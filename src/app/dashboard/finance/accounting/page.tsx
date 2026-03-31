@@ -1,17 +1,19 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
 import { collection, query, orderBy, where, doc, addDoc, serverTimestamp, setDoc, getDocs, writeBatch } from 'firebase/firestore';
 import { 
-  Loader2, Plus, Landmark, Save, Receipt, BookMarked, Printer, Eye, BookOpen, PlusCircle
+  Loader2, Plus, Landmark, Save, Receipt, BookMarked, Printer, Eye, BookOpen, PlusCircle, Download, ShieldCheck
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 // UI
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -297,15 +299,22 @@ function VoucherDocument({ pv, schoolProfile }: { pv: any, schoolProfile: any })
                 </tbody>
             </table>
 
-            <div className="grid grid-cols-2 gap-12 mt-16 pt-8 border-t border-dashed">
+            {/* THREE-POINT SIGNATURE SECTION */}
+            <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-dashed">
                 <div className="text-center">
                     <div className="border-b border-black h-8 mb-2"></div>
-                    <p className="text-[10px] font-black uppercase text-slate-400">Prepared By</p>
-                    <p className="text-xs font-bold">{pv.preparedByName}</p>
+                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">Accountant</p>
+                    <p className="text-[8px] font-bold text-slate-500">Prepared By: {pv.preparedByName}</p>
                 </div>
                 <div className="text-center">
                     <div className="border-b border-black h-8 mb-2"></div>
-                    <p className="text-[10px] font-black uppercase text-slate-400">Authorized Official</p>
+                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">Internal Auditor</p>
+                    <p className="text-[8px] font-bold text-slate-500">Vetted & Cleared</p>
+                </div>
+                <div className="text-center">
+                    <div className="border-b border-black h-8 mb-2"></div>
+                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">Director</p>
+                    <p className="text-[8px] font-bold text-slate-500">Authorized Official</p>
                 </div>
             </div>
         </div>
@@ -501,6 +510,8 @@ export default function AccountingPage() {
 
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [selectedPV, setSelectedPV] = useState<any>(null);
+    const [isExporting, setIsExporting] = useState(false);
+    const printRef = useRef<HTMLDivElement>(null);
 
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: accounts, isLoading: accountsLoading, forceRefetch: forceRefetchAccounts } = useCollection<Account>(accountsQuery);
@@ -516,6 +527,25 @@ export default function AccountingPage() {
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
     
+    const handleDownloadPDF = async (pv: any) => {
+        const element = document.getElementById('printable-voucher');
+        if (!element) return;
+        
+        setIsExporting(true);
+        try {
+            const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            pdf.save(`Voucher_${pv.pvNumber}.pdf`);
+            toast({ title: "Voucher Downloaded" });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Export Failed" });
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     if (!canAccess) return <div className="p-8 text-center text-red-500">Access Denied</div>;
 
     const isLoading = isLoadingSchool || accountsLoading || jLoading || pvLoading;
@@ -681,7 +711,13 @@ export default function AccountingPage() {
                                                             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                                                                 <DialogHeader><DialogTitle>Voucher Detail</DialogTitle></DialogHeader>
                                                                 <div className="p-4 bg-slate-100 rounded-xl overflow-hidden"><VoucherDocument pv={pv} schoolProfile={schoolProfile} /></div>
-                                                                <DialogFooter className="print:hidden"><Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print</Button></DialogFooter>
+                                                                <DialogFooter className="print:hidden">
+                                                                    <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print</Button>
+                                                                    <Button onClick={() => handleDownloadPDF(pv)} disabled={isExporting} className="bg-indigo-600">
+                                                                        {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>}
+                                                                        Save PDF
+                                                                    </Button>
+                                                                </DialogFooter>
                                                             </DialogContent>
                                                         </Dialog>
                                                     </TableCell>
