@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc, Timestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -142,10 +142,10 @@ export default function ReportCardManager() {
     }, [selectedStudentId, academicYear, term, firestore, schoolId]);
 
     const generateReport = async () => {
-        if (!firestore || !schoolId || !classId || !selectedStudentId) return;
+        if (!firestore || !schoolId || !classId || !selectedStudentId || !schoolProfile) return;
         
         if (areDatesMissing) {
-            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Term dates required." });
+            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Term dates are required to calculate attendance." });
             return;
         }
 
@@ -153,20 +153,46 @@ export default function ReportCardManager() {
         setProcessedReport(null);
 
         try {
+            // 1. Fetch Assessments
             const assessmentsRef = collection(firestore, 'assessments');
-            const q = query(
+            const qAssessments = query(
                 assessmentsRef, 
                 where('schoolId', '==', schoolId),
                 where('classId', '==', classId),
                 where('academicYear', '==', academicYear),
                 where('term', '==', term)
             );
-            const snap = await getDocs(q);
-            const allAssessments = snap.docs.map(d => d.data());
+            const assessmentSnap = await getDocs(qAssessments);
+            const allAssessments = assessmentSnap.docs.map(d => d.data());
 
+            // 2. Fetch Attendance for the term
+            const attendanceRef = collection(firestore, 'attendance');
+            const qAttendance = query(
+                attendanceRef,
+                where('schoolId', '==', schoolId),
+                where('classId', '==', classId),
+                where('date', '>=', schoolProfile.termStartDate),
+                where('date', '<=', schoolProfile.termEndDate)
+            );
+            const attSnap = await getDocs(qAttendance);
+            const allAttRecords = attSnap.docs.map(d => d.data());
+
+            // 3. Calculate Attendance Stats
+            const uniqueDates = new Set(allAttRecords.map(r => 
+                r.date?.toDate ? r.date.toDate().toDateString() : new Date(r.date).toDateString()
+            ));
+            const totalClassDays = uniqueDates.size;
+
+            const studentAtt = allAttRecords.filter(r => 
+                r.studentId === selectedStudentId && (r.status === 'Present' || r.status === 'Late')
+            );
+            const studentPresentDays = studentAtt.length;
+
+            // 4. Calculate Academic Stats
             const studentTotals: Record<string, number> = {};
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
+            
             activeStudents.forEach((stu: any) => {
                 let grandTotal = 0;
                 subjects?.forEach((sub: any) => {
@@ -233,6 +259,8 @@ export default function ReportCardManager() {
                 overallAverage: subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0,
                 classPosition,
                 totalStudents: activeStudents.length,
+                studentPresentDays,
+                totalClassDays,
                 id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`,
                 schoolName: schoolProfile?.name,
                 schoolMotto: schoolProfile?.motto,
@@ -252,7 +280,7 @@ export default function ReportCardManager() {
 
         } catch (error: any) {
             console.error(error);
-            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report." });
+            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report. Ensure assessments and attendance are recorded." });
         } finally {
             setIsGenerating(false);
         }
