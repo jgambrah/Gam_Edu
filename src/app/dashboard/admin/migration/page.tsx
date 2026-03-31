@@ -29,8 +29,10 @@ type MigrationTab = 'students' | 'grades' | 'parents' | 'balances';
 
 /**
  * Robust value extractor that handles common CSV variations and missing data.
+ * "Solid" mapping strategy for all data hubs.
  */
 function getRowValue(row: any, keys: string[]): string {
+  if (!row) return '';
   const rowKeys = Object.keys(row);
   for (const searchKey of keys) {
     // 1. Try exact match
@@ -156,7 +158,7 @@ export default function MigrationHubPage() {
       for (let i = 0; i < studentCsvData.length; i++) {
         const row = studentCsvData[i];
         
-        const email = getRowValue(row, ['Email', 'Email Address', 'User Email']).toLowerCase();
+        const email = getRowValue(row, ['Email', 'Email Address', 'User Email', 'student_email']).toLowerCase();
         const firstName = getRowValue(row, ['FirstName', 'First Name', 'Given Name']);
         const lastName = getRowValue(row, ['LastName', 'Last Name', 'Surname']);
         const rawClassName = getRowValue(row, ['ClassName', 'Class', 'Grade']);
@@ -233,11 +235,11 @@ export default function MigrationHubPage() {
 
       for (let i = 0; i < parentCsvData.length; i++) {
         const row = parentCsvData[i];
-        const email = getRowValue(row, ['Email', 'Email Address', 'Parent Email']).toLowerCase();
+        const email = getRowValue(row, ['Email', 'Email Address', 'Parent Email', 'parent_email']).toLowerCase();
         const firstName = getRowValue(row, ['FirstName', 'First Name', 'Parent FirstName']);
         const lastName = getRowValue(row, ['LastName', 'Last Name', 'Parent LastName']);
         const phone = getRowValue(row, ['Phone', 'PhoneNumber']);
-        const studentEmail = getRowValue(row, ['StudentEmail', 'Child Email']).toLowerCase();
+        const studentEmail = getRowValue(row, ['StudentEmail', 'Child Email', 'student_email']).toLowerCase();
 
         if (!email || !firstName) { failCount++; setParentImportProgress(i + 1); continue; }
 
@@ -291,10 +293,10 @@ export default function MigrationHubPage() {
 
       for (let i = 0; i < gradeCsvData.length; i++) {
         const row = gradeCsvData[i];
-        const email = getRowValue(row, ['Email', 'Student Email']).toLowerCase().trim();
-        const subjectName = getRowValue(row, ['SubjectName', 'Subject']);
-        const ca = getRowValue(row, ['CA', 'Test']);
-        const exam = getRowValue(row, ['Exam', 'Final']);
+        const email = getRowValue(row, ['Email', 'Student Email', 'student_email']).toLowerCase().trim();
+        const subjectName = getRowValue(row, ['SubjectName', 'Subject', 'subject_name']);
+        const ca = getRowValue(row, ['CA', 'Test', 'ca_score', 'assessment_score']);
+        const exam = getRowValue(row, ['Exam', 'Final', 'exam_score', 'test_score']);
         
         const studentInfo = studentMap.get(email);
         const targetSubjectId = subjectMap[subjectName] || null;
@@ -306,8 +308,8 @@ export default function MigrationHubPage() {
           classId: studentInfo.classId || 'unassigned',
           subjectId: targetSubjectId,
           subjectName: subjects?.find(s => s.id === targetSubjectId)?.name || subjectName,
-          academicYear: getRowValue(row, ['Year']) || '2024-2025',
-          term: getRowValue(row, ['Term']) || 'First Term',
+          academicYear: getRowValue(row, ['Year', 'academic_year']) || '2024-2025',
+          term: getRowValue(row, ['Term', 'academic_term']) || 'First Term',
           schoolId, createdAt: serverTimestamp(), maxScore: 100
         };
 
@@ -342,11 +344,17 @@ export default function MigrationHubPage() {
     let failCount = 0;
 
     try {
+      // 1. Fetch Students to build lookup map
       const studentsSnapshot = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
       const studentMap = new Map<string, any>();
       studentsSnapshot.docs.forEach(docSnap => {
         const data = docSnap.data();
-        if (data.email) studentMap.set(data.email.toLowerCase().trim(), { uid: docSnap.id, firstName: data.firstName, lastName: data.lastName, classId: data.classId });
+        if (data.email) studentMap.set(data.email.toLowerCase().trim(), { 
+          uid: docSnap.id, 
+          firstName: data.firstName, 
+          lastName: data.lastName, 
+          classId: data.classId 
+        });
       });
 
       let batch = writeBatch(firestore);
@@ -354,11 +362,14 @@ export default function MigrationHubPage() {
 
       for (let i = 0; i < balanceCsvData.length; i++) {
         const row = balanceCsvData[i];
-        const email = getRowValue(row, ['Email', 'Student Email', 'Email Address']).toLowerCase().trim();
-        const balanceStr = getRowValue(row, ['Balance', 'Closing Balance', 'Amount', 'Arrears']);
+        const email = getRowValue(row, ['Email', 'Student Email', 'Email Address', 'student_email']).toLowerCase().trim();
+        const balanceStr = getRowValue(row, ['Balance', 'Closing Balance', 'Amount', 'Arrears', 'outstanding', 'debt']);
         
         const studentInfo = studentMap.get(email);
-        const amount = parseFloat(balanceStr.replace(/[^0-9.-]+/g, ""));
+        
+        // Solid parsing: Handle commas, currency symbols and extra characters
+        const cleanAmountStr = balanceStr.replace(/[^0-9.-]+/g, "");
+        const amount = parseFloat(cleanAmountStr);
 
         if (!studentInfo || isNaN(amount) || amount <= 0) {
           failCount++;
@@ -410,7 +421,7 @@ export default function MigrationHubPage() {
   const uniqueCsvClasses = useMemo(() => {
     const set = new Set<string>();
     studentCsvData.forEach(row => {
-      const val = getRowValue(row, ['ClassName', 'Class', 'Grade']);
+      const val = getRowValue(row, ['ClassName', 'Class', 'Grade', 'class_name']);
       if (val) set.add(val);
     });
     return Array.from(set);
@@ -419,7 +430,7 @@ export default function MigrationHubPage() {
   const uniqueCsvSubjects = useMemo(() => {
     const set = new Set<string>();
     gradeCsvData.forEach(row => {
-      const val = getRowValue(row, ['SubjectName', 'Subject', 'Topic']);
+      const val = getRowValue(row, ['SubjectName', 'Subject', 'Topic', 'subject_name']);
       if (val) set.add(val);
     });
     return Array.from(set);
@@ -516,8 +527,8 @@ export default function MigrationHubPage() {
                     <TableBody>
                       {parentCsvData.slice(0, 5).map((row, i) => (
                         <TableRow key={i}>
-                          <TableCell className="text-xs font-bold">{getRowValue(row, ['FirstName'])} {getRowValue(row, ['LastName'])}</TableCell>
-                          <TableCell className="text-xs text-pink-600">{getRowValue(row, ['StudentEmail']) || 'No Link'}</TableCell>
+                          <TableCell className="text-xs font-bold">{getRowValue(row, ['FirstName', 'First Name'])} {getRowValue(row, ['LastName', 'Last Name'])}</TableCell>
+                          <TableCell className="text-xs text-pink-600">{getRowValue(row, ['StudentEmail', 'Child Email', 'student_email']) || 'No Link'}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -527,7 +538,7 @@ export default function MigrationHubPage() {
               <CardFooter className="bg-slate-50 p-8 border-t">
                 <Button onClick={executeParentImport} disabled={isImportingParents || parentCsvData.length === 0} className="w-full h-14 bg-pink-600 text-white font-black uppercase">Migrate Parents ({parentCsvData.length})</Button>
               </CardFooter>
-            </Card>
+            </div>
           </div>
         </TabsContent>
 
@@ -581,9 +592,9 @@ export default function MigrationHubPage() {
                 <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 space-y-3">
                     <div className="flex items-center gap-2">
                         <Info className="h-4 w-4 text-emerald-600" />
-                        <h4 className="text-xs font-black text-emerald-900 uppercase">CSV Format</h4>
+                        <h4 className="text-xs font-black text-emerald-900 uppercase">Solid Mapping</h4>
                     </div>
-                    <p className="text-[10px] text-emerald-700 leading-tight">Required Headers: Email, Balance (or Arrears)</p>
+                    <p className="text-[10px] text-emerald-700 leading-tight">Headers accepted: Email, Balance, Closing Balance, Arrears, or Debt.</p>
                 </div>
 
                 <div className="border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 relative group cursor-pointer">
@@ -604,7 +615,7 @@ export default function MigrationHubPage() {
             <Card className="lg:col-span-2 shadow-xl rounded-[2.5rem] bg-white overflow-hidden border-none">
               <CardHeader className="bg-slate-900 text-white p-8">
                 <CardTitle className="text-xl font-black uppercase tracking-tight">2. Review Arrears</CardTitle>
-                <CardDescription className="text-slate-400 font-bold text-xs mt-1">Closing balances will be recorded as 'Opening Balance' bills.</CardDescription>
+                <CardDescription className="text-slate-400 font-bold text-xs mt-1">Parsed balances will be recorded as 'Opening Balance' bills.</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
                 {isImportingBalances && <Progress value={balanceImportPercentage} className="h-3 mb-6 bg-emerald-100" />}
@@ -620,18 +631,24 @@ export default function MigrationHubPage() {
                       <TableHeader className="bg-slate-50">
                         <TableRow>
                           <TableHead className="text-[10px] font-black uppercase">Student Email</TableHead>
-                          <TableHead className="text-[10px] font-black uppercase text-right">Balance (GH₵)</TableHead>
+                          <TableHead className="text-[10px] font-black uppercase text-right">Parsed Balance (GH₵)</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {balanceCsvData.slice(0, 10).map((row, i) => (
-                          <TableRow key={i}>
-                            <TableCell className="text-xs font-medium">{getRowValue(row, ['Email', 'Student Email'])}</TableCell>
-                            <TableCell className="text-xs font-bold text-right text-red-600">
-                                {getRowValue(row, ['Balance', 'Arrears', 'Amount'])}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {balanceCsvData.slice(0, 10).map((row, i) => {
+                          const email = getRowValue(row, ['Email', 'Student Email', 'Email Address', 'student_email']);
+                          const balStr = getRowValue(row, ['Balance', 'Arrears', 'Amount', 'Closing Balance', 'debt']);
+                          const cleanAmt = balStr.replace(/[^0-9.-]+/g, "");
+                          
+                          return (
+                            <TableRow key={i}>
+                              <TableCell className="text-xs font-medium">{email}</TableCell>
+                              <TableCell className="text-xs font-black text-right text-red-600">
+                                  {isNaN(parseFloat(cleanAmt)) ? 'Invalid' : `GH₵${parseFloat(cleanAmt).toFixed(2)}`}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                     {balanceCsvData.length > 10 && <div className="p-3 text-center text-[10px] text-slate-400 font-bold uppercase border-t bg-slate-50">And {balanceCsvData.length - 10} more...</div>}
@@ -644,7 +661,7 @@ export default function MigrationHubPage() {
                     disabled={isImportingBalances || balanceCsvData.length === 0} 
                     className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest rounded-2xl shadow-xl"
                 >
-                  {isImportingBalances ? <Loader2 className="animate-spin mr-2"/> : <Database className="mr-2 h-4 w-4"/>}
+                  {isImportingBalances ? <Loader2 className="animate-spin mr-3 h-6 w-6"/> : <Database className="mr-3 h-6 w-6"/>}
                   Inject Opening Balances ({balanceCsvData.length})
                 </Button>
               </CardFooter>
