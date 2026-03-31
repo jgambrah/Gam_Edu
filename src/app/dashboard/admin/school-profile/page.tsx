@@ -69,7 +69,7 @@ export default function SchoolProfilePage() {
         setEmail(profile.email || '');
         setWebsite(profile.website || '');
         setLogoUrl(profile.logoUrl || '');
-        setHeadmasterSignature(profile.headmasterSignature || '');
+        setHeadmasterSignature(profile.headmasterSignature || profile.headmasterSignatureUrl || '');
         setCaWeight(profile.caWeight ?? 30);
         setExamWeight(profile.examWeight ?? 70);
         
@@ -97,6 +97,7 @@ export default function SchoolProfilePage() {
       setLogoUrl(url);
       toast({ title: "Logo Uploaded", description: "Preview updated. Remember to save changes." });
     } catch (error: any) {
+      console.error(`logo upload error:`, error);
       toast({ variant: 'destructive', title: "Upload Failed", description: "Could not save logo." });
     } finally {
       setIsUploadingLogo(false);
@@ -131,7 +132,9 @@ export default function SchoolProfilePage() {
     setIsSaving(true);
     try {
         const brandingData = {
-            name, motto, address, phone, email, website, logoUrl, headmasterSignature,
+            name, motto, address, phone, email, website, logoUrl, 
+            headmasterSignature,
+            headmasterSignatureUrl: headmasterSignature, // Aligning field names
             termStartDate: termStartDate ? Timestamp.fromDate(termStartDate) : null,
             termEndDate: termEndDate ? Timestamp.fromDate(termEndDate) : null,
             nextTermDate: nextTermDate ? Timestamp.fromDate(nextTermDate) : null,
@@ -151,6 +154,7 @@ export default function SchoolProfilePage() {
         
         toast({ title: "Settings Saved", description: "School profile updated successfully." });
     } catch (error: any) {
+        console.error(error);
         toast({ variant: 'destructive', title: "Error", description: "Could not save profile." });
     } finally {
         setIsSaving(false);
@@ -193,7 +197,7 @@ export default function SchoolProfilePage() {
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-sm font-bold text-slate-700">Headmaster Signature</Label>
+                            <Label className="text-sm font-bold text-slate-700">Headmaster Signature (Global)</Label>
                             <div className="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 transition-colors hover:bg-slate-50 h-full justify-center text-center">
                                 <div className="relative h-32 w-full border-4 border-white rounded-2xl overflow-hidden bg-white shadow-xl flex items-center justify-center shrink-0">
                                     {headmasterSignature ? (

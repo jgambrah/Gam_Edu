@@ -5,7 +5,6 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser 
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc } from 'firebase/firestore';
-import { format, startOfDay, endOfDay } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -27,10 +26,6 @@ import { notifyParents } from '@/app/actions/notifications';
 
 // --- HELPERS ---
 
-/**
- * Fetches an image via the local proxy and converts it to a Base64 data URI.
- * This is the ONLY way to bypass CORS restrictions for html2canvas PDF generation.
- */
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
         const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
@@ -122,7 +117,6 @@ export default function ReportCardManager() {
 
     const areDatesMissing = !schoolProfile?.termStartDate || !schoolProfile?.termEndDate;
 
-    // Filter for Active Students
     const activeStudents = useMemo(() => {
         if (!students) return [];
         return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
@@ -138,9 +132,7 @@ export default function ReportCardManager() {
                 const data = snap.data();
                 setClassTeacherComment(data.classTeacherComment || '');
                 setHeadmasterComment(data.headmasterComment || '');
-                if (data.schoolId === schoolId) {
-                    setProcessedReport(data);
-                }
+                setProcessedReport(data);
             } else {
                 setClassTeacherComment('');
                 setHeadmasterComment('');
@@ -153,7 +145,7 @@ export default function ReportCardManager() {
         if (!firestore || !schoolId || !classId || !selectedStudentId) return;
         
         if (areDatesMissing) {
-            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Please ask the Administrator to configure the Term Dates." });
+            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Term dates required." });
             return;
         }
 
@@ -172,14 +164,9 @@ export default function ReportCardManager() {
             const snap = await getDocs(q);
             const allAssessments = snap.docs.map(d => d.data());
 
-            // --- CALCULATE RANKS ---
             const studentTotals: Record<string, number> = {};
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
-
-            subjects?.forEach((sub: any) => { 
-                subjectStats[sub.id] = { totalScores: [], sum: 0 }; 
-            });
-
+            subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
             activeStudents.forEach((stu: any) => {
                 let grandTotal = 0;
                 subjects?.forEach((sub: any) => {
@@ -187,15 +174,9 @@ export default function ReportCardManager() {
                     let total100 = 0;
                     if (stuSubjAssessments.length > 0) {
                         const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
-                        const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
-                        const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                        const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
-
+                        const weightedCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * CA_WEIGHT;
                         const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
-                        const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
-                        const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                        const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
-
+                        const weightedExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * EXAM_WEIGHT;
                         total100 = Math.round(weightedCA + weightedExam);
                     }
                     grandTotal += total100;
@@ -208,55 +189,38 @@ export default function ReportCardManager() {
             });
 
             const myTotal = studentTotals[selectedStudentId] || 0;
-            const higherCount = Object.values(studentTotals).filter(t => t > myTotal).length;
-            const classPosition = formatOrdinal(higherCount + 1);
+            const classPosition = formatOrdinal(Object.values(studentTotals).filter(t => t > myTotal).length + 1);
+            const targetStudent = activeStudents.find((s: any) => s.uid === selectedStudentId);
 
-            const targetStudent = activeStudents.find((s:any) => s.uid === selectedStudentId);
             const reportRows: any[] = [];
             let myGrandTotal = 0;
             let subjectsTaken = 0;
-
             subjects?.forEach((sub: any) => {
                 const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
-                if (myAssessments.length === 0) return; 
-
+                if (myAssessments.length === 0) return;
                 const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
-                const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
-                const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
-
-                const exams = myAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id && a.assessmentType.includes('Exam'));
-                const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
-                const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-                const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
-
+                const weightedCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * CA_WEIGHT;
+                const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
+                const weightedExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * EXAM_WEIGHT;
                 const total100 = Math.round(weightedCA + weightedExam);
                 myGrandTotal += total100;
                 subjectsTaken++;
-
                 const { grade, autoRemark } = getGradeAndRemark(total100);
-                const subjectHigherCount = subjectStats[sub.id].totalScores.filter(s => s > total100).length;
-                const mySubjectRank = formatOrdinal(subjectHigherCount + 1);
-
                 reportRows.push({
                     subjectName: sub.name,
                     ca: Math.round(weightedCA),
                     exam: Math.round(weightedExam),
-                    total: total100,
-                    grade,
-                    autoRemark,
-                    classAverage: subjectStats[sub.id].totalScores.length > 0 ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) : 0,
-                    position: mySubjectRank
+                    total: total100, grade, autoRemark,
+                    classAverage: subjectStats[sub.id].totalScores.length > 0
+                        ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) : 0,
+                    position: formatOrdinal(subjectStats[sub.id].totalScores.filter(s => s > total100).length + 1)
                 });
             });
 
-            const overallAverage = subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0;
-
-            // ✅ FIX: Fetch latest school data for signatures (from 'schools' collection)
+            // SOVEREIGN SIGNATURE RECONCILIATION
             const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
             const schoolData = schoolDoc.data();
 
-            // ✅ FIX: Parallel Base64 conversion for logo and all authorized signatures
             const [logoB64, headmasterSigB64, teacherSigB64] = await Promise.all([
                 schoolProfile?.logoUrl ? getBase64ImageFromUrl(schoolProfile.logoUrl) : Promise.resolve(''),
                 schoolData?.headmasterSignatureUrl ? getBase64ImageFromUrl(schoolData.headmasterSignatureUrl) : Promise.resolve(''),
@@ -267,29 +231,29 @@ export default function ReportCardManager() {
                 student: targetStudent,
                 studentId: selectedStudentId,
                 rows: reportRows,
-                overallAverage,
+                overallAverage: subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0,
                 classPosition,
                 totalStudents: activeStudents.length,
-                logoBase64: logoB64,
-                headmasterSigBase64: headmasterSigB64,
-                teacherSigBase64: teacherSigB64,
+                id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`,
                 schoolName: schoolProfile?.name,
                 schoolMotto: schoolProfile?.motto,
                 schoolAddress: schoolProfile?.address,
                 schoolPhone: schoolProfile?.phone,
                 schoolEmail: schoolProfile?.email,
                 nextTermDate: schoolProfile?.nextTermDate || null,
+                logoBase64: logoB64,
+                headmasterSigBase64: headmasterSigB64,
+                teacherSigBase64: teacherSigB64,
+                classTeacherName: `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim(),
+                classTeacherSignatureUrl: profile?.signatureUrl || null,
                 term,
                 academicYear,
-                className: classes?.find((c:any) => c.id === classId)?.name || '',
-                id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`,
-                classTeacherName: `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim(),
-                classTeacherSignatureUrl: profile?.signatureUrl || null
+                className: classes?.find((c: any) => c.id === classId)?.name || '',
             });
 
         } catch (error: any) {
             console.error(error);
-            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report data." });
+            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report." });
         } finally {
             setIsGenerating(false);
         }
@@ -309,13 +273,11 @@ export default function ReportCardManager() {
                 updatedAt: serverTimestamp()
             };
             
-            // Don't save large base64 strings to Firestore to save space
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
-            
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             toast({ title: "Draft Saved" });
         } catch (e) {
-            toast({ variant: 'destructive', title: "Error", description: "Failed to save progress." });
+            toast({ variant: 'destructive', title: "Error" });
         } finally {
             setIsSaving(false);
         }
@@ -325,7 +287,6 @@ export default function ReportCardManager() {
         if (!processedReport || !schoolId || isPublishing) return;
         setIsPublishing(true);
         try {
-            // Re-fetch latest school details for signing
             const schoolDoc = await getDoc(doc(firestore!, 'schools', schoolId));
             const schoolData = schoolDoc.data();
 
@@ -342,10 +303,8 @@ export default function ReportCardManager() {
             };
 
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
-            
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             toast({ title: "Report Published!" });
-            
             await notifyParents([selectedStudentId!], "Report Card Ready 🎓", `Report for ${processedReport.student?.firstName} is now available.`, "/dashboard/my-reports");
         } catch (e) {
             toast({ variant: 'destructive', title: "Error" });
@@ -386,10 +345,9 @@ export default function ReportCardManager() {
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
             pdf.save(`${processedReport.student?.firstName}_Report_${term}.pdf`);
-            
             toast({ title: "Export Complete" });
         } catch (error) {
-            console.error("PDF Export Error:", error);
+            console.error(error);
             toast({ variant: 'destructive', title: "Export Failed" });
         } finally {
             setIsExporting(false);
@@ -438,11 +396,7 @@ export default function ReportCardManager() {
                         <Label>Student</Label>
                         <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
                             <SelectTrigger className="bg-white"><SelectValue placeholder="Choose Student"/></SelectTrigger>
-                            <SelectContent>
-                                {activeStudents.map((s:any) => (
-                                    <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>
-                                ))}
-                            </SelectContent>
+                            <SelectContent>{activeStudents.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                 </CardContent>
@@ -469,10 +423,7 @@ export default function ReportCardManager() {
                         </CardContent>
                         <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
                             <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary">
-                                {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>} 
-                                {isExporting ? 'Generating...' : 'Save PDF'}
-                            </Button>
+                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary">{isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>} Save PDF</Button>
                             <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800"><Save className="mr-2 h-4 w-4"/> Save Draft</Button>
                             {isAdminOrDirector && (
                                 <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700">
