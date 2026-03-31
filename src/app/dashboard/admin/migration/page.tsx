@@ -24,6 +24,7 @@ import { extractStudentsFromText } from '@/ai/flows/extract-students-flow';
 import type { Class, Subject, Student, FinancialRecord } from '@/lib/types';
 import { generateNextStudentId } from '@/lib/student-utils';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type MigrationTab = 'students' | 'grades' | 'parents' | 'balances';
 
@@ -460,8 +461,19 @@ export default function MigrationHubPage() {
         <TabsContent value="students" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <Card className="lg:col-span-1 border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem]">
-              <CardHeader><CardTitle className="text-lg font-black uppercase text-slate-800">1. Student Source</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="text-lg font-black uppercase text-slate-800">1. Student Source</CardTitle>
+                <CardDescription className="text-xs font-medium text-indigo-600">Onboard students in bulk.</CardDescription>
+              </CardHeader>
               <CardContent className="space-y-6">
+                <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 space-y-3">
+                    <div className="flex items-center gap-2">
+                        <Info className="h-4 w-4 text-indigo-600" />
+                        <h4 className="text-xs font-black text-indigo-900 uppercase">Solid Mapping</h4>
+                    </div>
+                    <p className="text-[10px] text-indigo-700 leading-tight">Headers accepted: Email, FirstName, LastName, Class, Gender.</p>
+                </div>
+
                 {!showTextPaste ? (
                   <div className="space-y-4">
                     <div className="border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 transition-all group cursor-pointer relative">
@@ -474,7 +486,10 @@ export default function MigrationHubPage() {
                 ) : (
                   <div className="space-y-4">
                     <Textarea value={rawText} onChange={e => setRawText(e.target.value)} placeholder="Paste PDF text here..." className="h-48 rounded-2xl" />
-                    <Button disabled={isExtracting} onClick={handleAiExtract} className="w-full bg-purple-600 font-bold">{isExtracting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Wand2 className="mr-2 h-4 w-4"/>} AI Extract</Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={() => setShowTextPaste(false)} className="flex-1 rounded-xl">Cancel</Button>
+                        <Button disabled={isExtracting} onClick={handleAiExtract} className="flex-[2] bg-purple-600 font-bold rounded-xl">{isExtracting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Wand2 className="mr-2 h-4 w-4"/>} AI Extract</Button>
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -498,7 +513,7 @@ export default function MigrationHubPage() {
                 )}
               </CardContent>
               <CardFooter className="bg-slate-50 p-8 border-t">
-                <Button onClick={executeStudentImport} disabled={isImportingStudents || studentCsvData.length === 0} className="w-full h-14 bg-indigo-600 text-white font-black uppercase">Migrate Students ({studentCsvData.length})</Button>
+                <Button onClick={executeStudentImport} disabled={isImportingStudents || studentCsvData.length === 0} className="w-full h-14 bg-indigo-600 text-white font-black uppercase rounded-2xl shadow-lg">Migrate Students ({studentCsvData.length})</Button>
               </CardFooter>
             </Card>
           </div>
@@ -508,10 +523,21 @@ export default function MigrationHubPage() {
         <TabsContent value="parents" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <Card className="lg:col-span-1 border-t-4 border-t-pink-600 shadow-xl rounded-[2rem]">
-              <CardHeader><CardTitle className="text-lg font-black uppercase text-slate-800">1. Parent Source</CardTitle></CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 relative">
-                  <HeartHandshake className="h-12 w-12 text-slate-300 mb-4" />
+              <CardHeader>
+                <CardTitle className="text-lg font-black uppercase text-slate-800">1. Parent Source</CardTitle>
+                <CardDescription className="text-xs font-medium text-pink-600">Link parents to existing students.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="bg-pink-50 p-4 rounded-2xl border border-pink-100 space-y-3">
+                    <div className="flex items-center gap-2">
+                        <Info className="h-4 w-4 text-pink-600" />
+                        <h4 className="text-xs font-black text-pink-900 uppercase">Solid Mapping</h4>
+                    </div>
+                    <p className="text-[10px] text-pink-700 leading-tight">Headers accepted: Email, FirstName, LastName, Phone, StudentEmail.</p>
+                </div>
+
+                <div className="border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 relative group cursor-pointer">
+                  <HeartHandshake className="h-12 w-12 text-slate-300 group-hover:text-pink-500 mb-4 transition-colors" />
                   <p className="text-sm font-bold text-slate-600">Upload Parent CSV</p>
                   <input type="file" accept=".csv" onChange={(e) => handleFileUpload(e, 'parents')} className="absolute inset-0 opacity-0 cursor-pointer" />
                 </div>
@@ -536,7 +562,7 @@ export default function MigrationHubPage() {
                 )}
               </CardContent>
               <CardFooter className="bg-slate-50 p-8 border-t">
-                <Button onClick={executeParentImport} disabled={isImportingParents || parentCsvData.length === 0} className="w-full h-14 bg-pink-600 text-white font-black uppercase">Migrate Parents ({parentCsvData.length})</Button>
+                <Button onClick={executeParentImport} disabled={isImportingParents || parentCsvData.length === 0} className="w-full h-14 bg-pink-600 text-white font-black uppercase rounded-2xl shadow-lg">Migrate Parents ({parentCsvData.length})</Button>
               </CardFooter>
             </Card>
           </div>
@@ -546,10 +572,21 @@ export default function MigrationHubPage() {
         <TabsContent value="grades" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <Card className="lg:col-span-1 border-t-4 border-t-orange-600 shadow-xl rounded-[2rem]">
-              <CardHeader><CardTitle className="text-lg font-black uppercase text-slate-800">1. Grades Source</CardTitle></CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 relative">
-                  <FileText className="h-12 w-12 text-slate-300 mb-4" />
+              <CardHeader>
+                <CardTitle className="text-lg font-black uppercase text-slate-800">1. Grades Source</CardTitle>
+                <CardDescription className="text-xs font-medium text-orange-600">Import historical academic records.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="bg-orange-50 p-4 rounded-2xl border border-orange-100 space-y-3">
+                    <div className="flex items-center gap-2">
+                        <Info className="h-4 w-4 text-orange-600" />
+                        <h4 className="text-xs font-black text-orange-900 uppercase">Solid Mapping</h4>
+                    </div>
+                    <p className="text-[10px] text-orange-700 leading-tight">Headers accepted: Email, Subject, CA, Exam, Year, Term.</p>
+                </div>
+
+                <div className="border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 relative group cursor-pointer">
+                  <FileText className="h-12 w-12 text-slate-300 group-hover:text-orange-500 mb-4 transition-colors" />
                   <p className="text-sm font-bold text-slate-600">Upload Grades CSV</p>
                   <input type="file" accept=".csv" onChange={(e) => handleFileUpload(e, 'grades')} className="absolute inset-0 opacity-0 cursor-pointer" />
                 </div>
@@ -574,7 +611,7 @@ export default function MigrationHubPage() {
                 )}
               </CardContent>
               <CardFooter className="bg-slate-50 p-8 border-t">
-                <Button onClick={executeGradeImport} disabled={isImportingGrades || gradeCsvData.length === 0} className="w-full h-14 bg-orange-600 text-white font-black uppercase">Migrate History ({gradeCsvData.length})</Button>
+                <Button onClick={executeGradeImport} disabled={isImportingGrades || gradeCsvData.length === 0} className="w-full h-14 bg-orange-600 text-white font-black uppercase rounded-2xl shadow-lg">Migrate History ({gradeCsvData.length})</Button>
               </CardFooter>
             </Card>
           </div>
