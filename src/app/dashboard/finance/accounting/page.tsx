@@ -27,30 +27,32 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AppLogo } from '@/components/icons/app-logo';
-import { Account, JournalLine, journalEntrySchema, ACCOUNT_TYPES, accountSchema } from '@/lib/types';
+import { Account, JournalLine, JournalEntry, journalEntrySchema, ACCOUNT_TYPES, accountSchema } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
-// --- CONSTANTS: GHANA TAX (REFINED WITH UNIQUE IDS) ---
+// --- CONSTANTS: GHANA TAX 2025/2026 (ACT 1151 COMPLIANT) ---
 const GHANA_WHT_RATES = [
   { id: 'wht-none',          label: 'None (0%)',                        rate: 0 },
-  { id: 'wht-goods',         label: 'Goods / Supply (3%)',              rate: 0.03 },
-  { id: 'wht-services',      label: 'Services (7.5%)',                  rate: 0.075 },
-  { id: 'wht-rent',          label: 'Rent (8%)',                        rate: 0.08 },
-  { id: 'wht-consultancy',   label: 'Consultancy/Professional (7.5%)',  rate: 0.075 },
+  { id: 'wht-goods',         label: 'Supply of Goods (3%)',             rate: 0.03 },
+  { id: 'wht-works',         label: 'Supply of Works (5%)',             rate: 0.05 },
+  { id: 'wht-services',      label: 'Supply of Services (7.5%)',        rate: 0.075 },
+  { id: 'wht-rent-res',      label: 'Residential Rent (8%)',            rate: 0.08 },
+  { id: 'wht-div-int',       label: 'Dividends / Interest (8%)',        rate: 0.08 },
+  { id: 'wht-mgmt-nonres',   label: 'Mgmt Fees / Non-Res / Rent (15%)', rate: 0.15 },
+  { id: 'wht-allowances',    label: 'Director Allowances (20%)',        rate: 0.20 },
 ];
 
 const GHANA_VAT_RATES = [
-  { id: 'vat-none',      label: 'No VAT (0%)',                    rate: 0 },
-  { id: 'vat-standard',  label: 'Standard VAT + Levies (21.9%)',  rate: 0.219 }, 
-  { id: 'vat-flat',      label: 'Flat Rate Scheme (4%)',          rate: 0.04 },
+  { id: 'vat-none',          label: 'No VAT (0%)',                      rate: 0 },
+  { id: 'vat-consolidated',  label: 'Consolidated Standard Rate (20%)', rate: 0.20 },
 ];
 
 const pvSchema = z.object({
     payee: z.string().min(1, "Payee name is required."),
     description: z.string().min(1, "Particulars are required."),
     grossAmount: z.coerce.number().min(0.01, "Amount must be positive."),
-    whtRate: z.coerce.number(),
-    vatRate: z.coerce.number(),
+    whtRateId: z.string(),
+    vatRateId: z.string(),
     debitAccountId: z.string().min(1, "Select an expense or asset account."),
     creditAccountId: z.string().min(1, "Select a bank or cash account."),
 });
@@ -330,26 +332,26 @@ function PaymentVoucherForm({
     const form = useForm<PVFormValues>({
         resolver: zodResolver(pvSchema),
         defaultValues: {
-            whtRate: 0,
-            vatRate: 0,
+            whtRateId: 'wht-none',
+            vatRateId: 'vat-none',
             grossAmount: 0,
         }
     });
 
     const watchGross = form.watch('grossAmount');
-    const watchWHT = form.watch('whtRate');
-    const watchVAT = form.watch('vatRate');
+    const watchWHTId = form.watch('whtRateId');
+    const watchVATId = form.watch('vatRateId');
 
     const calculations = useMemo(() => {
         const gross = parseFloat(String(watchGross)) || 0;
-        const whtRateVal = GHANA_WHT_RATES.find(r => r.id === String(watchWHT))?.rate ?? 0;
-        const vatRateVal = GHANA_VAT_RATES.find(r => r.id === String(watchVAT))?.rate ?? 0;
+        const whtRateVal = GHANA_WHT_RATES.find(r => r.id === watchWHTId)?.rate ?? 0;
+        const vatRateVal = GHANA_VAT_RATES.find(r => r.id === watchVATId)?.rate ?? 0;
         
         const wht = gross * whtRateVal;
         const vat = gross * vatRateVal;
         const net = (gross + vat) - wht;
         return { wht, vat, net };
-    }, [watchGross, watchWHT, watchVAT]);
+    }, [watchGross, watchWHTId, watchVATId]);
 
     const expenseAccounts = accounts.filter(a => ['Expense', 'Asset'].includes(a.type) && !a.isControlAccount);
     const bankAccounts = accounts.filter(a => ['Asset'].includes(a.type) && !a.isControlAccount);
@@ -440,8 +442,8 @@ function PaymentVoucherForm({
                     <Input type="number" step="0.01" {...form.register('grossAmount')} className="font-bold text-lg" />
                 </div>
                 <div className="space-y-2">
-                    <Label>WHT Rate</Label>
-                    <Select onValueChange={(id) => form.setValue('whtRate', id as any)} defaultValue="wht-none">
+                    <Label>WHT Type</Label>
+                    <Select onValueChange={(id) => form.setValue('whtRateId', id)} value={watchWHTId}>
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                         <SelectContent>
                             {GHANA_WHT_RATES.map(r => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
@@ -449,8 +451,8 @@ function PaymentVoucherForm({
                     </Select>
                 </div>
                 <div className="space-y-2">
-                    <Label>VAT Rate</Label>
-                    <Select onValueChange={(id) => form.setValue('vatRate', id as any)} defaultValue="vat-none">
+                    <Label>VAT Rate (Act 1151)</Label>
+                    <Select onValueChange={(id) => form.setValue('vatRateId', id)} value={watchVATId}>
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                         <SelectContent>
                             {GHANA_VAT_RATES.map(r => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
@@ -628,7 +630,7 @@ export default function AccountingPage() {
                                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                                     <DialogHeader>
                                         <DialogTitle>Create Payment Voucher</DialogTitle>
-                                        <DialogDescription>Statutory taxes and GL accounts are automatically calculated.</DialogDescription>
+                                        <DialogDescription>Statutory taxes and GL accounts are automatically calculated based on Ghana 2026 Act 1151.</DialogDescription>
                                     </DialogHeader>
                                     {schoolId && accounts && (
                                         <PaymentVoucherForm 
