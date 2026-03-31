@@ -53,7 +53,12 @@ function StudentAssignmentDialog({
   }, [allRoutes]);
   
   const availableStudents = useMemo(() => {
-    return students.filter(s => s.usesBusService === true && !globallyAssignedIds.includes(s.uid));
+    // Filter for ACTIVE subscribers only
+    return students.filter(s => 
+        s.usesBusService === true && 
+        (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) &&
+        !globallyAssignedIds.includes(s.uid)
+    );
   }, [students, globallyAssignedIds]);
   
   const form = useForm<z.infer<typeof assignmentSchema>>({
@@ -101,11 +106,15 @@ function StudentAssignmentDialog({
   
   const assignedInThisRoute = useMemo(() => {
     return route.stops?.flatMap(stop => 
-        stop.assignedStudentIds.map(studentId => ({
-            student: students.find(s => s.uid === studentId),
-            stop: stop
-        }))
-    ).filter(item => item.student) || [];
+        stop.assignedStudentIds.map(studentId => {
+            const student = students.find(s => s.uid === studentId);
+            // Verify student exists and is ACTIVE
+            if (student && (student.enrollmentStatus === 'Active' || !student.enrollmentStatus)) {
+                return { student, stop };
+            }
+            return null;
+        })
+    ).filter((item): item is { student: Student, stop: Stop } => item !== null) || [];
   }, [route, students]);
 
   return (
@@ -135,7 +144,7 @@ function StudentAssignmentDialog({
                             <SelectContent>
                                 {availableStudents.length === 0 ? (
                                     <div className="p-4 text-center text-xs text-muted-foreground italic">
-                                        No unassigned bus subscribers found.
+                                        No unassigned active bus subscribers found.
                                     </div>
                                 ) : (
                                     availableStudents.map(s => (
@@ -504,7 +513,11 @@ export default function TransportPage() {
 
   const subscribedStudents = useMemo(() => {
     if (!students) return [];
-    return students.filter(s => s.usesBusService === true);
+    // Filter for ACTIVE bus service subscribers
+    return students.filter(s => 
+        s.usesBusService === true && 
+        (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
+    );
   }, [students]);
 
   const handleEditRoute = (route: Route) => {
@@ -600,7 +613,11 @@ export default function TransportPage() {
                             {stop.assignedStudentIds?.length > 0 ? (
                                 stop.assignedStudentIds.map(studentId => {
                                     const student = students?.find(s => s.uid === studentId);
-                                    return student ? <div key={studentId} className="flex items-center gap-2 text-sm"><StudentDisplay student={student} variant="compact" /></div> : null;
+                                    // Verify student exists and is ACTIVE
+                                    if (student && (student.enrollmentStatus === 'Active' || !student.enrollmentStatus)) {
+                                        return <div key={studentId} className="flex items-center gap-2 text-sm"><StudentDisplay student={student} variant="compact" /></div>;
+                                    }
+                                    return null;
                                 })
                             ) : <p className="text-[10px] text-slate-400 italic">No students assigned to this stop.</p>}
                         </div>
@@ -614,7 +631,7 @@ export default function TransportPage() {
         <Card className="md:col-span-1 border-t-4 border-t-indigo-500 shadow-sm h-fit">
             <CardHeader className="bg-white">
                 <CardTitle className="flex items-center gap-2 text-lg"><Users className="text-indigo-600 h-5 w-5"/> Bus Service Subscribers</CardTitle>
-                <CardDescription>Found {subscribedStudents.length} students enrolled in transport.</CardDescription>
+                <CardDescription>Found {subscribedStudents.length} active students enrolled in transport.</CardDescription>
             </CardHeader>
             <CardContent>
                 {isLoading ? (
@@ -651,7 +668,7 @@ export default function TransportPage() {
                                 })}
                                 {subscribedStudents.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={3} className="text-center text-muted-foreground py-10 italic">No students are currently subscribed to the bus service.</TableCell>
+                                        <TableCell colSpan={3} className="text-center text-muted-foreground py-10 italic">No active students are currently subscribed to the bus service.</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
