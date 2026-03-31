@@ -476,7 +476,7 @@ function PaymentVoucherForm({
             </div>
 
             <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 font-bold">
-                {isSubmitting ? <Loader2 className="animate-spin mr-2"/> : <Receipt className="mr-2 h-4 w-4"/>}
+                {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Receipt className="mr-2 h-4 w-4"/>}
                 Process Payment Voucher
             </Button>
         </form>
