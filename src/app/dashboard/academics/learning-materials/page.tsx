@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -11,6 +10,17 @@ import { Class, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -57,16 +67,16 @@ function MaterialForm({
   setOpen, 
   materialToEdit, 
   classes,
-  subjectsList, // <--- PASSED FROM PARENT
+  subjectsList, 
   preSelectedSubject,
   preSelectedClassId,
-  schoolId, // SAAS
+  schoolId, 
 }: { 
   open: boolean; 
   setOpen: (o: boolean) => void; 
   materialToEdit?: LearningMaterial | null; 
   classes: Class[] | undefined;
-  subjectsList: string[]; // <--- NEW PROP
+  subjectsList: string[]; 
   preSelectedSubject?: string;
   preSelectedClassId?: string;
   schoolId: string;
@@ -133,11 +143,7 @@ function MaterialForm({
     setQuestions(updated);
   };
 
-  const handleRemoveResource = (id: string) => {
-      setResources(resources.filter(r => r.id !== id));
-  };
-  
-    const [resources, setResources] = useState<ResourceItem[]>([]);
+  const [resources, setResources] = useState<ResourceItem[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,7 +177,7 @@ function MaterialForm({
         practiceQuestions: questions,
         uploadedBy: currentUser.uid,
         updatedAt: serverTimestamp(),
-        schoolId: schoolId, // SAAS
+        schoolId: schoolId, 
       };
 
       if (materialToEdit) {
@@ -352,13 +358,11 @@ export default function LearningMaterialsPage() {
 
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // --- FETCHING LOGIC REFACTORED ---
-  
   // 1. Student Profile & Class ID
   const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
     useMemoFirebase(() => (role === 'Student' && user && firestore && schoolId) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, firestore, schoolId])
   );
-  const studentClassId = useMemo(() => studentData?.[0]?.classId, [studentData]);
+  const studentClassId = studentData?.[0]?.classId;
 
   // Determine which class ID to use for querying materials
   const activeClassId = role === 'Student' ? studentClassId : selectedClassId;
@@ -378,7 +382,7 @@ export default function LearningMaterialsPage() {
     return Array.from(new Set([...fallbackSubjects, ...dbSubjects])).sort();
   }, [subjectsData]);
 
-  // 4. Materials Query (now depends on activeClassId and schoolId)
+  // 4. Materials Query
   const materialsQuery = useMemoFirebase(() => {
     if (!firestore || !activeClassId || !schoolId) return null;
     let q = query(collection(firestore, 'learning_materials'), where('schoolId', '==', schoolId), where('classId', '==', activeClassId));
@@ -396,9 +400,8 @@ export default function LearningMaterialsPage() {
   }, [materials]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this topic?")) return;
     try {
-        await deleteDoc(doc(firestore, 'learning_materials', id));
+        await deleteDoc(doc(firestore!, 'learning_materials', id));
         toast({ title: "Deleted" });
     } catch (e) { toast({ variant: "destructive", title: "Error" }); }
   };
@@ -519,7 +522,29 @@ export default function LearningMaterialsPage() {
                     <CardHeader className="pb-2">
                         <div className="flex justify-between items-start">
                             <div><CardTitle className="text-lg">{mat.topicTitle || (mat as any).title}</CardTitle>{mat.content && <p className="text-sm text-slate-600 mt-1">{mat.content.substring(0, 100)}...</p>}</div>
-                            {canManage && (<div className="flex gap-1"><Button variant="ghost" size="sm" onClick={() => handleEdit(mat)}><Edit className="h-4 w-4 text-slate-500" /></Button><Button variant="ghost" size="sm" onClick={() => handleDelete(mat.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button></div>)}
+                            {canManage && (
+                                <div className="flex gap-1">
+                                    <Button variant="ghost" size="sm" onClick={() => handleEdit(mat)}><Edit className="h-4 w-4 text-slate-500" /></Button>
+                                    
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="text-red-600"><Trash2 className="h-4 w-4" /></Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Delete Topic?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Are you sure you want to delete the topic "<strong>{mat.topicTitle}</strong>"? This will remove all associated notes, videos, and questions.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDelete(mat.id)} className="bg-red-600 hover:bg-red-700">Delete Permanently</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </div>
+                            )}
                         </div>
                     </CardHeader>
                     <CardContent className="flex-1 pb-4">

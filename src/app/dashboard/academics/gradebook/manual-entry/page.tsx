@@ -17,6 +17,17 @@ import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/dialog";
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
@@ -163,7 +174,7 @@ export default function GradebookPage() {
     };
 
     const handleDeleteBatch = async (typeToDelete: string) => {
-        if (!firestore || !confirm(`Are you sure you want to delete ALL ${typeToDelete} scores for this class? This cannot be undone.`)) return;
+        if (!firestore) return;
 
         setIsSaving(true);
         try {
@@ -291,15 +302,32 @@ export default function GradebookPage() {
                                                         {records.length} students graded.
                                                     </p>
                                                 </div>
-                                                <Button 
-                                                    variant="destructive" 
-                                                    size="sm" 
-                                                    onClick={() => handleDeleteBatch(type)}
-                                                    disabled={isSaving}
-                                                    className="w-full rounded-xl"
-                                                >
-                                                    <Trash2 className="h-4 w-4 mr-2" /> Delete Batch
-                                                </Button>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button 
+                                                            variant="destructive" 
+                                                            size="sm" 
+                                                            disabled={isSaving}
+                                                            className="w-full rounded-xl"
+                                                        >
+                                                            <Trash2 className="h-4 w-4 mr-2" /> Delete Batch
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Permanently Delete Batch?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This will erase all {records.length} scores for <strong>{type}</strong>. This action is irreversible.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={() => handleDeleteBatch(type)} className="bg-red-600 hover:bg-red-700">
+                                                                Confirm Delete
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             </div>
                                         ))}
                                     </div>

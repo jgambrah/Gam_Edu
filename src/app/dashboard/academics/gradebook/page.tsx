@@ -16,6 +16,17 @@ import { Loader2, Save, FileSpreadsheet, Trash2, History } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
@@ -74,7 +85,7 @@ export default function GradebookPage() {
             where('classId', '==', classId),
             where('subjectId', '==', subjectId),
             where('academicYear', '==', academicYear),
-            where('term', '==', term)
+            where('term', '==', selectedTerm)
         );
     }, [firestore, schoolId, classId, subjectId, academicYear, term]);
 
@@ -108,9 +119,13 @@ export default function GradebookPage() {
 
             Object.entries(scores).forEach(([studentId, score]) => {
                 if (score !== '' && score !== null && !isNaN(Number(score))) {
+                    const student = students?.find(s => s.uid === studentId);
+                    const studentName = `${student?.firstName || ''} ${student?.lastName || ''}`.trim();
+                    
                     const newAssessmentRef = doc(collection(firestore, 'assessments'));
                     batch.set(newAssessmentRef, {
                         studentId,
+                        studentName,
                         classId,
                         subjectId,
                         schoolId, 
@@ -159,7 +174,7 @@ export default function GradebookPage() {
     };
 
     const handleDeleteBatch = async (typeToDelete: string) => {
-        if (!firestore || !confirm(`Are you sure you want to delete ALL ${typeToDelete} scores for this class? This cannot be undone.`)) return;
+        if (!firestore) return;
 
         setIsSaving(true);
         try {
@@ -341,15 +356,32 @@ export default function GradebookPage() {
                                                         {records.length} students graded.
                                                     </p>
                                                 </div>
-                                                <Button 
-                                                    variant="destructive" 
-                                                    size="sm" 
-                                                    onClick={() => handleDeleteBatch(type)}
-                                                    disabled={isSaving}
-                                                    className="w-full rounded-xl"
-                                                >
-                                                    <Trash2 className="h-4 w-4 mr-2" /> Delete Batch
-                                                </Button>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button 
+                                                            variant="destructive" 
+                                                            size="sm" 
+                                                            disabled={isSaving}
+                                                            className="w-full rounded-xl"
+                                                        >
+                                                            <Trash2 className="h-4 w-4 mr-2" /> Delete Batch
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Delete Batch: {type}?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This will permanently delete the scores for all {records.length} students in this category. This action cannot be undone.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={() => handleDeleteBatch(type)} className="bg-red-600 hover:bg-red-700">
+                                                                Yes, Delete All
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             </div>
                                         ))}
                                     </div>

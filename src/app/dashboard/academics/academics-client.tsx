@@ -13,7 +13,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Card,
   CardContent,
@@ -332,9 +331,7 @@ export default function AcademicsPageContent() {
     }
   };
 
-  const handleDeleteClass = async (e: React.MouseEvent, id: string) => {
-      e.stopPropagation();
-      if (!confirm("Permanently delete this class? This will not delete students but they will lose their class assignment.")) return;
+  const handleDeleteClass = async (id: string) => {
       try {
           await deleteDoc(doc(firestore!, 'classes', id));
           toast({ title: "Class Deleted" });
@@ -465,9 +462,26 @@ export default function AcademicsPageContent() {
                                     <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-600" onClick={(e) => handleEditClick(e, c)}>
                                         <Edit className="h-4 w-4"/>
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={(e) => handleDeleteClass(e, c.id)}>
-                                        <Trash2 className="h-4 w-4"/>
-                                    </Button>
+                                    
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={(e) => e.stopPropagation()}>
+                                                <Trash2 className="h-4 w-4"/>
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Delete Class: {c.name}?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Are you sure you want to permanently delete this class? This will not delete students but they will lose their class assignment.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDeleteClass(c.id)} className="bg-red-600 hover:bg-red-700">Delete Class</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                   </>
                               )}
                               <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 transition-transform group-hover:translate-x-1" />

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,6 +16,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -41,7 +51,7 @@ type Announcement = {
   createdAt: any;
   audience: Audience[];
   classId?: string;
-  schoolId?: string; // SAAS
+  schoolId?: string; 
 };
 
 // --- COMPONENT: Post Announcement Form ---
@@ -69,7 +79,6 @@ function PostAnnouncementForm({
     const [selectedAudience, setSelectedAudience] = useState<Audience[]>(['Everybody']);
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
     
-    // SAAS FIX: Only show classes for this school
     const classesQuery = useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, 
     [firestore, schoolId]);
@@ -111,7 +120,7 @@ function PostAnnouncementForm({
 
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'announcements_v2'), {
+            await addDoc(collection(firestore!, 'announcements_v2'), {
                 title,
                 content,
                 priority,
@@ -122,7 +131,7 @@ function PostAnnouncementForm({
                 classId: selectedClassId === 'all' ? null : selectedClassId,
                 publishedAt: serverTimestamp(),
                 createdAt: serverTimestamp(),
-                schoolId: schoolId, // SAAS FIX: Stamp with schoolId
+                schoolId: schoolId, 
             });
 
             toast({ title: 'Success', description: 'Announcement posted.' });
@@ -143,7 +152,7 @@ function PostAnnouncementForm({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-3xl">
+            <DialogContent className="sm:max-w-[700px]">
                 <DialogHeader>
                     <DialogTitle>Post New Announcement</DialogTitle>
                     <DialogDescription>Share news with the entire school or target specific groups.</DialogDescription>
@@ -251,15 +260,14 @@ export default function AnnouncementsPage() {
   const { role, isRoleLoading } = useRole();
   const { user } = useUser();
   const { toast } = useToast();
-  const { schoolId, loading: schoolLoading } = useCurrentSchool(); // SAAS FIX
+  const { schoolId, loading: schoolLoading } = useCurrentSchool(); 
 
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const canManage = ['Administrator', 'Director'].includes(role);
 
-  // 1. FETCH ANNOUNCEMENTS (SAAS FIX: Filtered by schoolId)
   const announcementsQuery = useMemoFirebase(() => {
-      if (!firestore || !schoolId) return null; // Don't query without schoolId
+      if (!firestore || !schoolId) return null; 
       
       const q = query(
           collection(firestore, 'announcements_v2'), 
@@ -267,7 +275,6 @@ export default function AnnouncementsPage() {
           orderBy('publishedAt', 'desc')
       );
       
-      // Student/Parent/Teacher view (further filtering by audience)
       if (!canManage && role) {
           return query(q, where('audience', 'array-contains-any', ['Everybody', role]));
       }
@@ -279,16 +286,14 @@ export default function AnnouncementsPage() {
 
 
   const handleDelete = async (id: string) => {
-      if (!confirm("Delete this announcement?")) return;
       try {
-          await deleteDoc(doc(firestore, 'announcements_v2', id));
+          await deleteDoc(doc(firestore!, 'announcements_v2', id));
           toast({ title: "Deleted", description: "Announcement removed." });
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
       }
   };
 
-  // Helper for Priority Badge Color
   const getPriorityColor = (p: string) => {
       switch(p) {
           case 'Urgent': return 'bg-red-100 text-red-800 border-red-200';
@@ -356,9 +361,25 @@ export default function AnnouncementsPage() {
                               </div>
                               
                               {canManage && (
-                                  <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-600 hover:bg-red-50" onClick={() => handleDelete(post.id)}>
-                                      <Trash2 className="h-4 w-4"/>
-                                  </Button>
+                                  <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                          <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-600 hover:bg-red-50">
+                                              <Trash2 className="h-4 w-4"/>
+                                          </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                          <AlertDialogHeader>
+                                              <AlertDialogTitle>Delete Announcement?</AlertDialogTitle>
+                                              <AlertDialogDescription>
+                                                  Are you sure you want to remove the announcement "<strong>{post.title}</strong>"? This will hide it from everyone's portal.
+                                              </AlertDialogDescription>
+                                          </AlertDialogHeader>
+                                          <AlertDialogFooter>
+                                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                              <AlertDialogAction onClick={() => handleDelete(post.id)} className="bg-red-600 hover:bg-red-700">Delete Post</AlertDialogAction>
+                                          </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                  </AlertDialog>
                               )}
                           </div>
                       </CardHeader>
