@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -38,14 +39,21 @@ export async function generateReportCommentAction(
     `;
 
     const response = await ai.generate({
-      model: 'googleai/gemini-1.5-flash', 
+      // Using gemini-3-flash-preview as it's the consistent stable model in this project
+      model: 'googleai/gemini-3-flash-preview', 
       prompt: prompt,
       config: { temperature: 0.7 }
     });
 
-    return { success: true, text: response.text.trim() };
+    const text = response.text;
+    
+    if (!text) {
+        throw new Error("AI Service returned an empty response.");
+    }
+
+    return { success: true, text: text.trim() };
   } catch (e: any) {
     console.error("AI Comment Error:", e);
-    return { success: false, error: "AI failed to generate comment." };
+    return { success: false, error: `AI Error: ${e.message || "Could not generate comment."}` };
   }
 }
