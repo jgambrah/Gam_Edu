@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, FileSpreadsheet, Trash2 } from 'lucide-react';
+import { Loader2, Save, FileSpreadsheet, Trash2, History } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
@@ -58,7 +58,8 @@ export default function GradebookPage() {
             ? query(
                 collection(firestore, 'students'), 
                 where('schoolId', '==', schoolId), 
-                where('classId', '==', classId)
+                where('classId', '==', classId),
+                where('enrollmentStatus', '==', 'Active')
             ) 
             : null, 
     [firestore, schoolId, classId]);
@@ -79,12 +80,6 @@ export default function GradebookPage() {
 
     const { data: rawAssessments, isLoading: loadingAssessments, forceRefetch: refetchAssessments } = useCollection<any>(assessmentsQuery);
 
-    // Filter for ACTIVE students in memory to handle legacy records with undefined status
-    const activeStudents = useMemo(() => {
-        if (!students) return [];
-        return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
-    }, [students]);
-
     // Group assessments for the management list
     const groupedAssessments = useMemo(() => {
         if (!rawAssessments) return {};
@@ -103,23 +98,7 @@ export default function GradebookPage() {
     };
 
     const handleSaveBatch = async () => {
-        if (!firestore) {
-            toast({ variant: 'destructive', title: "System Error", description: "Database not connected." });
-            return;
-        }
-        if (!schoolId) {
-            toast({ variant: 'destructive', title: "System Error", description: "School ID missing. Please refresh." });
-            return;
-        }
-        if (!user) {
-            toast({ variant: 'destructive', title: "Auth Error", description: "You must be logged in to save scores." });
-            return;
-        }
-        
-        if (!classId || !subjectId) {
-            toast({ variant: 'destructive', title: "Missing Information", description: "Please select both a Class and a Subject." });
-            return;
-        }
+        if (!firestore || !user || !schoolId || !classId || !subjectId) return;
 
         setIsSaving(true);
         try {
@@ -143,7 +122,7 @@ export default function GradebookPage() {
                         maxScore: Number(maxScore),
                         teacherRemark: remarks[studentId] || "", 
                         createdAt: serverTimestamp(),
-                        assessmentDate: serverTimestamp() // Add standard date field
+                        assessmentDate: serverTimestamp()
                     });
                     count++;
                     updatedStudentIds.push(studentId);
@@ -308,9 +287,9 @@ export default function GradebookPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {activeStudents.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No active students in this class.</TableCell></TableRow>}
-                                        {activeStudents.map((s:any) => (
-                                            <TableRow key={s.id}>
+                                        {students?.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No active students in this class.</TableCell></TableRow>}
+                                        {students?.map((s:any) => (
+                                            <TableRow key={s.uid}>
                                                 <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
                                                 <TableCell>
                                                     <div className="relative">
@@ -345,7 +324,7 @@ export default function GradebookPage() {
                         <Card className="border-t-4 border-t-orange-400 shadow-md">
                             <CardHeader>
                                 <CardTitle className="text-orange-800 flex items-center gap-2">
-                                    <FileSpreadsheet className="h-5 w-5"/> Existing Entries for this Class
+                                    <History className="h-5 w-5"/> Existing Entries for this Class
                                 </CardTitle>
                                 <CardDescription>If you made a mistake, delete the batch here and re-enter the scores above.</CardDescription>
                             </CardHeader>

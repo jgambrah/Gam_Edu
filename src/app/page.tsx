@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, School, CheckCircle2, Globe, Brain, Shield, Users, BookOpen, Star } from 'lucide-react';
+import { Loader2, School, CheckCircle2, Globe, Brain, Shield, Users, BookOpen, Star, AlertCircle } from 'lucide-react';
 import { AppLogo } from '@/components/icons/app-logo';
 
 const TESTIMONIALS = [
@@ -90,15 +90,20 @@ export default function LoginPage() {
       console.error(error);
       let message = "Invalid email or password.";
       
-      if (error.code === 'auth/invalid-credential') {
+      // Clearer error feedback for common issues
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         message = "Incorrect email or password. Please check your credentials and try again.";
-      } else if (error.code === 'auth/user-not-found') {
-        message = "No account found with this email.";
       } else if (error.code === 'auth/too-many-requests') {
-        message = "Too many attempts. Your account is temporarily locked. Try again later.";
+        message = "Too many attempts. Your account is temporarily locked for security. Try again later.";
+      } else if (error.code === 'auth/network-request-failed') {
+        message = "Network error. Please check your internet connection.";
       }
       
-      toast({ variant: "destructive", title: "Login Failed", description: message });
+      toast({ 
+        variant: "destructive", 
+        title: "Login Failed", 
+        description: message 
+      });
     } finally {
       setLoading(false);
     }

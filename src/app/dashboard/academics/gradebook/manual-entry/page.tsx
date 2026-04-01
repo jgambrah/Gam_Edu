@@ -12,9 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft } from 'lucide-react';
+import { Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft, History } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 const ASSESSMENT_TYPES = [
@@ -194,7 +195,7 @@ export default function GradebookPage() {
                     <p className="text-muted-foreground">Batch enter continuous assessments and manage past records.</p>
                 </div>
                 <Button asChild variant="ghost">
-                    <Link href="/dashboard/academics/gradebook"><ArrowLeft className="mr-2 h-4 w-4"/> Back to Gradebook</Link>
+                    <Link href="/dashboard/report-cards"><ArrowLeft className="mr-2 h-4 w-4"/> Back to Reports</Link>
                 </Button>
             </div>
 
