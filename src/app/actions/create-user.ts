@@ -56,19 +56,19 @@ export async function createNewUser(
       // If the above line does not throw, the user exists.
       throw new Error(`User with email ${email} already exists. Please try a different email address.`);
     } catch (error: any) {
-      // We want to see 'auth/user-not-found'. If we get a different error, something else is wrong.
       if (error.code !== 'auth/user-not-found') {
-        throw error; // Re-throw other auth errors (e.g., network error)
+        throw error;
       }
-      // If user is not found, we can proceed. The catch block is empty on purpose.
     }
     
-    // 2. Auth Creation if they don't exist
+    // 2. Auth Creation with standardized displayName
     console.log("Creating new Auth User...");
+    const displayName = `${details?.firstName || ''} ${details?.lastName || ''}`.trim();
+    
     const userRecord = await auth.createUser({
         email,
         password,
-        displayName: `${details?.firstName} ${details?.lastName}`,
+        displayName: displayName || email,
     });
     
     // 3. Firestore Profile Creation
@@ -93,7 +93,7 @@ export async function createNewUser(
         role: role || 'Parent',
         createdAt: new Date(),
         isActive: true,
-        requirePasswordChange: true // NEW: Force password change on first login
+        requirePasswordChange: true 
     };
 
     if (schoolId) profileData.schoolId = schoolId;
@@ -105,10 +105,10 @@ export async function createNewUser(
         role: role || 'Parent',
         schoolId: schoolId,
         email,
-        requirePasswordChange: true // NEW: Also store in mapping for fast lookup
+        requirePasswordChange: true 
     }, { merge: true });
     
-    // 5. Send Credentials Email (Integrated Step)
+    // 5. Send Credentials Email
     if (details?.firstName && schoolId) {
         const schoolDoc = await firestore.collection('schools').doc(schoolId).get();
         const schoolName = schoolDoc.data()?.name || 'Your School';

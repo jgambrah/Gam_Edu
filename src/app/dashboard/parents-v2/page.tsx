@@ -59,7 +59,7 @@ export default function ParentsPage() {
   const [editingParent, setEditingParent] = useState<ParentMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ FIX: Controlled selection state — persists across searches
+  // ✅ Controlled selection state
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
 
   // Filters
@@ -67,7 +67,6 @@ export default function ParentsPage() {
   const [studentSearch, setStudentSearch] = useState('');
   const [showOnlyUnlinked, setShowOnlyUnlinked] = useState(false);
 
-  // Toggle a student in/out of the selection without affecting others
   const toggleStudentSelection = (uid: string) => {
     setSelectedStudentIds(prev =>
       prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]
@@ -110,7 +109,7 @@ export default function ParentsPage() {
         setIsSubmitting(false);
         setStudentSearch('');
         setShowOnlyUnlinked(true);
-        setSelectedStudentIds([]); // ✅ Clear selection when opening Add modal
+        setSelectedStudentIds([]);
     }
   }, [isAddOpen]);
 
@@ -119,7 +118,7 @@ export default function ParentsPage() {
         setIsSubmitting(false);
         setStudentSearch('');
         setShowOnlyUnlinked(true);
-        setSelectedStudentIds(editingParent.studentIds || []); // ✅ Pre-populate with existing linked students
+        setSelectedStudentIds(editingParent.studentIds || []);
     }
   }, [editingParent]);
   
@@ -131,7 +130,6 @@ export default function ParentsPage() {
       
       const formData = new FormData(e.currentTarget);
       const values = Object.fromEntries(formData.entries()) as any;
-      // ✅ Use selectedStudentIds from state instead of form checkboxes
       const studentIds = selectedStudentIds;
       const password = "password123";
 
@@ -176,7 +174,6 @@ export default function ParentsPage() {
 
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries()) as any;
-    // ✅ Use selectedStudentIds from state instead of form checkboxes
     const studentIds = selectedStudentIds;
 
     try {
@@ -232,7 +229,6 @@ export default function ParentsPage() {
   const filteredStudentsForModal = useMemo(() => {
       let list = students.filter(s => searchStudent(s, studentSearch));
       if (showOnlyUnlinked) {
-          // ✅ Show unlinked students + already-selected students (so they stay visible when filtering)
           list = list.filter(s => !s.parentId || selectedStudentIds.includes(s.uid) || (editingParent && s.parentId === editingParent.uid));
       }
       return list;

@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Lock, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import SignatureStamp from '@/components/shared/SignatureStamp';
-import { format } from 'date-fns';
+import { format, parseISO, isValid } from 'date-fns';
 
 interface ReportCardTemplateProps {
     data: any;
@@ -16,13 +16,30 @@ interface ReportCardTemplateProps {
 /**
  * Standardized Report Card Template for GAM Edu.
  * Displays academic results, attendance, and persistent digital signatures.
- * (STEP 4): Now renders signatures safely using pre-flighted Base64 assets.
+ * (STEP 4): Standardized date parsing for ISO strings to prevent timezone shifts.
  */
 export default function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: ReportCardTemplateProps) {
     if (!data) return null;
 
-    const nextTermReopening = data.nextTermDate 
-        ? format(data.nextTermDate.toDate ? data.nextTermDate.toDate() : new Date(data.nextTermDate), 'PPP') 
+    const getSafeDate = (d: any) => {
+        if (!d) return null;
+        try {
+            if (typeof d === 'string') {
+                const parsed = parseISO(d);
+                return isValid(parsed) ? parsed : null;
+            }
+            if (typeof d.toDate === 'function') {
+                return d.toDate();
+            }
+            return new Date(d);
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const nextTermDate = getSafeDate(data.nextTermDate);
+    const nextTermReopening = nextTermDate 
+        ? format(nextTermDate, 'PPP') 
         : "To Be Announced";
 
     return (

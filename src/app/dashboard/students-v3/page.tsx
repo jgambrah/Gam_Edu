@@ -113,7 +113,6 @@ export default function StudentsV3Page() {
   }, [loadData, adminSchoolId]);
   
   // --- RESET LOGIC ---
-  // Fixes the bug where state (like photos) persists between students
   useEffect(() => {
     if (isAddOpen) {
         setIsSubmitting(false);
@@ -131,14 +130,13 @@ export default function StudentsV3Page() {
         setIsSubmitting(false);
         setSelectedClassId(editingStudent.classId || '');
         setSelectedGender(editingStudent.gender || '');
-        setSelectedPhoto(null); // Ensure we don't carry over a photo from another session
+        setSelectedPhoto(null);
         setUsesBus(editingStudent.usesBusService === true);
         setBillingModel(editingStudent.transportBillingModel || 'Daily');
         setCanteenBillingMode(editingStudent.canteenBillingMode || 'Daily');
     }
   }, [editingStudent]);
 
-  // Handle URL creation/cleanup for previews
   const photoPreviewUrl = useMemo(() => {
     if (selectedPhoto) return URL.createObjectURL(selectedPhoto);
     return null;

@@ -108,9 +108,13 @@ export default function GradebookPage() {
 
             Object.entries(scores).forEach(([studentId, score]) => {
                 if (score !== '' && score !== null && !isNaN(Number(score))) {
+                    const student = students?.find(s => s.uid === studentId);
+                    const studentName = `${student?.firstName || ''} ${student?.lastName || ''}`.trim();
+                    
                     const newAssessmentRef = doc(collection(firestore, 'assessments'));
                     batch.set(newAssessmentRef, {
                         studentId,
+                        studentName,
                         classId,
                         subjectId,
                         schoolId, 
@@ -266,7 +270,6 @@ export default function GradebookPage() {
 
             {classId && subjectId ? (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                    {/* EXISTING BATCHES VIEWER */}
                     {Object.keys(groupedAssessments).length > 0 && (
                         <Card className="border-t-4 border-t-orange-400 shadow-md">
                             <CardHeader className="bg-orange-50/50">

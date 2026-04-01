@@ -26,7 +26,6 @@ import { StudentDisplay } from '@/components/student-display';
 import { billMultipleStudents } from '@/lib/billing';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
-// Schema matches your data structure
 const attendanceRecordSchema = z.object({
   id: z.string().optional(),
   studentId: z.string(),
@@ -60,7 +59,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     
     const [billingProgress, setBillingProgress] = useState<string | null>(null);
 
-    // Fetch Classes
     const classesQuery = useMemoFirebase(() => {
         if (!user || !firestore || !schoolId) return null;
         let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
@@ -91,7 +89,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 collection(firestore, 'students'), 
                 where('schoolId', '==', schoolId),
                 where('classId', '==', selectedClassId),
-                where('enrollmentStatus', '==', 'Active') // <--- THE FIX
+                where('enrollmentStatus', '==', 'Active') 
             );
             const studentSnapshot = await getDocs(studentQuery);
             
@@ -108,7 +106,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 return;
             }
 
-            // Fetch existing attendance for this class and date
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
                 where('schoolId', '==', schoolId),
@@ -118,14 +115,14 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const attendanceSnapshot = await getDocs(attendanceQuery);
             const existingRecords = attendanceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as AttendanceRecord[];
 
-            // Map students to form records, prioritizing existing data
             const formRecords = studentList.map(student => {
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
+                const studentName = `${student.firstName || ''} ${student.lastName || ''}`.trim();
                 
                 return {
                     id: existingRecord?.id,
                     studentId: student.uid,
-                    studentName: `${student.firstName} ${student.lastName}`,
+                    studentName: studentName,
                     classId: selectedClassId,
                     status: (existingRecord?.status || 'Present') as "Present" | "Absent" | "Late" | "Excused",
                     notes: existingRecord?.notes || '',
@@ -347,7 +344,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     </Form>
                 )}
 
-                {/* FIXED BUTTON — lives outside all overflow containers */}
                 {studentsLoaded && fields.length > 0 && (
                     <div className="fixed bottom-0 left-0 right-0 z-[9999] px-6 pb-6 pt-3 bg-white border-t shadow-[0_-4px_12px_rgba(0,0,0,0.12)]">
                         <div className="max-w-4xl mx-auto">

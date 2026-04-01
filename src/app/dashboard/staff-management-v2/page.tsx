@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -31,7 +30,7 @@ type StaffMember = {
   lastName: string;
   email: string;
   role: UserRole;
-  schoolId?: string; // New Field
+  schoolId?: string; 
 };
 
 type Student = {
@@ -39,7 +38,7 @@ type Student = {
     uid: string;
     firstName: string;
     lastName: string;
-    schoolId?: string; // Also expect schoolId here
+    schoolId?: string; 
 };
 
 // --- MAIN PAGE COMPONENT ---
@@ -61,7 +60,7 @@ export default function StaffManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [newStaffRole, setNewStaffRole] = useState<UserRole>('Teacher');
 
-  // --- DATA FETCHING (Corrected with useCallback) ---
+  // --- DATA FETCHING ---
   const loadData = useCallback(async () => {
     if (!firestore || !adminSchoolId) return;
     
@@ -83,7 +82,6 @@ export default function StaffManagementPage() {
     }
   }, [firestore, adminSchoolId, toast]);
 
-  // Trigger data load when school ID becomes available
   useEffect(() => {
     if (adminSchoolId) {
       loadData();
@@ -107,23 +105,23 @@ export default function StaffManagementPage() {
     
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries());
+    const firstName = (values.firstName as string) || '';
+    const lastName = (values.lastName as string) || '';
+    const email = (values.email as string) || '';
     const password = "password123";
 
     try {
       const result = await createNewUser(
-        values.email as string, 
+        email, 
         password, 
         newStaffRole, 
-        { firstName: values.firstName as string, lastName: values.lastName as string },
+        { firstName, lastName },
         adminSchoolId
       );
       
       if ('error' in result) throw new Error(result.error);
 
-      // The createNewUser action already creates the document in the correct collection ('staff' or 'parents').
-      // This explicit setDoc is redundant and was causing the bug. It is now removed.
-
-      toast({ title: "Success", description: `Staff member ${values.firstName} added.` });
+      toast({ title: "Success", description: `Staff member ${firstName} added.` });
       setIsAddOpen(false);
       loadData();
     } catch (error: any) {
@@ -166,7 +164,6 @@ export default function StaffManagementPage() {
     if (!firestore || !confirm("Delete this staff member? This action cannot be undone.")) return;
     try {
       await deleteDoc(doc(firestore, 'staff', id));
-      // TODO: Consider deleting the auth user as well.
       toast({ title: "Deleted", description: "Staff member removed." });
       loadData();
     } catch (e: any) {

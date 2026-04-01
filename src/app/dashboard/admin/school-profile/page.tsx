@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 
@@ -32,7 +32,6 @@ export default function SchoolProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
 
-  // Fetch from the specific School Document
   const schoolRef = useMemoFirebase(
     () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
     [firestore, schoolId]
@@ -40,7 +39,6 @@ export default function SchoolProfilePage() {
   
   const { data: profile, isLoading } = useDoc(schoolRef);
 
-  // Form State
   const [name, setName] = useState('');
   const [motto, setMotto] = useState('');
   const [address, setAddress] = useState('');
@@ -50,16 +48,13 @@ export default function SchoolProfilePage() {
   const [logoUrl, setLogoUrl] = useState('');
   const [headmasterSignature, setHeadmasterSignature] = useState<string>('');
 
-  // Academic Settings State
   const [caWeight, setCaWeight] = useState<number>(30);
   const [examWeight, setExamWeight] = useState<number>(70);
   
-  // Term Dates State
   const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
   const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
   const [nextTermDate, setNextTermDate] = useState<Date | undefined>(undefined);
 
-  // Load data when fetched
   useEffect(() => {
     if (profile) {
         setName(profile.name || '');
@@ -73,9 +68,16 @@ export default function SchoolProfilePage() {
         setCaWeight(profile.caWeight ?? 30);
         setExamWeight(profile.examWeight ?? 70);
         
-        if (profile.termStartDate) setTermStartDate(profile.termStartDate.toDate());
-        if (profile.termEndDate) setTermEndDate(profile.termEndDate.toDate());
-        if (profile.nextTermDate) setNextTermDate(profile.nextTermDate.toDate());
+        // Handle both legacy Timestamps and new ISO strings
+        if (profile.termStartDate) {
+            setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
+        }
+        if (profile.termEndDate) {
+            setTermEndDate(typeof profile.termEndDate === 'string' ? parseISO(profile.termEndDate) : profile.termEndDate.toDate());
+        }
+        if (profile.nextTermDate) {
+            setNextTermDate(typeof profile.nextTermDate === 'string' ? parseISO(profile.nextTermDate) : profile.nextTermDate.toDate());
+        }
     }
   }, [profile]);
 
@@ -134,10 +136,11 @@ export default function SchoolProfilePage() {
         const brandingData = {
             name, motto, address, phone, email, website, logoUrl, 
             headmasterSignature,
-            headmasterSignatureUrl: headmasterSignature, // Aligning field names
-            termStartDate: termStartDate ? Timestamp.fromDate(termStartDate) : null,
-            termEndDate: termEndDate ? Timestamp.fromDate(termEndDate) : null,
-            nextTermDate: nextTermDate ? Timestamp.fromDate(nextTermDate) : null,
+            headmasterSignatureUrl: headmasterSignature,
+            // STORE AS ISO STRINGS TO PREVENT TIMEZONE SHIFTS
+            termStartDate: termStartDate ? format(termStartDate, 'yyyy-MM-dd') : null,
+            termEndDate: termEndDate ? format(termEndDate, 'yyyy-MM-dd') : null,
+            nextTermDate: nextTermDate ? format(nextTermDate, 'yyyy-MM-dd') : null,
             updatedAt: serverTimestamp()
         };
 
@@ -203,7 +206,7 @@ export default function SchoolProfilePage() {
                                     {headmasterSignature ? (
                                         <div className="relative w-full h-full p-2">
                                             <img src={headmasterSignature} alt="Signature Preview" className="h-full w-full object-contain mix-blend-multiply" />
-                                            <button type="button" className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1" onClick={() => setHeadmasterSignature('')}><X className="h-3 w-3"/></button>
+                                            <button type="button" className="absolute top-1 right-1 bg-red-50 text-white rounded-full p-1" onClick={() => setHeadmasterSignature('')}><X className="h-3 w-3"/></button>
                                         </div>
                                     ) : (
                                         <PenTool className="h-12 w-12 text-slate-200" />

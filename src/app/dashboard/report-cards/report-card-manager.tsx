@@ -5,7 +5,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser 
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc, Timestamp } from 'firebase/firestore';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -169,14 +169,19 @@ export default function ReportCardManager() {
             const assessmentSnap = await getDocs(qAssessments);
             const allAssessments = assessmentSnap.docs.map(d => d.data());
 
-            // 2. Fetch Attendance for the term
+            // 2. Normalize and Fetch Attendance
+            const tStartStr = schoolProfile.termStartDate;
+            const tEndStr = schoolProfile.termEndDate;
+            const tStartDate = typeof tStartStr === 'string' ? parseISO(tStartStr) : tStartStr.toDate();
+            const tEndDate = typeof tEndStr === 'string' ? parseISO(tEndStr) : tEndStr.toDate();
+
             const attendanceRef = collection(firestore, 'attendance');
             const qAttendance = query(
                 attendanceRef,
                 where('schoolId', '==', schoolId),
                 where('classId', '==', classId),
-                where('date', '>=', schoolProfile.termStartDate),
-                where('date', '<=', schoolProfile.termEndDate)
+                where('date', '>=', Timestamp.fromDate(startOfDay(tStartDate))),
+                where('date', '<=', Timestamp.fromDate(endOfDay(tEndDate)))
             );
             const attSnap = await getDocs(qAttendance);
             const allAttRecords = attSnap.docs.map(d => d.data());
@@ -247,7 +252,7 @@ export default function ReportCardManager() {
                 });
             });
 
-            // 5. Fetch Signatures (THE FIX STEP 1)
+            // 5. Signatures Conversion
             const selectedClass = classes?.find((c: any) => c.id === classId);
             const classTeacherId = selectedClass?.teacherId;
 
