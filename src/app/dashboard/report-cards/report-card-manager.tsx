@@ -208,10 +208,14 @@ export default function ReportCardManager() {
                     let total100 = 0;
                     if (stuSubjAssessments.length > 0) {
                         const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
-                        const weightedCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * CA_WEIGHT;
+                        const rawCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * CA_WEIGHT;
                         const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
-                        const weightedExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * EXAM_WEIGHT;
-                        total100 = Math.round(weightedCA + weightedExam);
+                        const rawExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * EXAM_WEIGHT;
+                        
+                        // FIX: Round components before adding to total
+                        const finalCA = Math.round(rawCA);
+                        const finalExam = Math.round(rawExam);
+                        total100 = finalCA + finalExam;
                     }
                     grandTotal += total100;
                     if (subjectStats[sub.id]) {
@@ -233,17 +237,22 @@ export default function ReportCardManager() {
                 const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
                 if (myAssessments.length === 0) return;
                 const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
-                const weightedCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * CA_WEIGHT;
+                const rawCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * CA_WEIGHT;
                 const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
-                const weightedExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * EXAM_WEIGHT;
-                const total100 = Math.round(weightedCA + weightedExam);
+                const rawExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * EXAM_WEIGHT;
+                
+                // FIX: Round components before adding to total to prevent addition errors on paper
+                const finalCA = Math.round(rawCA);
+                const finalExam = Math.round(rawExam);
+                const total100 = finalCA + finalExam;
+
                 myGrandTotal += total100;
                 subjectsTaken++;
                 const { grade, autoRemark } = getGradeAndRemark(total100);
                 reportRows.push({
                     subjectName: sub.name,
-                    ca: Math.round(weightedCA),
-                    exam: Math.round(weightedExam),
+                    ca: finalCA,
+                    exam: finalExam,
                     total: total100, grade, autoRemark,
                     classAverage: subjectStats[sub.id].totalScores.length > 0
                         ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) : 0,
