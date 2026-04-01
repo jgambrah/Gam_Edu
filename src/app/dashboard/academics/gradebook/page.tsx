@@ -85,7 +85,7 @@ export default function GradebookPage() {
             where('classId', '==', classId),
             where('subjectId', '==', subjectId),
             where('academicYear', '==', academicYear),
-            where('term', '==', selectedTerm)
+            where('term', '==', term)
         );
     }, [firestore, schoolId, classId, subjectId, academicYear, term]);
 
