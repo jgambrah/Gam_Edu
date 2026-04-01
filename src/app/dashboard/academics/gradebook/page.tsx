@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, FileSpreadsheet, Trash2 } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import { Badge } from '@/components/ui/badge';
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
