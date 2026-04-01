@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,9 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, FileSpreadsheet } from 'lucide-react';
+import { Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import Link from 'next/link';
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
@@ -51,14 +52,43 @@ export default function GradebookPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
-    const studentsQuery = useMemoFirebase(() => (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, [firestore, schoolId, classId]);
+    const studentsQuery = useMemoFirebase(() => 
+        (firestore && schoolId && classId) 
+            ? query(
+                collection(firestore, 'students'), 
+                where('schoolId', '==', schoolId), 
+                where('classId', '==', classId),
+                where('enrollmentStatus', '==', 'Active')
+            ) 
+            : null, 
+    [firestore, schoolId, classId]);
     const { data: students, isLoading: loadingStudents } = useCollection<any>(studentsQuery);
 
-    // Filter for ACTIVE students in memory to handle legacy records with undefined status
-    const activeStudents = useMemo(() => {
-        if (!students) return [];
-        return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
-    }, [students]);
+    // 1. Fetch Existing Assessments for Batch Management
+    const assessmentsQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || !classId || !subjectId) return null;
+        return query(
+            collection(firestore, 'assessments'),
+            where('schoolId', '==', schoolId),
+            where('classId', '==', classId),
+            where('subjectId', '==', subjectId),
+            where('academicYear', '==', academicYear),
+            where('term', '==', term)
+        );
+    }, [firestore, schoolId, classId, subjectId, academicYear, term]);
+
+    const { data: rawAssessments, isLoading: loadingAssessments, forceRefetch: refetchAssessments } = useCollection<any>(assessmentsQuery);
+
+    // 2. Group assessments by type
+    const groupedAssessments = useMemo(() => {
+        if (!rawAssessments) return {};
+        const groups: Record<string, any[]> = {};
+        rawAssessments.forEach(a => {
+            if (!groups[a.assessmentType]) groups[a.assessmentType] = [];
+            groups[a.assessmentType].push(a);
+        });
+        return groups;
+    }, [rawAssessments]);
 
     const handleScoreChange = (studentId: string, val: string) => {
         const num = val === '' ? '' : Number(val);
@@ -67,23 +97,7 @@ export default function GradebookPage() {
     };
 
     const handleSaveBatch = async () => {
-        if (!firestore) {
-            toast({ variant: 'destructive', title: "System Error", description: "Database not connected." });
-            return;
-        }
-        if (!schoolId) {
-            toast({ variant: 'destructive', title: "System Error", description: "School ID missing. Please refresh." });
-            return;
-        }
-        if (!user) {
-            toast({ variant: 'destructive', title: "Auth Error", description: "You must be logged in to save scores." });
-            return;
-        }
-        
-        if (!classId || !subjectId) {
-            toast({ variant: 'destructive', title: "Missing Information", description: "Please select both a Class and a Subject." });
-            return;
-        }
+        if (!firestore || !user || !schoolId || !classId || !subjectId) return;
 
         setIsSaving(true);
         try {
@@ -107,6 +121,7 @@ export default function GradebookPage() {
                         maxScore: Number(maxScore),
                         teacherRemark: remarks[studentId] || "", 
                         createdAt: serverTimestamp(),
+                        assessmentDate: serverTimestamp()
                     });
                     count++;
                     updatedStudentIds.push(studentId);
@@ -132,6 +147,7 @@ export default function GradebookPage() {
 
             setScores({});
             setRemarks({});
+            if (refetchAssessments) refetchAssessments();
 
         } catch (error: any) {
             console.error("Save Batch Error:", error);
@@ -141,15 +157,45 @@ export default function GradebookPage() {
         }
     };
 
+    const handleDeleteBatch = async (typeToDelete: string) => {
+        if (!firestore || !confirm(`Are you sure you want to delete ALL ${typeToDelete} scores for this class? This cannot be undone.`)) return;
+
+        setIsSaving(true);
+        try {
+            const batch = writeBatch(firestore);
+            const docsToDelete = groupedAssessments[typeToDelete];
+            
+            docsToDelete.forEach(docData => {
+                const ref = doc(firestore, 'assessments', docData.id);
+                batch.delete(ref);
+            });
+
+            await batch.commit();
+            toast({ title: "Deleted", description: `Removed ${docsToDelete.length} scores for ${typeToDelete}.` });
+            if (refetchAssessments) refetchAssessments();
+
+        } catch (error: any) {
+            console.error(error);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to delete scores." });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     const isGlobalLoading = isUserLoading || schoolLoading;
 
     return (
         <div className="p-6 space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold flex items-center gap-2">
-                    <FileSpreadsheet className="text-blue-600" /> Gradebook Entry
-                </h1>
-                <p className="text-muted-foreground">Batch enter continuous assessments and exam scores.</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold flex items-center gap-2">
+                        <FileSpreadsheet className="text-blue-600" /> Batch Entry & Management
+                    </h1>
+                    <p className="text-muted-foreground">Batch enter continuous assessments and manage past records.</p>
+                </div>
+                <Button asChild variant="ghost">
+                    <Link href="/dashboard/academics/gradebook"><ArrowLeft className="mr-2 h-4 w-4"/> Back to Gradebook</Link>
+                </Button>
             </div>
 
             <Card className="border-t-4 border-t-blue-600 shadow-sm">
@@ -218,63 +264,104 @@ export default function GradebookPage() {
             </Card>
 
             {classId && subjectId ? (
-                <Card className="shadow-lg">
-                    <CardHeader className="flex flex-row items-center justify-between border-b bg-slate-50/50">
-                        <div>
-                            <CardTitle>Student Roster</CardTitle>
-                            <CardDescription>Enter marks for the selected class and subject.</CardDescription>
-                        </div>
-                        <Button 
-                            onClick={handleSaveBatch} 
-                            disabled={isSaving || isGlobalLoading} 
-                            className="bg-blue-600 hover:bg-blue-700 h-12 px-8 font-bold"
-                        >
-                            {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
-                            {isGlobalLoading ? 'Checking Auth...' : 'Save All Scores'}
-                        </Button>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                        {loadingStudents ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-blue-600"/></div> : (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Student Name</TableHead>
-                                        <TableHead className="w-[150px]">Score (/{maxScore})</TableHead>
-                                        <TableHead>Teacher Remark (Optional)</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {activeStudents.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No active students in this class.</TableCell></TableRow>}
-                                    {activeStudents.map((s:any) => (
-                                        <TableRow key={s.id}>
-                                            <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
-                                            <TableCell>
-                                                <div className="relative">
-                                                    <Input 
-                                                        type="number" 
-                                                        min="0" max={maxScore}
-                                                        value={scores[s.uid] ?? ''} 
-                                                        onChange={e => handleScoreChange(s.uid, e.target.value)}
-                                                        className={`font-bold pr-10 ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
-                                                    />
-                                                    <span className="absolute right-3 top-2 text-[10px] text-muted-foreground uppercase font-bold">PTS</span>
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    {/* EXISTING BATCHES VIEWER */}
+                    {Object.keys(groupedAssessments).length > 0 && (
+                        <Card className="border-t-4 border-t-orange-400 shadow-md">
+                            <CardHeader className="bg-orange-50/50">
+                                <CardTitle className="text-orange-800 flex items-center gap-2">
+                                    <History className="h-5 w-5"/> Existing Entries for this Class
+                                </CardTitle>
+                                <CardDescription>View already recorded scores. If a mistake was made, delete the batch below.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="pt-6">
+                                {loadingAssessments ? <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-orange-500"/></div> : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {Object.entries(groupedAssessments).map(([type, records]) => (
+                                            <div key={type} className="flex flex-col justify-between p-4 bg-white rounded-2xl border border-orange-100 shadow-sm group hover:border-orange-300 transition-colors">
+                                                <div className="mb-4">
+                                                    <Badge variant="outline" className="bg-orange-50 border-orange-200 text-orange-700 font-black mb-2 uppercase text-[10px]">
+                                                        {type}
+                                                    </Badge>
+                                                    <p className="text-sm font-bold text-slate-800">
+                                                        {records.length} students graded.
+                                                    </p>
                                                 </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Input 
-                                                    type="text" 
-                                                    placeholder="e.g. Excellent progress"
-                                                    value={remarks[s.uid] ?? ''} 
-                                                    onChange={e => setRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
-                                                />
-                                            </TableCell>
+                                                <Button 
+                                                    variant="destructive" 
+                                                    size="sm" 
+                                                    onClick={() => handleDeleteBatch(type)}
+                                                    disabled={isSaving}
+                                                    className="w-full rounded-xl"
+                                                >
+                                                    <Trash2 className="h-4 w-4 mr-2" /> Delete Batch
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    <Card className="shadow-lg border-2 border-indigo-50">
+                        <CardHeader className="flex flex-row items-center justify-between border-b bg-slate-50/50">
+                            <div>
+                                <CardTitle>Score Entry Roster</CardTitle>
+                                <CardDescription>Enter new marks for the selected class and subject.</CardDescription>
+                            </div>
+                            <Button 
+                                onClick={handleSaveBatch} 
+                                disabled={isSaving || isGlobalLoading} 
+                                className="bg-blue-600 hover:bg-blue-700 h-12 px-8 font-bold"
+                            >
+                                {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
+                                {isGlobalLoading ? 'Checking Auth...' : 'Save All Scores'}
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="pt-6">
+                            {loadingStudents ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-blue-600"/></div> : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Student Name</TableHead>
+                                            <TableHead className="w-[150px]">Score (/{maxScore})</TableHead>
+                                            <TableHead>Teacher Remark (Optional)</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        )}
-                    </CardContent>
-                </Card>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {students?.length === 0 && <TableRow><TableCell colSpan={3} className="text-center py-10 text-muted-foreground italic">No active students found in this class.</TableCell></TableRow>}
+                                        {students?.map((s:any) => (
+                                            <TableRow key={s.uid}>
+                                                <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
+                                                <TableCell>
+                                                    <div className="relative">
+                                                        <Input 
+                                                            type="number" 
+                                                            min="0" max={maxScore}
+                                                            value={scores[s.uid] ?? ''} 
+                                                            onChange={e => handleScoreChange(s.uid, e.target.value)}
+                                                            className={`font-bold pr-10 ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
+                                                        />
+                                                        <span className="absolute right-3 top-2 text-[10px] text-muted-foreground uppercase font-bold">PTS</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input 
+                                                        type="text" 
+                                                        placeholder="e.g. Excellent progress"
+                                                        value={remarks[s.uid] ?? ''} 
+                                                        onChange={e => setRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
             ) : (
                 <div className="p-20 text-center text-muted-foreground border-4 border-dashed rounded-[2.5rem] bg-slate-50 flex flex-col items-center gap-4">
                     <div className="bg-white p-4 rounded-full shadow-sm">
@@ -282,7 +369,7 @@ export default function GradebookPage() {
                     </div>
                     <div>
                         <p className="text-lg font-bold text-slate-600">Gradebook Ready</p>
-                        <p className="text-sm">Please select a Class and Subject to load the student roster.</p>
+                        <p className="text-sm">Please select a Class and Subject to load the student roster and existing records.</p>
                     </div>
                 </div>
             )}

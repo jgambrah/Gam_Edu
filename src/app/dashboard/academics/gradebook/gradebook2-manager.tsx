@@ -5,10 +5,11 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { 
-  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText, Loader2 
+  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText, Loader2, History, Settings2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import Link from 'next/link';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -380,7 +381,7 @@ export default function GradebookManager() {
     activeStudents.forEach(student => {
         const myRecords = financialRecords.filter(r => r.studentId === student.uid);
         const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const paid = myRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
+        const paid = myRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
         financials[student.uid] = { balance: billed - paid };
     });
     return financials;
@@ -415,8 +416,14 @@ export default function GradebookManager() {
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
                 <div className="flex gap-2">
+                    <Button asChild variant="outline" className="border-orange-200 text-orange-700 hover:bg-orange-50 shadow-sm">
+                        <Link href="/dashboard/academics/gradebook/manual-entry">
+                            <History className="mr-2 h-4 w-4" /> Batch Management
+                        </Link>
+                    </Button>
                     <Button 
-                        variant={activeForm === 'grade' ? 'secondary' : 'outline'} 
+                        variant={activeForm === 'grade' ? 'secondary' : 'default'} 
+                        className="bg-indigo-600 hover:bg-indigo-700 shadow-sm"
                         onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
                         disabled={!selectedClassId}
                     >
