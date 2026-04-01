@@ -5,13 +5,14 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser 
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc, Timestamp } from 'firebase/firestore';
+import { format } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck, Lock, AlertCircle, PenTool } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck, Lock, AlertCircle, PenTool, Sparkles } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -23,6 +24,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
+import { generateReportCommentAction } from '@/app/actions/report-ai';
 
 // --- HELPERS ---
 
@@ -84,6 +86,8 @@ export default function ReportCardManager() {
     const [isSaving, setIsSaving] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+    const [isGeneratingTeacherComment, setIsGeneratingTeacherComment] = useState(false);
+    const [isGeneratingHeadmasterComment, setIsGeneratingHeadmasterComment] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
     
     const printRef = useRef<HTMLDivElement>(null);
@@ -348,7 +352,6 @@ export default function ReportCardManager() {
 
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
             
-            // THE FIX (STEP 2): Use merge: true to protect existing fields
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             
             toast({ title: "Report Published!" });
@@ -398,6 +401,34 @@ export default function ReportCardManager() {
             toast({ variant: 'destructive', title: "Export Failed" });
         } finally {
             setIsExporting(false);
+        }
+    };
+
+    const handleGenerateComment = async (type: 'Teacher' | 'Headmaster') => {
+        if (!processedReport || !schoolId) return;
+        
+        const setLoader = type === 'Teacher' ? setIsGeneratingTeacherComment : setIsGeneratingHeadmasterComment;
+        const setComment = type === 'Teacher' ? setClassTeacherComment : setHeadmasterComment;
+        
+        setLoader(true);
+        try {
+            const res = await generateReportCommentAction(
+                schoolId, 
+                `${processedReport.student.firstName} ${processedReport.student.lastName}`, 
+                processedReport.overallAverage, 
+                type
+            );
+            
+            if (res.success && res.text) {
+                setComment(res.text); 
+                toast({ title: "Comment Generated ✨", description: "You can edit the text before publishing." });
+            } else {
+                toast({ variant: 'destructive', title: "AI Error", description: res.error });
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoader(false);
         }
     };
 
@@ -458,11 +489,33 @@ export default function ReportCardManager() {
                         <CardHeader><CardTitle>Final Remarks</CardTitle></CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="font-bold">Class Teacher's Remark</Label>
+                                <div className="flex justify-between items-center">
+                                    <Label className="font-bold">Class Teacher's Remark</Label>
+                                    <Button 
+                                        variant="ghost" size="sm" 
+                                        className="text-purple-600 h-6 gap-1" 
+                                        onClick={() => handleGenerateComment('Teacher')}
+                                        disabled={isGeneratingTeacherComment || (!isTeacher && !isAdminOrDirector)}
+                                    >
+                                        {isGeneratingTeacherComment ? <Loader2 className="h-3 w-3 animate-spin"/> : <Sparkles className="h-3 w-3"/>}
+                                        AI Draft
+                                    </Button>
+                                </div>
                                 <Textarea placeholder="Overall performance remark..." value={classTeacherComment} onChange={(e) => setClassTeacherComment(e.target.value)} rows={4} disabled={!isTeacher && !isAdminOrDirector}/>
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold">Headmaster's Remark</Label>
+                                <div className="flex justify-between items-center">
+                                    <Label className="font-bold">Headmaster's Remark</Label>
+                                    <Button 
+                                        variant="ghost" size="sm" 
+                                        className="text-purple-600 h-6 gap-1" 
+                                        onClick={() => handleGenerateComment('Headmaster')}
+                                        disabled={isGeneratingHeadmasterComment || !isAdminOrDirector}
+                                    >
+                                        {isGeneratingHeadmasterComment ? <Loader2 className="h-3 w-3 animate-spin"/> : <Sparkles className="h-3 w-3"/>}
+                                        AI Draft
+                                    </Button>
+                                </div>
                                 <Textarea placeholder="Headmaster final decision..." value={headmasterComment} onChange={(e) => setHeadmasterComment(e.target.value)} rows={4} disabled={!isAdminOrDirector}/>
                             </div>
                         </CardContent>
