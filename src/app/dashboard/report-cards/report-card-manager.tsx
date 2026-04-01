@@ -243,13 +243,29 @@ export default function ReportCardManager() {
                 });
             });
 
+            // 5. Fetch Signatures (THE FIX STEP 1)
+            const selectedClass = classes?.find((c: any) => c.id === classId);
+            const classTeacherId = selectedClass?.teacherId;
+
+            let classTeacherSignatureUrl = null;
+            let classTeacherName = 'Class Teacher';
+
+            if (classTeacherId) {
+                const teacherDoc = await getDoc(doc(firestore, 'staff', classTeacherId));
+                if (teacherDoc.exists()) {
+                    const tData = teacherDoc.data();
+                    classTeacherSignatureUrl = tData.signatureBase64 || tData.signatureUrl || null;
+                    classTeacherName = `${tData.firstName || ''} ${tData.lastName || ''}`.trim();
+                }
+            }
+
             const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
             const schoolData = schoolDoc.data();
 
             const [logoB64, headmasterSigB64, teacherSigB64] = await Promise.all([
                 schoolProfile?.logoUrl ? getBase64ImageFromUrl(schoolProfile.logoUrl) : Promise.resolve(''),
                 schoolData?.headmasterSignatureUrl ? getBase64ImageFromUrl(schoolData.headmasterSignatureUrl) : Promise.resolve(''),
-                profile?.signatureUrl ? getBase64ImageFromUrl(profile.signatureUrl) : Promise.resolve(''),
+                classTeacherSignatureUrl ? getBase64ImageFromUrl(classTeacherSignatureUrl) : Promise.resolve(''),
             ]);
 
             setProcessedReport({
@@ -271,8 +287,9 @@ export default function ReportCardManager() {
                 logoBase64: logoB64,
                 headmasterSigBase64: headmasterSigB64,
                 teacherSigBase64: teacherSigB64,
-                classTeacherName: `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim(),
-                classTeacherSignatureUrl: profile?.signatureUrl || null,
+                classTeacherName: classTeacherName,
+                classTeacherSignatureUrl: classTeacherSignatureUrl,
+                headmasterSignatureUrl: schoolData?.headmasterSignatureUrl || null,
                 term,
                 academicYear,
                 className: classes?.find((c: any) => c.id === classId)?.name || '',
@@ -330,7 +347,10 @@ export default function ReportCardManager() {
             };
 
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
+            
+            // THE FIX (STEP 2): Use merge: true to protect existing fields
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
+            
             toast({ title: "Report Published!" });
             await notifyParents([selectedStudentId!], "Report Card Ready 🎓", `Report for ${processedReport.student?.firstName} is now available.`, "/dashboard/my-reports");
         } catch (e) {

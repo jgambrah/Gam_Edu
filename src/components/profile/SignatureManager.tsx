@@ -23,7 +23,9 @@ export default function SignatureManager() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
-    if (profile?.signatureUrl) setSignatureUrl(profile.signatureUrl);
+    if (profile?.signatureBase64 || profile?.signatureUrl) {
+        setSignatureUrl(profile.signatureBase64 || profile.signatureUrl);
+    }
   }, [profile]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,31 +38,40 @@ export default function SignatureManager() {
     }
 
     setUploading(true);
-    try {
-      const storage = getStorage(app);
-      const storageRef = ref(storage, `signatures/${schoolId}/${user.uid}/signature.png`);
-      
-      const snapshot = await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(snapshot.ref);
+    
+    // STEP 3: Ensure Teachers save as Base64 for Solid PDF Rendering
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+        try {
+            const base64String = reader.result as string;
+            
+            // Backup to Storage for permanent URL access
+            const storage = getStorage(app);
+            const storageRef = ref(storage, `signatures/${schoolId}/${user.uid}/signature.png`);
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
 
-      const collectionName = role === 'Student' ? 'students' : (role === 'Parent' ? 'parents' : 'staff');
-      
-      await updateDoc(doc(firestore, collectionName, user.uid), {
-        signatureUrl: downloadURL,
-        updatedAt: serverTimestamp()
-      });
+            const collectionName = role === 'Student' ? 'students' : (role === 'Parent' ? 'parents' : 'staff');
+            
+            await updateDoc(doc(firestore, collectionName, user.uid), {
+                signatureUrl: downloadURL,
+                signatureBase64: base64String, // The "Solid" field for PDFs
+                updatedAt: serverTimestamp()
+            });
 
-      setSignatureUrl(downloadURL);
-      refreshRole();
-      toast({ 
-        title: "Electronic Signature Locked", 
-        description: "Your signature is now ready for digital signing." 
-      });
-    } catch (e: any) {
-      toast({ variant: 'destructive', title: "Upload Failed", description: e.message });
-    } finally {
-      setUploading(false);
-    }
+            setSignatureUrl(base64String);
+            refreshRole();
+            toast({ 
+                title: "Electronic Signature Locked", 
+                description: "Your signature is now ready for digital signing." 
+            });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Upload Failed", description: e.message });
+        } finally {
+            setUploading(false);
+        }
+    };
+    reader.readAsDataURL(file);
   };
 
   const removeSignature = async () => {
@@ -73,7 +84,8 @@ export default function SignatureManager() {
 
       const collectionName = role === 'Student' ? 'students' : (role === 'Parent' ? 'parents' : 'staff');
       await updateDoc(doc(firestore, collectionName, user.uid), {
-        signatureUrl: null
+        signatureUrl: null,
+        signatureBase64: null
       });
 
       setSignatureUrl(null);

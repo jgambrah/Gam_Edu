@@ -16,6 +16,7 @@ interface ReportCardTemplateProps {
 /**
  * Standardized Report Card Template for GAM Edu.
  * Displays academic results, attendance, and persistent digital signatures.
+ * (STEP 4): Now renders signatures safely using pre-flighted Base64 assets.
  */
 export default function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: ReportCardTemplateProps) {
     if (!data) return null;
