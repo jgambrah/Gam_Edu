@@ -75,7 +75,8 @@ function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, 
                 collection(firestore, 'students'), 
                 where('schoolId', '==', schoolId), 
                 where('usesBusService', '==', true), 
-                where('transportBillingModel', '==', 'Termly')
+                where('transportBillingModel', '==', 'Termly'),
+                where('enrollmentStatus', '==', 'Active')
             ));
 
             if (studentsSnap.empty) {
@@ -173,7 +174,8 @@ function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, on
             const studentsSnap = await getDocs(query(
                 collection(firestore, 'students'), 
                 where('schoolId', '==', schoolId), 
-                where('canteenBillingMode', '==', 'Termly')
+                where('canteenBillingMode', '==', 'Termly'),
+                where('enrollmentStatus', '==', 'Active')
             ));
 
             if (studentsSnap.empty) {
@@ -522,7 +524,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
         toast({
             variant: 'destructive', 
             title: 'No Students', 
-            description: values.classId === 'all' ? 'There are no students in the school.' : 'There are no students in the selected class.'
+            description: values.classId === 'all' ? 'There are no active students in the school.' : 'There are no active students in the selected class.'
         }); 
         setIsSubmitting(false); 
         return; 
@@ -569,7 +571,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                                 <SelectTrigger><SelectValue placeholder="Select target..."/></SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="all" className="font-bold text-indigo-600 italic">All Students (Whole School)</SelectItem>
+                                <SelectItem value="all" className="font-bold text-indigo-600 italic">All Active Students (Whole School)</SelectItem>
                                 <Separator className="my-1" />
                                 {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
@@ -661,7 +663,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 />
             </div>
             <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null} 
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-6 animate-spin"/> : null} 
                 Add Bulk Bill
             </Button>
         </form>
@@ -681,7 +683,7 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
     const [routeRates, setRouteRates] = useState<Map<string, number>>(new Map());
 
     const studentsQuery = useMemoFirebase(() => 
-        (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId)) : null,
+        (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('enrollmentStatus', '==', 'Active')) : null,
     [firestore, selectedClassId, schoolId]);
     const { data: classStudents, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
@@ -1073,9 +1075,15 @@ export default function AccountsPage() {
   const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
   
-  const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+  const rawStudentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(rawStudentsQuery);
   
+  // Strictly only use active students for this operational page
+  const students = useMemo(() => {
+      if (!rawStudents) return [];
+      return rawStudents.filter(s => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+  }, [rawStudents]);
+
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: classes } = useCollection<Class>(classesQuery);
 
@@ -1084,8 +1092,17 @@ export default function AccountsPage() {
   const isLoading = isLoadingRecords || isLoadingStudents;
 
   const dashboardStats = useMemo(() => {
-    if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0 };
-    const activeRecords = records.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
+    if (!records || !students) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0 };
+    
+    // Cross-reference with active students only
+    const activeStudentIds = new Set(students.map(s => s.uid));
+
+    const activeRecords = records.filter(r => 
+        r.status !== 'Pending Reversal' && 
+        r.status !== 'Rejected Reversal' &&
+        activeStudentIds.has(r.studentId)
+    );
+
     let totalPaid = 0, totalBilled = 0, totalWaivers = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0;
 
     for (const record of activeRecords) {
@@ -1118,12 +1135,14 @@ export default function AccountsPage() {
         outstandingTransport, 
         otherDebt 
     };
-  }, [records]);
+  }, [records, students]);
 
   const studentFinancials = useMemo(() => {
     if (!records || !students) return [];
+    
     const recordsByStudent: Record<string, FinancialRecord[]> = {};
     records.forEach(r => { if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = []; recordsByStudent[r.studentId].push(r); });
+    
     return students.map(student => {
           const studentRecords = recordsByStudent[student.uid] || [];
           const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');

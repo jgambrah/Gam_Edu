@@ -94,8 +94,11 @@ export default function BulkPaymentsPage() {
             const studentSnap = await getDocs(studentQ);
             const allStudents = studentSnap.docs.map(d => ({ ...d.data(), uid: d.id }) as Student);
 
-            // 4. Filter by subscription (Daily only)
+            // 4. Filter by subscription (Daily only) and active status
             const subscribedStudents = allStudents.filter(s => {
+                const isActive = s.enrollmentStatus === 'Active' || !s.enrollmentStatus;
+                if (!isActive) return false;
+
                 if (serviceType === 'Canteen') {
                     return s.usesCanteen !== false && (s.canteenBillingMode === 'Daily' || !s.canteenBillingMode);
                 } else {
