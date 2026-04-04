@@ -1,19 +1,23 @@
 'use client';
 import { use, useState, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { AdmissionForm } from '@/components/public/AdmissionForm';
 import { 
   Loader2, MapPin, Phone, Mail, CheckCircle2, Globe, 
-  Camera, Play, Info, Facebook, Instagram, Linkedin, Video 
+  Camera, Play, Info, Facebook, Instagram, Linkedin, Video,
+  Megaphone, Calendar, ArrowRight
 } from 'lucide-react';
+import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
 
 export default function PublicSchoolPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params);
     const firestore = useFirestore();
-    const[school, setSchool] = useState<any>(null);
+    const [school, setSchool] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
+    // 1. Fetch School Data by Slug
     useEffect(() => {
         const fetchSchool = async () => {
             if (!firestore || !slug) return;
@@ -31,6 +35,20 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         };
         fetchSchool();
     }, [firestore, slug]);
+
+    // 2. Fetch Public Announcements (News & Updates)
+    const announcementsQuery = useMemoFirebase(() => {
+        if (!firestore || !school?.id) return null;
+        return query(
+            collection(firestore, 'announcements_v2'),
+            where('schoolId', '==', school.id),
+            where('audience', 'array-contains', 'Everybody'),
+            orderBy('publishedAt', 'desc'),
+            limit(3)
+        );
+    }, [firestore, school?.id]);
+    
+    const { data: announcements, isLoading: loadingNews } = useCollection<any>(announcementsQuery);
 
     if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-blue-600"/></div>;
     if (!school) return <div className="min-h-screen flex items-center justify-center text-2xl font-bold text-slate-500">School Not Found.</div>;
@@ -53,6 +71,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                 </div>
                 <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-slate-500">
                     <a href="#about" className="hover:text-slate-900 transition-colors">About</a>
+                    {announcements && announcements.length > 0 && <a href="#news" className="hover:text-slate-900 transition-colors">News</a>}
                     {videoUrls.length > 0 && <a href="#videos" className="hover:text-slate-900 transition-colors">Videos</a>}
                     {school.gallery?.length > 0 && <a href="#gallery" className="hover:text-slate-900 transition-colors">Gallery</a>}
                     <a href="#apply" className="px-6 py-2 rounded-full text-white transition-opacity hover:opacity-90" style={{ backgroundColor: brandColor }}>
@@ -146,6 +165,45 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                         )}
                     </div>
                 </section>
+
+                {/* SECTION: NEWS & UPDATES */}
+                {announcements && announcements.length > 0 && (
+                    <section id="news" className="space-y-12">
+                        <div className="text-center space-y-2">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                                <Megaphone className="h-3 w-3" /> Bulletins
+                            </div>
+                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">News & Updates</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {announcements.map((news: any) => (
+                                <div key={news.id} className="bg-white border rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all border-slate-100 flex flex-col h-full">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <Badge variant="outline" className={cn(
+                                            "uppercase text-[9px] font-black tracking-widest",
+                                            news.priority === 'Urgent' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'
+                                        )}>
+                                            {news.priority || 'Normal'}
+                                        </Badge>
+                                        <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                                            <Calendar className="h-3 w-3"/>
+                                            {news.publishedAt ? format(news.publishedAt.toDate(), 'dd MMM yyyy') : 'Just now'}
+                                        </span>
+                                    </div>
+                                    <h4 className="text-xl font-black text-slate-800 leading-tight mb-4">{news.title}</h4>
+                                    <p className="text-sm text-slate-500 line-clamp-4 leading-relaxed mb-6 flex-1 italic">
+                                        "{news.content}"
+                                    </p>
+                                    <div className="pt-4 border-t border-slate-50 mt-auto">
+                                        <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest flex items-center gap-2">
+                                            Official School Update <ArrowRight className="h-3 w-3"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* SECTION: VIDEOS */}
                 {videoUrls.length > 0 && (
