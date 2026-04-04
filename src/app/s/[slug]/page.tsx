@@ -6,7 +6,7 @@ import { AdmissionForm } from '@/components/public/AdmissionForm';
 import { 
   Loader2, MapPin, Phone, Mail, CheckCircle2, Globe, 
   Camera, Play, Info, Facebook, Instagram, Linkedin, Video,
-  Megaphone, Calendar, ArrowRight, Sparkles, GraduationCap, Heart, FileText, User
+  Megaphone, Calendar, ArrowRight, Sparkles, GraduationCap, Heart, FileText, User, Users
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
