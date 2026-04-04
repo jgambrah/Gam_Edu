@@ -6,7 +6,7 @@ import { AdmissionForm } from '@/components/public/AdmissionForm';
 import { 
   Loader2, MapPin, Phone, Mail, CheckCircle2, Globe, 
   Camera, Play, Info, Facebook, Instagram, Linkedin, Video,
-  Megaphone, Calendar, ArrowRight, Sparkles
+  Megaphone, Calendar, ArrowRight, Sparkles, GraduationCap, Heart, FileText, User
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     const { slug } = use(params);
     const firestore = useFirestore();
     const [school, setSchool] = useState<any>(null);
+    const [team, setTeam] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     // 1. Fetch School Data by Slug
@@ -55,6 +56,35 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     
     const { data: announcements } = useCollection<any>(announcementsQuery);
 
+    // 3. Fetch Public Team/Staff
+    useEffect(() => {
+        const fetchTeam = async () => {
+            if (!firestore || !school?.id) return;
+            try {
+                const q = query(
+                    collection(firestore, 'staff'), 
+                    where('schoolId', '==', school.id),
+                    where('showOnWebsite', '==', true)
+                );
+                const snap = await getDocs(q);
+                // Sort to put Directors/Admins first, then Teachers
+                const staffData = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => {
+                    const roleOrder = ['Director', 'Administrator', 'Teacher'];
+                    const aIdx = roleOrder.indexOf(a.role);
+                    const bIdx = roleOrder.indexOf(b.role);
+                    if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+                    if (aIdx !== -1) return -1;
+                    if (bIdx !== -1) return 1;
+                    return 0;
+                });
+                setTeam(staffData);
+            } catch (err) {
+                console.error("Failed to load team:", err);
+            }
+        };
+        if (school) fetchTeam();
+    }, [firestore, school]);
+
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 animate-spin text-indigo-600"/></div>;
     if (!school) return <div className="min-h-screen flex items-center justify-center text-2xl font-bold text-slate-500">School Not Found.</div>;
 
@@ -74,15 +104,15 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     return (
         <div className="min-h-screen bg-white font-sans text-slate-900">
             {/* NAVBAR */}
-            <nav className="bg-white/80 backdrop-blur-md border-b px-6 py-4 flex justify-between items-center sticky top-0 z-[100]">
+            <nav className="bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-[100]">
                 <div className="flex items-center gap-3">
                     <h1 className="text-2xl font-black tracking-tight" style={{ color: brandColor }}>{school.name}</h1>
                 </div>
                 <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-slate-500">
                     <a href="#about" className="hover:text-slate-900 transition-colors">About</a>
+                    {team.length > 0 && <a href="#team" className="hover:text-slate-900 transition-colors">Team</a>}
                     {announcements && announcements.length > 0 && <a href="#news" className="hover:text-slate-900 transition-colors">News</a>}
                     {videoUrls.length > 0 && <a href="#videos" className="hover:text-slate-900 transition-colors">Videos</a>}
-                    {school.gallery?.length > 0 && <a href="#gallery" className="hover:text-slate-900 transition-colors">Gallery</a>}
                     <button 
                         onClick={scrollToForm}
                         className="px-6 py-2 rounded-full text-white transition-opacity hover:opacity-90 font-black uppercase text-xs tracking-widest" 
@@ -185,6 +215,70 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                         )}
                     </div>
                 </section>
+
+                {/* MEET OUR TEAM SECTION */}
+                {team.length > 0 && (
+                    <section id="team" className="space-y-12">
+                        <div className="text-center space-y-2">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                                <Users className="h-3 w-3" /> Staff Directory
+                            </div>
+                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">Meet Our Educators</h3>
+                            <p className="text-lg text-slate-500 max-w-2xl mx-auto">Our dedicated team of professionals is committed to providing the best educational experience for your child.</p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {team.map(member => (
+                                <div key={member.id} className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden hover:-translate-y-2 transition-transform duration-300 group">
+                                    {/* Photo Area */}
+                                    <div className="h-72 bg-slate-100 w-full overflow-hidden flex items-center justify-center relative">
+                                        {member.publicPhotoUrl ? (
+                                            <img src={member.publicPhotoUrl} alt={member.firstName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                        ) : (
+                                            <div className="text-slate-300 text-7xl font-black opacity-20">
+                                                <User className="h-24 w-24" />
+                                            </div>
+                                        )}
+                                        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg border border-white" style={{ color: brandColor }}>
+                                            {member.role}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Info Area */}
+                                    <div className="p-8 space-y-5">
+                                        <div>
+                                            <h4 className="text-2xl font-black text-slate-800 tracking-tight">{member.firstName} {member.lastName}</h4>
+                                            {member.qualifications && (
+                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 flex items-center gap-2">
+                                                    <GraduationCap size={14} style={{ color: brandColor }} /> {member.qualifications}
+                                                </p>
+                                            )}
+                                        </div>
+                                        
+                                        {member.publicBio && (
+                                            <p className="text-sm text-slate-500 leading-relaxed border-l-4 pl-4 italic" style={{ borderColor: `${brandColor}40` }}>
+                                                "{member.publicBio}"
+                                            </p>
+                                        )}
+
+                                        {member.interests && (
+                                            <div className="pt-5 border-t border-slate-50">
+                                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-3">Expertise & Interests</p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {member.interests.split(',').map((interest: string, i: number) => (
+                                                        <Badge key={i} variant="outline" className="bg-slate-50 text-slate-500 border-slate-100 text-[10px] font-bold py-0.5 px-3">
+                                                            {interest.trim()}
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* SECTION: NEWS & UPDATES */}
                 {announcements && announcements.length > 0 && (

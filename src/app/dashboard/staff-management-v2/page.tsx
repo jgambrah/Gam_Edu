@@ -17,10 +17,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserCog, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
+import { UserCog, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, Globe, GraduationCap, Heart, FileText } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 
 // --- TYPE DEFINITIONS ---
 type StaffMember = {
@@ -30,20 +33,16 @@ type StaffMember = {
   lastName: string;
   email: string;
   role: UserRole;
-  schoolId?: string; 
-};
-
-type Student = {
-    id: string;
-    uid: string;
-    firstName: string;
-    lastName: string;
-    schoolId?: string; 
+  schoolId?: string;
+  publicPhotoUrl?: string;
+  publicBio?: string;
+  qualifications?: string;
+  interests?: string;
+  showOnWebsite?: boolean;
 };
 
 // --- MAIN PAGE COMPONENT ---
 export default function StaffManagementPage() {
-  const { user } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool();
@@ -141,10 +140,27 @@ export default function StaffManagementPage() {
     const firstName = formData.get('firstName') as string;
     const lastName = formData.get('lastName') as string;
     const role = formData.get('role') as UserRole;
+    
+    // Public profile fields
+    const showOnWebsite = formData.get('showOnWebsite') === 'on';
+    const publicPhotoUrl = formData.get('publicPhotoUrl') as string;
+    const publicBio = formData.get('publicBio') as string;
+    const qualifications = formData.get('qualifications') as string;
+    const interests = formData.get('interests') as string;
 
     try {
         const staffRef = doc(firestore, 'staff', editingStaff.id);
-        await updateDoc(staffRef, { firstName, lastName, role });
+        await updateDoc(staffRef, { 
+            firstName, 
+            lastName, 
+            role,
+            showOnWebsite,
+            publicPhotoUrl,
+            publicBio,
+            qualifications,
+            interests,
+            updatedAt: serverTimestamp()
+        });
         
         const userRef = doc(firestore, 'users', editingStaff.id);
         await updateDoc(userRef, { role });
@@ -225,6 +241,7 @@ export default function StaffManagementPage() {
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
+                    <TableHead>Website</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -234,6 +251,13 @@ export default function StaffManagementPage() {
                       <TableCell className="font-medium">{member.firstName} {member.lastName}</TableCell>
                       <TableCell>{member.email}</TableCell>
                       <TableCell><Badge variant="secondary">{member.role}</Badge></TableCell>
+                      <TableCell>
+                        {member.showOnWebsite ? (
+                            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">Public</Badge>
+                        ) : (
+                            <Badge variant="outline" className="bg-slate-50 text-slate-400">Private</Badge>
+                        )}
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                            <Button variant="ghost" size="sm" onClick={() => setEditingStaff(member)}><Edit className="h-4 w-4 text-blue-600"/></Button>
@@ -275,23 +299,65 @@ export default function StaffManagementPage() {
       
       {/* EDIT MODAL */}
       <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
-        <DialogContent className="sm:max-w-md">
-            <DialogHeader><DialogTitle>Edit Staff Details</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader><DialogTitle>Edit Staff Member</DialogTitle></DialogHeader>
             {editingStaff && (
-                <form onSubmit={handleUpdateStaff} className="space-y-4 mt-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStaff.firstName} required /></div>
-                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStaff.lastName} required /></div>
-                    </div>
-                    <div className="space-y-2"><Label>Email</Label><Input value={editingStaff.email} disabled className="bg-slate-100" /></div>
-                    <div className="space-y-2">
-                        <Label>Role</Label>
-                        <Select name="role" defaultValue={editingStaff.role}>
-                            <SelectTrigger><SelectValue/></SelectTrigger>
-                            <SelectContent>{STAFF_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
-                    <DialogFooter>
+                <form onSubmit={handleUpdateStaff} className="mt-4">
+                    <Tabs defaultValue="basic" className="space-y-6">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                            <TabsTrigger value="public" className="gap-2">
+                                <Globe className="h-3 w-3" /> Public Profile
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="basic" className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStaff.firstName} required /></div>
+                                <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStaff.lastName} required /></div>
+                            </div>
+                            <div className="space-y-2"><Label>Email</Label><Input value={editingStaff.email} disabled className="bg-slate-100" /></div>
+                            <div className="space-y-2">
+                                <Label>Role</Label>
+                                <Select name="role" defaultValue={editingStaff.role}>
+                                    <SelectTrigger><SelectValue/></SelectTrigger>
+                                    <SelectContent>{STAFF_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+                                </Select>
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="public" className="space-y-4">
+                            <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                                <div className="space-y-0.5">
+                                    <Label className="text-indigo-900">Show on Website</Label>
+                                    <p className="text-xs text-indigo-600">Make this profile visible on the public microsite.</p>
+                                </div>
+                                <Switch name="showOnWebsite" defaultChecked={editingStaff.showOnWebsite} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><Globe className="h-3 w-3"/> Public Photo URL</Label>
+                                <Input name="publicPhotoUrl" defaultValue={editingStaff.publicPhotoUrl} placeholder="https://..." />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><GraduationCap className="h-3 w-3"/> Qualifications</Label>
+                                <Input name="qualifications" defaultValue={editingStaff.qualifications} placeholder="e.g. B.Ed Mathematics, M.Sc Education" />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><Heart className="h-3 w-3"/> Interests & Skills</Label>
+                                <Input name="interests" defaultValue={editingStaff.interests} placeholder="e.g. Chess, Robotics, Football (Comma separated)" />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><FileText className="h-3 w-3"/> Public Biography</Label>
+                                <Textarea name="publicBio" defaultValue={editingStaff.publicBio} placeholder="Tell parents about this staff member's experience and passion..." rows={4} />
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+
+                    <DialogFooter className="pt-6 border-t mt-6">
                         <Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}</Button>
                     </DialogFooter>
                 </form>

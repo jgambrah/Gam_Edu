@@ -1,4 +1,3 @@
-
 rules_version = '2';
 
 service cloud.firestore {
@@ -78,8 +77,9 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} { 
-      allow get: if isSignedIn();
-      allow list: if isAdmin() || isFinanceStaff() || isTransportStaff();
+      // Allow public to read if showOnWebsite is true, otherwise require sign-in
+      allow get: if (resource.data.showOnWebsite == true) || isSignedIn();
+      allow list: if (resource.data.showOnWebsite == true) || isAdmin() || isFinanceStaff() || isTransportStaff();
       allow write: if isAdmin() || isOwner(staffId); 
       match /payroll/{configId} { 
         allow read, write: if isFinanceStaff() || isAdmin(); 
