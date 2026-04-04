@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { useRole } from '@/context/role-context';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin 
+  Facebook, Instagram, Linkedin, Play
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -33,8 +34,8 @@ export default function WebsiteBuilderPage() {
     aboutText: '', 
     coverImageUrl: '', 
     primaryColor: '#2563eb', 
-    youtubeUrl: '',
     gallery: [] as string[],
+    videoUrls: [] as string[], // NEW: Support for multiple videos
     // Contact Info
     phone: '',
     email: '',
@@ -46,6 +47,7 @@ export default function WebsiteBuilderPage() {
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
+  const [newVideoUrl, setNewVideoUrl] = useState('');
 
   useEffect(() => {
     if (schoolData) {
@@ -56,8 +58,8 @@ export default function WebsiteBuilderPage() {
         aboutText: schoolData.aboutText || '',
         coverImageUrl: schoolData.coverImageUrl || '',
         primaryColor: schoolData.primaryColor || '#2563eb',
-        youtubeUrl: schoolData.youtubeUrl || '',
         gallery: schoolData.gallery || [],
+        videoUrls: schoolData.videoUrls || (schoolData.youtubeUrl ? [schoolData.youtubeUrl] : []),
         phone: schoolData.phone || '',
         email: schoolData.email || '',
         address: schoolData.address || '',
@@ -96,6 +98,28 @@ export default function WebsiteBuilderPage() {
         ...prev,
         gallery: prev.gallery.filter((_, i) => i !== index)
     }));
+  };
+
+  const addVideo = () => {
+    if (!newVideoUrl.trim()) return;
+    setFormData(prev => ({
+        ...prev,
+        videoUrls: [...prev.videoUrls, newVideoUrl.trim()]
+    }));
+    setNewVideoUrl('');
+  };
+
+  const removeVideo = (index: number) => {
+    setFormData(prev => ({
+        ...prev,
+        videoUrls: prev.videoUrls.filter((_, i) => i !== index)
+    }));
+  };
+
+  const extractYouTubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
   };
 
   if (isLoading) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-indigo-600"/></div>;
@@ -187,6 +211,60 @@ export default function WebsiteBuilderPage() {
 
                     <Card>
                         <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><Video className="h-5 w-5 text-indigo-600"/> Video Library</CardTitle>
+                            <CardDescription>Share your school's promo videos, tours, and event highlights.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex gap-2">
+                                <Input 
+                                    value={newVideoUrl} 
+                                    onChange={e => setNewVideoUrl(e.target.value)} 
+                                    placeholder="YouTube URL (e.g. https://www.youtube.com/watch?v=...)" 
+                                />
+                                <Button type="button" onClick={addVideo} variant="secondary">
+                                    <Plus className="h-4 w-4"/>
+                                </Button>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {formData.videoUrls.map((url, i) => {
+                                    const ytId = extractYouTubeId(url);
+                                    return (
+                                        <div key={i} className="relative aspect-video rounded-xl overflow-hidden border bg-slate-900 group">
+                                            {ytId ? (
+                                                <iframe 
+                                                    width="100%" height="100%" 
+                                                    src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`} 
+                                                    frameBorder="0" allowFullScreen
+                                                    className="absolute inset-0"
+                                                ></iframe>
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full text-white gap-2">
+                                                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                                    <span className="text-[10px] font-bold">Invalid Video URL</span>
+                                                </div>
+                                            )}
+                                            <button 
+                                                type="button"
+                                                onClick={() => removeVideo(i)}
+                                                className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                            >
+                                                <Trash2 className="h-3 w-3"/>
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                                {formData.videoUrls.length === 0 && (
+                                    <div className="col-span-full py-10 text-center border-2 border-dashed rounded-xl bg-slate-50 text-slate-400">
+                                        No videos in your library yet.
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
                             <CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5 text-indigo-600"/> Photo Gallery</CardTitle>
                             <CardDescription>Showcase your campus, classrooms, and students.</CardDescription>
                         </CardHeader>
@@ -228,7 +306,7 @@ export default function WebsiteBuilderPage() {
                 <div className="space-y-6">
                     <Card className="bg-indigo-50 border-indigo-100">
                         <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-widest text-indigo-600">Public Media</CardTitle>
+                            <CardTitle className="text-sm uppercase tracking-widest text-indigo-600">Site Appearance</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
@@ -237,11 +315,6 @@ export default function WebsiteBuilderPage() {
                                 {formData.coverImageUrl && (
                                     <img src={formData.coverImageUrl} className="mt-2 rounded-lg border aspect-video object-cover" alt="Cover Preview" />
                                 )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label className="flex items-center gap-2"><Video className="w-4 h-4"/> YouTube Promo URL</Label>
-                                <Input value={formData.youtubeUrl} onChange={e => setFormData({...formData, youtubeUrl: e.target.value})} placeholder="https://..." />
                             </div>
                         </CardContent>
                     </Card>
