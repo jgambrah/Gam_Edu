@@ -142,7 +142,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
             <div className="max-w-7xl mx-auto px-6 py-24 space-y-32">
                 
                 {/* SECTION: ABOUT */}
-                <section id="about" className="grid md:grid-cols-2 gap-20 items-start">
+                <section id="about" className="grid md:grid-cols-2 gap-20 items-start border-b pb-24 border-slate-100">
                     <div className="space-y-8">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
                             <Info className="h-3 w-3" /> Discover Our School
@@ -205,67 +205,6 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     </div>
                 </section>
 
-                {/* SECTION: VIDEOS */}
-                {school.videoUrls?.length > 0 && (
-                    <section id="videos" className="space-y-12">
-                        <div className="text-center space-y-2">
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
-                                <Video className="h-3 w-3" /> Media Library
-                            </div>
-                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">Video Showcase</h3>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                            {school.videoUrls.map((video: any, i: number) => {
-                                const ytId = getYouTubeId(video.url || video);
-                                if (!ytId) return null;
-                                return (
-                                    <div key={i} className="space-y-4">
-                                        <div className="rounded-[2.5rem] overflow-hidden shadow-2xl aspect-video border-[12px] border-slate-50 ring-1 ring-slate-200 bg-black">
-                                            <iframe 
-                                                width="100%" height="100%" 
-                                                src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`} 
-                                                title={`Video ${i+1}`} 
-                                                frameBorder="0" allowFullScreen
-                                            ></iframe>
-                                        </div>
-                                        {video.title && (
-                                            <div className="px-4 text-center">
-                                                <h4 className="text-xl font-bold text-slate-800">{video.title}</h4>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </section>
-                )}
-
-                {/* SECTION: GALLERY */}
-                {school.gallery?.length > 0 && (
-                    <section id="gallery" className="space-y-12">
-                        <div className="text-center space-y-2">
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
-                                <Camera className="h-3 w-3" /> Snapshots
-                            </div>
-                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">Life at {school.name}</h3>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {school.gallery.map((item: any, i: number) => (
-                                <div key={i} className="group space-y-4">
-                                    <div className="rounded-3xl overflow-hidden aspect-square shadow-xl border-4 border-white ring-1 ring-slate-100 hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
-                                        <img src={item.url || item} alt="" className="w-full h-full object-cover" />
-                                    </div>
-                                    {item.caption && (
-                                        <p className="text-sm font-medium text-slate-500 text-center px-4 italic leading-relaxed">
-                                            "{item.caption}"
-                                        </p>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                )}
-
                 {/* SECTION: TEAM */}
                 {team.length > 0 && (
                     <section id="team" className="space-y-12">
@@ -273,7 +212,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
                                 <Users className="h-3 w-3" /> Staff Directory
                             </div>
-                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">Meet Our Educators</h3>
+                            <h3 className="text-5xl font-black uppercase italic tracking-tighter" style={{ color: brandColor }}>Meet Our Educators</h3>
                         </div>
 
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -310,6 +249,67 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     </section>
                 )}
 
+                {/* SECTION: VIDEOS */}
+                {school.videoUrls?.length > 0 && (
+                    <section id="videos" className="space-y-12">
+                        <div className="text-center space-y-2">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                                <Video className="h-3 w-3" /> Media Library
+                            </div>
+                            <h3 className="text-5xl font-black uppercase italic tracking-tighter" style={{ color: brandColor }}>Video Showcase</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            {school.videoUrls.map((video: any, i: number) => {
+                                const ytId = getYouTubeId(video.url || video);
+                                if (!ytId) return null;
+                                return (
+                                    <div key={i} className="space-y-4">
+                                        <div className="rounded-[2.5rem] overflow-hidden shadow-2xl aspect-video border-[12px] border-slate-50 ring-1 ring-slate-200 bg-black">
+                                            <iframe 
+                                                width="100%" height="100%" 
+                                                src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`} 
+                                                title={`Video ${i+1}`} 
+                                                frameBorder="0" allowFullScreen
+                                            ></iframe>
+                                        </div>
+                                        {video.title && (
+                                            <div className="px-4 text-center">
+                                                <h4 className="text-xl font-bold text-slate-800">{video.title}</h4>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
+
+                {/* SECTION: GALLERY */}
+                {school.gallery?.length > 0 && (
+                    <section id="gallery" className="space-y-12">
+                        <div className="text-center space-y-2">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                                <Camera className="h-3 w-3" /> Snapshots
+                            </div>
+                            <h3 className="text-5xl font-black uppercase italic tracking-tighter" style={{ color: brandColor }}>Life at {school.name}</h3>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {school.gallery.map((item: any, i: number) => (
+                                <div key={i} className="group space-y-4">
+                                    <div className="rounded-3xl overflow-hidden aspect-square shadow-xl border-4 border-white ring-1 ring-slate-100 hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
+                                        <img src={item.url || item} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                    {item.caption && (
+                                        <p className="text-sm font-medium text-slate-500 text-center px-4 italic leading-relaxed">
+                                            "{item.caption}"
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
                 {/* SECTION: NEWS */}
                 {announcements && announcements.length > 0 && (
                     <section id="news" className="space-y-12">
@@ -317,7 +317,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
                                 <Megaphone className="h-3 w-3" /> Bulletins
                             </div>
-                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">News & Updates</h3>
+                            <h3 className="text-5xl font-black uppercase italic tracking-tighter" style={{ color: brandColor }}>News & Updates</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {announcements.map((news: any) => (
