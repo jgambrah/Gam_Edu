@@ -1,11 +1,13 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc, deleteField } from 'firebase/firestore';
 import { UserRole, STAFF_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
+import { cn } from '@/lib/utils';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -58,6 +60,10 @@ export default function StaffManagementPage() {
   // Form State & Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [newStaffRole, setNewStaffRole] = useState<UserRole>('Teacher');
+  
+  // Edit State (Controlled for components that don't play well with FormData)
+  const [editRole, setEditRole] = useState<UserRole>('Teacher');
+  const [editShowOnWebsite, setEditShowOnWebsite] = useState(false);
 
   // --- DATA FETCHING ---
   const loadData = useCallback(async () => {
@@ -95,6 +101,15 @@ export default function StaffManagementPage() {
       setNewStaffRole('Teacher');
     }
   }, [isAddOpen]);
+
+  // Sync edit state when modal opens
+  useEffect(() => {
+    if (editingStaff) {
+        setIsSubmitting(false);
+        setEditRole(editingStaff.role);
+        setEditShowOnWebsite(!!editingStaff.showOnWebsite);
+    }
+  }, [editingStaff]);
 
   // --- ADD STAFF ---
   const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -139,10 +154,12 @@ export default function StaffManagementPage() {
     const formData = new FormData(e.currentTarget);
     const firstName = formData.get('firstName') as string;
     const lastName = formData.get('lastName') as string;
-    const role = formData.get('role') as UserRole;
+    
+    // Captured from state because Select/Switch don't use standard native form fields
+    const role = editRole;
+    const showOnWebsite = editShowOnWebsite;
     
     // Public profile fields
-    const showOnWebsite = formData.get('showOnWebsite') === 'on';
     const publicPhotoUrl = formData.get('publicPhotoUrl') as string;
     const publicBio = formData.get('publicBio') as string;
     const qualifications = formData.get('qualifications') as string;
@@ -162,6 +179,7 @@ export default function StaffManagementPage() {
             updatedAt: serverTimestamp()
         });
         
+        // Also update user record role mapping
         const userRef = doc(firestore, 'users', editingStaff.id);
         await updateDoc(userRef, { role });
 
@@ -169,6 +187,7 @@ export default function StaffManagementPage() {
         setEditingStaff(null);
         loadData();
     } catch (error: any) {
+        console.error("Update Error:", error);
         toast({ variant: 'destructive', title: "Error", description: "Failed to update staff member." });
     } finally {
         setIsSubmitting(false);
@@ -208,7 +227,7 @@ export default function StaffManagementPage() {
             </div>
             <div className="flex gap-2">
                  <Button variant="outline" onClick={loadData} disabled={overallLoading || !adminSchoolId}>
-                    <RefreshCw className={`h-4 w-4 mr-2 ${overallLoading ? 'animate-spin' : ''}`}/> Refresh
+                    <RefreshCw className={cn("h-4 w-4 mr-2", overallLoading && "animate-spin")}/> Refresh
                 </Button>
                 <Button onClick={() => setIsAddOpen(true)} className="bg-purple-600 hover:bg-purple-700" disabled={!adminSchoolId}>
                     <UserPlus className="h-4 w-4 mr-2"/> Add Staff
@@ -218,7 +237,7 @@ export default function StaffManagementPage() {
         
         <CardContent className="space-y-4">
           <div className="relative max-w-sm">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input 
               placeholder="Search by name or email..." 
               className="pl-8" 
@@ -319,7 +338,7 @@ export default function StaffManagementPage() {
                             <div className="space-y-2"><Label>Email</Label><Input value={editingStaff.email} disabled className="bg-slate-100" /></div>
                             <div className="space-y-2">
                                 <Label>Role</Label>
-                                <Select name="role" defaultValue={editingStaff.role}>
+                                <Select value={editRole} onValueChange={(v: any) => setEditRole(v)}>
                                     <SelectTrigger><SelectValue/></SelectTrigger>
                                     <SelectContent>{STAFF_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
                                 </Select>
@@ -332,7 +351,10 @@ export default function StaffManagementPage() {
                                     <Label className="text-indigo-900">Show on Website</Label>
                                     <p className="text-xs text-indigo-600">Make this profile visible on the public microsite.</p>
                                 </div>
-                                <Switch name="showOnWebsite" defaultChecked={editingStaff.showOnWebsite} />
+                                <Switch 
+                                    checked={editShowOnWebsite} 
+                                    onCheckedChange={setEditShowOnWebsite} 
+                                />
                             </div>
 
                             <div className="space-y-2">
