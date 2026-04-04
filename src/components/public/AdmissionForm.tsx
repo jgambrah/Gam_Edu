@@ -1,0 +1,69 @@
+
+'use client';
+import { useState } from 'react';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, Send } from 'lucide-react';
+
+export function AdmissionForm({ schoolId, primaryColor }: { schoolId: string, primaryColor: string }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const[loading, setLoading] = useState(false);
+    
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!firestore) return;
+        setLoading(true);
+        const formData = new FormData(e.currentTarget);
+        
+        try {
+            await addDoc(collection(firestore, 'admissionApplications'), {
+                schoolId,
+                parentName: formData.get('parentName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                student: {
+                    fullName: formData.get('studentName'),
+                    desiredGrade: formData.get('grade'),
+                },
+                parent1: {
+                    name: formData.get('parentName'),
+                    phone: formData.get('phone'),
+                    email: formData.get('email'),
+                },
+                status: 'Pending Review',
+                createdAt: serverTimestamp(),
+                submittedAt: serverTimestamp()
+            });
+            toast({ title: "Application Submitted!", description: "The school will contact you shortly." });
+            (e.target as HTMLFormElement).reset();
+        } catch (err: any) {
+            console.error("Submission Error:", err);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to submit application." });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+            <h3 className="text-2xl font-bold mb-4" style={{ color: primaryColor }}>Apply for Admission</h3>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2"><Label>Parent Name *</Label><Input name="parentName" required /></div>
+                <div className="space-y-2"><Label>Phone Number *</Label><Input name="phone" required /></div>
+            </div>
+            <div className="space-y-2"><Label>Email Address</Label><Input name="email" type="email" /></div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2"><Label>Child's Full Name *</Label><Input name="studentName" required /></div>
+                <div className="space-y-2"><Label>Grade Applying For *</Label><Input name="grade" placeholder="e.g. Grade 1" required /></div>
+            </div>
+            <Button type="submit" disabled={loading} className="w-full h-12 text-lg text-white" style={{ backgroundColor: primaryColor }}>
+                {loading ? <Loader2 className="animate-spin mr-2"/> : <Send className="mr-2 h-4 w-4"/>} Submit Application
+            </Button>
+        </form>
+    );
+}

@@ -56,7 +56,8 @@ import {
   Sparkles,
   Coins,
   ArrowUpCircle,
-  Database
+  Database,
+  LayoutTemplate
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -115,6 +116,12 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         }
     ]
+  },
+  {
+    path: '/dashboard/profile',
+    title: 'My Profile',
+    icon: UserIcon,
+    roles: 'all',
   },
   {
     path: '/dashboard/people',
@@ -482,6 +489,12 @@ export const navItems: NavItem[] = [
             path: '/dashboard/admin/migration',
             title: 'Data Import Hub',
             icon: Database,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/admin/website-builder',
+            title: 'Website Builder',
+            icon: LayoutTemplate,
             roles: ['Director', 'Administrator'],
         },
         {
