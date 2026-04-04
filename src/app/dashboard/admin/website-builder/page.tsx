@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin, Play
+  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -23,6 +23,7 @@ export default function WebsiteBuilderPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
 
   const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
   const { data: schoolData, isLoading } = useDoc<any>(schoolRef);
@@ -35,12 +36,10 @@ export default function WebsiteBuilderPage() {
     coverImageUrl: '', 
     primaryColor: '#2563eb', 
     gallery: [] as string[],
-    videoUrls: [] as string[], // NEW: Support for multiple videos
-    // Contact Info
+    videoUrls: [] as string[],
     phone: '',
     email: '',
     address: '',
-    // Social Links
     facebookUrl: '',
     instagramUrl: '',
     linkedinUrl: ''
@@ -69,6 +68,18 @@ export default function WebsiteBuilderPage() {
       });
     }
   }, [schoolData]);
+
+  const publicUrl = typeof window !== 'undefined' 
+    ? `${window.location.origin}/s/${formData.slug}`
+    : '';
+
+  const handleCopyUrl = () => {
+    if (!publicUrl) return;
+    navigator.clipboard.writeText(publicUrl);
+    setHasCopied(true);
+    toast({ title: "Link Copied!", description: "You can now paste and share your school's link." });
+    setTimeout(() => setHasCopied(false), 2000);
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,21 +137,47 @@ export default function WebsiteBuilderPage() {
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                     <LayoutTemplate className="text-indigo-600"/> Website Builder
                 </h1>
                 <p className="text-muted-foreground font-medium">Customize your school's public presence and admissions portal.</p>
             </div>
-            {schoolData?.slug && (
-                <Link href={`/s/${formData.slug}`} target="_blank">
-                    <Button variant="outline" className="border-indigo-200 text-indigo-700 bg-indigo-50 font-bold">
-                        <Globe className="mr-2 h-4 w-4"/> View Live Site
-                    </Button>
-                </Link>
-            )}
+            <div className="flex gap-2">
+                {schoolData?.slug && (
+                    <Link href={`/s/${formData.slug}`} target="_blank">
+                        <Button variant="outline" className="border-indigo-200 text-indigo-700 bg-indigo-50 font-bold">
+                            <ExternalLink className="mr-2 h-4 w-4"/> Preview Site
+                        </Button>
+                    </Link>
+                )}
+            </div>
         </div>
+
+        {/* PUBLIC URL SHARE CARD */}
+        <Card className="bg-slate-900 text-white border-none overflow-hidden rounded-3xl shadow-xl">
+            <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="space-y-2 text-center md:text-left">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Share Your School With The World</p>
+                    <h2 className="text-2xl font-bold tracking-tight">Your Public Web Address</h2>
+                    <div className="flex items-center gap-2 bg-white/10 p-3 rounded-xl border border-white/10 font-mono text-sm break-all">
+                        <Globe className="h-4 w-4 text-indigo-400 shrink-0"/>
+                        <span className="opacity-80">{publicUrl}</span>
+                    </div>
+                </div>
+                <Button 
+                    onClick={handleCopyUrl} 
+                    className={cn(
+                        "h-14 px-8 rounded-2xl font-black transition-all active:scale-95 shrink-0",
+                        hasCopied ? "bg-green-500 hover:bg-green-600" : "bg-white text-slate-900 hover:bg-slate-100"
+                    )}
+                >
+                    {hasCopied ? <Check className="mr-2 h-5 w-5"/> : <Copy className="mr-2 h-5 w-5"/>}
+                    {hasCopied ? "COPIED!" : "COPY LINK TO SHARE"}
+                </Button>
+            </CardContent>
+        </Card>
 
         <form onSubmit={handleSave} className="space-y-6 pb-20">
             <div className="grid lg:grid-cols-3 gap-6">
@@ -164,6 +201,7 @@ export default function WebsiteBuilderPage() {
                                             required
                                         />
                                     </div>
+                                    <p className="text-[10px] text-muted-foreground italic">Try to keep it short and professional (e.g. school-name).</p>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="flex items-center gap-2"><Palette className="w-4 h-4"/> Primary Brand Color</Label>
@@ -304,7 +342,7 @@ export default function WebsiteBuilderPage() {
                 </div>
 
                 <div className="space-y-6">
-                    <Card className="bg-indigo-50 border-indigo-100">
+                    <Card className="bg-indigo-50 border-indigo-100 shadow-lg">
                         <CardHeader>
                             <CardTitle className="text-sm uppercase tracking-widest text-indigo-600">Site Appearance</CardTitle>
                         </CardHeader>
