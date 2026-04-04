@@ -57,7 +57,8 @@ import {
   Coins,
   ArrowUpCircle,
   Database,
-  LayoutTemplate
+  LayoutTemplate,
+  User as UserIcon
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -358,7 +359,7 @@ export const navItems: NavItem[] = [
     title: 'Financials',
     icon: Banknote,
     roles: ['Director', 'Administrator', 'Accountant'],
-     subItems: [
+    subItems: [
       {
         path: '/dashboard/accounts',
         title: 'Student Billing',
