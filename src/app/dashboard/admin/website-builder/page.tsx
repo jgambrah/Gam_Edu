@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { useRole } from '@/context/role-context';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Type
+  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -53,13 +52,13 @@ export default function WebsiteBuilderPage() {
 
   useEffect(() => {
     if (schoolData) {
-      // Data migration check: if gallery/videos are just strings, convert to objects
+      // Data migration check: handle strings or objects for media arrays
       const rawGallery = schoolData.gallery || [];
       const formattedGallery = rawGallery.map((item: any) => 
         typeof item === 'string' ? { url: item, caption: '' } : item
       );
 
-      const rawVideos = schoolData.videoUrls || (schoolData.youtubeUrl ? [schoolData.youtubeUrl] : []);
+      const rawVideos = schoolData.videoUrls || (schoolData.youtubeUrl ? [{ url: schoolData.youtubeUrl, title: 'Promo Video' }] : []);
       const formattedVideos = rawVideos.map((item: any) => 
         typeof item === 'string' ? { url: item, title: 'Video Resource' } : item
       );
@@ -91,7 +90,7 @@ export default function WebsiteBuilderPage() {
     if (!publicUrl) return;
     navigator.clipboard.writeText(publicUrl);
     setHasCopied(true);
-    toast({ title: "Link Copied!", description: "You can now paste and share your school's link." });
+    toast({ title: "Link Copied!", description: "Share this link with prospective parents." });
     setTimeout(() => setHasCopied(false), 2000);
   };
 
@@ -101,7 +100,7 @@ export default function WebsiteBuilderPage() {
     setIsSaving(true);
     try {
         await updateDoc(doc(firestore, 'schools', schoolId), { ...formData });
-        toast({ title: "Website Updated!", description: "Your public page is now live." });
+        toast({ title: "Website Published!", description: "Your public page has been updated." });
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -127,10 +126,7 @@ export default function WebsiteBuilderPage() {
   };
 
   const addVideo = () => {
-    if (!newVideoUrl.trim() || !newVideoTitle.trim()) {
-        toast({ variant: 'destructive', title: "Missing Info", description: "Please enter both a video URL and a title." });
-        return;
-    }
+    if (!newVideoUrl.trim() || !newVideoTitle.trim()) return;
     setFormData(prev => ({
         ...prev,
         videoUrls: [...prev.videoUrls, { url: newVideoUrl.trim(), title: newVideoTitle.trim() }]
@@ -146,40 +142,32 @@ export default function WebsiteBuilderPage() {
     }));
   };
 
-  const extractYouTubeId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  };
-
   if (isLoading) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-indigo-600"/></div>;
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex justify-between items-center">
             <div>
                 <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                     <LayoutTemplate className="text-indigo-600"/> Website Builder
                 </h1>
-                <p className="text-muted-foreground font-medium">Customize your school's public presence and admissions portal.</p>
+                <p className="text-muted-foreground font-medium">Build and manage your school's public identity.</p>
             </div>
-            <div className="flex gap-2">
-                {schoolData?.slug && (
-                    <Link href={`/s/${formData.slug}`} target="_blank">
-                        <Button variant="outline" className="border-indigo-200 text-indigo-700 bg-indigo-50 font-bold">
-                            <ExternalLink className="mr-2 h-4 w-4"/> Preview Site
-                        </Button>
-                    </Link>
-                )}
-            </div>
+            {schoolData?.slug && (
+                <Link href={`/s/${formData.slug}`} target="_blank">
+                    <Button variant="outline" className="border-indigo-200 text-indigo-700 bg-indigo-50 font-bold">
+                        <ExternalLink className="mr-2 h-4 w-4"/> View Live Site
+                    </Button>
+                </Link>
+            )}
         </div>
 
         {/* PUBLIC URL SHARE CARD */}
         <Card className="bg-slate-900 text-white border-none overflow-hidden rounded-3xl shadow-xl">
             <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="space-y-2 text-center md:text-left">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Share Your School With The World</p>
-                    <h2 className="text-2xl font-bold tracking-tight">Your Public Web Address</h2>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Share Your School</p>
+                    <h2 className="text-2xl font-bold tracking-tight">Your Official Web Address</h2>
                     <div className="flex items-center gap-2 bg-white/10 p-3 rounded-xl border border-white/10 font-mono text-sm break-all">
                         <Globe className="h-4 w-4 text-indigo-400 shrink-0"/>
                         <span className="opacity-80">{publicUrl}</span>
@@ -193,7 +181,7 @@ export default function WebsiteBuilderPage() {
                     )}
                 >
                     {hasCopied ? <Check className="mr-2 h-5 w-5"/> : <Copy className="mr-2 h-5 w-5"/>}
-                    {hasCopied ? "COPIED!" : "COPY LINK TO SHARE"}
+                    {hasCopied ? "COPIED!" : "COPY LINK"}
                 </Button>
             </CardContent>
         </Card>
@@ -202,10 +190,7 @@ export default function WebsiteBuilderPage() {
             <div className="grid lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Basic Identity</CardTitle>
-                            <CardDescription>How the school appears in search and URL bars.</CardDescription>
-                        </CardHeader>
+                        <CardHeader><CardTitle>Basic Identity</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
@@ -249,59 +234,22 @@ export default function WebsiteBuilderPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <div className="space-y-1">
-                                    <Label className="text-[10px] uppercase font-black text-slate-400">Video Title</Label>
-                                    <Input 
-                                        value={newVideoTitle} 
-                                        onChange={e => setNewVideoTitle(e.target.value)} 
-                                        placeholder="e.g. Virtual Campus Tour" 
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <Label className="text-[10px] uppercase font-black text-slate-400">YouTube URL</Label>
-                                    <div className="flex gap-2">
-                                        <Input 
-                                            value={newVideoUrl} 
-                                            onChange={e => setNewVideoUrl(e.target.value)} 
-                                            placeholder="https://..." 
-                                        />
-                                        <Button type="button" onClick={addVideo} variant="secondary">
-                                            <Plus className="h-4 w-4"/>
-                                        </Button>
-                                    </div>
+                                <Input value={newVideoTitle} onChange={e => setNewVideoTitle(e.target.value)} placeholder="Video Title (e.g. Campus Tour)" />
+                                <div className="flex gap-2">
+                                    <Input value={newVideoUrl} onChange={e => setNewVideoUrl(e.target.value)} placeholder="YouTube URL" />
+                                    <Button type="button" onClick={addVideo} variant="secondary"><Plus/></Button>
                                 </div>
                             </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-                                {formData.videoUrls.map((video, i) => {
-                                    const ytId = extractYouTubeId(video.url);
-                                    return (
-                                        <div key={i} className="relative rounded-xl overflow-hidden border bg-white group flex flex-col">
-                                            <div className="aspect-video bg-slate-900 flex items-center justify-center relative">
-                                                {ytId ? (
-                                                    <iframe 
-                                                        width="100%" height="100%" 
-                                                        src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`} 
-                                                        frameBorder="0" allowFullScreen
-                                                        className="absolute inset-0"
-                                                    ></iframe>
-                                                ) : (
-                                                    <span className="text-[10px] text-white font-bold">Invalid URL</span>
-                                                )}
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => removeVideo(i)}
-                                                    className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                                                >
-                                                    <Trash2 className="h-3 w-3"/>
-                                                </button>
-                                            </div>
-                                            <div className="p-3 bg-slate-50 border-t">
-                                                <p className="text-xs font-bold text-slate-700 truncate">{video.title}</p>
-                                            </div>
+                            <div className="space-y-2 mt-4">
+                                {formData.videoUrls.map((video, i) => (
+                                    <div key={i} className="flex items-center justify-between p-3 bg-slate-50 border rounded-xl">
+                                        <div className="flex items-center gap-3">
+                                            <Video className="h-4 w-4 text-indigo-500" />
+                                            <span className="text-sm font-bold text-slate-700">{video.title}</span>
                                         </div>
-                                    );
-                                })}
+                                        <Button type="button" variant="ghost" size="sm" onClick={() => removeVideo(i)} className="text-red-500"><Trash2 className="h-4 w-4"/></Button>
+                                    </div>
+                                ))}
                             </div>
                         </CardContent>
                     </Card>
@@ -313,45 +261,18 @@ export default function WebsiteBuilderPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <div className="space-y-1">
-                                    <Label className="text-[10px] uppercase font-black text-slate-400">Photo Caption</Label>
-                                    <Input 
-                                        value={newGalleryCaption} 
-                                        onChange={e => setNewGalleryCaption(e.target.value)} 
-                                        placeholder="e.g. Science Lab in action" 
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <Label className="text-[10px] uppercase font-black text-slate-400">Image URL</Label>
-                                    <div className="flex gap-2">
-                                        <Input 
-                                            value={newGalleryUrl} 
-                                            onChange={e => setNewGalleryUrl(e.target.value)} 
-                                            placeholder="https://..." 
-                                        />
-                                        <Button type="button" onClick={addGalleryImage} variant="secondary">
-                                            <Plus className="h-4 w-4"/>
-                                        </Button>
-                                    </div>
+                                <Input value={newGalleryCaption} onChange={e => setNewGalleryCaption(e.target.value)} placeholder="Caption (e.g. Science Lab)" />
+                                <div className="flex gap-2">
+                                    <Input value={newGalleryUrl} onChange={e => setNewGalleryUrl(e.target.value)} placeholder="Image URL" />
+                                    <Button type="button" onClick={addGalleryImage} variant="secondary"><Plus/></Button>
                                 </div>
                             </div>
-                            
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4">
                                 {formData.gallery.map((item, i) => (
-                                    <div key={i} className="relative rounded-xl overflow-hidden border group bg-white flex flex-col">
-                                        <div className="aspect-video relative overflow-hidden">
-                                            <img src={item.url} alt="" className="w-full h-full object-cover" />
-                                            <button 
-                                                type="button"
-                                                onClick={() => removeGalleryImage(i)}
-                                                className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <Trash2 className="h-3 w-3"/>
-                                            </button>
-                                        </div>
-                                        <div className="p-2 bg-slate-50 border-t min-h-[40px]">
-                                            <p className="text-[10px] font-medium text-slate-600 line-clamp-2">{item.caption || "No caption"}</p>
-                                        </div>
+                                    <div key={i} className="relative rounded-xl overflow-hidden border group bg-white">
+                                        <img src={item.url} alt="" className="aspect-video w-full object-cover" />
+                                        <div className="p-2 bg-white/90 backdrop-blur-sm text-[10px] font-bold text-slate-600 truncate">{item.caption || "No caption"}</div>
+                                        <button type="button" onClick={() => removeGalleryImage(i)} className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-3 w-3"/></button>
                                     </div>
                                 ))}
                             </div>
@@ -360,25 +281,18 @@ export default function WebsiteBuilderPage() {
                 </div>
 
                 <div className="space-y-6">
-                    <Card className="bg-indigo-50 border-indigo-100 shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-widest text-indigo-600">Site Appearance</CardTitle>
-                        </CardHeader>
+                    <Card className="bg-indigo-50 border-indigo-100">
+                        <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-indigo-600">Site Appearance</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <Label>Hero / Cover Image URL</Label>
                                 <Input value={formData.coverImageUrl} onChange={e => setFormData({...formData, coverImageUrl: e.target.value})} placeholder="https://..." />
-                                {formData.coverImageUrl && (
-                                    <img src={formData.coverImageUrl} className="mt-2 rounded-lg border aspect-video object-cover" alt="Cover Preview" />
-                                )}
                             </div>
                         </CardContent>
                     </Card>
 
                     <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-widest text-slate-500">Contact Details</CardTitle>
-                        </CardHeader>
+                        <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-slate-500">Contact Details</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <Label className="flex items-center gap-2"><Phone className="h-3 w-3"/> Phone</Label>
@@ -396,20 +310,18 @@ export default function WebsiteBuilderPage() {
                     </Card>
 
                     <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-widest text-slate-500">Social Media</CardTitle>
-                        </CardHeader>
+                        <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-slate-500">Social Media</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label className="flex items-center gap-2"><Facebook className="h-3 w-3"/> Facebook</Label>
+                                <Label className="flex items-center gap-2 text-blue-600"><Facebook className="h-3 w-3"/> Facebook</Label>
                                 <Input value={formData.facebookUrl} onChange={e => setFormData({...formData, facebookUrl: e.target.value})} placeholder="https://..." />
                             </div>
                             <div className="space-y-2">
-                                <Label className="flex items-center gap-2"><Instagram className="h-3 w-3"/> Instagram</Label>
+                                <Label className="flex items-center gap-2 text-pink-600"><Instagram className="h-3 w-3"/> Instagram</Label>
                                 <Input value={formData.instagramUrl} onChange={e => setFormData({...formData, instagramUrl: e.target.value})} placeholder="https://..." />
                             </div>
                             <div className="space-y-2">
-                                <Label className="flex items-center gap-2"><Linkedin className="h-3 w-3"/> LinkedIn</Label>
+                                <Label className="flex items-center gap-2 text-blue-800"><Linkedin className="h-3 w-3"/> LinkedIn</Label>
                                 <Input value={formData.linkedinUrl} onChange={e => setFormData({...formData, linkedinUrl: e.target.value})} placeholder="https://..." />
                             </div>
                         </CardContent>

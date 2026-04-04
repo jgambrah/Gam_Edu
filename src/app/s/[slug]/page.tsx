@@ -12,10 +12,6 @@ import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-/**
- * Public facing school microsite.
- * Parents can view details and apply for admission here.
- */
 export default function PublicSchoolPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params);
     const firestore = useFirestore();
@@ -56,7 +52,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     
     const { data: announcements } = useCollection<any>(announcementsQuery);
 
-    // 3. Fetch Public Team/Staff
+    // 3. Fetch Public Team
     useEffect(() => {
         const fetchTeam = async () => {
             if (!firestore || !school?.id) return;
@@ -68,12 +64,8 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                 );
                 const snap = await getDocs(q);
                 const staffData = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => {
-                    const roleOrder = ['Director', 'Administrator', 'Teacher'];
-                    const aIdx = roleOrder.indexOf(a.role);
-                    const bIdx = roleOrder.indexOf(b.role);
-                    if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
-                    if (aIdx !== -1) return -1;
-                    if (bIdx !== -1) return 1;
+                    if (a.role === 'Director') return -1;
+                    if (b.role === 'Director') return 1;
                     return 0;
                 });
                 setTeam(staffData);
