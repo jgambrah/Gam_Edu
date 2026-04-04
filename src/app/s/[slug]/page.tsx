@@ -1,3 +1,4 @@
+
 'use client';
 import { use, useState, useEffect } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -6,11 +7,16 @@ import { AdmissionForm } from '@/components/public/AdmissionForm';
 import { 
   Loader2, MapPin, Phone, Mail, CheckCircle2, Globe, 
   Camera, Play, Info, Facebook, Instagram, Linkedin, Video,
-  Megaphone, Calendar, ArrowRight
+  Megaphone, Calendar, ArrowRight, Sparkles
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
+/**
+ * Public facing school microsite.
+ * Parents can view details and apply for admission here.
+ */
 export default function PublicSchoolPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params);
     const firestore = useFirestore();
@@ -48,9 +54,9 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         );
     }, [firestore, school?.id]);
     
-    const { data: announcements, isLoading: loadingNews } = useCollection<any>(announcementsQuery);
+    const { data: announcements } = useCollection<any>(announcementsQuery);
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-blue-600"/></div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 animate-spin text-indigo-600"/></div>;
     if (!school) return <div className="min-h-screen flex items-center justify-center text-2xl font-bold text-slate-500">School Not Found.</div>;
 
     const brandColor = school.primaryColor || '#2563eb';
@@ -61,6 +67,10 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     };
 
     const videoUrls = school.videoUrls || (school.youtubeUrl ? [school.youtubeUrl] : []);
+
+    const scrollToForm = () => {
+        document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-900">
@@ -74,9 +84,13 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     {announcements && announcements.length > 0 && <a href="#news" className="hover:text-slate-900 transition-colors">News</a>}
                     {videoUrls.length > 0 && <a href="#videos" className="hover:text-slate-900 transition-colors">Videos</a>}
                     {school.gallery?.length > 0 && <a href="#gallery" className="hover:text-slate-900 transition-colors">Gallery</a>}
-                    <a href="#apply" className="px-6 py-2 rounded-full text-white transition-opacity hover:opacity-90" style={{ backgroundColor: brandColor }}>
+                    <button 
+                        onClick={scrollToForm}
+                        className="px-6 py-2 rounded-full text-white transition-opacity hover:opacity-90 font-black uppercase text-xs tracking-widest" 
+                        style={{ backgroundColor: brandColor }}
+                    >
                         Enroll Now
-                    </a>
+                    </button>
                 </div>
             </nav>
 
@@ -86,15 +100,22 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     <img src={school.coverImageUrl} alt="Cover" className="absolute inset-0 w-full h-full object-cover opacity-50 scale-105" />
                 )}
                 <div className="relative z-10 max-w-4xl space-y-6">
-                    <h2 className="text-5xl md:text-8xl font-black text-white leading-none tracking-tighter uppercase italic">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest border border-white/20">
+                        <Sparkles className="h-3 w-3 text-yellow-400" /> Admissions Open for 2025/2026
+                    </div>
+                    <h2 className="text-5xl md:text-8xl font-black text-white leading-none tracking-tighter uppercase italic drop-shadow-2xl">
                         {school.name}
                     </h2>
                     <div className="h-2 w-24 mx-auto rounded-full" style={{ backgroundColor: brandColor }} />
                     <p className="text-xl md:text-2xl text-slate-200 font-medium max-w-2xl mx-auto drop-shadow-lg">{school.motto}</p>
                     <div className="pt-8">
-                        <a href="#apply" className="px-12 py-5 rounded-2xl text-white text-xl font-black uppercase tracking-tighter shadow-2xl transition-transform hover:scale-105 active:scale-95 inline-block" style={{ backgroundColor: brandColor }}>
-                            Start Application
-                        </a>
+                        <button 
+                            onClick={scrollToForm}
+                            className="px-12 py-5 rounded-2xl text-white text-xl font-black uppercase tracking-tighter shadow-2xl transition-transform hover:scale-105 active:scale-95 inline-block" 
+                            style={{ backgroundColor: brandColor }}
+                        >
+                            Start Online Application
+                        </button>
                     </div>
                 </div>
             </div>
