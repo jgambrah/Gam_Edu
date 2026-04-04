@@ -3,7 +3,10 @@ import { use, useState, useEffect } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { AdmissionForm } from '@/components/public/AdmissionForm';
-import { Loader2, MapPin, Phone, Mail, CheckCircle2, Globe, Camera, Play, Info } from 'lucide-react';
+import { 
+  Loader2, MapPin, Phone, Mail, CheckCircle2, Globe, 
+  Camera, Play, Info, Facebook, Instagram, Linkedin 
+} from 'lucide-react';
 
 export default function PublicSchoolPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params);
@@ -128,6 +131,26 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                                     <span className="font-bold">{school.email || "Email not provided"}</span>
                                 </div>
                             </div>
+                            
+                            {(school.facebookUrl || school.instagramUrl || school.linkedinUrl) && (
+                                <div className="flex gap-4 pt-4 border-t border-slate-800">
+                                    {school.facebookUrl && (
+                                        <a href={school.facebookUrl} target="_blank" rel="noreferrer" className="p-2 bg-slate-800 rounded-full hover:bg-blue-600 transition-colors">
+                                            <Facebook className="h-5 w-5" />
+                                        </a>
+                                    )}
+                                    {school.instagramUrl && (
+                                        <a href={school.instagramUrl} target="_blank" rel="noreferrer" className="p-2 bg-slate-800 rounded-full hover:bg-pink-600 transition-colors">
+                                            <Instagram className="h-5 w-5" />
+                                        </a>
+                                    )}
+                                    {school.linkedinUrl && (
+                                        <a href={school.linkedinUrl} target="_blank" rel="noreferrer" className="p-2 bg-slate-800 rounded-full hover:bg-blue-800 transition-colors">
+                                            <Linkedin className="h-5 w-5" />
+                                        </a>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </section>

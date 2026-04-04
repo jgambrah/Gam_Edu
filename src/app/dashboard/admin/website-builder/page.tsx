@@ -10,7 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2, Globe, LayoutTemplate, Palette, Save, Video, Image as ImageIcon, Plus, Trash2 } from 'lucide-react';
+import { 
+  Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
+  Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
+  Facebook, Instagram, Linkedin 
+} from 'lucide-react';
 import Link from 'next/link';
 
 export default function WebsiteBuilderPage() {
@@ -30,7 +34,15 @@ export default function WebsiteBuilderPage() {
     coverImageUrl: '', 
     primaryColor: '#2563eb', 
     youtubeUrl: '',
-    gallery: [] as string[]
+    gallery: [] as string[],
+    // Contact Info
+    phone: '',
+    email: '',
+    address: '',
+    // Social Links
+    facebookUrl: '',
+    instagramUrl: '',
+    linkedinUrl: ''
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -45,7 +57,13 @@ export default function WebsiteBuilderPage() {
         coverImageUrl: schoolData.coverImageUrl || '',
         primaryColor: schoolData.primaryColor || '#2563eb',
         youtubeUrl: schoolData.youtubeUrl || '',
-        gallery: schoolData.gallery || []
+        gallery: schoolData.gallery || [],
+        phone: schoolData.phone || '',
+        email: schoolData.email || '',
+        address: schoolData.address || '',
+        facebookUrl: schoolData.facebookUrl || '',
+        instagramUrl: schoolData.instagramUrl || '',
+        linkedinUrl: schoolData.linkedinUrl || ''
       });
     }
   }, [schoolData]);
@@ -146,6 +164,29 @@ export default function WebsiteBuilderPage() {
 
                     <Card>
                         <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><Phone className="h-5 w-5 text-indigo-600"/> Contact Information</CardTitle>
+                            <CardDescription>Official details displayed on the public page footer.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2"><Phone className="h-3 w-3" /> Phone Number</Label>
+                                    <Input value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="+233..." />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2"><Mail className="h-3 w-3" /> Email Address</Label>
+                                    <Input value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="admin@school.com" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><MapPin className="h-3 w-3" /> Campus Address</Label>
+                                <Input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} placeholder="123 Education St, Accra" />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
                             <CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5 text-indigo-600"/> Photo Gallery</CardTitle>
                             <CardDescription>Showcase your campus, classrooms, and students.</CardDescription>
                         </CardHeader>
@@ -187,7 +228,7 @@ export default function WebsiteBuilderPage() {
                 <div className="space-y-6">
                     <Card className="bg-indigo-50 border-indigo-100">
                         <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-widest text-indigo-600">Visual Assets</CardTitle>
+                            <CardTitle className="text-sm uppercase tracking-widest text-indigo-600">Public Media</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
@@ -207,16 +248,20 @@ export default function WebsiteBuilderPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-widest text-slate-500">Core Beliefs</CardTitle>
+                            <CardTitle className="text-sm uppercase tracking-widest text-slate-500">Social Presence</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Our Mission</Label>
-                                <Textarea value={formData.mission} onChange={e => setFormData({...formData, mission: e.target.value})} rows={3} className="text-xs" />
+                                <Label className="flex items-center gap-2 text-blue-600"><Facebook className="h-3 w-3"/> Facebook URL</Label>
+                                <Input value={formData.facebookUrl} onChange={e => setFormData({...formData, facebookUrl: e.target.value})} placeholder="https://facebook.com/..." className="text-xs" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Our Vision</Label>
-                                <Textarea value={formData.vision} onChange={e => setFormData({...formData, vision: e.target.value})} rows={3} className="text-xs" />
+                                <Label className="flex items-center gap-2 text-pink-600"><Instagram className="h-3 w-3"/> Instagram URL</Label>
+                                <Input value={formData.instagramUrl} onChange={e => setFormData({...formData, instagramUrl: e.target.value})} placeholder="https://instagram.com/..." className="text-xs" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2 text-blue-800"><Linkedin className="h-3 w-3"/> LinkedIn URL</Label>
+                                <Input value={formData.linkedinUrl} onChange={e => setFormData({...formData, linkedinUrl: e.target.value})} placeholder="https://linkedin.com/in/..." className="text-xs" />
                             </div>
                         </CardContent>
                     </Card>

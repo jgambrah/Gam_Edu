@@ -15,7 +15,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
-  CalendarDays, CalendarIcon, ArrowRightCircle, PenTool, X
+  CalendarDays, CalendarIcon, ArrowRightCircle, PenTool, X,
+  Facebook, Instagram, Linkedin
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,11 @@ export default function SchoolProfilePage() {
   const [website, setWebsite] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [headmasterSignature, setHeadmasterSignature] = useState<string>('');
+  
+  // Social Links
+  const [facebookUrl, setFacebookUrl] = useState('');
+  const [instagramUrl, setInstagramUrl] = useState('');
+  const [linkedinUrl, setLinkedinUrl] = useState('');
 
   const [caWeight, setCaWeight] = useState<number>(30);
   const [examWeight, setExamWeight] = useState<number>(70);
@@ -65,10 +71,12 @@ export default function SchoolProfilePage() {
         setWebsite(profile.website || '');
         setLogoUrl(profile.logoUrl || '');
         setHeadmasterSignature(profile.headmasterSignature || profile.headmasterSignatureUrl || '');
+        setFacebookUrl(profile.facebookUrl || '');
+        setInstagramUrl(profile.instagramUrl || '');
+        setLinkedinUrl(profile.linkedinUrl || '');
         setCaWeight(profile.caWeight ?? 30);
         setExamWeight(profile.examWeight ?? 70);
         
-        // Handle both legacy Timestamps and new ISO strings
         if (profile.termStartDate) {
             setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
         }
@@ -137,7 +145,9 @@ export default function SchoolProfilePage() {
             name, motto, address, phone, email, website, logoUrl, 
             headmasterSignature,
             headmasterSignatureUrl: headmasterSignature,
-            // STORE AS ISO STRINGS TO PREVENT TIMEZONE SHIFTS
+            facebookUrl,
+            instagramUrl,
+            linkedinUrl,
             termStartDate: termStartDate ? format(termStartDate, 'yyyy-MM-dd') : null,
             termEndDate: termEndDate ? format(termEndDate, 'yyyy-MM-dd') : null,
             nextTermDate: nextTermDate ? format(nextTermDate, 'yyyy-MM-dd') : null,
@@ -217,7 +227,7 @@ export default function SchoolProfilePage() {
                                     <Button type="button" variant="outline" onClick={() => document.getElementById('sig-upload')?.click()} className="bg-white border-2 font-bold">
                                         <Upload className="mr-2 h-4 w-4"/> Signature
                                     </Button>
-                                    <p className="text-[9px] text-slate-400 mt-2 font-black uppercase tracking-widest">PNG/JPG, Max 500KB. Base64 Optimized.</p>
+                                    <p className="text-[9px] text-slate-400 mt-2 font-black uppercase tracking-widest">PNG/JPG, Max 500KB.</p>
                                 </div>
                             </div>
                         </div>
@@ -235,6 +245,17 @@ export default function SchoolProfilePage() {
                             <div className="space-y-2"><Label className="flex items-center gap-2"><Phone className="h-3 w-3"/> Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+233..." /></div>
                             <div className="space-y-2"><Label className="flex items-center gap-2"><Mail className="h-3 w-3"/> Email</Label><Input value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@school.com" /></div>
                             <div className="space-y-2"><Label className="flex items-center gap-2"><Globe className="h-3 w-3"/> Website</Label><Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" /></div>
+                        </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-2"><Globe className="h-5 w-5 text-indigo-600"/><h3 className="text-lg font-bold text-slate-800">Social Media Links</h3></div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-600"><Facebook className="h-3 w-3"/> Facebook</Label><Input value={facebookUrl} onChange={e => setFacebookUrl(e.target.value)} placeholder="https://..." /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 text-pink-600"><Instagram className="h-3 w-3"/> Instagram</Label><Input value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} placeholder="https://..." /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-800"><Linkedin className="h-3 w-3"/> LinkedIn</Label><Input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="https://..." /></div>
                         </div>
                     </div>
 
