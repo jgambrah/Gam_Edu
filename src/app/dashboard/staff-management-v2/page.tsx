@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import {
   UserCog, UserPlus, Trash2, Loader2, Search,
-  RefreshCw, Edit, Globe, GraduationCap, Heart, FileText
+  RefreshCw, Edit, Globe, GraduationCap, Heart, FileText, Save
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
