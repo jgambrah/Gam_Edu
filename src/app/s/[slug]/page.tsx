@@ -42,7 +42,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         fetchSchool();
     }, [firestore, slug]);
 
-    // 2. Fetch Public Announcements (News & Updates)
+    // 2. Fetch Public Announcements
     const announcementsQuery = useMemoFirebase(() => {
         if (!firestore || !school?.id) return null;
         return query(
@@ -67,7 +67,6 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     where('showOnWebsite', '==', true)
                 );
                 const snap = await getDocs(q);
-                // Sort to put Directors/Admins first, then Teachers
                 const staffData = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => {
                     const roleOrder = ['Director', 'Administrator', 'Teacher'];
                     const aIdx = roleOrder.indexOf(a.role);
@@ -95,8 +94,6 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         return (match && match[2].length === 11) ? match[2] : null;
     };
 
-    const videoUrls = school.videoUrls || (school.youtubeUrl ? [school.youtubeUrl] : []);
-
     const scrollToForm = () => {
         document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth' });
     };
@@ -112,7 +109,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     <a href="#about" className="hover:text-slate-900 transition-colors">About</a>
                     {team.length > 0 && <a href="#team" className="hover:text-slate-900 transition-colors">Team</a>}
                     {announcements && announcements.length > 0 && <a href="#news" className="hover:text-slate-900 transition-colors">News</a>}
-                    {videoUrls.length > 0 && <a href="#videos" className="hover:text-slate-900 transition-colors">Videos</a>}
+                    {school.gallery?.length > 0 && <a href="#gallery" className="hover:text-slate-900 transition-colors">Gallery</a>}
                     <button 
                         onClick={scrollToForm}
                         className="px-6 py-2 rounded-full text-white transition-opacity hover:opacity-90 font-black uppercase text-xs tracking-widest" 
@@ -130,7 +127,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                 )}
                 <div className="relative z-10 max-w-4xl space-y-6">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest border border-white/20">
-                        <Sparkles className="h-3 w-3 text-yellow-400" /> Admissions Open for 2025/2026
+                        <Sparkles className="h-3 w-3 text-yellow-400" /> Admissions Open
                     </div>
                     <h2 className="text-5xl md:text-8xl font-black text-white leading-none tracking-tighter uppercase italic drop-shadow-2xl">
                         {school.name}
@@ -216,7 +213,68 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     </div>
                 </section>
 
-                {/* MEET OUR TEAM SECTION */}
+                {/* SECTION: VIDEOS */}
+                {school.videoUrls?.length > 0 && (
+                    <section id="videos" className="space-y-12">
+                        <div className="text-center space-y-2">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                                <Video className="h-3 w-3" /> Media Library
+                            </div>
+                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">Video Showcase</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            {school.videoUrls.map((video: any, i: number) => {
+                                const ytId = getYouTubeId(video.url || video);
+                                if (!ytId) return null;
+                                return (
+                                    <div key={i} className="space-y-4">
+                                        <div className="rounded-[2.5rem] overflow-hidden shadow-2xl aspect-video border-[12px] border-slate-50 ring-1 ring-slate-200 bg-black">
+                                            <iframe 
+                                                width="100%" height="100%" 
+                                                src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`} 
+                                                title={`Video ${i+1}`} 
+                                                frameBorder="0" allowFullScreen
+                                            ></iframe>
+                                        </div>
+                                        {video.title && (
+                                            <div className="px-4 text-center">
+                                                <h4 className="text-xl font-bold text-slate-800">{video.title}</h4>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
+
+                {/* SECTION: GALLERY */}
+                {school.gallery?.length > 0 && (
+                    <section id="gallery" className="space-y-12">
+                        <div className="text-center space-y-2">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                                <Camera className="h-3 w-3" /> Snapshots
+                            </div>
+                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">Life at {school.name}</h3>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {school.gallery.map((item: any, i: number) => (
+                                <div key={i} className="group space-y-4">
+                                    <div className="rounded-3xl overflow-hidden aspect-square shadow-xl border-4 border-white ring-1 ring-slate-100 hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
+                                        <img src={item.url || item} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                    {item.caption && (
+                                        <p className="text-sm font-medium text-slate-500 text-center px-4 italic leading-relaxed">
+                                            "{item.caption}"
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* SECTION: TEAM */}
                 {team.length > 0 && (
                     <section id="team" className="space-y-12">
                         <div className="text-center space-y-2">
@@ -224,27 +282,21 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                                 <Users className="h-3 w-3" /> Staff Directory
                             </div>
                             <h3 className="text-5xl font-black uppercase italic tracking-tighter">Meet Our Educators</h3>
-                            <p className="text-lg text-slate-500 max-w-2xl mx-auto">Our dedicated team of professionals is committed to providing the best educational experience for your child.</p>
                         </div>
 
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {team.map(member => (
                                 <div key={member.id} className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden hover:-translate-y-2 transition-transform duration-300 group">
-                                    {/* Photo Area */}
                                     <div className="h-72 bg-slate-100 w-full overflow-hidden flex items-center justify-center relative">
                                         {member.publicPhotoUrl ? (
                                             <img src={member.publicPhotoUrl} alt={member.firstName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                         ) : (
-                                            <div className="text-slate-300 text-7xl font-black opacity-20">
-                                                <User className="h-24 w-24" />
-                                            </div>
+                                            <User className="h-24 w-24 text-slate-300 opacity-20" />
                                         )}
                                         <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg border border-white" style={{ color: brandColor }}>
                                             {member.role}
                                         </div>
                                     </div>
-                                    
-                                    {/* Info Area */}
                                     <div className="p-8 space-y-5">
                                         <div>
                                             <h4 className="text-2xl font-black text-slate-800 tracking-tight">{member.firstName} {member.lastName}</h4>
@@ -254,24 +306,10 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                                                 </p>
                                             )}
                                         </div>
-                                        
                                         {member.publicBio && (
                                             <p className="text-sm text-slate-500 leading-relaxed border-l-4 pl-4 italic" style={{ borderColor: `${brandColor}40` }}>
                                                 "{member.publicBio}"
                                             </p>
-                                        )}
-
-                                        {member.interests && (
-                                            <div className="pt-5 border-t border-slate-50">
-                                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-3">Expertise & Interests</p>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {member.interests.split(',').map((interest: string, i: number) => (
-                                                        <Badge key={i} variant="outline" className="bg-slate-50 text-slate-500 border-slate-100 text-[10px] font-bold py-0.5 px-3">
-                                                            {interest.trim()}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -280,7 +318,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     </section>
                 )}
 
-                {/* SECTION: NEWS & UPDATES */}
+                {/* SECTION: NEWS */}
                 {announcements && announcements.length > 0 && (
                     <section id="news" className="space-y-12">
                         <div className="text-center space-y-2">
@@ -293,10 +331,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                             {announcements.map((news: any) => (
                                 <div key={news.id} className="bg-white border rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all border-slate-100 flex flex-col h-full">
                                     <div className="flex items-center justify-between mb-4">
-                                        <Badge variant="outline" className={cn(
-                                            "uppercase text-[9px] font-black tracking-widest",
-                                            news.priority === 'Urgent' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'
-                                        )}>
+                                        <Badge variant="outline" className="uppercase text-[9px] font-black tracking-widest">
                                             {news.priority || 'Normal'}
                                         </Badge>
                                         <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
@@ -310,56 +345,9 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                                     </p>
                                     <div className="pt-4 border-t border-slate-50 mt-auto">
                                         <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest flex items-center gap-2">
-                                            Official School Update <ArrowRight className="h-3 w-3"/>
+                                            Official Update <ArrowRight className="h-3 w-3"/>
                                         </span>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                )}
-
-                {/* SECTION: VIDEOS */}
-                {videoUrls.length > 0 && (
-                    <section id="videos" className="space-y-12">
-                        <div className="text-center space-y-2">
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
-                                <Video className="h-3 w-3" /> Media Library
-                            </div>
-                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">Video Showcase</h3>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {videoUrls.map((url: string, i: number) => {
-                                const ytId = getYouTubeId(url);
-                                if (!ytId) return null;
-                                return (
-                                    <div key={i} className="rounded-[2.5rem] overflow-hidden shadow-2xl aspect-video border-[12px] border-slate-50 ring-1 ring-slate-200 bg-black">
-                                        <iframe 
-                                            width="100%" height="100%" 
-                                            src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`} 
-                                            title={`Promo Video ${i+1}`} 
-                                            frameBorder="0" allowFullScreen
-                                        ></iframe>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </section>
-                )}
-
-                {/* SECTION: GALLERY */}
-                {school.gallery?.length > 0 && (
-                    <section id="gallery" className="space-y-12">
-                        <div className="text-center space-y-2">
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
-                                <Camera className="h-3 w-3" /> Snapshot
-                            </div>
-                            <h3 className="text-5xl font-black uppercase italic tracking-tighter">Life at {school.name}</h3>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {school.gallery.map((url: string, i: number) => (
-                                <div key={i} className="rounded-3xl overflow-hidden aspect-square shadow-xl border-4 border-white ring-1 ring-slate-100 hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
-                                    <img src={url} alt={`Gallery ${i}`} className="w-full h-full object-cover" />
                                 </div>
                             ))}
                         </div>
@@ -371,7 +359,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     <div className="max-w-3xl mx-auto text-center space-y-12">
                         <div className="space-y-4">
                             <h3 className="text-6xl font-black tracking-tighter uppercase italic" style={{ color: brandColor }}>Enroll Today</h3>
-                            <p className="text-xl text-slate-500 font-medium">Join our community of learners. Fill out the enquiry form below and our admissions team will reach out to schedule a tour.</p>
+                            <p className="text-xl text-slate-500 font-medium">Join our community. Fill out the enquiry form below.</p>
                         </div>
                         <AdmissionForm schoolId={school.id} primaryColor={brandColor} />
                     </div>
