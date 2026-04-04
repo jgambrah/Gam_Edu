@@ -49,7 +49,7 @@ service cloud.firestore {
     // =========================================================
 
     match /schools/{schoolId} {
-      allow read: if true; // PUBLIC: Anyone can view a school's public profile
+      allow get: if true; // Publicly readable via slug search
       allow list: if isAdmin();
       allow write: if isSuperAdmin(); 
       allow update: if isSignedIn() && isDirector();
@@ -287,7 +287,7 @@ service cloud.firestore {
         isSuperAdmin() || 
         isFinanceStaff() || isAdmin() || isTeacher() ||
         resource.data.studentId == request.auth.uid ||
-        parentOwnsStudent(resource.data.studentId)
+        parentOwnsStudent(get(/databases/$(database)/documents/financialRecords/$(recordId)).data.studentId)
       ); 
       allow list: if isSignedIn();
       allow write: if isFinanceStaff() || isAdmin() || isTeacher(); 
@@ -413,7 +413,7 @@ service cloud.firestore {
 
     match /admissionApplications/{applicationId} {
       allow read, write, list: if isAdmin();
-      allow create: if true; // PUBLIC: Parents filling out the form don't have accounts yet
+      allow create: if true; // Public submission
       allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
     }
 
