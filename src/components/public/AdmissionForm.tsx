@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import { useFirestore } from '@/firebase';
@@ -9,11 +8,6 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Send } from 'lucide-react';
 
-/**
- * Public Admission Enquiry Form.
- * This form is accessible by anyone on the school's public microsite.
- * It submits data directly to the school's admissionApplications collection.
- */
 export function AdmissionForm({ schoolId, primaryColor }: { schoolId: string, primaryColor: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -21,106 +15,67 @@ export function AdmissionForm({ schoolId, primaryColor }: { schoolId: string, pr
     
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!firestore || !schoolId) return;
-        
+        if (!firestore) return;
         setLoading(true);
         const formData = new FormData(e.currentTarget);
         
         try {
-            // Generate a human-readable application ID
-            const appId = `APP-${Date.now().toString().slice(-6)}`;
-
             await addDoc(collection(firestore, 'admissionApplications'), {
                 schoolId,
-                applicationId: appId,
-                // Form Fields
-                student: {
-                    fullName: formData.get('studentName'),
-                    desiredGrade: formData.get('grade'),
-                },
-                parent1: {
-                    name: formData.get('parentName'),
-                    email: formData.get('email'),
-                    phone: formData.get('phone'),
-                },
-                // Metadata
-                status: 'Pending Review', // Matches the internal dashboard filter
-                submittedAt: serverTimestamp(),
-                source: 'Public Website'
+                parentName: formData.get('parentName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                studentName: formData.get('studentName'),
+                gradeApplyingFor: formData.get('grade'),
+                status: 'Pending Review',
+                submittedAt: serverTimestamp()
             });
-
-            toast({ 
-                title: "Application Submitted!", 
-                description: `Thank you. Your application ID is ${appId}. We will contact you shortly.` 
-            });
+            toast({ title: "Application Submitted!", description: "The school will contact you shortly." });
             (e.target as HTMLFormElement).reset();
         } catch (err: any) {
             console.error("Admission Submit Error:", err);
-            toast({ 
-                variant: 'destructive', 
-                title: "Submission Error", 
-                description: "We couldn't process your application right now. Please try again or contact the school directly." 
-            });
+            toast({ variant: 'destructive', title: "Error", description: "Failed to submit. Please try again." });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div id="enrol-form" className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-4 bg-white p-8 rounded-[2.5rem] shadow-2xl border-4 border-slate-100 text-left">
-                <div className="mb-6">
-                    <h3 className="text-3xl font-black uppercase italic tracking-tighter" style={{ color: primaryColor }}>Apply for Admission</h3>
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Start your child's journey with us.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Parent Full Name *</Label>
-                        <Input name="parentName" required placeholder="e.g. Jane Doe" className="h-12 rounded-xl border-2" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Phone Number *</Label>
-                        <Input name="phone" required placeholder="e.g. 024 XXX XXXX" className="h-12 rounded-xl border-2" />
-                    </div>
-                </div>
-
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 text-left">
+            <h3 className="text-2xl font-bold mb-4" style={{ color: primaryColor }}>Apply for Admission</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Email Address</Label>
-                    <Input name="email" type="email" placeholder="jane@example.com" className="h-12 rounded-xl border-2" />
+                    <Label>Parent Name *</Label>
+                    <Input name="parentName" required placeholder="Full Name" />
                 </div>
-
-                <Separator className="my-4 opacity-50" />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Child's Full Name *</Label>
-                        <Input name="studentName" required placeholder="e.g. John Doe" className="h-12 rounded-xl border-2" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Grade Applying For *</Label>
-                        <Input name="grade" placeholder="e.g. Grade 1 or JHS 1" required className="h-12 rounded-xl border-2" />
-                    </div>
+                <div className="space-y-2">
+                    <Label>Phone Number *</Label>
+                    <Input name="phone" required placeholder="Contact Number" />
                 </div>
-
-                <Button 
-                    type="submit" 
-                    disabled={loading} 
-                    className="w-full h-16 text-xl font-black uppercase tracking-tighter rounded-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-95 text-white" 
-                    style={{ backgroundColor: primaryColor }}
-                >
-                    {loading ? <Loader2 className="animate-spin mr-2 h-6 w-6"/> : <Send className="mr-2 h-6 w-6"/>} 
-                    Submit Application
-                </Button>
-                
-                <p className="text-[9px] text-center text-slate-400 font-bold uppercase tracking-widest mt-4">
-                    Your data is secure and will be reviewed by the school administration.
-                </p>
-            </form>
-        </div>
+            </div>
+            <div className="space-y-2">
+                <Label>Email Address</Label>
+                <Input name="email" type="email" placeholder="example@email.com" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label>Child's Full Name *</Label>
+                    <Input name="studentName" required placeholder="Student Name" />
+                </div>
+                <div className="space-y-2">
+                    <Label>Grade Applying For *</Label>
+                    <Input name="grade" placeholder="e.g. Grade 1" required />
+                </div>
+            </div>
+            <Button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full h-12 text-lg text-white font-bold" 
+                style={{ backgroundColor: primaryColor }}
+            >
+                {loading ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Send className="mr-2 h-4 w-4"/>} 
+                Submit Application
+            </Button>
+        </form>
     );
-}
-
-function Separator({ className }: { className?: string }) {
-    return <div className={cn("h-px w-full bg-slate-200", className)} />;
 }

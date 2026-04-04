@@ -114,7 +114,7 @@ service cloud.firestore {
     }
 
     match /announcements_v2/{announcementId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if true; // Publicly readable for microsites
       allow write: if isAdmin();
     }
 
@@ -322,7 +322,6 @@ service cloud.firestore {
     }
     
     match /suppliers/{id} {
-      member
       allow read, list: if isSignedIn();
       allow write: if isFinanceStaff() || isAdmin();
     }
