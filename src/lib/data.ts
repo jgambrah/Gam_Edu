@@ -493,12 +493,6 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         },
         {
-            path: '/dashboard/admin/website-builder',
-            title: 'Website Builder',
-            icon: LayoutTemplate,
-            roles: ['Director', 'Administrator'],
-        },
-        {
             path: '/dashboard/audit-log',
             title: 'Audit Log',
             icon: FileText,

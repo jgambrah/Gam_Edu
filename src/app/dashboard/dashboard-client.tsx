@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -85,33 +86,26 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
                 <Card>
                     <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
                     <CardContent className="space-y-3">
-                        <Link href="/dashboard/admin/website-builder" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border border-indigo-100 bg-indigo-50/30 transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-indigo-100 rounded-lg"><LayoutTemplate className="h-4 w-4 text-indigo-600"/></div>
-                                <span className="text-sm font-bold text-indigo-900">Website Builder</span>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-indigo-300 group-hover:translate-x-1 transition-transform"/>
-                        </Link>
-                        <Link href="/dashboard/students-v3" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                        <Link href="/dashboard/students-v3" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all group">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-green-100 rounded-lg"><GraduationCap className="h-4 w-4 text-green-600"/></div>
-                                <span className="text-sm font-semibold">Enroll Student</span>
+                                <span className="text-sm font-bold">Enroll Student</span>
                             </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300"/>
+                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
                         </Link>
-                        <Link href="/dashboard/staff-management-v2" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                        <Link href="/dashboard/staff-management-v2" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all group">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-purple-100 rounded-lg"><Users className="h-4 w-4 text-purple-600"/></div>
-                                <span className="text-sm font-semibold">Add New Staff</span>
+                                <span className="text-sm font-bold">Add New Staff</span>
                             </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300"/>
+                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
                         </Link>
-                        <Link href="/dashboard/accounts" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all">
+                        <Link href="/dashboard/accounts" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all group">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-emerald-100 rounded-lg"><Banknote className="h-4 w-4 text-emerald-600"/></div>
-                                <span className="text-sm font-semibold">Financial Ledger</span>
+                                <span className="text-sm font-bold">Financial Ledger</span>
                             </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300"/>
+                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
                         </Link>
                     </CardContent>
                 </Card>
