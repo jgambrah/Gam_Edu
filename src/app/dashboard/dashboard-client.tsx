@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -10,7 +9,7 @@ import {
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
   Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
-  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, LayoutTemplate
+  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -463,33 +462,6 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
                                         <ChevronRight className="h-4 w-4 text-slate-300"/>
                                     </div>
                                 </Link>
-                            ))
-                        ) : (
-                            <p className="text-center py-10 text-muted-foreground italic text-sm">No children linked to your account.</p>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <Megaphone className="h-5 w-5 text-blue-600"/> Recent Announcements
-                        </CardTitle>
-                        <CardDescription>Stay updated with school news.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {isLoading ? (
-                            <div className="space-y-3">
-                                <Skeleton className="h-12 w-full rounded-lg" />
-                                <Skeleton className="h-12 w-full rounded-lg" />
-                            </div>
-                        ) : announcements && announcements.length > 0 ? (
-                            announcements.map((ann: any) => (
-                                <div key={ann.id} className="border-b last:border-0 pb-3 last:pb-0">
-                                    <p className="font-semibold text-sm text-slate-800">{ann.title}</p>
-                                    <p className="text-xs text-slate-500 line-clamp-1 mt-1">{ann.content}</p>
-                                    <p className="text-[10px] text-slate-400 mt-1">{ann.publishedAt ? format(ann.publishedAt.toDate(), 'PPP') : 'Just now'}</p>
-                                </div>
                             ))
                         ) : (
                             <p className="text-center py-10 text-muted-foreground italic text-sm">No recent announcements.</p>

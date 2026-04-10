@@ -1,4 +1,3 @@
-
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -230,7 +229,7 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/report-cards',
-            title: 'Report Card Manager',
+            title: 'Report Cards',
             icon: FileText,
             roles: ['Teacher', 'Administrator', 'Director'],
         },

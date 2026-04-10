@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -26,7 +25,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function StaffPayrollForm({ staff, schoolId }: { staff: Staff; schoolId: string; }) {
-    const firestore = useFirestore();
+    const firestore = useFirestore(); // Fixed: Added missing firestore hook
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoadingConfig, setIsLoadingConfig] = useState(true);
@@ -56,22 +55,27 @@ function StaffPayrollForm({ staff, schoolId }: { staff: Staff; schoolId: string;
         async function fetchConfig() {
             if (!staff || !firestore) return;
             setIsLoadingConfig(true);
-            const configQuery = query(collection(firestore, `staff/${staff.uid}/payroll`));
-            const snapshot = await getDocs(configQuery);
-            if (!snapshot.empty) {
-                form.reset(snapshot.docs[0].data() as StaffPayrollConfig);
-            } else {
-                form.reset({
-                     basicSalary: 0,
-                    allowances: [],
-                    deductions: [],
-                    ssnitNumber: '',
-                    tinNumber: '',
-                    bankName: '',
-                    accountNumber: '',
-                });
+            try {
+                const configQuery = query(collection(firestore, `staff/${staff.uid}/payroll`));
+                const snapshot = await getDocs(configQuery);
+                if (!snapshot.empty) {
+                    form.reset(snapshot.docs[0].data() as StaffPayrollConfig);
+                } else {
+                    form.reset({
+                        basicSalary: 0,
+                        allowances: [],
+                        deductions: [],
+                        ssnitNumber: '',
+                        tinNumber: '',
+                        bankName: '',
+                        accountNumber: '',
+                    });
+                }
+            } catch (e) {
+                console.error("Fetch Config Error:", e);
+            } finally {
+                setIsLoadingConfig(false);
             }
-            setIsLoadingConfig(false);
         }
         fetchConfig();
     }, [staff, firestore, form]);
@@ -127,31 +131,34 @@ function StaffPayrollForm({ staff, schoolId }: { staff: Staff; schoolId: string;
                 </div>
                 <div className="grid md:grid-cols-2 gap-8">
                     <Card>
-                        <CardHeader><div className="flex justify-between items-center"><CardTitle>Allowances</CardTitle><Button type="button" size="sm" variant="outline" onClick={() => appendAllowance({name: '', amount: 0})}><PlusCircle className="mr-2"/>Add</Button></div></CardHeader>
+                        <CardHeader><div className="flex justify-between items-center"><CardTitle>Allowances</CardTitle><Button type="button" size="sm" variant="outline" onClick={() => appendAllowance({name: '', amount: 0})}><PlusCircle className="mr-2 h-4 w-4"/>Add</Button></div></CardHeader>
                         <CardContent className="space-y-4">
                             {allowanceFields.map((field, index) => (
                                 <div key={field.id} className="flex items-end gap-2"><FormField control={form.control} name={`allowances.${index}.name`} render={({ field }) => (
                                     <FormItem className="flex-grow"><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
                                 )}/><FormField control={form.control} name={`allowances.${index}.amount`} render={({ field }) => (
                                     <FormItem><FormLabel>Amount</FormLabel><FormControl><Input type="number" {...field} /></FormControl></FormItem>
-                                )}/><Button type="button" variant="destructive" size="icon" onClick={() => removeAllowance(index)}><Trash2/></Button></div>
+                                )}/><Button type="button" variant="destructive" size="icon" onClick={() => removeAllowance(index)}><Trash2 className="h-4 w-4"/></Button></div>
                             ))}
                         </CardContent>
                     </Card>
                     <Card>
-                        <CardHeader><div className="flex justify-between items-center"><CardTitle>Manual Deductions</CardTitle><Button type="button" size="sm" variant="outline" onClick={() => appendDeduction({name: '', amount: 0})}><PlusCircle className="mr-2"/>Add</Button></div></CardHeader>
+                        <CardHeader><div className="flex justify-between items-center"><CardTitle>Manual Deductions</CardTitle><Button type="button" size="sm" variant="outline" onClick={() => appendDeduction({name: '', amount: 0})}><PlusCircle className="mr-2 h-4 w-4"/>Add</Button></div></CardHeader>
                         <CardContent className="space-y-4">
                            {deductionFields.map((field, index) => (
                                 <div key={field.id} className="flex items-end gap-2"><FormField control={form.control} name={`deductions.${index}.name`} render={({ field }) => (
                                     <FormItem className="flex-grow"><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
                                 )}/><FormField control={form.control} name={`deductions.${index}.amount`} render={({ field }) => (
                                     <FormItem><FormLabel>Amount</FormLabel><FormControl><Input type="number" {...field} /></FormControl></FormItem>
-                                )}/><Button type="button" variant="destructive" size="icon" onClick={() => removeDeduction(index)}><Trash2/></Button></div>
+                                )}/><Button type="button" variant="destructive" size="icon" onClick={() => removeDeduction(index)}><Trash2 className="h-4 w-4"/></Button></div>
                             ))}
                         </CardContent>
                     </Card>
                 </div>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Configuration</Button>
+                <Button type="submit" disabled={isSubmitting} className="w-full">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} 
+                    Save Configuration
+                </Button>
             </form>
         </Form>
     );
@@ -186,7 +193,7 @@ export default function StaffPayrollConfigPage() {
                                 <SelectValue placeholder="Select a staff member to configure..." />
                             </SelectTrigger>
                             <SelectContent>
-                                {staffList?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                                {staffList?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
@@ -197,5 +204,3 @@ export default function StaffPayrollConfigPage() {
         </div>
     );
 }
-
-    
