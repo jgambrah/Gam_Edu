@@ -1,53 +1,18 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser, useFirestore } from '@/firebase'; 
-import { doc, getDoc } from 'firebase/firestore';
+import { useUser } from '@/firebase'; 
 import PayButton from '@/components/subscription/PayButton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Crown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 export default function SubscriptionPage() {
   const { user, isUserLoading } = useUser();
-  const firestore = useFirestore();
-  const [schoolId, setSchoolId] = useState<string | null>(null);
-  const [schoolName, setSchoolName] = useState<string | null>(null);
-  const [isLoadingSchool, setIsLoadingSchool] = useState(true);
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
-  useEffect(() => {
-    async function fetchSchoolInfo() {
-      if (!user || !firestore) return;
-      
-      try {
-        const userDocRef = doc(firestore, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-          const sId = userDocSnap.data()?.schoolId;
-          if (sId) {
-            setSchoolId(sId);
-            const schoolDocRef = doc(firestore, 'schools', sId);
-            const schoolDocSnap = await getDoc(schoolDocRef);
-            if (schoolDocSnap.exists()) {
-              setSchoolName(schoolDocSnap.data()?.name);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching school info:", error);
-      } finally {
-        setIsLoadingSchool(false);
-      }
-    }
-    
-    fetchSchoolInfo();
-  }, [user, firestore]);
-
-  const isLoading = isUserLoading || isLoadingSchool;
-
-  if (isLoading) {
+  if (isUserLoading || isLoadingSchool) {
     return (
       <div className="min-h-screen flex items-center justify-center">
           <Loader2 className="h-10 w-10 animate-spin" />
@@ -66,20 +31,26 @@ export default function SubscriptionPage() {
     );
   }
   
+  // CRITICAL: Metadata for Webhook
   const commonMetadata = {
     type: 'school_upgrade',
     schoolId: schoolId,
-    schoolName: schoolName,
-    userId: user.uid
+    custom_fields: [
+      {
+        display_name: "Payment Type",
+        variable_name: "payment_type",
+        value: "School System Upgrade"
+      }
+    ]
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold tracking-tight">Choose Your Plan</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Choose Your Plan</h1>
             <p className="text-muted-foreground mt-2">
-                Your trial has ended. Upgrade <strong className="text-indigo-600">{schoolName || 'your school'}</strong> to unlock all features.
+                Your trial has ended. Upgrade your school system to unlock all features instantly.
             </p>
         </div>
 
@@ -108,7 +79,7 @@ export default function SubscriptionPage() {
                         amount={300} 
                         email={user.email || ''} 
                         userId={user.uid}
-                        metadata={{...commonMetadata, planType: 'monthly'}}
+                        metadata={{...commonMetadata, planLabel: 'Monthly'}}
                     />
                 </CardContent>
             </Card>
@@ -125,7 +96,7 @@ export default function SubscriptionPage() {
                         <span className="text-gray-500">/year</span>
                     </div>
                     <CardDescription>
-                        Save GHS 600 with our annual subscription.
+                        Save GHS 600 with our discounted annual subscription.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -139,7 +110,7 @@ export default function SubscriptionPage() {
                         amount={3000} 
                         email={user.email || ''} 
                         userId={user.uid}
-                        metadata={{...commonMetadata, planType: 'annual'}}
+                        metadata={{...commonMetadata, planLabel: 'Annual'}}
                     />
                 </CardContent>
             </Card>
