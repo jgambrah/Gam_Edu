@@ -18,14 +18,14 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, setDoc, query, getDocs, where } from 'firebase/firestore';
-import { Loader2, PlusCircle, Trash2, Users } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Users, Save } from 'lucide-react';
 import { Staff, StaffPayrollConfig, staffPayrollConfigSchema } from '@/lib/types';
 import { useRole } from '@/context/role-context';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function StaffPayrollForm({ staff, schoolId }: { staff: Staff; schoolId: string; }) {
-    const firestore = useFirestore(); // Fixed: Added missing firestore hook
+    const firestore = useFirestore(); 
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoadingConfig, setIsLoadingConfig] = useState(true);
