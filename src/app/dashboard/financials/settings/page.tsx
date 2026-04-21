@@ -84,30 +84,52 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         }
     }, [canteenSettings, form]);
 
-    const handleSave = (values: z.infer<typeof canteenRateSchema>) => {
+    const handleSave = async (values: z.infer<typeof canteenRateSchema>) => {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
-        const data = { 
-            ...values,
-            updatedAt: serverTimestamp() 
-        };
         
-        setDoc(settingsRef, data, { merge: true })
-            .then(() => {
-                toast({ title: 'Success', description: 'Canteen settings have been updated.' });
-            })
-            .catch(async (error) => {
+        // Clean and Coerce data for Firestore
+        const data: any = {
+            pricingModel: values.pricingModel,
+            dailyRate: Number(values.dailyRate) || 0,
+            termlyRate: Number(values.termlyRate) || 0,
+            updatedAt: serverTimestamp()
+        };
+
+        if (values.classRates) {
+            data.classRates = Object.fromEntries(
+                Object.entries(values.classRates).map(([k, v]) => [k, Number(v) || 0])
+            );
+        }
+        if (values.classTermlyRates) {
+            data.classTermlyRates = Object.fromEntries(
+                Object.entries(values.classTermlyRates).map(([k, v]) => [k, Number(v) || 0])
+            );
+        }
+        
+        try {
+            await setDoc(settingsRef, data, { merge: true });
+            toast({ title: 'Success', description: 'Canteen settings have been updated.' });
+        } catch (error: any) {
+            console.error("Save failed:", error);
+            if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
                     operation: 'write',
                     requestResourceData: data,
                 });
                 errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => {
-                setIsSaving(false);
-            });
+            } else {
+                toast({ 
+                    variant: 'destructive', 
+                    title: 'Update Failed', 
+                    description: error.message || 'Check your internet connection and try again.' 
+                });
+            }
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -244,26 +266,29 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
         }
     }, [transportSettings, form]);
 
-    const handleSave = (values: z.infer<typeof transportRateSchema>) => {
+    const handleSave = async (values: z.infer<typeof transportRateSchema>) => {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
-        const data = { dailyRate: values.dailyRate, updatedAt: serverTimestamp() };
-        setDoc(settingsRef, data, { merge: true })
-            .then(() => {
-                toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
-            })
-            .catch(async (error) => {
+        const data = { dailyRate: Number(values.dailyRate) || 0, updatedAt: serverTimestamp() };
+        
+        try {
+            await setDoc(settingsRef, data, { merge: true });
+            toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
+        } catch (error: any) {
+            if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
                     operation: 'write',
                     requestResourceData: data,
                 });
                 errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => {
-                setIsSaving(false);
-            });
+            } else {
+                toast({ variant: 'destructive', title: "Update Failed", description: error.message });
+            }
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -341,7 +366,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             // 3. Fetch Students to know their route and billing model
             const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
             const studentsSnap = await getDocs(studentsQuery);
-            const studentMap = new Map<string, { usesBus: boolean, routeId: string, transportMode: string, canteenMode: string }>();
+            const studentMap = new Map<string, { usesBus: boolean, routeId: string, transportMode: string, canteenMode: string, status: string }>();
 
             studentsSnap.docs.forEach(doc => {
                 const data = doc.data();
@@ -349,7 +374,8 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                     usesBus: data.usesBusService === true, 
                     routeId: data.routeId || '',
                     transportMode: data.transportBillingModel || 'Daily',
-                    canteenMode: data.canteenBillingMode || 'Daily'
+                    canteenMode: data.canteenBillingMode || 'Daily',
+                    status: data.enrollmentStatus || 'Active'
                 });
             });
             
@@ -378,13 +404,17 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
             
             for (const attendanceDoc of recordsToProcess) {
                 const record = attendanceDoc.data();
+                const studentInfo = studentMap.get(record.studentId);
+
+                // SKIP: Inactive/Archived students
+                if (!studentInfo || studentInfo.status === 'Inactive') continue;
+
                 const recordDate = record.date.toDate();
                 const dateKey = format(recordDate, 'yyyy-MM-dd');
-                const studentInfo = studentMap.get(record.studentId);
 
                 // A. Determine the correct Canteen Rate for this specific student's class
                 // ONLY bill daily Canteen if their mode is 'Daily'
-                if (studentInfo?.canteenMode === 'Daily') {
+                if (studentInfo.canteenMode === 'Daily') {
                     let studentCanteenRate = 0;
                     if (canteenModel === 'Flat') {
                         studentCanteenRate = globalCanteenRate;
@@ -414,7 +444,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
 
                 // B. Transport Billing (DYNAMIC ROUTE RATE & MODE CHECK)
                 // ONLY bill daily Transport if they use the bus AND their mode is 'Daily'
-                if (studentInfo?.usesBus && studentInfo?.routeId && studentInfo?.transportMode === 'Daily') {
+                if (studentInfo.usesBus && studentInfo.routeId && studentInfo.transportMode === 'Daily') {
                     const specificTransportRate = routeRatesMap.get(studentInfo.routeId)?.dailyRate || 0;
 
                     if (specificTransportRate > 0) {
@@ -499,7 +529,7 @@ export default function FinancialSettingsPage() {
   }
 
   if (!schoolId) {
-       return <Card className="m-6"><CardHeader><CardTitle>School Not Found</CardTitle></CardHeader></Card>;
+       return <Card className="m-6"><CardHeader><CardTitle>School Not Found</CardTitle></CardHeader>;
   }
 
   return (

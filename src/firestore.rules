@@ -55,10 +55,11 @@ service cloud.firestore {
       allow update: if isSignedIn() && isDirector();
     }
     
-    match /schoolSettings/{docId} { 
+    match /schoolSettings/{schoolId} { 
       allow read: if isSignedIn(); 
       allow write: if isAdmin() || isFinanceStaff(); 
-      match /{subcollection}/{subdocId} {
+      // Recursive match for rates, categories, etc.
+      match /{allPaths=**} {
         allow read: if isSignedIn();
         allow write: if isAdmin() || isFinanceStaff();
       }
@@ -286,7 +287,7 @@ service cloud.firestore {
         isSuperAdmin() || 
         isFinanceStaff() || isAdmin() || isTeacher() ||
         resource.data.studentId == request.auth.uid ||
-        parentOwnsStudent(resource.data.studentId)
+        parentOwnsStudent(get(/databases/$(database)/documents/financialRecords/$(recordId)).data.studentId)
       ); 
       allow list: if isSignedIn();
       allow write: if isFinanceStaff() || isAdmin() || isTeacher(); 
@@ -412,7 +413,7 @@ service cloud.firestore {
 
     match /admissionApplications/{applicationId} {
       allow read, write, list: if isAdmin();
-      allow create: if isSignedIn();
+      allow create: if true; // Public submission
       allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
     }
 
@@ -502,7 +503,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    match /student_progress/{userId} {
+    @match /student_progress/{userId} {
       allow read, write: if request.auth.uid == userId;
     }
 

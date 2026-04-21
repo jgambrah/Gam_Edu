@@ -89,16 +89,24 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         
         setIsSaving(true);
         
-        // Clean data for Firestore (remove undefined, ensure types)
+        // Clean and Coerce data for Firestore
         const data: any = {
             pricingModel: values.pricingModel,
-            dailyRate: values.dailyRate || 0,
-            termlyRate: values.termlyRate || 0,
+            dailyRate: Number(values.dailyRate) || 0,
+            termlyRate: Number(values.termlyRate) || 0,
             updatedAt: serverTimestamp()
         };
 
-        if (values.classRates) data.classRates = values.classRates;
-        if (values.classTermlyRates) data.classTermlyRates = values.classTermlyRates;
+        if (values.classRates) {
+            data.classRates = Object.fromEntries(
+                Object.entries(values.classRates).map(([k, v]) => [k, Number(v) || 0])
+            );
+        }
+        if (values.classTermlyRates) {
+            data.classTermlyRates = Object.fromEntries(
+                Object.entries(values.classTermlyRates).map(([k, v]) => [k, Number(v) || 0])
+            );
+        }
         
         try {
             await setDoc(settingsRef, data, { merge: true });
@@ -262,7 +270,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
-        const data = { dailyRate: values.dailyRate, updatedAt: serverTimestamp() };
+        const data = { dailyRate: Number(values.dailyRate) || 0, updatedAt: serverTimestamp() };
         
         try {
             await setDoc(settingsRef, data, { merge: true });
