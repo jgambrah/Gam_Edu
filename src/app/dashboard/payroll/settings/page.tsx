@@ -84,30 +84,40 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         }
     }, [canteenSettings, form]);
 
-    const handleSave = (values: z.infer<typeof canteenRateSchema>) => {
+    const handleSave = async (values: z.infer<typeof canteenRateSchema>) => {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
-        const data = { 
-            ...values,
-            updatedAt: serverTimestamp() 
-        };
         
-        setDoc(settingsRef, data, { merge: true })
-            .then(() => {
-                toast({ title: 'Success', description: 'Canteen settings have been updated.' });
-            })
-            .catch(async (error) => {
+        // Clean data for Firestore
+        const data: any = {
+            pricingModel: values.pricingModel,
+            dailyRate: values.dailyRate || 0,
+            termlyRate: values.termlyRate || 0,
+            updatedAt: serverTimestamp()
+        };
+
+        if (values.classRates) data.classRates = values.classRates;
+        if (values.classTermlyRates) data.classTermlyRates = values.classTermlyRates;
+        
+        try {
+            await setDoc(settingsRef, data, { merge: true });
+            toast({ title: 'Success', description: 'Canteen settings have been updated.' });
+        } catch (error: any) {
+            console.error("Save failed:", error);
+            if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
                     operation: 'write',
                     requestResourceData: data,
                 });
                 errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => {
-                setIsSaving(false);
-            });
+            } else {
+                toast({ variant: 'destructive', title: 'Error', description: error.message });
+            }
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -244,26 +254,29 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
         }
     }, [transportSettings, form]);
 
-    const handleSave = (values: z.infer<typeof transportRateSchema>) => {
+    const handleSave = async (values: z.infer<typeof transportRateSchema>) => {
         if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
         const data = { dailyRate: values.dailyRate, updatedAt: serverTimestamp() };
-        setDoc(settingsRef, data, { merge: true })
-            .then(() => {
-                toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
-            })
-            .catch(async (error) => {
+        
+        try {
+            await setDoc(settingsRef, data, { merge: true });
+            toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
+        } catch (error: any) {
+            if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
                     operation: 'write',
                     requestResourceData: data,
                 });
                 errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => {
-                setIsSaving(false);
-            });
+            } else {
+                toast({ variant: 'destructive', title: "Update Failed", description: error.message });
+            }
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
