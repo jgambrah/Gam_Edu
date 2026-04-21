@@ -112,7 +112,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
             await setDoc(settingsRef, data, { merge: true });
             toast({ title: 'Success', description: 'Canteen settings have been updated.' });
         } catch (error: any) {
-            console.error("Save failed:", error);
+            console.error("SAVE FAILED:", error.code, error.message);
             if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
@@ -276,6 +276,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
             await setDoc(settingsRef, data, { merge: true });
             toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
         } catch (error: any) {
+            console.error("SAVE FAILED:", error.code, error.message);
             if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,

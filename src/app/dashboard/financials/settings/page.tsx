@@ -60,7 +60,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
     const { data: canteenSettings, isLoading: isLoadingSettings } = useDoc(settingsRef);
 
     const form = useForm<z.infer<typeof canteenRateSchema>>({
-        resolver: zodResolver(canteenRateSchema),
+        resolver: zodResolver( canteenRateSchema),
         defaultValues: { 
             pricingModel: 'Flat',
             dailyRate: 0,
@@ -112,7 +112,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
             await setDoc(settingsRef, data, { merge: true });
             toast({ title: 'Success', description: 'Canteen settings have been updated.' });
         } catch (error: any) {
-            console.error("Save failed:", error);
+            console.error("SAVE FAILED:", error.code, error.message);
             if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
@@ -276,6 +276,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
             await setDoc(settingsRef, data, { merge: true });
             toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
         } catch (error: any) {
+            console.error("SAVE FAILED:", error.code, error.message);
             if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
@@ -529,7 +530,7 @@ export default function FinancialSettingsPage() {
   }
 
   if (!schoolId) {
-       return <Card className="m-6"><CardHeader><CardTitle>School Not Found</CardTitle></CardHeader>;
+       return <Card className="m-6"><CardHeader><CardTitle>School Not Found</CardTitle></CardHeader></Card>;
   }
 
   return (

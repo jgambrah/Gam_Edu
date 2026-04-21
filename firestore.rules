@@ -26,6 +26,14 @@ service cloud.firestore {
            : '');
     }
 
+    function isAnyStaff(schoolId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId;
+    }
+
+    function isDirectorOrAdmin(schoolId) {
+      return isSuperAdmin() || (isAnyStaff(schoolId) && getUserRole() in ['Director', 'Administrator', 'Admin']);
+    }
+
     function isAdmin() {
       return isSuperAdmin() || (isSignedIn() && getUserRole() in ['Director', 'Administrator', 'Admin']);
     }
@@ -49,18 +57,23 @@ service cloud.firestore {
     // =========================================================
 
     match /schools/{schoolId} {
-      allow get: if true; // Publicly readable via slug search
+      allow get: if isSignedIn();
       allow list: if isAdmin();
       allow write: if isSuperAdmin(); 
       allow update: if isSignedIn() && isDirector();
     }
     
-    match /schoolSettings/{docId} { 
-      allow read: if isSignedIn(); 
-      allow write: if isAdmin() || isFinanceStaff(); 
-      match /{subcollection}/{subdocId} {
-        allow read: if isSignedIn();
-        allow write: if isAdmin() || isFinanceStaff();
+    match /schoolSettings/{schoolId} { 
+      allow read: if isSuperAdmin() || isAnyStaff(schoolId);
+      
+      match /rates/{rateId} {
+        allow read: if isSuperAdmin() || isAnyStaff(schoolId);
+        allow write: if isSuperAdmin() || isDirectorOrAdmin(schoolId) || (isAnyStaff(schoolId) && getUserRole() == 'Accountant');
+      }
+
+      match /{allPaths=**} {
+        allow read: if isSuperAdmin() || isAnyStaff(schoolId);
+        allow write: if isSuperAdmin() || isDirectorOrAdmin(schoolId);
       }
     }
 
@@ -114,7 +127,7 @@ service cloud.firestore {
     }
 
     match /announcements_v2/{announcementId} {
-      allow read, list: if true; // Publicly readable for microsites
+      allow read, list: if isSignedIn();
       allow write: if isAdmin();
     }
 
