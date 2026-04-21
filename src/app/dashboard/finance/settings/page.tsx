@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
@@ -87,6 +88,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
     const handleSave = (values: z.infer<typeof canteenRateSchema>) => {
         if (!firestore || !settingsRef) return;
         
+        console.log("--- SAVING CANTEEN SETTINGS ---", values);
         setIsSaving(true);
         
         // Normalize all numeric fields to Number type
@@ -108,7 +110,6 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
             );
         }
         
-        // Non-blocking write
         setDoc(settingsRef, data, { merge: true })
           .then(() => {
             toast({ title: 'Settings Updated', description: 'Canteen billing logic has been saved.' });
@@ -282,6 +283,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
     const handleSave = (values: z.infer<typeof transportRateSchema>) => {
         if (!firestore || !settingsRef) return;
         
+        console.log("--- SAVING TRANSPORT SETTINGS ---", values);
         setIsSaving(true);
         const data = { dailyRate: Number(values.dailyRate) || 0, updatedAt: serverTimestamp() };
         
