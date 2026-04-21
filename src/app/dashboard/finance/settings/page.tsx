@@ -18,7 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
-import { Loader2, Utensils, Bus, RefreshCw, ListChecks, CalendarRange } from 'lucide-react';
+import { Loader2, Utensils, Bus, RefreshCw, ListChecks, CalendarRange, Settings, Search } from 'lucide-react';
 import { useRole } from '@/context/role-context';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
@@ -52,7 +52,6 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
-    // Fetch Classes for Class-Based pricing
     const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
@@ -89,7 +88,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         
         setIsSaving(true);
         
-        // Clean and Coerce data for Firestore
+        // --- DATA NORMALIZATION: Force all numeric fields to Number type ---
         const data: any = {
             pricingModel: values.pricingModel,
             dailyRate: Number(values.dailyRate) || 0,
@@ -109,10 +108,11 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         }
         
         try {
+            console.log("Committing Canteen Rates to Firestore:", data);
             await setDoc(settingsRef, data, { merge: true });
             toast({ title: 'Success', description: 'Canteen settings have been updated.' });
         } catch (error: any) {
-            console.error("SAVE FAILED:", error.code, error.message);
+            console.error("SAVE FAILED:", error.code, error.message, error);
             if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
@@ -133,7 +133,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
     };
 
     return (
-        <Card className="border-t-4 border-t-orange-500">
+        <Card className="border-t-4 border-t-orange-500 shadow-sm">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl"><Utensils className="text-orange-500"/> Canteen Billing Logic</CardTitle>
                 <CardDescription>Configure how students are billed for meals (Daily vs Termly).</CardDescription>
@@ -276,7 +276,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
             await setDoc(settingsRef, data, { merge: true });
             toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
         } catch (error: any) {
-            console.error("SAVE FAILED:", error.code, error.message);
+            console.error("SAVE FAILED:", error.code, error.message, error);
             if (error.code === 'permission-denied') {
                 const permissionError = new FirestorePermissionError({
                     path: settingsRef.path,
@@ -293,7 +293,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
     };
 
     return (
-        <Card className="border-t-4 border-t-indigo-500">
+        <Card className="border-t-4 border-t-indigo-500 shadow-sm">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Bus className="text-indigo-500"/> Transport Settings</CardTitle>
                 <CardDescription>Set the default daily fee for bus usage. Specific route rates will override this.</CardDescription>
@@ -314,7 +314,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={isSaving || isLoading} className="h-12">
+                        <Button type="submit" disabled={isSaving || isLoading} className="h-12 font-bold bg-indigo-600 hover:bg-indigo-700">
                             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Save Rate
                         </Button>
@@ -407,14 +407,11 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                 const record = attendanceDoc.data();
                 const studentInfo = studentMap.get(record.studentId);
 
-                // SKIP: Inactive/Archived students
                 if (!studentInfo || studentInfo.status === 'Inactive') continue;
 
                 const recordDate = record.date.toDate();
                 const dateKey = format(recordDate, 'yyyy-MM-dd');
 
-                // A. Determine the correct Canteen Rate for this specific student's class
-                // ONLY bill daily Canteen if their mode is 'Daily'
                 if (studentInfo.canteenMode === 'Daily') {
                     let studentCanteenRate = 0;
                     if (canteenModel === 'Flat') {
@@ -423,12 +420,11 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                         studentCanteenRate = classCanteenRates[record.classId] || 0;
                     }
 
-                    // Apply Canteen Bill
                     if (studentCanteenRate > 0) {
                         const canteenRecordId = `canteen-${record.studentId}-${dateKey}`;
                         const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                         billingBatch.set(financialRecordRef, {
-                            billedAmount: studentCanteenRate,
+                            billedAmount: Number(studentCanteenRate),
                             studentId: record.studentId, 
                             studentName: record.studentName, 
                             classId: record.classId,
@@ -443,8 +439,6 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                     }
                 }
 
-                // B. Transport Billing (DYNAMIC ROUTE RATE & MODE CHECK)
-                // ONLY bill daily Transport if they use the bus AND their mode is 'Daily'
                 if (studentInfo.usesBus && studentInfo.routeId && studentInfo.transportMode === 'Daily') {
                     const specificTransportRate = routeRatesMap.get(studentInfo.routeId)?.dailyRate || 0;
 
@@ -453,7 +447,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                         
                         billingBatch.set(financialRecordRef, {
-                            billedAmount: specificTransportRate,
+                            billedAmount: Number(specificTransportRate),
                             studentId: record.studentId, 
                             studentName: record.studentName, 
                             classId: record.classId,
@@ -481,15 +475,15 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
     };
     
     return (
-        <Card className="border-t-4 border-t-slate-800">
+        <Card className="border-t-4 border-t-slate-800 shadow-sm">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><RefreshCw/> Retrospective Billing</CardTitle>
                 <CardDescription>Recalculate and apply fees for a past date range.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form className="flex items-end gap-4">
-                        <FormItem className="flex-1">
+                    <form className="flex flex-col md:flex-row items-end gap-4">
+                        <FormItem className="flex-1 w-full">
                             <FormLabel>Date Range</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -506,9 +500,9 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                                 </PopoverContent>
                             </Popover>
                         </FormItem>
-                        <Button type="button" onClick={handleReprocess} disabled={isProcessing} className="h-12 px-8">
+                        <Button type="button" onClick={handleReprocess} disabled={isProcessing} className="h-12 px-10 font-bold bg-slate-900">
                             {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                            Reprocess
+                            Run Audit
                         </Button>
                     </form>
                 </Form>
@@ -522,11 +516,23 @@ export default function FinancialSettingsPage() {
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   
   if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
-    return <Card className="m-6"><CardHeader><CardTitle>Access Denied</CardTitle></CardHeader></Card>;
+    return (
+        <div className="p-8 flex justify-center">
+            <Card className="max-w-md w-full border-red-100 bg-red-50/50">
+                <CardHeader className="text-center">
+                    <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4 text-red-600">
+                        <ShieldAlert size={32} />
+                    </div>
+                    <CardTitle>Access Restricted</CardTitle>
+                    <CardDescription>Only Accountants and Administrators can access financial configurations.</CardDescription>
+                </CardHeader>
+            </Card>
+        </div>
+    );
   }
 
   if (isLoadingSchool) {
-      return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+      return <div className="flex justify-center p-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
   }
 
   if (!schoolId) {
@@ -534,10 +540,12 @@ export default function FinancialSettingsPage() {
   }
 
   return (
-    <div className="space-y-6 p-6 max-w-6xl mx-auto">
+    <div className="space-y-8 p-6 max-w-6xl mx-auto">
         <div className="flex flex-col gap-1 mb-4">
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight">Financial Settings</h1>
-            <p className="text-muted-foreground font-medium italic">Configure automated billing rates and reprocess history.</p>
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                <Settings className="text-indigo-600 h-8 w-8"/> Financial Logic Center
+            </h1>
+            <p className="text-muted-foreground font-medium italic">Configure automated billing models and auditing tools.</p>
         </div>
         
         <div className="grid lg:grid-cols-2 gap-6">

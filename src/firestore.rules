@@ -26,6 +26,14 @@ service cloud.firestore {
            : '');
     }
 
+    function isAnyStaff(schoolId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId;
+    }
+
+    function isDirectorOrAdmin(schoolId) {
+      return isSuperAdmin() || (isAnyStaff(schoolId) && getUserRole() in ['Director', 'Administrator', 'Admin']);
+    }
+
     function isAdmin() {
       return isSuperAdmin() || (isSignedIn() && getUserRole() in ['Director', 'Administrator', 'Admin']);
     }
@@ -56,12 +64,12 @@ service cloud.firestore {
     }
     
     match /schoolSettings/{schoolId} { 
-      allow read: if isSignedIn(); 
-      allow write: if isAdmin() || isFinanceStaff(); 
-      // Recursive match for rates, categories, etc.
+      allow read: if isSuperAdmin() || isAnyStaff(schoolId);
+      allow write: if isSuperAdmin() || isDirectorOrAdmin(schoolId) || (isAnyStaff(schoolId) && getUserRole() == 'Accountant');
+
       match /{allPaths=**} {
-        allow read: if isSignedIn();
-        allow write: if isAdmin() || isFinanceStaff();
+        allow read: if isSuperAdmin() || isAnyStaff(schoolId);
+        allow write: if isSuperAdmin() || isDirectorOrAdmin(schoolId) || (isAnyStaff(schoolId) && getUserRole() == 'Accountant');
       }
     }
 
@@ -78,8 +86,9 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} { 
-      allow get: if isSignedIn();
-      allow list: if isAdmin() || isFinanceStaff() || isTransportStaff();
+      // Allow public to read if showOnWebsite is true, otherwise require sign-in
+      allow get: if (resource.data.showOnWebsite == true) || isSignedIn();
+      allow list: if (resource.data.showOnWebsite == true) || isAdmin() || isFinanceStaff() || isTransportStaff();
       allow write: if isAdmin() || isOwner(staffId); 
       match /payroll/{configId} { 
         allow read, write: if isFinanceStaff() || isAdmin(); 
@@ -503,7 +512,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    @match /student_progress/{userId} {
+    match /student_progress/{userId} {
       allow read, write: if request.auth.uid == userId;
     }
 

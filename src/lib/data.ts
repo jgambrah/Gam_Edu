@@ -414,8 +414,8 @@ export const navItems: NavItem[] = [
         roles: ['Director', 'Administrator', 'Accountant'],
       },
        {
-        path: '/dashboard/payroll/settings',
-        title: 'Settings',
+        path: '/dashboard/finance/settings',
+        title: 'Financial Settings',
         icon: Settings,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
