@@ -630,7 +630,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     name="billedAmount" 
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Amount per Student (GH₵)</Label>
+                            <FormLabel>Amount per Student (GH₵)</FormLabel>
                             <FormControl>
                                 <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} />
                             </FormControl>
@@ -927,7 +927,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     };
 
     const toggleAll = () => {
-        if(selectedStudents.length === classStudents.length) setSelectedStudents([]);
+        if(selectedStudents.length === classStudents.length && classStudents.length > 0) setSelectedStudents([]);
         else setSelectedStudents(classStudents.map(s => s.uid));
     };
 
@@ -1073,7 +1073,6 @@ export default function AccountsPage() {
   const rawStudentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(rawStudentsQuery);
   
-  // Strictly only use active students for this operational page
   const students = useMemo(() => {
       if (!rawStudents) return [];
       return rawStudents.filter(s => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
@@ -1089,7 +1088,6 @@ export default function AccountsPage() {
   const dashboardStats = useMemo(() => {
     if (!records || !students) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0 };
     
-    // Cross-reference with active students only
     const activeStudentIds = new Set(students.map(s => s.uid));
 
     const activeRecords = records.filter(r => 
@@ -1351,7 +1349,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     };
 
     const toggleAll = () => {
-        if(selectedStudents.length === classStudents.length) setSelectedStudents([]);
+        if(selectedStudents.length === classStudents.length && classStudents.length > 0) setSelectedStudents([]);
         else setSelectedStudents(classStudents.map(s => s.uid));
     };
 
