@@ -284,9 +284,11 @@ export default function BulkDailyReceiptsPage() {
             {pendingBills.length > 0 && (
                 <Card className="border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem] overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
                     <CardHeader className="bg-slate-50 border-b pb-4">
-                        <div>
-                            <CardTitle className="text-xl">2. Review & Process Payments</CardTitle>
-                            <CardDescription>Entries with 'Cash Received' greater than 0 will be processed. Amounts are pre-filled based on the bill balance.</CardDescription>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <CardTitle className="text-xl">2. Review & Process Payments</CardTitle>
+                                <CardDescription>Review amounts and click Process. Amounts are pre-filled based on the bill balance.</CardDescription>
+                            </div>
                         </div>
                     </CardHeader>
                     <CardContent className="p-0">
@@ -303,10 +305,10 @@ export default function BulkDailyReceiptsPage() {
                                 <TableBody>
                                     {pendingBills.map(bill => {
                                         const balance = bill.billedAmount - (bill.amountPaid || 0) - (bill.waiverAmount || 0);
-                                        const hasPayment = (paymentData[bill.id] || 0) > 0;
+                                        const currentPayment = paymentData[bill.id] || 0;
                                         
                                         return (
-                                            <TableRow key={bill.id} className={cn("transition-colors", hasPayment ? "bg-emerald-50/30" : "")}>
+                                            <TableRow key={bill.id} className={cn("transition-colors", currentPayment > balance ? "bg-purple-50/30" : currentPayment > 0 ? "bg-emerald-50/30" : "")}>
                                                 <TableCell className="font-bold text-slate-700">{bill.studentName}</TableCell>
                                                 <TableCell className="text-xs text-slate-500">{bill.description}</TableCell>
                                                 <TableCell className="font-mono text-red-600 font-bold text-right">GH₵{balance.toFixed(2)}</TableCell>
@@ -314,22 +316,21 @@ export default function BulkDailyReceiptsPage() {
                                                     <div className="relative group">
                                                         <Input 
                                                             type="number" 
-                                                            min="0" max={balance} step="0.01"
+                                                            min="0" step="0.01"
                                                             value={paymentData[bill.id] ?? ''}
                                                             onChange={e => setPaymentData(prev => ({ 
                                                                 ...prev, 
-                                                                [bill.id]: e.target.value === '' ? 0 : parseFloat(e.target.value) 
+                                                                [bill.id]: e.target.value === '' ? 0 : Number(e.target.value) 
                                                             }))}
                                                             className={cn(
-                                                                "font-black text-right pr-10 border-2 transition-all",
-                                                                hasPayment ? "border-emerald-400 bg-white text-emerald-700 ring-2 ring-emerald-50" : "bg-slate-50 border-slate-200 text-slate-400"
+                                                                "font-black text-right pr-4 border-2 transition-all",
+                                                                currentPayment > balance 
+                                                                    ? "border-purple-300 bg-white text-purple-700 ring-2 ring-purple-50" 
+                                                                    : currentPayment > 0 
+                                                                        ? "border-emerald-400 bg-white text-emerald-700 ring-2 ring-emerald-50" 
+                                                                        : "bg-slate-50 border-slate-200 text-slate-400"
                                                             )}
                                                         />
-                                                        {hasPayment && (
-                                                            <div className="absolute right-3 top-2.5 text-emerald-500">
-                                                                <CheckCircle2 size={16} />
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
