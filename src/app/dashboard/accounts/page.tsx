@@ -46,8 +46,9 @@ import { GenerateReceipt } from './generate-receipt';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentSelect } from '@/components/StudentSelect';
-import { billStudentForAttendance, billMultipleStudents } from '@/lib/billing';
+import { billStudentForAttendance } from '@/lib/billing';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
+import { StudentSearchInput } from '@/components/student-search';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -215,271 +216,6 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 </div>
             </DialogContent>
         </Dialog>
-    );
-}
-
-function BulkTermlyTransportModal({ schoolId, onComplete }: { schoolId: string, onComplete: () => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [termName, setTermName] = useState('First Term');
-    const [dueDate, setDueDate] = useState<Date>(new Date());
-
-    const handleBulkTermlyTransport = async () => {
-        if (!firestore || !schoolId) return;
-        setIsSubmitting(true);
-        
-        try {
-            const routesSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
-            const routeMap = new Map();
-            routesSnap.docs.forEach(d => routeMap.set(d.id, d.data().termlyRate || 0));
-
-            const studentsSnap = await getDocs(query(
-                collection(firestore, 'students'), 
-                where('schoolId', '==', schoolId), 
-                where('usesBusService', '==', true), 
-                where('transportBillingModel', '==', 'Termly'),
-                where('enrollmentStatus', '==', 'Active')
-            ));
-
-            if (studentsSnap.empty) {
-                toast({ variant: 'destructive', title: "No Students Found", description: "No students on Termly transport billing mode." });
-                setIsSubmitting(false);
-                return;
-            }
-
-            const batch = writeBatch(firestore);
-            let count = 0;
-
-            studentsSnap.docs.forEach(docSnap => {
-                const student = docSnap.data();
-                const termlyRate = routeMap.get(student.routeId);
-
-                if (termlyRate > 0) {
-                    const recordRef = doc(collection(firestore, 'financialRecords'));
-                    batch.set(recordRef, {
-                        studentId: docSnap.id,
-                        studentName: `${student.firstName} ${student.lastName}`,
-                        classId: student.classId || '',
-                        type: 'Transport Fee (Termly)',
-                        description: `Termly Bus Fare - ${termName}`,
-                        billedAmount: termlyRate,
-                        amountPaid: 0,
-                        status: 'Unpaid',
-                        dueDate: Timestamp.fromDate(startOfDay(dueDate)),
-                        createdAt: serverTimestamp(),
-                        schoolId: schoolId
-                    });
-                    count++;
-                }
-            });
-
-            await batch.commit();
-            toast({ title: 'Success', description: `Generated ${count} termly transport bills.` });
-            onComplete();
-        } catch (e: any) {
-            console.error(e);
-            toast({ variant: 'destructive', title: "Error", description: e.message });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    return (
-        <div className="space-y-4">
-            <div className="space-y-2">
-                <Label>Academic Term Name</Label>
-                <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
-            </div>
-            <div className="space-y-2">
-                <Label>Payment Due Date</Label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left font-normal bg-white border-2">
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {format(dueDate, "PPP")}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={dueDate} onSelect={(d) => d && setDueDate(d)} initialFocus />
-                    </PopoverContent>
-                </Popover>
-            </div>
-            <Button onClick={handleBulkTermlyTransport} disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                Generate Termly Bills
-            </Button>
-        </div>
-    );
-}
-
-function BulkTermlyCanteenModal({ schoolId, onComplete }: { schoolId: string, onComplete: () => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [termName, setTermName] = useState('First Term');
-    const [dueDate, setDueDate] = useState<Date>(new Date());
-
-    const handleBulkTermlyCanteen = async () => {
-        if (!firestore || !schoolId) return;
-        setIsSubmitting(true);
-        
-        try {
-            const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
-            if (!settingsSnap.exists()) {
-                throw new Error("Canteen rates not configured. Please check Financial Settings.");
-            }
-            const settings = settingsSnap.data();
-            const model = settings.pricingModel || 'Flat';
-            const flatRate = settings.termlyRate || 0;
-            const classRates = settings.classTermlyRates || {};
-
-            const studentsSnap = await getDocs(query(
-                collection(firestore, 'students'), 
-                where('schoolId', '==', schoolId), 
-                where('canteenBillingMode', '==', 'Termly'),
-                where('enrollmentStatus', '==', 'Active')
-            ));
-
-            if (studentsSnap.empty) {
-                toast({ variant: 'destructive', title: "No Students Found", description: "No students on Termly canteen billing mode." });
-                setIsSubmitting(false);
-                return;
-            }
-
-            const batch = writeBatch(firestore);
-            let count = 0;
-            const termId = termName.replace(/\s+/g, '');
-
-            studentsSnap.docs.forEach(docSnap => {
-                const student = docSnap.data();
-                let rate = 0;
-                
-                if (model === 'Class-Based') {
-                    rate = classRates[student.classId] || 0;
-                } else {
-                    rate = flatRate;
-                }
-
-                if (rate > 0) {
-                    const termBillId = `canteen-term-${docSnap.id}-${termId}`;
-                    const recordRef = doc(firestore, 'financialRecords', termBillId);
-                    
-                    batch.set(recordRef, {
-                        studentId: docSnap.id,
-                        studentName: `${student.firstName} ${student.lastName}`,
-                        classId: student.classId || '',
-                        type: 'Canteen Fee (Daily)',
-                        description: `Termly Canteen - ${termName}`,
-                        billedAmount: rate,
-                        amountPaid: 0,
-                        status: 'Unpaid',
-                        dueDate: Timestamp.fromDate(startOfDay(dueDate)),
-                        createdAt: serverTimestamp(),
-                        schoolId: schoolId
-                    }, { merge: true });
-                    count++;
-                }
-            });
-
-            if (count === 0) {
-                throw new Error("No bills were generated. Please check if rates are set for the students' classes.");
-            }
-
-            await batch.commit();
-            toast({ title: 'Success', description: `Generated ${count} termly canteen bills.` });
-            onComplete();
-        } catch (e: any) {
-            console.error(e);
-            toast({ variant: 'destructive', title: "Error", description: e.message });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    return (
-        <div className="space-y-4">
-            <div className="space-y-2">
-                <Label>Academic Term Name</Label>
-                <Input value={termName} onChange={e => setTermName(e.target.value)} placeholder="e.g., First Term 2025" />
-            </div>
-            <div className="space-y-2">
-                <Label>Payment Due Date</Label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left font-normal bg-white border-2">
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {format(dueDate, "PPP")}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={dueDate} onSelect={(d) => d && setDueDate(d)} initialFocus />
-                    </PopoverContent>
-                </Popover>
-            </div>
-            <Button onClick={handleBulkTermlyCanteen} disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold">
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                Generate Termly Bills
-            </Button>
-        </div>
-    );
-}
-
-function PaymentHistory({ record }: { record: FinancialRecord }) {
-    const firestore = useFirestore();
-    const paymentsQuery = useMemoFirebase(() =>
-        (firestore && record?.id) ? 
-        query(
-            collection(firestore, 'financialRecords', record.id, 'payments'), 
-            orderBy('paidAt', 'desc')
-        ) : null,
-        [firestore, record?.id]
-    );
-    const { data: payments, isLoading } = useCollection<PaymentTransaction>(paymentsQuery);
-
-    if (isLoading) return <div className="p-4 text-xs animate-pulse">Loading history...</div>;
-    
-    if ((!payments || payments.length === 0) && (record.amountPaid || 0) > 0) {
-        return (
-            <div className="p-4 bg-blue-50 border border-blue-100 rounded-md m-2 flex justify-between items-center">
-                <div>
-                    <p className="text-xs font-semibold text-blue-800">Legacy Payment Found</p>
-                    <p className="text-[10px] text-blue-600">This payment was recorded before the detailed tracking update.</p>
-                </div>
-                <GenerateReceipt 
-                    transaction={record} 
-                    payment={{
-                        id: 'legacy-' + record.id,
-                        amount: record.amountPaid,
-                        method: 'Recorded Payment',
-                        paidAt: record.lastPaymentDate || record.createdAt,
-                        notes: 'Legacy record'
-                    } as any} 
-                    variant="full" 
-                />
-            </div>
-        );
-    }
-
-    if (!payments || payments.length === 0) {
-        return (
-            <div className="p-4 bg-slate-50 border border-dashed rounded-md m-2">
-                <p className="text-xs text-muted-foreground italic text-center">
-                    No payment transactions recorded for this charge.
-                </p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="p-4 space-y-2">
-            {payments.map(p => (
-                <div key={p.id} className="flex justify-between items-center text-xs bg-white p-2 border rounded">
-                    <span>{p.id}: GH₵{p.amount.toFixed(2)} ({p.method}) - {p.paidAt?.toDate ? format(p.paidAt.toDate(), 'dd MMM yy') : ''}</span>
-                    <GenerateReceipt transaction={record} payment={p} variant="icon" />
-                </div>
-            ))}
-        </div>
     );
 }
 
@@ -918,6 +654,64 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
     );
 }
 
+function PaymentHistory({ record }: { record: FinancialRecord }) {
+    const firestore = useFirestore();
+    const paymentsQuery = useMemoFirebase(() =>
+        (firestore && record?.id) ? 
+        query(
+            collection(firestore, 'financialRecords', record.id, 'payments'), 
+            orderBy('paidAt', 'desc')
+        ) : null,
+        [firestore, record?.id]
+    );
+    const { data: payments, isLoading } = useCollection<PaymentTransaction>(paymentsQuery);
+
+    if (isLoading) return <div className="p-4 text-xs animate-pulse">Loading history...</div>;
+    
+    if ((!payments || payments.length === 0) && (record.amountPaid || 0) > 0) {
+        return (
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-md m-2 flex justify-between items-center">
+                <div>
+                    <p className="text-xs font-semibold text-blue-800">Legacy Payment Found</p>
+                    <p className="text-[10px] text-blue-600">This payment was recorded before the detailed tracking update.</p>
+                </div>
+                <GenerateReceipt 
+                    transaction={record} 
+                    payment={{
+                        id: 'legacy-' + record.id,
+                        amount: record.amountPaid,
+                        method: 'Recorded Payment',
+                        paidAt: record.lastPaymentDate || record.createdAt,
+                        notes: 'Legacy record'
+                    } as any} 
+                    variant="full" 
+                />
+            </div>
+        );
+    }
+
+    if (!payments || payments.length === 0) {
+        return (
+            <div className="p-4 bg-slate-50 border border-dashed rounded-md m-2">
+                <p className="text-xs text-muted-foreground italic text-center">
+                    No payment transactions recorded for this charge.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-4 space-y-2">
+            {payments.map(p => (
+                <div key={p.id} className="flex justify-between items-center text-xs bg-white p-2 border rounded">
+                    <span>{p.id}: GH₵{p.amount.toFixed(2)} ({p.method}) - {p.paidAt?.toDate ? format(p.paidAt.toDate(), 'dd MMM yy') : ''}</span>
+                    <GenerateReceipt transaction={record} payment={p} variant="icon" />
+                </div>
+            ))}
+        </div>
+    );
+}
+
 function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver, onEditRecord, onReverseTransaction }: { student: Student; records: FinancialRecord[]; onRecordPayment: (record: FinancialRecord) => void; onApplyWaiver: (record: FinancialRecord) => void; onEditRecord: (record: FinancialRecord) => void; onReverseTransaction: (record: FinancialRecord) => void; }) {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
@@ -1237,22 +1031,6 @@ export default function AccountsPage() {
 
                         {activeForm === 'levy' && schoolId && (
                             <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
-                        )}
-
-                        {activeForm === 'termly-transport' && schoolId && (
-                            <div className="bg-amber-50 p-4 rounded-lg border border-amber-100 mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4 text-amber-900">Termly Transport Billing</h3>
-                                <p className="text-sm text-amber-700 mb-4">This will bill all students on the 'Termly' transport plan based on their route rates.</p>
-                                <BulkTermlyTransportModal schoolId={schoolId} onComplete={() => { forceRefetch(); setActiveForm(null); }} />
-                            </div>
-                        )}
-
-                        {activeForm === 'termly-canteen' && schoolId && (
-                            <div className="bg-green-50 p-4 rounded-lg border border-green-100 mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4 text-green-900">Termly Canteen Billing</h3>
-                                <p className="text-sm text-green-700 mb-4">This will bill all students on the 'Termly' canteen plan.</p>
-                                <BulkTermlyCanteenModal schoolId={schoolId} onComplete={() => { forceRefetch(); setActiveForm(null); }} />
-                            </div>
                         )}
                         
                         <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-sm"/>
