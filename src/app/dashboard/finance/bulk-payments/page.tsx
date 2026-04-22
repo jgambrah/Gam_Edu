@@ -1,445 +1,352 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where, getDocs, doc, getDoc, writeBatch, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { useState, useEffect, useCallback } from 'react';
+import { useFirestore, useUser } from '@/firebase';
+import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 import { format, startOfDay } from 'date-fns';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2, Calendar as CalendarIcon, Search, DollarSign, Bus, Utensils, CheckCircle2, Save } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { useCurrentSchool } from '@/hooks/use-current-school';
-import { useRole } from '@/context/role-context';
-import { StudentDisplay } from '@/components/student-display';
-import { searchStudent, generateNextReceiptId } from '@/lib/student-utils';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, Search, CheckCircle2, CalendarIcon, Coins } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { generateNextReceiptId } from '@/lib/student-utils';
 
-// Types
-import { Student, Class, Route, FinancialRecord } from '@/lib/types';
+type BillRecord = {
+    id: string;
+    studentId: string;
+    studentName: string;
+    classId: string;
+    description: string;
+    billedAmount: number;
+    amountPaid: number;
+    waiverAmount?: number;
+    type: string;
+};
 
-interface PaymentRow {
-    student: Student;
-    currentBalance: number;
-    paymentAmount: number;
-    recordId: string | null; 
-}
-
-export default function BulkPaymentsPage() {
-    const { user } = useUser();
-    const { role } = useRole();
+export default function BulkDailyReceiptsPage() {
     const firestore = useFirestore();
+    const { user } = useUser();
+    const { schoolId } = useCurrentSchool();
     const { toast } = useToast();
-    const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
-    // Filters
     const [date, setDate] = useState<Date>(new Date());
     const [serviceType, setServiceType] = useState<'Canteen' | 'Transport'>('Canteen');
-    const [classId, setClassId] = useState<string>('all');
-    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedClassId, setSelectedClassId] = useState<string>('all');
+    
+    const [classes, setClasses] = useState<any[]>([]);
+    const [pendingBills, setPendingBills] = useState<BillRecord[]>([]);
+    const [paymentData, setPaymentData] = useState<Record<string, number>>({});
+    
+    const [isLoading, setIsLoading] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    // Grid State
-    const [rows, setRows] = useState<PaymentRow[]>([]);
-    const [isLoadingGrid, setIsLoadingGrid] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // Data Dependencies
-    const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: classes } = useCollection<Class>(classesQuery);
-
-    const routesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: routes } = useCollection<Route>(routesQuery);
-
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
-
-    // --- GRID LOADING LOGIC ---
-    const loadGrid = useCallback(async () => {
+    // 1. Load Classes for Dropdown
+    useEffect(() => {
         if (!firestore || !schoolId) return;
-        
-        setIsLoadingGrid(true);
+        const fetchClasses = async () => {
+            const q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+            const snap = await getDocs(q);
+            setClasses(snap.docs.map(d => ({ id: d.id, name: d.data().name })));
+        };
+        fetchClasses();
+    }, [firestore, schoolId]);
+
+    // 2. Load the REAL unpaid bills for this date
+    const handleLoadBills = async () => {
+        if (!firestore || !schoolId) return;
+        setIsLoading(true);
+        setPendingBills([]);
+        setPaymentData({});
+
         try {
-            const dateStr = format(startOfDay(date), 'yyyy-MM-dd');
+            const searchDate = startOfDay(date);
             
-            // 1. Fetch Canteen Rates
-            let canteenModel = 'Flat';
-            let globalCanteenRate = 0;
-            let classCanteenRates: Record<string, number> = {};
-            
-            if (serviceType === 'Canteen') {
-                const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
-                if (canteenSnap.exists()) {
-                    const data = canteenSnap.data();
-                    canteenModel = data.pricingModel || 'Flat';
-                    globalCanteenRate = data.dailyRate || 0;
-                    classCanteenRates = data.classRates || {};
-                }
-            }
-
-            // 2. Fetch Routes Map
-            const routeRatesMap = new Map<string, number>();
-            if (serviceType === 'Transport' && routes) {
-                routes.forEach(r => routeRatesMap.set(r.id, r.dailyRate || 0));
-            }
-
-            // 3. Query Students
-            let studentQ = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
-            if (classId !== 'all') {
-                studentQ = query(studentQ, where('classId', '==', classId));
-            }
-            const studentSnap = await getDocs(studentQ);
-            const allStudents = studentSnap.docs.map(d => ({ ...d.data(), uid: d.id }) as Student);
-
-            // 4. Filter by subscription (Daily only) and active status
-            const subscribedStudents = allStudents.filter(s => {
-                const isActive = s.enrollmentStatus === 'Active' || !s.enrollmentStatus;
-                if (!isActive) return false;
-
-                if (serviceType === 'Canteen') {
-                    return s.usesCanteen !== false && (s.canteenBillingMode === 'Daily' || !s.canteenBillingMode);
-                } else {
-                    return s.usesBusService === true && s.transportBillingModel === 'Daily';
-                }
-            });
-
-            // 5. Fetch relevant bills for these students on this date
-            const billType = serviceType === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)';
+            // Fetch financial records matching the exact due date and schoolId
             const billsQuery = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
-                where('type', '==', billType),
-                where('dueDate', '==', Timestamp.fromDate(startOfDay(date)))
+                where('dueDate', '==', Timestamp.fromDate(searchDate))
             );
-            const billsSnap = await getDocs(billsQuery);
-            const billsMap = new Map<string, FinancialRecord>();
-            billsSnap.docs.forEach(d => billsMap.set(d.data().studentId, { id: d.id, ...d.data() } as FinancialRecord));
+            
+            const snap = await getDocs(billsQuery);
+            
+            const relevantBills: BillRecord[] = [];
+            const newPaymentData: Record<string, number> = {};
 
-            // 6. Construct Rows
-            const newRows: PaymentRow[] = subscribedStudents.map(student => {
-                const existingBill = billsMap.get(student.uid);
-                
-                let prefill = 0;
-                if (serviceType === 'Canteen') {
-                    prefill = canteenModel === 'Flat' ? globalCanteenRate : (classCanteenRates[student.classId] || 0);
-                } else {
-                    prefill = student.routeId ? (routeRatesMap.get(student.routeId) || 0) : 0;
+            snap.docs.forEach(d => {
+                const data = d.data();
+                const balance = data.billedAmount - (data.amountPaid || 0) - (data.waiverAmount || 0);
+
+                // Filter in memory: Match service type, check if unpaid, check class filter
+                if (
+                    data.type.includes(serviceType) && 
+                    balance > 0 && 
+                    (selectedClassId === 'all' || data.classId === selectedClassId)
+                ) {
+                    relevantBills.push({ id: d.id, ...data } as BillRecord);
+                    newPaymentData[d.id] = parseFloat(balance.toFixed(2)); // Pre-fill with the exact amount owed
                 }
-
-                const currentBalance = existingBill 
-                    ? (existingBill.billedAmount - (existingBill.amountPaid || 0) - (existingBill.waiverAmount || 0))
-                    : prefill; 
-
-                return {
-                    student,
-                    currentBalance: Math.max(0, currentBalance),
-                    paymentAmount: prefill, 
-                    recordId: existingBill?.id || null
-                };
             });
 
-            setRows(newRows);
+            if (relevantBills.length === 0) {
+                toast({ title: "No Bills Found", description: "All clear! Either attendance hasn't been taken, or everyone is already paid up." });
+            }
+
+            setPendingBills(relevantBills);
+            setPaymentData(newPaymentData);
+
         } catch (error: any) {
-            console.error("Load Grid Error:", error);
-            toast({ variant: 'destructive', title: "Error", description: "Failed to load student payments." });
+            console.error("Load Bills Error:", error);
+            toast({ variant: 'destructive', title: "Error", description: "Could not load bills." });
         } finally {
-            setIsLoadingGrid(false);
+            setIsLoading(false);
         }
-    }, [firestore, schoolId, date, serviceType, classId, routes, toast]);
-
-    useEffect(() => {
-        if (!schoolLoading && schoolId) {
-            loadGrid();
-        }
-    }, [loadGrid, schoolLoading, schoolId]);
-
-    const handleAmountChange = (uid: string, amount: string) => {
-        const val = amount === '' ? 0 : parseFloat(amount);
-        setRows(prev => prev.map(r => r.student.uid === uid ? { ...r, paymentAmount: val } : r));
     };
 
-    const filteredRows = useMemo(() => {
-        return rows.filter(r => searchStudent(r.student, searchTerm));
-    }, [rows, searchTerm]);
-
-    const totalAmount = useMemo(() => {
-        return rows.reduce((sum, r) => sum + r.paymentAmount, 0);
-    }, [rows]);
-
-    const handleSubmitAll = async () => {
-        if (!firestore || !user || !schoolId || totalAmount <= 0) return;
+    // 3. Process the Payments
+    const handleProcessPayments = async () => {
+        if (!firestore || !schoolId || !user) return;
         
-        setIsSubmitting(true);
-        const batch = writeBatch(firestore);
-        const dateStr = format(startOfDay(date), 'yyyy-MM-dd');
-        const validPayments = rows.filter(r => r.paymentAmount > 0);
+        // Find bills that actually have an amount typed in > 0
+        const billsToPay = pendingBills.filter(bill => (paymentData[bill.id] || 0) > 0);
+        
+        if (billsToPay.length === 0) {
+            return toast({ variant: 'destructive', title: "No Payments", description: "All payment amounts are 0." });
+        }
+
+        setIsProcessing(true);
 
         try {
-            const tillQ = query(
+            // A. Check for Open Till
+            const tillSnap = await getDocs(query(
                 collection(firestore, 'tills'), 
                 where('accountantId', '==', user.uid), 
-                where('status', '==', 'Open'),
+                where('status', '==', 'Open'), 
                 where('schoolId', '==', schoolId)
-            );
-            const tillSnap = await getDocs(tillQ);
-            if (tillSnap.empty) {
-                throw new Error("Please OPEN YOUR TILL before processing cash payments.");
-            }
-            const activeTill = tillSnap.docs[0];
+            ));
 
+            if (tillSnap.empty) {
+                toast({ variant: 'destructive', title: "No Open Till", description: "You must open a Cash Till before accepting payments." });
+                setIsProcessing(false);
+                return;
+            }
+            
+            const activeTill = tillSnap.docs[0];
+            const batch = writeBatch(firestore);
+            let totalCollected = 0;
             let processedCount = 0;
 
-            for (const row of validPayments) {
-                const recordId = row.recordId || `${serviceType.toLowerCase()}-${row.student.uid}-${dateStr}`;
-                const recordRef = doc(firestore, 'financialRecords', recordId);
-                const receiptId = await generateNextReceiptId(firestore, schoolId);
-                const paymentRef = doc(firestore, 'financialRecords', recordId, 'payments', receiptId);
-
-                const isFullyPaid = row.paymentAmount >= row.currentBalance;
+            for (const bill of billsToPay) {
+                const payAmount = Number(paymentData[bill.id]);
                 
-                // If the record doesn't exist (student marked present but not billed), we create it
-                if (!row.recordId) {
-                    batch.set(recordRef, {
-                        studentId: row.student.uid,
-                        studentName: `${row.student.firstName} ${row.student.lastName}`,
-                        classId: row.student.classId || '',
-                        type: serviceType === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)',
-                        description: `${serviceType} Fee - ${format(date, 'PPP')}`,
-                        billedAmount: row.paymentAmount,
-                        amountPaid: row.paymentAmount,
-                        status: 'Paid',
-                        dueDate: Timestamp.fromDate(startOfDay(date)),
-                        createdAt: serverTimestamp(),
-                        schoolId: schoolId,
-                        lastPaymentDate: serverTimestamp(),
-                    });
-                } else {
-                    batch.update(recordRef, {
-                        amountPaid: increment(row.paymentAmount),
-                        status: isFullyPaid ? 'Paid' : 'Unpaid',
-                        lastPaymentDate: serverTimestamp(),
-                    });
-                }
+                // B. Generate Receipt ID
+                const receiptId = await generateNextReceiptId(firestore, schoolId);
+                
+                const recordRef = doc(firestore, 'financialRecords', bill.id);
+                const paymentRef = doc(firestore, 'financialRecords', bill.id, 'payments', receiptId);
+                const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
 
+                const newAmountPaid = (bill.amountPaid || 0) + payAmount;
+                const isFullyPaid = (bill.billedAmount - newAmountPaid - (bill.waiverAmount || 0)) <= 0.01;
+
+                // 1. Update the Main Bill Document (This fixes the Overview & Student Accounts)
+                batch.update(recordRef, {
+                    amountPaid: newAmountPaid,
+                    lastPaymentDate: serverTimestamp(),
+                    status: isFullyPaid ? 'Paid' : 'Unpaid'
+                });
+
+                // 2. Log the Receipt in the Student's Bill
                 batch.set(paymentRef, {
                     id: receiptId,
-                    amount: row.paymentAmount,
+                    amount: payAmount,
                     method: 'Cash',
                     paidAt: serverTimestamp(),
                     processedById: user.uid,
-                    processedByName: user.displayName || user.email,
-                    studentId: row.student.uid,
-                    description: `${serviceType} Fee - ${format(date, 'PPP')}`,
+                    processedByName: user.displayName || user.email || 'Accountant',
                     schoolId: schoolId,
-                    notes: 'Bulk Daily Entry'
+                    studentId: bill.studentId,
+                    description: bill.description,
+                    notes: 'Bulk Daily Receipting'
                 });
 
+                // 3. Log the Individual Till Transaction (This fixes the Missing Names in Till)
+                batch.set(tillTransRef, {
+                    amount: payAmount,
+                    studentName: bill.studentName,
+                    timestamp: serverTimestamp(),
+                    type: 'Payment',
+                    description: `${serviceType} Payment - ${bill.description} (Receipt: ${receiptId})`,
+                    status: 'Completed',
+                    schoolId: schoolId
+                });
+
+                totalCollected += payAmount;
                 processedCount++;
             }
 
+            // 4. Update the Till Balance
             batch.update(doc(firestore, 'tills', activeTill.id), {
-                currentBalance: increment(totalAmount)
+                currentBalance: increment(totalCollected)
             });
 
-            const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
-            batch.set(tillTransRef, {
-                amount: totalAmount,
-                timestamp: serverTimestamp(),
-                type: 'Payment',
-                description: `Bulk ${serviceType} Collection - ${processedCount} Students`,
-                status: 'Completed',
-                schoolId: schoolId,
-            });
-
+            // COMMIT EVERYTHING
             await batch.commit();
-            toast({ title: "Success!", description: `Recorded ${processedCount} payments totaling GH₵${totalAmount.toFixed(2)}.` });
-            loadGrid();
+
+            toast({ title: "Payments Processed! 🎉", description: `Successfully received GH₵${totalCollected.toFixed(2)} from ${processedCount} students.` });
+            
+            // Clear the list
+            setPendingBills([]);
+            setPaymentData({});
 
         } catch (error: any) {
-            console.error("Batch Submission Error:", error);
+            console.error("Process Error:", error);
             toast({ variant: 'destructive', title: "Processing Failed", description: error.message });
         } finally {
-            setIsSubmitting(false);
+            setIsProcessing(false);
         }
     };
 
-    if (!canAccess) {
-        return <div className="p-8 text-center text-red-500">Access Denied. Financial staff only.</div>;
-    }
-
     return (
-        <div className="p-6 space-y-6 max-w-6xl mx-auto pb-32">
+        <div className="p-6 max-w-5xl mx-auto space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2">
-                        <DollarSign className="h-8 w-8 text-emerald-600"/> Bulk Daily Payments
+                        <Coins className="h-8 w-8 text-green-600" /> Bulk Daily Receipts
                     </h1>
-                    <p className="text-muted-foreground font-medium italic">Rapid entry for Canteen and Transport fees.</p>
+                    <p className="text-muted-foreground font-medium italic">Quickly process cash payments for daily Canteen or Transport bills.</p>
                 </div>
-                <Card className="bg-emerald-50 border-emerald-100 p-4 shadow-sm">
-                    <div className="text-xs font-black text-emerald-600 uppercase tracking-widest">Session Total</div>
-                    <div className="text-3xl font-black text-emerald-900">GH₵{totalAmount.toFixed(2)}</div>
-                </Card>
+                {pendingBills.length > 0 && (
+                    <div className="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl shadow-sm text-center min-w-[200px] animate-in zoom-in">
+                        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Selected Cash</p>
+                        <p className="text-3xl font-black text-emerald-900">
+                            GH₵{pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)}
+                        </p>
+                    </div>
+                )}
             </div>
 
-            <Card className="shadow-sm border-2">
-                <CardHeader className="pb-3 border-b bg-slate-50/50">
-                    <CardTitle className="text-sm font-bold uppercase text-slate-500">Filter Records</CardTitle>
+            <Card className="border-t-4 border-t-green-500 shadow-sm rounded-2xl">
+                <CardHeader>
+                    <CardTitle className="text-lg">1. Load Pending Bills</CardTitle>
+                    <CardDescription>Fetch unpaid daily bills generated by the attendance system.</CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-6">
-                    <div className="space-y-2">
-                        <Label>Date</Label>
+                <CardContent className="flex flex-col md:flex-row gap-4 items-end">
+                    <div className="flex-1 space-y-2 w-full">
+                        <Label className="text-xs font-bold uppercase text-slate-500">Service Date</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="w-full justify-start text-left font-normal bg-white h-11 border-2">
+                                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal border-2 h-12 bg-white', !date && 'text-muted-foreground')}>
                                     <CalendarIcon className="mr-2 h-4 w-4 text-indigo-600" />
-                                    {format(date, "PPP")}
+                                    {date ? format(date, 'PPP') : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus />
-                            </PopoverContent>
+                            <PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus /></PopoverContent>
                         </Popover>
                     </div>
-
-                    <div className="space-y-2">
-                        <Label>Service Type</Label>
+                    
+                    <div className="flex-1 space-y-2 w-full">
+                        <Label className="text-xs font-bold uppercase text-slate-500">Service Type</Label>
                         <Select value={serviceType} onValueChange={(v: any) => setServiceType(v)}>
-                            <SelectTrigger className="bg-white border-2 h-11">
-                                <SelectValue />
-                            </SelectTrigger>
+                            <SelectTrigger className="bg-white border-2 h-12 font-bold"><SelectValue /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Canteen"><div className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen</div></SelectItem>
-                                <SelectItem value="Transport"><div className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Transport</div></SelectItem>
+                                <SelectItem value="Canteen" className="font-bold">Canteen Fees</SelectItem>
+                                <SelectItem value="Transport" className="font-bold">Transport Fees</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label>Target Class</Label>
-                        <Select value={classId} onValueChange={setClassId}>
-                            <SelectTrigger className="bg-white border-2 h-11">
-                                <SelectValue placeholder="All Classes" />
-                            </SelectTrigger>
+                    <div className="flex-1 space-y-2 w-full">
+                        <Label className="text-xs font-bold uppercase text-slate-500">Class Filter</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger className="bg-white border-2 h-12"><SelectValue placeholder="All Classes" /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Classes</SelectItem>
-                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label>Find Student</Label>
-                        <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                                placeholder="Name or ID..." 
-                                className="pl-8 h-11 border-2 bg-white" 
-                                value={searchTerm}
-                                onChange={e => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                    <Button onClick={handleLoadBills} disabled={isLoading} className="bg-green-600 hover:bg-green-700 w-full md:w-auto h-12 px-8 font-black uppercase tracking-widest">
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4"/>}
+                        Find Bills
+                    </Button>
                 </CardContent>
             </Card>
 
-            <Card className="shadow-lg border-none overflow-hidden rounded-2xl bg-white min-h-[400px]">
-                <CardContent className="p-0">
-                    {isLoadingGrid ? (
-                        <div className="flex flex-col items-center justify-center py-32 gap-4 text-slate-400">
-                            <Loader2 className="h-12 w-12 animate-spin text-emerald-500"/>
-                            <p className="font-bold uppercase tracking-widest text-xs">Syncing Subscriptions...</p>
+            {pendingBills.length > 0 && (
+                <Card className="border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem] overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
+                    <CardHeader className="bg-slate-50 border-b pb-4">
+                        <div>
+                            <CardTitle className="text-xl">2. Review & Process Payments</CardTitle>
+                            <CardDescription>Entries with 'Cash Received' greater than 0 will be processed. Amounts are pre-filled based on the bill balance.</CardDescription>
                         </div>
-                    ) : filteredRows.length === 0 ? (
-                        <div className="text-center py-32 text-muted-foreground bg-slate-50 italic">
-                            No daily {serviceType.toLowerCase()} subscribers found for this selection.
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto">
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <div className="max-h-[50vh] overflow-y-auto">
                             <Table>
-                                <TableHeader className="bg-slate-50">
+                                <TableHeader className="bg-white sticky top-0 shadow-sm z-10">
                                     <TableRow>
-                                        <TableHead className="w-[350px]">Student Details</TableHead>
-                                        <TableHead className="text-right">Unpaid Balance</TableHead>
-                                        <TableHead className="text-center w-[220px]">Payment Amount (GH₵)</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
+                                        <TableHead className="font-black text-[10px] uppercase tracking-widest">Student Name</TableHead>
+                                        <TableHead className="font-black text-[10px] uppercase tracking-widest">Description</TableHead>
+                                        <TableHead className="text-right font-black text-[10px] uppercase tracking-widest">Due (GH₵)</TableHead>
+                                        <TableHead className="w-[180px] font-black text-[10px] uppercase tracking-widest">Cash Received</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredRows.map((row) => (
-                                        <TableRow key={row.student.uid} className={cn(row.paymentAmount > 0 ? "bg-emerald-50/20" : "")}>
-                                            <TableCell>
-                                                <StudentDisplay student={row.student} variant="list" showAvatar />
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex flex-col items-end">
-                                                    <span className={cn("font-bold font-mono", row.currentBalance > 0 ? "text-red-600" : "text-green-600")}>
-                                                        GH₵{row.currentBalance.toFixed(2)}
-                                                    </span>
-                                                    {!row.recordId && <span className="text-[10px] text-orange-500 font-bold uppercase">Bill Missing</span>}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="relative group">
-                                                    <Input 
-                                                        type="number" 
-                                                        step="0.01"
-                                                        value={row.paymentAmount || ''}
-                                                        onChange={(e) => handleAmountChange(row.student.uid, e.target.value)}
-                                                        className="text-right font-black text-xl h-14 pr-12 border-2 focus:ring-emerald-500 focus:border-emerald-500 rounded-xl"
-                                                    />
-                                                    {row.paymentAmount > 0 && (
-                                                        <div className="absolute right-3 top-4 text-emerald-500 animate-in zoom-in">
-                                                            <CheckCircle2 className="h-6 w-6" />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="sm" 
-                                                    onClick={() => handleAmountChange(row.student.uid, '0')}
-                                                    className="text-slate-400 hover:text-red-500 font-bold"
-                                                >
-                                                    RESET
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {pendingBills.map(bill => {
+                                        const balance = bill.billedAmount - (bill.amountPaid || 0) - (bill.waiverAmount || 0);
+                                        const hasPayment = (paymentData[bill.id] || 0) > 0;
+                                        
+                                        return (
+                                            <TableRow key={bill.id} className={cn("transition-colors", hasPayment ? "bg-emerald-50/30" : "")}>
+                                                <TableCell className="font-bold text-slate-700">{bill.studentName}</TableCell>
+                                                <TableCell className="text-xs text-slate-500">{bill.description}</TableCell>
+                                                <TableCell className="font-mono text-red-600 font-bold text-right">GH₵{balance.toFixed(2)}</TableCell>
+                                                <TableCell>
+                                                    <div className="relative group">
+                                                        <Input 
+                                                            type="number" 
+                                                            min="0" max={balance} step="0.01"
+                                                            value={paymentData[bill.id] ?? ''}
+                                                            onChange={e => setPaymentData(prev => ({ 
+                                                                ...prev, 
+                                                                [bill.id]: e.target.value === '' ? 0 : parseFloat(e.target.value) 
+                                                            }))}
+                                                            className={cn(
+                                                                "font-black text-right pr-10 border-2 transition-all",
+                                                                hasPayment ? "border-emerald-400 bg-white text-emerald-700 ring-2 ring-emerald-50" : "bg-slate-50 border-slate-200 text-slate-400"
+                                                            )}
+                                                        />
+                                                        {hasPayment && (
+                                                            <div className="absolute right-3 top-2.5 text-emerald-500">
+                                                                <CheckCircle2 size={16} />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                                 </TableBody>
                             </Table>
                         </div>
-                    )}
-                </CardContent>
-            </Card>
-
-            {!isLoadingGrid && filteredRows.length > 0 && (
-                <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-white border-t-4 border-t-slate-900 p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6">
-                        <div className="flex gap-8">
-                            <div className="text-center px-4 border-r">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Payments to Log</p>
-                                <p className="text-2xl font-black text-slate-900">{rows.filter(r => r.paymentAmount > 0).length}</p>
-                            </div>
-                            <div className="text-center px-4">
-                                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Total Batch Value</p>
-                                <p className="text-2xl font-black text-emerald-600">GH₵{totalAmount.toFixed(2)}</p>
-                            </div>
-                        </div>
-                        <Button 
-                            onClick={handleSubmitAll} 
-                            disabled={isSubmitting || totalAmount === 0} 
-                            className="w-full sm:w-auto h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl text-xl shadow-xl shadow-emerald-900/20 active:scale-95 transition-all uppercase tracking-tighter"
-                        >
-                            {isSubmitting ? <Loader2 className="animate-spin mr-3 h-6 w-6"/> : <Save className="mr-3 h-6 w-6"/>}
-                            Commit Batch Payments
+                    </CardContent>
+                    <CardFooter className="bg-slate-50 border-t p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <Button variant="ghost" className="font-bold text-slate-400" onClick={() => {setPendingBills([]); setPaymentData({});}}>Discard List</Button>
+                        <Button onClick={handleProcessPayments} disabled={isProcessing} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 h-16 px-12 text-xl font-black rounded-2xl shadow-xl shadow-indigo-200 uppercase tracking-tighter">
+                            {isProcessing ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <CheckCircle2 className="mr-2 h-6 w-6"/>}
+                            Post GH₵{pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)} to Till
                         </Button>
-                    </div>
-                </div>
+                    </CardFooter>
+                </Card>
             )}
         </div>
     );
