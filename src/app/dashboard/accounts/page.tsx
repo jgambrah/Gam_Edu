@@ -671,68 +671,74 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     );
 }
 
-function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: Class[], schoolId: string, onRecordsAdded: () => void }) {
+// --- SUB-COMPONENT: Daily Charge Form (Formerly ManualLevyForm) ---
+function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: any[], students: Student[], schoolId: string, onRecordsAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const[isSubmitting, setIsSubmitting] = useState(false);
+    
     const [selectedClassId, setSelectedClassId] = useState('');
-    const [chargeType, setChargeType] = useState<'Canteen' | 'Transport'>('Canteen');
+    const[chargeType, setChargeType] = useState<'Canteen' | 'Transport'>('Canteen');
     const [date, setDate] = useState<Date>(new Date());
+    
+    // Global Canteen Rate (Transport uses individual route rates)
+    const[canteenRate, setCanteenRate] = useState(0);
+    const [routesMap, setRoutesMap] = useState<Map<string, number>>(new Map());
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
-    const [rate, setRate] = useState(0);
-    const [routeRates, setRouteRates] = useState<Map<string, number>>(new Map());
+    
+    const classStudents = useMemo(() => students.filter(s => s.classId === selectedClassId), [students, selectedClassId]);
 
-    const studentsQuery = useMemoFirebase(() => 
-        (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('enrollmentStatus', '==', 'Active')) : null,
-    [firestore, selectedClassId, schoolId]);
-    const { data: classStudents, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
-
+    // Fetch Rates on Mount
     useEffect(() => {
-        async function fetchRate() {
-            if (!firestore || !schoolId) return;
-            
-            if (chargeType === 'Canteen') {
-                const snap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
-                if (snap.exists()) {
-                    const data = snap.data();
-                    if (data.pricingModel === 'Class-Based') {
-                        const classRate = selectedClassId ? (data.classRates?.[selectedClassId] || 0) : 0;
-                        setRate(classRate);
-                    } else {
-                        setRate(data.dailyRate || 0);
-                    }
-                }
-            } else {
-                const q = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
-                const snap = await getDocs(q);
-                const map = new Map<string, number>();
-                snap.docs.forEach(d => map.set(d.id, d.data().dailyRate || 0));
-                setRouteRates(map);
-            }
-        }
-        fetchRate();
-    }, [firestore, schoolId, chargeType, selectedClassId]);
+        if(!firestore || !schoolId) return;
+        const fetchRates = async () => {
+            // Fetch Canteen Rate
+            const cSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+            if(cSnap.exists()) setCanteenRate(Number(cSnap.data().dailyRate) || 0);
 
-    const handleDailyChargeLevy = async () => {
-        if(!firestore || !schoolId || !classStudents) return;
+            // Fetch Transport Routes
+            const rSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
+            const rMap = new Map<string, number>();
+            rSnap.docs.forEach(d => rMap.set(d.id, Number(d.data().dailyRate) || 0));
+            setRoutesMap(rMap);
+        };
+        fetchRates();
+    }, [firestore, schoolId]);
+
+    const toggleStudent = (uid: string) => {
+        if(selectedStudents.includes(uid)) setSelectedStudents(prev => prev.filter(id => id !== uid));
+        else setSelectedStudents(prev => [...prev, uid]);
+    };
+
+    const toggleAll = () => {
+        if(selectedStudents.length === classStudents.length) setSelectedStudents([]);
+        else setSelectedStudents(classStudents.map(s => s.uid));
+    };
+
+    const handleSubmit = async () => {
+        if(!firestore || !schoolId) return;
+        if(selectedStudents.length === 0) return toast({ variant: 'destructive', title: 'Error', description: 'Select at least one student.' });
+
         setIsSubmitting(true);
-        
         try {
             const batch = writeBatch(firestore);
             const dateStr = format(date, 'yyyy-MM-dd');
+            let billedCount = 0;
 
             selectedStudents.forEach(uid => {
                 const student = classStudents.find(s => s.uid === uid);
                 if(!student) return;
 
-                let billingRate = rate;
-                if (chargeType === 'Transport') {
-                    const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
-                    if (!isDailyTransportSubscriber) return;
-                    billingRate = student.routeId ? (routeRates.get(student.routeId) || 0) : 0;
+                // Determine Rate
+                let appliedRate = 0;
+                if (chargeType === 'Canteen') {
+                    appliedRate = canteenRate;
+                } else if (chargeType === 'Transport') {
+                    if (!student.routeId) return; // Skip if no route assigned
+                    appliedRate = routesMap.get(student.routeId) || 0;
                 }
-                
-                if (billingRate <= 0) return;
+
+                if (appliedRate <= 0) return; // Don't create 0 bills
 
                 const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
                 const recordRef = doc(firestore, 'financialRecords', recordId);
@@ -741,106 +747,95 @@ function ManualLevyForm({ setOpen, classes, schoolId, onRecordsAdded }: { setOpe
                     studentId: uid,
                     studentName: `${student.firstName} ${student.lastName}`,
                     classId: selectedClassId,
-                    type: chargeType === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)',
-                    description: `${chargeType} Fee - ${format(date, 'PPP')}`,
-                    billedAmount: billingRate,
+                    type: `${chargeType} Fee (Daily)`,
+                    description: `${chargeType} (Manual) - ${format(date, 'PPP')}`,
+                    billedAmount: appliedRate,
                     amountPaid: 0,
                     status: 'Unpaid',
                     dueDate: Timestamp.fromDate(startOfDay(date)),
                     createdAt: serverTimestamp(),
-                    schoolId: schoolId
+                    schoolId: schoolId,
                 }, { merge: true });
+                
+                billedCount++;
             });
 
+            if (billedCount === 0) {
+                toast({ variant: 'destructive', title: 'No Bills Created', description: 'Check if students have assigned routes or if rates are > 0.' });
+                return;
+            }
+
             await batch.commit();
-            toast({ title: 'Bills Generated', description: `Successfully levied ${selectedStudents.length} charges.` });
+            toast({ title: 'Success', description: `Generated ${billedCount} bills successfully.` });
             onRecordsAdded();
             setOpen(false);
         } catch(e: any) {
+            console.error(e);
             toast({ variant: 'destructive', title: 'Error', description: e.message });
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const toggleStudent = (uid: string) => {
-        setSelectedStudents(prev => prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]);
-    };
-
     return (
-        <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                    <Label>Charge Type</Label>
-                    <Select value={chargeType} onValueChange={(v: any) => setChargeType(v)}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Canteen">Canteen {rate > 0 ? `(Rate: GH₵${rate.toFixed(2)})` : ''}</SelectItem>
-                            <SelectItem value="Transport">Transport (Route-based)</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="space-y-2">
-                    <Label>Target Class</Label>
-                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger><SelectValue placeholder="Select Class"/></SelectTrigger>
-                        <SelectContent>
-                            {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="space-y-2">
-                    <Label>Date of Service</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {format(date, "PPP")}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus />
-                        </PopoverContent>
-                    </Popover>
-                </div>
-            </div>
-
-            {selectedClassId && (
-                <div className="border rounded-md bg-white">
-                    <div className="p-2 border-b bg-slate-50 flex justify-between items-center">
-                        <span className="text-sm font-bold">{selectedStudents.length} Students Selected</span>
-                        <Button variant="ghost" size="sm" onClick={() => setSelectedStudents(selectedStudents.length === classStudents?.length ? [] : classStudents?.map(s => s.uid) || [])}>
-                            {selectedStudents.length === classStudents?.length ? 'Deselect All' : 'Select All'}
-                        </Button>
+        <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+                <DialogTitle>Add Daily Charge (Manual)</DialogTitle>
+                <DialogDescription>Manually bill specific students for Canteen or Transport.</DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-2">
+                <div className="flex gap-4">
+                    <div className="flex-1 space-y-2">
+                        <Label>Type</Label>
+                        <Select value={chargeType} onValueChange={(v: any) => setChargeType(v)}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="Canteen">Canteen</SelectItem><SelectItem value="Transport">Transport</SelectItem></SelectContent>
+                        </Select>
                     </div>
-                    <ScrollArea className="h-48">
-                        {loadingStudents ? <div className="p-4 flex justify-center"><Loader2 className="animate-spin h-4 w-4"/></div> : (
-                            <div className="p-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                {classStudents?.map(s => (
-                                    <div key={s.uid} className="flex items-center space-x-2 p-2 hover:bg-slate-50 rounded">
-                                        <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)} />
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium">{s.firstName} {s.lastName}</span>
-                                            {chargeType === 'Transport' && (
-                                                <span className={cn("text-[10px] font-bold flex items-center gap-1", s.transportBillingModel === 'Termly' ? "text-red-400" : "text-indigo-600")}>
-                                                    <RouteIcon className="h-2 w-2" />
-                                                    {s.transportBillingModel === 'Termly' ? "Termly Plan (Skipped)" : (s.routeId ? (routeRates.get(s.routeId) ? `GH₵${routeRates.get(s.routeId)}` : 'No rate set') : 'No route assigned')}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </ScrollArea>
+                    <div className="flex-1 space-y-2">
+                        <Label>Date</Label>
+                        <Popover>
+                            <PopoverTrigger asChild><Button variant={'outline'} className="w-full justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, 'PP') : <span>Pick a date</span>}</Button></PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus/></PopoverContent>
+                        </Popover>
+                    </div>
                 </div>
-            )}
 
-            <Button onClick={handleDailyChargeLevy} disabled={isSubmitting || selectedStudents.length === 0} className="w-full h-12 text-lg font-bold bg-indigo-600 hover:bg-indigo-700">
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <HandCoins className="mr-2 h-4 w-4"/>}
-                Levy {chargeType} Charges
-            </Button>
-        </div>
+                <div className="space-y-2">
+                    <Label>Class</Label>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                    </Select>
+                    {chargeType === 'Canteen' && <p className="text-xs text-muted-foreground mt-1">Current Rate: GH₵{canteenRate}</p>}
+                    {chargeType === 'Transport' && <p className="text-xs text-blue-600 mt-1">Rates will be applied dynamically based on each student's assigned route.</p>}
+                </div>
+
+                {selectedClassId && (
+                    <div className="border rounded-md max-h-[300px] overflow-y-auto p-2">
+                        <div className="flex items-center gap-2 p-2 border-b mb-2 sticky top-0 bg-white">
+                            <Checkbox checked={selectedStudents.length === classStudents.length && classStudents.length > 0} onCheckedChange={toggleAll}/>
+                            <Label>Select All ({classStudents.length})</Label>
+                        </div>
+                        {classStudents.map(s => (
+                            <div key={s.uid} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded">
+                                <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)}/>
+                                <span className="text-sm">{s.firstName} {s.lastName}</span>
+                                {chargeType === 'Transport' && s.routeId && (
+                                    <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 ml-auto">GH₵ {routesMap.get(s.routeId) || 0}</Badge>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <Button onClick={handleSubmit} disabled={isSubmitting || selectedStudents.length === 0} className="w-full">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PlusCircle className="mr-2 h-4 w-4"/>}
+                    Generate Bills
+                </Button>
+            </div>
+        </DialogContent>
     );
 }
 
@@ -1112,19 +1107,11 @@ export default function AccountsPage() {
         const balance = billed - paid - waiver;
         totalBilled += billed; totalPaid += paid; totalWaivers += waiver;
         
-        if (balance > 0.01) {
-            const type = (record.type || '').toLowerCase();
-            const desc = (record.description || '').toLowerCase();
-            
-            if (type.includes('tuition') || desc.includes('tuition')) { 
-                outstandingTuition += balance; 
-            } else if (type.includes('canteen') || desc.includes('canteen') || desc.includes('lunch') || desc.includes('food')) { 
-                outstandingCanteen += balance; 
-            } else if (type.includes('transport') || type.includes('bus') || desc.includes('transport') || desc.includes('bus') || desc.includes('shuttle')) { 
-                outstandingTransport += balance; 
-            } else { 
-                otherDebt += balance; 
-            }
+        if (balance > 0) {
+            if (record.type.includes('Tuition')) outstandingTuition += balance;
+            else if (record.type.includes('Canteen')) outstandingCanteen += balance;
+            else if (record.type.includes('Transport')) outstandingTransport += balance;
+            else otherDebt += balance;
         }
     }
     return { 
@@ -1258,7 +1245,7 @@ export default function AccountsPage() {
                         {activeForm === 'levy' && schoolId && (
                             <div className="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100 mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4 text-indigo-900">Manual Daily Service Levy</h3>
-                                <ManualLevyForm setOpen={() => setActiveForm(null)} classes={classes || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
+                                <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
                         )}
 
@@ -1322,4 +1309,172 @@ export default function AccountsPage() {
         {dialogState.record && dialogState.type === 'payment' ? (<RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={forceRefetch} />) : null}
     </div>
   );
+}
+
+// --- SUB-COMPONENT: Daily Charge Form (Formerly ManualLevyForm) ---
+function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: any[], students: Student[], schoolId: string, onRecordsAdded: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const[isSubmitting, setIsSubmitting] = useState(false);
+    
+    const [selectedClassId, setSelectedClassId] = useState('');
+    const[chargeType, setChargeType] = useState<'Canteen' | 'Transport'>('Canteen');
+    const [date, setDate] = useState<Date>(new Date());
+    
+    // Global Canteen Rate (Transport uses individual route rates)
+    const[canteenRate, setCanteenRate] = useState(0);
+    const [routesMap, setRoutesMap] = useState<Map<string, number>>(new Map());
+    const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+    
+    const classStudents = useMemo(() => students.filter(s => s.classId === selectedClassId), [students, selectedClassId]);
+
+    // Fetch Rates on Mount
+    useEffect(() => {
+        if(!firestore || !schoolId) return;
+        const fetchRates = async () => {
+            // Fetch Canteen Rate
+            const cSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+            if(cSnap.exists()) setCanteenRate(Number(cSnap.data().dailyRate) || 0);
+
+            // Fetch Transport Routes
+            const rSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
+            const rMap = new Map<string, number>();
+            rSnap.docs.forEach(d => rMap.set(d.id, Number(d.data().dailyRate) || 0));
+            setRoutesMap(rMap);
+        };
+        fetchRates();
+    }, [firestore, schoolId]);
+
+    const toggleStudent = (uid: string) => {
+        if(selectedStudents.includes(uid)) setSelectedStudents(prev => prev.filter(id => id !== uid));
+        else setSelectedStudents(prev => [...prev, uid]);
+    };
+
+    const toggleAll = () => {
+        if(selectedStudents.length === classStudents.length) setSelectedStudents([]);
+        else setSelectedStudents(classStudents.map(s => s.uid));
+    };
+
+    const handleSubmit = async () => {
+        if(!firestore || !schoolId) return;
+        if(selectedStudents.length === 0) return toast({ variant: 'destructive', title: 'Error', description: 'Select at least one student.' });
+
+        setIsSubmitting(true);
+        try {
+            const batch = writeBatch(firestore);
+            const dateStr = format(date, 'yyyy-MM-dd');
+            let billedCount = 0;
+
+            selectedStudents.forEach(uid => {
+                const student = classStudents.find(s => s.uid === uid);
+                if(!student) return;
+
+                // Determine Rate
+                let appliedRate = 0;
+                if (chargeType === 'Canteen') {
+                    appliedRate = canteenRate;
+                } else if (chargeType === 'Transport') {
+                    if (!student.routeId) return; // Skip if no route assigned
+                    appliedRate = routesMap.get(student.routeId) || 0;
+                }
+
+                if (appliedRate <= 0) return; // Don't create 0 bills
+
+                const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
+                const recordRef = doc(firestore, 'financialRecords', recordId);
+                
+                batch.set(recordRef, {
+                    studentId: uid,
+                    studentName: `${student.firstName} ${student.lastName}`,
+                    classId: selectedClassId,
+                    type: `${chargeType} Fee (Daily)`,
+                    description: `${chargeType} (Manual) - ${format(date, 'PPP')}`,
+                    billedAmount: appliedRate,
+                    amountPaid: 0,
+                    status: 'Unpaid',
+                    dueDate: Timestamp.fromDate(startOfDay(date)),
+                    createdAt: serverTimestamp(),
+                    schoolId: schoolId,
+                }, { merge: true });
+                
+                billedCount++;
+            });
+
+            if (billedCount === 0) {
+                toast({ variant: 'destructive', title: 'No Bills Created', description: 'Check if students have assigned routes or if rates are > 0.' });
+                return;
+            }
+
+            await batch.commit();
+            toast({ title: 'Success', description: `Generated ${billedCount} bills successfully.` });
+            onRecordsAdded();
+            setOpen(false);
+        } catch(e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Error', description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+                <DialogTitle>Add Daily Charge (Manual)</DialogTitle>
+                <DialogDescription>Manually bill specific students for Canteen or Transport.</DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-2">
+                <div className="flex gap-4">
+                    <div className="flex-1 space-y-2">
+                        <Label>Type</Label>
+                        <Select value={chargeType} onValueChange={(v: any) => setChargeType(v)}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="Canteen">Canteen</SelectItem><SelectItem value="Transport">Transport</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex-1 space-y-2">
+                        <Label>Date</Label>
+                        <Popover>
+                            <PopoverTrigger asChild><Button variant={'outline'} className="w-full justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, 'PP') : <span>Pick a date</span>}</Button></PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus/></PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label>Class</Label>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                    </Select>
+                    {chargeType === 'Canteen' && <p className="text-xs text-muted-foreground mt-1">Current Rate: GH₵{canteenRate}</p>}
+                    {chargeType === 'Transport' && <p className="text-xs text-blue-600 mt-1">Rates will be applied dynamically based on each student's assigned route.</p>}
+                </div>
+
+                {selectedClassId && (
+                    <div className="border rounded-md max-h-[300px] overflow-y-auto p-2">
+                        <div className="flex items-center gap-2 p-2 border-b mb-2 sticky top-0 bg-white">
+                            <Checkbox checked={selectedStudents.length === classStudents.length && classStudents.length > 0} onCheckedChange={toggleAll}/>
+                            <Label>Select All ({classStudents.length})</Label>
+                        </div>
+                        {classStudents.map(s => (
+                            <div key={s.uid} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded">
+                                <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)}/>
+                                <span className="text-sm">{s.firstName} {s.lastName}</span>
+                                {chargeType === 'Transport' && s.routeId && (
+                                    <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 ml-auto">GH₵ {routesMap.get(s.routeId) || 0}</Badge>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <Button onClick={handleSubmit} disabled={isSubmitting || selectedStudents.length === 0} className="w-full">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PlusCircle className="mr-2 h-4 w-4"/>}
+                    Generate Bills
+                </Button>
+            </div>
+        </DialogContent>
+    );
 }
