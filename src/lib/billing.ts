@@ -164,12 +164,19 @@ export async function billMultipleStudents(
   const globalCanteenRate = canteenData?.dailyRate || 0;
   const classCanteenRates = canteenData?.classRates || {};
 
-  // 2. Fetch ALL Transport Routes for this school to build a Rate Map
+  // 2. Fetch ALL Transport Routes for this school and build a Student -> Rate Map
   const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
   const routesSnap = await getDocs(routesQuery);
-  const routeRatesMap = new Map<string, number>();
-  routesSnap.docs.forEach(doc => {
-      routeRatesMap.set(doc.id, doc.data().dailyRate || 0);
+  const studentToTransportRateMap = new Map<string, number>();
+
+  routesSnap.docs.forEach(d => {
+      const data = d.data();
+      const dailyRate = Number(data.dailyRate) || 0;
+      data.stops?.forEach((stop: any) => {
+          stop.assignedStudentIds?.forEach((sid: string) => {
+              studentToTransportRateMap.set(sid, dailyRate);
+          });
+      });
   });
 
   let successful = 0;
@@ -189,8 +196,8 @@ export async function billMultipleStudents(
         studentCanteenRate = classCanteenRates[student.classId] || 0;
     }
 
-    // B. Resolve Transport Rate
-    const transportRate = student.routeId ? (routeRatesMap.get(student.routeId) || 0) : 0;
+    // B. Resolve Transport Rate (Look up in our generated map)
+    const transportRate = studentToTransportRateMap.get(student.uid) || 0;
 
     const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, { 
         canteen: studentCanteenRate, 

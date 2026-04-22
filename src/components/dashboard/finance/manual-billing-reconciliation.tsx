@@ -50,11 +50,20 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
             const globalCanteenRate = canteenData?.dailyRate || 0;
             const classCanteenRates = canteenData?.classRates || {};
 
-            // B. Fetch Transport Routes Map (For route-specific rates)
+            // B. Fetch Transport Routes Map (To build Student -> Rate lookup)
             const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
             const routesSnap = await getDocs(routesQuery);
-            const routeRatesMap = new Map<string, number>();
-            routesSnap.docs.forEach(d => routeRatesMap.set(d.id, d.data().dailyRate || 0));
+            const studentToTransportRateMap = new Map<string, number>();
+            
+            routesSnap.docs.forEach(d => {
+                const data = d.data();
+                const rate = Number(data.dailyRate) || 0;
+                data.stops?.forEach((stop: any) => {
+                    stop.assignedStudentIds?.forEach((sid: string) => {
+                        studentToTransportRateMap.set(sid, rate);
+                    });
+                });
+            });
 
             // C. Fetch Student Metadata (For subscription models)
             const studentsQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
@@ -80,7 +89,6 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
             }
 
             // E. Get Existing Bills (Who already has a bill on this DAY?)
-            // We search by schoolId and dueDate (which is standardized to midnight)
             const billsQ = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
@@ -107,7 +115,6 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                     
                     if (currentCanteenRate > 0) {
                         const expectedCanteenId = `canteen-${att.studentId}-${dateStr}`;
-                        // If the ID isn't in our "existing" set, it's missing
                         if (!existingBillIds.has(expectedCanteenId)) {
                             detectedMissing.push({
                                 id: `${expectedCanteenId}-${missingCounter++}`,
@@ -125,7 +132,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 // 2. Check Transport Gap
                 const transportMode = studentMeta.transportBillingModel || 'Daily';
                 if (transportMode === 'Daily' && studentMeta.usesBusService === true) {
-                    const specificTransportRate = studentMeta.routeId ? (routeRatesMap.get(studentMeta.routeId) || 0) : 0;
+                    const specificTransportRate = studentToTransportRateMap.get(att.studentId) || 0;
                     
                     if (specificTransportRate > 0) {
                         const expectedTransportId = `transport-${att.studentId}-${dateStr}`;
@@ -170,7 +177,6 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
         const itemsToProcess = missingBills.filter(item => selectedItems.includes(item.id));
         
         itemsToProcess.forEach(item => {
-            // Strip the unique counter from the ID to get the deterministic ID
             const cleanId = item.id.substring(0, item.id.lastIndexOf('-'));
             const ref = doc(firestore, 'financialRecords', cleanId);
             batch.set(ref, {
@@ -181,7 +187,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 type: item.type === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)',
                 description: `${item.type} - ${format(date, 'PPP')}`,
                 status: 'Unpaid',
-                dueDate: Timestamp.fromDate(startOfDay(date)), // Standardized midnight
+                dueDate: Timestamp.fromDate(startOfDay(date)),
                 createdAt: serverTimestamp(),
                 amountPaid: 0,
                 schoolId: schoolId,
