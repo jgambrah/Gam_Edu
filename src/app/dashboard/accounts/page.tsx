@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, deleteDoc, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp } from 'firebase/firestore';
 import { format, isPast, startOfDay, endOfDay, startOfMonth } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 
@@ -130,7 +130,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     appliedRate = canteenRate;
                 } else if (chargeType === 'Transport') {
                     const routeId = studentRouteMap.get(uid);
-                    if (!routeId) return; // Skip if no route assigned in system
+                    if (!routeId) return; 
                     appliedRate = routesMap.get(routeId) || 0;
                 }
 
@@ -848,7 +848,7 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
                                                           <DialogTrigger asChild><DropdownMenuItem onSelect={(e) => e.preventDefault()}><Receipt className="mr-2 h-4 w-4"/> Print Full Receipt</DropdownMenuItem></DialogTrigger>
                                                           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                                                               <DialogHeader><DialogTitle>Full Statement Receipt</DialogTitle><DialogDescription>Consolidated receipt for all payments made against this bill.</DialogDescription></DialogHeader>
-                                                              <GenerateReceipt transaction={rec} payment={{ id: 'consolidated-' + rec.id, amount: record.amountPaid, method: 'Total Recorded', paidAt: rec.lastPaymentDate || rec.createdAt, notes: 'Consolidated Receipt for ' + rec.description } as any} variant="full" />
+                                                              <GenerateReceipt transaction={rec} payment={{ id: 'consolidated-' + rec.id, amount: rec.amountPaid, method: 'Total Recorded', paidAt: rec.lastPaymentDate || rec.createdAt, notes: 'Consolidated Receipt for ' + rec.description } as any} variant="full" />
                                                           </DialogContent>
                                                       </Dialog>
                                                   </DropdownMenuContent>
@@ -1053,7 +1053,13 @@ export default function AccountsPage() {
                         )}
 
                         {activeForm === 'levy' && schoolId && (
-                            <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
+                            <DailyChargeForm 
+                                setOpen={() => setActiveForm(null)} 
+                                classes={classes || []} 
+                                students={students || []} 
+                                schoolId={schoolId} 
+                                onRecordsAdded={forceRefetch} 
+                            />
                         )}
                         
                         <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-sm"/>
