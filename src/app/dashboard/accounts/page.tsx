@@ -49,6 +49,7 @@ import { StudentSelect } from '@/components/StudentSelect';
 import { billStudentForAttendance } from '@/lib/billing';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
 import { StudentSearchInput } from '@/components/student-search';
+import { TemporaryFinanceReset } from '@/components/dashboard/finance/TemporaryFinanceReset';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -962,6 +963,7 @@ export default function AccountsPage() {
                 {isAdmin ? <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger> : null}
             </TabsList>
             <TabsContent value="billing" className="space-y-6">
+                <TemporaryFinanceReset onComplete={forceRefetch} />
                 
                 <Card>
                     <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
