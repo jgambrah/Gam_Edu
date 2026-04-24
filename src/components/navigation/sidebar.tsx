@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { useFirebase, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { signOut } from 'firebase/auth';
-import { auth } from '@/firebase/client-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
 import type { NavItem, UserRole } from '@/lib/types';
@@ -113,6 +112,17 @@ export function AppSidebarContent() {
   };
 
   const filteredNav = navItems.filter((item) => isNavItemVisible(item, role, hasFinanceAccess));
+
+  const handleSignOut = async () => {
+    if (auth) {
+      try {
+        await signOut(auth);
+        router.push('/');
+      } catch (error) {
+        console.error('Error signing out:', error);
+      }
+    }
+  };
 
   const getInitials = (email?: string | null) => {
     if (!email) return 'U';
