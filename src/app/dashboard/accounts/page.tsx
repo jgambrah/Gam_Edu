@@ -36,10 +36,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
-import { Separator } from '@/components/ui/separator';
 
-import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, Class, PaymentTransaction } from '@/lib/types';
+import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent, generateNextReceiptId } from '@/lib/student-utils';
 import { GenerateReceipt } from './generate-receipt';
@@ -54,6 +52,232 @@ import { TemporaryFinanceReset } from '@/components/dashboard/finance/TemporaryF
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
 });
+
+// --- SUB-COMPONENT: Apply Waiver Dialog ---
+function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const form = useForm<z.infer<typeof applyWaiverSchema>>({
+        resolver: zodResolver(applyWaiverSchema),
+        defaultValues: { amount: 0, reason: '' }
+    });
+
+    const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
+
+    async function onSubmit(values: z.infer<typeof applyWaiverSchema>) {
+        if (!firestore || !record.id) return;
+        setIsSubmitting(true);
+        try {
+            const recordRef = doc(firestore, 'financialRecords', record.id);
+            const newWaiverAmount = (record.waiverAmount || 0) + values.amount;
+            const isFullySettled = (record.billedAmount - (record.amountPaid || 0) - newWaiverAmount) <= 0.01;
+            
+            await updateDoc(recordRef, {
+                waiverAmount: newWaiverAmount,
+                waiverReason: values.reason,
+                status: isFullySettled ? 'Paid' : record.status
+            });
+            
+            toast({ title: 'Waiver Applied', description: `GH₵${values.amount.toFixed(2)} waived.` });
+            onUpdate();
+            setOpen(false);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Error', description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Apply Waiver</DialogTitle>
+                    <DialogDescription>Reducing the amount owed for: {record.description}</DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <div className="p-4 bg-orange-50 border border-orange-100 rounded-lg text-center">
+                            <p className="text-xs uppercase font-bold text-orange-600">Current Outstanding</p>
+                            <p className="text-2xl font-bold text-orange-900">GH₵{balance.toFixed(2)}</p>
+                        </div>
+                        <FormField control={form.control} name="amount" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Waiver Amount (GH₵)</FormLabel>
+                                <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))}/></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}/>
+                        <FormField control={form.control} name="reason" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Reason for Waiver</FormLabel>
+                                <FormControl><Textarea placeholder="e.g. Scholarship discount, Administrative correction" {...field}/></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}/>
+                        <Button type="submit" disabled={isSubmitting} className="w-full">
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Apply Waiver
+                        </Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- SUB-COMPONENT: Edit Record Dialog ---
+function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const form = useForm<z.infer<typeof financialRecordSchema>>({
+        resolver: zodResolver(financialRecordSchema),
+        defaultValues: {
+            studentId: record.studentId,
+            type: record.type as any,
+            description: record.description,
+            billedAmount: record.billedAmount,
+            dueDate: record.dueDate?.toDate ? record.dueDate.toDate() : new Date(record.dueDate),
+            academicYear: record.academicYear,
+            term: record.term
+        }
+    });
+
+    async function onSubmit(values: z.infer<typeof financialRecordSchema>) {
+        if (!firestore || !record.id) return;
+        setIsSubmitting(true);
+        try {
+            const recordRef = doc(firestore, 'financialRecords', record.id);
+            const isFullyPaid = (values.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0)) <= 0.01;
+            
+            await updateDoc(recordRef, {
+                ...values,
+                dueDate: Timestamp.fromDate(values.dueDate),
+                status: isFullyPaid ? 'Paid' : 'Unpaid'
+            });
+            
+            toast({ title: 'Bill Updated' });
+            onUpdate();
+            setOpen(false);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Update Failed', description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle>Edit Bill</DialogTitle>
+                    <DialogDescription>Modify the details of this financial record.</DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField control={form.control} name="type" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Fee Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        {['Tuition Fee', 'Admission Fee', 'Maintenance Fee', 'Examination Fee', 'PTA Levy', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal'].map(t => (
+                                            <SelectItem key={t} value={t}>{t}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </FormItem>
+                        )}/>
+                        <FormField control={form.control} name="description" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl><Input {...field} /></FormControl>
+                            </FormItem>
+                        )}/>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name="billedAmount" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Total Bill (GH₵)</FormLabel>
+                                    <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))}/></FormControl>
+                                </FormItem>
+                            )}/>
+                            <FormField control={form.control} name="dueDate" render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Due Date</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button variant="outline" className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                                    {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                                        </PopoverContent>
+                                    </Popover>
+                                </FormItem>
+                            )}/>
+                        </div>
+                        <Button type="submit" disabled={isSubmitting} className="w-full">
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Changes
+                        </Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- SUB-COMPONENT: Reversal Request Dialog ---
+function ReversalRequestDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [reason, setReason] = useState('');
+
+    async function handleRequest() {
+        if (!firestore || !record.id || !reason.trim()) return;
+        setIsSubmitting(true);
+        try {
+            await updateDoc(doc(firestore, 'financialRecords', record.id), {
+                status: 'Pending Reversal',
+                reversalReason: reason,
+                reversalRequestedAt: serverTimestamp()
+            });
+            toast({ title: 'Reversal Requested', description: 'Administrator will review this request.' });
+            onUpdate();
+            setOpen(false);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Error', description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Request Transaction Reversal</DialogTitle>
+                    <DialogDescription>This will flag the record for administrative review and possible cancellation.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label>Reason for Reversal</Label>
+                        <Textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain why this transaction needs to be reversed..." />
+                    </div>
+                    <Button variant="destructive" onClick={handleRequest} disabled={isSubmitting || !reason.trim()} className="w-full">
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Submit Reversal Request
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 // --- SUB-COMPONENT: Daily Charge Form ---
 function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: any[], students: Student[], schoolId: string, onRecordsAdded: () => void }) {
@@ -75,11 +299,9 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     useEffect(() => {
         if(!firestore || !schoolId) return;
         const fetchRates = async () => {
-            // Fetch Canteen Rate
             const cSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
             if(cSnap.exists()) setCanteenRate(Number(cSnap.data().dailyRate) || 0);
 
-            // Fetch Transport Routes and build student lookup map
             const rSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
             const rMap = new Map<string, number>();
             const sToRMap = new Map<string, string>();
@@ -88,8 +310,6 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 const data = d.data();
                 const rate = Number(data.dailyRate) || 0;
                 rMap.set(d.id, rate);
-                
-                // Scan stops for assigned students
                 data.stops?.forEach((stop: any) => {
                     stop.assignedStudentIds?.forEach((sid: string) => {
                         sToRMap.set(sid, d.id);
@@ -1106,6 +1326,9 @@ export default function AccountsPage() {
         </Tabs>
 
         {dialogState.record && dialogState.type === 'payment' ? (<RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={forceRefetch} />) : null}
+        {dialogState.record && dialogState.type === 'waiver' ? (<ApplyWaiverDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'waiver', record: null})} onUpdate={forceRefetch} />) : null}
+        {dialogState.record && dialogState.type === 'reversal' ? (<ReversalRequestDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={forceRefetch} />) : null}
+        {editingRecord && (<EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={forceRefetch} />)}
     </div>
   );
 }
