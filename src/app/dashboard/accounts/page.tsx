@@ -36,6 +36,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Separator } from '@/components/ui/separator';
 
 import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
@@ -291,33 +293,23 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     
     const [canteenRate, setCanteenRate] = useState(0);
     const [routesMap, setRoutesMap] = useState<Map<string, number>>(new Map());
-    const [studentRouteMap, setStudentRouteMap] = useState<Map<string, string>>(new Map()); // studentId -> routeId
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
     
     const classStudents = useMemo(() => students.filter(s => s.classId === selectedClassId), [students, selectedClassId]);
 
+    // Fetch Rates on Mount
     useEffect(() => {
         if(!firestore || !schoolId) return;
         const fetchRates = async () => {
+            // Fetch Canteen Rate
             const cSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
             if(cSnap.exists()) setCanteenRate(Number(cSnap.data().dailyRate) || 0);
 
+            // Fetch Transport Routes
             const rSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
             const rMap = new Map<string, number>();
-            const sToRMap = new Map<string, string>();
-
-            rSnap.docs.forEach(d => {
-                const data = d.data();
-                const rate = Number(data.dailyRate) || 0;
-                rMap.set(d.id, rate);
-                data.stops?.forEach((stop: any) => {
-                    stop.assignedStudentIds?.forEach((sid: string) => {
-                        sToRMap.set(sid, d.id);
-                    });
-                });
-            });
+            rSnap.docs.forEach(d => rMap.set(d.id, Number(d.data().dailyRate) || 0));
             setRoutesMap(rMap);
-            setStudentRouteMap(sToRMap);
         };
         fetchRates();
     }, [firestore, schoolId]);
@@ -346,16 +338,16 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 const student = classStudents.find(s => s.uid === uid);
                 if(!student) return;
 
+                // Determine Rate
                 let appliedRate = 0;
                 if (chargeType === 'Canteen') {
                     appliedRate = canteenRate;
                 } else if (chargeType === 'Transport') {
-                    const routeId = studentRouteMap.get(uid);
-                    if (!routeId) return; 
-                    appliedRate = routesMap.get(routeId) || 0;
+                    if (!student.routeId) return; // Skip if no route assigned
+                    appliedRate = routesMap.get(student.routeId) || 0;
                 }
 
-                if (appliedRate <= 0) return;
+                if (appliedRate <= 0) return; // Don't create 0 bills
 
                 const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
                 const recordRef = doc(firestore, 'financialRecords', recordId);
@@ -378,7 +370,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
             });
 
             if (billedCount === 0) {
-                toast({ variant: 'destructive', title: 'No Bills Created', description: 'Ensure students are assigned to bus routes with rates > 0.' });
+                toast({ variant: 'destructive', title: 'No Bills Created', description: 'Check if students have assigned routes or if rates are > 0.' });
                 return;
             }
 
@@ -427,7 +419,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                             <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select>
                         {chargeType === 'Canteen' && <p className="text-xs text-muted-foreground mt-1">Current Rate: GH₵{canteenRate}</p>}
-                        {chargeType === 'Transport' && <p className="text-xs text-blue-600 mt-1">Rates are applied based on student route assignments.</p>}
+                        {chargeType === 'Transport' && <p className="text-xs text-blue-600 mt-1">Rates will be applied dynamically based on each student's assigned route.</p>}
                     </div>
 
                     {selectedClassId && (
@@ -436,20 +428,15 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                                 <Checkbox checked={selectedStudents.length === classStudents.length && classStudents.length > 0} onCheckedChange={toggleAll}/>
                                 <Label>Select All ({classStudents.length})</Label>
                             </div>
-                            {classStudents.map(s => {
-                                const routeId = studentRouteMap.get(s.uid);
-                                const rate = routeId ? (routesMap.get(routeId) || 0) : 0;
-                                
-                                return (
-                                    <div key={s.uid} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded">
-                                        <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)}/>
-                                        <span className="text-sm">{s.firstName} {s.lastName}</span>
-                                        {chargeType === 'Transport' && routeId && (
-                                            <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 ml-auto">GH₵ {rate}</Badge>
-                                        )}
-                                    </div>
-                                );
-                            })}
+                            {classStudents.map(s => (
+                                <div key={s.uid} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded">
+                                    <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)}/>
+                                    <span className="text-sm">{s.firstName} {s.lastName}</span>
+                                    {chargeType === 'Transport' && s.routeId && (
+                                        <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 ml-auto">GH₵ {routesMap.get(s.routeId) || 0}</Badge>
+                                    )}
+                                </div>
+                            ))}
                         </div>
                     )}
 
