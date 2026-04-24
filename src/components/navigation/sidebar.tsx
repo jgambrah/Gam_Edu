@@ -9,7 +9,7 @@ import {
   Building2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useFirebase, useUser } from '@/firebase';
+import { useFirebase, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/firebase/client-provider';
@@ -31,10 +31,25 @@ import {
 } from '@/components/ui/collapsible';
 import RoleSwitcher from './role-switcher';
 import { AppLogo } from '@/components/icons/app-logo';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { doc } from 'firebase/firestore';
 
-function isNavItemVisible(item: NavItem, role: UserRole | null) {
+function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess: boolean) {
   if (item.roles === 'all') return true;
   if (!role) return false;
+
+  // Custom Logic for Financials/Billing visibility
+  const isFinanceTab = 
+    item.path.includes('/dashboard/financials') || 
+    item.path.includes('/dashboard/accounts') ||
+    item.title.toLowerCase().includes('finance') ||
+    item.title.toLowerCase().includes('billing') ||
+    item.title.toLowerCase().includes('payroll');
+
+  if (isFinanceTab && !hasFinanceAccess) {
+    return false;
+  }
+
   // Handle Admin alias
   const effectiveRole =
     role === 'Administrator' || role === 'Director' ? 'Admin' : role;
@@ -75,22 +90,29 @@ export function AppSidebarContent() {
   const router = useRouter();
   const { user } = useUser();
   const { auth } = useFirebase();
+  const firestore = useFirestore();
   const { role, profile, loading } = useRole();
+  const { schoolId } = useCurrentSchool();
 
-  const handleSignOut = async () => {
-    if (auth) {
-      await signOut(auth);
-      setTimeout(() => {
-        router.push('/');
-      }, 100);
-    }
-  };
+  // Dynamic Setting Fetch
+  const schoolSettingsRef = useMemoFirebase(
+    () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
+    [firestore, schoolId]
+  );
+  const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
+
+  // Permission Logic
+  const hasFinanceAccess = 
+    role === 'Director' || 
+    role === 'Accountant' || 
+    (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
+    user?.email === 'jamesgambrah@gmail.com';
 
   const isSubItemActive = (item: NavItem) => {
     return item.subItems?.some((sub) => pathname === sub.path) ?? false;
   };
 
-  const filteredNav = navItems.filter((item) => isNavItemVisible(item, role));
+  const filteredNav = navItems.filter((item) => isNavItemVisible(item, role, hasFinanceAccess));
 
   const getInitials = (email?: string | null) => {
     if (!email) return 'U';
@@ -122,10 +144,10 @@ export function AppSidebarContent() {
             </div>
           ) : (
             filteredNav.map((item, index) =>
-              isNavItemVisible(item, role) ? (
+              isNavItemVisible(item, role, hasFinanceAccess) ? (
                 <SidebarMenuItem key={`nav-${item.path}-${index}`}>
                   {item.subItems &&
-                  item.subItems.filter((sub) => isNavItemVisible(sub, role))
+                  item.subItems.filter((sub) => isNavItemVisible(sub, role, hasFinanceAccess))
                     .length > 0 ? (
                     <Collapsible defaultOpen={isSubItemActive(item)}>
                       <CollapsibleTrigger asChild>
@@ -146,7 +168,7 @@ export function AppSidebarContent() {
                         <ul className="mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5">
                           {item.subItems.map(
                             (subItem, subIndex) =>
-                              isNavItemVisible(subItem, role) && (
+                              isNavItemVisible(subItem, role, hasFinanceAccess) && (
                                 <li key={`subnav-${subItem.path}-${subIndex}`} className="list-none">
                                   <NavLink item={subItem} isSubItem />
                                 </li>

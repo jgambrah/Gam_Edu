@@ -42,7 +42,7 @@ function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-ind
   );
 }
 
-function AdminDashboard({ profile, students, staff, classes, announcements, isLoading, schoolData }: any) {
+function AdminDashboard({ profile, students, staff, classes, announcements, isLoading, schoolData, hasFinanceAccess }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Administrator';
 
@@ -99,13 +99,15 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
                             </div>
                             <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
                         </Link>
-                        <Link href="/dashboard/accounts" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-emerald-100 rounded-lg"><Banknote className="h-4 w-4 text-emerald-600"/></div>
-                                <span className="text-sm font-bold">Financial Ledger</span>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
-                        </Link>
+                        {hasFinanceAccess && (
+                            <Link href="/dashboard/accounts" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-emerald-100 rounded-lg"><Banknote className="h-4 w-4 text-emerald-600"/></div>
+                                    <span className="text-sm font-bold">Financial Ledger</span>
+                                </div>
+                                <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
+                            </Link>
+                        )}
                     </CardContent>
                 </Card>
 
@@ -561,6 +563,12 @@ export default function DashboardClient() {
   const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
   const { data: schoolData } = useDoc<any>(schoolRef);
 
+  const schoolSettingsRef = useMemoFirebase(
+    () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
+    [firestore, schoolId]
+  );
+  const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
+
   const studentsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isStaff) 
         ? query(
@@ -618,12 +626,19 @@ export default function DashboardClient() {
 
   const isLoading = roleLoading || schoolLoading || (isStaff && (loadingStudents || loadingStaff || loadingClasses)) || (isParent && (loadingParentStudents || loadingParentFinancials)) || (isAccountant && (loadingRecords || loadingTills)) || (isTransportStaff && (loadingRoutes || loadingBuses));
 
+  // Dynamic Finance Permission Logic
+  const hasFinanceAccess = 
+    role === 'Director' || 
+    role === 'Accountant' || 
+    (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
+    profile?.email === 'jamesgambrah@gmail.com';
+
   if (isLoading) {
     return <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>;
   }
 
   if (role === 'Administrator' || role === 'Director') {
-    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={isLoading} schoolData={schoolData} />;
+    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={isLoading} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} />;
   }
 
   if (role === 'Accountant') {

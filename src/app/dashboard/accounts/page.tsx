@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -1076,7 +1076,7 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
 }
 
 export default function AccountsPage() {
-  const { role } = useRole(); 
+  const { role, profile } = useRole(); 
   const firestore = useFirestore(); 
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
@@ -1101,8 +1101,18 @@ export default function AccountsPage() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: classes } = useCollection<Class>(classesQuery);
 
-  const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
-  const isAdmin = ['Administrator', 'Director'].includes(role || '');
+  const schoolSettingsRef = useMemoFirebase(
+    () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
+    [firestore, schoolId]
+  );
+  const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
+
+  const canAccess = 
+    role === 'Director' || 
+    role === 'Accountant' || 
+    (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
+    profile?.email === 'jamesgambrah@gmail.com';
+
   const isLoading = isLoadingRecords || isLoadingStudents;
 
   const dashboardStats = useMemo(() => {
@@ -1126,9 +1136,10 @@ export default function AccountsPage() {
         totalBilled += billed; totalPaid += paid; totalWaivers += waiver;
         
         if (balance > 0) {
-            if (record.type.includes('Tuition')) outstandingTuition += balance;
-            else if (record.type.includes('Canteen')) outstandingCanteen += balance;
-            else if (record.type.includes('Transport')) outstandingTransport += balance;
+            const type = record.type.toLowerCase();
+            if (type.includes('tuition')) outstandingTuition += balance;
+            else if (type.includes('canteen')) outstandingCanteen += balance;
+            else if (type.includes('transport')) outstandingTransport += balance;
             else otherDebt += balance;
         }
     }
@@ -1160,14 +1171,26 @@ export default function AccountsPage() {
   const filteredStudentsWithBills = useMemo(() => studentFinancials.filter(sf => searchStudent(sf.student, searchTerm)), [studentFinancials, searchTerm]);
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
 
-  if (!canAccess) return <Card><CardHeader><CardTitle>Access Denied</CardTitle></CardHeader></Card>;
+  if (!canAccess && !isLoading) {
+    return (
+        <Card className="m-6 border-red-100 bg-red-50/50">
+            <CardHeader className="text-center">
+                <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4">
+                    <ShieldAlert className="h-8 w-8 text-red-600" />
+                </div>
+                <CardTitle>Access Denied</CardTitle>
+                <CardDescription>The Director has restricted financial access for Administrators.</CardDescription>
+            </CardHeader>
+        </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList>
                 <TabsTrigger value="billing">Student Billing</TabsTrigger>
-                {isAdmin ? <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger> : null}
+                <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger>
             </TabsList>
             <TabsContent value="billing" className="space-y-6">
                 <TemporaryFinanceReset onComplete={forceRefetch} />
@@ -1309,6 +1332,44 @@ export default function AccountsPage() {
                         )}
                     </CardContent>
                 </Card>
+            </TabsContent>
+            <TabsContent value="approval" className="space-y-6">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Transaction Reversal Approvals</CardTitle>
+                        <CardDescription>Review requests to reverse or cancel recorded student bills.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                         <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Student</TableHead>
+                                    <TableHead>Description</TableHead>
+                                    <TableHead>Amount</TableHead>
+                                    <TableHead>Reason</TableHead>
+                                    <TableHead className="text-right">Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {pendingReversals.map(r => (
+                                    <TableRow key={r.id}>
+                                        <TableCell className="font-bold">{r.studentName}</TableCell>
+                                        <TableCell className="text-sm">{r.description}</TableCell>
+                                        <TableCell className="font-mono">GH₵{r.billedAmount.toFixed(2)}</TableCell>
+                                        <TableCell className="max-w-xs italic text-xs">{(r as any).reversalReason}</TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <Button size="sm" variant="outline" className="text-red-600" onClick={() => updateDoc(doc(firestore!, 'financialRecords', r.id), { status: 'Rejected Reversal' })}>Reject</Button>
+                                                <Button size="sm" className="bg-red-600 hover:bg-red-700" onClick={() => deleteDoc(doc(firestore!, 'financialRecords', r.id))}>Confirm Delete</Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {pendingReversals.length === 0 && <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground italic">No pending reversal requests.</TableCell></TableRow>}
+                            </TableBody>
+                         </Table>
+                    </CardContent>
+                 </Card>
             </TabsContent>
         </Tabs>
 

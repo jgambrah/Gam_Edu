@@ -12,11 +12,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
   CalendarDays, CalendarIcon, ArrowRightCircle, PenTool, X,
-  Facebook, Instagram, Linkedin
+  Facebook, Instagram, Linkedin, Shield
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -26,7 +27,7 @@ import { Calendar } from '@/components/ui/calendar';
 
 export default function SchoolProfilePage() {
   const firestore = useFirestore();
-  const { role } = useRole();
+  const { role, profile: userProfile } = useRole();
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
   const { toast } = useToast();
   
@@ -48,6 +49,7 @@ export default function SchoolProfilePage() {
   const [website, setWebsite] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [headmasterSignature, setHeadmasterSignature] = useState<string>('');
+  const [allowAdminFinanceAccess, setAllowAdminFinanceAccess] = useState(true);
   
   // Social Links
   const [facebookUrl, setFacebookUrl] = useState('');
@@ -76,6 +78,7 @@ export default function SchoolProfilePage() {
         setLinkedinUrl(profile.linkedinUrl || '');
         setCaWeight(profile.caWeight ?? 30);
         setExamWeight(profile.examWeight ?? 70);
+        setAllowAdminFinanceAccess(profile.allowAdminFinanceAccess !== false);
         
         if (profile.termStartDate) {
             setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
@@ -151,6 +154,7 @@ export default function SchoolProfilePage() {
             termStartDate: termStartDate ? format(termStartDate, 'yyyy-MM-dd') : null,
             termEndDate: termEndDate ? format(termEndDate, 'yyyy-MM-dd') : null,
             nextTermDate: nextTermDate ? format(nextTermDate, 'yyyy-MM-dd') : null,
+            allowAdminFinanceAccess,
             updatedAt: serverTimestamp()
         };
 
@@ -174,22 +178,23 @@ export default function SchoolProfilePage() {
     }
   };
 
-  const canManage = ['Administrator', 'Director'].includes(role || '');
+  const isDirector = role === 'Director' || role === 'Administrator';
+  const isCEO = userProfile?.email === 'jamesgambrah@gmail.com';
 
-  if (!canManage) {
+  if (!isDirector && !isCEO) {
       return <div className="p-8 text-center text-red-500">Access Denied. Only Directors can manage school profile.</div>;
   }
 
   if (isLoading || isSchoolLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600 h-8 w-8"/></div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6 pb-24">
+    <div className="max-w-4xl mx-auto p-6 space-y-6 pb-24 text-black">
         <Card className="border-t-4 border-t-blue-600 shadow-md">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
+                <CardTitle className="flex items-center gap-2 text-xl font-black uppercase tracking-tight">
                     <Building2 className="text-blue-600"/> School Profile Settings
                 </CardTitle>
-                <CardDescription>Configure official school information for reports and receipts.</CardDescription>
+                <CardDescription className="font-medium">Configure official school information for reports and receipts.</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSave} className="space-y-8">
@@ -202,8 +207,8 @@ export default function SchoolProfilePage() {
                                 </div>
                                 <div>
                                     <input id="logo-upload" type="file" accept="image/*" onChange={handleLogoUpload} disabled={isUploadingLogo} className="hidden"/>
-                                    <Button type="button" variant="outline" onClick={() => document.getElementById('logo-upload')?.click()} disabled={isUploadingLogo} className="bg-white border-2 font-bold">
-                                        {isUploadingLogo ? <Loader2 className="animate-spin h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Logo
+                                    <Button type="button" variant="outline" onClick={() => document.getElementById('logo-upload')?.click()} disabled={isUploadingLogo} className="bg-white border-2 font-bold rounded-xl h-10 px-6">
+                                        {isUploadingLogo ? <Loader2 className="animate-spin h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload Logo
                                     </Button>
                                 </div>
                             </div>
@@ -216,7 +221,7 @@ export default function SchoolProfilePage() {
                                     {headmasterSignature ? (
                                         <div className="relative w-full h-full p-2">
                                             <img src={headmasterSignature} alt="Signature Preview" className="h-full w-full object-contain mix-blend-multiply" />
-                                            <button type="button" className="absolute top-1 right-1 bg-red-50 text-white rounded-full p-1" onClick={() => setHeadmasterSignature('')}><X className="h-3 w-3"/></button>
+                                            <button type="button" className="absolute top-1 right-1 bg-red-50 text-red-500 rounded-full p-1" onClick={() => setHeadmasterSignature('')}><X className="h-3 w-3"/></button>
                                         </div>
                                     ) : (
                                         <PenTool className="h-12 w-12 text-slate-200" />
@@ -224,8 +229,8 @@ export default function SchoolProfilePage() {
                                 </div>
                                 <div>
                                     <input id="sig-upload" type="file" accept="image/png, image/jpeg" onChange={handleSignatureUpload} className="hidden" />
-                                    <Button type="button" variant="outline" onClick={() => document.getElementById('sig-upload')?.click()} className="bg-white border-2 font-bold">
-                                        <Upload className="mr-2 h-4 w-4"/> Signature
+                                    <Button type="button" variant="outline" onClick={() => document.getElementById('sig-upload')?.click()} className="bg-white border-2 font-bold rounded-xl h-10 px-6">
+                                        <Upload className="mr-2 h-4 w-4"/> Upload Signature
                                     </Button>
                                     <p className="text-[9px] text-slate-400 mt-2 font-black uppercase tracking-widest">PNG/JPG, Max 500KB.</p>
                                 </div>
@@ -237,52 +242,52 @@ export default function SchoolProfilePage() {
 
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2"><Label>School Name</Label><Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sunnyside International School" required /></div>
-                            <div className="space-y-2"><Label>Motto / Slogan</Label><Input value={motto} onChange={e => setMotto(e.target.value)} placeholder="e.g. Excellence & Integrity" /></div>
+                            <div className="space-y-2"><Label className="font-bold">School Name</Label><Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sunnyside International School" className="h-12 border-2 rounded-xl" required /></div>
+                            <div className="space-y-2"><Label className="font-bold">Motto / Slogan</Label><Input value={motto} onChange={e => setMotto(e.target.value)} placeholder="e.g. Excellence & Integrity" className="h-12 border-2 rounded-xl" /></div>
                         </div>
-                        <div className="space-y-2"><Label>Physical Address</Label><Textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="e.g. 123 Education Street, Accra, Ghana" rows={3} /></div>
+                        <div className="space-y-2"><Label className="font-bold">Physical Address</Label><Textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="e.g. 123 Education Street, Accra, Ghana" rows={3} className="border-2 rounded-xl" /></div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2"><Label className="flex items-center gap-2"><Phone className="h-3 w-3"/> Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+233..." /></div>
-                            <div className="space-y-2"><Label className="flex items-center gap-2"><Mail className="h-3 w-3"/> Email</Label><Input value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@school.com" /></div>
-                            <div className="space-y-2"><Label className="flex items-center gap-2"><Globe className="h-3 w-3"/> Website</Label><Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Phone className="h-3 w-3"/> Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+233..." className="h-11 border-2 rounded-xl" /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Mail className="h-3 w-3"/> Email</Label><Input value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@school.com" className="h-11 border-2 rounded-xl" /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Globe className="h-3 w-3"/> Website</Label><Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" className="h-11 border-2 rounded-xl" /></div>
                         </div>
                     </div>
 
                     <Separator />
 
                     <div className="space-y-6">
-                        <div className="flex items-center gap-2"><Globe className="h-5 w-5 text-indigo-600"/><h3 className="text-lg font-bold text-slate-800">Social Media Links</h3></div>
+                        <div className="flex items-center gap-2"><Globe className="h-5 w-5 text-indigo-600"/><h3 className="text-lg font-black text-slate-800 uppercase tracking-tight italic">Social Media Links</h3></div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-600"><Facebook className="h-3 w-3"/> Facebook</Label><Input value={facebookUrl} onChange={e => setFacebookUrl(e.target.value)} placeholder="https://..." /></div>
-                            <div className="space-y-2"><Label className="flex items-center gap-2 text-pink-600"><Instagram className="h-3 w-3"/> Instagram</Label><Input value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} placeholder="https://..." /></div>
-                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-800"><Linkedin className="h-3 w-3"/> LinkedIn</Label><Input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="https://..." /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-600 font-bold"><Facebook className="h-3 w-3"/> Facebook</Label><Input value={facebookUrl} onChange={e => setFacebookUrl(e.target.value)} placeholder="https://..." className="h-11 border-2 rounded-xl" /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 text-pink-600 font-bold"><Instagram className="h-3 w-3"/> Instagram</Label><Input value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} placeholder="https://..." className="h-11 border-2 rounded-xl" /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-800 font-bold"><Linkedin className="h-3 w-3"/> LinkedIn</Label><Input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="https://..." className="h-11 border-2 rounded-xl" /></div>
                         </div>
                     </div>
 
                     <Separator />
 
                     <div className="space-y-6">
-                        <div className="flex items-center gap-2"><CalendarDays className="h-5 w-5 text-indigo-600"/><h3 className="text-lg font-bold text-slate-800">Current Academic Term</h3></div>
-                        <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100">
+                        <div className="flex items-center gap-2"><CalendarDays className="h-5 w-5 text-indigo-600"/><h3 className="text-lg font-black text-slate-800 uppercase tracking-tight italic">Current Academic Term</h3></div>
+                        <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 shadow-inner">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="font-bold text-slate-700 text-xs uppercase">Term Start</Label>
+                                    <Label className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Term Start</Label>
                                     <Popover>
-                                        <PopoverTrigger asChild><Button variant="outline" className="w-full text-left font-normal bg-white h-12 border-2 rounded-xl">{termStartDate ? format(termStartDate, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></PopoverTrigger>
+                                        <PopoverTrigger asChild><Button variant="outline" className="w-full text-left font-bold bg-white h-12 border-2 rounded-xl">{termStartDate ? format(termStartDate, "PPP") : <span className="opacity-40">Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50 text-indigo-600" /></Button></PopoverTrigger>
                                         <PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={termStartDate} onSelect={setTermStartDate} initialFocus /></PopoverContent>
                                     </Popover>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="font-bold text-slate-700 text-xs uppercase">Term End</Label>
+                                    <Label className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Term End</Label>
                                     <Popover>
-                                        <PopoverTrigger asChild><Button variant="outline" className="w-full text-left font-normal bg-white h-12 border-2 rounded-xl">{termEndDate ? format(termEndDate, "PPP") : <span>Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></PopoverTrigger>
+                                        <PopoverTrigger asChild><Button variant="outline" className="w-full text-left font-bold bg-white h-12 border-2 rounded-xl">{termEndDate ? format(termEndDate, "PPP") : <span className="opacity-40">Pick date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50 text-indigo-600" /></Button></PopoverTrigger>
                                         <PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={termEndDate} onSelect={setTermEndDate} initialFocus /></PopoverContent>
                                     </Popover>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="font-bold text-indigo-700 text-xs uppercase flex items-center gap-1"><ArrowRightCircle className="h-3 w-3" /> Next Term Begins</Label>
+                                    <Label className="font-black text-indigo-700 text-[10px] uppercase tracking-widest flex items-center gap-1"><ArrowRightCircle className="h-3 w-3" /> Next Term Begins</Label>
                                     <Popover>
-                                        <PopoverTrigger asChild><Button variant="outline" className="w-full text-left font-bold bg-white h-12 border-4 border-indigo-100 rounded-xl text-indigo-600">{nextTermDate ? format(nextTermDate, "PPP") : <span>To Be Announced</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></PopoverTrigger>
+                                        <PopoverTrigger asChild><Button variant="outline" className="w-full text-left font-black bg-white h-12 border-4 border-indigo-100 rounded-xl text-indigo-600">{nextTermDate ? format(nextTermDate, "PPP") : <span>To Be Announced</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></PopoverTrigger>
                                         <PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={nextTermDate} onSelect={setNextTermDate} initialFocus /></PopoverContent>
                                     </Popover>
                                 </div>
@@ -293,18 +298,34 @@ export default function SchoolProfilePage() {
                     <Separator />
 
                     <div className="space-y-6">
-                        <div className="flex items-center gap-2"><GraduationCap className="h-5 w-5 text-indigo-600"/><h3 className="text-lg font-bold text-slate-800">Academic Weighting</h3></div>
-                        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div className="flex items-center gap-2"><GraduationCap className="h-5 w-5 text-indigo-600"/><h3 className="text-lg font-black text-slate-800 uppercase tracking-tight italic">Academic & Security Settings</h3></div>
+                        <div className="bg-slate-50 p-6 rounded-[2rem] border-2 border-slate-200 space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-2"><div className="flex justify-between"><Label className="font-bold">CA Weight (%)</Label><span className="text-indigo-600 font-black">{caWeight}%</span></div><Input type="number" value={caWeight} onChange={e => { const val = parseInt(e.target.value) || 0; setCaWeight(val); setExamWeight(100 - val); }} min={0} max={100} className="h-12 border-2"/></div>
-                                <div className="space-y-2"><div className="flex justify-between"><Label className="font-bold">Exam Weight (%)</Label><span className="text-indigo-600 font-black">{examWeight}%</span></div><Input type="number" value={examWeight} onChange={e => { const val = parseInt(e.target.value) || 0; setExamWeight(val); setCaWeight(100 - val); }} min={0} max={100} className="h-12 border-2"/></div>
+                                <div className="space-y-2"><div className="flex justify-between"><Label className="font-black text-xs uppercase tracking-widest text-slate-500">CA Weight (%)</Label><span className="text-indigo-600 font-black">{caWeight}%</span></div><Input type="number" value={caWeight} onChange={e => { const val = parseInt(e.target.value) || 0; setCaWeight(val); setExamWeight(100 - val); }} min={0} max={100} className="h-12 border-2 rounded-xl font-bold"/></div>
+                                <div className="space-y-2"><div className="flex justify-between"><Label className="font-black text-xs uppercase tracking-widest text-slate-500">Exam Weight (%)</Label><span className="text-indigo-600 font-black">{examWeight}%</span></div><Input type="number" value={examWeight} onChange={e => { const val = parseInt(e.target.value) || 0; setExamWeight(val); setCaWeight(100 - val); }} min={0} max={100} className="h-12 border-2 rounded-xl font-bold"/></div>
+                            </div>
+
+                            <div className="flex flex-row items-center justify-between rounded-2xl border-2 border-indigo-100 p-6 bg-white shadow-sm">
+                                <div className="space-y-1 pr-4">
+                                    <Label className="text-base font-black text-slate-800 flex items-center gap-2">
+                                        <Shield className="h-4 w-4 text-indigo-600"/>
+                                        Administrator Finance Access
+                                    </Label>
+                                    <p className="text-xs font-medium text-slate-500 max-w-md">Allow staff with the 'Administrator' role to view and manage financial records, bills, and tills.</p>
+                                </div>
+                                <Checkbox 
+                                    checked={allowAdminFinanceAccess} 
+                                    onCheckedChange={(checked) => setAllowAdminFinanceAccess(!!checked)} 
+                                    disabled={role !== 'Director' && !isCEO}
+                                    className="h-7 w-7 rounded-lg border-2"
+                                />
                             </div>
                         </div>
                     </div>
 
-                    <div className="pt-4 border-t flex justify-end">
-                        <Button type="submit" disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 w-[200px] h-12 text-lg font-bold">
-                            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>} Save Profile
+                    <div className="pt-8 border-t flex justify-end">
+                        <Button type="submit" disabled={isSaving} className="bg-slate-900 hover:bg-black text-white w-full sm:w-[220px] h-14 text-lg font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-slate-200 transition-all active:scale-95">
+                            {isSaving ? <Loader2 className="animate-spin mr-2 h-5 w-5"/> : <Save className="mr-2 h-5 w-5"/>} Save Settings
                         </Button>
                     </div>
                 </form>
