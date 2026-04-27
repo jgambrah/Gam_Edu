@@ -37,6 +37,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { Student, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction, Route, FinancialRecord } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
@@ -44,7 +45,6 @@ import { searchStudent, generateNextReceiptId } from '@/lib/student-utils';
 import { GenerateReceipt } from './generate-receipt';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { StudentSelect } from '@/components/StudentSelect';
 import { billStudentForAttendance } from '@/lib/billing';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
 import { StudentSearchInput } from '@/components/student-search';
@@ -1216,15 +1216,17 @@ export default function AccountsPage() {
 
   if (!canAccess && !isLoading) {
     return (
-        <Card className="m-6 border-red-100 bg-red-50/50">
-            <CardHeader className="text-center">
-                <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4">
-                    <ShieldAlert className="h-8 w-8 text-red-600" />
-                </div>
-                <CardTitle>Access Denied</CardTitle>
-                <CardDescription>The Director has restricted financial access for Administrators.</CardDescription>
-            </CardHeader>
-        </Card>
+        <div className="p-6">
+            <Card className="border-red-100 bg-red-50/50">
+                <CardHeader className="text-center">
+                    <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4">
+                        <ShieldAlert className="h-8 w-8 text-red-600" />
+                    </div>
+                    <CardTitle>Access Denied</CardTitle>
+                    <CardDescription>The Director has restricted financial access for Administrators.</CardDescription>
+                </CardHeader>
+            </Card>
+        </div>
     );
   }
 
