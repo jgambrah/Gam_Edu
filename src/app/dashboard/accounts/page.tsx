@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -34,12 +34,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
 
-import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction } from '@/lib/types';
+import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction, Route } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent, generateNextReceiptId } from '@/lib/student-utils';
 import { GenerateReceipt } from './generate-receipt';
@@ -292,7 +290,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     const [date, setDate] = useState<Date>(new Date());
     
     const [canteenRate, setCanteenRate] = useState(0);
-    const [routesMap, setRoutesMap] = useState<Map<string, number>>(new Map());
+    const [studentToRouteRateMap, setStudentToRouteRateMap] = useState<Map<string, number>>(new Map());
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
     
     const classStudents = useMemo(() => students.filter(s => s.classId === selectedClassId), [students, selectedClassId]);
@@ -305,11 +303,22 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
             const cSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
             if(cSnap.exists()) setCanteenRate(Number(cSnap.data().dailyRate) || 0);
 
-            // Fetch Transport Routes
+            // Fetch Transport Routes and build student map
             const rSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
-            const rMap = new Map<string, number>();
-            rSnap.docs.forEach(d => rMap.set(d.id, Number(d.data().dailyRate) || 0));
-            setRoutesMap(rMap);
+            const sMap = new Map<string, number>();
+            
+            rSnap.docs.forEach(d => {
+                const data = d.data();
+                const rate = Number(data.dailyRate) || 0;
+                
+                // Scan stops for student IDs to build a reliable route assignment map
+                data.stops?.forEach((stop: any) => {
+                    stop.assignedStudentIds?.forEach((sid: string) => {
+                        sMap.set(sid, rate);
+                    });
+                });
+            });
+            setStudentToRouteRateMap(sMap);
         };
         fetchRates();
     }, [firestore, schoolId]);
@@ -343,8 +352,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 if (chargeType === 'Canteen') {
                     appliedRate = canteenRate;
                 } else if (chargeType === 'Transport') {
-                    if (!student.routeId) return; // Skip if no route assigned
-                    appliedRate = routesMap.get(student.routeId) || 0;
+                    appliedRate = studentToRouteRateMap.get(uid) || 0;
                 }
 
                 if (appliedRate <= 0) return; // Don't create 0 bills
@@ -416,7 +424,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                         <Label>Class</Label>
                         <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                             <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
-                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                            <SelectContent>{classes?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select>
                         {chargeType === 'Canteen' && <p className="text-xs text-muted-foreground mt-1">Current Rate: GH₵{canteenRate}</p>}
                         {chargeType === 'Transport' && <p className="text-xs text-blue-600 mt-1">Rates will be applied dynamically based on each student's assigned route.</p>}
@@ -432,15 +440,17 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                                 <div key={s.uid} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded">
                                     <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)}/>
                                     <span className="text-sm">{s.firstName} {s.lastName}</span>
-                                    {chargeType === 'Transport' && s.routeId && (
-                                        <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 ml-auto">GH₵ {routesMap.get(s.routeId) || 0}</Badge>
+                                    {chargeType === 'Transport' && (
+                                        <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 ml-auto">
+                                            GH₵ {studentToRouteRateMap.get(s.uid) || 0}
+                                        </Badge>
                                     )}
                                 </div>
                             ))}
                         </div>
                     )}
 
-                    <Button onClick={handleSubmit} disabled={isSubmitting || selectedStudents.length === 0} className="w-full">
+                    <Button onClick={handleSubmit} disabled={isSubmitting || selectedStudents.length === 0} className="w-full h-12 text-lg">
                         {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PlusCircle className="mr-2 h-4 w-4"/>}
                         Generate Bills
                     </Button>
@@ -617,7 +627,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                     )}
                 />
             </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full">
+            <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null} 
                 {isOpeningBalance ? 'Save Opening Balance' : 'Add Bill'}
             </Button>
@@ -792,7 +802,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     )}
                 />
             </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full">
+            <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-6 animate-spin"/> : null} 
                 Add Bulk Bill
             </Button>
@@ -877,7 +887,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                         )}/>
                         <FormField control={form.control} name="method" render={({ field }) => (<FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)}/>
                         <FormField control={form.control} name="notes" render={({ field }) => (<FormItem><FormLabel>Reference / Notes (Optional)</FormLabel><FormControl><Textarea placeholder="Ref or notes..." {...field}/></FormControl><FormMessage /></FormItem>)}/>
-                        <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
+                        <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
                     </form>
                 </Form>
             </DialogContent>
