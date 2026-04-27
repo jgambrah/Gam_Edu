@@ -36,6 +36,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction, Route } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
@@ -299,19 +300,15 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     useEffect(() => {
         if(!firestore || !schoolId) return;
         const fetchRates = async () => {
-            // Fetch Canteen Rate
             const cSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
             if(cSnap.exists()) setCanteenRate(Number(cSnap.data().dailyRate) || 0);
 
-            // Fetch Transport Routes and build student map
             const rSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
             const sMap = new Map<string, number>();
             
             rSnap.docs.forEach(d => {
                 const data = d.data();
                 const rate = Number(data.dailyRate) || 0;
-                
-                // Scan stops for student IDs to build a reliable route assignment map
                 data.stops?.forEach((stop: any) => {
                     stop.assignedStudentIds?.forEach((sid: string) => {
                         sMap.set(sid, rate);
@@ -347,7 +344,6 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 const student = classStudents.find(s => s.uid === uid);
                 if(!student) return;
 
-                // Determine Rate
                 let appliedRate = 0;
                 if (chargeType === 'Canteen') {
                     appliedRate = canteenRate;
@@ -355,7 +351,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     appliedRate = studentToRouteRateMap.get(uid) || 0;
                 }
 
-                if (appliedRate <= 0) return; // Don't create 0 bills
+                if (appliedRate <= 0) return;
 
                 const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
                 const recordRef = doc(firestore, 'financialRecords', recordId);
@@ -406,7 +402,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     <div className="flex gap-4">
                         <div className="flex-1 space-y-2">
                             <Label>Type</Label>
-                            <Select value={chargeType} onValueChange={(v: any) => setChargeType(v)}>
+                            <Select value={chargeType} onValueChange={(v: any) => setCategory(v)}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent><SelectItem value="Canteen">Canteen</SelectItem><SelectItem value="Transport">Transport</SelectItem></SelectContent>
                             </Select>
@@ -426,8 +422,6 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                             <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
                             <SelectContent>{classes?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select>
-                        {chargeType === 'Canteen' && <p className="text-xs text-muted-foreground mt-1">Current Rate: GH₵{canteenRate}</p>}
-                        {chargeType === 'Transport' && <p className="text-xs text-blue-600 mt-1">Rates will be applied dynamically based on each student's assigned route.</p>}
                     </div>
 
                     {selectedClassId && (
