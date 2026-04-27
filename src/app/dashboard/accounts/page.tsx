@@ -290,18 +290,23 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     const [selectedClassId, setSelectedClassId] = useState('');
     const [date, setDate] = useState<Date>(new Date());
     
-    const [canteenRate, setCanteenRate] = useState(0);
+    const [canteenSettings, setCanteenSettings] = useState<any>(null);
     const [studentToRouteRateMap, setStudentToRouteRateMap] = useState<Map<string, number>>(new Map());
+    
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+    const [studentSearch, setStudentSearch] = useState('');
     
     const classStudents = useMemo(() => students.filter(s => s.classId === selectedClassId), [students, selectedClassId]);
+    const filteredStudents = useMemo(() => 
+        classStudents.filter(s => searchStudent(s, studentSearch)), 
+    [classStudents, studentSearch]);
 
     // Fetch Rates on Mount
     useEffect(() => {
         if(!firestore || !schoolId) return;
         const fetchRates = async () => {
             const cSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
-            if(cSnap.exists()) setCanteenRate(Number(cSnap.data().dailyRate) || 0);
+            if(cSnap.exists()) setCanteenSettings(cSnap.data());
 
             const rSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
             const sMap = new Map<string, number>();
@@ -326,8 +331,8 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     };
 
     const toggleAll = () => {
-        if(selectedStudents.length === classStudents.length && classStudents.length > 0) setSelectedStudents([]);
-        else setSelectedStudents(classStudents.map(s => s.uid));
+        if(selectedStudents.length === filteredStudents.length && filteredStudents.length > 0) setSelectedStudents([]);
+        else setSelectedStudents(filteredStudents.map(s => s.uid));
     };
 
     const handleSubmit = async () => {
@@ -345,8 +350,10 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                 if(!student) return;
 
                 let appliedRate = 0;
-                if (chargeType === 'Canteen') {
-                    appliedRate = canteenRate;
+                if (chargeType === 'Canteen' && canteenSettings) {
+                    const model = canteenSettings.pricingModel || 'Flat';
+                    if (model === 'Flat') appliedRate = canteenSettings.dailyRate || 0;
+                    else appliedRate = canteenSettings.classRates?.[selectedClassId] || 0;
                 } else if (chargeType === 'Transport') {
                     appliedRate = studentToRouteRateMap.get(uid) || 0;
                 }
@@ -425,22 +432,32 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     </div>
 
                     {selectedClassId && (
-                        <div className="border rounded-md max-h-[300px] overflow-y-auto p-2">
-                            <div className="flex items-center gap-2 p-2 border-b mb-2 sticky top-0 bg-white">
-                                <Checkbox checked={selectedStudents.length === classStudents.length && classStudents.length > 0} onCheckedChange={toggleAll}/>
-                                <Label>Select All ({classStudents.length})</Label>
+                        <div className="space-y-3">
+                            <div className="relative">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input 
+                                    placeholder="Search student in class..." 
+                                    className="pl-8 h-9" 
+                                    value={studentSearch} 
+                                    onChange={e => setStudentSearch(e.target.value)} 
+                                />
                             </div>
-                            {classStudents.map(s => (
-                                <div key={s.uid} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded">
-                                    <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)}/>
-                                    <span className="text-sm">{s.firstName} {s.lastName}</span>
-                                    {chargeType === 'Transport' && (
-                                        <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 ml-auto">
-                                            GH₵ {studentToRouteRateMap.get(s.uid) || 0}
-                                        </Badge>
-                                    )}
+                            <div className="border rounded-md max-h-[300px] overflow-y-auto p-2 bg-slate-50/50">
+                                <div className="flex items-center gap-2 p-2 border-b mb-2 sticky top-0 bg-white z-10">
+                                    <Checkbox checked={selectedStudents.length === filteredStudents.length && filteredStudents.length > 0} onCheckedChange={toggleAll}/>
+                                    <Label className="text-xs font-bold uppercase text-slate-500">Select All ({filteredStudents.length})</Label>
                                 </div>
-                            ))}
+                                {filteredStudents.map(s => (
+                                    <div key={s.uid} className="flex items-center gap-2 p-2 hover:bg-white rounded transition-colors cursor-pointer" onClick={() => toggleStudent(s.uid)}>
+                                        <Checkbox checked={selectedStudents.includes(s.uid)} onCheckedChange={() => toggleStudent(s.uid)}/>
+                                        <span className="text-sm font-medium">{s.firstName} {s.lastName}</span>
+                                        <Badge variant="outline" className="text-[10px] ml-auto">
+                                            {chargeType === 'Transport' ? `GH₵ ${studentToRouteRateMap.get(s.uid) || 0}` : `Canteen`}
+                                        </Badge>
+                                    </div>
+                                ))}
+                                {filteredStudents.length === 0 && <p className="text-center py-10 text-muted-foreground text-xs italic">No students match your search.</p>}
+                            </div>
                         </div>
                     )}
 
@@ -458,6 +475,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [studentSearch, setStudentSearch] = useState('');
   
   const form = useForm<z.infer<typeof extendedFinancialRecordSchema>>({ 
     resolver: zodResolver(extendedFinancialRecordSchema), 
@@ -479,6 +497,10 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
         form.setValue('description', 'Opening Balance (Arrears from previous term)'); 
       }
   }, [isOpeningBalance, form]);
+
+  const filteredStudents = useMemo(() => 
+    students.filter(s => searchStudent(s, studentSearch)), 
+  [students, studentSearch]);
 
   async function onSubmit(values: z.infer<typeof extendedFinancialRecordSchema>) {
     if (!firestore || !schoolId) return;
@@ -527,8 +549,25 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                 name="studentId" 
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Student</FormLabel>
-                        <StudentSelect students={students || []} value={field.value} onValueChange={field.onChange} />
+                        <FormLabel>Search & Select Student</FormLabel>
+                        <div className="space-y-2">
+                            <StudentSearchInput value={studentSearch} onChange={setStudentSearch} placeholder="Start typing name or ID..." className="h-9"/>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                    <SelectTrigger><SelectValue placeholder="Choose student from results..."/></SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <ScrollArea className="h-[200px]">
+                                        {filteredStudents.map(s => (
+                                            <SelectItem key={s.uid} value={s.uid}>
+                                                <StudentDisplay student={s} variant="compact" />
+                                            </SelectItem>
+                                        ))}
+                                        {filteredStudents.length === 0 && <p className="p-4 text-center text-xs text-muted-foreground">No students match your search.</p>}
+                                    </ScrollArea>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <FormMessage />
                     </FormItem>
                 )}
