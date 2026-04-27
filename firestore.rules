@@ -269,7 +269,7 @@ service cloud.firestore {
       allow update, delete: if isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid);
     }
 
-    match /lesson_materials/{materialId} {
+    match /learning_materials/{materialId} {
       allow read, list: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
     }
@@ -285,7 +285,7 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // =========================================================
+    // ================= ========================================
     // 7. FINANCE
     // =========================================================
 

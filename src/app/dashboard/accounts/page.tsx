@@ -17,7 +17,7 @@ import {
   DropdownMenuLabel, 
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
+} from '@/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -38,7 +38,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { Student, FinancialRecord, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction, Route } from '@/lib/types';
+import { Student, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction, Route, FinancialRecord } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent, generateNextReceiptId } from '@/lib/student-utils';
 import { GenerateReceipt } from './generate-receipt';
@@ -84,7 +84,7 @@ function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: Financ
             onUpdate();
             setOpen(false);
         } catch (e: any) {
-            toast({ variant: 'destructive', title: 'Error', description: e.message });
+            toast({ variant: 'destructive', title: "Error", description: e.message });
         } finally {
             setIsSubmitting(false);
         }
@@ -286,8 +286,8 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const [selectedClassId, setSelectedClassId] = useState('');
     const [chargeType, setChargeType] = useState<'Canteen' | 'Transport'>('Canteen');
+    const [selectedClassId, setSelectedClassId] = useState('');
     const [date, setDate] = useState<Date>(new Date());
     
     const [canteenRate, setCanteenRate] = useState(0);
@@ -1202,8 +1202,22 @@ export default function AccountsPage() {
                 <Card>
                     <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
                     <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-                        <Card className="border-l-4 border-l-red-500"><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Outstanding</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-red-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card>
-                        <Card className="border-l-4 border-l-green-500"><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Revenue</CardHeader><CardContent className="p-4 pt-0"><div className="text-2xl font-bold text-green-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card>
+                        <Card className="border-l-4 border-l-red-500">
+                          <CardHeader className="p-4 pb-2">
+                            <CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Outstanding</CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-4 pt-0">
+                            <div className="text-2xl font-bold text-red-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div>
+                          </CardContent>
+                        </Card>
+                        <Card className="border-l-4 border-l-green-500">
+                          <CardHeader className="p-4 pb-2">
+                            <CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Revenue</CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-4 pt-0">
+                            <div className="text-2xl font-bold text-green-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div>
+                          </CardContent>
+                        </Card>
                         <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Tuition Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card>
                         <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Canteen Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card>
                         <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Transport Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card>
