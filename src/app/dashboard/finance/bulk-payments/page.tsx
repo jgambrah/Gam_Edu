@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useFirestore, useUser } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -43,6 +43,7 @@ export default function BulkDailyReceiptsPage() {
     const [classes, setClasses] = useState<any[]>([]);
     const [pendingBills, setPendingBills] = useState<BillRecord[]>([]);
     const [paymentData, setPaymentData] = useState<Record<string, number>>({});
+    const [searchTerm, setSearchTerm] = useState('');
     
     const [isLoading, setIsLoading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -64,11 +65,11 @@ export default function BulkDailyReceiptsPage() {
         setIsLoading(true);
         setPendingBills([]);
         setPaymentData({});
+        setSearchTerm('');
 
         try {
             const searchDate = startOfDay(date);
             
-            // Fetch financial records matching the exact due date and schoolId
             const billsQuery = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
@@ -84,14 +85,13 @@ export default function BulkDailyReceiptsPage() {
                 const data = d.data();
                 const balance = data.billedAmount - (data.amountPaid || 0) - (data.waiverAmount || 0);
 
-                // Filter in memory: Match service type, check if unpaid, check class filter
                 if (
                     data.type.includes(serviceType) && 
                     balance > 0 && 
                     (selectedClassId === 'all' || data.classId === selectedClassId)
                 ) {
                     relevantBills.push({ id: d.id, ...data } as BillRecord);
-                    newPaymentData[d.id] = parseFloat(balance.toFixed(2)); // Pre-fill with the exact amount owed
+                    newPaymentData[d.id] = parseFloat(balance.toFixed(2));
                 }
             });
 
@@ -110,11 +110,20 @@ export default function BulkDailyReceiptsPage() {
         }
     };
 
+    // Filtered bills based on search term
+    const filteredPendingBills = useMemo(() => {
+        if (!searchTerm.trim()) return pendingBills;
+        const term = searchTerm.toLowerCase().trim();
+        return pendingBills.filter(bill => 
+            bill.studentName.toLowerCase().includes(term) ||
+            bill.description.toLowerCase().includes(term)
+        );
+    }, [pendingBills, searchTerm]);
+
     // 3. Process the Payments
     const handleProcessPayments = async () => {
         if (!firestore || !schoolId || !user) return;
         
-        // Find bills that actually have an amount typed in > 0
         const billsToPay = pendingBills.filter(bill => (paymentData[bill.id] || 0) > 0);
         
         if (billsToPay.length === 0) {
@@ -124,7 +133,6 @@ export default function BulkDailyReceiptsPage() {
         setIsProcessing(true);
 
         try {
-            // A. Check for Open Till
             const tillSnap = await getDocs(query(
                 collection(firestore, 'tills'), 
                 where('accountantId', '==', user.uid), 
@@ -145,8 +153,6 @@ export default function BulkDailyReceiptsPage() {
 
             for (const bill of billsToPay) {
                 const payAmount = Number(paymentData[bill.id]);
-                
-                // B. Generate Receipt ID
                 const receiptId = await generateNextReceiptId(firestore, schoolId);
                 
                 const recordRef = doc(firestore, 'financialRecords', bill.id);
@@ -156,14 +162,12 @@ export default function BulkDailyReceiptsPage() {
                 const newAmountPaid = (bill.amountPaid || 0) + payAmount;
                 const isFullyPaid = (bill.billedAmount - newAmountPaid - (bill.waiverAmount || 0)) <= 0.01;
 
-                // 1. Update the Main Bill Document (This fixes the Overview & Student Accounts)
                 batch.update(recordRef, {
                     amountPaid: newAmountPaid,
                     lastPaymentDate: serverTimestamp(),
                     status: isFullyPaid ? 'Paid' : 'Unpaid'
                 });
 
-                // 2. Log the Receipt in the Student's Bill
                 batch.set(paymentRef, {
                     id: receiptId,
                     amount: payAmount,
@@ -177,7 +181,6 @@ export default function BulkDailyReceiptsPage() {
                     notes: 'Bulk Daily Receipting'
                 });
 
-                // 3. Log the Individual Till Transaction (This fixes the Missing Names in Till)
                 batch.set(tillTransRef, {
                     amount: payAmount,
                     studentName: bill.studentName,
@@ -192,19 +195,17 @@ export default function BulkDailyReceiptsPage() {
                 processedCount++;
             }
 
-            // 4. Update the Till Balance
             batch.update(doc(firestore, 'tills', activeTill.id), {
                 currentBalance: increment(totalCollected)
             });
 
-            // COMMIT EVERYTHING
             await batch.commit();
 
             toast({ title: "Payments Processed! 🎉", description: `Successfully received GH₵${totalCollected.toFixed(2)} from ${processedCount} students.` });
             
-            // Clear the list
             setPendingBills([]);
             setPaymentData({});
+            setSearchTerm('');
 
         } catch (error: any) {
             console.error("Process Error:", error);
@@ -225,7 +226,7 @@ export default function BulkDailyReceiptsPage() {
                 </div>
                 {pendingBills.length > 0 && (
                     <div className="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl shadow-sm text-center min-w-[200px] animate-in zoom-in">
-                        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Selected Cash</p>
+                        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Total Batch Cash</p>
                         <p className="text-3xl font-black text-emerald-900">
                             GH₵{pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)}
                         </p>
@@ -283,12 +284,19 @@ export default function BulkDailyReceiptsPage() {
 
             {pendingBills.length > 0 && (
                 <Card className="border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem] overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
-                    <CardHeader className="bg-slate-50 border-b pb-4">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <CardTitle className="text-xl">2. Review & Process Payments</CardTitle>
-                                <CardDescription>Review amounts and click Process. Amounts are pre-filled based on the bill balance.</CardDescription>
-                            </div>
+                    <CardHeader className="bg-slate-50 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <CardTitle className="text-xl">2. Review & Process Payments</CardTitle>
+                            <CardDescription>Search and verify cash received for the selected batch.</CardDescription>
+                        </div>
+                        <div className="relative w-full md:w-[250px]">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input 
+                                placeholder="Search student name..." 
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                className="pl-9 h-10 border-2 rounded-xl bg-white"
+                            />
                         </div>
                     </CardHeader>
                     <CardContent className="p-0">
@@ -303,7 +311,7 @@ export default function BulkDailyReceiptsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {pendingBills.map(bill => {
+                                    {filteredPendingBills.map(bill => {
                                         const balance = bill.billedAmount - (bill.amountPaid || 0) - (bill.waiverAmount || 0);
                                         const currentPayment = paymentData[bill.id] || 0;
                                         
@@ -336,12 +344,19 @@ export default function BulkDailyReceiptsPage() {
                                             </TableRow>
                                         );
                                     })}
+                                    {filteredPendingBills.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={4} className="py-20 text-center text-muted-foreground italic">
+                                                No results matching "{searchTerm}"
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
                                 </TableBody>
                             </Table>
                         </div>
                     </CardContent>
                     <CardFooter className="bg-slate-50 border-t p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <Button variant="ghost" className="font-bold text-slate-400" onClick={() => {setPendingBills([]); setPaymentData({});}}>Discard List</Button>
+                        <Button variant="ghost" className="font-bold text-slate-400" onClick={() => {setPendingBills([]); setPaymentData({}); setSearchTerm('');}}>Discard List</Button>
                         <Button onClick={handleProcessPayments} disabled={isProcessing} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 h-16 px-12 text-xl font-black rounded-2xl shadow-xl shadow-indigo-200 uppercase tracking-tighter">
                             {isProcessing ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <CheckCircle2 className="mr-2 h-6 w-6"/>}
                             Post GH₵{pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)} to Till
