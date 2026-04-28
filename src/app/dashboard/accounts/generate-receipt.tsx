@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Receipt, Download, Loader2, Printer } from 'lucide-react';
-import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
+import { doc, query, collection, where } from 'firebase/firestore';
 import { FinancialRecord, Student, PaymentTransaction } from '@/lib/types';
 import { PaymentReceipt } from './payment-receipt';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -63,6 +63,25 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
     );
     const { data: student, isLoading: isLoadingStudent } = useDoc<Student>(studentRef);
 
+    // NEW: Fetch all records for the student to calculate total balance
+    const allRecordsQuery = useMemoFirebase(() => 
+        (firestore && transaction.studentId && schoolId) ? 
+        query(collection(firestore, 'financialRecords'), 
+              where('schoolId', '==', schoolId),
+              where('studentId', '==', transaction.studentId)) : null,
+        [firestore, transaction.studentId, schoolId]
+    );
+    const { data: allRecords, isLoading: isLoadingAllRecords } = useCollection<FinancialRecord>(allRecordsQuery);
+
+    const totalBalance = useMemo(() => {
+        if (!allRecords) return 0;
+        return allRecords.reduce((acc, r) => {
+            // Skip pending reversals in balance calculation
+            if (r.status === 'Pending Reversal') return acc;
+            return acc + (r.billedAmount - (r.amountPaid || 0) - (r.waiverAmount || 0));
+        }, 0);
+    }, [allRecords]);
+
     // Convert logo to base64 when profile is loaded
     useEffect(() => {
         if (schoolProfile?.logoUrl) {
@@ -70,7 +89,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
         }
     }, [schoolProfile]);
 
-    const isLoadingData = isLoadingProfile || isLoadingStudent;
+    const isLoadingData = isLoadingProfile || isLoadingStudent || isLoadingAllRecords;
 
     const handleDownloadPdf = async () => {
         if (!printRef.current || !student) return;
@@ -128,7 +147,15 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                         </div>
                     ) : (
                          <div ref={printRef}>
-                            {student && <PaymentReceipt transaction={transaction} payment={payment} student={student} schoolProfile={{...schoolProfile, logoBase64}} />}
+                            {student && (
+                                <PaymentReceipt 
+                                    transaction={transaction} 
+                                    payment={payment} 
+                                    student={student} 
+                                    schoolProfile={{...schoolProfile, logoBase64}}
+                                    totalBalance={totalBalance}
+                                />
+                            )}
                         </div>
                     )}
                 </div>

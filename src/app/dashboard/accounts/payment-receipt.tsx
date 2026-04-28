@@ -1,4 +1,3 @@
-
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -11,7 +10,8 @@ interface PaymentReceiptProps {
   payment: PaymentTransaction;
   student: Student;
   schoolProfile: any;
-  isThermal?: boolean; // Make the new prop optional
+  totalBalance?: number; // Prop to hold the overall student balance
+  isThermal?: boolean; 
 }
 
 export function PaymentReceipt({
@@ -19,6 +19,7 @@ export function PaymentReceipt({
   payment,
   student,
   schoolProfile,
+  totalBalance = 0,
   isThermal = false,
 }: PaymentReceiptProps) {
   const amountPaid = payment.amount || 0;
@@ -28,7 +29,6 @@ export function PaymentReceipt({
     return (
       <div className="bg-white text-black font-mono p-2" style={{ width: '80mm', fontSize: '12px' }}>
         <div className="text-center mb-2">
-          {/* Logo for thermal */}
           {schoolProfile?.logoBase64 && (
              <img 
                 src={schoolProfile.logoBase64} 
@@ -50,13 +50,17 @@ export function PaymentReceipt({
           <span className="font-bold">TOTAL PAID:</span>
           <span className="text-xl font-bold">GH₵{amountPaid.toFixed(2)}</span>
         </div>
+        <div className="flex justify-between items-center py-1">
+          <span className="font-bold">OVERALL BAL:</span>
+          <span className="font-bold">GH₵{totalBalance.toFixed(2)}</span>
+        </div>
       </div>
     );
   }
 
-  // Original A4 Layout
+  // A4 Layout
   const balanceBefore = transaction.billedAmount - (transaction.amountPaid - payment.amount) - (transaction.waiverAmount || 0);
-  const balanceAfter = balanceBefore - payment.amount;
+  const balanceAfterBill = balanceBefore - payment.amount;
 
   return (
     <div 
@@ -129,19 +133,20 @@ export function PaymentReceipt({
       </section>
       
       <section className="flex justify-end mt-6">
-        <div className="w-1/2 text-xs">
-          <div className="flex justify-between py-2 border-b">
-            <span className="font-medium">Balance Before Payment</span>
-            <span className="font-mono">GH₵ {balanceBefore.toFixed(2)}</span>
+        <div className="w-2/3 text-xs space-y-1">
+          <div className="flex justify-between py-1 border-b">
+            <span className="text-slate-500">Balance on this specific bill</span>
+            <span className="font-mono">GH₵ {balanceAfterBill.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between py-2 border-b">
-            <span className="font-medium">Amount Paid</span>
-            <span className="font-mono text-green-600">- GH₵ {amountPaid.toFixed(2)}</span>
+          
+          <div className="flex justify-between py-3 bg-slate-900 text-white px-3 rounded-xl text-sm shadow-lg">
+            <span className="font-bold uppercase tracking-tight">Total Student Ledger Balance</span>
+            <span className="font-bold">GH₵ {totalBalance.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between py-3 bg-gray-100 px-2 rounded-b-lg text-sm">
-            <span className="font-bold">New Balance Outstanding</span>
-            <span className="font-bold">GH₵ {balanceAfter.toFixed(2)}</span>
-          </div>
+          
+          <p className="text-[9px] text-slate-400 italic text-right pt-1">
+            * This includes all unpaid tuition, canteen, transport, and other school fees.
+          </p>
         </div>
       </section>
 
