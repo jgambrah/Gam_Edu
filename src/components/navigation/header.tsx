@@ -57,7 +57,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6">
+    <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b border-slate-200/50 bg-white/70 backdrop-blur-lg px-4 md:px-6 shadow-sm">
       <div className="flex items-center gap-2">
         <Sheet>
           <SheetTrigger asChild>
@@ -66,55 +66,60 @@ export default function Header() {
               <span className="sr-only">Toggle Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 border-r p-0">
+          <SheetContent side="left" className="w-64 border-r p-0 bg-indigo-950">
             <div className="flex h-full flex-col">
               <AppSidebarContent />
             </div>
           </SheetContent>
         </Sheet>
-        <h1 className="text-lg font-semibold md:text-xl">{pageTitle}</h1>
+        <h1 className="text-lg font-black text-slate-900 tracking-tight uppercase italic md:text-xl">
+            {pageTitle}
+        </h1>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <Button 
             variant="ghost" 
             size="icon" 
             onClick={handleRefresh} 
             disabled={isRefreshing}
             title="Refresh Application"
-            className="text-slate-500 hover:text-slate-900"
+            className="text-slate-400 hover:text-slate-900 rounded-xl"
         >
-            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
             <span className="sr-only">Refresh</span>
         </Button>
-        <CreditBalance />
+        <div className="hidden sm:block">
+            <CreditBalance />
+        </div>
         <NotificationBell />
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={user?.photoURL || ''} alt="User Avatar" />
-                <AvatarFallback>{getInitials(user?.email)}</AvatarFallback>
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full border-2 border-slate-100 shadow-sm overflow-hidden p-0">
+              <Avatar className="h-full w-full rounded-none">
+                <AvatarImage src={user?.photoURL || ''} alt="User Avatar" className="object-cover" />
+                <AvatarFallback className="bg-slate-50 text-indigo-600 font-bold">{getInitials(user?.email)}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard/profile" className="flex items-center w-full cursor-pointer">
-                <UserIcon className="mr-2 h-4 w-4" />
-                <span>My Profile</span>
+          <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 border-slate-200 shadow-2xl">
+            <DropdownMenuLabel className="px-2 py-1.5 font-bold text-slate-900">My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator className="mx-2" />
+            <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
+              <Link href="/dashboard/profile" className="flex items-center w-full">
+                <UserIcon className="mr-2 h-4 w-4 text-slate-500" />
+                <span className="font-medium text-sm">My Profile</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard/help" className="flex items-center w-full cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Help Center</span>
+            <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
+              <Link href="/dashboard/help" className="flex items-center w-full">
+                <Settings className="mr-2 h-4 w-4 text-slate-500" />
+                <span className="font-medium text-sm">Help Center</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
+            <DropdownMenuSeparator className="mx-2" />
+            <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer rounded-xl font-bold">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

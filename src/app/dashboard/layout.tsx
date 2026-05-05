@@ -88,14 +88,20 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   if (profile?.role === 'Parent') collectionName = 'parents';
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-slate-800">
       <AppSidebar />
-      <div className="flex flex-1 flex-col overflow-hidden md:ml-64">
+      <div className="flex flex-1 flex-col overflow-hidden md:ml-64 relative">
         <TrialBanner />
         <Header />
-        <main className="relative flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-          <div className="pb-24">
-            {children}
+        <main className="relative flex-1 overflow-y-auto scroll-smooth">
+          {/* DECORATIVE BACKGROUND GLOWS */}
+          <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="p-4 md:p-8 relative z-10">
+            <div className="pb-24">
+              {children}
+            </div>
           </div>
           
           {/* Overlay for expired trial */}

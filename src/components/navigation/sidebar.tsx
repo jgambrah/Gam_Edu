@@ -71,14 +71,14 @@ function NavLink({
       target={item.path.startsWith('http') ? '_blank' : undefined}
       rel={item.path.startsWith('http') ? 'noopener noreferrer' : undefined}
       className={cn(
-        'flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none transition-colors',
-        'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-        'focus-visible:ring-2 focus-visible:ring-sidebar-ring',
-        isSubItem ? 'h-7 text-xs' : 'h-8 text-sm',
-        isActive && 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+        'flex w-full items-center gap-2 rounded-xl p-2.5 text-left text-sm outline-none transition-all duration-200',
+        isActive 
+          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-indigo-500/20 scale-[1.02] font-bold' 
+          : 'text-slate-400 hover:text-slate-100 hover:bg-white/5',
+        isSubItem ? 'h-8 text-xs' : 'h-10 text-sm'
       )}
     >
-      <item.icon className="h-4 w-4 shrink-0" />
+      <item.icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-white' : 'text-slate-500')} />
       <span className="truncate">{item.title}</span>
     </Link>
   );
@@ -131,31 +131,31 @@ export function AppSidebarContent() {
 
   return (
     <>
-      <SidebarHeader>
+      <SidebarHeader className="border-indigo-900/30">
         <Link href="/dashboard" className="flex items-center gap-3 p-2 group transition-all">
-          <AppLogo className="h-9 w-9 shadow-lg shadow-indigo-200 rounded-xl group-hover:scale-105 transition-transform" />
+          <AppLogo className="h-9 w-9 shadow-lg shadow-indigo-500/20 rounded-xl group-hover:scale-105 transition-transform" />
           <div className="flex flex-col">
-            <span className="text-lg font-black text-slate-900 leading-none tracking-tighter">GAM EDU</span>
-            <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Management</span>
+            <span className="text-lg font-black text-white leading-none tracking-tighter">GAM EDU</span>
+            <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mt-0.5">Management</span>
           </div>
         </Link>
       </SidebarHeader>
 
       <UiSidebarContent>
-        <SidebarMenu>
+        <SidebarMenu className="px-2">
           {loading ? (
-            <div className="space-y-2 px-2">
+            <div className="space-y-2 px-2 mt-4">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={`sidebar-skeleton-${i}`}
-                  className="h-8 animate-pulse rounded bg-slate-100"
+                  className="h-10 animate-pulse rounded-xl bg-white/5"
                 />
               ))}
             </div>
           ) : (
             filteredNav.map((item, index) =>
               isNavItemVisible(item, role, hasFinanceAccess) ? (
-                <SidebarMenuItem key={`nav-${item.path}-${index}`}>
+                <SidebarMenuItem key={`nav-${item.path}-${index}`} className="my-0.5">
                   {item.subItems &&
                   item.subItems.filter((sub) => isNavItemVisible(sub, role, hasFinanceAccess))
                     .length > 0 ? (
@@ -163,19 +163,21 @@ export function AppSidebarContent() {
                       <CollapsibleTrigger asChild>
                         <button
                           className={cn(
-                            'flex h-8 w-full items-center justify-between gap-2 rounded-md p-2 text-left text-sm',
-                            'transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                            'flex h-10 w-full items-center justify-between gap-2 rounded-xl p-2.5 text-left text-sm transition-all duration-200',
+                            isSubItemActive(item) 
+                              ? 'text-white bg-white/5' 
+                              : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
                           )}
                         >
                           <div className="flex items-center gap-2">
-                            <item.icon className="h-4 w-4 shrink-0" />
+                            <item.icon className={cn('h-4 w-4 shrink-0', isSubItemActive(item) ? 'text-indigo-400' : 'text-slate-500')} />
                             <span className="truncate">{item.title}</span>
                           </div>
                           <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 data-[state=open]:rotate-90" />
                         </button>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
-                        <ul className="mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5">
+                        <ul className="mx-4 mt-1 flex min-w-0 translate-x-px flex-col gap-1 border-l border-indigo-900/30 px-3 py-1">
                           {item.subItems.map(
                             (subItem, subIndex) =>
                               isNavItemVisible(subItem, role, hasFinanceAccess) && (
@@ -198,41 +200,41 @@ export function AppSidebarContent() {
         {user &&
           ((user.email?.toLowerCase() === 'jamesgambrah@gmail.com') ||
             (user.uid === 'L4oE5XWweKRYrhtIXn6hB8IDHBC2')) && (
-            <div className="p-2">
+            <div className="p-4">
               <Link
                 href="/dashboard/super-admin"
-                className="mt-6 mb-2 flex items-center gap-3 rounded-lg bg-purple-100 px-3 py-2 font-bold text-purple-700 transition-all hover:bg-purple-200 border border-purple-300"
+                className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 py-3 font-black text-white text-xs uppercase tracking-widest transition-all hover:scale-[1.03] shadow-lg shadow-purple-500/20"
               >
-                <Building2 className="h-5 w-5" />
+                <Building2 className="h-4 w-4" />
                 <span>CEO Portal</span>
               </Link>
             </div>
           )}
       </UiSidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="p-4 gap-4 border-t border-indigo-900/30">
         {process.env.NODE_ENV === 'development' && <RoleSwitcher />}
-        <div className="flex items-center gap-3 p-2">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={user?.photoURL || ''} alt="User Avatar" />
-            <AvatarFallback>{getInitials(user?.email)}</AvatarFallback>
+        <div className="flex items-center gap-3 p-1">
+          <Avatar className="h-10 w-10 border-2 border-indigo-900/50 shadow-inner">
+            <AvatarImage src={user?.photoURL || ''} alt="User Avatar" className="object-cover" />
+            <AvatarFallback className="bg-indigo-900 text-indigo-200 font-bold">{getInitials(user?.email)}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className="truncate text-sm font-medium">
-              {profile?.firstName || user?.displayName || user?.email || 'User'}
+          <div className="flex flex-col min-w-0">
+            <span className="truncate text-sm font-bold text-white leading-none mb-1">
+              {profile?.firstName || user?.displayName || user?.email?.split('@')[0] || 'User'}
             </span>
-            <span className="text-xs capitalize text-muted-foreground">
-              {loading ? 'Loading...' : role || 'No Role'}
+            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">
+              {loading ? '---' : role || 'User'}
             </span>
           </div>
         </div>
         <Button
           variant="ghost"
-          className="h-9 w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700"
+          className="h-10 w-full justify-start text-red-400 hover:text-red-100 hover:bg-red-500/20 rounded-xl transition-all"
           onClick={handleSignOut}
         >
           <LogOut className="mr-2 h-4 w-4" />
-          Sign Out
+          <span className="font-bold uppercase text-[10px] tracking-widest">Sign Out</span>
         </Button>
       </SidebarFooter>
     </>
@@ -241,7 +243,7 @@ export function AppSidebarContent() {
 
 export default function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar className="bg-gradient-to-b from-indigo-950 via-slate-900 to-purple-950 border-r border-indigo-900/50 shadow-2xl">
       <AppSidebarContent />
     </Sidebar>
   );
