@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useFirestore, useUser } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { format, startOfDay } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -61,19 +61,28 @@ export default function BulkDailyReceiptsPage() {
 
     // 2. Load the REAL unpaid bills for this date
     const handleLoadBills = async () => {
-        if (!firestore || !schoolId) return;
+        if (!firestore || !schoolId) {
+            toast({ variant: 'destructive', title: "System Error", description: "School ID not found. Please refresh." });
+            return;
+        }
+
         setIsLoading(true);
         setPendingBills([]);
         setPaymentData({});
         setSearchTerm('');
 
         try {
-            const searchDate = startOfDay(date);
+            // BEST PRACTICE: Use a range query for dates to avoid precision/timezone mismatches
+            const dayStart = startOfDay(date);
+            const dayEnd = endOfDay(date);
             
+            console.log(`[Reconciliation] Scanning ${serviceType} for ${format(date, 'yyyy-MM-dd')} in School ${schoolId}`);
+
             const billsQuery = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
-                where('dueDate', '==', Timestamp.fromDate(searchDate))
+                where('dueDate', '>=', Timestamp.fromDate(dayStart)),
+                where('dueDate', '<=', Timestamp.fromDate(dayEnd))
             );
             
             const snap = await getDocs(billsQuery);
@@ -83,20 +92,31 @@ export default function BulkDailyReceiptsPage() {
 
             snap.docs.forEach(d => {
                 const data = d.data();
-                const balance = data.billedAmount - (data.amountPaid || 0) - (data.waiverAmount || 0);
+                const type = data.type || '';
+                const billed = Number(data.billedAmount) || 0;
+                const paid = Number(data.amountPaid) || 0;
+                const waiver = Number(data.waiverAmount) || 0;
+                const balance = billed - paid - waiver;
 
-                if (
-                    data.type.includes(serviceType) && 
-                    balance > 0 && 
-                    (selectedClassId === 'all' || data.classId === selectedClassId)
-                ) {
+                // 1. Filter by Service Name (Case-insensitive check)
+                const isCorrectService = type.toLowerCase().includes(serviceType.toLowerCase());
+                
+                // 2. Filter by Class
+                const matchesClass = selectedClassId === 'all' || data.classId === selectedClassId;
+
+                if (isCorrectService && balance > 0.01 && matchesClass) {
                     relevantBills.push({ id: d.id, ...data } as BillRecord);
                     newPaymentData[d.id] = parseFloat(balance.toFixed(2));
                 }
             });
 
             if (relevantBills.length === 0) {
-                toast({ title: "No Bills Found", description: "All clear! Either attendance hasn't been taken, or everyone is already paid up." });
+                toast({ 
+                    title: "No Bills Found", 
+                    description: "No unpaid bills match your selection. Ensure attendance was taken and services are set to 'Daily' billing." 
+                });
+            } else {
+                toast({ title: "Bills Found", description: `Located ${relevantBills.length} pending receipts.` });
             }
 
             setPendingBills(relevantBills);
@@ -104,7 +124,7 @@ export default function BulkDailyReceiptsPage() {
 
         } catch (error: any) {
             console.error("Load Bills Error:", error);
-            toast({ variant: 'destructive', title: "Error", description: "Could not load bills." });
+            toast({ variant: 'destructive', title: "Error", description: "Could not load bills. Check your connection." });
         } finally {
             setIsLoading(false);
         }
@@ -335,7 +355,7 @@ export default function BulkDailyReceiptsPage() {
                                                                 currentPayment > balance 
                                                                     ? "border-purple-300 bg-white text-purple-700 ring-2 ring-purple-50" 
                                                                     : currentPayment > 0 
-                                                                        ? "border-emerald-400 bg-white text-emerald-700 ring-2 ring-emerald-50" 
+                                                                        ? "border-emerald-400 bg-white text-emerald-700 ring-2 emerald-50" 
                                                                         : "bg-slate-50 border-slate-200 text-slate-400"
                                                             )}
                                                         />
