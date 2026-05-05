@@ -288,6 +288,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
 }) {
     const firestore = useFirestore();
     const { user } = useUser();
+    const { role } = useRole();
     const { toast } = useToast();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
@@ -299,6 +300,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
 
     if (!till) return null;
 
+    const canApprove = role === 'Director' || role === 'Administrator';
     const pendingAdjustments = transactions?.filter(tx => tx.status === 'Pending Adjustment') || [];
 
     const handleAdjustmentDecision = async (tx: TillTransaction, decision: 'Approve' | 'Reject') => {
@@ -392,7 +394,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
                                     <TableCell><Badge variant={(tx.status === 'Completed' || !tx.status) ? 'default' : 'secondary'}>{tx.status || 'Completed'}</Badge></TableCell>
                                     <TableCell className={`text-right font-mono ${tx.amount < 0 ? 'text-red-500' : ''}`}>{tx.amount.toFixed(2)}</TableCell>
                                     <TableCell className="text-right">
-                                        {tx.status === 'Pending Adjustment' && (
+                                        {tx.status === 'Pending Adjustment' && canApprove && (
                                             <div className="flex gap-2 justify-end">
                                                 <Button size="sm" variant="destructive" onClick={() => handleAdjustmentDecision(tx, 'Reject')} disabled={isProcessing === tx.id}>Reject</Button>
                                                 <Button size="sm" onClick={() => handleAdjustmentDecision(tx, 'Approve')} disabled={isProcessing === tx.id}>Approve</Button>
@@ -409,32 +411,36 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
                     <DialogFooter>
                         <div className="w-full flex justify-end gap-2 pt-4 border-t">
                             <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="destructive" disabled={pendingAdjustments.length > 0 || isProcessing === 'main_till'}>Reject Till</Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader><AlertDialogTitle>Reject Entire Till?</AlertDialogTitle><AlertDialogDescription>This will reopen the till for the accountant. Use this if there is a major discrepancy.</AlertDialogDescription></AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleTillDecision('Reject')}>Confirm Rejection</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button disabled={pendingAdjustments.length > 0 || isProcessing === 'main_till'}>
-                                        {isProcessing === 'main_till' && <Loader2 className="animate-spin mr-2"/>} Approve Till
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader><AlertDialogTitle>Approve & Close Till?</AlertDialogTitle><AlertDialogDescription>This will finalize the till balance and close it permanently.</AlertDialogDescription></AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleTillDecision('Approve')}>Confirm & Close</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                            {canApprove && (
+                                <>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="destructive" disabled={pendingAdjustments.length > 0 || isProcessing === 'main_till'}>Reject Till</Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader><AlertDialogTitle>Reject Entire Till?</AlertDialogTitle><AlertDialogDescription>This will reopen the till for the accountant. Use this if there is a major discrepancy.</AlertDialogDescription></AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleTillDecision('Reject')}>Confirm Rejection</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button disabled={pendingAdjustments.length > 0 || isProcessing === 'main_till'}>
+                                                {isProcessing === 'main_till' && <Loader2 className="animate-spin mr-2"/>} Approve Till
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader><AlertDialogTitle>Approve & Close Till?</AlertDialogTitle><AlertDialogDescription>This will finalize the till balance and close it permanently.</AlertDialogDescription></AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleTillDecision('Approve')}>Confirm & Close</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </>
+                            )}
                         </div>
                     </DialogFooter>
                 )}
