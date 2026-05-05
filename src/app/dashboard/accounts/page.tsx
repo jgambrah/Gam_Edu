@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp, deleteDoc } from 'firebase/firestore';
 import { format, isPast, startOfDay, endOfDay, startOfMonth } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 
@@ -1129,6 +1129,7 @@ export default function AccountsPage() {
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null); 
   const [activeTab, setActiveTab] = useState('billing');
+  const [isProcessingReversal, setIsProcessingReversal] = useState<string | null>(null);
 
   const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
@@ -1213,6 +1214,35 @@ export default function AccountsPage() {
 
   const filteredStudentsWithBills = useMemo(() => studentFinancials.filter(sf => searchStudent(sf.student, searchTerm)), [studentFinancials, searchTerm]);
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
+
+  // --- REVERSAL HANDLERS ---
+  const handleApproveReversal = async (record: FinancialRecord) => {
+    if (!firestore || isProcessingReversal) return;
+    setIsProcessingReversal(record.id);
+    try {
+        await deleteDoc(doc(firestore, 'financialRecords', record.id));
+        toast({ title: "Reversal Approved", description: "The bill has been permanently removed from the student's ledger." });
+        forceRefetch();
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: "Approval Failed", description: e.message });
+    } finally {
+        setIsProcessingReversal(null);
+    }
+  };
+
+  const handleRejectReversal = async (record: FinancialRecord) => {
+    if (!firestore || isProcessingReversal) return;
+    setIsProcessingReversal(record.id);
+    try {
+        await updateDoc(doc(firestore, 'financialRecords', record.id), { status: 'Rejected Reversal' });
+        toast({ title: "Reversal Rejected", description: "The bill remains active on the student's ledger." });
+        forceRefetch();
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: "Rejection Failed", description: e.message });
+    } finally {
+        setIsProcessingReversal(null);
+    }
+  };
 
   if (!canAccess && !isLoading) {
     return (
@@ -1418,8 +1448,23 @@ export default function AccountsPage() {
                                         <TableCell className="max-w-xs italic text-xs">{(r as any).reversalReason}</TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Button size="sm" variant="outline" className="text-red-600" onClick={() => updateDoc(doc(firestore!, 'financialRecords', r.id), { status: 'Rejected Reversal' })}>Reject</Button>
-                                                <Button size="sm" className="bg-red-600 hover:bg-red-700" onClick={() => deleteDoc(doc(firestore!, 'financialRecords', r.id))}>Confirm Delete</Button>
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="outline" 
+                                                    className="text-red-600" 
+                                                    disabled={isProcessingReversal === r.id}
+                                                    onClick={() => handleRejectReversal(r)}
+                                                >
+                                                    {isProcessingReversal === r.id ? <Loader2 className="h-4 w-4 animate-spin"/> : "Reject"}
+                                                </Button>
+                                                <Button 
+                                                    size="sm" 
+                                                    className="bg-red-600 hover:bg-red-700"
+                                                    disabled={isProcessingReversal === r.id}
+                                                    onClick={() => handleApproveReversal(r)}
+                                                >
+                                                    {isProcessingReversal === r.id ? <Loader2 className="h-4 w-4 animate-spin"/> : "Confirm Delete"}
+                                                </Button>
                                             </div>
                                         </TableCell>
                                     </TableRow>
