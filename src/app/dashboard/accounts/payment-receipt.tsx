@@ -25,6 +25,8 @@ export function PaymentReceipt({
   const amountPaid = payment.amount || 0;
   const paymentDate = payment.paidAt?.toDate ? format(payment.paidAt.toDate(), 'PPP') : 'N/A';
   
+  const themeColor = schoolProfile?.brandColor || '#1e293b';
+
   if (isThermal) {
     return (
       <div className="bg-white text-black font-mono p-2" style={{ width: '80mm', fontSize: '12px' }}>
@@ -36,7 +38,7 @@ export function PaymentReceipt({
                 className="w-12 h-12 mx-auto mb-1 object-contain"
              />
           )}
-          <h1 className="text-lg font-bold uppercase">{schoolProfile?.name}</h1>
+          <h1 className="text-lg font-bold uppercase" style={{ color: themeColor }}>{schoolProfile?.name}</h1>
           <div className="border-b border-black border-dashed my-2"></div>
           <h2 className="text-sm font-bold tracking-widest">OFFICIAL RECEIPT</h2>
           <p className="text-[10px] font-bold">#{payment.id}</p>
@@ -52,7 +54,7 @@ export function PaymentReceipt({
         </div>
         <div className="flex justify-between items-center py-1">
           <span className="font-bold">OVERALL BAL:</span>
-          <span className="font-bold">GH₵{totalBalance.toFixed(2)}</span>
+          <span className="font-bold" style={{ color: themeColor }}>GH₵{totalBalance.toFixed(2)}</span>
         </div>
       </div>
     );
@@ -67,7 +69,10 @@ export function PaymentReceipt({
         className="bg-white text-black font-sans p-8 mx-auto"
         style={{ width: '148mm', minHeight: '210mm', position: 'relative' }}
     >
-      <header className="flex items-center justify-between pb-4 border-b-2 border-black">
+      <header 
+        className="flex items-center justify-between pb-4 border-b-2"
+        style={{ borderBottomColor: themeColor }}
+      >
         <div className="flex items-center gap-4">
           {schoolProfile?.logoBase64 ? (
             <img 
@@ -86,7 +91,12 @@ export function PaymentReceipt({
             <AppLogo className="h-12 w-12 text-slate-800" />
           )}
           <div>
-            <h1 className="text-xl font-bold uppercase tracking-wide">{schoolProfile?.name || 'School Name'}</h1>
+            <h1 
+              className="text-xl font-bold uppercase tracking-wide"
+              style={{ color: themeColor }}
+            >
+              {schoolProfile?.name || 'School Name'}
+            </h1>
             <p className="text-[10px] text-gray-500">{schoolProfile?.address || 'School Address'}</p>
           </div>
         </div>
@@ -115,7 +125,7 @@ export function PaymentReceipt({
       <section>
         <table className="w-full text-xs">
           <thead className="bg-gray-50">
-            <tr className="border-b border-t border-gray-200">
+            <tr className="border-b border-t border-gray-200" style={{ backgroundColor: `${themeColor}08` }}>
               <th className="text-left p-2 font-bold uppercase text-gray-600">Description</th>
               <th className="text-right p-2 font-bold uppercase text-gray-600">Amount Paid</th>
             </tr>
@@ -126,7 +136,7 @@ export function PaymentReceipt({
                 <p className="font-medium">{transaction.description}</p>
                 <p className="text-[10px] text-gray-500">Payment towards fee: {transaction.type}</p>
               </td>
-              <td className="text-right p-2 font-mono">GH₵ {amountPaid.toFixed(2)}</td>
+              <td className="text-right p-2 font-mono" style={{ color: themeColor, fontWeight: 'bold' }}>GH₵ {amountPaid.toFixed(2)}</td>
             </tr>
           </tbody>
         </table>
@@ -139,7 +149,10 @@ export function PaymentReceipt({
             <span className="font-mono">GH₵ {balanceAfterBill.toFixed(2)}</span>
           </div>
           
-          <div className="flex justify-between py-3 bg-slate-900 text-white px-3 rounded-xl text-sm shadow-lg">
+          <div 
+            className="flex justify-between py-3 text-white px-3 rounded-xl text-sm shadow-lg"
+            style={{ backgroundColor: themeColor }}
+          >
             <span className="font-bold uppercase tracking-tight">Total Student Ledger Balance</span>
             <span className="font-bold">GH₵ {totalBalance.toFixed(2)}</span>
           </div>

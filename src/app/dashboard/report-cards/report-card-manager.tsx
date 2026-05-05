@@ -300,6 +300,7 @@ export default function ReportCardManager() {
                 schoolAddress: schoolProfile?.address,
                 schoolPhone: schoolProfile?.phone,
                 schoolEmail: schoolProfile?.email,
+                brandColor: schoolProfile?.brandColor || '#1e293b',
                 nextTermDate: schoolProfile?.nextTermDate || null,
                 logoBase64: logoB64,
                 headmasterSigBase64: headmasterSigB64,

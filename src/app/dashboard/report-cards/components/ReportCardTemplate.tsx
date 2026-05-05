@@ -16,10 +16,12 @@ interface ReportCardTemplateProps {
 /**
  * Standardized Report Card Template for GAM Edu.
  * Displays academic results, attendance, and persistent digital signatures.
- * (STEP 4): Standardized date parsing for ISO strings to prevent timezone shifts.
+ * Now supports dynamic brand colors for institutional white-labeling.
  */
 export default function ReportCardTemplate({ data, classTeacherComment, headmasterComment, caWeight, examWeight }: ReportCardTemplateProps) {
     if (!data) return null;
+
+    const themeColor = data.brandColor || '#1e293b';
 
     const getSafeDate = (d: any) => {
         if (!d) return null;
@@ -57,7 +59,10 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             }}
         >
             {/* ── HEADER ── */}
-            <div className="flex flex-row items-center justify-between border-b-[3px] border-double border-slate-900 pb-4 mb-4">
+            <div 
+                className="flex flex-row items-center justify-between border-b-[3px] border-double pb-4 mb-4"
+                style={{ borderBottomColor: themeColor }}
+            >
                 <div className="w-24 h-24 flex shrink-0 items-center justify-center">
                     {data.logoBase64 ? (
                         <img src={data.logoBase64} alt="Logo" className="max-w-full max-h-full object-contain" />
@@ -67,7 +72,10 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 </div>
 
                 <div className="flex-1 text-center px-4">
-                    <h1 className="text-3xl font-black uppercase tracking-tight leading-none mb-1">
+                    <h1 
+                        className="text-3xl font-black uppercase tracking-tight leading-none mb-1"
+                        style={{ color: themeColor }}
+                    >
                         {data.schoolName || 'SCHOOL NAME'}
                     </h1>
                     {data.schoolMotto && (
@@ -83,7 +91,10 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             </div>
 
             {/* ── TITLE ── */}
-            <div className="bg-slate-100 border border-slate-300 py-2 text-center mb-4 uppercase font-black tracking-[0.2em] text-lg">
+            <div 
+                className="border py-2 text-center mb-4 uppercase font-black tracking-[0.2em] text-lg"
+                style={{ backgroundColor: themeColor, color: '#ffffff', borderColor: themeColor }}
+            >
                 Terminal Report Card
             </div>
 
@@ -116,36 +127,39 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             </div>
 
             {/* ── NEXT TERM ALERT ── */}
-            <div className="bg-indigo-50 border-2 border-indigo-100 p-3 text-center mb-6 rounded-xl">
-                <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mr-2">Next Term Reopening:</span>
-                <span className="text-base font-black text-indigo-900">{nextTermReopening}</span>
+            <div 
+                className="bg-indigo-50 border-2 p-3 text-center mb-6 rounded-xl"
+                style={{ borderColor: `${themeColor}40`, backgroundColor: `${themeColor}08` }}
+            >
+                <span className="text-[10px] font-black uppercase tracking-widest mr-2" style={{ color: themeColor }}>Next Term Reopening:</span>
+                <span className="text-base font-black" style={{ color: themeColor }}>{nextTermReopening}</span>
             </div>
 
             {/* ── GRADES TABLE ── */}
             <table className="w-full text-xs mb-6 border-collapse">
                 <thead>
-                    <tr className="bg-slate-900 text-white uppercase font-bold text-[10px]">
-                        <th className="border border-slate-900 p-2 text-left w-[25%]">Subject</th>
-                        <th className="border border-slate-900 p-2 text-center w-[10%]">CA ({caWeight})</th>
-                        <th className="border border-slate-900 p-2 text-center w-[10%]">Exam ({examWeight})</th>
-                        <th className="border border-slate-900 p-2 text-center w-[10%] bg-slate-800">Total</th>
-                        <th className="border border-slate-900 p-2 text-center w-[8%]">Avg</th>
-                        <th className="border border-slate-900 p-2 text-center w-[8%]">Pos</th>
-                        <th className="border border-slate-900 p-2 text-center w-[8%]">Grd</th>
-                        <th className="border border-slate-900 p-2 text-left w-[21%]">Remark</th>
+                    <tr style={{ backgroundColor: themeColor, color: '#ffffff' }}>
+                        <th className="border p-2 text-left w-[25%] uppercase font-bold text-[10px]" style={{ borderColor: themeColor }}>Subject</th>
+                        <th className="border p-2 text-center w-[10%] uppercase font-bold text-[10px]" style={{ borderColor: themeColor }}>CA ({caWeight})</th>
+                        <th className="border p-2 text-center w-[10%] uppercase font-bold text-[10px]" style={{ borderColor: themeColor }}>Exam ({examWeight})</th>
+                        <th className="border p-2 text-center w-[10%] uppercase font-bold text-[10px] bg-black/10" style={{ borderColor: themeColor }}>Total</th>
+                        <th className="border p-2 text-center w-[8%] uppercase font-bold text-[10px]" style={{ borderColor: themeColor }}>Avg</th>
+                        <th className="border p-2 text-center w-[8%] uppercase font-bold text-[10px]" style={{ borderColor: themeColor }}>Pos</th>
+                        <th className="border p-2 text-center w-[8%] uppercase font-bold text-[10px]" style={{ borderColor: themeColor }}>Grd</th>
+                        <th className="border p-2 text-left w-[21%] uppercase font-bold text-[10px]" style={{ borderColor: themeColor }}>Remark</th>
                     </tr>
                 </thead>
                 <tbody>
                     {data.rows?.map((row: any, i: number) => (
                         <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                            <td className="border border-slate-300 p-2 font-bold uppercase">{row.subjectName}</td>
-                            <td className="border border-slate-300 p-2 text-center">{row.ca}</td>
-                            <td className="border border-slate-300 p-2 text-center">{row.exam}</td>
-                            <td className="border border-slate-300 p-2 text-center font-black bg-slate-100/50">{row.total}</td>
-                            <td className="border border-slate-300 p-2 text-center text-slate-400">{row.classAverage}</td>
-                            <td className="border border-slate-300 p-2 text-center font-bold">{row.position}</td>
-                            <td className="border border-slate-300 p-2 text-center font-black">{row.grade}</td>
-                            <td className="border border-slate-300 p-2 italic text-slate-600 text-[10px]">{row.autoRemark}</td>
+                            <td className="border p-2 font-bold uppercase" style={{ borderColor: themeColor }}>{row.subjectName}</td>
+                            <td className="border p-2 text-center" style={{ borderColor: themeColor }}>{row.ca}</td>
+                            <td className="border p-2 text-center" style={{ borderColor: themeColor }}>{row.exam}</td>
+                            <td className="border p-2 text-center font-black bg-slate-100/50" style={{ borderColor: themeColor }}>{row.total}</td>
+                            <td className="border p-2 text-center text-slate-400" style={{ borderColor: themeColor }}>{row.classAverage}</td>
+                            <td className="border p-2 text-center font-bold" style={{ borderColor: themeColor }}>{row.position}</td>
+                            <td className="border p-2 text-center font-black" style={{ borderColor: themeColor }}>{row.grade}</td>
+                            <td className="border p-2 italic text-slate-600 text-[10px]" style={{ borderColor: themeColor }}>{row.autoRemark}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -164,7 +178,10 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             </div>
 
             {/* ── SIGNATURES ── */}
-            <div className="grid grid-cols-2 gap-16 pt-10 mt-auto border-t-2 border-slate-100">
+            <div 
+                className="grid grid-cols-2 gap-16 pt-10 mt-auto border-t-2"
+                style={{ borderTopColor: `${themeColor}20` }}
+            >
                 <div className="text-center flex flex-col items-center">
                     <div className="h-20 flex items-end justify-center mb-2">
                         {data.teacherSigBase64 || data.classTeacherSignatureUrl ? (
@@ -205,7 +222,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
             {/* ── FOOTER ── */}
             <div className="mt-12 flex items-center justify-between opacity-40">
                 <div className="flex items-center gap-2">
-                    <ShieldCheck size={12} className="text-indigo-600" />
+                    <ShieldCheck size={12} style={{ color: themeColor }} />
                     <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500">
                         Fingerprint: {data.digitalFingerprint || 'GAM-EDU-VERIFIED'}
                     </span>

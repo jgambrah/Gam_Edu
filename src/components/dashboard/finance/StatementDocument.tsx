@@ -21,6 +21,8 @@ interface StatementDocumentProps {
 
 export function StatementDocument({ student, records, dateRange, summary, schoolProfile }: StatementDocumentProps) {
   
+  const themeColor = schoolProfile?.brandColor || '#1e293b';
+
   // Calculate summary for the PERIOD being displayed
   const periodSummary = useMemo(() => {
     if (!records) return { totalBilled: 0, totalPaid: 0 };
@@ -49,7 +51,10 @@ export function StatementDocument({ student, records, dateRange, summary, school
       }}
     >
       {/* Header */}
-      <header className="flex items-center justify-between pb-4 border-b-2 border-black">
+      <header 
+        className="flex items-center justify-between pb-4 border-b-2"
+        style={{ borderBottomColor: themeColor }}
+      >
         <div className="flex items-center gap-4">
           {schoolProfile?.logoBase64 ? (
             <img 
@@ -68,7 +73,12 @@ export function StatementDocument({ student, records, dateRange, summary, school
             <AppLogo className="h-16 w-16 text-slate-800" />
           )}
           <div>
-            <h1 className="text-2xl font-bold uppercase tracking-wide">{schoolProfile?.name || 'School Name'}</h1>
+            <h1 
+              className="text-2xl font-bold uppercase tracking-wide"
+              style={{ color: themeColor }}
+            >
+              {schoolProfile?.name || 'School Name'}
+            </h1>
             <p className="text-xs text-gray-500">{schoolProfile?.address || 'School Address'}</p>
           </div>
         </div>
@@ -97,11 +107,11 @@ export function StatementDocument({ student, records, dateRange, summary, school
       <section>
         <table className="w-full text-sm">
           <thead className="bg-gray-50">
-            <tr className="border-b border-t border-gray-200">
-              <th className="text-left p-3 font-bold uppercase text-gray-600 w-1/2">Date & Description</th>
-              <th className="text-right p-3 font-bold uppercase text-gray-600">Charges</th>
-              <th className="text-right p-3 font-bold uppercase text-gray-600">Payments</th>
-              <th className="text-right p-3 font-bold uppercase text-gray-600">Balance</th>
+            <tr className="border-b border-t border-gray-200" style={{ backgroundColor: themeColor, color: '#ffffff' }}>
+              <th className="text-left p-3 font-bold uppercase text-[10px] w-1/2">Date & Description</th>
+              <th className="text-right p-3 font-bold uppercase text-[10px]">Charges</th>
+              <th className="text-right p-3 font-bold uppercase text-[10px]">Payments</th>
+              <th className="text-right p-3 font-bold uppercase text-[10px]">Balance</th>
             </tr>
           </thead>
           <tbody>
@@ -121,7 +131,7 @@ export function StatementDocument({ student, records, dateRange, summary, school
                   </td>
                   <td className="text-right p-3 font-mono">GH₵{debit > 0 ? debit.toFixed(2) : '-'}</td>
                   <td className="text-right p-3 font-mono text-green-600">GH₵{credit > 0 ? credit.toFixed(2) : '-'}</td>
-                  <td className="text-right p-3 font-mono">GH₵{runningBalance.toFixed(2)}</td>
+                  <td className="text-right p-3 font-mono font-bold" style={{ color: themeColor }}>GH₵{runningBalance.toFixed(2)}</td>
                 </tr>
               )
             })}
@@ -140,7 +150,10 @@ export function StatementDocument({ student, records, dateRange, summary, school
             <span className="font-medium">Payments this Period</span>
             <span className="font-mono text-green-600">GH₵ {periodSummary.totalPaid.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between py-4 bg-gray-100 px-4 rounded-b-lg text-lg">
+          <div 
+            className="flex justify-between py-4 px-4 rounded-b-lg text-lg text-white"
+            style={{ backgroundColor: themeColor }}
+          >
             <span className="font-bold">Total Outstanding Balance</span>
             <span className="font-bold">GH₵ {summary.balance.toFixed(2)}</span>
           </div>

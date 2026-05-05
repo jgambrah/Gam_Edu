@@ -17,7 +17,7 @@ import {
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
   CalendarDays, CalendarIcon, ArrowRightCircle, PenTool, X,
-  Facebook, Instagram, Linkedin, Shield
+  Facebook, Instagram, Linkedin, Shield, Palette
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -48,6 +48,7 @@ export default function SchoolProfilePage() {
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [brandColor, setBrandColor] = useState('#2563eb');
   const [headmasterSignature, setHeadmasterSignature] = useState<string>('');
   const [allowAdminFinanceAccess, setAllowAdminFinanceAccess] = useState(true);
   
@@ -72,6 +73,7 @@ export default function SchoolProfilePage() {
         setEmail(profile.email || '');
         setWebsite(profile.website || '');
         setLogoUrl(profile.logoUrl || '');
+        setBrandColor(profile.brandColor || '#2563eb');
         setHeadmasterSignature(profile.headmasterSignature || profile.headmasterSignatureUrl || '');
         setFacebookUrl(profile.facebookUrl || '');
         setInstagramUrl(profile.instagramUrl || '');
@@ -145,7 +147,7 @@ export default function SchoolProfilePage() {
     setIsSaving(true);
     try {
         const brandingData = {
-            name, motto, address, phone, email, website, logoUrl, 
+            name, motto, address, phone, email, website, logoUrl, brandColor,
             headmasterSignature,
             headmasterSignatureUrl: headmasterSignature,
             facebookUrl,
@@ -215,24 +217,40 @@ export default function SchoolProfilePage() {
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-sm font-bold text-slate-700">Headmaster Signature (Global)</Label>
-                            <div className="flex flex-col items-center gap-4 p-6 border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 transition-colors hover:bg-slate-50 h-full justify-center text-center">
-                                <div className="relative h-32 w-full border-4 border-white rounded-2xl overflow-hidden bg-white shadow-xl flex items-center justify-center shrink-0">
-                                    {headmasterSignature ? (
-                                        <div className="relative w-full h-full p-2">
-                                            <img src={headmasterSignature} alt="Signature Preview" className="h-full w-full object-contain mix-blend-multiply" />
-                                            <button type="button" className="absolute top-1 right-1 bg-red-50 text-red-500 rounded-full p-1" onClick={() => setHeadmasterSignature('')}><X className="h-3 w-3"/></button>
-                                        </div>
-                                    ) : (
-                                        <PenTool className="h-12 w-12 text-slate-200" />
-                                    )}
+                            <Label className="text-sm font-bold text-slate-700">Branding & Identity</Label>
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2 font-bold"><Palette className="h-4 w-4 text-indigo-600"/> Primary Brand Color</Label>
+                                    <div className="flex gap-2 items-center">
+                                        <input 
+                                            type="color" 
+                                            value={brandColor} 
+                                            onChange={e => setBrandColor(e.target.value)} 
+                                            className="h-12 w-12 rounded-xl cursor-pointer border-4 border-white shadow-sm p-0 overflow-hidden" 
+                                        />
+                                        <Input value={brandColor} onChange={e => setBrandColor(e.target.value)} className="w-32 font-mono font-bold uppercase border-2 h-12" />
+                                    </div>
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase leading-tight">This color will be used for headers, borders, and accents on all printed report cards and receipts.</p>
                                 </div>
-                                <div>
-                                    <input id="sig-upload" type="file" accept="image/png, image/jpeg" onChange={handleSignatureUpload} className="hidden" />
-                                    <Button type="button" variant="outline" onClick={() => document.getElementById('sig-upload')?.click()} className="bg-white border-2 font-bold rounded-xl h-10 px-6">
-                                        <Upload className="mr-2 h-4 w-4"/> Upload Signature
-                                    </Button>
-                                    <p className="text-[9px] text-slate-400 mt-2 font-black uppercase tracking-widest">PNG/JPG, Max 500KB.</p>
+
+                                <div className="space-y-2">
+                                    <Label className="font-bold">Digital Signature (Headmaster)</Label>
+                                    <div className="relative h-20 w-full border-2 border-dashed rounded-xl bg-white flex items-center justify-center overflow-hidden">
+                                        {headmasterSignature ? (
+                                            <>
+                                                <img src={headmasterSignature} alt="Signature Preview" className="h-full w-auto object-contain mix-blend-multiply" />
+                                                <button type="button" className="absolute top-1 right-1 bg-red-50 text-red-500 rounded-full p-1" onClick={() => setHeadmasterSignature('')}><X className="h-3 w-3"/></button>
+                                            </>
+                                        ) : (
+                                            <PenTool className="h-8 w-8 text-slate-200" />
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2 mt-2">
+                                        <input id="sig-upload" type="file" accept="image/png, image/jpeg" onChange={handleSignatureUpload} className="hidden" />
+                                        <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('sig-upload')?.click()} className="text-xs h-8 border-2 font-bold w-full">
+                                            <Upload className="mr-1 h-3 w-3"/> Upload Signature
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
