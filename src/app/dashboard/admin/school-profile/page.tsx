@@ -53,6 +53,8 @@ export default function SchoolProfilePage() {
   const [headmasterSignature, setHeadmasterSignature] = useState<string>('');
   const [allowAdminFinanceAccess, setAllowAdminFinanceAccess] = useState(true);
   const [allowAdminBillingToggles, setAllowAdminBillingToggles] = useState(false);
+  const [autoLockDebtors, setAutoLockDebtors] = useState(false);
+  const [debtorLockThreshold, setDebtorLockThreshold] = useState(0);
   
   // Social Links
   const [facebookUrl, setFacebookUrl] = useState('');
@@ -85,6 +87,8 @@ export default function SchoolProfilePage() {
         setExamWeight(profile.examWeight ?? 70);
         setAllowAdminFinanceAccess(profile.allowAdminFinanceAccess !== false);
         setAllowAdminBillingToggles(profile.allowAdminBillingToggles === true);
+        setAutoLockDebtors(profile.autoLockDebtors === true);
+        setDebtorLockThreshold(Number(profile.debtorLockThreshold) || 0);
         
         if (profile.termStartDate) {
             setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
@@ -163,6 +167,8 @@ export default function SchoolProfilePage() {
             nextTermDate: nextTermDate ? format(nextTermDate, 'yyyy-MM-dd') : null,
             allowAdminFinanceAccess,
             allowAdminBillingToggles,
+            autoLockDebtors,
+            debtorLockThreshold,
             updatedAt: serverTimestamp()
         };
 
@@ -297,9 +303,9 @@ export default function SchoolProfilePage() {
                     <div className="space-y-6">
                         <div className="flex items-center gap-2"><Globe className="h-5 w-5 text-indigo-600"/><h3 className="text-lg font-black text-slate-800 uppercase tracking-tight italic">Social Media Links</h3></div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-600 font-bold"><Facebook className="h-3 w-3"/> Facebook</Label><Input value={facebookUrl} onChange={e => setFacebookUrl(e.target.value)} placeholder="https://..." className="h-11 border-2 rounded-xl" /></div>
-                            <div className="space-y-2"><Label className="flex items-center gap-2 text-pink-600 font-bold"><Instagram className="h-3 w-3"/> Instagram</Label><Input value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} placeholder="https://..." className="h-11 border-2 rounded-xl" /></div>
-                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-800 font-bold"><Linkedin className="h-3 w-3"/> LinkedIn</Label><Input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="https://..." className="h-11 border-2 rounded-xl" /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-600"><Facebook className="h-3 w-3"/> Facebook</Label><Input value={facebookUrl} onChange={e => setFacebookUrl(e.target.value)} placeholder="https://..." className="h-11 border-2 rounded-xl" /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 text-pink-600"><Instagram className="h-3 w-3"/> Instagram</Label><Input value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} placeholder="https://..." className="h-11 border-2 rounded-xl" /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 text-blue-800"><Linkedin className="h-3 w-3"/> LinkedIn</Label><Input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="https://..." className="h-11 border-2 rounded-xl" /></div>
                         </div>
                     </div>
 
@@ -374,6 +380,37 @@ export default function SchoolProfilePage() {
                                     disabled={role !== 'Director' && !isCEO}
                                     className="h-7 w-7 rounded-lg border-2"
                                 />
+                            </div>
+
+                            {/* --- NEW: FINANCIAL ENFORCEMENT --- */}
+                            <div className="flex flex-col rounded-2xl border-4 p-6 bg-red-50/50 border-red-100 shadow-sm space-y-6">
+                                <div className="flex flex-row items-center justify-between">
+                                    <div className="space-y-1 pr-4">
+                                        <Label className="text-base font-black text-red-800 flex items-center gap-2">
+                                            <Shield className="h-4 w-4 text-red-600"/>
+                                            Auto-Lock Debtors (Parent Portal)
+                                        </Label>
+                                        <p className="text-xs font-medium text-red-600/70 max-w-md">Restrict parent access to report cards and grades if they owe fees above a threshold.</p>
+                                    </div>
+                                    <Checkbox 
+                                        checked={autoLockDebtors} 
+                                        onCheckedChange={(checked) => setAutoLockDebtors(!!checked)} 
+                                        className="h-7 w-7 rounded-lg border-2 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
+                                    />
+                                </div>
+                                {autoLockDebtors && (
+                                    <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                                        <Label className="text-red-800 font-bold uppercase text-[10px] tracking-widest">Lock threshold amount (GH₵)</Label>
+                                        <Input 
+                                            type="number" 
+                                            value={debtorLockThreshold} 
+                                            onChange={e => setDebtorLockThreshold(Number(e.target.value))} 
+                                            className="max-w-[200px] h-12 border-2 border-red-200 font-black text-red-600 text-lg rounded-xl focus:ring-red-500"
+                                            placeholder="0.00"
+                                        />
+                                        <p className="text-[10px] font-bold text-red-500 uppercase italic">Parents owing more than this amount will be locked out of academic features.</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

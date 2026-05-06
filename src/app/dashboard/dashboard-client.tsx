@@ -9,7 +9,7 @@ import {
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
   Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
-  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe
+  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, ShieldAlert
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -406,7 +406,7 @@ function TeacherDashboard({ profile, classes, isLoading }: any) {
     );
 }
 
-function ParentDashboard({ profile, children, financials, announcements, isLoading }: any) {
+function ParentDashboard({ profile, children, financials, announcements, isLoading, schoolSettings }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Parent';
 
@@ -418,6 +418,37 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
             return sum + Math.max(0, balance);
         }, 0);
     }, [financials]);
+
+    // --- LOCKOUT LOGIC ---
+    const isLockedOut = schoolSettings?.autoLockDebtors === true && totalOutstanding > (schoolSettings?.debtorLockThreshold || 0);
+
+    if (isLockedOut) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 text-center animate-in zoom-in">
+                <div className="bg-red-100 p-6 rounded-full mb-6">
+                    <ShieldAlert className="h-16 w-16 text-red-600" />
+                </div>
+                <h1 className="text-3xl font-black text-slate-800 mb-2">Account Restricted</h1>
+                <p className="text-lg text-slate-600 max-w-md mb-8">
+                    Academic features have been temporarily restricted due to outstanding school fees exceeding the allowed threshold.
+                </p>
+                
+                <Card className="w-full max-w-sm border-red-200 shadow-xl">
+                    <CardHeader className="bg-red-50 border-b border-red-100 pb-4">
+                        <CardTitle className="text-red-800 text-lg">Current Outstanding Balance</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        <div className="text-4xl font-black text-red-600 mb-6">
+                            GH₵ {totalOutstanding.toFixed(2)}
+                        </div>
+                        <Button asChild className="w-full h-14 text-lg bg-red-600 hover:bg-red-700">
+                            <Link href="/dashboard/my-bills">View Invoices & Pay</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -466,7 +497,7 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
                                 </Link>
                             ))
                         ) : (
-                            <p className="text-center py-10 text-muted-foreground italic text-sm">No recent announcements.</p>
+                            <p className="text-center py-10 text-muted-foreground italic text-sm">No children linked.</p>
                         )}
                         <Button variant="outline" className="w-full text-xs font-bold" asChild>
                             <Link href="/dashboard/announcements">View All Announcements</Link>
@@ -631,7 +662,7 @@ export default function DashboardClient() {
     role === 'Director' || 
     role === 'Accountant' || 
     (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
-    profile?.email === 'jamesgambrah@gmail.com';
+    user?.email === 'jamesgambrah@gmail.com';
 
   if (isLoading) {
     return <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>;
@@ -654,7 +685,7 @@ export default function DashboardClient() {
   }
 
   if (role === 'Parent') {
-    return <ParentDashboard profile={profile} children={parentStudents} financials={parentFinancials} announcements={announcements} isLoading={isLoading} />;
+    return <ParentDashboard profile={profile} children={parentStudents} financials={parentFinancials} announcements={announcements} isLoading={isLoading} schoolSettings={schoolSettings} />;
   }
 
   return <StudentDashboard profile={profile} />;
