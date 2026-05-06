@@ -45,7 +45,10 @@ service cloud.firestore {
     function isParent() { return exists(/databases/$(database)/documents/parents/$(request.auth.uid)); }
     
     function isFinanceStaff() { return isAdmin() || getUserRole() == 'Accountant'; }
-    function isDirector() { return isAdmin(); }
+    
+    // STRICT DIRECTOR CHECK: Only the Director role can manage sensitive school settings
+    function isDirector() { return isSignedIn() && getUserRole() == 'Director'; }
+    
     function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian'; }
     function isTransportStaff() { return isAdmin() || getUserRole() == 'Transport Staff'; }
 
@@ -66,11 +69,12 @@ service cloud.firestore {
     
     match /schoolSettings/{schoolId} { 
       allow read: if isSuperAdmin() || isAnyStaff(schoolId);
-      allow write: if isSuperAdmin() || isDirectorOrAdmin(schoolId) || (isAnyStaff(schoolId) && getUserRole() == 'Accountant');
+      // Restricted from 'isAdmin()' to strictly CEO or Director
+      allow write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isDirector(); 
 
       match /{allPaths=**} {
         allow read: if isSuperAdmin() || isAnyStaff(schoolId);
-        allow write: if isSuperAdmin() || isDirectorOrAdmin(schoolId) || (isAnyStaff(schoolId) && getUserRole() == 'Accountant');
+        allow write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isDirector();
       }
     }
 

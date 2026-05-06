@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useFirestore, useDoc, useMemoFirebase, useAuth } from '@/firebase';
 import { doc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRole } from '@/context/role-context';
@@ -27,6 +27,7 @@ import { Calendar } from '@/components/ui/calendar';
 
 export default function SchoolProfilePage() {
   const firestore = useFirestore();
+  const { user } = useAuth();
   const { role, profile: userProfile } = useRole();
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
   const { toast } = useToast();
@@ -192,11 +193,16 @@ export default function SchoolProfilePage() {
     }
   };
 
-  const isDirector = role === 'Director' || role === 'Administrator';
-  const isCEO = userProfile?.email === 'jamesgambrah@gmail.com';
+  // Only the School Director or the Platform CEO can manage school-wide settings
+  const canManage = role === 'Director' || user?.email === 'jamesgambrah@gmail.com';
 
-  if (!isDirector && !isCEO) {
-      return <div className="p-8 text-center text-red-500">Access Denied. Only Directors can manage school profile.</div>;
+  if (!canManage && !isSchoolLoading && !isLoading) {
+      return (
+          <div className="p-8 text-center flex flex-col items-center justify-center min-h-[50vh]">
+              <h2 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h2>
+              <p className="text-slate-600">Only the School Director can modify School Settings and Permissions.</p>
+          </div>
+      );
   }
 
   if (isLoading || isSchoolLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600 h-8 w-8"/></div>;
@@ -361,7 +367,6 @@ export default function SchoolProfilePage() {
                                 <Checkbox 
                                     checked={allowAdminFinanceAccess} 
                                     onCheckedChange={(checked) => setAllowAdminFinanceAccess(!!checked)} 
-                                    disabled={role !== 'Director' && !isCEO}
                                     className="h-7 w-7 rounded-lg border-2"
                                 />
                             </div>
@@ -377,12 +382,11 @@ export default function SchoolProfilePage() {
                                 <Checkbox 
                                     checked={allowAdminBillingToggles} 
                                     onCheckedChange={(checked) => setAllowAdminBillingToggles(!!checked)} 
-                                    disabled={role !== 'Director' && !isCEO}
                                     className="h-7 w-7 rounded-lg border-2"
                                 />
                             </div>
 
-                            {/* --- NEW: FINANCIAL ENFORCEMENT --- */}
+                            {/* --- FINANCIAL ENFORCEMENT --- */}
                             <div className="flex flex-col rounded-2xl border-4 p-6 bg-red-50/50 border-red-100 shadow-sm space-y-6">
                                 <div className="flex flex-row items-center justify-between">
                                     <div className="space-y-1 pr-4">
