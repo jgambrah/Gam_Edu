@@ -6,6 +6,7 @@ import { FinancialRecord, Student } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
 import { DateRange } from 'react-day-picker';
 import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
 
 interface StatementDocumentProps {
   student?: Student;
