@@ -103,6 +103,18 @@ export default function SchoolProfilePage() {
     }
   }, [profile]);
 
+  // Only the School Director or the Platform CEO can manage school-wide settings
+  const canManage = role === 'Director' || user?.email === 'jamesgambrah@gmail.com';
+
+  if (!isSchoolLoading && !isLoading && !canManage) {
+      return (
+          <div className="p-8 text-center flex flex-col items-center justify-center min-h-[50vh]">
+              <h2 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h2>
+              <p className="text-slate-600">Only the School Director can modify School Settings and Permissions.</p>
+          </div>
+      );
+  }
+
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !schoolId) return;
@@ -192,18 +204,6 @@ export default function SchoolProfilePage() {
         setIsSaving(false);
     }
   };
-
-  // Only the School Director or the Platform CEO can manage school-wide settings
-  const canManage = role === 'Director' || user?.email === 'jamesgambrah@gmail.com';
-
-  if (!canManage && !isSchoolLoading && !isLoading) {
-      return (
-          <div className="p-8 text-center flex flex-col items-center justify-center min-h-[50vh]">
-              <h2 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h2>
-              <p className="text-slate-600">Only the School Director can modify School Settings and Permissions.</p>
-          </div>
-      );
-  }
 
   if (isLoading || isSchoolLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600 h-8 w-8"/></div>;
 
