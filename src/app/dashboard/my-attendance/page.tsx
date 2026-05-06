@@ -5,7 +5,7 @@ import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
