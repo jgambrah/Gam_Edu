@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
@@ -430,7 +431,8 @@ export default function ReportCardManager() {
                 schoolId, 
                 `${processedReport.student.firstName} ${processedReport.student.lastName}`, 
                 processedReport.overallAverage, 
-                type
+                type,
+                term
             );
             
             if (res.success && res.text) {
