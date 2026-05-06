@@ -11,7 +11,7 @@ interface StatementDocumentProps {
   student?: Student;
   records: FinancialRecord[];
   dateRange?: DateRange;
-  summary: { // This is now the OVERALL summary
+  summary: { 
     totalBilled: number;
     totalPaid: number;
     balance: number;
@@ -21,7 +21,8 @@ interface StatementDocumentProps {
 
 export function StatementDocument({ student, records, dateRange, summary, schoolProfile }: StatementDocumentProps) {
   
-  const themeColor = schoolProfile?.brandColor || '#1e293b';
+  const primaryTheme = schoolProfile?.brandColor || '#1e293b';
+  const secondaryTheme = schoolProfile?.secondaryColor || primaryTheme;
 
   // Calculate summary for the PERIOD being displayed
   const periodSummary = useMemo(() => {
@@ -33,7 +34,6 @@ export function StatementDocument({ student, records, dateRange, summary, school
   
   // Running balance calculation needs to account for the starting balance of the period
   const balanceBroughtForward = useMemo(() => {
-    // The overall balance minus the net change of the filtered period gives us the starting balance.
     const periodNetChange = periodSummary.totalBilled - periodSummary.totalPaid;
     return summary.balance - periodNetChange;
   }, [summary, periodSummary]);
@@ -43,132 +43,135 @@ export function StatementDocument({ student, records, dateRange, summary, school
 
   return (
     <div 
-      className="bg-white text-black font-sans p-8 mx-auto"
+      className="bg-white text-black font-sans flex flex-col"
       style={{ 
           width: '210mm', 
           minHeight: '297mm',
           position: 'relative' 
       }}
     >
-      {/* Header */}
+      {/* Header: High Impact Institutional Branding */}
       <header 
-        className="flex items-center justify-between pb-4 border-b-2"
-        style={{ borderBottomColor: themeColor }}
+        className="flex items-center justify-between px-10 py-10 mb-8 rounded-b-[3rem] shadow-lg"
+        style={{ backgroundColor: primaryTheme, color: '#ffffff' }}
       >
         <div className="flex items-center gap-4">
-          {schoolProfile?.logoBase64 ? (
-            <img 
-              src={schoolProfile.logoBase64} 
-              alt="School Logo" 
-              className="w-20 h-20 object-contain"
-            />
-          ) : schoolProfile?.logoUrl ? (
-            <img 
-              src={schoolProfile.logoUrl} 
-              alt="School Logo" 
-              className="w-20 h-20 object-contain"
-              crossOrigin="anonymous"
-            />
-          ) : (
-            <AppLogo className="h-16 w-16 text-slate-800" />
-          )}
+          <div className="w-16 h-16 bg-white rounded-2xl p-2 flex items-center justify-center shadow-inner">
+            {schoolProfile?.logoBase64 ? (
+              <img 
+                src={schoolProfile.logoBase64} 
+                alt="School Logo" 
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <AppLogo className="w-full h-full text-slate-800" />
+            )}
+          </div>
           <div>
-            <h1 
-              className="text-2xl font-bold uppercase tracking-wide"
-              style={{ color: themeColor }}
-            >
+            <h1 className="text-2xl font-black uppercase tracking-tight leading-none mb-1">
               {schoolProfile?.name || 'School Name'}
             </h1>
-            <p className="text-xs text-gray-500">{schoolProfile?.address || 'School Address'}</p>
+            <p className="text-[10px] opacity-70 font-bold uppercase tracking-widest">{schoolProfile?.address || 'School Address'}</p>
           </div>
         </div>
         <div className="text-right">
-          <h2 className="text-3xl font-bold uppercase text-gray-400 tracking-wider">Statement</h2>
-          <p className="text-xs font-mono text-gray-500 mt-1">
-            {format(new Date(), 'PPP')}
+          <h2 className="text-4xl font-black uppercase tracking-widest opacity-20">Statement</h2>
+          <p className="text-[10px] font-mono font-bold mt-1 opacity-60">
+            GENERATED: {format(new Date(), 'PPP')}
           </p>
         </div>
       </header>
       
-      {/* Billed To & Details */}
-      <section className="grid grid-cols-2 gap-8 my-8 text-sm">
-        <div>
-          <h3 className="text-xs uppercase font-bold text-gray-500 mb-2">Statement For</h3>
-          <p className="font-bold text-base">{student?.firstName} {student?.lastName}</p>
-          <p className="text-gray-600 font-mono">{student ? formatStudentId(student) : ''}</p>
-        </div>
-        <div className="text-right">
-          <h3 className="text-xs uppercase font-bold text-gray-500 mb-2">Statement Period</h3>
-          <p>{dateRange?.from ? format(dateRange.from, 'PPP') : 'Start of Records'} - {dateRange?.to ? format(dateRange.to, 'PPP') : 'Today'}</p>
-        </div>
-      </section>
+      <div className="px-10 flex-1">
+        {/* Billed To & Details */}
+        <section className="grid grid-cols-2 gap-8 my-8 text-sm">
+          <div>
+            <h3 className="text-[10px] uppercase font-black text-slate-400 mb-2 tracking-widest">Statement Prepared For</h3>
+            <p className="font-black text-xl text-slate-900 uppercase">{student?.firstName} {student?.lastName}</p>
+            <p className="text-slate-500 font-mono font-bold text-xs">{student ? formatStudentId(student) : ''}</p>
+          </div>
+          <div className="text-right">
+            <h3 className="text-[10px] uppercase font-black text-slate-400 mb-2 tracking-widest">Accounting Period</h3>
+            <p className="font-bold text-slate-600">{dateRange?.from ? format(dateRange.from, 'PPP') : 'Start of Records'} - {dateRange?.to ? format(dateRange.to, 'PPP') : 'Today'}</p>
+          </div>
+        </section>
 
-      {/* Line Items Table */}
-      <section>
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr className="border-b border-t border-gray-200" style={{ backgroundColor: themeColor, color: '#ffffff' }}>
-              <th className="text-left p-3 font-bold uppercase text-[10px] w-1/2">Date & Description</th>
-              <th className="text-right p-3 font-bold uppercase text-[10px]">Charges</th>
-              <th className="text-right p-3 font-bold uppercase text-[10px]">Payments</th>
-              <th className="text-right p-3 font-bold uppercase text-[10px]">Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b border-gray-200 bg-slate-50">
-                <td colSpan={3} className="p-3 font-bold">Balance Brought Forward</td>
-                <td className="text-right p-3 font-mono font-bold">GH₵{balanceBroughtForward.toFixed(2)}</td>
-            </tr>
-            {records.map(rec => {
-              const debit = rec.billedAmount;
-              const credit = (rec.amountPaid || 0) + (rec.waiverAmount || 0);
-              runningBalance += (debit - credit);
-              return (
-                <tr key={rec.id} className="border-b border-gray-200">
-                  <td className="p-3">
-                    <p className="font-medium">{rec.description}</p>
-                    <p className="text-xs text-gray-500">{format(rec.createdAt.toDate(), 'PPP')}</p>
-                  </td>
-                  <td className="text-right p-3 font-mono">GH₵{debit > 0 ? debit.toFixed(2) : '-'}</td>
-                  <td className="text-right p-3 font-mono text-green-600">GH₵{credit > 0 ? credit.toFixed(2) : '-'}</td>
-                  <td className="text-right p-3 font-mono font-bold" style={{ color: themeColor }}>GH₵{runningBalance.toFixed(2)}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </section>
-      
-      {/* Totals */}
-      <section className="flex justify-end mt-8">
-        <div className="w-1/2 text-sm">
-          <div className="flex justify-between py-2 border-b">
-            <span className="font-medium">Charges this Period</span>
-            <span className="font-mono">GH₵ {periodSummary.totalBilled.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between py-2 border-b">
-            <span className="font-medium">Payments this Period</span>
-            <span className="font-mono text-green-600">GH₵ {periodSummary.totalPaid.toFixed(2)}</span>
-          </div>
-          <div 
-            className="flex justify-between py-4 px-4 rounded-b-lg text-lg text-white"
-            style={{ backgroundColor: themeColor }}
-          >
-            <span className="font-bold">Total Outstanding Balance</span>
-            <span className="font-bold">GH₵ {summary.balance.toFixed(2)}</span>
-          </div>
-        </div>
-      </section>
+        {/* Line Items Table */}
+        <section className="mt-8">
+            <h3 
+                className="text-[11px] font-black uppercase tracking-[0.3em] mb-4 pb-1 border-b-4"
+                style={{ color: primaryTheme, borderBottomColor: secondaryTheme }}
+            >
+                Transaction History
+            </h3>
+            <table className="w-full text-xs border-collapse rounded-xl overflow-hidden shadow-sm" style={{ border: `2px solid ${secondaryTheme}` }}>
+                <thead>
+                    <tr style={{ backgroundColor: secondaryTheme, color: '#ffffff' }}>
+                        <th className="text-left p-4 font-black uppercase text-[10px] tracking-widest">Date & Description</th>
+                        <th className="text-right p-4 font-black uppercase text-[10px] tracking-widest">Charges</th>
+                        <th className="text-right p-4 font-black uppercase text-[10px] tracking-widest">Payments</th>
+                        <th className="text-right p-4 font-black uppercase text-[10px] tracking-widest bg-black/10">Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr className="bg-slate-50 border-b" style={{ borderBottomColor: `${secondaryTheme}20` }}>
+                        <td colSpan={3} className="p-4 font-black text-slate-400 uppercase tracking-widest text-[9px]">Balance Brought Forward</td>
+                        <td className="text-right p-4 font-black text-sm">GH₵ {balanceBroughtForward.toFixed(2)}</td>
+                    </tr>
+                    {records.map((rec, i) => {
+                        const debit = rec.billedAmount;
+                        const credit = (rec.amountPaid || 0) + (rec.waiverAmount || 0);
+                        runningBalance += (debit - credit);
+                        return (
+                            <tr key={rec.id} className={cn("border-b", i % 2 === 0 ? "bg-white" : "bg-slate-50/50")} style={{ borderBottomColor: `${secondaryTheme}10` }}>
+                                <td className="p-4 border-r" style={{ borderRightColor: `${secondaryTheme}10` }}>
+                                    <p className="font-bold text-slate-800">{rec.description}</p>
+                                    <p className="text-[9px] text-slate-400 font-bold uppercase mt-1">{format(rec.createdAt.toDate(), 'dd MMM yyyy')}</p>
+                                </td>
+                                <td className="text-right p-4 font-bold text-slate-600 border-r" style={{ borderRightColor: `${secondaryTheme}10` }}>{debit > 0 ? `GH₵ ${debit.toFixed(2)}` : '-'}</td>
+                                <td className="text-right p-4 font-bold text-emerald-600 border-r" style={{ borderRightColor: `${secondaryTheme}10` }}>{credit > 0 ? `GH₵ ${credit.toFixed(2)}` : '-'}</td>
+                                <td className="text-right p-4 font-black text-sm" style={{ color: primaryTheme }}>GH₵ {runningBalance.toFixed(2)}</td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+        </section>
+        
+        {/* Summary Totals */}
+        <section className="flex justify-end mt-10">
+            <div className="w-1/2 space-y-2">
+                <div className="flex justify-between py-2 border-b text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                    <span>Charges this Period</span>
+                    <span className="text-slate-900 font-mono">GH₵ {periodSummary.totalBilled.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                    <span>Payments this Period</span>
+                    <span className="text-emerald-600 font-mono">GH₵ {periodSummary.totalPaid.toFixed(2)}</span>
+                </div>
+                <div 
+                    className="flex justify-between items-center py-6 px-6 rounded-2xl shadow-2xl text-white mt-4"
+                    style={{ backgroundColor: primaryTheme }}
+                >
+                    <span className="font-black uppercase tracking-tighter text-sm">Statement Balance</span>
+                    <span className="font-black text-2xl font-mono">GH₵ {summary.balance.toFixed(2)}</span>
+                </div>
+                <p className="text-[9px] text-slate-400 font-bold italic text-right pt-2 uppercase">
+                    * Verified Institutional Transcript of Accounts
+                </p>
+            </div>
+        </section>
+      </div>
 
       {/* Footer */}
-      <footer className="absolute bottom-8 left-8 right-8 text-sm">
-        <div className="flex justify-between items-end pt-12">
+      <footer className="px-10 pb-12 mt-auto">
+        <div className="flex justify-between items-end">
             <div className="text-center w-1/3">
-                <div className="border-b-2 border-dashed border-gray-300 mb-2 w-4/5 mx-auto"></div>
-                <p className="text-xs font-bold uppercase">Bursar's Signature</p>
+                <div className="border-b-2 border-dashed border-slate-300 mb-2 w-full"></div>
+                <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Bursar's Verified Seal</p>
             </div>
-             <div className="w-1/3 text-right">
-                <p className="text-xs text-gray-400">Generated by GAM Edu</p>
+             <div className="text-right opacity-20">
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">GAM-EDU Cloud Ledger System</p>
              </div>
         </div>
       </footer>

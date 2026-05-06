@@ -17,7 +17,7 @@ import {
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
   CalendarDays, CalendarIcon, ArrowRightCircle, PenTool, X,
-  Facebook, Instagram, Linkedin, Shield, Palette, Lock
+  Facebook, Instagram, Linkedin, Shield, Palette, Lock, Eraser
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -49,6 +49,7 @@ export default function SchoolProfilePage() {
   const [website, setWebsite] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [brandColor, setBrandColor] = useState('#2563eb');
+  const [secondaryColor, setSecondaryColor] = useState('');
   const [headmasterSignature, setHeadmasterSignature] = useState<string>('');
   const [allowAdminFinanceAccess, setAllowAdminFinanceAccess] = useState(true);
   const [allowAdminBillingToggles, setAllowAdminBillingToggles] = useState(false);
@@ -75,6 +76,7 @@ export default function SchoolProfilePage() {
         setWebsite(profile.website || '');
         setLogoUrl(profile.logoUrl || '');
         setBrandColor(profile.brandColor || '#2563eb');
+        setSecondaryColor(profile.secondaryColor || '');
         setHeadmasterSignature(profile.headmasterSignature || profile.headmasterSignatureUrl || '');
         setFacebookUrl(profile.facebookUrl || '');
         setInstagramUrl(profile.instagramUrl || '');
@@ -150,6 +152,7 @@ export default function SchoolProfilePage() {
     try {
         const brandingData = {
             name, motto, address, phone, email, website, logoUrl, brandColor,
+            secondaryColor,
             headmasterSignature,
             headmasterSignatureUrl: headmasterSignature,
             facebookUrl,
@@ -220,21 +223,36 @@ export default function SchoolProfilePage() {
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-sm font-bold text-slate-700">Branding & Identity</Label>
+                            <Label className="text-sm font-bold text-slate-700">Instituional Branding</Label>
                             <div className="space-y-6">
-                                <div className="space-y-2">
-                                    <Label className="flex items-center gap-2 font-bold"><Palette className="h-4 w-4 text-indigo-600"/> Primary Brand Color</Label>
-                                    <div className="flex gap-2 items-center">
-                                        <input 
-                                            type="color" 
-                                            value={brandColor} 
-                                            onChange={e => setBrandColor(e.target.value)} 
-                                            className="h-12 w-12 rounded-xl cursor-pointer border-4 border-white shadow-sm p-0 overflow-hidden" 
-                                        />
-                                        <Input value={brandColor} onChange={e => setBrandColor(e.target.value)} className="w-32 font-mono font-bold uppercase border-2 h-12" />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest text-slate-500">Primary Color</Label>
+                                        <div className="flex gap-2 items-center">
+                                            <input 
+                                                type="color" 
+                                                value={brandColor} 
+                                                onChange={e => setBrandColor(e.target.value)} 
+                                                className="h-12 w-12 rounded-xl cursor-pointer border-4 border-white shadow-sm p-0 overflow-hidden" 
+                                            />
+                                            <Input value={brandColor} onChange={e => setBrandColor(e.target.value)} className="font-mono font-bold uppercase border-2 h-12" />
+                                        </div>
                                     </div>
-                                    <p className="text-[10px] text-slate-500 font-bold uppercase leading-tight">This color will be used for headers, borders, and accents on all printed report cards and receipts.</p>
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest text-slate-500">Secondary Color</Label>
+                                        <div className="flex gap-2 items-center">
+                                            <input 
+                                                type="color" 
+                                                value={secondaryColor || '#ffffff'} 
+                                                onChange={e => setSecondaryColor(e.target.value)} 
+                                                className="h-12 w-12 rounded-xl cursor-pointer border-4 border-white shadow-sm p-0 overflow-hidden" 
+                                            />
+                                            <Input value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} placeholder="None" className="font-mono font-bold uppercase border-2 h-12" />
+                                            <Button type="button" variant="ghost" size="icon" onClick={() => setSecondaryColor('')} className="h-12 w-12 border-2 text-slate-400 hover:text-red-500"><Eraser className="h-4 w-4"/></Button>
+                                        </div>
+                                    </div>
                                 </div>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase leading-tight">Primary: Backgrounds/Titles. Secondary: Table borders/Accents.</p>
 
                                 <div className="space-y-2">
                                     <Label className="font-bold">Digital Signature (Headmaster)</Label>
