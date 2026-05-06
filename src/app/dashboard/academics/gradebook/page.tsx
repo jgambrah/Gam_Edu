@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, FileSpreadsheet, Trash2, History } from 'lucide-react';
+import { Loader2, Save, FileSpreadsheet, Trash2, History, Sparkles } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +27,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { generateClassInsightsAction } from '@/app/actions/insights-ai';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
@@ -55,6 +57,11 @@ export default function GradebookPage() {
     const [scores, setScores] = useState<Record<string, number | ''>>({});
     const [remarks, setRemarks] = useState<Record<string, string>>({}); 
     const [isSaving, setIsSaving] = useState(false);
+
+    // AI Insights State
+    const [isInsightsOpen, setIsInsightsOpen] = useState(false);
+    const [insightsText, setInsightsText] = useState<string | null>(null);
+    const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
 
     // Data Fetching
     const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -198,6 +205,38 @@ export default function GradebookPage() {
         }
     };
 
+    const handleGenerateInsights = async () => {
+        if (!schoolId || !classId || !subjectId) return;
+        setIsGeneratingInsights(true);
+        setInsightsText(null);
+        setIsInsightsOpen(true);
+
+        try {
+            const className = classes?.find((c: any) => c.id === classId)?.name || 'Class';
+            const subjectName = subjects?.find((s: any) => s.id === subjectId)?.name || 'Subject';
+            
+            // Format scores for the AI
+            const scoresData = students?.map((s: any) => ({
+                studentName: `${s.firstName} ${s.lastName}`,
+                score: scores[s.uid] ?? ''
+            })) || [];
+
+            const res = await generateClassInsightsAction(schoolId, className, subjectName, scoresData, maxScore);
+            
+            if (res.success && res.text) {
+                setInsightsText(res.text);
+            } else {
+                toast({ variant: 'destructive', title: "AI Error", description: res.error });
+                setIsInsightsOpen(false);
+            }
+        } catch (e) {
+            console.error(e);
+            setIsInsightsOpen(false);
+        } finally {
+            setIsGeneratingInsights(false);
+        }
+    };
+
     const isGlobalLoading = isUserLoading || schoolLoading;
 
     return (
@@ -282,14 +321,24 @@ export default function GradebookPage() {
                                 <CardTitle>Student Roster</CardTitle>
                                 <CardDescription>Enter marks for the selected class and subject.</CardDescription>
                             </div>
-                            <Button 
-                                onClick={handleSaveBatch} 
-                                disabled={isSaving || isGlobalLoading} 
-                                className="bg-blue-600 hover:bg-blue-700 h-12 px-8 font-bold"
-                            >
-                                {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
-                                {isGlobalLoading ? 'Authenticating...' : 'Save All Scores'}
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button 
+                                    variant="outline" 
+                                    className="border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100"
+                                    onClick={handleGenerateInsights}
+                                    disabled={isSaving || isGeneratingInsights}
+                                >
+                                    <Sparkles className="mr-2 h-4 w-4" /> AI Insights
+                                </Button>
+                                <Button 
+                                    onClick={handleSaveBatch} 
+                                    disabled={isSaving || isGlobalLoading} 
+                                    className="bg-blue-600 hover:bg-blue-700 h-12 px-8 font-bold"
+                                >
+                                    {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
+                                    {isGlobalLoading ? 'Authenticating...' : 'Save All Scores'}
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent className="pt-6">
                             {loadingStudents ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-blue-600"/></div> : (
@@ -401,6 +450,35 @@ export default function GradebookPage() {
                     </div>
                 </div>
             )}
+
+            <Dialog open={isInsightsOpen} onOpenChange={setIsInsightsOpen}>
+                <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-purple-700">
+                            <Sparkles className="h-5 w-5" /> Smart Class Insights
+                        </DialogTitle>
+                        <DialogDescription>
+                            AI analysis based on the current scores entered in the roster.
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    <div className="flex-1 overflow-y-auto pr-2 mt-4">
+                        {isGeneratingInsights ? (
+                            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                                <Loader2 className="h-10 w-10 animate-spin text-purple-500" />
+                                <p className="text-purple-600 font-medium">Analyzing student performance...</p>
+                                <p className="text-xs text-muted-foreground">This costs 5 AI credits.</p>
+                            </div>
+                        ) : (
+                            <div className="prose prose-sm prose-purple max-w-none">
+                                <div className="whitespace-pre-wrap text-slate-700 leading-relaxed">
+                                    {insightsText}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
