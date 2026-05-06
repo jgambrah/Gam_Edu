@@ -72,7 +72,21 @@ export function StatementDocument({ student, records, dateRange, summary, school
             <h1 className="text-2xl font-black uppercase tracking-tight leading-none mb-1">
               {schoolProfile?.name || 'School Name'}
             </h1>
-            <p className="text-[10px] opacity-70 font-bold uppercase tracking-widest">{schoolProfile?.address || 'School Address'}</p>
+            
+            {/* --- NEW: SCHOOL CONTACT DETAILS --- */}
+            <div className="mt-1 space-y-0.5">
+                {schoolProfile?.motto && (
+                    <p className="text-xs italic font-medium opacity-90">"{schoolProfile.motto}"</p>
+                )}
+                {schoolProfile?.address && (
+                    <p className="text-[10px] font-medium uppercase tracking-widest">{schoolProfile.address}</p>
+                )}
+                {(schoolProfile?.phone || schoolProfile?.email) && (
+                    <p className="text-[10px] font-medium uppercase tracking-widest">
+                        {schoolProfile?.phone || ""} {schoolProfile?.phone && schoolProfile?.email ? " | " : ""} {schoolProfile?.email || ""}
+                    </p>
+                )}
+            </div>
           </div>
         </div>
         <div className="text-right">

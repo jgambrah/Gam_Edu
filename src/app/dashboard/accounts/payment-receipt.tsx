@@ -40,6 +40,22 @@ export function PaymentReceipt({
              />
           )}
           <h1 className="text-lg font-bold uppercase" style={{ color: primaryTheme }}>{schoolProfile?.name}</h1>
+          
+          {/* --- NEW: SCHOOL CONTACT DETAILS (THERMAL) --- */}
+          <div className="text-center mt-1 space-y-0.5">
+              {schoolProfile?.motto && (
+                  <p className="text-[10px] italic font-medium opacity-90">"{schoolProfile.motto}"</p>
+              )}
+              {schoolProfile?.address && (
+                  <p className="text-[9px] font-medium">{schoolProfile.address}</p>
+              )}
+              {(schoolProfile?.phone || schoolProfile?.email) && (
+                  <p className="text-[9px] font-medium">
+                      {schoolProfile?.phone || ""} {schoolProfile?.phone && schoolProfile?.email ? " | " : ""} {schoolProfile?.email || ""}
+                  </p>
+              )}
+          </div>
+
           <div className="border-b border-black border-dashed my-2"></div>
           <h2 className="text-sm font-bold tracking-widest">OFFICIAL RECEIPT</h2>
           <p className="text-[10px] font-bold">#{payment.id}</p>
@@ -90,7 +106,21 @@ export function PaymentReceipt({
             <h1 className="text-lg font-black uppercase tracking-tight leading-none">
               {schoolProfile?.name || 'School Name'}
             </h1>
-            <p className="text-[9px] opacity-70 mt-1 font-bold">{schoolProfile?.address || 'School Address'}</p>
+            
+            {/* --- NEW: SCHOOL CONTACT DETAILS --- */}
+            <div className="mt-1 space-y-0.5">
+                {schoolProfile?.motto && (
+                    <p className="text-[10px] italic font-medium opacity-90">"{schoolProfile.motto}"</p>
+                )}
+                {schoolProfile?.address && (
+                    <p className="text-[9px] font-medium">{schoolProfile.address}</p>
+                )}
+                {(schoolProfile?.phone || schoolProfile?.email) && (
+                    <p className="text-[9px] font-medium">
+                        {schoolProfile?.phone || ""} {schoolProfile?.phone && schoolProfile?.email ? " | " : ""} {schoolProfile?.email || ""}
+                    </p>
+                )}
+            </div>
           </div>
         </div>
         <div className="text-right">
