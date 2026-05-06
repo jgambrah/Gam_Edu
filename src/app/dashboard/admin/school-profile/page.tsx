@@ -17,7 +17,7 @@ import {
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
   CalendarDays, CalendarIcon, ArrowRightCircle, PenTool, X,
-  Facebook, Instagram, Linkedin, Shield, Palette
+  Facebook, Instagram, Linkedin, Shield, Palette, Lock
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -51,6 +51,7 @@ export default function SchoolProfilePage() {
   const [brandColor, setBrandColor] = useState('#2563eb');
   const [headmasterSignature, setHeadmasterSignature] = useState<string>('');
   const [allowAdminFinanceAccess, setAllowAdminFinanceAccess] = useState(true);
+  const [allowAdminBillingToggles, setAllowAdminBillingToggles] = useState(false);
   
   // Social Links
   const [facebookUrl, setFacebookUrl] = useState('');
@@ -81,6 +82,7 @@ export default function SchoolProfilePage() {
         setCaWeight(profile.caWeight ?? 30);
         setExamWeight(profile.examWeight ?? 70);
         setAllowAdminFinanceAccess(profile.allowAdminFinanceAccess !== false);
+        setAllowAdminBillingToggles(profile.allowAdminBillingToggles === true);
         
         if (profile.termStartDate) {
             setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
@@ -157,6 +159,7 @@ export default function SchoolProfilePage() {
             termEndDate: termEndDate ? format(termEndDate, 'yyyy-MM-dd') : null,
             nextTermDate: nextTermDate ? format(nextTermDate, 'yyyy-MM-dd') : null,
             allowAdminFinanceAccess,
+            allowAdminBillingToggles,
             updatedAt: serverTimestamp()
         };
 
@@ -334,6 +337,22 @@ export default function SchoolProfilePage() {
                                 <Checkbox 
                                     checked={allowAdminFinanceAccess} 
                                     onCheckedChange={(checked) => setAllowAdminFinanceAccess(!!checked)} 
+                                    disabled={role !== 'Director' && !isCEO}
+                                    className="h-7 w-7 rounded-lg border-2"
+                                />
+                            </div>
+
+                            <div className="flex flex-row items-center justify-between rounded-2xl border-2 border-orange-100 p-6 bg-white shadow-sm">
+                                <div className="space-y-1 pr-4">
+                                    <Label className="text-base font-black text-slate-800 flex items-center gap-2">
+                                        <Lock className="h-4 w-4 text-orange-600"/>
+                                        Administrator Billing Toggles
+                                    </Label>
+                                    <p className="text-xs font-medium text-slate-500 max-w-md">Allow Administrators to turn Canteen and Transport billing ON/OFF for students.</p>
+                                </div>
+                                <Checkbox 
+                                    checked={allowAdminBillingToggles} 
+                                    onCheckedChange={(checked) => setAllowAdminBillingToggles(!!checked)} 
                                     disabled={role !== 'Director' && !isCEO}
                                     className="h-7 w-7 rounded-lg border-2"
                                 />

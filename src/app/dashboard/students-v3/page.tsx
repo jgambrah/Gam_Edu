@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { 
   collection, 
   getDocs, 
@@ -13,12 +13,14 @@ import {
   addDoc,
   runTransaction,
   query, 
-  where
+  where,
+  deleteField
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { createNewUser } from '@/app/actions/create-user';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
 import { cn } from '@/lib/utils';
+import { useRole } from '@/context/role-context';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -30,7 +32,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -43,6 +45,7 @@ import { sendSMSAction } from '@/app/actions/sms';
 export default function StudentsV3Page() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
+  const { role } = useRole();
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchool } = useCurrentSchool();
 
@@ -75,6 +78,18 @@ export default function StudentsV3Page() {
   const [usesBus, setUsesBus] = useState(false);
   const [billingModel, setBillingModel] = useState<'Daily' | 'Termly'>('Daily');
   const [canteenBillingMode, setCanteenBillingMode] = useState<'Daily' | 'Termly' | 'None'>('Daily');
+
+  // --- PERMISSIONS ---
+  const schoolSettingsQuery = useMemoFirebase(
+      () => (firestore && adminSchoolId) ? doc(firestore, 'schoolSettings', adminSchoolId) : null,
+      [firestore, adminSchoolId]
+  );
+  const { data: schoolSettings } = useDoc<any>(schoolSettingsQuery as any);
+
+  const canEditBillingToggles = useMemo(() => {
+      if (!role) return false;
+      return role === 'Director' || role === 'Accountant' || (role === 'Administrator' && schoolSettings?.allowAdminBillingToggles === true);
+  }, [role, schoolSettings]);
 
   // --- DATA FETCHING ---
   const loadData = useCallback(async () => {
@@ -265,24 +280,34 @@ export default function StudentsV3Page() {
         }
 
         const studentRef = doc(firestore, 'students', editingStudent.id);
-        await updateDoc(studentRef, {
+        
+        // Build base update object
+        const updateData: any = {
             firstName: (values.firstName as string) || editingStudent.firstName,
             lastName: (values.lastName as string) || editingStudent.lastName,
             classId: selectedClassId || null,
             gender: selectedGender || null,
             dateOfBirth: (values.dateOfBirth as string) || null,
             address: (values.address as string) || null,
-            usesBusService: usesBus,
-            transportBillingModel: usesBus ? billingModel : null,
-            canteenBillingMode: canteenBillingMode || 'Daily',
-            usesCanteen: canteenBillingMode !== 'None',
             photoURL: photoURL || null,
-        });
+            updatedAt: serverTimestamp()
+        };
+
+        // Only update billing fields if the user has permission
+        if (canEditBillingToggles) {
+            updateData.usesBusService = usesBus;
+            updateData.transportBillingModel = usesBus ? billingModel : null;
+            updateData.canteenBillingMode = canteenBillingMode || 'Daily';
+            updateData.usesCanteen = canteenBillingMode !== 'None';
+        }
+
+        await updateDoc(studentRef, updateData);
 
         toast({ title: "Updated", description: "Student profile saved." });
         setEditingStudent(null);
         loadData();
     } catch (error: any) {
+        console.error(error);
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
         setIsSubmitting(false);
@@ -488,38 +513,45 @@ export default function StudentsV3Page() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 
-                <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
-                    <h4 className="text-sm font-bold text-slate-700">Services & Subscriptions</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <Label className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen Mode</Label>
-                            <Select value={canteenBillingMode} onValueChange={(val: any) => setCanteenBillingMode(val)}>
-                                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Daily">Daily</SelectItem>
-                                    <SelectItem value="Termly">Termly</SelectItem>
-                                    <SelectItem value="None">None</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Bus Subscription</Label>
-                            <div className="flex items-center space-x-2 h-10">
-                                <Checkbox id="usesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
-                                <Label htmlFor="usesBusService" className="cursor-pointer font-medium text-slate-600">Uses School Bus</Label>
+                {canEditBillingToggles ? (
+                    <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
+                        <h4 className="font-bold text-sm text-slate-700">Services & Subscriptions</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen Mode</Label>
+                                <Select value={canteenBillingMode} onValueChange={(val: any) => setCanteenBillingMode(val)}>
+                                    <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Daily">Daily</SelectItem>
+                                        <SelectItem value="Termly">Termly</SelectItem>
+                                        <SelectItem value="None">None</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Bus Subscription</Label>
+                                <div className="flex items-center space-x-2 h-10">
+                                    <Checkbox id="usesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
+                                    <Label htmlFor="usesBusService" className="cursor-pointer font-medium text-slate-600">Uses School Bus</Label>
+                                </div>
                             </div>
                         </div>
+                        {usesBus && (
+                            <div className="space-y-2 animate-in fade-in border-t pt-4">
+                                <Label>Bus Billing Model</Label>
+                                <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
+                                    <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                    <SelectContent><SelectItem value="Daily">Daily</SelectItem><SelectItem value="Termly">Termly</SelectItem></SelectContent>
+                                </Select>
+                            </div>
+                        )}
                     </div>
-                    {usesBus && (
-                        <div className="space-y-2 animate-in fade-in border-t pt-4">
-                            <Label>Bus Billing Model</Label>
-                            <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
-                                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                                <SelectContent><SelectItem value="Daily">Daily</SelectItem><SelectItem value="Termly">Termly</SelectItem></SelectContent>
-                            </Select>
-                        </div>
-                    )}
-                </div>
+                ) : (
+                    <div className="p-4 bg-slate-50 border rounded-xl flex items-center gap-3 opacity-60">
+                        <Lock className="h-4 w-4 text-slate-400" />
+                        <p className="text-xs text-slate-500 font-medium italic">Service toggles are locked by administration.</p>
+                    </div>
+                )}
 
                 <DialogFooter>
                     <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
@@ -578,38 +610,45 @@ export default function StudentsV3Page() {
                     </div>
                     <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
                     
-                    <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
-                        <h4 className="text-sm font-bold text-slate-700">Services & Subscriptions</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen Mode</Label>
-                                <Select value={canteenBillingMode} onValueChange={(val: any) => setCanteenBillingMode(val)}>
-                                    <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Daily">Daily</SelectItem>
-                                        <SelectItem value="Termly">Termly</SelectItem>
-                                        <SelectItem value="None">None</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Bus Subscription</Label>
-                                <div className="flex items-center space-x-2 h-10">
-                                    <Checkbox id="editUsesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
-                                    <Label htmlFor="editUsesBusService" className="cursor-pointer font-medium text-slate-600">Uses School Bus</Label>
+                    {canEditBillingToggles ? (
+                        <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
+                            <h4 className="font-bold text-sm text-slate-700">Services & Subscriptions</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen Mode</Label>
+                                    <Select value={canteenBillingMode} onValueChange={(val: any) => setCanteenBillingMode(val)}>
+                                        <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Daily">Daily</SelectItem>
+                                            <SelectItem value="Termly">Termly</SelectItem>
+                                            <SelectItem value="None">None</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Bus Subscription</Label>
+                                    <div className="flex items-center space-x-2 h-10">
+                                        <Checkbox id="editUsesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
+                                        <Label htmlFor="editUsesBusService" className="cursor-pointer font-medium text-slate-600">Uses School Bus</Label>
+                                    </div>
                                 </div>
                             </div>
+                            {usesBus && (
+                                <div className="space-y-2 animate-in fade-in border-t pt-4">
+                                    <Label>Bus Billing Model</Label>
+                                    <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
+                                        <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                        <SelectContent><SelectItem value="Daily">Daily</SelectItem><SelectItem value="Termly">Termly</SelectItem></SelectContent>
+                                    </Select>
+                                </div>
+                            )}
                         </div>
-                        {usesBus && (
-                            <div className="space-y-2 animate-in fade-in border-t pt-4">
-                                <Label>Bus Billing Model</Label>
-                                <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
-                                    <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                                    <SelectContent><SelectItem value="Daily">Daily</SelectItem><SelectItem value="Termly">Termly</SelectItem></SelectContent>
-                                </Select>
-                            </div>
-                        )}
-                    </div>
+                    ) : (
+                        <div className="p-4 bg-slate-50 border rounded-xl flex items-center gap-3 opacity-60">
+                            <Lock className="h-4 w-4 text-slate-400" />
+                            <p className="text-xs text-slate-500 font-medium italic">Service toggles are locked by administration.</p>
+                        </div>
+                    )}
 
                     <DialogFooter>
                         <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
