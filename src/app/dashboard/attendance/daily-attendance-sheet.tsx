@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { StudentDisplay } from '@/components/student-display';
 import { billMultipleStudents } from '@/lib/billing';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { notifyParents } from '@/app/actions/notifications';
 
 const attendanceRecordSchema = z.object({
   id: z.string().optional(),
@@ -172,6 +173,16 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             });
 
             await batch.commit();
+
+            // Notify parents asynchronously
+            const gradedStudentIds = data.records.map(r => r.studentId);
+            notifyParents(
+                gradedStudentIds,
+                "Daily Attendance Recorded 📅",
+                "Your child's attendance for today has been updated. Tap to view details.",
+                "/dashboard/my-attendance"
+            ).catch(err => console.error("Notification failed:", err));
+
             toast({ title: 'Attendance Saved!', description: 'Now processing financial records...' });
 
             const studentsToBill = data.records
@@ -361,7 +372,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                     ? <Loader2 className="mr-2 h-4 w-6 animate-spin"/>
                                     : <Check className="mr-2 h-4 w-6"/>
                                 }
-                                Confirm Attendance & Generate Bills
+                                Confirm Attendance & Notify Parents
                             </Button>
                         </div>
                     </div>
