@@ -2,12 +2,13 @@
 /**
  * @fileOverview Dr. GAM - The Intelligent Campus Assistant.
  * 
- * This flow uses the standard Genkit 1.x registry pattern to provide
- * stable, role-aware guidance to users of the GAM Edu platform.
+ * This flow provides stable, role-aware guidance to users, helping them
+ * navigate the school management platform and assist with administrative writing.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { gemini15Flash } from '@genkit-ai/google-genai';
 
 // --- SCHEMAS ---
 const HistoryMessageSchema = z.object({
@@ -49,27 +50,23 @@ const assistantPrompt = ai.definePrompt({
     #### 1. 👔 FOR ADMINISTRATORS & DIRECTORS
     - **Student/Staff Onboarding**: "People > Students" or "People > Staff Management".
     - **Bulk Import**: "System > Data Import Hub" (Upload CSVs for students/grades).
-    - **Settings**: "System > School Profile" (Logo, Colors, Permissions).
-    - **Financials**: "Financials > Student Billing" or "Financials > Accounting / GL".
-    - **Vouchers**: "Financials > Payment Vouchers".
-    - **Authorization**: "Academics > Authorization Vault" (Sign Report Cards).
     - **Promotion**: "People > Class Promotion" (Move students to next class).
+    - **Financials**: "Financials > Student Billing" or "Financials > Accounting / GL".
+    - **Settings**: "System > School Profile" (Logo, Colors, Permissions).
 
     #### 2. 🍎 FOR TEACHERS
     - **Attendance**: "Academics > Student Attendance" (Daily taking).
     - **Lesson Plans**: "Academics > Lesson Planning" (Use 'Ask AI' to generate).
     - **Gradebook**: "Academics > Gradebook" (Batch score entry).
-    - **Assignments**: "Academics > Assignments & Quizzes".
+    - **Assessments**: "Academics > Assessments".
 
     #### 3. 🎓 FOR STUDENTS
-    - **Learning Hubs**: "Clubs & Activities".
-      - "Nursery Bloom": Interactive AI classroom.
-      - "Senior Academy": Advanced Math, English, Science modules.
-      - "Maths/Science/ELA Clubs": Practice problems and leaderboards.
-    - **My Grades**: "Live Grades" or "My Report Cards".
+    - **Clubs & Activities**: Use this to find the "Nursery Bloom", "Maths Club", or "Coding Club".
+    - **My Grades**: "Live Grades" (ongoing marks) or "My Report Cards" (terminal).
+    - **My Tasks**: "Assignments & Quizzes".
 
     #### 4. 👪 FOR PARENTS
-    - **Children**: "My Children" (Attendance & Behavioral logs).
+    - **Child Tracking**: "My Children" (Attendance & Behavioral logs).
     - **Payments**: "My Bills" (View and pay school fees).
     - **Reports**: "My Report Cards".
 
@@ -78,7 +75,7 @@ const assistantPrompt = ai.definePrompt({
     1. Be friendly, professional, and use emojis! 🍎
     2. Always suggest which sidebar link to click.
     3. If asked to write an announcement, draft it clearly.
-    4. If there is a conversation history, maintain context.
+    4. Always respond in the requested JSON format containing the 'response' field.
 
     USER REQUEST: {{prompt}}
   `,
@@ -92,8 +89,9 @@ const campusAssistantFlow = ai.defineFlow(
     outputSchema: CampusAssistantOutputSchema,
   },
   async (input) => {
+    // Calling the prompt with the stable model reference
     const { output } = await assistantPrompt(input, {
-        model: 'googleai/gemini-1.5-flash',
+        model: gemini15Flash,
         config: {
             temperature: 0.5,
         }
@@ -112,7 +110,9 @@ export async function campusAssistant(input: CampusAssistantInput): Promise<Camp
   try {
     return await campusAssistantFlow(input);
   } catch (error: any) {
-    console.error("Campus Assistant Error:", error);
+    // Log the detailed error to the server console for debugging
+    console.error("DETAILED CAMPUS ASSISTANT ERROR:", error);
+    
     return { 
       response: "I'm sorry, I'm having a little trouble connecting to the school servers right now. Please try again in a few seconds! 🍎" 
     };
