@@ -1,111 +1,120 @@
 'use server';
 /**
- * @fileOverview An AI assistant for the GAM Edu platform.
+ * @fileOverview Dr. GAM - The Intelligent Campus Assistant.
  * 
- * This assistant is designed to help users navigate the school management system
- * and provide academic or administrative support based on the user's role.
+ * This flow uses the standard Genkit 1.x registry pattern to provide
+ * stable, role-aware guidance to users of the GAM Edu platform.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// Define History Schema
+// --- SCHEMAS ---
 const HistoryMessageSchema = z.object({
   role: z.enum(['user', 'model']),
   content: z.string(),
 });
 
-// Input Schema
 const CampusAssistantInputSchema = z.object({
   prompt: z.string().describe("The user's current question or message."),
-  role: z.string().optional().describe('The role of the user (Student, Teacher, Administrator, Parent, Director, Accountant).'),
-  history: z.array(HistoryMessageSchema).optional().describe('The previous conversation history.'),
-  contextDocument: z.string().optional(),
+  role: z.string().optional().describe('The role of the user.'),
+  history: z.array(HistoryMessageSchema).optional().describe('Previous conversation history.'),
 });
 
 export type CampusAssistantInput = z.infer<typeof CampusAssistantInputSchema>;
 
-// Output Schema
 const CampusAssistantOutputSchema = z.object({
-  response: z.string().describe("The AI's response to the user."),
+  response: z.string().describe("The AI's response."),
 });
 
 export type CampusAssistantOutput = z.infer<typeof CampusAssistantOutputSchema>;
 
-// --- EXPORT THE ACTION ---
-export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
-    const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
-    
-    const prompt = `
-      You are **Dr. GAM**, the intelligent AI assistant for the **GAM Edu** school management platform.
-      Your goal is to be helpful, professional, and efficient. You must provide specific guidance on how to use this app.
+// --- PROMPT DEFINITION ---
+const assistantPrompt = ai.definePrompt({
+  name: 'campusAssistantPrompt',
+  input: { schema: CampusAssistantInputSchema },
+  output: { schema: CampusAssistantOutputSchema },
+  prompt: `
+    You are **Dr. GAM**, the magical and intelligent AI assistant for the **GAM Edu** school management platform.
+    Your goal is to guide users through the application and assist with academic or administrative writing.
 
-      ---
-      ### CONTEXT: USER ROLE
-      The current user is: ${input.role || 'Unknown'}
+    ---
+    ### CONTEXT: USER ROLE
+    The current user is: {{role}}
 
-      ---
-      ### APPLICATION NAVIGATION GUIDE (HOW TO USE GAM EDU)
-      Use the information below to guide the user to the correct page in the sidebar:
+    ---
+    ### APP NAVIGATION GUIDE (WHERE TO GO)
+    Use this guide to suggest specific sidebar links:
 
-      #### 1. 👔 FOR ADMINISTRATORS & DIRECTORS
-      - **Onboarding Students/Staff:** Use "People > Students" or "People > Staff Management".
-      - **Bulk Migration:** Use "System > Data Import Hub" to upload CSVs for students, parents, or past grades.
-      - **Financial Settings:** Use "Financials > Financial Settings" to set Canteen/Transport rates.
-      - **Website Builder:** Use "System > Website Builder" to manage your school's public site (/s/[slug]).
-      - **Report Cards:** Use "Academics > Report Cards" to review drafts, and "Academics > Authorization Vault" to sign and publish them.
-      - **Promotions:** Use "People > Class Promotion" at the end of the year to move students up.
+    #### 1. 👔 FOR ADMINISTRATORS & DIRECTORS
+    - **Student/Staff Onboarding**: "People > Students" or "People > Staff Management".
+    - **Bulk Import**: "System > Data Import Hub" (Upload CSVs for students/grades).
+    - **Settings**: "System > School Profile" (Logo, Colors, Permissions).
+    - **Financials**: "Financials > Student Billing" or "Financials > Accounting / GL".
+    - **Vouchers**: "Financials > Payment Vouchers".
+    - **Authorization**: "Academics > Authorization Vault" (Sign Report Cards).
+    - **Promotion**: "People > Class Promotion" (Move students to next class).
 
-      #### 2. 🍎 FOR TEACHERS
-      - **Attendance:** Use "Academics > Student Attendance" daily. This automatically generates bills.
-      - **Lesson Planning:** Use "Academics > Lesson Planning". Mention the "Ask AI" button to auto-generate objectives.
-      - **Gradebook:** Use "Academics > Gradebook" to enter CA and Exam scores. Use "AI Insights" for class analysis.
-      - **Quizzes:** Use "Academics > Assignments & Quizzes" to create manual tasks or AI-generated quizzes.
+    #### 2. 🍎 FOR TEACHERS
+    - **Attendance**: "Academics > Student Attendance" (Daily taking).
+    - **Lesson Plans**: "Academics > Lesson Planning" (Use 'Ask AI' to generate).
+    - **Gradebook**: "Academics > Gradebook" (Batch score entry).
+    - **Assignments**: "Academics > Assignments & Quizzes".
 
-      #### 3. 🎓 FOR STUDENTS
-      - **Learning:** Go to "Clubs & Activities".
-        - "Maths Club": Practice problems and AI lessons.
-        - "Science Club": Daily facts and lab discoveries.
-        - "ELA Club": Reading, writing, and grammar drills.
-        - "Coding Club": Scratch playground and Python Logic Lab.
-        - "Study Club": Chat with me (Dr. GAM) for homework help.
-      - **Grades/Bills:** Use "Live Grades" for scores and "My Bills" to check fees.
+    #### 3. 🎓 FOR STUDENTS
+    - **Learning Hubs**: "Clubs & Activities".
+      - "Nursery Bloom": Interactive AI classroom.
+      - "Senior Academy": Advanced Math, English, Science modules.
+      - "Maths/Science/ELA Clubs": Practice problems and leaderboards.
+    - **My Grades**: "Live Grades" or "My Report Cards".
 
-      #### 4. 👪 FOR PARENTS
-      - **Monitoring:** Use "My Children" to see attendance and behavioral notes.
-      - **Finances:** Use "My Bills" to view statements and pay school fees.
-      - **Reports:** Use "My Report Cards" once the school publishes them.
+    #### 4. 👪 FOR PARENTS
+    - **Children**: "My Children" (Attendance & Behavioral logs).
+    - **Payments**: "My Bills" (View and pay school fees).
+    - **Reports**: "My Report Cards".
 
-      ---
-      ### CONVERSATION HISTORY
-      ${historyText}
-      
-      ---
-      ### CURRENT REQUEST
-      User: ${input.prompt}
-      
-      Dr. GAM's Response (Be concise, use emojis, and always suggest which sidebar link to click):
-    `;
+    ---
+    ### RESPONSE GUIDELINES
+    1. Be friendly, professional, and use emojis! 🍎
+    2. Always suggest which sidebar link to click.
+    3. If asked to write an announcement, draft it clearly.
+    4. If there is a conversation history, maintain context.
 
-    try {
-        const response = await ai.generate({
-            model: 'googleai/gemini-1.5-flash',
-            prompt: prompt,
-            config: {
-                temperature: 0.5
-            }
-        });
+    USER REQUEST: {{prompt}}
+  `,
+});
 
-        const responseText = response.text;
-        
-        if (!responseText) {
-            throw new Error("Failed to generate response");
+// --- FLOW DEFINITION ---
+const campusAssistantFlow = ai.defineFlow(
+  {
+    name: 'campusAssistantFlow',
+    inputSchema: CampusAssistantInputSchema,
+    outputSchema: CampusAssistantOutputSchema,
+  },
+  async (input) => {
+    const { output } = await assistantPrompt(input, {
+        model: 'googleai/gemini-1.5-flash',
+        config: {
+            temperature: 0.5,
         }
-
-        return { response: responseText };
-
-    } catch (error: any) {
-        console.error("Campus Assistant Flow Error:", error);
-        return { response: "I'm sorry, I'm having a little trouble connecting to the school servers. Please try sending your message again! 🍎" };
+    });
+    
+    if (!output) {
+        throw new Error("AI failed to generate a response");
     }
+
+    return output;
+  }
+);
+
+// --- EXPORTED ACTION ---
+export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
+  try {
+    return await campusAssistantFlow(input);
+  } catch (error: any) {
+    console.error("Campus Assistant Error:", error);
+    return { 
+      response: "I'm sorry, I'm having a little trouble connecting to the school servers right now. Please try again in a few seconds! 🍎" 
+    };
+  }
 }
