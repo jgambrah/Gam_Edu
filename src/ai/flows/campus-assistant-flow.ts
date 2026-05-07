@@ -1,6 +1,9 @@
 'use server';
 /**
  * @fileOverview An AI assistant for the GAM Edu platform.
+ * 
+ * This assistant is designed to help users navigate the school management system
+ * and provide academic or administrative support based on the user's role.
  */
 
 import { ai } from '@/ai/genkit';
@@ -15,7 +18,7 @@ const HistoryMessageSchema = z.object({
 // Input Schema
 const CampusAssistantInputSchema = z.object({
   prompt: z.string().describe("The user's current question or message."),
-  role: z.string().optional().describe('The role of the user (Student, Teacher, Administrator).'),
+  role: z.string().optional().describe('The role of the user (Student, Teacher, Administrator, Parent, Director, Accountant).'),
   history: z.array(HistoryMessageSchema).optional().describe('The previous conversation history.'),
   contextDocument: z.string().optional(),
 });
@@ -32,56 +35,56 @@ export type CampusAssistantOutput = z.infer<typeof CampusAssistantOutputSchema>;
 // --- EXPORT THE ACTION ---
 export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
     const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
-    const isStudent = input.role === 'Student';
-    const isTeacher = input.role === 'Teacher';
     
     const prompt = `
-      You are **GAM Edu Assistant**, the intelligent AI assistant for the **GAM Edu** school management platform.
-      Your goal is to be helpful, polite, and efficient. You must adapt your personality based on the user's request.
-  
+      You are **Dr. GAM**, the intelligent AI assistant for the **GAM Edu** school management platform.
+      Your goal is to be helpful, professional, and efficient. You must provide specific guidance on how to use this app.
+
       ---
       ### CONTEXT: USER ROLE
-      The current user is identified as: ${input.role || 'Unknown'}
-  
+      The current user is: ${input.role || 'Unknown'}
+
       ---
-      ### YOUR CAPABILITIES & INSTRUCTIONS
-      ${ isStudent ? `
-      #### 1. 🎓 FOR STUDENTS (Study Helper)
-      - If the user asks about an academic topic, act as a **Tutor**.
-      - Explain concepts simply (e.g., "Explain living cells"). Use analogies.
-      - Quiz them if they ask for practice.
-      - **Example:** If asked "Explain living cells", provide a clear biology explanation, not app support.
-      ` : isTeacher ? `
-      #### 2. 🍎 FOR TEACHERS (Curriculum Assistant)
-      - If asked about **Lesson Planning**, act as an **Expert Curriculum Designer**.
-      - Suggest specific, measurable learning objectives using Bloom's Taxonomy.
-      - Provide creative activity ideas for specific topics (e.g. "Suggest a JHS 1 Science activity for photosynthesis").
-      - Remind them that they can use the "Ask AI" button in the "Lesson Planning" section to automatically fill out their forms.
-      - Draft professional emails or messages to parents.
-      ` : `
-      #### 2. 👔 FOR ADMINISTRATORS & DIRECTORS (Office Assistant)
-      - If the user asks to write a letter, memo, or announcement, act as a **Professional Secretary**.
-      - Draft professional documents. Ask for details if needed (e.g., "Who is this letter for?").
-      - **Example:** "Draft a letter to parents about a holiday" -> Write a formal letter.
-      `}
-  
-      #### 3. 🧭 APP NAVIGATION (For Everyone)
-      - Guide users on how to use GAM Edu.
-      - **Academics:** Mention the "Math Club", "Science Lab", and "ELA Club" for practice.
-      - **Lesson Plans:** Tell Teachers they can create plans in the "Lesson Planning" tab.
-      - **Materials:** Tell users they can find resources in "Learning Materials".
-      - **Attendance:** Explain that attendance is taken in the Class Dashboard.
-  
+      ### APPLICATION NAVIGATION GUIDE (HOW TO USE GAM EDU)
+      Use the information below to guide the user to the correct page in the sidebar:
+
+      #### 1. 👔 FOR ADMINISTRATORS & DIRECTORS
+      - **Onboarding Students/Staff:** Use "People > Students" or "People > Staff Management".
+      - **Bulk Migration:** Use "System > Data Import Hub" to upload CSVs for students, parents, or past grades.
+      - **Financial Settings:** Use "Financials > Financial Settings" to set Canteen/Transport rates.
+      - **Website Builder:** Use "System > Website Builder" to manage your school's public site (/s/[slug]).
+      - **Report Cards:** Use "Academics > Report Cards" to review drafts, and "Academics > Authorization Vault" to sign and publish them.
+      - **Promotions:** Use "People > Class Promotion" at the end of the year to move students up.
+
+      #### 2. 🍎 FOR TEACHERS
+      - **Attendance:** Use "Academics > Student Attendance" daily. This automatically generates bills.
+      - **Lesson Planning:** Use "Academics > Lesson Planning". Mention the "Ask AI" button to auto-generate objectives.
+      - **Gradebook:** Use "Academics > Gradebook" to enter CA and Exam scores. Use "AI Insights" for class analysis.
+      - **Quizzes:** Use "Academics > Assignments & Quizzes" to create manual tasks or AI-generated quizzes.
+
+      #### 3. 🎓 FOR STUDENTS
+      - **Learning:** Go to "Clubs & Activities".
+        - "Maths Club": Practice problems and AI lessons.
+        - "Science Club": Daily facts and lab discoveries.
+        - "ELA Club": Reading, writing, and grammar drills.
+        - "Coding Club": Scratch playground and Python Logic Lab.
+        - "Study Club": Chat with me (Dr. GAM) for homework help.
+      - **Grades/Bills:** Use "Live Grades" for scores and "My Bills" to check fees.
+
+      #### 4. 👪 FOR PARENTS
+      - **Monitoring:** Use "My Children" to see attendance and behavioral notes.
+      - **Finances:** Use "My Bills" to view statements and pay school fees.
+      - **Reports:** Use "My Report Cards" once the school publishes them.
+
       ---
       ### CONVERSATION HISTORY
-      (Use this to remember what the user just said)
       ${historyText}
       
       ---
       ### CURRENT REQUEST
       User: ${input.prompt}
       
-      GAM Edu Assistant Response:
+      Dr. GAM's Response (Be concise, use emojis, and always suggest which sidebar link to click):
     `;
 
     try {
@@ -89,7 +92,7 @@ export async function campusAssistant(input: CampusAssistantInput): Promise<Camp
             model: 'googleai/gemini-1.5-flash',
             prompt: prompt,
             config: {
-                temperature: 0.7
+                temperature: 0.5
             }
         });
 
@@ -103,7 +106,6 @@ export async function campusAssistant(input: CampusAssistantInput): Promise<Camp
 
     } catch (error: any) {
         console.error("Campus Assistant Flow Error:", error);
-        // Provide a user-friendly error message in the response
-        return { response: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment." };
+        return { response: "I'm sorry, I'm having a little trouble connecting to the school servers. Please try sending your message again! 🍎" };
     }
 }
