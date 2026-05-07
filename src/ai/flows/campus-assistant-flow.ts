@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI assistant for the GAM Edu platform.
@@ -87,7 +86,7 @@ export async function campusAssistant(input: CampusAssistantInput): Promise<Camp
 
     try {
         const response = await ai.generate({
-            model: 'googleai/gemini-3-flash-preview',
+            model: 'googleai/gemini-1.5-flash',
             prompt: prompt,
             config: {
                 temperature: 0.7
