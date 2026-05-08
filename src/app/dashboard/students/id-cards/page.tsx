@@ -94,11 +94,13 @@ export default function IDCardGeneratorPage() {
         toast({ title: "Generating ID Cards...", description: "Please wait while we render the high-quality PDF." });
 
         try {
-            // Make the hidden container visible for the capture engine
+            // Ensure element is visible for capture
             element.style.display = 'block'; 
+            element.style.visibility = 'visible';
             
             // Allow time for any remaining layout shifts or image processing
-            await new Promise(res => setTimeout(res, 1500));
+            // Increased to 2000ms for safety on mobile/slow connections
+            await new Promise(res => setTimeout(res, 2000));
 
             const canvas = await html2canvas(element, { 
                 scale: 2, 
@@ -107,25 +109,40 @@ export default function IDCardGeneratorPage() {
                 backgroundColor: '#ffffff'
             });
             
-            const imgData = canvas.toDataURL('image/png');
+            // Check if canvas has dimensions
+            if (canvas.width === 0 || canvas.height === 0) {
+                throw new Error("Canvas capture yielded empty results. Ensure the population is loaded.");
+            }
+
+            // JPEG is significantly more stable for large data URLs in jsPDF than PNG
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            
+            if (!imgData || imgData === 'data:,') {
+                throw new Error("Data URL generation failed.");
+            }
+
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             
-            // Use canvas dimensions directly to avoid 'UNKNOWN' type parsing error in jsPDF
             const imgWidth = canvas.width;
             const imgHeight = canvas.height;
             const ratio = imgWidth / imgHeight;
             const width = pdfWidth;
             const height = width / ratio;
 
-            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+            // Use JPEG format here to match the data URL
+            pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
             pdf.save(`${currentClassName.replace(/\s+/g, '_')}_ID_Cards.pdf`);
             
             element.style.display = 'none';
             toast({ title: "Success", description: "ID Cards PDF exported." });
-        } catch (error) {
+        } catch (error: any) {
             console.error("PDF Export Error:", error);
-            toast({ variant: 'destructive', title: "Export Failed", description: "An error occurred while generating the PDF." });
+            toast({ 
+                variant: 'destructive', 
+                title: "Export Failed", 
+                description: error.message || "An error occurred while generating the PDF." 
+            });
             if (element) element.style.display = 'none';
         } finally {
             setIsGenerating(false);
