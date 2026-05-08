@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -14,17 +14,18 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogOut, Settings, PanelLeft, RefreshCw, User as UserIcon } from 'lucide-react';
+import { LogOut, Settings, PanelLeft, RefreshCw, User as UserIcon, Search, Command } from 'lucide-react';
 import { navItems } from '@/lib/data';
 import { useFirebase, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { auth } from '@/firebase/client-provider';
 import NotificationBell from './notifications';
 import CreditBalance from '@/components/CreditBalance';
 import { AppSidebarContent } from './sidebar';
+import { Input } from '@/components/ui/input';
 
 export default function Header() {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { auth: authInstance } = useFirebase();
@@ -56,6 +57,19 @@ export default function Header() {
     return email.substring(0, 2).toUpperCase();
   };
 
+  // Shortcut listener for search
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        const searchInput = document.getElementById("global-search");
+        searchInput?.focus();
+      }
+    }
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b border-slate-200/50 bg-white/70 backdrop-blur-lg px-4 md:px-6 shadow-sm">
       <div className="flex items-center gap-2">
@@ -72,12 +86,41 @@ export default function Header() {
             </div>
           </SheetContent>
         </Sheet>
-        <h1 className="text-lg font-black text-slate-900 tracking-tight uppercase italic md:text-xl">
+        
+        {/* Page Title - Hidden when search is focused on mobile */}
+        <h1 className={cn(
+            "text-lg font-black text-slate-900 tracking-tight uppercase italic md:text-xl transition-all duration-300",
+            searchFocused ? "hidden md:block opacity-0 lg:opacity-100" : "block opacity-100"
+        )}>
             {pageTitle}
         </h1>
       </div>
 
-      <div className="flex items-center gap-3">
+      {/* GLOBAL SEARCH / COMMAND BAR */}
+      <div className={cn(
+          "flex-1 max-w-md transition-all duration-300 mx-4",
+          searchFocused ? "max-w-xl scale-[1.02]" : "max-w-md"
+      )}>
+          <div className="relative group">
+              <Search className={cn(
+                  "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
+                  searchFocused ? "text-indigo-600" : "text-slate-400"
+              )} />
+              <Input 
+                  id="global-search"
+                  placeholder="Quick search (⌘+K)" 
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setSearchFocused(false)}
+                  className="w-full pl-10 pr-12 h-10 bg-slate-100/50 border-transparent focus:bg-white focus:border-indigo-300 transition-all rounded-xl text-sm"
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden md:flex items-center gap-1 opacity-40 pointer-events-none">
+                  <Command className="h-3 w-3" />
+                  <span className="text-[10px] font-bold">K</span>
+              </div>
+          </div>
+      </div>
+
+      <div className="flex items-center gap-2">
         <Button 
             variant="ghost" 
             size="icon" 
@@ -89,9 +132,11 @@ export default function Header() {
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
             <span className="sr-only">Refresh</span>
         </Button>
+        
         <div className="hidden sm:block">
             <CreditBalance />
         </div>
+        
         <NotificationBell />
         
         <DropdownMenu>
@@ -128,4 +173,8 @@ export default function Header() {
       </div>
     </header>
   );
+}
+
+function cn(...inputs: any[]) {
+    return inputs.filter(Boolean).join(' ');
 }

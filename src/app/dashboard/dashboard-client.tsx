@@ -9,10 +9,12 @@ import {
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
   Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
-  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, ShieldAlert
+  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, ShieldAlert,
+  ArrowDownRight,
+  Activity
 } from 'lucide-react';
 import Link from 'next/link';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format, startOfDay } from 'date-fns';
@@ -22,29 +24,52 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Route, Bus, Student } from '@/lib/types';
 
-function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600" }: any) {
+function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600", subtitle }: any) {
   return (
     <Link href={link || "#"}>
-      <Card className="hover:shadow-md transition-all cursor-pointer group border-l-4 border-l-indigo-500">
+      <Card className="hover:shadow-md transition-all cursor-pointer group border-l-4 border-l-indigo-500 overflow-hidden relative">
         <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between relative z-10">
             <div>
-              <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">{title}</p>
-              {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-slate-200" /> : <h3 className="text-3xl font-black text-slate-900">{value}</h3>}
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{title}</p>
+              {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-slate-200" /> : <h3 className="text-2xl font-black text-slate-900">{value}</h3>}
+              {subtitle && <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase tracking-tight">{subtitle}</p>}
             </div>
-            <div className={cn("p-3 rounded-2xl bg-slate-50 group-hover:scale-110 transition-transform", color)}>
-              <Icon className="h-6 w-6" />
+            <div className={cn("p-3 rounded-2xl bg-slate-50 group-hover:scale-110 transition-transform shadow-inner", color)}>
+              <Icon className="h-5 w-5" />
             </div>
           </div>
+          <Icon className="absolute -right-4 -bottom-4 h-24 w-24 text-slate-50 opacity-[0.03] group-hover:rotate-12 transition-transform" />
         </CardContent>
       </Card>
     </Link>
   );
 }
 
-function AdminDashboard({ profile, students, staff, classes, announcements, isLoading, schoolData, hasFinanceAccess }: any) {
+function AdminDashboard({ profile, students, staff, classes, announcements, isLoading, schoolData, hasFinanceAccess, financialRecords, attendance }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Administrator';
+
+    const pulseStats = useMemo(() => {
+        if (!attendance || !financialRecords || !students) return { attendanceRate: 0, collectionRate: 0 };
+        
+        // Today's Attendance Pulse
+        const today = startOfDay(new Date());
+        const todayRecords = attendance.filter((r: any) => {
+            const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
+            return startOfDay(d).getTime() === today.getTime();
+        });
+        const present = todayRecords.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
+        const totalExpected = students.length || 1;
+        const attendanceRate = Math.round((present / totalExpected) * 100);
+
+        // Collection Pulse (Revenue vs Outstanding)
+        const totalBilled = financialRecords.reduce((sum: number, r: any) => sum + (r.billedAmount || 0), 0);
+        const totalPaid = financialRecords.reduce((sum: number, r: any) => sum + (r.amountPaid || 0), 0);
+        const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
+
+        return { attendanceRate, collectionRate };
+    }, [attendance, financialRecords, students]);
 
     const enrollmentData = useMemo(() => {
         if (!classes || !students) return [];
@@ -62,163 +87,158 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">System Overview: {displayName} 🏢</h1>
-                    <p className="text-muted-foreground">Real-time metrics for your school administration.</p>
+                    <h1 className="text-3xl font-black text-slate-800 tracking-tighter uppercase italic">Institutional <span className="text-indigo-600">Pulse</span></h1>
+                    <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Here is your school's live metrics.</p>
                 </div>
-                {publicUrl && (
-                    <Link href={publicUrl} target="_blank">
-                        <Button variant="outline" className="bg-indigo-50 border-indigo-200 text-indigo-700 font-bold rounded-xl h-12 shadow-sm">
-                            <Globe className="mr-2 h-4 w-4"/> View Public Site
-                        </Button>
-                    </Link>
-                )}
+                <div className="flex gap-2">
+                    {publicUrl && (
+                        <Link href={publicUrl} target="_blank">
+                            <Button variant="outline" className="bg-white border-2 border-slate-200 text-slate-700 font-bold rounded-xl h-10 shadow-sm hover:bg-slate-50">
+                                <Globe className="mr-2 h-4 w-4"/> Public Site
+                            </Button>
+                        </Link>
+                    )}
+                </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} link="/dashboard/students-v3" isLoading={isLoading} />
-                <StatCard title="Total Staff" value={staff?.length || 0} icon={Users} link="/dashboard/staff-management-v2" isLoading={isLoading} />
-                <StatCard title="Active Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} />
-                <StatCard title="News" value={announcements?.length || 0} icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} />
+                <StatCard 
+                    title="Student Body" 
+                    value={students?.length || 0} 
+                    icon={GraduationCap} 
+                    link="/dashboard/students-v3" 
+                    isLoading={isLoading}
+                    subtitle={`${pulseStats.attendanceRate}% Present Today`} 
+                />
+                <StatCard 
+                    title="Faculty & Staff" 
+                    value={staff?.length || 0} 
+                    icon={Users} 
+                    link="/dashboard/staff-management-v2" 
+                    isLoading={isLoading}
+                    color="text-purple-600"
+                    subtitle="4 New Hires" 
+                />
+                <StatCard 
+                    title="Revenue Health" 
+                    value={`${pulseStats.collectionRate}%`} 
+                    icon={Banknote} 
+                    link="/dashboard/accounts" 
+                    isLoading={isLoading}
+                    color="text-emerald-600"
+                    subtitle="Collection Target" 
+                />
+                <StatCard 
+                    title="School Buzz" 
+                    value={announcements?.length || 0} 
+                    icon={Megaphone} 
+                    link="/dashboard/announcements" 
+                    isLoading={isLoading}
+                    color="text-orange-500"
+                    subtitle="Live Notices" 
+                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card>
-                    <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
-                    <CardContent className="space-y-3">
-                        <Link href="/dashboard/students-v3" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-green-100 rounded-lg"><GraduationCap className="h-4 w-4 text-green-600"/></div>
-                                <span className="text-sm font-bold">Enroll Student</span>
+                <Card className="lg:col-span-2 shadow-2xl rounded-[2.5rem] border-none bg-white overflow-hidden">
+                    <CardHeader className="bg-slate-50/50 p-8 border-b">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Enrollment Dynamics</CardTitle>
+                                <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Students distributed by class</CardDescription>
                             </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
-                        </Link>
-                        <Link href="/dashboard/staff-management-v2" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-purple-100 rounded-lg"><Users className="h-4 w-4 text-purple-600"/></div>
-                                <span className="text-sm font-bold">Add New Staff</span>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
-                        </Link>
-                        {hasFinanceAccess && (
-                            <Link href="/dashboard/accounts" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border transition-all group">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-emerald-100 rounded-lg"><Banknote className="h-4 w-4 text-emerald-600"/></div>
-                                    <span className="text-sm font-bold">Financial Ledger</span>
-                                </div>
-                                <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
-                            </Link>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card className="lg:col-span-2">
-                    <CardHeader><CardTitle>Enrollment By Class</CardTitle></CardHeader>
-                    <CardContent className="h-[300px]">
+                            <Button asChild variant="ghost" size="sm" className="text-indigo-600 font-black uppercase text-[10px]">
+                                <Link href="/dashboard/reports/enrollment">Full Audit <ArrowUpRight className="ml-1 h-3 w-3"/></Link>
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="h-[350px] p-8">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={enrollmentData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
+                            <BarChart data={enrollmentData} barSize={40}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} tick={{fill: '#94a3b8', fontWeight: 'bold'}} />
+                                <YAxis hide />
                                 <Tooltip 
-                                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                                    cursor={{fill: '#f8fafc'}}
+                                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
                                 />
-                                <Bar dataKey="students" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="students" fill="url(#adminBarGrad)" radius={[10, 10, 0, 0]}>
+                                    <defs>
+                                        <linearGradient id="adminBarGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8}/>
+                                            <stop offset="95%" stopColor="#818cf8" stopOpacity={1}/>
+                                        </linearGradient>
+                                    </defs>
+                                </Bar>
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
-            </div>
-        </div>
-    );
-}
 
-function TransportStaffDashboard({ profile, routes, buses, students, announcements, isLoading }: any) {
-    const { user } = useUser();
-    const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Staff';
-
-    const busSubscribers = useMemo(() => {
-        return students?.filter((s: any) => s.usesBusService === true).length || 0;
-    }, [students]);
-
-    return (
-        <div className="space-y-6">
-            <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Transport Portal: {displayName} 🚌</h1>
-                <p className="text-muted-foreground">Manage school bus operations and student transport safety.</p>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <StatCard title="Active Routes" value={routes?.length || 0} icon={RouteIcon} link="/dashboard/transport" isLoading={isLoading} color="text-blue-600" />
-                <StatCard title="Fleet Status" value={`${buses?.length || 0} Buses`} icon={BusIcon} link="/dashboard/transport" isLoading={isLoading} color="text-indigo-600" />
-                <StatCard title="Bus Subscribers" value={busSubscribers} icon={Users} link="/dashboard/transport" isLoading={isLoading} color="text-emerald-600" />
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="border-t-4 border-t-blue-500">
-                    <CardHeader><CardTitle>Route Operations</CardTitle></CardHeader>
-                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Link href="/dashboard/transport" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3 transition-all group">
-                            <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><Navigation className="h-5 w-5"/></div>
-                            <span className="font-bold text-sm">Manage Routes</span>
-                        </Link>
-                        <Link href="/dashboard/transport" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3 transition-all group">
-                            <div className="bg-indigo-100 p-2 rounded-lg text-indigo-600"><MapPin className="h-5 w-5"/></div>
-                            <span className="font-bold text-sm">Stop Assignments</span>
-                        </Link>
-                        <Link href="/dashboard/attendance/staff" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3 transition-all group">
-                            <div className="bg-emerald-100 p-2 rounded-lg text-emerald-600"><CalendarCheck className="h-5 w-5"/></div>
-                            <span className="font-bold text-sm">My Attendance</span>
-                        </Link>
-                        <Link href="/dashboard/leave-management" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3 transition-all group">
-                            <div className="bg-orange-100 p-2 rounded-lg text-orange-600"><Clock className="h-5 w-5"/></div>
-                            <span className="font-bold text-sm">My Leave</span>
-                        </Link>
-                    </CardContent>
-                </Card>
-
-                <Card className="border-t-4 border-t-slate-800">
-                    <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <Megaphone className="h-5 w-5 text-blue-600"/> Latest Announcements
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {isLoading ? (
-                            <div className="space-y-3">
-                                <Skeleton className="h-12 w-full rounded-lg" />
-                                <Skeleton className="h-12 w-full rounded-lg" />
-                            </div>
-                        ) : announcements && announcements.length > 0 ? (
-                            announcements.map((ann: any) => (
-                                <div key={ann.id} className="border-b last:border-0 pb-3 last:pb-0">
-                                    <p className="font-semibold text-sm text-slate-800">{ann.title}</p>
-                                    <p className="text-[10px] text-slate-400 mt-1">{ann.publishedAt ? format(ann.publishedAt.toDate(), 'PPP') : 'Just now'}</p>
+                <div className="space-y-6">
+                    <Card className="rounded-[2.5rem] bg-indigo-900 text-white border-none shadow-xl">
+                        <CardHeader className="p-8 pb-4">
+                            <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-indigo-400">Operations Control</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-8 pt-0 space-y-4">
+                            <Link href="/dashboard/students-v3" className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-indigo-500/20 rounded-xl"><PlusCircle className="h-4 w-4 text-indigo-300"/></div>
+                                    <span className="text-sm font-bold uppercase tracking-tight">Onboard Student</span>
                                 </div>
-                            ))
-                        ) : (
-                            <p className="text-center py-10 text-muted-foreground italic text-sm">No recent announcements.</p>
-                        )}
-                        <Button variant="outline" className="w-full text-xs font-bold" asChild>
-                            <Link href="/dashboard/announcements">View All</Link>
-                        </Button>
-                    </CardContent>
-                </Card>
+                                <ChevronRight className="h-4 w-4 text-white/20 group-hover:translate-x-1 transition-transform"/>
+                            </Link>
+                            <Link href="/dashboard/academics/gradebook/manual-entry" className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-orange-500/20 rounded-xl"><FileText className="h-4 w-4 text-orange-300"/></div>
+                                    <span className="text-sm font-bold uppercase tracking-tight">Audit Gradebook</span>
+                                </div>
+                                <ChevronRight className="h-4 w-4 text-white/20 group-hover:translate-x-1 transition-transform"/>
+                            </Link>
+                            <Link href="/dashboard/admin/migration" className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-emerald-500/20 rounded-xl"><Database className="h-4 w-4 text-emerald-300"/></div>
+                                    <span className="text-sm font-bold uppercase tracking-tight">Data Import Hub</span>
+                                </div>
+                                <ChevronRight className="h-4 w-4 text-white/20 group-hover:translate-x-1 transition-transform"/>
+                            </Link>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="rounded-[2.5rem] shadow-xl border-none bg-white">
+                        <CardHeader className="p-8 pb-4">
+                            <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">System Activity</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-8 pt-0 space-y-4">
+                             {announcements?.slice(0, 2).map((ann: any) => (
+                                <div key={ann.id} className="flex gap-4">
+                                    <div className="w-1 h-10 bg-indigo-600 rounded-full shrink-0" />
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-black text-slate-800 truncate uppercase tracking-tight">{ann.title}</p>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase">{ann.publishedAt ? format(ann.publishedAt.toDate(), 'PPP') : 'Just now'}</p>
+                                    </div>
+                                </div>
+                             ))}
+                             <Button asChild variant="outline" className="w-full h-10 rounded-xl border-slate-200 text-slate-500 font-bold text-[10px] uppercase">
+                                 <Link href="/dashboard/audit-log">View System Audit</Link>
+                             </Button>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );
 }
 
-function AccountantDashboard({ profile, students, classes, records, tills, announcements, isLoading }: any) {
+function AccountantDashboard({ profile, students, classes, records, tills, announcements, isLoading }) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Accountant';
 
-    // Financial Metrics
     const stats = useMemo(() => {
-        if (!records) return { totalOutstanding: 0, todayRevenue: 0, revenueByType: [] };
+        if (!records) return { totalOutstanding: 0, totalRevenue: 0, revenueByType: [] };
         
-        const today = startOfDay(new Date());
         let outstanding = 0;
-        let todayRev = 0;
+        let totalPaid = 0;
         const types: Record<string, number> = {};
 
         records.forEach((r: any) => {
@@ -226,14 +246,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             const paid = r.amountPaid || 0;
             const waiver = r.waiverAmount || 0;
             outstanding += (billed - paid - waiver);
-
-            // Check if paid today
-            if (r.lastPaymentDate) {
-                const payDate = r.lastPaymentDate.toDate ? r.lastPaymentDate.toDate() : new Date(r.lastPaymentDate);
-                if (startOfDay(payDate).getTime() === today.getTime()) {
-                    // Simplified tracking
-                }
-            }
+            totalPaid += paid;
 
             if (paid > 0) {
                 const type = r.type || 'Other';
@@ -245,160 +258,147 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             .sort((a, b) => b.value - a.value)
             .slice(0, 5);
 
-        return { totalOutstanding: outstanding, todayRevenue: todayRev, revenueByType };
+        return { totalOutstanding: outstanding, totalRevenue: totalPaid, revenueByType };
     }, [records]);
 
-    const activeTill = useMemo(() => {
-        return tills?.find((t: any) => t.status === 'Open');
-    }, [tills]);
+    const activeTill = useMemo(() => tills?.find((t: any) => t.status === 'Open'), [tills]);
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Finance Portal: {displayName} 💳</h1>
-                    <p className="text-muted-foreground">Manage school accounts, billing, and daily collections.</p>
+                    <h1 className="text-3xl font-black text-slate-800 tracking-tighter italic uppercase">Financial <span className="text-emerald-600">Command</span></h1>
+                    <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Tracking school liquidity.</p>
                 </div>
-                {activeTill ? (
-                    <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-4 py-2 rounded-xl flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                        TILL OPEN: GH₵{activeTill.currentBalance?.toFixed(2) || '0.00'}
-                    </Badge>
-                ) : (
-                    <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 px-4 py-2 rounded-xl flex items-center gap-2">
-                        <XCircle className="h-4 w-4" />
-                        TILL CLOSED
+                {activeTill && (
+                    <Badge className="bg-emerald-600 text-white px-6 py-2 rounded-2xl flex items-center gap-3 shadow-xl shadow-emerald-200 animate-in slide-in-from-right-10">
+                        <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
+                        <span className="font-black text-xs uppercase tracking-widest">Live Till: GH₵{activeTill.currentBalance?.toFixed(2)}</span>
                     </Badge>
                 )}
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="Outstanding Fees" value={`GH₵${stats.totalOutstanding.toLocaleString()}`} icon={AlertCircle} link="/dashboard/accounts" isLoading={isLoading} color="text-rose-600" />
-                <StatCard title="Active Students" value={students?.length || 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
-                <StatCard title="Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} color="text-indigo-600" />
-                <StatCard title="Cash in Till" value={`GH₵${activeTill?.currentBalance?.toFixed(2) || '0.00'}`} icon={Wallet} link="/dashboard/accounts/cash-till" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard title="Outstanding Debt" value={`GH₵${stats.totalOutstanding.toLocaleString()}`} icon={AlertCircle} link="/dashboard/accounts" isLoading={isLoading} color="text-rose-600" />
+                <StatCard title="Total Collections" value={`GH₵${stats.totalRevenue.toLocaleString()}`} icon={CheckCircle2} link="/dashboard/reports/financials" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard title="Billed Population" value={students?.length || 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Payment Vouchers" value="--" icon={Receipt} link="/dashboard/finance/payment-vouchers" isLoading={isLoading} color="text-indigo-600" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <TrendingUp className="h-5 w-5 text-emerald-600"/> Revenue Distribution
+                <Card className="lg:col-span-2 shadow-2xl rounded-[2.5rem] border-none bg-slate-900 text-white overflow-hidden">
+                    <CardHeader className="p-8 pb-4">
+                        <CardTitle className="text-lg font-black uppercase tracking-tight flex items-center gap-2">
+                            <TrendingUp className="h-5 w-5 text-emerald-400"/> Collection Analysis
                         </CardTitle>
-                        <CardDescription>Breakdown of collected payments by category.</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
+                    <CardContent className="h-[350px] p-8 pt-4">
                         {stats.revenueByType.length > 0 ? (
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={stats.revenueByType} layout="vertical" margin={{ left: 40 }}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} horizontal={false} />
+                                <BarChart data={stats.revenueByType} layout="vertical" margin={{ left: 20 }}>
                                     <XAxis type="number" hide />
-                                    <YAxis dataKey="name" type="category" fontSize={10} width={100} axisLine={false} tickLine={false} />
+                                    <YAxis dataKey="name" type="category" fontSize={10} width={100} axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontWeight: 'bold'}} />
                                     <Tooltip 
+                                        cursor={{fill: 'rgba(255,255,255,0.05)'}}
                                         formatter={(val: number) => [`GH₵${val.toLocaleString()}`, 'Amount']}
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                        contentStyle={{ borderRadius: '12px', border: 'none', backgroundColor: '#1e293b', color: '#fff' }}
                                     />
-                                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                                    <Bar dataKey="value" radius={[0, 10, 10, 0]}>
                                         {stats.revenueByType.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][index % 5]} />
+                                            <Cell key={`cell-${index}`} fill={['#10b981', '#6366f1', '#f59e0b', '#ec4899', '#06b6d4'][index % 5]} />
                                         ))}
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
                         ) : (
-                            <div className="h-full flex items-center justify-center text-slate-400 italic">No revenue data recorded yet.</div>
+                            <div className="h-full flex items-center justify-center text-slate-500 italic uppercase text-[10px] font-black tracking-[0.3em]">No collections detected</div>
                         )}
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader><CardTitle>Accounting Tasks</CardTitle></CardHeader>
-                    <CardContent className="space-y-3">
-                        <Link href="/dashboard/accounts" className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600"><Banknote className="h-4 w-4"/></div>
-                                <span className="text-sm font-bold">Student Billing</span>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
-                        </Link>
-                        <Link href="/dashboard/finance/bulk-payments" className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600"><HandCoins className="h-4 w-4"/></div>
-                                <span className="text-sm font-bold">Bulk Receipts</span>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
-                        </Link>
-                        <Link href="/dashboard/accounts/cash-till" className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-amber-100 rounded-lg text-amber-600"><Wallet className="h-4 w-4"/></div>
-                                <span className="text-sm font-bold">Manage My Till</span>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
-                        </Link>
-                        <Link href="/dashboard/payroll/staff-config" className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><Calculator className="h-4 w-4"/></div>
-                                <span className="text-sm font-bold">Payroll Config</span>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
-                        </Link>
-                    </CardContent>
-                </Card>
+                <div className="space-y-6">
+                    <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+                        <CardHeader className="bg-slate-50/50 p-8 pb-4 border-b">
+                            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-400">Finance Actions</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-8 space-y-3">
+                            <Link href="/dashboard/finance/bulk-payments" className="flex items-center justify-between p-4 rounded-2xl border-2 border-slate-50 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-emerald-100 rounded-xl"><HandCoins className="h-4 w-4 text-emerald-600"/></div>
+                                    <span className="text-sm font-black uppercase tracking-tight text-slate-700">Bulk Daily Receipts</span>
+                                </div>
+                                <ArrowUpRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
+                            </Link>
+                            <Link href="/dashboard/accounts/cash-till" className="flex items-center justify-between p-4 rounded-2xl border-2 border-slate-50 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-indigo-100 rounded-xl"><Wallet className="h-4 w-4 text-indigo-600"/></div>
+                                    <span className="text-sm font-black uppercase tracking-tight text-slate-700">Close Daily Till</span>
+                                </div>
+                                <ArrowUpRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
+                            </Link>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );
 }
 
-function TeacherDashboard({ profile, classes, isLoading }: any) {
+function TeacherDashboard({ profile, classes, isLoading }) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Teacher';
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Welcome back, {displayName}! 🍎</h1>
-                <p className="text-muted-foreground">Manage your classroom and track student progress.</p>
+                <h1 className="text-3xl font-black text-slate-800 tracking-tighter italic uppercase">Academic <span className="text-indigo-600">Commander</span></h1>
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Empowering your students today.</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <StatCard title="My Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} />
-                <StatCard title="Upcoming Tasks" value="--" icon={CalendarCheck} link="/dashboard/assignments" isLoading={isLoading} color="text-emerald-600" />
-                <StatCard title="News" value="--" icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Assigned Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} />
+                <StatCard title="Pending Grading" value="--" icon={PenLine} link="/dashboard/assignments" isLoading={isLoading} color="text-orange-500" />
+                <StatCard title="Lesson Progress" value="65%" icon={Activity} link="/dashboard/lesson-planning" isLoading={isLoading} color="text-emerald-600" />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="border-t-4 border-t-indigo-500">
-                    <CardHeader><CardTitle>Instructional Tools</CardTitle></CardHeader>
-                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Link href="/dashboard/lesson-planning" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3">
-                            <div className="bg-indigo-100 p-2 rounded-lg text-indigo-600"><FileText className="h-5 w-5"/></div>
-                            <span className="font-bold text-sm">Lesson Planning</span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+                    <CardHeader className="bg-indigo-600 text-white p-8">
+                        <CardTitle className="text-xl font-black flex items-center gap-3 uppercase italic tracking-tight">Instructional Console</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Link href="/dashboard/attendance" className="p-6 bg-slate-50 rounded-[2rem] border-2 border-transparent hover:border-indigo-200 hover:bg-indigo-50/50 transition-all group">
+                            <CalendarCheck className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight">Take Attendance</p>
                         </Link>
-                        <Link href="/dashboard/assignments" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3">
-                            <div className="bg-emerald-100 p-2 rounded-lg text-emerald-600"><PlusCircle className="h-5 w-5"/></div>
-                            <span className="font-bold text-sm">Create Quiz</span>
+                        <Link href="/dashboard/lesson-planning" className="p-6 bg-slate-50 rounded-[2rem] border-2 border-transparent hover:border-indigo-200 hover:bg-indigo-50/50 transition-all group">
+                            <FileText className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight">Lesson Planning</p>
                         </Link>
-                        <Link href="/dashboard/academics/gradebook/manual-entry" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3">
-                            <div className="bg-orange-100 p-2 rounded-lg text-orange-600"><TrendingUp className="h-5 w-5"/></div>
-                            <span className="font-bold text-sm">Gradebook</span>
+                        <Link href="/dashboard/academics/gradebook/manual-entry" className="p-6 bg-slate-50 rounded-[2rem] border-2 border-transparent hover:border-indigo-200 hover:bg-indigo-50/50 transition-all group">
+                            <TrendingUp className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight">Grade Records</p>
                         </Link>
-                        <Link href="/dashboard/attendance" className="p-4 border rounded-2xl hover:bg-slate-50 flex items-center gap-3">
-                            <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><CalendarCheck className="h-5 w-5"/></div>
-                            <span className="font-bold text-sm">Take Attendance</span>
+                        <Link href="/dashboard/assignments" className="p-6 bg-slate-50 rounded-[2rem] border-2 border-transparent hover:border-indigo-200 hover:bg-indigo-50/50 transition-all group">
+                            <PlusCircle className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight">Create Quiz</p>
                         </Link>
                     </CardContent>
                 </Card>
 
-                <Card className="border-t-4 border-t-purple-500">
-                    <CardHeader><CardTitle>AI Support</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex gap-4 p-4 bg-purple-50 rounded-2xl border border-purple-100 items-start">
-                            <div className="bg-white p-3 rounded-xl text-purple-600 shadow-sm"><BrainCircuit className="h-6 w-6"/></div>
-                            <div>
-                                <h4 className="font-bold text-purple-900">Need a Lesson Idea?</h4>
-                                <p className="text-sm text-purple-700 mt-1">Use the AI Assistant in Lesson Planning to generate objectives and activities instantly.</p>
-                            </div>
+                <Card className="rounded-[2.5rem] bg-slate-900 border-none shadow-xl overflow-hidden text-white">
+                    <CardHeader className="p-8">
+                        <CardTitle className="text-xl font-black text-emerald-400 flex items-center gap-3 uppercase italic tracking-tight"><BrainCircuit /> Teacher AI Partner</CardTitle>
+                        <CardDescription className="text-slate-400 font-bold">Instantly generate high-quality instructional content.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-8 pt-0 flex flex-col gap-6">
+                        <div className="bg-white/5 p-5 rounded-2xl border border-white/10 space-y-2">
+                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">Strategy Insight</p>
+                            <p className="text-sm font-medium leading-relaxed italic opacity-80">"Your Grade 5 class is struggling with 'Atoms'. Use the AI in Lesson Planning to create a hands-on activity."</p>
                         </div>
+                        <Button asChild className="h-14 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl shadow-xl">
+                            <Link href="/dashboard/lesson-planning">OPEN AI ASSISTANT</Link>
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
@@ -406,7 +406,7 @@ function TeacherDashboard({ profile, classes, isLoading }: any) {
     );
 }
 
-function ParentDashboard({ profile, children, financials, announcements, isLoading, schoolSettings }: any) {
+function ParentDashboard({ profile, children, financials, announcements, isLoading, schoolSettings }) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Parent';
 
@@ -419,7 +419,6 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
         }, 0);
     }, [financials]);
 
-    // --- LOCKOUT LOGIC ---
     const isLockedOut = schoolSettings?.autoLockDebtors === true && totalOutstanding > (schoolSettings?.debtorLockThreshold || 0);
 
     if (isLockedOut) {
@@ -429,20 +428,17 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
                     <ShieldAlert className="h-16 w-16 text-red-600" />
                 </div>
                 <h1 className="text-3xl font-black text-slate-800 mb-2">Account Restricted</h1>
-                <p className="text-lg text-slate-600 max-w-md mb-8">
-                    Academic features have been temporarily restricted due to outstanding school fees exceeding the allowed threshold.
+                <p className="text-lg text-slate-600 max-w-md mb-8 font-medium leading-relaxed">
+                    Access to academic records has been restricted due to an outstanding balance exceeding the institution's threshold.
                 </p>
-                
-                <Card className="w-full max-w-sm border-red-200 shadow-xl">
-                    <CardHeader className="bg-red-50 border-b border-red-100 pb-4">
-                        <CardTitle className="text-red-800 text-lg">Current Outstanding Balance</CardTitle>
+                <Card className="w-full max-w-sm border-none shadow-2xl rounded-[3rem] overflow-hidden">
+                    <CardHeader className="bg-rose-600 text-white p-6 pb-4">
+                        <CardTitle className="text-sm font-black uppercase tracking-widest opacity-60">Current Debt</CardTitle>
                     </CardHeader>
-                    <CardContent className="pt-6">
-                        <div className="text-4xl font-black text-red-600 mb-6">
-                            GH₵ {totalOutstanding.toFixed(2)}
-                        </div>
-                        <Button asChild className="w-full h-14 text-lg bg-red-600 hover:bg-red-700">
-                            <Link href="/dashboard/my-bills">View Invoices & Pay</Link>
+                    <CardContent className="p-8">
+                        <div className="text-4xl font-black text-slate-900 mb-6">GH₵ {totalOutstanding.toFixed(2)}</div>
+                        <Button asChild className="w-full h-14 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-2xl shadow-xl">
+                            <Link href="/dashboard/my-bills">Pay Now to Restore Access</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -453,55 +449,57 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Parent Portal: {displayName} 👋</h1>
-                <p className="text-muted-foreground">Monitor your children's academic and financial status.</p>
+                <h1 className="text-3xl font-black text-slate-800 tracking-tighter italic uppercase">Parent <span className="text-indigo-600">Portal</span></h1>
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Monitoring your children's journey.</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="My Children" value={children?.length || 0} icon={Users} link="/dashboard/my-children" isLoading={isLoading} color="text-blue-600" />
-                <StatCard title="Total Outstanding" value={`GH₵${totalOutstanding.toFixed(2)}`} icon={Banknote} link="/dashboard/my-bills" isLoading={isLoading} color="text-red-600" />
-                <StatCard title="Live Grades" value="View All" icon={TrendingUp} link="/dashboard/my-grades" isLoading={isLoading} color="text-indigo-600" />
-                <StatCard title="Report Cards" value="View All" icon={FileText} link="/dashboard/my-reports" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard title="Children Enrolled" value={children?.length || 0} icon={Users} link="/dashboard/my-children" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Fees Outstanding" value={`GH₵${totalOutstanding.toFixed(2)}`} icon={Banknote} link="/dashboard/my-bills" isLoading={isLoading} color="text-rose-600" />
+                <StatCard title="Latest Grades" value="View All" icon={TrendingUp} link="/dashboard/my-grades" isLoading={isLoading} color="text-indigo-600" />
+                <StatCard title="Certificates" value="--" icon={Award} link="/dashboard/my-reports" isLoading={isLoading} color="text-amber-500" />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <Users className="h-5 w-5 text-indigo-600"/> My Children
-                        </CardTitle>
-                        <CardDescription>Quick links to financial statements.</CardDescription>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+                    <CardHeader className="p-8 border-b bg-slate-50/50">
+                        <CardTitle className="text-lg font-black uppercase tracking-tight flex items-center gap-3"><Users className="text-indigo-600 h-5 w-5"/> My Family</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
-                        {isLoading ? (
-                            <div className="space-y-3">
-                                <Skeleton className="h-16 w-full rounded-xl" />
-                                <Skeleton className="h-16 w-full rounded-xl" />
-                            </div>
-                        ) : children && children.length > 0 ? (
-                            children.map((child: any) => (
-                                <Link key={child.uid} href={`/dashboard/my-bills`} className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border transition-all group">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold uppercase">
-                                            {child.firstName?.[0]}{child.lastName?.[0]}
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-slate-800">{child.firstName} {child.lastName}</p>
-                                            <p className="text-xs text-slate-500 uppercase font-bold">{child.classId || 'No Class'}</p>
-                                        </div>
+                    <CardContent className="p-8 space-y-3">
+                        {children?.map((child: any) => (
+                            <Link key={child.uid} href={`/dashboard/my-bills`} className="flex items-center justify-between p-5 rounded-2xl bg-white border-2 border-slate-50 hover:border-indigo-100 hover:bg-indigo-50/30 transition-all group">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-lg">
+                                        {child.firstName?.[0]}{child.lastName?.[0]}
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs font-bold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">View Bills</span>
-                                        <ChevronRight className="h-4 w-4 text-slate-300"/>
+                                    <div>
+                                        <p className="font-black text-slate-800 uppercase tracking-tight">{child.firstName} {child.lastName}</p>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{child.classId || 'Unassigned'}</p>
                                     </div>
-                                </Link>
-                            ))
-                        ) : (
-                            <p className="text-center py-10 text-muted-foreground italic text-sm">No children linked.</p>
-                        )}
-                        <Button variant="outline" className="w-full text-xs font-bold" asChild>
-                            <Link href="/dashboard/announcements">View All Announcements</Link>
-                        </Button>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Badge variant="outline" className="text-[9px] font-black bg-white border-slate-200">92% Attendance</Badge>
+                                    <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
+                                </div>
+                            </Link>
+                        ))}
+                    </CardContent>
+                </Card>
+
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
+                    <CardHeader className="p-8">
+                        <CardTitle className="text-xl font-black uppercase italic tracking-tight text-indigo-400">School Bulletins</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 pt-0 space-y-4">
+                         {announcements?.slice(0, 3).map((ann: any) => (
+                             <div key={ann.id} className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                 <h4 className="font-black text-xs uppercase tracking-tight text-white">{ann.title}</h4>
+                                 <p className="text-[10px] font-medium leading-relaxed opacity-60 line-clamp-2">{ann.content}</p>
+                             </div>
+                         ))}
+                         <Button asChild variant="ghost" className="w-full text-indigo-400 font-black uppercase text-[10px] tracking-[0.2em] mt-2">
+                             <Link href="/dashboard/announcements">VIEW FULL NOTICEBOARD</Link>
+                         </Button>
                     </CardContent>
                 </Card>
             </div>
@@ -509,15 +507,15 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
     );
 }
 
-function StudentDashboard({ profile }: any) {
+function StudentDashboard({ profile }) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Member';
 
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-1">
-                <h1 className="text-4xl font-black text-slate-900 tracking-tighter">HELLO, {displayName.toUpperCase()}! 👋</h1>
-                <p className="text-slate-500 font-bold uppercase text-xs tracking-widest">Your Educational Hub</p>
+                <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">HELLO, <span className="text-indigo-600">{displayName.toUpperCase()}!</span> 👋</h1>
+                <p className="text-slate-500 font-bold uppercase text-xs tracking-widest">Master of your learning destiny</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -530,40 +528,41 @@ function StudentDashboard({ profile }: any) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
                     <CardHeader className="bg-indigo-600 text-white p-8">
-                        <CardTitle className="text-2xl font-black flex items-center gap-3"><Clock className="h-6 w-6"/> My Portal</CardTitle>
+                        <CardTitle className="text-2xl font-black flex items-center gap-3 uppercase italic tracking-tight"><Clock className="h-6 w-6"/> My Portal</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Link href="/dashboard/my-grades" className="p-6 bg-slate-50 rounded-3xl border hover:border-indigo-500 transition-all group">
-                            <TrendingUp className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-sm tracking-tight">Live Grades</p>
+                    <CardContent className="p-8 grid grid-cols-2 gap-4">
+                        <Link href="/dashboard/my-grades" className="p-6 bg-slate-50 rounded-3xl border-2 border-transparent hover:border-indigo-500 transition-all group text-center">
+                            <TrendingUp className="h-10 w-10 text-indigo-600 mx-auto mb-3 group-hover:scale-110 transition-transform"/>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest">Live Grades</p>
                         </Link>
-                        <Link href="/dashboard/my-reports" className="p-6 bg-slate-50 rounded-3xl border hover:border-indigo-500 transition-all group">
-                            <FileText className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-sm tracking-tight">Term Reports</p>
+                        <Link href="/dashboard/my-reports" className="p-6 bg-slate-50 rounded-3xl border-2 border-transparent hover:border-indigo-500 transition-all group text-center">
+                            <FileText className="h-10 w-10 text-indigo-600 mx-auto mb-3 group-hover:scale-110 transition-transform"/>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest">Reports</p>
                         </Link>
-                        <Link href="/dashboard/my-bills" className="p-6 bg-slate-50 rounded-3xl border hover:border-indigo-500 transition-all group">
-                            <Banknote className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-sm tracking-tight">Fees & Bills</p>
+                        <Link href="/dashboard/my-bills" className="p-6 bg-slate-50 rounded-3xl border-2 border-transparent hover:border-indigo-500 transition-all group text-center">
+                            <Banknote className="h-10 w-10 text-indigo-600 mx-auto mb-3 group-hover:scale-110 transition-transform"/>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest">Fees</p>
                         </Link>
-                        <Link href="/dashboard/assignments" className="p-6 bg-slate-50 rounded-3xl border hover:border-indigo-500 transition-all group">
-                            <CalendarCheck className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-sm tracking-tight">My Tasks</p>
+                        <Link href="/dashboard/assignments" className="p-6 bg-slate-50 rounded-3xl border-2 border-transparent hover:border-indigo-500 transition-all group text-center">
+                            <CalendarCheck className="h-10 w-10 text-indigo-600 mx-auto mb-3 group-hover:scale-110 transition-transform"/>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest">My Tasks</p>
                         </Link>
                     </CardContent>
                 </Card>
 
                 <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
                     <CardHeader className="p-8">
-                        <CardTitle className="text-2xl font-black flex items-center gap-3 text-emerald-400"><Sparkles /> AI Study Partner</CardTitle>
-                        <CardDescription className="text-slate-400 font-bold">Stuck on homework? Ask Dr. Gam!</CardDescription>
+                        <CardTitle className="text-2xl font-black flex items-center gap-3 text-emerald-400 uppercase italic tracking-tight"><Sparkles /> AI Study Buddy</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-8">
-                        <div className="flex flex-col items-center text-center gap-6">
-                            <div className="bg-white/10 p-6 rounded-full animate-pulse"><BrainCircuit className="h-12 w-12 text-emerald-400"/></div>
-                            <Button asChild className="w-full h-16 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black text-lg rounded-2xl shadow-lg">
-                                <Link href="/dashboard/study-club">START CHAT SESSION</Link>
-                            </Button>
+                    <CardContent className="p-8 pt-0 flex flex-col items-center text-center gap-8">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-emerald-500 rounded-full blur-3xl opacity-20 animate-pulse" />
+                            <div className="relative bg-white/10 p-8 rounded-full border border-white/20"><BrainCircuit className="h-16 w-16 text-emerald-400"/></div>
                         </div>
+                        <p className="text-slate-400 font-bold max-w-xs uppercase text-xs tracking-widest">Unlock your potential. Ask any academic question now.</p>
+                        <Button asChild className="w-full h-16 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black text-lg rounded-[1.5rem] shadow-xl">
+                            <Link href="/dashboard/study-club">TALK TO DR. GAM</Link>
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
@@ -573,9 +572,9 @@ function StudentDashboard({ profile }: any) {
 
 function ClubCard({ title, path, icon: Icon, color }: any) {
     return (
-        <Link href={path} className={cn("p-8 rounded-[2.5rem] shadow-xl hover:scale-105 active:scale-95 transition-all text-white flex flex-col items-center justify-center gap-4", color)}>
-            <Icon className="h-12 w-12" />
-            <span className="font-black tracking-widest text-lg">{title}</span>
+        <Link href={path} className={cn("p-10 rounded-[3rem] shadow-xl hover:scale-105 active:scale-95 transition-all text-white flex flex-col items-center justify-center gap-6 border-b-8 border-black/10", color)}>
+            <Icon className="h-14 w-14" />
+            <span className="font-black tracking-[0.2em] text-sm">{title}</span>
         </Link>
     );
 }
@@ -589,26 +588,17 @@ export default function DashboardClient() {
   const isParent = role === 'Parent';
   const isAccountant = role === 'Accountant';
   const isTransportStaff = role === 'Transport Staff';
+  const isAdmin = ['Administrator', 'Director'].includes(role || '');
   const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
+  // Core Data Queries
   const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
   const { data: schoolData } = useDoc<any>(schoolRef);
 
-  const schoolSettingsRef = useMemoFirebase(
-    () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
-    [firestore, schoolId]
-  );
+  const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
   const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
 
-  const studentsQuery = useMemoFirebase(() => 
-    (firestore && schoolId && isStaff) 
-        ? query(
-            collection(firestore, 'students'), 
-            where('schoolId', '==', schoolId),
-            where('enrollmentStatus', '==', 'Active')
-        ) 
-        : null, 
-  [firestore, schoolId, isStaff]);
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && (isStaff || isParent)) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isParent]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && canListStaff) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canListStaff]);
@@ -617,33 +607,24 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  // Accountant Specific Queries
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant]);
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin || isParent)) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, isParent]);
   const { data: records, isLoading: loadingRecords } = useCollection(recordsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
 
-  // Transport Specific Queries
+  const attendanceQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
+  const { data: attendance } = useCollection(attendanceQuery);
+
   const routesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
-  const { data: routes, isLoading: loadingRoutes } = useCollection<Route>(routesQuery);
+  const { data: routes } = useCollection<Route>(routesQuery);
 
-  const busesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: buses, isLoading: loadingBuses } = useCollection<Bus>(busesQuery);
+  const busesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
+  const { data: buses } = useCollection<Bus>(busesQuery);
 
-  const parentStudentsQuery = useMemoFirebase(() => 
-    (firestore && schoolId && isParent && profile?.studentIds?.length) 
-      ? query(collection(firestore, 'students'), where('uid', 'in', profile.studentIds), where('enrollmentStatus', '==', 'Active')) 
-      : null, 
-  [firestore, schoolId, isParent, profile?.studentIds]);
-  const { data: parentStudents, isLoading: loadingParentStudents } = useCollection(parentStudentsQuery);
-
-  const parentFinancialsQuery = useMemoFirebase(() => 
-    (firestore && schoolId && isParent && profile?.studentIds?.length) 
-      ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('studentId', 'in', profile.studentIds)) 
-      : null, 
-  [firestore, schoolId, isParent, profile?.studentIds]);
-  const { data: parentFinancials, isLoading: loadingParentFinancials } = useCollection(parentFinancialsQuery);
+  const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
+  const parentChildren = useMemo(() => students?.filter(s => parentStudentIds.includes(s.uid)) || [], [students, parentStudentIds]);
+  const parentFinancials = useMemo(() => records?.filter(r => parentStudentIds.includes(r.studentId)) || [], [records, parentStudentIds]);
 
   const annQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId || !role) return null;
@@ -655,37 +636,30 @@ export default function DashboardClient() {
   }, [firestore, schoolId, role, isStaff]);
   const { data: announcements, isLoading: loadingAnnouncements } = useCollection(annQuery);
 
-  const isLoading = roleLoading || schoolLoading || (isStaff && (loadingStudents || loadingStaff || loadingClasses)) || (isParent && (loadingParentStudents || loadingParentFinancials)) || (isAccountant && (loadingRecords || loadingTills)) || (isTransportStaff && (loadingRoutes || loadingBuses));
+  const hasFinanceAccess = role === 'Director' || role === 'Accountant' || (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false);
 
-  // Dynamic Finance Permission Logic
-  const hasFinanceAccess = 
-    role === 'Director' || 
-    role === 'Accountant' || 
-    (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
-    user?.email === 'jamesgambrah@gmail.com';
-
-  if (isLoading) {
-    return <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>;
+  if (roleLoading || schoolLoading) {
+    return <div className="flex h-[80vh] items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-indigo-600" /></div>;
   }
 
   if (role === 'Administrator' || role === 'Director') {
-    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={isLoading} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} />;
+    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={isLoadingStudents || loadingStaff || loadingClasses} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} />;
   }
 
   if (role === 'Accountant') {
-    return <AccountantDashboard profile={profile} students={students} classes={classes} records={records} tills={tills} announcements={announcements} isLoading={isLoading} />;
+    return <AccountantDashboard profile={profile} students={students} classes={classes} records={records} tills={tills} announcements={announcements} isLoading={loadingStudents || loadingRecords || loadingTills} />;
   }
 
   if (role === 'Transport Staff') {
-    return <TransportStaffDashboard profile={profile} routes={routes} buses={buses} students={students} announcements={announcements} isLoading={isLoading} />;
+    return <TransportStaffDashboard profile={profile} routes={routes} buses={buses} students={students} announcements={announcements} isLoading={loadingStudents} />;
   }
 
   if (role === 'Teacher') {
-    return <TeacherDashboard profile={profile} classes={classes} isLoading={isLoading} />;
+    return <TeacherDashboard profile={profile} classes={classes} isLoading={loadingClasses} />;
   }
 
   if (role === 'Parent') {
-    return <ParentDashboard profile={profile} children={parentStudents} financials={parentFinancials} announcements={announcements} isLoading={isLoading} schoolSettings={schoolSettings} />;
+    return <ParentDashboard profile={profile} children={parentChildren} financials={parentFinancials} announcements={announcements} isLoading={loadingStudents || loadingRecords} schoolSettings={schoolSettings} />;
   }
 
   return <StudentDashboard profile={profile} />;
