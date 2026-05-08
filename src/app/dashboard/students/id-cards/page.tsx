@@ -14,6 +14,7 @@ import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
 import { Student, Class } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
+import { Badge } from '@/components/ui/badge';
 
 export default function IDCardGeneratorPage() {
     const firestore = useFirestore();
