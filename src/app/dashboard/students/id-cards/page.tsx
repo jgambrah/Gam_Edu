@@ -234,7 +234,7 @@ export default function IDCardGeneratorPage() {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="border-b pb-1 mb-1">
-                                                    <h3 className="text-[13px] font-black text-slate-800 uppercase truncate leading-none">{students[0].lastName}</h3>
+                                                    <h3 className="text-[13px] font-black text-slate-800 uppercase truncate leading-tight">{students[0].lastName}</h3>
                                                     <h4 className="text-[12px] font-bold text-slate-600 truncate">{students[0].firstName}</h4>
                                                 </div>
                                                 <Badge variant="secondary" className="text-[8px] font-black bg-slate-100 text-slate-500 uppercase px-2 rounded-full">
@@ -315,15 +315,15 @@ export default function IDCardGeneratorPage() {
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="pb-2 border-b border-slate-100 mb-1">
-                                                <h3 className="text-[14px] font-black text-slate-900 uppercase truncate leading-none mb-1">{student.lastName}</h3>
-                                                <h4 className="text-[13px] font-bold text-slate-600 leading-none truncate">{student.firstName}</h4>
+                                            <div className="pb-2 border-b border-slate-100 mb-2">
+                                                <h3 className="text-[15px] font-black text-slate-900 uppercase truncate leading-tight">{student.lastName}</h3>
+                                                <h4 className="text-[14px] font-bold text-slate-600 leading-tight truncate">{student.firstName}</h4>
                                             </div>
                                             
-                                            <div className="pt-2 space-y-2">
+                                            <div className="pt-1 space-y-2">
                                                 <div className="flex flex-col">
                                                     <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Grade / Class</span>
-                                                    <span className="text-[11px] font-black text-indigo-600 uppercase truncate">{currentClassName}</span>
+                                                    <span className="text-[12px] font-black text-indigo-600 uppercase truncate leading-normal">{currentClassName}</span>
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Student ID Number</span>
