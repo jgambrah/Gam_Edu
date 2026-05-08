@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, UserRound, IdCard, MapPin, Phone, Mail } from 'lucide-react';
+import { Loader2, Printer, Download, UserRound, IdCard, MapPin } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -85,7 +85,7 @@ export default function IDCardGeneratorPage() {
     const secondaryColor = schoolProfile?.secondaryColor || primaryColor;
     const currentClassName = classes?.find(c => c.id === classId)?.name || 'N/A';
 
-    // Chunk students for multi-page support (8 per A4 page for more spacing)
+    // Chunk students for multi-page support (8 per A4 page - 2 columns x 4 rows)
     const studentChunks = useMemo(() => {
         if (!students) return [];
         const size = 8;
@@ -121,7 +121,7 @@ export default function IDCardGeneratorPage() {
                 await new Promise(res => setTimeout(res, 1000));
 
                 const canvas = await html2canvas(pageElement, {
-                    scale: 3, // Increased scale for high detail
+                    scale: 3, // High scale for crisp text
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
@@ -129,7 +129,7 @@ export default function IDCardGeneratorPage() {
                     height: pageElement.offsetHeight
                 });
 
-                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
                 // Re-hide
@@ -199,7 +199,7 @@ export default function IDCardGeneratorPage() {
                 <Card className="rounded-[2.5rem] border-none shadow-2xl bg-slate-50/50 print:hidden">
                     <CardHeader className="p-8 border-b bg-white rounded-t-[2.5rem]">
                         <CardTitle className="text-xl">Layout Preview: {currentClassName}</CardTitle>
-                        <CardDescription>Visualizing how the cards will appear on the printed A4 sheet.</CardDescription>
+                        <CardDescription>A 2-column grid optimized for spacing and legibility.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-8">
                         {loadingStudents ? (
@@ -208,10 +208,10 @@ export default function IDCardGeneratorPage() {
                                 <p className="text-xs font-black uppercase text-slate-400">Scanning Database...</p>
                             </div>
                         ) : students && students.length > 0 ? (
-                            <div className="flex flex-wrap justify-center gap-8">
+                            <div className="flex flex-wrap justify-center gap-10">
                                 <div className="p-10 bg-white rounded-[3rem] shadow-xl border-4 border-white ring-1 ring-slate-200">
                                     <div className="w-[86mm] h-[54mm] bg-white rounded-2xl shadow-2xl border overflow-hidden flex flex-row relative scale-[1.2] origin-center">
-                                        <div className="w-[30mm] flex flex-col items-center justify-center p-3 text-center border-r border-black/5" style={{ backgroundColor: primaryColor, color: 'white' }}>
+                                        <div className="w-[28mm] flex flex-col items-center justify-center p-3 text-center border-r border-black/5" style={{ backgroundColor: primaryColor, color: 'white' }}>
                                             {logoBase64 ? (
                                                 <img src={logoBase64} alt="Logo" className="h-10 object-contain mb-1" />
                                             ) : (
@@ -219,12 +219,12 @@ export default function IDCardGeneratorPage() {
                                             )}
                                             <h2 className="text-[9px] font-black uppercase leading-tight tracking-tighter line-clamp-1">{schoolProfile?.name || "SCHOOL NAME"}</h2>
                                             
-                                            <div className="mt-1 space-y-0.5 opacity-80 scale-[0.9]">
-                                                <p className="text-[6px] font-bold truncate px-2">{schoolProfile?.address || "School Address"}</p>
-                                                <p className="text-[6px] font-black tracking-widest">{schoolProfile?.phone || "000-000-0000"}</p>
+                                            <div className="mt-1 space-y-0.5 opacity-80 scale-[0.85]">
+                                                <p className="text-[6px] font-bold truncate px-1">{schoolProfile?.address || "School Address"}</p>
+                                                <p className="text-[6px] font-black tracking-widest">{schoolProfile?.phone || ""}</p>
                                             </div>
                                         </div>
-                                        <div className="flex-1 flex flex-row items-center p-4 gap-3">
+                                        <div className="flex-1 flex flex-row items-center p-4 gap-4">
                                             <div className="w-20 h-20 bg-slate-100 rounded-xl border-4 border-white shadow-md overflow-hidden flex items-center justify-center shrink-0">
                                                 {students[0].photoURL ? (
                                                     <img src={students[0].photoURL} crossOrigin="anonymous" alt="Student" className="w-full h-full object-cover" />
@@ -233,20 +233,22 @@ export default function IDCardGeneratorPage() {
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="text-[13px] font-black text-slate-800 uppercase truncate leading-none">{students[0].lastName}</h3>
-                                                <h4 className="text-[12px] font-bold text-slate-600 truncate mb-1">{students[0].firstName}</h4>
+                                                <div className="border-b pb-1 mb-1">
+                                                    <h3 className="text-[13px] font-black text-slate-800 uppercase truncate leading-none">{students[0].lastName}</h3>
+                                                    <h4 className="text-[12px] font-bold text-slate-600 truncate">{students[0].firstName}</h4>
+                                                </div>
                                                 <Badge variant="secondary" className="text-[8px] font-black bg-slate-100 text-slate-500 uppercase px-2 rounded-full">
                                                     {currentClassName}
                                                 </Badge>
                                                 <div className="mt-2 flex flex-col">
                                                     <span className="text-[6px] font-black text-slate-400 uppercase tracking-widest">Student ID</span>
-                                                    <span className="text-[10px] font-black tracking-widest font-mono text-slate-800">
+                                                    <span className="text-[11px] font-black tracking-widest font-mono text-slate-800">
                                                         {formatStudentId(students[0])}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="absolute bottom-0 right-0 left-[30mm] h-1" style={{ backgroundColor: secondaryColor }} />
+                                        <div className="absolute bottom-0 right-0 left-[28mm] h-1.5" style={{ backgroundColor: secondaryColor }} />
                                     </div>
                                     <p className="mt-14 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Sample Digital Proof</p>
                                 </div>
@@ -275,7 +277,8 @@ export default function IDCardGeneratorPage() {
                             display: 'none' 
                         }}
                     >
-                        <div className="grid grid-cols-2 gap-x-[12mm] gap-y-[12mm] justify-items-center">
+                        {/* 2-Column Grid for maximum spacing */}
+                        <div className="grid grid-cols-2 gap-x-[15mm] gap-y-[15mm] justify-items-center">
                             {chunk.map((student: Student) => (
                                 <div 
                                     key={student.id} 
@@ -286,7 +289,7 @@ export default function IDCardGeneratorPage() {
                                 >
                                     {/* Left Branding Sidebar */}
                                     <div 
-                                        className="w-[30mm] flex flex-col items-center justify-center p-3 text-center border-r border-black/5" 
+                                        className="w-[28mm] flex flex-col items-center justify-center p-3 text-center border-r border-black/5" 
                                         style={{ backgroundColor: primaryColor, color: 'white' }}
                                     >
                                         {logoBase64 ? (
@@ -297,7 +300,7 @@ export default function IDCardGeneratorPage() {
                                         <h2 className="text-[10px] font-black uppercase leading-tight tracking-tighter mb-2">{schoolProfile?.name || "SCHOOL"}</h2>
                                         
                                         <div className="space-y-1 opacity-80 scale-[0.85]">
-                                            <p className="text-[7px] font-bold line-clamp-3 leading-tight">{schoolProfile?.address || "Address Not Set"}</p>
+                                            <p className="text-[7px] font-bold line-clamp-3 leading-tight">{schoolProfile?.address || ""}</p>
                                             <p className="text-[7px] font-black tracking-widest">{schoolProfile?.phone || ""}</p>
                                         </div>
                                     </div>
@@ -311,20 +314,20 @@ export default function IDCardGeneratorPage() {
                                                 <UserRound className="w-10 h-10 text-slate-200" />
                                             )}
                                         </div>
-                                        <div className="flex-1 min-w-0 space-y-1">
-                                            <div className="pb-2 border-b border-slate-100">
-                                                <h3 className="text-[13px] font-black text-slate-900 uppercase truncate leading-none mb-1">{student.lastName}</h3>
-                                                <h4 className="text-[12px] font-bold text-slate-600 leading-none truncate">{student.firstName}</h4>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="pb-2 border-b border-slate-100 mb-1">
+                                                <h3 className="text-[14px] font-black text-slate-900 uppercase truncate leading-none mb-1">{student.lastName}</h3>
+                                                <h4 className="text-[13px] font-bold text-slate-600 leading-none truncate">{student.firstName}</h4>
                                             </div>
                                             
                                             <div className="pt-2 space-y-2">
                                                 <div className="flex flex-col">
-                                                    <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Enrollment Class</span>
-                                                    <span className="text-[10px] font-black text-indigo-600 uppercase truncate">{currentClassName}</span>
+                                                    <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Grade / Class</span>
+                                                    <span className="text-[11px] font-black text-indigo-600 uppercase truncate">{currentClassName}</span>
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Student ID Number</span>
-                                                    <span className="text-[11px] font-black tracking-widest font-mono text-slate-800">
+                                                    <span className="text-[12px] font-black tracking-widest font-mono text-slate-800">
                                                         {formatStudentId(student)}
                                                     </span>
                                                 </div>
@@ -333,7 +336,7 @@ export default function IDCardGeneratorPage() {
                                     </div>
                                     
                                     {/* Small bottom verification strip */}
-                                    <div className="absolute bottom-0 right-0 left-[30mm] h-1.5" style={{ backgroundColor: secondaryColor }} />
+                                    <div className="absolute bottom-0 right-0 left-[28mm] h-2" style={{ backgroundColor: secondaryColor }} />
                                 </div>
                             ))}
                         </div>
