@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Printer, Download, UserRound, IdCard, MapPin, Phone, Mail } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import jsPDF from 'jsPDF';
+import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
 import { Student, Class } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
@@ -47,7 +47,6 @@ export default function IDCardGeneratorPage() {
     const [classId, setClassId] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [logoBase64, setLogoBase64] = useState<string>('');
-    const printAreaRef = useRef<HTMLDivElement>(null);
 
     // Fetch School Profile
     const schoolProfileRef = useMemoFirebase(
@@ -211,42 +210,43 @@ export default function IDCardGeneratorPage() {
                         ) : students && students.length > 0 ? (
                             <div className="flex flex-wrap justify-center gap-8">
                                 <div className="p-10 bg-white rounded-[3rem] shadow-xl border-4 border-white ring-1 ring-slate-200">
-                                    <div className="w-[54mm] h-[86mm] bg-white rounded-2xl shadow-2xl border overflow-hidden flex flex-col relative scale-[1.2] origin-center">
-                                        <div className="h-[35%] flex flex-col items-center justify-center p-4 text-center" style={{ backgroundColor: primaryColor, color: 'white' }}>
+                                    <div className="w-[86mm] h-[54mm] bg-white rounded-2xl shadow-2xl border overflow-hidden flex flex-row relative scale-[1.2] origin-center">
+                                        <div className="w-[30mm] flex flex-col items-center justify-center p-3 text-center border-r border-black/5" style={{ backgroundColor: primaryColor, color: 'white' }}>
                                             {logoBase64 ? (
                                                 <img src={logoBase64} alt="Logo" className="h-10 object-contain mb-1" />
                                             ) : (
                                                 <div className="w-10 h-10 rounded-full bg-white/20 mb-1" />
                                             )}
-                                            <h2 className="text-[10px] font-black uppercase leading-tight tracking-tighter line-clamp-1">{schoolProfile?.name || "SCHOOL NAME"}</h2>
+                                            <h2 className="text-[9px] font-black uppercase leading-tight tracking-tighter line-clamp-1">{schoolProfile?.name || "SCHOOL NAME"}</h2>
                                             
-                                            <div className="mt-1 space-y-0.5 opacity-80">
-                                                <p className="text-[7px] font-bold truncate px-2">{schoolProfile?.address || "School Address"}</p>
-                                                <p className="text-[7px] font-black tracking-widest">{schoolProfile?.phone || "000-000-0000"}</p>
+                                            <div className="mt-1 space-y-0.5 opacity-80 scale-[0.9]">
+                                                <p className="text-[6px] font-bold truncate px-2">{schoolProfile?.address || "School Address"}</p>
+                                                <p className="text-[6px] font-black tracking-widest">{schoolProfile?.phone || "000-000-0000"}</p>
                                             </div>
                                         </div>
-                                        <div className="flex-1 flex flex-col items-center pt-6 px-4 text-center">
-                                            <div className="w-24 h-24 bg-slate-100 rounded-2xl border-4 border-white shadow-md mb-3 overflow-hidden flex items-center justify-center ring-1 ring-slate-200">
+                                        <div className="flex-1 flex flex-row items-center p-4 gap-3">
+                                            <div className="w-20 h-20 bg-slate-100 rounded-xl border-4 border-white shadow-md overflow-hidden flex items-center justify-center shrink-0">
                                                 {students[0].photoURL ? (
                                                     <img src={students[0].photoURL} crossOrigin="anonymous" alt="Student" className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <UserRound className="w-12 h-12 text-slate-200" />
+                                                    <UserRound className="w-10 h-10 text-slate-200" />
                                                 )}
                                             </div>
-                                            <div className="space-y-0.5">
-                                                <h3 className="text-[14px] font-black text-slate-800 leading-tight uppercase">{students[0].lastName}</h3>
-                                                <h4 className="text-[13px] font-bold text-slate-600 leading-tight">{students[0].firstName}</h4>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-[13px] font-black text-slate-800 uppercase truncate leading-none">{students[0].lastName}</h3>
+                                                <h4 className="text-[12px] font-bold text-slate-600 truncate mb-1">{students[0].firstName}</h4>
+                                                <Badge variant="secondary" className="text-[8px] font-black bg-slate-100 text-slate-500 uppercase px-2 rounded-full">
+                                                    {currentClassName}
+                                                </Badge>
+                                                <div className="mt-2 flex flex-col">
+                                                    <span className="text-[6px] font-black text-slate-400 uppercase tracking-widest">Student ID</span>
+                                                    <span className="text-[10px] font-black tracking-widest font-mono text-slate-800">
+                                                        {formatStudentId(students[0])}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <Badge variant="secondary" className="mt-4 text-[9px] font-black bg-slate-100 text-slate-500 uppercase px-3 rounded-full">
-                                                {currentClassName}
-                                            </Badge>
                                         </div>
-                                        <div className="h-10 mt-auto flex flex-col items-center justify-center text-white" style={{ backgroundColor: secondaryColor }}>
-                                            <span className="text-[7px] font-bold uppercase opacity-60">Identity Verification ID</span>
-                                            <span className="text-[11px] font-black tracking-widest font-mono">
-                                                {formatStudentId(students[0])}
-                                            </span>
-                                        </div>
+                                        <div className="absolute bottom-0 right-0 left-[30mm] h-1" style={{ backgroundColor: secondaryColor }} />
                                     </div>
                                     <p className="mt-14 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Sample Digital Proof</p>
                                 </div>
@@ -262,7 +262,7 @@ export default function IDCardGeneratorPage() {
             )}
 
             {/* ── HIDDEN PRINT TEMPLATES (A4 Chunks with generous spacing) ── */}
-            <div ref={printAreaRef} className="fixed" style={{ left: '-9999px', top: '0', zIndex: -1 }}>
+            <div className="fixed" style={{ left: '-9999px', top: '0', zIndex: -1 }}>
                 {studentChunks.map((chunk, pageIdx) => (
                     <div 
                         key={pageIdx}
@@ -282,7 +282,6 @@ export default function IDCardGeneratorPage() {
                                     className="w-[86mm] h-[54mm] bg-white rounded-2xl border border-slate-300 overflow-hidden flex flex-row relative shadow-sm" 
                                     style={{ 
                                         boxSizing: 'border-box',
-                                        // Standard horizontal ID card layout for better content visibility
                                     }}
                                 >
                                     {/* Left Branding Sidebar */}
