@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Printer, Download, UserRound, IdCard, MapPin, Phone, Mail } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import jsPDF from 'jsPDF';
 import { Label } from '@/components/ui/label';
 import { Student, Class } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
@@ -86,10 +86,10 @@ export default function IDCardGeneratorPage() {
     const secondaryColor = schoolProfile?.secondaryColor || primaryColor;
     const currentClassName = classes?.find(c => c.id === classId)?.name || 'N/A';
 
-    // Chunk students for multi-page support (9 per A4 page)
+    // Chunk students for multi-page support (8 per A4 page for more spacing)
     const studentChunks = useMemo(() => {
         if (!students) return [];
-        const size = 9;
+        const size = 8;
         const result = [];
         for (let i = 0; i < students.length; i += size) {
             result.push(students.slice(i, i + size));
@@ -101,7 +101,7 @@ export default function IDCardGeneratorPage() {
         if (!studentChunks.length) return;
         
         setIsGenerating(true);
-        toast({ title: "Generating ID Cards...", description: "Compiling multiple pages into high-quality PDF." });
+        toast({ title: "Generating ID Cards...", description: "Optimizing layout for high clarity and spacing." });
 
         try {
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -118,10 +118,11 @@ export default function IDCardGeneratorPage() {
 
                 // Briefly make visible for capture
                 pageElement.style.display = 'block';
-                await new Promise(res => setTimeout(res, 500));
+                // Wait slightly more for layout stability
+                await new Promise(res => setTimeout(res, 1000));
 
                 const canvas = await html2canvas(pageElement, {
-                    scale: 2,
+                    scale: 3, // Increased scale for high detail
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
@@ -129,7 +130,7 @@ export default function IDCardGeneratorPage() {
                     height: pageElement.offsetHeight
                 });
 
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
                 pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
                 // Re-hide
@@ -161,7 +162,7 @@ export default function IDCardGeneratorPage() {
                 <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Generate printable multi-page identification cards</p>
             </div>
             
-            <Card className="border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem]">
+            <Card className="border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem] print:hidden">
                 <CardHeader>
                     <CardTitle className="text-lg">Select Population</CardTitle>
                     <CardDescription>Choose a class to compile ID cards.</CardDescription>
@@ -196,36 +197,35 @@ export default function IDCardGeneratorPage() {
             </Card>
 
             {classId && (
-                <Card className="rounded-[2.5rem] border-none shadow-2xl bg-slate-50/50">
+                <Card className="rounded-[2.5rem] border-none shadow-2xl bg-slate-50/50 print:hidden">
                     <CardHeader className="p-8 border-b bg-white rounded-t-[2.5rem]">
-                        <CardTitle className="text-xl">Preview: {currentClassName}</CardTitle>
-                        <CardDescription>Found {students?.length || 0} active students. PDF will contain {studentChunks.length} pages.</CardDescription>
+                        <CardTitle className="text-xl">Layout Preview: {currentClassName}</CardTitle>
+                        <CardDescription>Visualizing how the cards will appear on the printed A4 sheet.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-8">
                         {loadingStudents ? (
                             <div className="flex flex-col items-center py-20 gap-3">
                                 <Loader2 className="animate-spin text-indigo-600 h-10 w-10"/>
-                                <p className="text-xs font-black uppercase text-slate-400">Loading Student Database...</p>
+                                <p className="text-xs font-black uppercase text-slate-400">Scanning Database...</p>
                             </div>
                         ) : students && students.length > 0 ? (
                             <div className="flex flex-wrap justify-center gap-8">
-                                <div className="p-8 bg-white rounded-[3rem] shadow-xl border-4 border-white ring-1 ring-slate-200">
+                                <div className="p-10 bg-white rounded-[3rem] shadow-xl border-4 border-white ring-1 ring-slate-200">
                                     <div className="w-[54mm] h-[86mm] bg-white rounded-2xl shadow-2xl border overflow-hidden flex flex-col relative scale-[1.2] origin-center">
-                                        <div className="h-[35%] flex flex-col items-center justify-center p-3 text-center" style={{ backgroundColor: primaryColor, color: 'white' }}>
+                                        <div className="h-[35%] flex flex-col items-center justify-center p-4 text-center" style={{ backgroundColor: primaryColor, color: 'white' }}>
                                             {logoBase64 ? (
-                                                <img src={logoBase64} alt="Logo" className="h-8 object-contain mb-1" />
+                                                <img src={logoBase64} alt="Logo" className="h-10 object-contain mb-1" />
                                             ) : (
-                                                <div className="w-8 h-8 rounded-full bg-white/20 mb-1" />
+                                                <div className="w-10 h-10 rounded-full bg-white/20 mb-1" />
                                             )}
-                                            <h2 className="text-[9px] font-black uppercase leading-tight tracking-tighter line-clamp-1">{schoolProfile?.name || "SCHOOL NAME"}</h2>
+                                            <h2 className="text-[10px] font-black uppercase leading-tight tracking-tighter line-clamp-1">{schoolProfile?.name || "SCHOOL NAME"}</h2>
                                             
-                                            {/* Institutional Contact Info */}
                                             <div className="mt-1 space-y-0.5 opacity-80">
-                                                <p className="text-[6px] font-bold truncate px-2">{schoolProfile?.address || "School Address"}</p>
-                                                <p className="text-[6px] font-black tracking-widest">{schoolProfile?.phone || "000-000-0000"}</p>
+                                                <p className="text-[7px] font-bold truncate px-2">{schoolProfile?.address || "School Address"}</p>
+                                                <p className="text-[7px] font-black tracking-widest">{schoolProfile?.phone || "000-000-0000"}</p>
                                             </div>
                                         </div>
-                                        <div className="flex-1 flex flex-col items-center pt-6 px-3 text-center">
+                                        <div className="flex-1 flex flex-col items-center pt-6 px-4 text-center">
                                             <div className="w-24 h-24 bg-slate-100 rounded-2xl border-4 border-white shadow-md mb-3 overflow-hidden flex items-center justify-center ring-1 ring-slate-200">
                                                 {students[0].photoURL ? (
                                                     <img src={students[0].photoURL} crossOrigin="anonymous" alt="Student" className="w-full h-full object-cover" />
@@ -234,25 +234,25 @@ export default function IDCardGeneratorPage() {
                                                 )}
                                             </div>
                                             <div className="space-y-0.5">
-                                                <h3 className="text-[13px] font-black text-slate-800 leading-tight uppercase">{students[0].lastName}</h3>
-                                                <h4 className="text-[12px] font-bold text-slate-600 leading-tight">{students[0].firstName}</h4>
+                                                <h3 className="text-[14px] font-black text-slate-800 leading-tight uppercase">{students[0].lastName}</h3>
+                                                <h4 className="text-[13px] font-bold text-slate-600 leading-tight">{students[0].firstName}</h4>
                                             </div>
                                             <Badge variant="secondary" className="mt-4 text-[9px] font-black bg-slate-100 text-slate-500 uppercase px-3 rounded-full">
                                                 {currentClassName}
                                             </Badge>
                                         </div>
                                         <div className="h-10 mt-auto flex flex-col items-center justify-center text-white" style={{ backgroundColor: secondaryColor }}>
-                                            <span className="text-[7px] font-bold uppercase opacity-60">Student ID Number</span>
+                                            <span className="text-[7px] font-bold uppercase opacity-60">Identity Verification ID</span>
                                             <span className="text-[11px] font-black tracking-widest font-mono">
                                                 {formatStudentId(students[0])}
                                             </span>
                                         </div>
                                     </div>
-                                    <p className="mt-12 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Live Design Preview</p>
+                                    <p className="mt-14 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Sample Digital Proof</p>
                                 </div>
                             </div>
                         ) : (
-                            <div className="text-center py-20 bg-white rounded-[2rem] border-4 border-dashed">
+                            <div className="text-center py-24 bg-white rounded-[2rem] border-4 border-dashed">
                                 <UserRound className="h-16 w-16 text-slate-100 mx-auto mb-4" />
                                 <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">No active students in this class.</p>
                             </div>
@@ -261,59 +261,80 @@ export default function IDCardGeneratorPage() {
                 </Card>
             )}
 
-            {/* HIDDEN PRINT TEMPLATES (A4 Chunks) */}
+            {/* ── HIDDEN PRINT TEMPLATES (A4 Chunks with generous spacing) ── */}
             <div ref={printAreaRef} className="fixed" style={{ left: '-9999px', top: '0', zIndex: -1 }}>
                 {studentChunks.map((chunk, pageIdx) => (
                     <div 
                         key={pageIdx}
                         id={`print-page-${pageIdx}`}
-                        className="bg-white p-[10mm] mb-[20mm]" 
+                        className="bg-white p-[15mm] mb-[30mm]" 
                         style={{ 
                             width: '210mm', 
-                            minHeight: '297mm', 
+                            height: '297mm', 
                             boxSizing: 'border-box',
-                            display: 'none' // Controlled by export function
+                            display: 'none' 
                         }}
                     >
-                        <div className="grid grid-cols-3 gap-x-[5mm] gap-y-[8mm] justify-items-center">
+                        <div className="grid grid-cols-2 gap-x-[12mm] gap-y-[12mm] justify-items-center">
                             {chunk.map((student: Student) => (
-                                <div key={student.id} className="w-[54mm] h-[86mm] bg-white rounded-xl border border-slate-300 overflow-hidden flex flex-col relative" style={{ boxSizing: 'border-box' }}>
-                                    
-                                    <div className="h-[30mm] flex flex-col items-center justify-center p-2 text-center" style={{ backgroundColor: primaryColor, color: 'white' }}>
+                                <div 
+                                    key={student.id} 
+                                    className="w-[86mm] h-[54mm] bg-white rounded-2xl border border-slate-300 overflow-hidden flex flex-row relative shadow-sm" 
+                                    style={{ 
+                                        boxSizing: 'border-box',
+                                        // Standard horizontal ID card layout for better content visibility
+                                    }}
+                                >
+                                    {/* Left Branding Sidebar */}
+                                    <div 
+                                        className="w-[30mm] flex flex-col items-center justify-center p-3 text-center border-r border-black/5" 
+                                        style={{ backgroundColor: primaryColor, color: 'white' }}
+                                    >
                                         {logoBase64 ? (
-                                            <img src={logoBase64} alt="Logo" className="h-8 object-contain mb-1" />
+                                            <img src={logoBase64} alt="Logo" className="h-12 object-contain mb-2" />
                                         ) : (
-                                            <div className="w-6 h-6 rounded-full bg-white/20 mb-1" />
+                                            <div className="w-10 h-10 rounded-full bg-white/20 mb-2" />
                                         )}
-                                        <h2 className="text-[8px] font-black uppercase leading-tight tracking-tighter">{schoolProfile?.name || "SCHOOL NAME"}</h2>
+                                        <h2 className="text-[10px] font-black uppercase leading-tight tracking-tighter mb-2">{schoolProfile?.name || "SCHOOL"}</h2>
                                         
-                                        <div className="mt-1 space-y-0.5 opacity-80 scale-[0.9]">
-                                            <p className="text-[5px] font-bold truncate px-1">{schoolProfile?.address || "School Address"}</p>
-                                            <p className="text-[5px] font-black tracking-widest">{schoolProfile?.phone || "000-000-0000"}</p>
+                                        <div className="space-y-1 opacity-80 scale-[0.85]">
+                                            <p className="text-[7px] font-bold line-clamp-3 leading-tight">{schoolProfile?.address || "Address Not Set"}</p>
+                                            <p className="text-[7px] font-black tracking-widest">{schoolProfile?.phone || ""}</p>
                                         </div>
                                     </div>
                                     
-                                    <div className="flex-1 flex flex-col items-center pt-4 px-2 text-center">
-                                        <div className="w-[28mm] h-[28mm] bg-slate-50 rounded-lg border-2 border-slate-100 shadow-inner mb-3 overflow-hidden flex items-center justify-center">
+                                    {/* Right Main Info Area */}
+                                    <div className="flex-1 flex flex-row items-center p-4 gap-4">
+                                        <div className="w-24 h-24 bg-slate-50 rounded-xl border-2 border-slate-100 shadow-inner overflow-hidden flex items-center justify-center shrink-0">
                                             {student.photoURL ? (
                                                 <img src={student.photoURL} crossOrigin="anonymous" alt="Student" className="w-full h-full object-cover" />
                                             ) : (
-                                                <UserRound className="w-12 h-12 text-slate-200" />
+                                                <UserRound className="w-10 h-10 text-slate-200" />
                                             )}
                                         </div>
-                                        <div className="space-y-0.5">
-                                            <h3 className="text-[11px] font-black text-slate-900 uppercase leading-none">{student.lastName}</h3>
-                                            <h4 className="text-[10px] font-bold text-slate-700 leading-none">{student.firstName}</h4>
+                                        <div className="flex-1 min-w-0 space-y-1">
+                                            <div className="pb-2 border-b border-slate-100">
+                                                <h3 className="text-[13px] font-black text-slate-900 uppercase truncate leading-none mb-1">{student.lastName}</h3>
+                                                <h4 className="text-[12px] font-bold text-slate-600 leading-none truncate">{student.firstName}</h4>
+                                            </div>
+                                            
+                                            <div className="pt-2 space-y-2">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Enrollment Class</span>
+                                                    <span className="text-[10px] font-black text-indigo-600 uppercase truncate">{currentClassName}</span>
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Student ID Number</span>
+                                                    <span className="text-[11px] font-black tracking-widest font-mono text-slate-800">
+                                                        {formatStudentId(student)}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <p className="text-[8px] font-black text-slate-400 mt-3 uppercase tracking-widest">{currentClassName}</p>
                                     </div>
                                     
-                                    <div className="h-[10mm] mt-auto flex flex-col items-center justify-center text-white" style={{ backgroundColor: secondaryColor }}>
-                                        <span className="text-[6px] font-bold uppercase opacity-60">Student ID</span>
-                                        <span className="text-[10px] font-black tracking-widest font-mono">
-                                            {formatStudentId(student)}
-                                        </span>
-                                    </div>
+                                    {/* Small bottom verification strip */}
+                                    <div className="absolute bottom-0 right-0 left-[30mm] h-1.5" style={{ backgroundColor: secondaryColor }} />
                                 </div>
                             ))}
                         </div>
@@ -325,7 +346,13 @@ export default function IDCardGeneratorPage() {
                 @media print {
                     body * { visibility: hidden !important; }
                     [id^="print-page-"], [id^="print-page-"] * { visibility: visible !important; }
-                    [id^="print-page-"] { position: relative !important; margin: 0 !important; page-break-after: always !important; display: block !important; }
+                    [id^="print-page-"] { 
+                        position: relative !important; 
+                        margin: 0 !important; 
+                        page-break-after: always !important; 
+                        display: block !important; 
+                        background: white !important;
+                    }
                 }
             `}</style>
         </div>
