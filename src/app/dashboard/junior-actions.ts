@@ -35,7 +35,7 @@ export async function generateJuniorStory(input: { topic: string; wordCount?: nu
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       output: {
         schema: JuniorStorySchema
@@ -75,7 +75,7 @@ export async function generateJuniorScience(input: { topic: string; schoolId: st
       Output strictly JSON.
     `;
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt,
       output: { schema: JuniorScienceSchema }
     });
@@ -109,7 +109,7 @@ export async function generateWordDetails(input: { word: string; schoolId: strin
       Output strictly JSON.
     `;
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt,
       output: { schema: WordDetailSchema }
     });
@@ -209,7 +209,7 @@ export async function assessHandwritingAction(input: { imageDataUri: string; tar
     `;
 
     const { text } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: [
         { text: prompt },
         { media: { url: input.imageDataUri } },
@@ -226,7 +226,7 @@ export async function assessHandwritingAction(input: { imageDataUri: string; tar
   }
 }
 
-// --- NEWLY ADDED: LIFE SKILLS GENERATOR ---
+// --- LIFE SKILLS GENERATOR ---
 const LifeSkillEntrySchema = z.any(); // Flexible schema for varied outputs
 
 export async function generateLifeSkillEntry(input: { topic: string; category: string; schoolId: string; }) {
@@ -273,7 +273,7 @@ export async function generateLifeSkillEntry(input: { topic: string; category: s
   
   try {
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt,
       output: { schema: LifeSkillEntrySchema }
     });
@@ -297,7 +297,7 @@ export async function generateRhyme(input: { topic: string; schoolId: string; })
 
     const prompt = `Write a very simple, 4-line nursery rhyme for a 5-year-old about: ${input.topic}. The rhyme should be positive and easy to sing.`;
     const response = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt,
     });
     
@@ -323,7 +323,7 @@ export async function generateSkillDetails(input: { skill: string; schoolId: str
     const prompt = `Generate details for a life skill for a 5-year old. The skill is: '${input.skill}'.`;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt,
       output: { schema: SkillDetailSchema }
     });
@@ -355,7 +355,7 @@ export async function generatePhonicsWorldEntry(topic: string, category: string,
         const prompt = `Create a nursery phonics entry for "${topic}" in category "${category}". 
         Return JSON: { "title": "string", "sound": "string", "description": "string", "imagePrompt": "string", "icon": "string" }`;
         const { output } = await ai.generate({
-            model: 'googleai/gemini-1.5-flash',
+            model: 'googleai/gemini-3-flash-preview',
             prompt,
             output: { schema: PhonicsWorldEntrySchema }
         });
@@ -367,7 +367,7 @@ export async function generatePhonicsWorldEntry(topic: string, category: string,
     }
 }
 
-// --- MATH WORLD ENTRY GENERATOR (NEW) ---
+// --- MATH WORLD ENTRY GENERATOR ---
 const MathWorldEntrySchema = z.object({
     title: z.string(),
     question: z.string(),
@@ -390,7 +390,7 @@ export async function generateMathWorldEntry(topic: string, category: string, sc
         `;
 
         const { output } = await ai.generate({
-            model: 'googleai/gemini-1.5-flash',
+            model: 'googleai/gemini-3-flash-preview',
             prompt,
             output: { schema: MathWorldEntrySchema }
         });
@@ -425,7 +425,7 @@ export async function generateScienceWorldEntry(topic: string, category: string,
         `;
 
         const { output } = await ai.generate({
-            model: 'googleai/gemini-1.5-flash',
+            model: 'googleai/gemini-3-flash-preview',
             prompt,
             output: { schema: ScienceWorldEntrySchema }
         });

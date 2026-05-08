@@ -8,7 +8,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { gemini15Flash } from '@genkit-ai/google-genai';
 
 // --- SCHEMAS ---
 const HistoryMessageSchema = z.object({
@@ -89,9 +88,9 @@ const campusAssistantFlow = ai.defineFlow(
     outputSchema: CampusAssistantOutputSchema,
   },
   async (input) => {
-    // Calling the prompt with the stable model reference
+    // Calling the prompt - model is handled by the default system configuration
     const { output } = await assistantPrompt(input, {
-        model: gemini15Flash,
+        model: 'googleai/gemini-3-flash-preview',
         config: {
             temperature: 0.5,
         }
