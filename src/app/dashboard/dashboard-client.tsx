@@ -344,6 +344,68 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
     );
 }
 
+function TransportStaffDashboard({ profile, routes, buses, students, announcements, isLoading }) {
+    const { user } = useUser();
+    const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Member';
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-black text-slate-800 tracking-tighter italic uppercase">Transport <span className="text-indigo-600">Command</span></h1>
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Managing the morning rush.</p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <StatCard title="Active Routes" value={routes?.length || 0} icon={RouteIcon} link="/dashboard/transport" isLoading={isLoading} color="text-indigo-600" />
+                <StatCard title="Total Buses" value={buses?.length || 0} icon={BusIcon} link="/dashboard/transport" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Bus Students" value={students?.filter(s => s.usesBusService).length || 0} icon={Users} link="/dashboard/transport" isLoading={isLoading} color="text-emerald-600" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+                    <CardHeader className="bg-indigo-600 text-white p-8">
+                        <CardTitle className="text-xl font-black flex items-center gap-3 uppercase italic tracking-tight">Fleet Status</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 space-y-3">
+                         {routes?.map((route: any) => {
+                             const bus = buses?.find((b: any) => b.id === route.busId);
+                             const studentCount = route.stops?.reduce((sum: number, stop: any) => sum + (stop.assignedStudentIds?.length || 0), 0) || 0;
+                             return (
+                                <div key={route.id} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border-2 border-transparent hover:border-indigo-100 transition-all">
+                                    <div>
+                                        <p className="font-black text-slate-800 uppercase tracking-tight">{route.name}</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase">{bus?.name || 'No Bus'}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <Badge variant="outline" className="bg-white">{studentCount} Students</Badge>
+                                    </div>
+                                </div>
+                             )
+                         })}
+                         <Button asChild variant="ghost" className="w-full mt-4 text-indigo-600 font-black uppercase text-[10px]">
+                             <Link href="/dashboard/transport">Manage All Routes</Link>
+                         </Button>
+                    </CardContent>
+                </Card>
+
+                 <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
+                    <CardHeader className="p-8">
+                        <CardTitle className="text-xl font-black uppercase italic tracking-tight text-indigo-400">Logistics Notices</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 pt-0 space-y-4">
+                         {announcements?.slice(0, 2).map((ann: any) => (
+                             <div key={ann.id} className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                 <h4 className="font-black text-xs uppercase tracking-tight text-white">{ann.title}</h4>
+                                 <p className="text-[10px] font-medium leading-relaxed opacity-60 line-clamp-2">{ann.content}</p>
+                             </div>
+                         ))}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
 function TeacherDashboard({ profile, classes, isLoading }) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Teacher';
@@ -357,7 +419,7 @@ function TeacherDashboard({ profile, classes, isLoading }) {
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <StatCard title="Assigned Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} />
-                <StatCard title="Pending Grading" value="--" icon={PenLine} link="/dashboard/assignments" isLoading={isLoading} color="text-orange-500" />
+                <StatCard title="Pending Grading" value="--" icon={FileText} link="/dashboard/assignments" isLoading={isLoading} color="text-orange-500" />
                 <StatCard title="Lesson Progress" value="65%" icon={Activity} link="/dashboard/lesson-planning" isLoading={isLoading} color="text-emerald-600" />
             </div>
 
@@ -643,7 +705,7 @@ export default function DashboardClient() {
   }
 
   if (role === 'Administrator' || role === 'Director') {
-    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={isLoadingStudents || loadingStaff || loadingClasses} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} />;
+    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} />;
   }
 
   if (role === 'Accountant') {
