@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, doc } from 'firebase/firestore';
@@ -16,6 +16,29 @@ import { Student, Class } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
 import { Badge } from '@/components/ui/badge';
 
+// Helper to get base64 via proxy to avoid CORS issues with html2canvas
+async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
+    try {
+        const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
+            ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
+            : imageUrl;
+
+        const res = await fetch(fetchUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
+        const blob = await res.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error: any) {
+        console.error("❌ getBase64ImageFromUrl failed:", error.message);
+        return "";
+    }
+}
+
 export default function IDCardGeneratorPage() {
     const firestore = useFirestore();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
@@ -23,14 +46,28 @@ export default function IDCardGeneratorPage() {
 
     const [classId, setClassId] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
+    const [logoBase64, setLogoBase64] = useState<string>('');
     const printRef = useRef<HTMLDivElement>(null);
 
     // Fetch School Profile
-    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const schoolProfileRef = useMemoFirebase(
+        () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
+        [firestore, schoolId]
+    );
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
+    // Convert logo to base64 for solid PDF rendering
+    useEffect(() => {
+        if (schoolProfile?.logoUrl) {
+            getBase64ImageFromUrl(schoolProfile.logoUrl).then(setLogoBase64);
+        }
+    }, [schoolProfile]);
+
     // Fetch Classes
-    const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const classesQuery = useMemoFirebase(
+        () => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, 
+        [firestore, schoolId]
+    );
     const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery);
 
     // Fetch Students
@@ -57,21 +94,24 @@ export default function IDCardGeneratorPage() {
         toast({ title: "Generating ID Cards...", description: "Please wait while we render the high-quality PDF." });
 
         try {
-            element.style.display = 'block'; // Make visible for capture
+            // Make the hidden container visible for the capture engine
+            element.style.display = 'block'; 
             
-            // Allow time for images to load
-            await new Promise(res => setTimeout(res, 1200));
+            // Allow time for any remaining layout shifts or image processing
+            await new Promise(res => setTimeout(res, 1500));
 
             const canvas = await html2canvas(element, { 
                 scale: 2, 
                 useCORS: true, 
+                logging: false,
                 backgroundColor: '#ffffff'
             });
             
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
             
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`${currentClassName.replace(/\s+/g, '_')}_ID_Cards.pdf`);
@@ -79,8 +119,8 @@ export default function IDCardGeneratorPage() {
             element.style.display = 'none';
             toast({ title: "Success", description: "ID Cards PDF exported." });
         } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: "Export Failed" });
+            console.error("PDF Export Error:", error);
+            toast({ variant: 'destructive', title: "Export Failed", description: "An error occurred while generating the PDF." });
             if (element) element.style.display = 'none';
         } finally {
             setIsGenerating(false);
@@ -159,11 +199,14 @@ export default function IDCardGeneratorPage() {
                             </div>
                         ) : students && students.length > 0 ? (
                             <div className="flex flex-wrap justify-center gap-8">
-                                {/* Visual sample of the design */}
                                 <div className="p-8 bg-white rounded-[3rem] shadow-xl border-4 border-white ring-1 ring-slate-200">
                                     <div className="w-[54mm] h-[86mm] bg-white rounded-2xl shadow-2xl border overflow-hidden flex flex-col relative scale-[1.2] origin-center">
                                         <div className="h-[30%] flex flex-col items-center justify-center p-3 text-center" style={{ backgroundColor: primaryColor, color: 'white' }}>
-                                            {schoolProfile?.logoUrl && <img src={schoolProfile.logoUrl} crossOrigin="anonymous" alt="Logo" className="h-8 object-contain mb-1" />}
+                                            {logoBase64 ? (
+                                                <img src={logoBase64} alt="Logo" className="h-8 object-contain mb-1" />
+                                            ) : (
+                                                <div className="w-8 h-8 rounded-full bg-white/20 mb-1" />
+                                            )}
                                             <h2 className="text-[10px] font-black uppercase leading-tight tracking-tighter line-clamp-2">{schoolProfile?.name || "SCHOOL NAME"}</h2>
                                         </div>
                                         <div className="flex-1 flex flex-col items-center pt-6 px-3 text-center">
@@ -210,13 +253,15 @@ export default function IDCardGeneratorPage() {
                             {students.map((student: any) => (
                                 <div key={student.id} className="w-[54mm] h-[86mm] bg-white rounded-xl border border-slate-300 overflow-hidden flex flex-col relative" style={{ boxSizing: 'border-box' }}>
                                     
-                                    {/* Header */}
                                     <div className="h-[26mm] flex flex-col items-center justify-center p-2 text-center" style={{ backgroundColor: primaryColor, color: 'white' }}>
-                                        {schoolProfile?.logoUrl && <img src={schoolProfile.logoUrl} crossOrigin="anonymous" alt="Logo" className="h-8 object-contain mb-1" />}
+                                        {logoBase64 ? (
+                                            <img src={logoBase64} alt="Logo" className="h-8 object-contain mb-1" />
+                                        ) : (
+                                            <div className="w-6 h-6 rounded-full bg-white/20 mb-1" />
+                                        )}
                                         <h2 className="text-[8px] font-black uppercase leading-tight tracking-tighter">{schoolProfile?.name || "SCHOOL NAME"}</h2>
                                     </div>
                                     
-                                    {/* Body */}
                                     <div className="flex-1 flex flex-col items-center pt-4 px-2 text-center">
                                         <div className="w-[28mm] h-[28mm] bg-slate-50 rounded-lg border-2 border-slate-100 shadow-inner mb-3 overflow-hidden flex items-center justify-center">
                                             {student.photoURL ? (
@@ -232,7 +277,6 @@ export default function IDCardGeneratorPage() {
                                         <p className="text-[8px] font-black text-slate-400 mt-3 uppercase tracking-widest">{currentClassName}</p>
                                     </div>
                                     
-                                    {/* Footer */}
                                     <div className="h-[10mm] mt-auto flex flex-col items-center justify-center text-white" style={{ backgroundColor: secondaryColor }}>
                                         <span className="text-[6px] font-bold uppercase opacity-60">Student ID</span>
                                         <span className="text-[10px] font-black tracking-widest font-mono">
