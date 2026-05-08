@@ -11,7 +11,9 @@ import {
   Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
   XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, ShieldAlert,
   ArrowDownRight,
-  Activity
+  Activity,
+  Database,
+  Award
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
@@ -164,7 +166,7 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
                                 />
                                 <Bar dataKey="students" fill="url(#adminBarGrad)" radius={[10, 10, 0, 0]}>
                                     <defs>
-                                        <linearGradient id="adminBarGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <linearGradient id="adminBarGrad" x1="0" x1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8}/>
                                             <stop offset="95%" stopColor="#818cf8" stopOpacity={1}/>
                                         </linearGradient>
