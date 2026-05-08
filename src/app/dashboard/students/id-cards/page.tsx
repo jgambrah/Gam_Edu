@@ -107,13 +107,18 @@ export default function IDCardGeneratorPage() {
                 backgroundColor: '#ffffff'
             });
             
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
             
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            // Use canvas dimensions directly to avoid 'UNKNOWN' type parsing error in jsPDF
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = imgWidth / imgHeight;
+            const width = pdfWidth;
+            const height = width / ratio;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
             pdf.save(`${currentClassName.replace(/\s+/g, '_')}_ID_Cards.pdf`);
             
             element.style.display = 'none';
@@ -177,7 +182,7 @@ export default function IDCardGeneratorPage() {
                                 disabled={isGenerating || !students?.length} 
                                 className="flex-1 md:w-48 h-12 rounded-xl bg-blue-600 hover:bg-blue-700 font-black uppercase tracking-tight shadow-lg shadow-blue-100"
                             >
-                                {isGenerating ? <Loader2 className="animate-spin mr-2"/> : <Download className="mr-2 h-4 w-4"/>}
+                                {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <Download className="mr-2 h-4 w-4"/>}
                                 Download PDF
                             </Button>
                         </div>
