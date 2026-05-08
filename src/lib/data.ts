@@ -57,6 +57,7 @@ import {
   ArrowUpCircle,
   Database,
   LayoutTemplate,
+  IdCard,
   User as UserIcon
 } from 'lucide-react';
 
@@ -157,6 +158,12 @@ export const navItems: NavItem[] = [
             path: '/dashboard/parents-v2',
             title: 'Parents',
             icon: HeartHandshake,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/students/id-cards',
+            title: 'ID Card Generator',
+            icon: IdCard,
             roles: ['Director', 'Administrator'],
         },
         {
