@@ -13,25 +13,6 @@ import { Loader2, CalendarCheck, Info } from 'lucide-react';
 
 /**
  * @fileOverview Personal attendance history for Students and Parents.
- *
- * KEY FIX — Parent flow had a two-level ID mismatch:
- *
- * 1. parentStudentIds contains Firestore *document IDs* of student docs
- *    (the `id` field set by Firestore, e.g. "abc123").
- *    The old code passed these directly to `where('studentId', 'in', ...)` on
- *    the attendance collection, but attendance records store the student's
- *    Firebase Auth *uid*, not the document ID — so no records were ever found.
- *
- * 2. The student name-lookup query used `where('uid', 'in', slice)` with the
- *    same document-ID values, so it also returned nothing, causing every
- *    matched attendance row to show "Unlinked Student".
- *
- * Fix:
- *  - Step 1: Fetch student docs by their Firestore document IDs using
- *            `where(documentId(), 'in', slice)`.
- *  - Step 2: Extract the `uid` field from those docs.
- *  - Step 3: Query attendance using those uid values.
- *  - Step 4: Match attendance rows to student names via uid — correctly.
  */
 export default function MyAttendancePage() {
     const { user } = useAuth();
@@ -39,7 +20,7 @@ export default function MyAttendancePage() {
     const firestore = useFirestore();
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
-    // ── Collect the parent's linked student *document IDs* ──────────────────
+    // 1. Collect linked student IDs from profile fallbacks
     const parentStudentDocIds = useMemo(() => {
         if (!profile) return [];
         return (
@@ -52,9 +33,7 @@ export default function MyAttendancePage() {
         );
     }, [profile]);
 
-    // ── Step 1: Fetch student documents by Firestore document ID ────────────
-    // For Students: match by their own uid field.
-    // For Parents : match by document ID (the IDs stored on the parent profile).
+    // 2. Fetch student documents to get Names and verify UIDs
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !role) return null;
 
@@ -67,9 +46,8 @@ export default function MyAttendancePage() {
         }
 
         if (role === 'Parent' && parentStudentDocIds.length > 0) {
-            // documentId() matches against the Firestore auto-generated doc ID,
-            // which is what parent profiles store in their studentIds array.
-            const slice = parentStudentDocIds.slice(0, 30);
+            // Firestore "in" query is limited to 10 items
+            const slice = parentStudentDocIds.slice(0, 10);
             return query(
                 collection(firestore, 'students'),
                 where(documentId(), 'in', slice),
@@ -82,33 +60,30 @@ export default function MyAttendancePage() {
 
     const { data: students, isLoading: studentsLoading } = useCollection<any>(studentsQuery);
 
-    // ── Step 2: Derive the uid values from fetched student docs ─────────────
-    // Attendance records store `studentId` as the Firebase Auth uid, so we
-    // need the uid field — not the Firestore document id.
-    const parentStudentUids = useMemo(() => {
-        if (role !== 'Parent' || !students) return [];
+    // 3. Extract verified UIDs for the attendance query
+    const studentUids = useMemo(() => {
+        if (!students) return [];
         return students.map((s: any) => s.uid).filter(Boolean);
-    }, [role, students]);
+    }, [students]);
 
-    // ── Step 3: Fetch attendance using the correct uid values ────────────────
+    // 4. Fetch attendance logs
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !user || !role) return null;
+        if (!firestore || !schoolId || studentUids.length === 0) return null;
 
         const baseQuery = collection(firestore, 'attendance');
 
-        if (role === 'Student') {
-            // Student's own uid is already correct for this field.
+        if (role === 'Student' && user) {
             return query(
                 baseQuery,
                 where('schoolId', '==', schoolId),
                 where('studentId', '==', user.uid),
-                limit(50)
+                limit(100)
             );
         }
 
-        if (role === 'Parent' && parentStudentUids.length > 0) {
-            // Now correctly using Auth uids, not document IDs.
-            const slice = parentStudentUids.slice(0, 30);
+        if (role === 'Parent' && studentUids.length > 0) {
+            // Firestore "in" query is limited to 10 items
+            const slice = studentUids.slice(0, 10);
             return query(
                 baseQuery,
                 where('schoolId', '==', schoolId),
@@ -118,11 +93,11 @@ export default function MyAttendancePage() {
         }
 
         return null;
-    }, [firestore, schoolId, role, user?.uid, parentStudentUids]);
+    }, [firestore, schoolId, role, user?.uid, studentUids]);
 
     const { data: attendance, isLoading: attendanceLoading } = useCollection<any>(attendanceQuery);
 
-    // ── Step 4: Sort newest-first in memory ──────────────────────────────────
+    // 5. Sort newest-first in memory to avoid index requirements for now
     const sortedAttendance = useMemo(() => {
         if (!attendance) return [];
         return [...attendance].sort((a, b) => {
@@ -132,17 +107,14 @@ export default function MyAttendancePage() {
         });
     }, [attendance]);
 
-    // Show loader while any essential data is still resolving.
-    // For parents we wait for students to load first so that the
-    // uid-based attendance query can be constructed correctly.
-    const isLoading =
-        attendanceLoading ||
-        studentsLoading ||
+    // Ensure we don't show "No records found" while any part of the chain is still loading
+    const isActuallyLoading =
         schoolLoading ||
         roleLoading ||
-        (role === 'Parent' && parentStudentDocIds.length > 0 && !students);
+        (role === 'Parent' && parentStudentDocIds.length > 0 && !students) ||
+        (studentUids.length > 0 && attendanceLoading && !attendance);
 
-    if (isLoading) {
+    if (isActuallyLoading) {
         return (
             <div className="p-10 flex justify-center">
                 <Loader2 className="animate-spin text-indigo-600 h-8 w-8" />
@@ -204,7 +176,6 @@ export default function MyAttendancePage() {
                                 </TableRow>
                             ) : (
                                 sortedAttendance.map(record => {
-                                    // Match by uid — now consistent with how attendance is stored.
                                     const student = students?.find(
                                         (s: any) => s.uid === record.studentId
                                     );
@@ -222,20 +193,14 @@ export default function MyAttendancePage() {
 
                                             {role === 'Parent' && (
                                                 <TableCell>
-                                                    {student ? (
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-black text-indigo-600 uppercase">
-                                                                {student.firstName?.[0]}{student.lastName?.[0]}
-                                                            </div>
-                                                            <span className="font-medium">
-                                                                {student.firstName} {student.lastName}
-                                                            </span>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-black text-indigo-600 uppercase">
+                                                            {student?.firstName?.[0] || 'S'}
                                                         </div>
-                                                    ) : (
-                                                        <span className="text-xs text-slate-400 italic">
-                                                            Unlinked Student
+                                                        <span className="font-medium">
+                                                            {student ? `${student.firstName} ${student.lastName}` : 'Student'}
                                                         </span>
-                                                    )}
+                                                    </div>
                                                 </TableCell>
                                             )}
 

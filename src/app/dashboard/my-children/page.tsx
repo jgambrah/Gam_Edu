@@ -35,29 +35,52 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
     const isTargetStudent = user?.uid === studentId;
     const isParent = role === 'Parent';
     
-    // Tighter permission check: Verify studentId is in parent's linked list
     const parentStudentIds = useMemo(() => {
-        return profile?.studentIds || profile?.student_ids || profile?.students || [];
+        return (
+            profile?.studentIds || 
+            profile?.student_ids || 
+            profile?.students || 
+            profile?.linkedStudentIds ||
+            []
+        );
     }, [profile]);
 
     const hasPermission = isStaff || isTargetStudent || (isParent && parentStudentIds.includes(studentId));
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !dateRange?.from || !studentId || !hasPermission || isRoleLoading) return null;
+        if (!firestore || !schoolId || !studentId || !hasPermission || isRoleLoading) return null;
         
-        const start = Timestamp.fromDate(startOfDay(dateRange.from));
-        const end = dateRange.to ? Timestamp.fromDate(endOfDay(dateRange.to)) : Timestamp.fromDate(endOfDay(dateRange.from));
-
+        // Remove complex filters from the DB query to avoid index errors for now
         return query(
             collection(firestore, 'attendance'),
             where('schoolId', '==', schoolId),
-            where('studentId', '==', studentId),
-            where('date', '>=', start),
-            where('date', '<=', end)
+            where('studentId', '==', studentId)
         );
-    }, [firestore, schoolId, studentId, dateRange, hasPermission, isRoleLoading]);
+    }, [firestore, schoolId, studentId, hasPermission, isRoleLoading]);
     
-    const { data: records, isLoading } = useCollection<AttendanceRecord>(attendanceQuery);
+    const { data: rawRecords, isLoading } = useCollection<AttendanceRecord>(attendanceQuery);
+
+    const filteredAndSortedRecords = useMemo(() => {
+        if (!rawRecords) return [];
+        
+        let filtered = [...rawRecords];
+        
+        if (dateRange?.from) {
+            const start = startOfDay(dateRange.from).getTime();
+            const end = dateRange.to ? endOfDay(dateRange.to).getTime() : endOfDay(dateRange.from).getTime();
+            
+            filtered = filtered.filter(r => {
+                const d = r.date?.toDate ? r.date.toDate().getTime() : 0;
+                return d >= start && d <= end;
+            });
+        }
+
+        return filtered.sort((a,b) => {
+            const da = a.date?.toDate ? a.date.toDate().getTime() : 0;
+            const db = b.date?.toDate ? b.date.toDate().getTime() : 0;
+            return db - da;
+        });
+    }, [rawRecords, dateRange]);
 
     const getStatusVariant = (status: AttendanceRecord['status']) => {
         switch (status) {
@@ -96,14 +119,14 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
                             <TableRow><TableHead>Date</TableHead><TableHead>Status</TableHead><TableHead>Notes</TableHead></TableRow>
                         </TableHeader>
                         <TableBody>
-                            {records?.sort((a,b) => b.date.toDate().getTime() - a.date.toDate().getTime()).map(rec => (
+                            {filteredAndSortedRecords.map(rec => (
                                 <TableRow key={rec.id}>
-                                    <TableCell className="font-medium">{format(rec.date.toDate(), 'PPP')}</TableCell>
+                                    <TableCell className="font-medium">{rec.date?.toDate ? format(rec.date.toDate(), 'PPP') : 'N/A'}</TableCell>
                                     <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
                                     <TableCell className="text-slate-500 text-xs italic">{rec.notes || '-'}</TableCell>
                                 </TableRow>
                             ))}
-                            {(!records || records.length === 0) && (
+                            {filteredAndSortedRecords.length === 0 && (
                                 <TableRow><TableCell colSpan={3} className="text-center py-12 text-muted-foreground italic">No attendance records found for this period.</TableCell></TableRow>
                             )}
                         </TableBody>
@@ -125,7 +148,13 @@ function BehavioralHistory({ studentId }: { studentId: string }) {
     const isParent = role === 'Parent';
 
     const parentStudentIds = useMemo(() => {
-        return profile?.studentIds || profile?.student_ids || profile?.students || [];
+        return (
+            profile?.studentIds || 
+            profile?.student_ids || 
+            profile?.students || 
+            profile?.linkedStudentIds ||
+            []
+        );
     }, [profile]);
 
     const hasPermission = isStaff || isTargetStudent || (isParent && parentStudentIds.includes(studentId));
@@ -239,7 +268,7 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
         return (
              <div className="p-4 border-b text-red-500 bg-red-50 rounded-md my-2">
                 <ShieldAlert className="h-4 w-4 inline mr-2" />
-                <span>Student record missing from database.</span>
+                <span>Student record could not be found.</span>
             </div>
         );
     }
@@ -262,7 +291,14 @@ function MyChildrenPageContent() {
     const firestore = useFirestore();
 
     const studentIds = useMemo(() => {
-        return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+        return (
+            profile?.studentIds || 
+            profile?.student_ids || 
+            profile?.students || 
+            profile?.childrenIds || 
+            profile?.linkedStudentIds || 
+            []
+        );
     }, [profile]);
     
     const { data: studentForStudentRole, isLoading: isStudentLoading } = useCollection<Student>(
@@ -316,7 +352,7 @@ function MyChildrenPageContent() {
                 <div className="p-12 text-center border-2 border-dashed rounded-3xl bg-slate-50 max-w-2xl mx-auto mt-10">
                     <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
                     <h3 className="text-xl font-bold text-slate-800">No Children Linked</h3>
-                    <p className="text-slate-50 mt-2">We couldn't find any students associated with your parent account.</p>
+                    <p className="text-slate-500 mt-2">We couldn't find any students associated with your parent account.</p>
                     <p className="text-sm text-indigo-600 mt-4 font-bold">Please contact the school office to verify your account link.</p>
                 </div>
             );
