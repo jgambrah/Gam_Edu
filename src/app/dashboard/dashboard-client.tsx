@@ -164,13 +164,14 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
                                     cursor={{fill: '#f8fafc'}}
                                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
                                 />
-                                <Bar dataKey="students" fill="url(#adminBarGrad)" radius={[10, 10, 0, 0]}>
-                                    <defs>
-                                        <linearGradient id="adminBarGrad" x1="0" x1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8}/>
-                                            <stop offset="95%" stopColor="#818cf8" stopOpacity={1}/>
-                                        </linearGradient>
-                                    </defs>
+                                <Bar dataKey="students" radius={[10, 10, 0, 0]}>
+                                    {enrollmentData.map((entry: any, index: number) => (
+                                        <Cell 
+                                          key={`cell-${index}`} 
+                                          fill="#4f46e5" 
+                                          fillOpacity={1 - (index * 0.1)} 
+                                        />
+                                    ))}
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
