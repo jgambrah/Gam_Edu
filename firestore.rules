@@ -168,6 +168,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /subjects/{subjectId}/assessments/{assessmentId} {
+        allow read, list: if isSignedIn();
+        allow write: if isAdmin() || isTeacher();
+    }
+
     match /timetables/{timetableId} {
       allow read, list: if isSignedIn();
       allow write: if isAdmin();
@@ -352,7 +357,7 @@ service cloud.firestore {
 
     match /inventory/{itemId} {
       allow read, list: if isSignedIn();
-      allow write: if isFinanceStaff() || isAdmin() || isDirector();
+      allow write: if isAdmin() || isFinanceStaff();
     }
 
     match /suppliers/{id} {
