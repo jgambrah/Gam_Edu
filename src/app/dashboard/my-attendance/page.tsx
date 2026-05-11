@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, limit } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -18,25 +18,53 @@ import { StudentDisplay } from '@/components/student-display';
  */
 export default function MyAttendancePage() {
     const { user } = useAuth();
-    const { role, profile } = useRole();
+    const { role, profile, loading: roleLoading } = useRole();
     const firestore = useFirestore();
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
-    // Robust field mapping for linked students
+    // Robust field mapping for linked students (Synchronized with MyBills robust fallback logic)
     const parentStudentIds = useMemo(() => {
-        return profile?.studentIds || profile?.student_ids || profile?.students || [];
+        if (!profile) return [];
+        return (
+            profile.studentIds || 
+            profile.student_ids || 
+            profile.students || 
+            profile.linkedStudentIds || 
+            profile.childrenIds || 
+            []
+        );
     }, [profile]);
 
     // 1. Fetch relevant students for naming/mapping
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !role) return null;
-        if (role === 'Student' && user) return query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId));
-        if (role === 'Parent' && parentStudentIds.length > 0) return query(collection(firestore, 'students'), where('uid', 'in', parentStudentIds), where('schoolId', '==', schoolId));
+        
+        if (role === 'Student' && user) {
+            return query(
+                collection(firestore, 'students'), 
+                where('uid', '==', user.uid), 
+                where('schoolId', '==', schoolId)
+            );
+        }
+        
+        if (role === 'Parent' && parentStudentIds.length > 0) {
+            // Firestore 'in' limit is 30, parents rarely have 30 kids.
+            const slice = parentStudentIds.slice(0, 30);
+            return query(
+                collection(firestore, 'students'), 
+                where('uid', 'in', slice), 
+                where('schoolId', '==', schoolId)
+            );
+        }
+        
         return null;
     }, [firestore, schoolId, role, user?.uid, parentStudentIds]);
     const { data: students } = useCollection<any>(studentsQuery);
 
     // 2. Fetch Attendance Records
+    // NOTE: We remove orderBy('date') here to avoid requiring complex composite indices 
+    // for 'in' queries, which can cause them to return empty data if indices aren't ready.
+    // We handle sorting in memory instead.
     const attendanceQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !user || !role) return null;
         
@@ -47,25 +75,35 @@ export default function MyAttendancePage() {
                 baseQuery, 
                 where('schoolId', '==', schoolId), 
                 where('studentId', '==', user.uid), 
-                orderBy('date', 'desc'), 
-                limit(30)
-            );
-        }
-        if (role === 'Parent') {
-            if (parentStudentIds.length === 0) return null;
-            return query(
-                baseQuery, 
-                where('schoolId', '==', schoolId), 
-                where('studentId', 'in', parentStudentIds), 
-                orderBy('date', 'desc'), 
                 limit(50)
             );
         }
+        
+        if (role === 'Parent' && parentStudentIds.length > 0) {
+            const slice = parentStudentIds.slice(0, 30);
+            return query(
+                baseQuery, 
+                where('schoolId', '==', schoolId), 
+                where('studentId', 'in', slice), 
+                limit(100)
+            );
+        }
+        
         return null;
     }, [firestore, schoolId, role, user?.uid, parentStudentIds]);
     const { data: attendance, isLoading } = useCollection<any>(attendanceQuery);
 
-    if (isLoading || schoolLoading) {
+    // 3. Sort and Filter in memory for robustness
+    const sortedAttendance = useMemo(() => {
+        if (!attendance) return [];
+        return [...attendance].sort((a, b) => {
+            const dateA = a.date?.toDate ? a.date.toDate().getTime() : 0;
+            const dateB = b.date?.toDate ? b.date.toDate().getTime() : 0;
+            return dateB - dateA; // Newest first
+        });
+    }, [attendance]);
+
+    if (isLoading || schoolLoading || roleLoading) {
         return <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-indigo-600 h-8 w-8"/></div>;
     }
 
@@ -102,9 +140,9 @@ export default function MyAttendancePage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {(!attendance || attendance.length === 0) ? (
+                            {sortedAttendance.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center py-20">
+                                    <TableCell colSpan={role === 'Parent' ? 4 : 3} className="text-center py-20">
                                         <div className="flex flex-col items-center gap-2 opacity-20">
                                             <CalendarCheck size={48} />
                                             <p className="font-black uppercase tracking-widest text-xs">No records found</p>
@@ -112,7 +150,7 @@ export default function MyAttendancePage() {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                attendance.map(record => {
+                                sortedAttendance.map(record => {
                                     const student = students?.find(s => s.uid === record.studentId);
                                     
                                     return (
@@ -129,7 +167,9 @@ export default function MyAttendancePage() {
                                                             </div>
                                                             <span className="font-medium">{student.firstName} {student.lastName}</span>
                                                         </div>
-                                                    ) : 'Unknown'}
+                                                    ) : (
+                                                        <span className="text-xs text-slate-400 italic">Unlinked Student</span>
+                                                    )}
                                                 </TableCell>
                                             )}
                                             <TableCell>
