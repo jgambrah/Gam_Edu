@@ -39,7 +39,11 @@ service cloud.firestore {
     function isStaff() { return exists(/databases/$(database)/documents/staff/$(request.auth.uid)); }
     function isParent() { return exists(/databases/$(database)/documents/parents/$(request.auth.uid)); }
 
-    function isFinanceStaff() { return isAdmin() || getUserRole() == 'Accountant'; }
+    function isFinanceStaff() {
+      let role = getUserRole();
+      if (role in ['Accountant', 'Director', 'Admin']) return true;
+      return false;
+    }
 
     // STRICT DIRECTOR CHECK: Only the Director role can manage sensitive school settings
     function isDirector() { return isSignedIn() && getUserRole() == 'Director'; }
@@ -326,8 +330,11 @@ service cloud.firestore {
     }
 
     match /inventory/{itemId} {
-      allow read, list: if isSignedIn();
-      allow write: if isFinanceStaff() || isAdmin() || isDirector();
+      allow read, list: if isSuperAdmin() || (isSignedIn() && isStaff());
+      allow write: if isSuperAdmin() || isFinanceStaff() || isAdmin() || isDirector();
+      match /transactions/{transactionId} {
+        allow read, write, list: if isSuperAdmin() || isFinanceStaff() || isAdmin();
+      }
     }
 
     match /suppliers/{id} {
