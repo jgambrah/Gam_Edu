@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -8,10 +8,11 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { 
     BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, School, 
     UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, 
-    MessageSquare, Activity, FileText, UserCog, Loader2, Search, Keyboard
+    MessageSquare, Activity, FileText, UserCog, Loader2, Search, Keyboard, Mail, Phone, MessageCircle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Tutorial } from '@/lib/types';
+import { Button } from '@/components/ui/button';
 
 function GuideCard({ icon: Icon, title, desc, steps }: any) {
     return (
@@ -45,11 +46,42 @@ export default function HelpPage() {
     <div className="p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
       
       {/* HERO SECTION */}
-      <div className="text-center space-y-4 mb-8">
-        <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">Campus <span className="text-indigo-600">Support</span></h1>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto font-medium">
-          Master the GAM Edu platform with our comprehensive guides and video tutorials.
-        </p>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
+        <div className="text-center md:text-left space-y-4">
+          <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">Campus <span className="text-indigo-600">Support</span></h1>
+          <p className="text-lg text-slate-500 max-w-2xl font-medium">
+            Master the GAM Edu platform with our comprehensive guides and video tutorials.
+          </p>
+        </div>
+
+        {/* --- OFFICIAL SUPPORT CONTACT --- */}
+        <Card className="w-full md:w-80 border-none shadow-2xl bg-indigo-900 text-white rounded-[2.5rem] overflow-hidden">
+            <CardHeader className="bg-indigo-950 p-5">
+                <CardTitle className="text-sm font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2">
+                    <Shield className="h-4 w-4"/> Contact Support
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+                <div className="space-y-1">
+                    <p className="text-lg font-black tracking-tight leading-none">James Gambrah</p>
+                    <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">Lead System Consultant</p>
+                </div>
+                
+                <div className="space-y-3 pt-2">
+                    <a href="tel:0244750903" className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-all border border-white/10">
+                        <Phone className="h-4 w-4 text-indigo-400"/>
+                        <span className="text-sm font-black">0244750903</span>
+                    </a>
+                    <a href="mailto:jamesgambrah@gmail.com" className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-all border border-white/10 overflow-hidden">
+                        <Mail className="h-4 w-4 text-indigo-400"/>
+                        <span className="text-[11px] font-bold truncate">jamesgambrah@gmail.com</span>
+                    </a>
+                </div>
+            </CardContent>
+            <CardFooter className="bg-indigo-950/50 p-4">
+                <p className="text-[9px] text-center w-full font-bold text-indigo-400 uppercase tracking-widest">Available 24/7 for Institutional Support</p>
+            </CardFooter>
+        </Card>
       </div>
 
       <Tabs defaultValue="guides" className="w-full">
@@ -186,7 +218,7 @@ export default function HelpPage() {
           </Accordion>
         </TabsContent>
 
-        {/* TAB 2: VIDEOS (NOW DYNAMIC) */}
+        {/* TAB 2: VIDEOS */}
         <TabsContent value="videos" className="space-y-6">
           <Card className="border-none shadow-xl bg-white rounded-[2rem] overflow-hidden">
             <CardHeader className="bg-slate-900 text-white p-8">

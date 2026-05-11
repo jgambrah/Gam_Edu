@@ -50,26 +50,29 @@ function DirectorInfoCell({ schoolId }: { schoolId: string }) {
         fetchDirector();
     }, [firestore, schoolId]);
 
-    if (loading) return <span className="text-xs text-slate-400 animate-pulse">Loading...</span>;
+    if (loading) return <span className="text-xs text-slate-400 animate-pulse">Loading leadership info...</span>;
     if (!director) return <span className="text-xs text-red-400 italic">No Director Found</span>;
 
     return (
-        <div className="flex flex-col space-y-1.5">
+        <div className="flex flex-col space-y-2 py-1">
             <span className="font-black text-sm text-slate-900 leading-none">{director.firstName} {director.lastName}</span>
-            <a 
-              href={`mailto:${director.email}`} 
-              className="text-xs text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 font-medium"
-            >
-              <Mail className="h-3 w-3 shrink-0"/> {director.email}
-            </a>
-            {director.phone && (
+            
+            <div className="space-y-1">
+              {director.phone && (
+                <a 
+                  href={`tel:${director.phone}`} 
+                  className="text-xs font-black text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1.5 bg-indigo-50/50 px-2 py-1 rounded-lg w-fit"
+                >
+                  <Phone className="h-3 w-3 shrink-0"/> {director.phone}
+                </a>
+              )}
               <a 
-                href={`tel:${director.phone}`} 
-                className="text-xs font-black text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1.5"
+                href={`mailto:${director.email}`} 
+                className="text-xs text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 font-medium px-2"
               >
-                <Phone className="h-3 w-3 shrink-0"/> {director.phone}
+                <Mail className="h-3 w-3 shrink-0"/> {director.email}
               </a>
-            )}
+            </div>
         </div>
     );
 }
@@ -523,7 +526,7 @@ export default function SuperAdminPage() {
                 </div>
                  <div className="space-y-2"><Label>New Balance</Label><Input type="number" value={creditAmount} onChange={e => setCreditAmount(Number(e.target.value))} /></div>
             </div>
-            <DialogFooter><Button variant="outline" onClick={() => setCreditSchool(null)}>Cancel</Button><Button onClick={handleUpdateCredits} disabled={updatingCredits} className="bg-indigo-600">{updatingCredits ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : "Save Balance"}</Button></DialogFooter>
+            <DialogFooter><Button variant="outline" onClick={() => setCreditSchool(null)}>Cancel</Button><Button onClick={handleUpdateCredits} disabled={updatingCredits} className="bg-indigo-600">{updatingCredits ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : "Save Balance"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -536,7 +539,7 @@ export default function SuperAdminPage() {
                     <div onClick={() => setNewPlan('Premium')} className={`flex-1 p-4 border-2 rounded-xl cursor-pointer text-center transition-all ${newPlan === 'Premium' ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-200' : 'border-slate-100 hover:border-slate-200'}`}><Crown className="mx-auto mb-2 h-6 w-6 text-yellow-500"/><h3 className="font-bold">Premium</h3></div>
                 </div>
             </div>
-            <DialogFooter><Button onClick={handleUpdatePlan} disabled={updatingPlan} className="w-full h-12 bg-slate-900">{updatingPlan ? <Loader2 className="mr-2 h-4 w-4"/> : "Apply Changes"}</Button></DialogFooter>
+            <DialogFooter><Button onClick={handleUpdatePlan} disabled={updatingPlan} className="w-full h-12 bg-slate-900">{updatingPlan ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : "Apply Changes"}</Button></DialogFooter>
         </DialogContent>
     </Dialog>
     </div>
