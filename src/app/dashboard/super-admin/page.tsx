@@ -50,30 +50,61 @@ function DirectorInfoCell({ schoolId }: { schoolId: string }) {
         fetchDirector();
     }, [firestore, schoolId]);
 
-    if (loading) return <span className="text-xs text-slate-400 animate-pulse">Loading leadership info...</span>;
+    if (loading) return <span className="text-xs text-slate-400 animate-pulse">Loading info...</span>;
     if (!director) return <span className="text-xs text-red-400 italic">No Director Found</span>;
 
     return (
-        <div className="flex flex-col space-y-2 py-1">
+        <div className="flex flex-col space-y-1 py-1">
             <span className="font-black text-sm text-slate-900 leading-none">{director.firstName} {director.lastName}</span>
-            
-            <div className="space-y-1">
-              {director.phone && (
-                <a 
-                  href={`tel:${director.phone}`} 
-                  className="text-xs font-black text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1.5 bg-indigo-50/50 px-2 py-1 rounded-lg w-fit"
-                >
-                  <Phone className="h-3 w-3 shrink-0"/> {director.phone}
-                </a>
-              )}
-              <a 
-                href={`mailto:${director.email}`} 
-                className="text-xs text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 font-medium px-2"
-              >
-                <Mail className="h-3 w-3 shrink-0"/> {director.email}
-              </a>
-            </div>
+            <a 
+              href={`mailto:${director.email}`} 
+              className="text-xs text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 font-medium"
+            >
+              <Mail className="h-3 w-3 shrink-0"/> {director.email}
+            </a>
         </div>
+    );
+}
+
+// --- SUB-COMPONENT: DIRECTOR PHONE CELL ---
+function DirectorPhoneCell({ schoolId }: { schoolId: string }) {
+    const firestore = useFirestore();
+    const [phone, setPhone] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPhone = async () => {
+            if (!firestore || !schoolId) return;
+            try {
+                const q = query(
+                    collection(firestore, 'staff'),
+                    where('schoolId', '==', schoolId),
+                    where('role', '==', 'Director'),
+                    limit(1)
+                );
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    setPhone(snap.docs[0].data().phone);
+                }
+            } catch (err) {
+                console.error("Failed to fetch director phone:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPhone();
+    }, [firestore, schoolId]);
+
+    if (loading) return <span className="text-xs text-slate-400 animate-pulse">Loading...</span>;
+    if (!phone) return <span className="text-xs text-slate-300 italic">N/A</span>;
+
+    return (
+        <a 
+            href={`tel:${phone}`} 
+            className="text-sm font-black text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1.5 bg-indigo-50 px-3 py-1.5 rounded-xl w-fit border border-indigo-100/50"
+        >
+            <Phone className="h-3.5 w-3.5 shrink-0"/> {phone}
+        </a>
     );
 }
 
@@ -459,7 +490,8 @@ export default function SuperAdminPage() {
                     <TableHeader className="bg-slate-50/50">
                         <TableRow>
                             <TableHead>School Name</TableHead>
-                            <TableHead>Director Details</TableHead>
+                            <TableHead>Director</TableHead>
+                            <TableHead>Contact Phone</TableHead>
                             <TableHead>Plan</TableHead>
                             <TableHead>Credits</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
@@ -474,6 +506,9 @@ export default function SuperAdminPage() {
                                 </TableCell>
                                 <TableCell>
                                     <DirectorInfoCell schoolId={s.id} />
+                                </TableCell>
+                                <TableCell>
+                                    <DirectorPhoneCell schoolId={s.id} />
                                 </TableCell>
                                 <TableCell><Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100">{s.plan}</Badge></TableCell>
                                 <TableCell>
