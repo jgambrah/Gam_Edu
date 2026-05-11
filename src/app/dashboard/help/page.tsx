@@ -8,7 +8,7 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { 
     BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, School, 
     UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, 
-    MessageSquare, Activity, FileText, UserCog, Loader2
+    MessageSquare, Activity, FileText, UserCog, Loader2, Search, Keyboard
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Tutorial } from '@/lib/types';
@@ -62,6 +62,33 @@ export default function HelpPage() {
         {/* TAB 1: USER GUIDES */}
         <TabsContent value="guides" className="space-y-6">
            <Accordion type="single" collapsible defaultValue="item-1">
+            <AccordionItem value="item-0">
+              <AccordionTrigger className="text-lg font-bold text-indigo-600">Global Search & Shortcuts</AccordionTrigger>
+              <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
+                <GuideCard 
+                    icon={Search} 
+                    title="Quick Navigation" 
+                    desc="Save time by using the system-wide command palette."
+                    steps={[
+                        "Press Cmd + K (Mac) or Ctrl + K (Windows) from any screen to open the Search Palette.",
+                        "Type a student's name, email, or Student ID (e.g., SS-2025-0001) to find them instantly.",
+                        "Search for specific classrooms or teachers to jump directly to their management dashboards.",
+                        "Use the built-in 'System Shortcuts' at the bottom of the search results to quickly post announcements or go to billing."
+                    ]}
+                />
+                 <GuideCard 
+                    icon={Keyboard} 
+                    title="Power User Shortcuts" 
+                    desc="Navigate the platform faster than ever."
+                    steps={[
+                        "The search bar in the header isn't just for looking up data; it's a command center.",
+                        "Use the Arrow Keys to navigate results and 'Enter' to select.",
+                        "On small screens, tap the Search icon in the header to expand the palette."
+                    ]}
+                />
+              </AccordionContent>
+            </AccordionItem>
+
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-lg font-bold">Getting Started</AccordionTrigger>
               <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
