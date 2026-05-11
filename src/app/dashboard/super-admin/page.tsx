@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, query, where, orderBy, updateDoc } from 'firebase/firestore'; 
+import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, query, where, orderBy, updateDoc, limit } from 'firebase/firestore'; 
 import { createNewUser } from '@/app/actions/create-user'; 
 import { sendSchoolCredentialsEmail } from '@/lib/email';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Zap, Crown, Clock, Video } from 'lucide-react'; 
+import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Zap, Crown, Clock, Video, Mail, Phone } from 'lucide-react'; 
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -20,6 +20,47 @@ import { Textarea } from '@/components/ui/textarea';
 
 type School = { id: string; name: string; plan: string; createdAt: any; aiCredits?: number };
 type Lead = { id: string; schoolName: string; contactName: string; email: string; phone: string; status: string; };
+
+// --- SUB-COMPONENT: DIRECTOR INFO CELL ---
+function DirectorInfoCell({ schoolId }: { schoolId: string }) {
+    const firestore = useFirestore();
+    const [director, setDirector] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDirector = async () => {
+            if (!firestore || !schoolId) return;
+            try {
+                const q = query(
+                    collection(firestore, 'staff'),
+                    where('schoolId', '==', schoolId),
+                    where('role', '==', 'Director'),
+                    limit(1)
+                );
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    setDirector(snap.docs[0].data());
+                }
+            } catch (err) {
+                console.error("Failed to fetch director:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchDirector();
+    }, [firestore, schoolId]);
+
+    if (loading) return <span className="text-xs text-slate-400 animate-pulse">Loading...</span>;
+    if (!director) return <span className="text-xs text-red-400 italic">No Director Found</span>;
+
+    return (
+        <div className="flex flex-col space-y-1">
+            <span className="font-bold text-sm text-slate-800">{director.firstName} {director.lastName}</span>
+            <span className="text-[10px] text-slate-500 flex items-center gap-1"><Mail className="h-3 w-3"/> {director.email}</span>
+            {director.phone && <span className="text-[10px] text-slate-500 flex items-center gap-1"><Phone className="h-3 w-3"/> {director.phone}</span>}
+        </div>
+    );
+}
 
 // --- SUB-COMPONENT: TUTORIAL MANAGER ---
 function TutorialManager() {
@@ -176,6 +217,7 @@ export default function SuperAdminPage() {
   const [schoolName, setSchoolName] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
   const [adminName, setAdminName] = useState('');
+  const [adminPhone, setAdminPhone] = useState('');
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null); 
 
   const loadData = useCallback(async () => {
@@ -204,6 +246,7 @@ export default function SuperAdminPage() {
       setSchoolName(lead.schoolName);
       setAdminName(lead.contactName);
       setAdminEmail(lead.email);
+      setAdminPhone(lead.phone || '');
       setSelectedLeadId(lead.id);
       toast({ title: "Form Filled", description: `Data populated from ${lead.schoolName}` });
   };
@@ -234,8 +277,14 @@ export default function SuperAdminPage() {
       if ('error' in result) throw new Error(result.error);
 
       await setDoc(doc(firestore, 'staff', result.uid), {
-        uid: result.uid, email: adminEmail, role: 'Director', firstName: adminName, lastName: 'Admin',
-        schoolId: newSchoolId, createdAt: serverTimestamp()
+        uid: result.uid, 
+        email: adminEmail, 
+        role: 'Director', 
+        firstName: adminName, 
+        lastName: 'Admin',
+        phone: adminPhone,
+        schoolId: newSchoolId, 
+        createdAt: serverTimestamp()
       });
 
       await sendSchoolCredentialsEmail(adminEmail, adminName, schoolName, password);
@@ -245,7 +294,7 @@ export default function SuperAdminPage() {
       }
 
       toast({ title: "Success!", description: `Created ${schoolName}` });
-      setSchoolName(''); setAdminEmail(''); setAdminName(''); setSelectedLeadId(null);
+      setSchoolName(''); setAdminEmail(''); setAdminName(''); setAdminPhone(''); setSelectedLeadId(null);
       loadData();
     } catch (error: any) {
       toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -337,7 +386,7 @@ export default function SuperAdminPage() {
                         <Label>School Name</Label>
                         <Input required value={schoolName} onChange={e => setSchoolName(e.target.value)} placeholder="e.g. Galaxy Int. School" />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <Label>Director Name</Label>
                             <Input required value={adminName} onChange={e => setAdminName(e.target.value)} placeholder="John" />
@@ -345,6 +394,10 @@ export default function SuperAdminPage() {
                         <div>
                             <Label>Director Email</Label>
                             <Input required type="email" value={adminEmail} onChange={e => setAdminEmail(e.target.value)} placeholder="admin@galaxy.com" />
+                        </div>
+                        <div>
+                            <Label>Director Phone</Label>
+                            <Input required type="tel" value={adminPhone} onChange={e => setAdminPhone(e.target.value)} placeholder="024 XXX XXXX" />
                         </div>
                     </div>
                     <Button disabled={creating} className="w-full bg-blue-600 hover:bg-blue-700 h-12">
@@ -391,6 +444,7 @@ export default function SuperAdminPage() {
                     <TableHeader className="bg-slate-50/50">
                         <TableRow>
                             <TableHead>School Name</TableHead>
+                            <TableHead>Director Details</TableHead>
                             <TableHead>Plan</TableHead>
                             <TableHead>Credits</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
@@ -399,7 +453,13 @@ export default function SuperAdminPage() {
                     <TableBody>
                         {schools.map(s => (
                             <TableRow key={s.id} className="hover:bg-slate-50 transition-colors">
-                                <TableCell className="font-bold text-slate-800">{s.name}</TableCell>
+                                <TableCell>
+                                    <div className="font-bold text-slate-800">{s.name}</div>
+                                    <div className="font-mono text-[10px] text-slate-400">ID: {s.id}</div>
+                                </TableCell>
+                                <TableCell>
+                                    <DirectorInfoCell schoolId={s.id} />
+                                </TableCell>
                                 <TableCell><Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100">{s.plan}</Badge></TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-1 font-mono text-xs bg-slate-100 px-2 py-1 rounded-full w-fit border border-slate-200">
