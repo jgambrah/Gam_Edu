@@ -54,10 +54,22 @@ function DirectorInfoCell({ schoolId }: { schoolId: string }) {
     if (!director) return <span className="text-xs text-red-400 italic">No Director Found</span>;
 
     return (
-        <div className="flex flex-col space-y-1">
-            <span className="font-bold text-sm text-slate-800">{director.firstName} {director.lastName}</span>
-            <span className="text-[10px] text-slate-500 flex items-center gap-1"><Mail className="h-3 w-3"/> {director.email}</span>
-            {director.phone && <span className="text-[10px] text-slate-500 flex items-center gap-1"><Phone className="h-3 w-3"/> {director.phone}</span>}
+        <div className="flex flex-col space-y-1.5">
+            <span className="font-black text-sm text-slate-900 leading-none">{director.firstName} {director.lastName}</span>
+            <a 
+              href={`mailto:${director.email}`} 
+              className="text-xs text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 font-medium"
+            >
+              <Mail className="h-3 w-3 shrink-0"/> {director.email}
+            </a>
+            {director.phone && (
+              <a 
+                href={`tel:${director.phone}`} 
+                className="text-xs font-black text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1.5"
+              >
+                <Phone className="h-3 w-3 shrink-0"/> {director.phone}
+              </a>
+            )}
         </div>
     );
 }
@@ -524,7 +536,7 @@ export default function SuperAdminPage() {
                     <div onClick={() => setNewPlan('Premium')} className={`flex-1 p-4 border-2 rounded-xl cursor-pointer text-center transition-all ${newPlan === 'Premium' ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-200' : 'border-slate-100 hover:border-slate-200'}`}><Crown className="mx-auto mb-2 h-6 w-6 text-yellow-500"/><h3 className="font-bold">Premium</h3></div>
                 </div>
             </div>
-            <DialogFooter><Button onClick={handleUpdatePlan} disabled={updatingPlan} className="w-full h-12 bg-slate-900">{updatingPlan ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : "Apply Changes"}</Button></DialogFooter>
+            <DialogFooter><Button onClick={handleUpdatePlan} disabled={updatingPlan} className="w-full h-12 bg-slate-900">{updatingPlan ? <Loader2 className="mr-2 h-4 w-4"/> : "Apply Changes"}</Button></DialogFooter>
         </DialogContent>
     </Dialog>
     </div>
