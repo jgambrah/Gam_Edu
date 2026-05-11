@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, query, where, orderBy, updateDoc, limit } from 'firebase/firestore'; 
+import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, query, where, orderBy, updateDoc, limit, getDoc } from 'firebase/firestore'; 
 import { createNewUser } from '@/app/actions/create-user'; 
 import { sendSchoolCredentialsEmail } from '@/lib/email';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 
-type School = { id: string; name: string; plan: string; createdAt: any; aiCredits?: number };
+type School = { id: string; name: string; plan: string; createdAt: any; aiCredits?: number; phone?: string };
 type Lead = { id: string; schoolName: string; contactName: string; email: string; phone: string; status: string; };
 
 // --- SUB-COMPONENT: DIRECTOR INFO CELL ---
@@ -66,36 +66,45 @@ function DirectorInfoCell({ schoolId }: { schoolId: string }) {
     );
 }
 
-// --- SUB-COMPONENT: DIRECTOR PHONE CELL ---
-function DirectorPhoneCell({ schoolId }: { schoolId: string }) {
+// --- SUB-COMPONENT: CONTACT PHONE CELL (Resilient Fetching) ---
+function ContactPhoneCell({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
     const [phone, setPhone] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchPhone = async () => {
+        const fetchContact = async () => {
             if (!firestore || !schoolId) return;
             try {
+                // 1. Try finding Director's personal phone in Staff
                 const q = query(
                     collection(firestore, 'staff'),
                     where('schoolId', '==', schoolId),
                     where('role', '==', 'Director'),
                     limit(1)
                 );
-                const snap = await getDocs(q);
-                if (!snap.empty) {
-                    setPhone(snap.docs[0].data().phone);
+                const staffSnap = await getDocs(q);
+                let foundPhone = !staffSnap.empty ? staffSnap.docs[0].data().phone : null;
+
+                // 2. Fallback: Get the School's main phone number from the schools collection
+                if (!foundPhone) {
+                    const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
+                    if (schoolDoc.exists()) {
+                        foundPhone = schoolDoc.data().phone;
+                    }
                 }
+
+                setPhone(foundPhone || null);
             } catch (err) {
-                console.error("Failed to fetch director phone:", err);
+                console.error("Failed to fetch contact phone:", err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchPhone();
+        fetchContact();
     }, [firestore, schoolId]);
 
-    if (loading) return <span className="text-xs text-slate-400 animate-pulse">Loading...</span>;
+    if (loading) return <span className="text-xs text-slate-400 animate-pulse italic">Connecting...</span>;
     if (!phone) return <span className="text-xs text-slate-300 italic">N/A</span>;
 
     return (
@@ -311,6 +320,7 @@ export default function SuperAdminPage() {
         trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), 
         isActive: true,
         aiCredits: 1000,
+        phone: adminPhone, // Duplicate phone to school record for resilient fetching
       });
 
       const newSchoolId = schoolRef.id;
@@ -508,7 +518,7 @@ export default function SuperAdminPage() {
                                     <DirectorInfoCell schoolId={s.id} />
                                 </TableCell>
                                 <TableCell>
-                                    <DirectorPhoneCell schoolId={s.id} />
+                                    <ContactPhoneCell schoolId={s.id} />
                                 </TableCell>
                                 <TableCell><Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100">{s.plan}</Badge></TableCell>
                                 <TableCell>
