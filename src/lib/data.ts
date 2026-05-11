@@ -78,7 +78,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/my-attendance',
     title: 'My Attendance',
     icon: CalendarCheck,
-    roles: ['Student', 'Parent'],
+    roles: ['Student'],
+  },
+  {
+    path: '/dashboard/my-attendance',
+    title: 'My Ward(s) Attendance',
+    icon: CalendarCheck,
+    roles: ['Parent'],
   },
   {
     path: '/dashboard/my-bills',

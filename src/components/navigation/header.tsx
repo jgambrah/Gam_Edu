@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -22,6 +22,7 @@ import NotificationBell from './notifications';
 import CreditBalance from '@/components/CreditBalance';
 import { AppSidebarContent } from './sidebar';
 import { GlobalSearch } from './global-search';
+import { useRole } from '@/context/role-context';
 import { cn } from '@/lib/utils';
 
 export default function Header() {
@@ -30,13 +31,25 @@ export default function Header() {
   const router = useRouter();
   const { auth: authInstance } = useFirebase();
   const { user } = useUser();
+  const { role } = useRole();
   
-  const pageTitle =
-    navItems.find((item) => item.path === pathname)?.title ||
-    navItems
+  const pageTitle = useMemo(() => {
+    // Find item with correct role
+    const item = navItems.find((item) => 
+        item.path === pathname && 
+        (item.roles === 'all' || item.roles.includes(role as any))
+    );
+    if (item) return item.title;
+
+    const subItem = navItems
       .flatMap((i) => i.subItems || [])
-      .find((s) => s.path === pathname)?.title ||
-    'Dashboard';
+      .find((s) => 
+          s.path === pathname && 
+          (s.roles === 'all' || s.roles.includes(role as any))
+      );
+    
+    return subItem?.title || 'Dashboard';
+  }, [pathname, role]);
 
   const handleLogout = async () => {
     if (authInstance) {

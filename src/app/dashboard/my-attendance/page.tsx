@@ -136,10 +136,10 @@ export default function MyAttendancePage() {
             <div className="flex flex-col gap-1">
                 <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3 italic uppercase">
                     <CalendarCheck className="text-indigo-600 h-8 w-8" />
-                    Attendance <span className="text-indigo-600">History</span>
+                    {role === 'Parent' ? "My Ward(s)" : "My"} <span className="text-indigo-600">Attendance</span>
                 </h1>
                 <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">
-                    Your official participation log
+                    {role === 'Parent' ? "Official school participation log for your children" : "Your official participation log"}
                 </p>
             </div>
 
