@@ -312,7 +312,7 @@ service cloud.firestore {
         isSuperAdmin() ||
         isFinanceStaff() || isAdmin() || isTeacher() ||
         resource.data.studentId == request.auth.uid ||
-        parentOwnsStudent(resource.data.studentId)
+        parentOwnsStudent(get(/databases/$(database)/documents/financialRecords/$(recordId)).data.studentId)
       );
       allow list: if isSignedIn();
       allow write: if isFinanceStaff() || isAdmin() || isTeacher();
@@ -356,8 +356,8 @@ service cloud.firestore {
     }
 
     match /inventory/{itemId} {
-      allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isFinanceStaff();
+      allow read, list: if isSuperAdmin() || (isSignedIn() && isStaff());
+      allow write: if isSuperAdmin() || isFinanceStaff() || isAdmin() || isDirector();
     }
 
     match /suppliers/{id} {
@@ -692,6 +692,7 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
+    // Communication
     match /forumThreads/{threadId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn();
