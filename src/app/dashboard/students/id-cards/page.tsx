@@ -97,7 +97,7 @@ function IDCard({
               display: 'flex',
               flexDirection: 'row' as const,
               alignItems: 'center',
-              padding: '10px 14px 18px 14px', 
+              padding: '14px 14px 18px 14px', 
               gap: '12px',
               minWidth: 0,
           }
@@ -146,7 +146,7 @@ function IDCard({
                 <div style={mainAreaStyle}>
                     {/* Photo */}
                     <div style={{
-                        width: '85px', height: '85px', minWidth: '85px',
+                        width: '80px', height: '80px', minWidth: '80px',
                         backgroundColor: '#f1f5f9',
                         borderRadius: '10px',
                         border: '2px solid #e2e8f0',
@@ -168,40 +168,38 @@ function IDCard({
                     </div>
 
                     {/* Text Info */}
-                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '4px' }}>
-                        <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '4px', marginBottom: '4px' }}>
-                            {/* Increased line-height (1.5) to prevent clipping of bold/uppercase characters */}
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '6px', marginBottom: '4px' }}>
                             <p style={{
-                                fontSize: '15px', fontWeight: 900,
+                                fontSize: '14px', fontWeight: 900,
                                 color: '#0f172a', textTransform: 'uppercase',
-                                lineHeight: '1.5', letterSpacing: '-0.01em',
+                                lineHeight: '1.2', letterSpacing: '-0.01em',
                                 wordBreak: 'break-word', whiteSpace: 'normal',
                             }}>
                                 {student.lastName}
                             </p>
                             <p style={{
-                                fontSize: '13px', fontWeight: 700, color: '#475569',
-                                lineHeight: '1.4', wordBreak: 'break-word', whiteSpace: 'normal',
-                                marginTop: '-2px'
+                                fontSize: '12px', fontWeight: 700, color: '#475569',
+                                lineHeight: '1.3', wordBreak: 'break-word', whiteSpace: 'normal',
                             }}>
                                 {student.firstName}
                             </p>
                         </div>
 
                         <div>
-                            <p style={{ fontSize: '7px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.12em', lineHeight: '1.4' }}>
+                            <p style={{ fontSize: '7px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
                                 Grade / Class
                             </p>
-                            <p style={{ fontSize: '11px', fontWeight: 900, color: '#4f46e5', textTransform: 'uppercase', lineHeight: '1.5', wordBreak: 'break-word' }}>
+                            <p style={{ fontSize: '11px', fontWeight: 900, color: '#4f46e5', textTransform: 'uppercase', lineHeight: '1.3', wordBreak: 'break-word' }}>
                                 {className}
                             </p>
                         </div>
 
                         <div>
-                            <p style={{ fontSize: '7px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.12em', lineHeight: '1.4' }}>
+                            <p style={{ fontSize: '7px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
                                 Student ID
                             </p>
-                            <p style={{ fontSize: '11px', fontWeight: 900, letterSpacing: '0.15em', fontFamily: 'monospace', color: '#0f172a', lineHeight: '1.5' }}>
+                            <p style={{ fontSize: '11px', fontWeight: 900, letterSpacing: '0.15em', fontFamily: 'monospace', color: '#0f172a' }}>
                                 {formatStudentId(student)}
                             </p>
                         </div>
@@ -310,21 +308,20 @@ export default function IDCardGeneratorPage() {
         setSelectedStudentId('all');
     }, [classId]);
 
-    const primaryColor = schoolProfile?.brandColor || schoolProfile?.primaryColor || '#2563eb';
-    const secondaryColor = schoolProfile?.secondaryColor || primaryColor;
-    const currentClassName = classes?.find(c => c.id === classId)?.name || 'N/A';
+    // ── MOVED HOOKS ABOVE CONDITIONAL RETURNS ──
+    const sortedStudents = useMemo(() =>
+        [...(allStudents || [])].sort((a, b) => a.lastName.localeCompare(b.lastName)),
+        [allStudents]
+    );
 
-    // The students to actually export (all or just one)
     const studentsToExport = useMemo(() => {
         if (!allStudents) return [];
-        if (selectedStudentId === 'all') return allStudents;
-        return allStudents.filter(s => s.id === selectedStudentId);
-    }, [allStudents, selectedStudentId]);
+        if (selectedStudentId === 'all') return sortedStudents;
+        return sortedStudents.filter(s => (s.id || s.uid) === selectedStudentId);
+    }, [allStudents, sortedStudents, selectedStudentId]);
 
-    // Preview student (first of export set, or selected student)
     const previewStudent = useMemo(() => studentsToExport[0] || null, [studentsToExport]);
 
-    // Chunk for multi-page PDF: 8 cards per A4 page (2 cols × 4 rows)
     const studentChunks = useMemo(() => {
         if (!studentsToExport.length) return [];
         const size = 8;
@@ -334,6 +331,10 @@ export default function IDCardGeneratorPage() {
         }
         return result;
     }, [studentsToExport]);
+
+    const primaryColor = schoolProfile?.brandColor || schoolProfile?.primaryColor || '#2563eb';
+    const secondaryColor = schoolProfile?.secondaryColor || primaryColor;
+    const currentClassName = classes?.find(c => c.id === classId)?.name || 'N/A';
 
     const handleDownloadPDF = async () => {
         if (!studentChunks.length) return;
@@ -353,10 +354,10 @@ export default function IDCardGeneratorPage() {
                 if (i > 0) pdf.addPage();
 
                 pageElement.style.display = 'block';
-                await new Promise(res => setTimeout(res, 1200)); // slightly longer for reliability
+                await new Promise(res => setTimeout(res, 1000));
 
                 const canvas = await html2canvas(pageElement, {
-                    scale: 3, 
+                    scale: 3,
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
@@ -389,11 +390,6 @@ export default function IDCardGeneratorPage() {
     };
 
     if (isLoadingSchool) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin h-8 w-8 text-blue-600" /></div>;
-
-    const sortedStudents = useMemo(() =>
-        [...(allStudents || [])].sort((a, b) => a.lastName.localeCompare(b.lastName)),
-        [allStudents]
-    );
 
     return (
         <div className="p-6 space-y-6">
@@ -443,7 +439,7 @@ export default function IDCardGeneratorPage() {
                                         <span className="font-bold">All Students ({sortedStudents.length})</span>
                                     </SelectItem>
                                     {sortedStudents.map((s) => (
-                                        <SelectItem key={s.id} value={s.id}>
+                                        <SelectItem key={s.id || s.uid} value={s.id || s.uid}>
                                             {s.lastName}, {s.firstName}
                                         </SelectItem>
                                     ))}
@@ -538,7 +534,6 @@ export default function IDCardGeneratorPage() {
                             display: 'none',
                         }}
                     >
-                        {/* 2-column grid, gap ~15mm */}
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: '1fr 1fr',
@@ -547,7 +542,7 @@ export default function IDCardGeneratorPage() {
                         }}>
                             {chunk.map((student: Student) => (
                                 <IDCard
-                                    key={student.id}
+                                    key={student.id || student.uid}
                                     student={student}
                                     className={currentClassName}
                                     schoolProfile={schoolProfile}
