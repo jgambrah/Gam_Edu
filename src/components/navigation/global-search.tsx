@@ -27,7 +27,13 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
+/**
+ * GlobalSearch Component
+ * Implements a command-palette style search for the entire school system.
+ * Accessible via Cmd+K or Ctrl+K.
+ */
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false);
   const [queryText, setQueryText] = React.useState('');
@@ -43,7 +49,7 @@ export function GlobalSearch() {
   const { schoolId } = useCurrentSchool();
   const { role } = useRole();
 
-  // Keyboard shortcut listener (Cmd+K or Ctrl+K)
+  // Listen for Cmd+K / Ctrl+K
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -55,7 +61,7 @@ export function GlobalSearch() {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
-  // Search execution logic
+  // Search Execution (Debounced)
   React.useEffect(() => {
     if (!queryText.trim() || !firestore || !schoolId) {
       setResults({ students: [], staff: [], classes: [] });
@@ -67,9 +73,9 @@ export function GlobalSearch() {
       try {
         const term = queryText.toLowerCase();
         
-        // 1. Search Students
+        // 1. Fetch Students
         const studentSnap = await getDocs(
-          query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(50))
+          query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(100))
         );
         const filteredStudents = studentSnap.docs
           .map(d => ({ id: d.id, ...d.data() }))
@@ -81,7 +87,7 @@ export function GlobalSearch() {
           )
           .slice(0, 5);
 
-        // 2. Search Staff (Admins/Directors/Teachers see this)
+        // 2. Fetch Staff (Privacy Guarded)
         let filteredStaff: any[] = [];
         const isStaff = ['Administrator', 'Director', 'Teacher'].includes(role || '');
         
@@ -99,7 +105,7 @@ export function GlobalSearch() {
             .slice(0, 5);
         }
 
-        // 3. Search Classes
+        // 3. Fetch Classes
         const classSnap = await getDocs(
           query(collection(firestore, 'classes'), where('schoolId', '==', schoolId), limit(20))
         );
@@ -131,12 +137,13 @@ export function GlobalSearch() {
 
   return (
     <>
+      {/* Visual Trigger (Search Box in Header) */}
       <button
         onClick={() => setOpen(true)}
-        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-400 bg-slate-100/50 hover:bg-white hover:border-indigo-300 border border-transparent transition-all rounded-xl group shadow-inner"
+        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-400 bg-slate-100/50 hover:bg-white hover:border-indigo-300 border-2 border-transparent transition-all rounded-xl group shadow-inner"
       >
         <Search className="h-4 w-4 group-hover:text-indigo-600 transition-colors" />
-        <span className="font-medium">Quick search...</span>
+        <span className="font-bold">Search campus...</span>
         <div className="ml-auto hidden md:flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
           <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-bold text-muted-foreground">
             <span className="text-xs">⌘</span>K
@@ -145,8 +152,10 @@ export function GlobalSearch() {
       </button>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
+        <DialogTitle className="sr-only">Global Search</DialogTitle>
+        <DialogDescription className="sr-only">Search for students, staff, and classes in your school system.</DialogDescription>
         <CommandInput 
-          placeholder="Search students, staff or classes..." 
+          placeholder="Start typing a name or ID..." 
           onValueChange={setQueryText}
         />
         <CommandList className="max-h-[450px]">
@@ -154,15 +163,16 @@ export function GlobalSearch() {
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2">
                     <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Scanning School Silo...</span>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Searching Database...</span>
                 </div>
-            ) : "No matching records found."}
+            ) : "No records found matching your query."}
           </CommandEmpty>
           
+          {/* STUDENT RESULTS */}
           {results.students.length > 0 && (
             <CommandGroup heading="Students">
               {results.students.map(s => (
-                <CommandItem key={s.id} onSelect={() => onSelect(`/dashboard/students-v3?search=${s.firstName}`)}>
+                <CommandItem key={`search-stu-${s.id}`} onSelect={() => onSelect(`/dashboard/students-v3?search=${s.firstName}`)}>
                   <GraduationCap className="mr-2 h-4 w-4 text-indigo-500" />
                   <div className="flex flex-col">
                     <span className="font-bold">{s.firstName} {s.lastName}</span>
@@ -173,10 +183,11 @@ export function GlobalSearch() {
             </CommandGroup>
           )}
 
+          {/* STAFF RESULTS */}
           {results.staff.length > 0 && (
             <CommandGroup heading="Staff & Teachers">
               {results.staff.map(s => (
-                <CommandItem key={s.id} onSelect={() => onSelect(`/dashboard/staff-management-v2`)}>
+                <CommandItem key={`search-staff-${s.id}`} onSelect={() => onSelect(`/dashboard/staff-management-v2`)}>
                   <User className="mr-2 h-4 w-4 text-purple-500" />
                   <div className="flex flex-col">
                     <span className="font-bold">{s.firstName} {s.lastName}</span>
@@ -187,10 +198,11 @@ export function GlobalSearch() {
             </CommandGroup>
           )}
 
+          {/* CLASS RESULTS */}
           {results.classes.length > 0 && (
             <CommandGroup heading="Classrooms">
               {results.classes.map(c => (
-                <CommandItem key={c.id} onSelect={() => onSelect(`/dashboard/academics`)}>
+                <CommandItem key={`search-class-${c.id}`} onSelect={() => onSelect(`/dashboard/academics`)}>
                   <School className="mr-2 h-4 w-4 text-emerald-500" />
                   <span className="font-bold">{c.name}</span>
                   <Badge variant="outline" className="ml-auto text-[10px] uppercase font-black tracking-widest opacity-50">View Dashboard</Badge>
@@ -201,7 +213,8 @@ export function GlobalSearch() {
 
           <CommandSeparator />
           
-          <CommandGroup heading="System Shortcuts">
+          {/* NAVIGATION SHORTCUTS */}
+          <CommandGroup heading="Quick Actions">
             <CommandItem onSelect={() => onSelect('/dashboard/announcements')}>
               <Megaphone className="mr-2 h-4 w-4 text-orange-500" />
               <span>Post Announcement</span>
@@ -209,7 +222,7 @@ export function GlobalSearch() {
             </CommandItem>
             <CommandItem onSelect={() => onSelect('/dashboard/accounts')}>
               <CreditCard className="mr-2 h-4 w-4 text-blue-500" />
-              <span>Billing Center</span>
+              <span>Student Billing</span>
               <ArrowRight className="ml-auto h-3 w-3 opacity-30" />
             </CommandItem>
           </CommandGroup>
