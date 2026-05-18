@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -435,7 +436,7 @@ export default function LeaveManagementPage() {
   const { role } = useRole();
 
   const isManager = role === 'Administrator' || role === 'Director';
-  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'].includes(role || '') || isManager;
+  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'].includes(role || '') || isManager;
   
   if (!isStaff) {
     return (

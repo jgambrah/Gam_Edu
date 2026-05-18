@@ -71,7 +71,9 @@ function LeaveApplicationForm({ setOpen, schoolId }: { setOpen: (open: boolean) 
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField control={form.control} name="leaveType" render={({ field }) => (
-          <FormItem><FormLabel>Leave Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a leave type" /></SelectTrigger></FormControl><SelectContent>{LEAVE_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+          <FormItem><FormLabel>Leave Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a leave type" /></SelectTrigger></FormControl><SelectContent>
+          {LEAVE_TYPES.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
+          </SelectContent></Select><FormMessage /></FormItem>
         )} />
         <div className="grid grid-cols-2 gap-4">
             <FormField control={form.control} name="startDate" render={({ field }) => (
@@ -349,7 +351,7 @@ export default function LeaveManagementPage() {
   const { role } = useRole();
 
   const isManager = role === 'Administrator' || role === 'Director';
-  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'].includes(role || '') || isManager;
+  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'].includes(role || '') || isManager;
   
   if (!isStaff) {
     return (
