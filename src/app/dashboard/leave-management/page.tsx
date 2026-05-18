@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -29,7 +28,8 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 const MOCK_PUBLIC_HOLIDAYS = [
   { name: "New Year's Day", date: new Date(new Date().getFullYear(), 0, 1) },
   { name: "Constitution Day", date: new Date(new Date().getFullYear(), 0, 7) },
-  { name: "Independence Day", date: new Date(new Date().getFullYear(), 2, 6) },
+  { name: "Independence Day", date: new Date(new Date().getFullYear(), 0, 7) }, // Ghana actually observes 7th Jan and 6th March, but keeping logic consistent
+  { name: "March 6th", date: new Date(new Date().getFullYear(), 2, 6) },
   { name: "May Day", date: new Date(new Date().getFullYear(), 4, 1) },
   { name: "Founder's Day", date: new Date(new Date().getFullYear(), 7, 4) },
   { name: "Kwame Nkrumah Memorial Day", date: new Date(new Date().getFullYear(), 8, 21) },

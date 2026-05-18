@@ -37,7 +37,7 @@ function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess
   if (item.roles === 'all') return true;
   if (!role) return false;
 
-  // STEP 2: Support Staff Logic
+  // SUPPORT STAFF RESTRICTIONS
   const isSupportStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook' || role === 'Transport Staff';
   const isRestrictedPath = 
     item.path.includes('/dashboard/academics') || 
@@ -51,7 +51,7 @@ function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess
     return false;
   }
 
-  // Custom Logic for Financials/Billing visibility
+  // FINANCE ACCESS CHECK
   const isFinanceTab = 
     item.path.includes('/dashboard/financials') || 
     item.path.includes('/dashboard/accounts') ||
@@ -147,7 +147,7 @@ export function AppSidebarContent() {
     <>
       <SidebarHeader className="border-indigo-900/30">
         <Link href="/dashboard" className="flex items-center gap-3 p-2 group transition-all">
-          <AppLogo className="h-9 w-9 shadow-lg shadow-indigo-500/20 rounded-xl group-hover:scale-105 transition-transform" />
+          <AppLogo className="h-9 w-9 shadow-lg shadow-indigo-50/20 rounded-xl group-hover:scale-105 transition-transform" />
           <div className="flex flex-col">
             <span className="text-lg font-black text-white leading-none tracking-tighter">GAM EDU</span>
             <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mt-0.5">Management</span>
