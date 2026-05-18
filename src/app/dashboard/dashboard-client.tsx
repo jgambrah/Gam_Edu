@@ -13,13 +13,15 @@ import {
   ArrowDownRight,
   Activity,
   Database,
-  Award
+  Award,
+  MessageSquare,
+  UserCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { format, startOfDay } from 'date-fns';
+import { format, startOfDay, formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
@@ -45,6 +47,38 @@ function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-ind
         </CardContent>
       </Card>
     </Link>
+  );
+}
+
+function QuickActionCard({ title, description, icon: Icon, link }: any) {
+  return (
+    <Link href={link}>
+      <div className="flex items-center gap-4 p-4 rounded-2xl bg-white border-2 border-slate-50 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group">
+        <div className="p-3 bg-indigo-100 rounded-xl group-hover:scale-110 transition-transform">
+          <Icon className="h-5 w-5 text-indigo-600" />
+        </div>
+        <div>
+          <h4 className="font-bold text-slate-800 text-sm">{title}</h4>
+          <p className="text-xs text-slate-500">{description}</p>
+        </div>
+        <ArrowUpRight className="ml-auto h-4 w-4 text-slate-300 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+      </div>
+    </Link>
+  );
+}
+
+function ActivityItem({ title, description, time, icon: Icon, iconColor }: any) {
+  return (
+    <div className="flex gap-4">
+      <div className={cn("p-2 rounded-xl bg-slate-50 h-fit", iconColor)}>
+        <Icon className="h-4 w-4" />
+      </div>
+      <div className="space-y-1 min-w-0 flex-1">
+        <p className="text-sm font-bold text-slate-800 truncate">{title}</p>
+        <p className="text-xs text-slate-500 line-clamp-2">{description}</p>
+        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{time}</p>
+      </div>
+    </div>
   );
 }
 
@@ -119,7 +153,7 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
                     link="/dashboard/staff-management-v2" 
                     isLoading={isLoading}
                     color="text-purple-600"
-                    subtitle="4 New Hires" 
+                    subtitle="Institutional Workforce" 
                 />
                 <StatCard 
                     title="Revenue Health" 
@@ -409,6 +443,99 @@ function TransportStaffDashboard({ profile, routes, buses, students, announcemen
     );
 }
 
+function SupportStaffDashboard({ profile, leaveRequests, announcements, isLoading, announcementsLoading }: any) {
+    const { user } = useUser();
+    const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Member';
+
+    return (
+        <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="flex flex-col gap-1 mb-2">
+                <h1 className="text-3xl font-black text-slate-800 tracking-tighter uppercase italic">Support <span className="text-indigo-600">Portal</span></h1>
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Your workplace companion.</p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <StatCard 
+                    title="My Leave Requests" 
+                    value={leaveRequests?.length || 0} 
+                    icon={FileText} 
+                    link="/dashboard/hr/leave-management"
+                    isLoading={isLoading}
+                />
+                <StatCard 
+                    title="Recent Announcements" 
+                    value={announcements?.length || 0} 
+                    icon={Megaphone}
+                    link="/dashboard/announcements"
+                    isLoading={isLoading}
+                    color="text-orange-500"
+                />
+                <StatCard 
+                    title="My Profile" 
+                    value="View" 
+                    icon={UserCheck}
+                    link="/dashboard/profile"
+                    isLoading={isLoading}
+                    color="text-emerald-600"
+                />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+                    <CardHeader className="bg-slate-50/50 p-8 border-b">
+                        <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Welcome to your Portal</CardTitle>
+                        <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Quick actions for your daily tasks.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-8 space-y-3">
+                        <QuickActionCard 
+                            title="Request Time Off" 
+                            description="Submit a new leave request to HR"
+                            icon={CalendarCheck} 
+                            link="/dashboard/hr/leave-management"
+                        />
+                        <QuickActionCard 
+                            title="Read Announcements" 
+                            description="Check the latest school news"
+                            icon={Megaphone} 
+                            link="/dashboard/announcements"
+                        />
+                        <QuickActionCard 
+                            title="Messages" 
+                            description="Contact administration or other staff"
+                            icon={MessageSquare} 
+                            link="/dashboard/messages"
+                        />
+                    </CardContent>
+                </Card>
+
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
+                    <CardHeader className="p-8 pb-4">
+                        <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-indigo-400">School Noticeboard</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 pt-0 space-y-6">
+                        {announcementsLoading ? (
+                            <div className="flex justify-center py-10"><Loader2 className="animate-spin text-indigo-400" /></div>
+                        ) : null}
+                        {!announcementsLoading && announcements?.length === 0 && (
+                            <p className="text-sm text-slate-500 italic uppercase font-black tracking-widest text-center py-10">No recent announcements.</p>
+                        )}
+                        {announcements?.slice(0, 4).map((a: any) => (
+                            <ActivityItem 
+                                key={a.id}
+                                title={a.title}
+                                description={a.content}
+                                time={a.publishedAt ? formatDistanceToNow(a.publishedAt.toDate(), { addSuffix: true }) : 'Just now'}
+                                icon={Bell}
+                                iconColor="text-indigo-400"
+                            />
+                        ))}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
 function TeacherDashboard({ profile, classes, isLoading }) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Teacher';
@@ -647,14 +774,16 @@ function ClubCard({ title, path, icon: Icon, color }: any) {
 export default function DashboardClient() {
   const { role, profile, loading: roleLoading } = useRole();
   const firestore = useFirestore();
+  const { user } = useUser();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
-  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff'].includes(role || '');
+  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff', 'Librarian', 'Cleaner', 'Security Officer', 'Cook'].includes(role || '');
   const isParent = role === 'Parent';
   const isAccountant = role === 'Accountant';
   const isTransportStaff = role === 'Transport Staff';
   const isAdmin = ['Administrator', 'Director'].includes(role || '');
   const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
+  const isSupportStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook' || role === 'Transport Staff';
 
   // Core Data Queries
   const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
@@ -669,7 +798,7 @@ export default function DashboardClient() {
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && canListStaff) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canListStaff]);
   const { data: staff, isLoading: loadingStaff } = useCollection(staffQuery);
 
-  const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff]);
+  const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff && !isSupportStaff) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
   const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin || isParent)) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, isParent]);
@@ -687,6 +816,9 @@ export default function DashboardClient() {
   const busesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
   const { data: buses } = useCollection<Bus>(busesQuery);
 
+  const leaveQuery = useMemoFirebase(() => (firestore && user && schoolId && isSupportStaff) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), where('staffId', '==', user.uid)) : null, [firestore, user, schoolId, isSupportStaff]);
+  const { data: leaveRequests, isLoading: loadingLeaves } = useCollection(leaveQuery);
+
   const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
   const parentChildren = useMemo(() => students?.filter(s => parentStudentIds.includes(s.uid)) || [], [students, parentStudentIds]);
   const parentFinancials = useMemo(() => records?.filter(r => parentStudentIds.includes(r.studentId)) || [], [records, parentStudentIds]);
@@ -703,7 +835,9 @@ export default function DashboardClient() {
 
   const hasFinanceAccess = role === 'Director' || role === 'Accountant' || (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false);
 
-  if (roleLoading || schoolLoading) {
+  const isLoading = roleLoading || schoolLoading;
+
+  if (isLoading) {
     return <div className="flex h-[80vh] items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-indigo-600" /></div>;
   }
 
@@ -715,8 +849,8 @@ export default function DashboardClient() {
     return <AccountantDashboard profile={profile} students={students} classes={classes} records={records} tills={tills} announcements={announcements} isLoading={loadingStudents || loadingRecords || loadingTills} />;
   }
 
-  if (role === 'Transport Staff') {
-    return <TransportStaffDashboard profile={profile} routes={routes} buses={buses} students={students} announcements={announcements} isLoading={loadingStudents} />;
+  if (isSupportStaff) {
+    return <SupportStaffDashboard profile={profile} leaveRequests={leaveRequests} announcements={announcements} isLoading={loadingLeaves} announcementsLoading={loadingAnnouncements} />;
   }
 
   if (role === 'Teacher') {

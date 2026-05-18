@@ -344,13 +344,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/hr',
     title: 'Human Resources',
     icon: UserCog,
-    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'],
     subItems: [
         {
             path: '/dashboard/attendance/staff',
             title: 'Staff Clock-In',
             icon: UserCheckIcon,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'],
         },
         {
             path: '/dashboard/hr/staff-attendance-records',
@@ -359,10 +359,10 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         },
         {
-            path: '/dashboard/leave-management',
+            path: '/dashboard/hr/leave-management',
             title: 'Leave Management',
             icon: Plane,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'],
         },
         {
             path: '/dashboard/staff/performance',
@@ -520,6 +520,12 @@ export const navItems: NavItem[] = [
             path: '/dashboard/admin/school-profile',
             title: 'School Profile',
             icon: Building2,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/admin/website-builder',
+            title: 'Website Builder',
+            icon: LayoutTemplate,
             roles: ['Director', 'Administrator'],
         },
     ]

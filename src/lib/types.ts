@@ -10,7 +10,9 @@ export type UserRole =
   | 'Parent'
   | 'Librarian'
   | 'Cook'
-  | 'Transport Staff';
+  | 'Transport Staff'
+  | 'Cleaner'
+  | 'Security Officer';
 
 export const ALL_ROLES: UserRole[] = [
   'Director',
@@ -22,6 +24,8 @@ export const ALL_ROLES: UserRole[] = [
   'Librarian',
   'Cook',
   'Transport Staff',
+  'Cleaner',
+  'Security Officer',
 ];
 
 export const STAFF_ROLES: UserRole[] = ALL_ROLES.filter(

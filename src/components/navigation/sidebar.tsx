@@ -37,6 +37,20 @@ function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess
   if (item.roles === 'all') return true;
   if (!role) return false;
 
+  // STEP 2: Support Staff Logic
+  const isSupportStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook' || role === 'Transport Staff';
+  const isRestrictedPath = 
+    item.path.includes('/dashboard/academics') || 
+    item.path.includes('/dashboard/financials') || 
+    item.path.includes('/dashboard/accounts') ||
+    item.path.includes('/dashboard/people') ||
+    item.path.includes('/dashboard/reports') ||
+    item.path.includes('/dashboard/system');
+
+  if (isSupportStaff && isRestrictedPath) {
+    return false;
+  }
+
   // Custom Logic for Financials/Billing visibility
   const isFinanceTab = 
     item.path.includes('/dashboard/financials') || 
@@ -230,7 +244,7 @@ export function AppSidebarContent() {
         </div>
         <Button
           variant="ghost"
-          className="h-10 w-full justify-start text-red-400 hover:text-red-100 hover:bg-red-500/20 rounded-xl transition-all"
+          className="h-10 w-full justify-start text-red-400 hover:text-red-100 hover:bg-red-50/20 rounded-xl transition-all"
           onClick={handleSignOut}
         >
           <LogOut className="mr-2 h-4 w-4" />
