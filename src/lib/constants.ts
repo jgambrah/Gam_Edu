@@ -76,7 +76,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/my-attendance',
     title: 'My Attendance',
     icon: CalendarCheck,
-    roles: ['Student', 'Parent'],
+    roles: ['Student'],
+  },
+  {
+    path: '/dashboard/my-attendance',
+    title: 'My Ward(s) Attendance',
+    icon: CalendarCheck,
+    roles: ['Parent'],
   },
   {
     path: '/dashboard/my-bills',
@@ -336,13 +342,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/hr',
     title: 'Human Resources',
     icon: UserCog,
-    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'],
     subItems: [
         {
             path: '/dashboard/attendance/staff',
             title: 'Staff Clock-In',
             icon: UserCheckIcon,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'],
         },
         {
             path: '/dashboard/hr/staff-attendance-records',
@@ -351,10 +357,10 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         },
         {
-            path: '/dashboard/leave-management',
+            path: '/dashboard/hr/leave-management',
             title: 'Leave Management',
             icon: Plane,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'],
         },
         {
             path: '/dashboard/staff/performance',

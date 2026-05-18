@@ -463,20 +463,20 @@ function SupportStaffDashboard({ profile, leaveRequests, announcements, isLoadin
                     isLoading={isLoading}
                 />
                 <StatCard 
+                    title="Attendance Status" 
+                    value="Clock In/Out" 
+                    icon={CalendarCheck} 
+                    link="/dashboard/attendance/staff"
+                    isLoading={isLoading}
+                    color="text-emerald-600"
+                />
+                <StatCard 
                     title="Recent Announcements" 
                     value={announcements?.length || 0} 
                     icon={Megaphone}
                     link="/dashboard/announcements"
                     isLoading={isLoading}
                     color="text-orange-500"
-                />
-                <StatCard 
-                    title="My Profile" 
-                    value="View" 
-                    icon={UserCheck}
-                    link="/dashboard/profile"
-                    isLoading={isLoading}
-                    color="text-emerald-600"
                 />
             </div>
 
@@ -487,6 +487,12 @@ function SupportStaffDashboard({ profile, leaveRequests, announcements, isLoadin
                         <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Quick actions for your daily tasks.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-8 space-y-3">
+                        <QuickActionCard 
+                            title="Staff Clock In/Out" 
+                            description="Record your daily arrival and departure"
+                            icon={CalendarCheck} 
+                            link="/dashboard/attendance/staff"
+                        />
                         <QuickActionCard 
                             title="Request Time Off" 
                             description="Submit a new leave request to HR"
@@ -777,7 +783,7 @@ export default function DashboardClient() {
   const { user } = useUser();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
-  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff', 'Librarian', 'Cleaner', 'Security Officer', 'Cook'].includes(role || '');
+  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'].includes(role || '');
   const isParent = role === 'Parent';
   const isAccountant = role === 'Accountant';
   const isTransportStaff = role === 'Transport Staff';
