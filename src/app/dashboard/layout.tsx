@@ -4,16 +4,18 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Header from '@/components/navigation/header';
 import { useUser, useFirestore } from '@/firebase';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldAlert } from 'lucide-react';
 import AppSidebar from '@/components/navigation/sidebar';
 import SchoolSetupWizard from '@/components/onboarding/SchoolSetupWizard';
 import TrialBanner from '@/components/TrialBanner';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
 import ForcePasswordChange from '@/components/auth/ForcePasswordChange';
 import { AiChat } from '@/components/ai-chat';
 import { PushNotificationManager } from '@/components/PushNotificationManager';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -22,20 +24,24 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
   const router = useRouter();
   const pathname = usePathname();
+  
   const [isLocked, setIsLocked] = useState(false);
+  const [studentDebtLocked, setStudentDebtLocked] = useState(false);
 
   useEffect(() => {
-    async function checkSubscription() {
+    async function checkSecurityAndStatus() {
       if (!user || !firestore || !schoolId || !profile) return;
       if (user.email === 'jamesgambrah@gmail.com') return;
       
-      // SKIP: Don't perform subscription check for parents as they are blocked from reading the school doc
+      // Parents trial check skipped as per existing logic
       if (profile.role === 'Parent') return;
 
       try {
         const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
         if (schoolDoc.exists()) {
           const data = schoolDoc.data();
+          
+          // 1. Subscription Check
           if (data.plan === 'Trial' && data.trialEndsAt) {
             const expiryDate = data.trialEndsAt.toDate();
             const now = new Date();
@@ -50,16 +56,39 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           } else {
             setIsLocked(false);
           }
+
+          // 2. Student Debt Lockout Check
+          if (role === 'Student' && data.autoLockStudents === true) {
+              const billsQ = query(
+                  collection(firestore, 'financialRecords'), 
+                  where('schoolId', '==', schoolId), 
+                  where('studentId', '==', user.uid),
+                  where('status', 'in', ['Unpaid', 'Overdue'])
+              );
+              const billsSnap = await getDocs(billsQ);
+              let myDebt = 0;
+              billsSnap.docs.forEach(d => {
+                  const bill = d.data();
+                  myDebt += (bill.billedAmount - (bill.amountPaid || 0) - (bill.waiverAmount || 0));
+              });
+
+              const threshold = Number(data.debtorLockThreshold) || 0;
+              if (myDebt > threshold) {
+                  setStudentDebtLocked(true);
+              } else {
+                  setStudentDebtLocked(false);
+              }
+          }
         }
       } catch (error) {
-        console.error('Subscription Check Failed:', error);
+        console.error('Security status check failed:', error);
       }
     }
 
     if (!isSchoolLoading && !isUserLoading && !isRoleLoading) {
-      checkSubscription();
+      checkSecurityAndStatus();
     }
-  }, [user, firestore, schoolId, isSchoolLoading, isUserLoading, isRoleLoading, profile, pathname, router]);
+  }, [user, firestore, schoolId, isSchoolLoading, isUserLoading, isRoleLoading, profile, role, pathname, router]);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -78,6 +107,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   if (!user) {
     return null;
   }
+
+  // Path protection logic
+  const isRestrictedStudentRoute = pathname.includes('/dashboard/assignments') || 
+                                   pathname.includes('/dashboard/assessments') || 
+                                   pathname.includes('/dashboard/my-reports');
 
   // Mandatory Password Change Check
   const needsPasswordChange = profile?.requirePasswordChange === true;
@@ -100,7 +134,23 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
           <div className="p-4 md:p-8 relative z-10">
             <div className="pb-24">
-              {children}
+              {/* STUDENT DEBT LOCKOVER */}
+              {role === 'Student' && studentDebtLocked && isRestrictedStudentRoute ? (
+                <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 text-center animate-in zoom-in">
+                  <div className="bg-orange-100 p-6 rounded-full mb-6">
+                    <ShieldAlert className="h-16 w-16 text-orange-600" />
+                  </div>
+                  <h1 className="text-3xl font-black text-slate-800 mb-2 uppercase">Access Restricted</h1>
+                  <p className="text-lg text-slate-600 max-w-md mb-8 font-medium">
+                    This section is currently unavailable. Please ask your parents or guardians to check their Parent Portal for important updates regarding your account.
+                  </p>
+                  <Button asChild className="h-14 px-10 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-2xl shadow-xl transition-all active:scale-95">
+                    <Link href="/dashboard">Return to Dashboard</Link>
+                  </Button>
+                </div>
+              ) : (
+                children
+              )}
             </div>
           </div>
           

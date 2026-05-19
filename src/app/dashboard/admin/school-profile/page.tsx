@@ -55,6 +55,7 @@ export default function SchoolProfilePage() {
   const [allowAdminFinanceAccess, setAllowAdminFinanceAccess] = useState(true);
   const [allowAdminBillingToggles, setAllowAdminBillingToggles] = useState(false);
   const [autoLockDebtors, setAutoLockDebtors] = useState(false);
+  const [autoLockStudents, setAutoLockStudents] = useState(false);
   const [debtorLockThreshold, setDebtorLockThreshold] = useState(0);
   
   // Social Links
@@ -89,6 +90,7 @@ export default function SchoolProfilePage() {
         setAllowAdminFinanceAccess(profile.allowAdminFinanceAccess !== false);
         setAllowAdminBillingToggles(profile.allowAdminBillingToggles === true);
         setAutoLockDebtors(profile.autoLockDebtors === true);
+        setAutoLockStudents(profile.autoLockStudents === true);
         setDebtorLockThreshold(Number(profile.debtorLockThreshold) || 0);
         
         if (profile.termStartDate) {
@@ -181,6 +183,7 @@ export default function SchoolProfilePage() {
             allowAdminFinanceAccess,
             allowAdminBillingToggles,
             autoLockDebtors,
+            autoLockStudents,
             debtorLockThreshold,
             updatedAt: serverTimestamp()
         };
@@ -402,7 +405,23 @@ export default function SchoolProfilePage() {
                                         className="h-7 w-7 rounded-lg border-2 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
                                     />
                                 </div>
-                                {autoLockDebtors && (
+
+                                <div className="flex flex-row items-center justify-between rounded-2xl border p-4 mt-2 bg-orange-50/50 border-orange-100">
+                                    <div className="space-y-1 pr-4">
+                                        <Label className="text-base font-black text-orange-800 flex items-center gap-2">
+                                            <Shield className="h-4 w-4 text-orange-600"/>
+                                            Auto-Lock Students (Assignments & Reports)
+                                        </Label>
+                                        <p className="text-xs font-medium text-orange-600/70 max-w-md">Restrict student access to official assessments and report cards if their fees exceed the threshold. (Learning clubs remain open).</p>
+                                    </div>
+                                    <Checkbox 
+                                        checked={autoLockStudents} 
+                                        onCheckedChange={(checked) => setAutoLockStudents(!!checked)} 
+                                        className="h-7 w-7 rounded-lg border-2 data-[state=checked]:bg-orange-600 data-[state=checked]:border-orange-600"
+                                    />
+                                </div>
+
+                                {(autoLockDebtors || autoLockStudents) && (
                                     <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
                                         <Label className="text-red-800 font-bold uppercase text-[10px] tracking-widest">Lock threshold amount (GH₵)</Label>
                                         <Input 
@@ -412,7 +431,7 @@ export default function SchoolProfilePage() {
                                             className="max-w-[200px] h-12 border-2 border-red-200 font-black text-red-600 text-lg rounded-xl focus:ring-red-500"
                                             placeholder="0.00"
                                         />
-                                        <p className="text-[10px] font-bold text-red-500 uppercase italic">Parents owing more than this amount will be locked out of academic features.</p>
+                                        <p className="text-[10px] font-bold text-red-500 uppercase italic">Users owing more than this amount will be locked out of academic features.</p>
                                     </div>
                                 )}
                             </div>
