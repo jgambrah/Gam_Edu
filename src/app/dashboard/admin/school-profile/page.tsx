@@ -17,7 +17,8 @@ import {
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
   CalendarDays, CalendarIcon, ArrowRightCircle, PenTool, X,
-  Facebook, Instagram, Linkedin, Shield, Palette, Lock, Eraser
+  Facebook, Instagram, Linkedin, Shield, Palette, Lock, Eraser,
+  MessageSquare
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -57,6 +58,11 @@ export default function SchoolProfilePage() {
   const [autoLockDebtors, setAutoLockDebtors] = useState(false);
   const [autoLockStudents, setAutoLockStudents] = useState(false);
   const [debtorLockThreshold, setDebtorLockThreshold] = useState(0);
+
+  // WhatsApp Automation States
+  const [waInstanceId, setWaInstanceId] = useState('');
+  const [waToken, setWaToken] = useState('');
+  const [enableWhatsApp, setEnableWhatsApp] = useState(false);
   
   // Social Links
   const [facebookUrl, setFacebookUrl] = useState('');
@@ -92,6 +98,10 @@ export default function SchoolProfilePage() {
         setAutoLockDebtors(profile.autoLockDebtors === true);
         setAutoLockStudents(profile.autoLockStudents === true);
         setDebtorLockThreshold(Number(profile.debtorLockThreshold) || 0);
+
+        setWaInstanceId(profile.waInstanceId || '');
+        setWaToken(profile.waToken || '');
+        setEnableWhatsApp(profile.enableWhatsApp === true);
         
         if (profile.termStartDate) {
             setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
@@ -185,6 +195,9 @@ export default function SchoolProfilePage() {
             autoLockDebtors,
             autoLockStudents,
             debtorLockThreshold,
+            waInstanceId,
+            waToken,
+            enableWhatsApp,
             updatedAt: serverTimestamp()
         };
 
@@ -238,7 +251,7 @@ export default function SchoolProfilePage() {
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-sm font-bold text-slate-700">Instituional Branding</Label>
+                            <Label className="text-sm font-bold text-slate-700">Institutional Branding</Label>
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
@@ -304,6 +317,50 @@ export default function SchoolProfilePage() {
                             <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Phone className="h-3 w-3"/> Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+233..." className="h-11 border-2 rounded-xl" /></div>
                             <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Mail className="h-3 w-3"/> Email</Label><Input value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@school.com" className="h-11 border-2 rounded-xl" /></div>
                             <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Globe className="h-3 w-3"/> Website</Label><Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" className="h-11 border-2 rounded-xl" /></div>
+                        </div>
+
+                        {/* --- WHATSAPP AUTOMATION SECTION --- */}
+                        <div className="space-y-4 p-5 border-2 rounded-[2rem] bg-emerald-50/30 border-emerald-100 mt-6 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-0.5">
+                                    <Label className="text-base font-black text-emerald-800 flex items-center gap-2 uppercase tracking-tight">
+                                        <MessageSquare className="h-5 w-5 text-emerald-600"/> WhatsApp Automation (API)
+                                    </Label>
+                                    <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Connect your school to the WhatsApp network</p>
+                                </div>
+                                <Checkbox 
+                                    checked={enableWhatsApp} 
+                                    onCheckedChange={(c) => setEnableWhatsApp(!!c)} 
+                                    className="h-7 w-7 rounded-lg border-2 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+                                />
+                            </div>
+                            
+                            {enableWhatsApp && (
+                                <div className="grid md:grid-cols-2 gap-4 animate-in slide-in-from-top-2 pt-2">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Instance ID</Label>
+                                        <Input 
+                                            value={waInstanceId} 
+                                            onChange={e => setWaInstanceId(e.target.value)} 
+                                            placeholder="e.g. instance8372" 
+                                            className="border-2 bg-white rounded-xl h-11 font-mono text-xs" 
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">API Token</Label>
+                                        <Input 
+                                            type="password" 
+                                            value={waToken} 
+                                            onChange={e => setWaToken(e.target.value)} 
+                                            placeholder="e.g. 1a2b3c4d5e..." 
+                                            className="border-2 bg-white rounded-xl h-11 font-mono text-xs" 
+                                        />
+                                    </div>
+                                    <p className="text-[10px] font-medium text-emerald-700 italic col-span-2 bg-white/50 p-3 rounded-xl border border-emerald-50">
+                                        Note: We currently support <strong>UltraMsg</strong>. Enter your credentials to enable automated arrival and departure alerts to parents.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

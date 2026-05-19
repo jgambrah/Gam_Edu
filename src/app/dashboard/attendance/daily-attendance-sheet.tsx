@@ -26,6 +26,7 @@ import { StudentDisplay } from '@/components/student-display';
 import { billMultipleStudents } from '@/lib/billing';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { notifyParents } from '@/app/actions/notifications';
+import { sendSchoolWhatsApp } from '@/app/actions/whatsapp';
 
 const attendanceRecordSchema = z.object({
   id: z.string().optional(),
@@ -174,7 +175,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
             await batch.commit();
 
-            // Notify parents asynchronously
+            // Notify parents via Push asynchronously
             const gradedStudentIds = data.records.map(r => r.studentId);
             notifyParents(
                 gradedStudentIds,
@@ -182,6 +183,33 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 "Your child's attendance for today has been updated. Tap to view details.",
                 "/dashboard/my-attendance"
             ).catch(err => console.error("Notification failed:", err));
+
+            // --- AUTOMATED WHATSAPP ALERTS (Fire and forget) ---
+            const alertRecords = data.records.filter(r => r.status === 'Absent' || r.status === 'Late');
+            
+            if (alertRecords.length > 0) {
+                const parentsSnap = await getDocs(query(
+                    collection(firestore, 'parents'), 
+                    where('schoolId', '==', schoolId), 
+                    where('studentIds', 'array-contains-any', gradedStudentIds)
+                ));
+                
+                parentsSnap.docs.forEach(parentDoc => {
+                    const parent = parentDoc.data();
+                    if (!parent.phone) return;
+
+                    const childAlerts = alertRecords.filter(r => parent.studentIds?.includes(r.studentId));
+                    
+                    childAlerts.forEach(alert => {
+                        const timeStr = format(new Date(), 'h:mm a');
+                        const message = alert.status === 'Absent' 
+                            ? `🚨 *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, was marked *ABSENT* today at ${timeStr}. Please contact the school if you are unaware of this.`
+                            : `⚠️ *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, arrived *LATE* to school today at ${timeStr}.`;
+
+                        sendSchoolWhatsApp(schoolId, parent.phone, message).catch(err => console.error("WhatsApp Send Failed:", err));
+                    });
+                });
+            }
 
             toast({ title: 'Attendance Saved!', description: 'Now processing financial records...' });
 
