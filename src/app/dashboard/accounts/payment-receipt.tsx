@@ -41,7 +41,6 @@ export function PaymentReceipt({
           )}
           <h1 className="text-lg font-bold uppercase" style={{ color: primaryTheme }}>{schoolProfile?.name}</h1>
           
-          {/* --- NEW: SCHOOL CONTACT DETAILS (THERMAL) --- */}
           <div className="text-center mt-1 space-y-0.5">
               {schoolProfile?.motto && (
                   <p className="text-[10px] italic font-medium opacity-90">"{schoolProfile.motto}"</p>
@@ -79,7 +78,6 @@ export function PaymentReceipt({
 
   // A4 Layout
   const balanceBefore = transaction.billedAmount - (transaction.amountPaid - payment.amount) - (transaction.waiverAmount || 0);
-  const balanceAfterBill = balanceBefore - payment.amount;
 
   return (
     <div 
@@ -103,11 +101,10 @@ export function PaymentReceipt({
             )}
           </div>
           <div>
-            <h1 className="text-lg font-black uppercase tracking-tight leading-none">
+            <h1 className="text-lg font-black uppercase tracking-tight leading-none text-white">
               {schoolProfile?.name || 'School Name'}
             </h1>
             
-            {/* --- NEW: SCHOOL CONTACT DETAILS --- */}
             <div className="mt-1 space-y-0.5">
                 {schoolProfile?.motto && (
                     <p className="text-[10px] italic font-medium opacity-90">"{schoolProfile.motto}"</p>
@@ -176,11 +173,6 @@ export function PaymentReceipt({
         
         <section className="flex justify-end mt-8">
             <div className="w-2/3 space-y-2">
-                <div className="flex justify-between py-2 border-b text-[10px] font-bold uppercase text-slate-400">
-                    <span>Balance on this bill</span>
-                    <span className="text-slate-900 font-mono">GH₵ {balanceAfterBill.toFixed(2)}</span>
-                </div>
-                
                 <div 
                     className="flex justify-between items-center py-4 px-5 text-white rounded-2xl shadow-xl"
                     style={{ backgroundColor: primaryTheme }}
