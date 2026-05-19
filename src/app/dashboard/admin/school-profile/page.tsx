@@ -20,7 +20,8 @@ import {
   Facebook, Instagram, Linkedin, Shield, Palette, Lock, Eraser,
   MessageSquare,
   MessageCircle,
-  CreditCard
+  CreditCard,
+  DollarSign
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -148,15 +149,6 @@ export default function SchoolProfilePage() {
 
   const canManage = role === 'Director' || user?.email === 'jamesgambrah@gmail.com';
 
-  if (!isSchoolLoading && !isLoading && !canManage) {
-      return (
-          <div className="p-8 text-center flex flex-col items-center justify-center min-h-[50vh]">
-              <h2 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h2>
-              <p className="text-slate-600">Only the School Director can modify School Settings and Permissions.</p>
-          </div>
-      );
-  }
-
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !schoolId) return;
@@ -260,6 +252,15 @@ export default function SchoolProfilePage() {
   };
 
   if (isLoading || isSchoolLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600 h-8 w-8"/></div>;
+
+  if (!canManage) {
+      return (
+          <div className="p-8 text-center flex flex-col items-center justify-center min-h-[50vh]">
+              <h2 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h2>
+              <p className="text-slate-600">Only the School Director can modify School Settings and Permissions.</p>
+          </div>
+      );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6 pb-24 text-black">
@@ -486,44 +487,62 @@ export default function SchoolProfilePage() {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 {/* Paystack Integration */}
-                                <div className="p-5 border-2 rounded-2xl bg-green-50/30 border-green-100">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <Label className="text-base font-black text-green-900 uppercase tracking-tighter">Paystack (MoMo & Card)</Label>
-                                        <Checkbox 
-                                            checked={enablePaystack} 
-                                            onCheckedChange={(c) => setEnablePaystack(!!c)} 
-                                            className="h-7 w-7 rounded-lg border-2 data-[state=checked]:bg-green-600"
-                                        />
+                                <div className="p-5 border rounded-2xl bg-green-50/30 border-green-100 shadow-sm">
+                                    <div className="flex items-center justify-between mb-4 border-b border-green-100 pb-3">
+                                        <div>
+                                            <Label className="text-lg font-black text-green-900 flex items-center gap-2">
+                                                <DollarSign className="h-5 w-5 text-green-600"/> Paystack (MoMo & Cards)
+                                            </Label>
+                                            <p className="text-xs text-green-700 mt-1">Allow parents to pay school fees directly into your school's bank account.</p>
+                                        </div>
+                                        <Checkbox checked={enablePaystack} onCheckedChange={(c) => setEnablePaystack(!!c)} className="h-6 w-6 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600" />
                                     </div>
+
                                     {enablePaystack && (
-                                        <div className="grid md:grid-cols-2 gap-4 animate-in slide-in-from-top-2">
-                                            <div className="space-y-2">
-                                                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Public Key</Label>
-                                                <Input 
-                                                    value={paystackPubKey} 
-                                                    onChange={e => setPaystackPubKey(e.target.value)} 
-                                                    placeholder="pk_live_..." 
-                                                    className="bg-white border-2 rounded-xl h-11 font-mono text-xs" 
-                                                />
+                                        <div className="space-y-6 animate-in slide-in-from-top-2">
+                                            
+                                            {/* 1-2-3 Setup Guide */}
+                                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                                <h4 className="text-sm font-bold text-slate-800 mb-3">How to connect your school's Paystack:</h4>
+                                                <ol className="list-decimal pl-5 text-xs text-slate-600 space-y-2">
+                                                    <li>
+                                                        Log in to your <a href="https://dashboard.paystack.com/#/settings/developer" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-bold hover:underline inline-flex items-center">Paystack Developer Settings <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>.
+                                                    </li>
+                                                    <li>Ensure you are in <strong>Live Mode</strong> (Toggle at the top left of Paystack).</li>
+                                                    <li>Copy your <strong>Live Public Key</strong> and <strong>Live Secret Key</strong>, and paste them into the boxes below.</li>
+                                                    <li>
+                                                        In Paystack, paste this exact URL into the <strong>Live Webhook URL</strong> box:
+                                                        <div className="mt-2 mb-1 p-2 bg-slate-100 rounded border border-slate-200 font-mono text-blue-700 flex justify-between items-center select-all">
+                                                            https://gam-it-service.app/api/webhooks/school-fees
+                                                        </div>
+                                                        <span className="text-[10px] italic text-slate-400">This URL ensures our system automatically clears student debts when they pay.</span>
+                                                    </li>
+                                                </ol>
                                             </div>
-                                            <div className="space-y-2">
-                                                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Secret Key</Label>
-                                                <Input 
-                                                    type="password" 
-                                                    value={paystackSecKey} 
-                                                    onChange={e => setPaystackSecKey(e.target.value)} 
-                                                    placeholder="sk_live_..." 
-                                                    className="bg-white border-2 rounded-xl h-11 font-mono text-xs" 
-                                                />
+
+                                            {/* Credential Inputs */}
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label className="text-green-800 font-bold">Live Public Key</Label>
+                                                    <Input 
+                                                        value={paystackPubKey} 
+                                                        onChange={e => setPaystackPubKey(e.target.value)} 
+                                                        placeholder="pk_live_..." 
+                                                        className="bg-white border-green-200 focus-visible:ring-green-500" 
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-green-800 font-bold">Live Secret Key</Label>
+                                                    <Input 
+                                                        type="password" 
+                                                        value={paystackSecKey} 
+                                                        onChange={e => setPaystackSecKey(e.target.value)} 
+                                                        placeholder="sk_live_..." 
+                                                        className="bg-white border-green-200 focus-visible:ring-green-500" 
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className="col-span-2 bg-white p-4 rounded-xl text-[10px] text-slate-600 border-2 border-dashed border-green-200">
-                                                <strong className="text-green-700 block mb-1">WEBHOOK SYNCHRONIZATION:</strong>
-                                                Copy the URL below and paste it into your Paystack Dashboard (Settings {' > '} API & Webhooks) as your <strong>Live Webhook URL</strong>. This allows GAM Edu to automatically update student ledgers when parents pay.
-                                                <br/>
-                                                <code className="mt-2 block p-2 bg-slate-50 rounded border text-blue-600 font-bold select-all break-all text-xs">
-                                                    https://gam-it-service.app/api/webhooks/school-fees
-                                                </code>
-                                            </div>
+                                            
                                         </div>
                                     )}
                                 </div>
