@@ -18,10 +18,15 @@ import { DatePickerWithRange } from '@/components/ui/date-picker-with-range';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { PaystackButton } from 'react-paystack';
+import { useToast } from '@/hooks/use-toast';
 
 function StudentBillView({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
+    const { user } = useUser();
+    const { role } = useRole();
+    const { toast } = useToast();
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
     const recordsQuery = useMemoFirebase(() => {
@@ -36,6 +41,12 @@ function StudentBillView({ studentId }: { studentId: string }) {
     const { data: records, isLoading } = useCollection<FinancialRecord>(recordsQuery);
 
     const { data: student } = useDoc<Student>(useMemoFirebase(() => firestore && studentId ? doc(firestore, 'students', studentId) : null, [firestore, studentId]));
+
+    const schoolSettingsQuery = useMemoFirebase(
+      () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
+      [firestore, schoolId]
+    );
+    const { data: schoolSettings } = useDoc<any>(schoolSettingsQuery as any);
 
     const overallSummary = useMemo(() => {
         if (!records) return { totalBilled: 0, totalPaid: 0, totalWaivers: 0, balance: 0 };
@@ -95,7 +106,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
                 <Card>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Waivers</CardTitle></CardHeader>
                     <CardContent><p className="text-2xl font-bold">GH₵{overallSummary.totalWaivers.toFixed(2)}</p></CardContent>
-                </Card>
+                 </Card>
                  <Card className={cn(overallSummary.balance > 0.01 ? "border-destructive" : "border-green-500")}>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Outstanding Balance</CardTitle></CardHeader>
                     <CardContent><p className="text-2xl font-bold">GH₵{Math.max(0, overallSummary.balance).toFixed(2)}</p></CardContent>
@@ -109,17 +120,41 @@ function StudentBillView({ studentId }: { studentId: string }) {
                             <TableHead className="text-right">Amount</TableHead>
                             <TableHead>Due Date</TableHead>
                             <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Online Payment</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredRecords.map(rec => (
-                            <TableRow key={rec.id}>
-                                <TableCell className="font-medium">{rec.description}</TableCell>
-                                <TableCell className="text-right font-bold">GH₵{(rec.billedAmount || 0).toFixed(2)}</TableCell>
-                                <TableCell className="text-xs">{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
-                                <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
-                            </TableRow>
-                        ))}
+                        {filteredRecords.map(rec => {
+                            const balance = (rec.billedAmount || 0) - (rec.amountPaid || 0) - (rec.waiverAmount || 0);
+                            return (
+                                <TableRow key={rec.id}>
+                                    <TableCell className="font-medium">{rec.description}</TableCell>
+                                    <TableCell className="text-right font-bold">GH₵{(rec.billedAmount || 0).toFixed(2)}</TableCell>
+                                    <TableCell className="text-xs">{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                    <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
+                                    <TableCell className="text-right">
+                                        {role === 'Parent' && schoolSettings?.enablePaystack && schoolSettings?.paystackPubKey && balance > 0.01 && (
+                                            <PaystackButton
+                                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-sm"
+                                                email={user?.email || 'parent@school.com'}
+                                                amount={Math.round(balance * 100)} // Convert GHS to Pesewas
+                                                currency="GHS"
+                                                publicKey={schoolSettings.paystackPubKey}
+                                                text="Pay via MoMo/Card"
+                                                metadata={{
+                                                    type: 'school_fee_payment',
+                                                    schoolId: schoolId,
+                                                    studentId: studentId,
+                                                    recordId: rec.id
+                                                }}
+                                                onSuccess={() => toast({ title: "Payment Received", description: "Verification in progress. Your balance will update shortly." })}
+                                                onClose={() => {}}
+                                            />
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </div>

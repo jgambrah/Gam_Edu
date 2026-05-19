@@ -19,7 +19,8 @@ import {
   CalendarDays, CalendarIcon, ArrowRightCircle, PenTool, X,
   Facebook, Instagram, Linkedin, Shield, Palette, Lock, Eraser,
   MessageSquare,
-  MessageCircle
+  MessageCircle,
+  CreditCard
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -77,6 +78,12 @@ export default function SchoolProfilePage() {
   const [smsProvider, setSmsProvider] = useState<'arkesel' | 'hubtel'>('arkesel');
   const [smsApiKey, setSmsApiKey] = useState('');
   const [smsSenderId, setSmsSenderId] = useState('');
+
+  // Fee Collection States (BYOG)
+  const [paystackPubKey, setPaystackPubKey] = useState('');
+  const [paystackSecKey, setPaystackSecKey] = useState('');
+  const [enablePaystack, setEnablePaystack] = useState(false);
+  const [enableTransflow, setEnableTransflow] = useState(false);
   
   // Social Links
   const [facebookUrl, setFacebookUrl] = useState('');
@@ -121,6 +128,11 @@ export default function SchoolProfilePage() {
         setSmsProvider(profile.smsProvider || 'arkesel');
         setSmsApiKey(profile.smsApiKey || '');
         setSmsSenderId(profile.smsSenderId || '');
+
+        setPaystackPubKey(profile.paystackPubKey || '');
+        setPaystackSecKey(profile.paystackSecKey || '');
+        setEnablePaystack(profile.enablePaystack === true);
+        setEnableTransflow(profile.enableTransflow === true);
         
         if (profile.termStartDate) {
             setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
@@ -134,7 +146,6 @@ export default function SchoolProfilePage() {
     }
   }, [profile]);
 
-  // Only the School Director or the Platform CEO can manage school-wide settings
   const canManage = role === 'Director' || user?.email === 'jamesgambrah@gmail.com';
 
   if (!isSchoolLoading && !isLoading && !canManage) {
@@ -221,6 +232,10 @@ export default function SchoolProfilePage() {
             smsProvider,
             smsApiKey,
             smsSenderId,
+            paystackPubKey,
+            paystackSecKey,
+            enablePaystack,
+            enableTransflow,
             updatedAt: serverTimestamp()
         };
 
@@ -460,6 +475,82 @@ export default function SchoolProfilePage() {
                                 </div>
                             )}
                         </div>
+
+                        {/* --- FEE COLLECTION GATEWAYS (BYOG) --- */}
+                        <Card className="mt-6 border-t-4 border-t-green-600 rounded-[2rem] shadow-sm">
+                            <CardHeader>
+                                <CardTitle className="text-green-800 flex items-center gap-2 uppercase tracking-tight">
+                                    <CreditCard className="h-5 w-5"/> Fee Collection Gateways
+                                </CardTitle>
+                                <CardDescription className="font-medium italic">Connect your own merchant accounts to receive school fees directly from parents.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {/* Paystack Integration */}
+                                <div className="p-5 border-2 rounded-2xl bg-green-50/30 border-green-100">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <Label className="text-base font-black text-green-900 uppercase tracking-tighter">Paystack (MoMo & Card)</Label>
+                                        <Checkbox 
+                                            checked={enablePaystack} 
+                                            onCheckedChange={(c) => setEnablePaystack(!!c)} 
+                                            className="h-7 w-7 rounded-lg border-2 data-[state=checked]:bg-green-600"
+                                        />
+                                    </div>
+                                    {enablePaystack && (
+                                        <div className="grid md:grid-cols-2 gap-4 animate-in slide-in-from-top-2">
+                                            <div className="space-y-2">
+                                                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Public Key</Label>
+                                                <Input 
+                                                    value={paystackPubKey} 
+                                                    onChange={e => setPaystackPubKey(e.target.value)} 
+                                                    placeholder="pk_live_..." 
+                                                    className="bg-white border-2 rounded-xl h-11 font-mono text-xs" 
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Secret Key</Label>
+                                                <Input 
+                                                    type="password" 
+                                                    value={paystackSecKey} 
+                                                    onChange={e => setPaystackSecKey(e.target.value)} 
+                                                    placeholder="sk_live_..." 
+                                                    className="bg-white border-2 rounded-xl h-11 font-mono text-xs" 
+                                                />
+                                            </div>
+                                            <div className="col-span-2 bg-white p-4 rounded-xl text-[10px] text-slate-600 border-2 border-dashed border-green-200">
+                                                <strong className="text-green-700 block mb-1">WEBHOOK SYNCHRONIZATION:</strong>
+                                                Copy the URL below and paste it into your Paystack Dashboard (Settings > API & Webhooks) as your <strong>Live Webhook URL</strong>. This allows GAM Edu to automatically update student ledgers when parents pay.
+                                                <br/>
+                                                <code className="mt-2 block p-2 bg-slate-50 rounded border text-blue-600 font-bold select-all break-all text-xs">
+                                                    https://gam-it-service.app/api/webhooks/school-fees
+                                                </code>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Transflow Integration Placeholder */}
+                                <div className="p-5 border-2 rounded-2xl bg-blue-50/30 border-blue-100">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <Label className="text-base font-black text-blue-900 uppercase tracking-tighter">Bank Transflow API</Label>
+                                        <Checkbox 
+                                            checked={enableTransflow} 
+                                            onCheckedChange={(c) => setEnableTransflow(!!c)} 
+                                            className="h-7 w-7 rounded-lg border-2 data-[state=checked]:bg-blue-600"
+                                        />
+                                    </div>
+                                    {enableTransflow && (
+                                        <div className="space-y-3 pt-2">
+                                            <p className="text-xs text-blue-700 font-medium leading-relaxed">
+                                                Bank-to-School direct integration is active. Provide this unique endpoint to your partner bank (Ecobank, GCB, etc.) for direct ledger posting:
+                                            </p>
+                                            <code className="block p-3 bg-white rounded-xl border-2 border-blue-100 text-blue-600 font-bold select-all text-xs">
+                                                https://gam-it-service.app/api/transflow/{schoolId}
+                                            </code>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
 
                     <Separator />
