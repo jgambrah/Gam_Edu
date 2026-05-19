@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, where, getDocs, doc } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { sendSMSAction } from '@/app/actions/sms';
+import { sendSchoolSMSAction } from '@/app/actions/sms'; // Pointing to the new institutional action
 import { sendSchoolWhatsApp } from '@/app/actions/whatsapp';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -43,7 +43,7 @@ export default function BulkSMSPage() {
   // Manual Selection Search State
   const [manualSearch, setManualSearch] = useState('');
 
-  // School Settings for WhatsApp
+  // School Settings for Hub Verification
   const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
   const { data: schoolSettings } = useDoc<any>(schoolSettingsRef as any);
 
@@ -113,8 +113,8 @@ export default function BulkSMSPage() {
                 const res = await sendSchoolWhatsApp(schoolId, (parent as any).phone, message);
                 if (res.success) count++; else failCount++;
             } else {
-                await sendSMSAction((parent as any).phone, message);
-                count++;
+                const res = await sendSchoolSMSAction(schoolId, (parent as any).phone, message);
+                if (res.success) count++; else failCount++;
             }
         }
     }
@@ -187,13 +187,22 @@ export default function BulkSMSPage() {
                             </div>
                         </div>
 
-                        {/* WARNING IF WHATSAPP NOT CONFIGURED */}
+                        {/* WARNING IF CHANNEL NOT CONFIGURED */}
                         {channel === 'whatsapp' && !schoolSettings?.enableWhatsApp && (
                             <div className="bg-red-50 text-red-700 p-4 rounded-lg border border-red-200 text-sm flex items-start gap-3 animate-in slide-in-from-top-2">
                                 <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
                                 <div>
                                     <strong>WhatsApp API Not Configured.</strong>
-                                    <p className="mt-1">Your school has not linked an UltraMsg API account. Please contact the Platform Administrator to purchase an API key and configure it in your School Profile settings.</p>
+                                    <p className="mt-1">Please connect your UltraMsg account in the School Profile settings to enable WhatsApp broadcasts.</p>
+                                </div>
+                            </div>
+                        )}
+                        {channel === 'sms' && !schoolSettings?.enableSms && (
+                            <div className="bg-red-50 text-red-700 p-4 rounded-lg border border-red-200 text-sm flex items-start gap-3 animate-in slide-in-from-top-2">
+                                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                                <div>
+                                    <strong>SMS API Not Configured.</strong>
+                                    <p className="mt-1">Please enter your Arkesel or Hubtel API keys in the School Profile settings to enable SMS broadcasts.</p>
                                 </div>
                             </div>
                         )}
@@ -209,7 +218,7 @@ export default function BulkSMSPage() {
                             <div className="space-y-2">
                                 <label className="text-sm font-medium flex items-center gap-2"><Filter className="h-4 w-4"/> Target Audience</label>
                                 <Select value={targetGroup} onValueChange={setTargetGroup}>
-                                    <SelectTrigger><SelectValue/></SelectTrigger>
+                                    <SelectTrigger className="bg-white border-2"><SelectValue/></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">All Parents ({parents?.length || 0})</SelectItem>
                                         <SelectItem value="debtors">Parents Owing Fees</SelectItem>
@@ -280,7 +289,7 @@ export default function BulkSMSPage() {
                     
                     <Button 
                         onClick={handleSend} 
-                        disabled={sending || !message || finalRecipients.length === 0 || (channel === 'whatsapp' && !schoolSettings?.enableWhatsApp)} 
+                        disabled={sending || !message || finalRecipients.length === 0 || (channel === 'whatsapp' && !schoolSettings?.enableWhatsApp) || (channel === 'sms' && !schoolSettings?.enableSms)} 
                         className={cn("w-full transition-all active:scale-95", channel === 'whatsapp' ? "bg-green-600 hover:bg-green-700 shadow-green-900/10" : "bg-blue-600 hover:bg-blue-700 shadow-blue-900/10")}
                     >
                         {sending ? <Loader2 className="animate-spin mr-2"/> : <Send className="mr-2 h-4 w-4"/>}

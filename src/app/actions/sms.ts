@@ -1,66 +1,110 @@
 'use server';
 
+import { getFirestore } from 'firebase-admin/firestore';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+
 /**
- * Server action to send SMS messages via a third-party provider.
- * Implements defensive checks for empty or malformed JSON responses.
+ * Initializes and returns the Firebase Admin App instance.
+ * Uses a named 'admin' instance to avoid conflicts.
  */
+function getAdminApp() {
+  const existingApp = getApps().find(app => app.name === 'admin');
+  if (existingApp) return existingApp;
 
-// You will need to sign up with Arkesel/Hubtel to get this key
-const SMS_API_KEY = process.env.SMS_API_KEY; 
-const SENDER_ID = "GAM Edu"; // Limit to 11 chars
+  const serviceAccount = {
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  };
 
-export async function sendSMSAction(phone: string, message: string) {
-  if (!SMS_API_KEY) {
-    console.error("SMS API Key missing");
-    return { success: false, error: "SMS System not configured" };
-  }
+  return initializeApp({ credential: cert(serviceAccount) }, 'admin');
+}
 
-  // Sanitize Phone (Ghana format: 0244... -> 233244...)
-  let cleanPhone = phone.replace(/\s+/g, '');
-  if (cleanPhone.startsWith('0')) {
-      cleanPhone = '233' + cleanPhone.substring(1);
+/**
+ * Sends an SMS message using a school's individual API credentials (BYOK).
+ * Supports Arkesel and Hubtel.
+ * 
+ * @param schoolId - The unique ID of the school.
+ * @param phone - The recipient's phone number.
+ * @param message - The SMS text content.
+ */
+export async function sendSchoolSMSAction(schoolId: string, phone: string, message: string) {
+  if (!schoolId || !phone) {
+    return { success: false, error: "Missing school or recipient information." };
   }
 
   try {
-    const url = `https://sms.arkesel.com/api/v2/sms/send`;
+    const db = getFirestore(getAdminApp());
     
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'api-key': SMS_API_KEY,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            sender: SENDER_ID,
-            message: message,
-            recipients: [cleanPhone]
-        })
-    });
-
-    // Read response as text first to handle empty bodies safely
-    const responseText = await response.text();
+    // 1. Fetch School Credentials from the secure settings path
+    const schoolDoc = await db.collection('schoolSettings').doc(schoolId).get();
+    const settings = schoolDoc.data();
     
-    if (!responseText) {
-        return { success: false, error: "SMS provider returned an empty response." };
+    if (!settings?.enableSms || !settings?.smsApiKey || !settings?.smsSenderId) {
+        return { success: false, error: "SMS API is not enabled or configured for this school." };
     }
 
-    let data;
-    try {
-        data = JSON.parse(responseText);
-    } catch (parseError) {
-        console.error("SMS JSON Parse Error:", responseText);
-        return { success: false, error: "Invalid response format from SMS provider." };
+    // 2. Format Phone Number for International Delivery (Ghana default: 233...)
+    let cleanPhone = phone.replace(/\s+/g, '');
+    if (cleanPhone.startsWith('0')) {
+        cleanPhone = '233' + cleanPhone.substring(1);
+    } else if (cleanPhone.startsWith('+')) {
+        cleanPhone = cleanPhone.substring(1);
     }
 
-    if (data.status === 'success' || data.code === '1000' || data.code === 1000) {
-        return { success: true };
-    } else {
-        console.error("SMS Provider Error:", data);
-        return { success: false, error: data.message || "Provider failed to send" };
+    // 3. Route to the correct provider based on school configuration
+    if (settings.smsProvider === 'arkesel') {
+        const url = 'https://sms.arkesel.com/api/v2/sms/send';
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'api-key': settings.smsApiKey,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: settings.smsSenderId,
+                message: message,
+                recipients: [cleanPhone]
+            })
+        });
+
+        // Safe JSON parsing handling for empty responses
+        const responseText = await response.text();
+        if (!responseText) return { success: false, error: "Empty response from Arkesel" };
+        
+        const data = JSON.parse(responseText);
+        if (data.status === 'success' || data.code === '1000' || data.code === 1000) {
+            return { success: true };
+        }
+        return { success: false, error: data.message || "Arkesel delivery failed." };
+    } 
+    
+    else if (settings.smsProvider === 'hubtel') {
+        // Hubtel Basic Send API (using Client Credentials)
+        // Hubtel often uses clientId and clientSecret, if they only provide one "API Key", we use it for both for simple integrations.
+        const url = `https://smsc.hubtel.com/v1/messages/send?clientid=${settings.smsApiKey}&clientsecret=${settings.smsApiKey}&from=${encodeURIComponent(settings.smsSenderId)}&to=${cleanPhone}&content=${encodeURIComponent(message)}`;
+        
+        const response = await fetch(url, { method: 'GET' });
+        
+        if (response.ok) {
+            return { success: true };
+        }
+        return { success: false, error: "Hubtel delivery failed. Check API key permissions." };
     }
 
-  } catch (error) {
-    console.error("SMS Network Error:", error);
-    return { success: false, error: "Network error while connecting to SMS service." };
+    return { success: false, error: "Configured SMS provider is not recognized." };
+
+  } catch (error: any) {
+    console.error("[SMS Server Action] Critical Error:", error);
+    return { success: false, error: error.message || "An unexpected server error occurred during SMS routing." };
   }
+}
+
+/**
+ * @deprecated Use sendSchoolSMSAction instead to ensure correct school billing attribution.
+ */
+export async function sendSMSAction(phone: string, message: string) {
+    console.warn("sendSMSAction is deprecated. Use sendSchoolSMSAction with schoolId.");
+    return { success: false, error: "System migration in progress. Use institutional SMS hub." };
 }

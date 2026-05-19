@@ -18,13 +18,21 @@ import {
   Upload, CheckCircle2, AlertCircle, GraduationCap,
   CalendarDays, CalendarIcon, ArrowRightCircle, PenTool, X,
   Facebook, Instagram, Linkedin, Shield, Palette, Lock, Eraser,
-  MessageSquare
+  MessageSquare,
+  MessageCircle
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function SchoolProfilePage() {
   const firestore = useFirestore();
@@ -63,6 +71,12 @@ export default function SchoolProfilePage() {
   const [waInstanceId, setWaInstanceId] = useState('');
   const [waToken, setWaToken] = useState('');
   const [enableWhatsApp, setEnableWhatsApp] = useState(false);
+
+  // SMS Automation States
+  const [enableSms, setEnableSms] = useState(false);
+  const [smsProvider, setSmsProvider] = useState<'arkesel' | 'hubtel'>('arkesel');
+  const [smsApiKey, setSmsApiKey] = useState('');
+  const [smsSenderId, setSmsSenderId] = useState('');
   
   // Social Links
   const [facebookUrl, setFacebookUrl] = useState('');
@@ -102,6 +116,11 @@ export default function SchoolProfilePage() {
         setWaInstanceId(profile.waInstanceId || '');
         setWaToken(profile.waToken || '');
         setEnableWhatsApp(profile.enableWhatsApp === true);
+
+        setEnableSms(profile.enableSms === true);
+        setSmsProvider(profile.smsProvider || 'arkesel');
+        setSmsApiKey(profile.smsApiKey || '');
+        setSmsSenderId(profile.smsSenderId || '');
         
         if (profile.termStartDate) {
             setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
@@ -198,6 +217,10 @@ export default function SchoolProfilePage() {
             waInstanceId,
             waToken,
             enableWhatsApp,
+            enableSms,
+            smsProvider,
+            smsApiKey,
+            smsSenderId,
             updatedAt: serverTimestamp()
         };
 
@@ -324,7 +347,7 @@ export default function SchoolProfilePage() {
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <Label className="text-base font-black text-emerald-800 flex items-center gap-2 uppercase tracking-tight">
-                                        <MessageSquare className="h-5 w-5 text-emerald-600"/> WhatsApp Automation (API)
+                                        <MessageCircle className="h-5 w-5 text-emerald-600"/> WhatsApp Automation (API)
                                     </Label>
                                     <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Connect your school to the WhatsApp network</p>
                                 </div>
@@ -357,7 +380,6 @@ export default function SchoolProfilePage() {
                                         />
                                     </div>
                                     
-                                    {/* --- CLICKABLE SETUP GUIDE --- */}
                                     <div className="col-span-2 md:col-span-2 bg-green-50 p-4 rounded-xl border border-green-200 mt-2">
                                         <h4 className="text-sm font-bold text-green-900 mb-2">How to connect your school's WhatsApp:</h4>
                                         <ol className="list-decimal pl-5 text-xs text-green-800 space-y-1 mb-3">
@@ -370,6 +392,70 @@ export default function SchoolProfilePage() {
                                         <p className="text-[11px] text-green-700 italic">
                                             * No need to type your phone number here! Once you scan the QR code on UltraMsg, messages will automatically send from your school's phone.
                                         </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* --- SMS AUTOMATION SECTION (BYOK) --- */}
+                        <div className="space-y-4 p-5 border-2 rounded-[2rem] bg-blue-50/30 border-blue-100 mt-4 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-0.5">
+                                    <Label className="text-base font-black text-blue-800 flex items-center gap-2 uppercase tracking-tight">
+                                        <MessageSquare className="h-5 w-5 text-blue-600"/> SMS Automation (API)
+                                    </Label>
+                                    <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Bring your own key (Arkesel / Hubtel)</p>
+                                </div>
+                                <Checkbox 
+                                    checked={enableSms} 
+                                    onCheckedChange={(c) => setEnableSms(!!c)} 
+                                    className="h-7 w-7 rounded-lg border-2 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                                />
+                            </div>
+                            
+                            {enableSms && (
+                                <div className="space-y-4 animate-in slide-in-from-top-2 mt-4">
+                                    <div className="grid md:grid-cols-3 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Provider</Label>
+                                            <Select value={smsProvider} onValueChange={(v: any) => setSmsProvider(v)}>
+                                                <SelectTrigger className="border-2 bg-white rounded-xl h-11 font-bold"><SelectValue/></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="arkesel">Arkesel</SelectItem>
+                                                    <SelectItem value="hubtel">Hubtel</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">API Key</Label>
+                                            <Input 
+                                              type="password" 
+                                              value={smsApiKey} 
+                                              onChange={e => setSmsApiKey(e.target.value)} 
+                                              placeholder="Paste your provider's API key here" 
+                                              className="border-2 bg-white rounded-xl h-11 font-mono text-xs" 
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Sender ID (Max 11 characters)</Label>
+                                        <Input 
+                                          value={smsSenderId} 
+                                          onChange={e => setSmsSenderId(e.target.value)} 
+                                          placeholder="e.g. SUNNYSIDE" 
+                                          maxLength={11} 
+                                          className="border-2 bg-white rounded-xl h-11 max-w-[200px] font-black uppercase" 
+                                        />
+                                    </div>
+
+                                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 text-xs text-blue-800 space-y-1">
+                                        <strong>How to setup:</strong>
+                                        <ol className="list-decimal pl-4 mt-1 space-y-1">
+                                            <li>Create an account at <a href="https://arkesel.com" target="_blank" rel="noopener noreferrer" className="font-bold underline text-indigo-600">Arkesel.com</a> or <a href="https://hubtel.com" target="_blank" rel="noopener noreferrer" className="font-bold underline text-indigo-600">Hubtel.com</a>.</li>
+                                            <li>Purchase an SMS bundle on their platform.</li>
+                                            <li>Copy your API Key and paste it here. Ensure your Sender ID is approved by the provider!</li>
+                                        </ol>
                                     </div>
                                 </div>
                             )}
