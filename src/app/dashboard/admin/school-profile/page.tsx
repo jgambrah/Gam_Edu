@@ -356,11 +356,19 @@ export default function SchoolProfilePage() {
                                             className="border-2 bg-white rounded-xl h-11 font-mono text-xs" 
                                         />
                                     </div>
-                                    <div className="col-span-2 bg-green-100/50 p-3 rounded-lg border border-green-200 mt-2">
-                                        <p className="text-xs text-green-800 font-medium">
-                                            <strong>How it works:</strong> Create an account at UltraMsg.com to get your Instance ID and Token. 
-                                            You will link your school's official WhatsApp number by scanning a QR code on the UltraMsg dashboard. 
-                                            No need to type your phone number here!
+                                    
+                                    {/* --- CLICKABLE SETUP GUIDE --- */}
+                                    <div className="col-span-2 md:col-span-2 bg-green-50 p-4 rounded-xl border border-green-200 mt-2">
+                                        <h4 className="text-sm font-bold text-green-900 mb-2">How to connect your school's WhatsApp:</h4>
+                                        <ol className="list-decimal pl-5 text-xs text-green-800 space-y-1 mb-3">
+                                            <li>
+                                                Go to <a href="https://ultramsg.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-bold hover:underline inline-flex items-center">UltraMsg.com <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a> and create a free account.
+                                            </li>
+                                            <li>Copy your new <strong>Instance ID</strong> and <strong>Token</strong> and paste them in the boxes above.</li>
+                                            <li>On the UltraMsg dashboard, scan the QR Code using your school's official WhatsApp phone to link the number.</li>
+                                        </ol>
+                                        <p className="text-[11px] text-green-700 italic">
+                                            * No need to type your phone number here! Once you scan the QR code on UltraMsg, messages will automatically send from your school's phone.
                                         </p>
                                     </div>
                                 </div>
