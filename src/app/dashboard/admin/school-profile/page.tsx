@@ -356,9 +356,13 @@ export default function SchoolProfilePage() {
                                             className="border-2 bg-white rounded-xl h-11 font-mono text-xs" 
                                         />
                                     </div>
-                                    <p className="text-[10px] font-medium text-emerald-700 italic col-span-2 bg-white/50 p-3 rounded-xl border border-emerald-50">
-                                        Note: We currently support <strong>UltraMsg</strong>. Enter your credentials to enable automated arrival and departure alerts to parents.
-                                    </p>
+                                    <div className="col-span-2 bg-green-100/50 p-3 rounded-lg border border-green-200 mt-2">
+                                        <p className="text-xs text-green-800 font-medium">
+                                            <strong>How it works:</strong> Create an account at UltraMsg.com to get your Instance ID and Token. 
+                                            You will link your school's official WhatsApp number by scanning a QR code on the UltraMsg dashboard. 
+                                            No need to type your phone number here!
+                                        </p>
+                                    </div>
                                 </div>
                             )}
                         </div>
