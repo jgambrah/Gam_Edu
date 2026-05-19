@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
+import { adminResetUserPassword } from '@/app/actions/admin-reset-password';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
 import { cn } from '@/lib/utils';
 
@@ -28,7 +29,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake, Filter, UserCheck } from 'lucide-react';
+import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake, Filter, UserCheck, KeyRound } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
@@ -69,6 +70,11 @@ export default function ParentsPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingParent, setEditingParent] = useState<ParentMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Password Reset State
+  const [resetPasswordUser, setResetPasswordUser] = useState<any>(null);
+  const [newTempPassword, setNewTempPassword] = useState('password123');
+  const [isResetting, setIsResetting] = useState(false);
 
   // ✅ Controlled selection state
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
@@ -271,8 +277,8 @@ export default function ParentsPage() {
         
         <CardContent className="space-y-4">
             <StudentSearchInput 
-              value={searchTerm}
-              onChange={setSearchTerm}
+              value={searchTerm} 
+              onChange={setSearchTerm} 
               className="max-w-sm"
               placeholder="Search parents by name or email..."
             />
@@ -284,7 +290,7 @@ export default function ParentsPage() {
                     {adminSchoolId ? "No parents found for this school." : "Loading..."}
                 </div>
             ) : (
-                <div className="rounded-md border">
+                <div className="rounded-md border overflow-hidden">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -296,21 +302,28 @@ export default function ParentsPage() {
                         </TableHeader>
                         <TableBody>
                             {filteredParents.map((p) => (
-                                <TableRow key={p.id}>
+                                <TableRow key={p.id} className="hover:bg-slate-50/50 transition-colors">
                                     <TableCell className="font-medium">{p.firstName} {p.lastName}</TableCell>
-                                    <TableCell>{p.email}</TableCell>
+                                    <TableCell className="text-slate-500">{p.email}</TableCell>
                                     <TableCell>
                                         <Badge variant="secondary" className="font-bold">
                                             {p.studentIds?.length || 0} Students
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => setEditingParent(p)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                        <div className="flex justify-end gap-1">
+                                            <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(p)} title="Reset Password">
+                                                <KeyRound className="h-4 w-4 text-orange-500"/>
+                                            </Button>
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                                                <Edit className="h-4 w-4"/>
+                                            </Button>
                                             
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="text-red-500"><Trash2 className="h-4 w-4"/></Button>
+                                                    <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                                                        <Trash2 className="h-4 w-4"/>
+                                                    </Button>
                                                 </AlertDialogTrigger>
                                                 <AlertDialogContent>
                                                     <AlertDialogHeader>
@@ -411,7 +424,8 @@ export default function ParentsPage() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingParent} onOpenChange={(open) => !open && setEditingParent(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Edit Parent Details</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Edit Parent Details</DialogTitle></DialogHeader>
             {editingParent && (
                 <form onSubmit={handleUpdateParent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -483,6 +497,52 @@ export default function ParentsPage() {
                 </form>
             )}
         </DialogContent>
+      </Dialog>
+
+      {/* PASSWORD RESET DIALOG */}
+      <Dialog open={!!resetPasswordUser} onOpenChange={(open) => !open && setResetPasswordUser(null)}>
+          <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                  <DialogTitle>Reset Password</DialogTitle>
+                  <DialogDescription>
+                      Set a temporary password for <strong>{resetPasswordUser?.firstName} {resetPasswordUser?.lastName}</strong>. 
+                      They will be forced to change it upon their next login.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                      <Label>Temporary Password</Label>
+                      <Input 
+                          type="text" 
+                          value={newTempPassword} 
+                          onChange={e => setNewTempPassword(e.target.value)} 
+                          minLength={6}
+                      />
+                  </div>
+                  <Button 
+                      onClick={async () => {
+                          if (!resetPasswordUser || newTempPassword.length < 6) return;
+                          setIsResetting(true);
+                          
+                          const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'parents');
+                          
+                          if (res.success) {
+                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
+                              setResetPasswordUser(null);
+                              setNewTempPassword('password123'); // Reset for next use
+                          } else {
+                              toast({ variant: 'destructive', title: "Error", description: res.error });
+                          }
+                          setIsResetting(false);
+                      }} 
+                      disabled={isResetting || newTempPassword.length < 6} 
+                      className="w-full bg-orange-600 hover:bg-orange-700"
+                  >
+                      {isResetting ? <Loader2 className="animate-spin mr-2"/> : <KeyRound className="mr-2 h-4 w-4"/>}
+                      Force Password Reset
+                  </Button>
+              </div>
+          </DialogContent>
       </Dialog>
     </div>
   );

@@ -479,6 +479,7 @@ export default function StaffManagementPage() {
                           if (res.success) {
                               toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
                               setResetPasswordUser(null);
+                              setNewTempPassword('password123'); // Reset for next use
                           } else {
                               toast({ variant: 'destructive', title: "Error", description: res.error });
                           }
