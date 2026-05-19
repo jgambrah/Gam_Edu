@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2 } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -48,6 +48,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { billStudentForAttendance } from '@/lib/billing';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
 import { StudentSearchInput } from '@/components/student-search';
+import { sendSchoolSMSAction } from '@/app/actions/sms';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -1101,6 +1102,28 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
                                                               <GenerateReceipt transaction={rec} payment={{ id: 'consolidated-' + rec.id, amount: rec.amountPaid, method: 'Total Recorded', paidAt: rec.lastPaymentDate || rec.createdAt, notes: 'Consolidated Receipt for ' + rec.description } as any} variant="full" />
                                                           </DialogContent>
                                                       </Dialog>
+                                                      <DropdownMenuItem 
+                                                          disabled={balance <= 0.01}
+                                                          onClick={async () => {
+                                                              const parentQ = query(collection(firestore!, 'parents'), where('schoolId', '==', schoolId), where('studentIds', 'array-contains', rec.studentId));
+                                                              const pSnap = await getDocs(parentQ);
+                                                              if (pSnap.empty || !pSnap.docs[0].data().phone) {
+                                                                  return toast({ variant: 'destructive', title: "No Parent Phone Found" });
+                                                              }
+                                                              
+                                                              const phone = pSnap.docs[0].data().phone;
+                                                              const link = `https://gam-it-service.app/pay/${rec.id}`;
+                                                              const msg = `Dear Parent, you have an outstanding bill of GHS ${balance.toFixed(2)} for ${rec.studentName} (${rec.description}). Please pay securely here: ${link} - GAM Edu`;
+                                                              
+                                                              toast({ title: "Sending SMS...", description: "Please wait." });
+                                                              const result = await sendSchoolSMSAction(schoolId!, phone, msg);
+                                                              
+                                                              if (result.success) toast({ title: "Payment Link Sent!" });
+                                                              else toast({ variant: 'destructive', title: "Failed to send SMS", description: result.error });
+                                                          }}
+                                                      >
+                                                          <Globe className="mr-2 h-4 w-4 text-blue-600"/> Send Payment Link via SMS
+                                                      </DropdownMenuItem>
                                                   </DropdownMenuContent>
                                               </DropdownMenu>
                                           </div>
