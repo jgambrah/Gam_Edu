@@ -518,7 +518,7 @@ export default function SchoolProfilePage() {
                                             </div>
                                             <div className="col-span-2 bg-white p-4 rounded-xl text-[10px] text-slate-600 border-2 border-dashed border-green-200">
                                                 <strong className="text-green-700 block mb-1">WEBHOOK SYNCHRONIZATION:</strong>
-                                                Copy the URL below and paste it into your Paystack Dashboard (Settings > API & Webhooks) as your <strong>Live Webhook URL</strong>. This allows GAM Edu to automatically update student ledgers when parents pay.
+                                                Copy the URL below and paste it into your Paystack Dashboard (Settings {' > '} API & Webhooks) as your <strong>Live Webhook URL</strong>. This allows GAM Edu to automatically update student ledgers when parents pay.
                                                 <br/>
                                                 <code className="mt-2 block p-2 bg-slate-50 rounded border text-blue-600 font-bold select-all break-all text-xs">
                                                     https://gam-it-service.app/api/webhooks/school-fees
