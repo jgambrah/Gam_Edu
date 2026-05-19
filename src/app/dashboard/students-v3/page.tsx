@@ -18,6 +18,7 @@ import {
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { createNewUser } from '@/app/actions/create-user';
+import { adminResetUserPassword } from '@/app/actions/admin-reset-password';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
 import { cn } from '@/lib/utils';
 import { useRole } from '@/context/role-context';
@@ -32,7 +33,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -61,6 +62,11 @@ export default function StudentsV3Page() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
+  // Password Reset State
+  const [resetPasswordUser, setResetPasswordUser] = useState<any>(null);
+  const [newTempPassword, setNewTempPassword] = useState('password123');
+  const [isResetting, setIsResetting] = useState(false);
 
   // Custom Confirmation Dialog State
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -436,6 +442,9 @@ export default function StudentsV3Page() {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-1">
+                                                <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(s)} title="Reset Password">
+                                                    <KeyRound className="h-4 w-4 text-orange-500"/>
+                                                </Button>
                                                 <Button variant="outline" size="sm" onClick={() => toast({ title: "Opening direct SMS...", description: "Feature being integrated." })} title="Send Bill Reminder">
                                                     <MessageSquare className="h-4 w-4" />
                                                 </Button>
@@ -658,6 +667,51 @@ export default function StudentsV3Page() {
                 </form>
             )}
         </DialogContent>
+      </Dialog>
+
+      {/* PASSWORD RESET DIALOG */}
+      <Dialog open={!!resetPasswordUser} onOpenChange={(open) => !open && setResetPasswordUser(null)}>
+          <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                  <DialogTitle>Reset Password</DialogTitle>
+                  <DialogDescription>
+                      Set a temporary password for <strong>{resetPasswordUser?.firstName} {resetPasswordUser?.lastName}</strong>. 
+                      They will be forced to change it upon their next login.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                      <Label>Temporary Password</Label>
+                      <Input 
+                          type="text" 
+                          value={newTempPassword} 
+                          onChange={e => setNewTempPassword(e.target.value)} 
+                          minLength={6}
+                      />
+                  </div>
+                  <Button 
+                      onClick={async () => {
+                          if (!resetPasswordUser || newTempPassword.length < 6) return;
+                          setIsResetting(true);
+                          
+                          const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'students');
+                          
+                          if (res.success) {
+                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
+                              setResetPasswordUser(null);
+                          } else {
+                              toast({ variant: 'destructive', title: "Error", description: res.error });
+                          }
+                          setIsResetting(false);
+                      }} 
+                      disabled={isResetting || newTempPassword.length < 6} 
+                      className="w-full bg-orange-600 hover:bg-orange-700"
+                  >
+                      {isResetting ? <Loader2 className="animate-spin mr-2"/> : <KeyRound className="mr-2 h-4 w-4"/>}
+                      Force Password Reset
+                  </Button>
+              </div>
+          </DialogContent>
       </Dialog>
 
       {/* --- TITAN-GRADE CONFIRMATION MODAL --- */}

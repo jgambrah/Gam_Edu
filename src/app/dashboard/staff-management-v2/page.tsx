@@ -5,6 +5,7 @@ import { useFirestore } from '@/firebase';
 import { collection, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, query, where } from 'firebase/firestore';
 import { UserRole, STAFF_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
+import { adminResetUserPassword } from '@/app/actions/admin-reset-password';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 
@@ -15,12 +16,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import {
   UserCog, UserPlus, Trash2, Loader2, Search,
-  RefreshCw, Edit, Globe, GraduationCap, Heart, FileText, Save
+  RefreshCw, Edit, Globe, GraduationCap, Heart, FileText, Save, KeyRound
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
@@ -55,6 +56,11 @@ export default function StaffManagementPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Password Reset State
+  const [resetPasswordUser, setResetPasswordUser] = useState<any>(null);
+  const [newTempPassword, setNewTempPassword] = useState('password123');
+  const [isResetting, setIsResetting] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [newStaffRole, setNewStaffRole] = useState<UserRole>('Teacher');
@@ -301,11 +307,14 @@ export default function StaffManagementPage() {
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => setEditingStaff(member)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(member)} title="Reset Password">
+                              <KeyRound className="h-4 w-4 text-orange-500"/>
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => setEditingStaff(member)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleDelete(member.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                          <Button variant="ghost" size="sm" onClick={() => handleDelete(member.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -438,6 +447,51 @@ export default function StaffManagementPage() {
             </form>
           )}
         </DialogContent>
+      </Dialog>
+
+      {/* PASSWORD RESET DIALOG */}
+      <Dialog open={!!resetPasswordUser} onOpenChange={(open) => !open && setResetPasswordUser(null)}>
+          <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                  <DialogTitle>Reset Password</DialogTitle>
+                  <DialogDescription>
+                      Set a temporary password for <strong>{resetPasswordUser?.firstName} {resetPasswordUser?.lastName}</strong>. 
+                      They will be forced to change it upon their next login.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                      <Label>Temporary Password</Label>
+                      <Input 
+                          type="text" 
+                          value={newTempPassword} 
+                          onChange={e => setNewTempPassword(e.target.value)} 
+                          minLength={6}
+                      />
+                  </div>
+                  <Button 
+                      onClick={async () => {
+                          if (!resetPasswordUser || newTempPassword.length < 6) return;
+                          setIsResetting(true);
+                          
+                          const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'staff');
+                          
+                          if (res.success) {
+                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
+                              setResetPasswordUser(null);
+                          } else {
+                              toast({ variant: 'destructive', title: "Error", description: res.error });
+                          }
+                          setIsResetting(false);
+                      }} 
+                      disabled={isResetting || newTempPassword.length < 6} 
+                      className="w-full bg-orange-600 hover:bg-orange-700"
+                  >
+                      {isResetting ? <Loader2 className="animate-spin mr-2"/> : <KeyRound className="mr-2 h-4 w-4"/>}
+                      Force Password Reset
+                  </Button>
+              </div>
+          </DialogContent>
       </Dialog>
     </div>
   );
