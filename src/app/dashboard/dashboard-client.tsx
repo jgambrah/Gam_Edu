@@ -617,7 +617,10 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
         }, 0);
     }, [financials]);
 
-    const isLockedOut = schoolSettings?.autoLockDebtors === true && totalOutstanding > (schoolSettings?.debtorLockThreshold || 0);
+    const numberOfChildren = profile?.studentIds?.length || 1;
+    const baseThreshold = Number(schoolSettings?.debtorLockThreshold) || 0;
+    const maxAllowedDebt = baseThreshold * numberOfChildren;
+    const isLockedOut = schoolSettings?.autoLockDebtors === true && totalOutstanding > maxAllowedDebt;
 
     if (isLockedOut) {
         return (
@@ -627,7 +630,7 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
                 </div>
                 <h1 className="text-3xl font-black text-slate-800 mb-2">Account Restricted</h1>
                 <p className="text-lg text-slate-600 max-w-md mb-8 font-medium leading-relaxed">
-                    Access to academic records has been restricted due to an outstanding balance exceeding the institution's threshold.
+                    Academic features have been temporarily restricted because your family's outstanding balance exceeds the allowed limit for your {numberOfChildren} enrolled {numberOfChildren === 1 ? 'child' : 'children'}.
                 </p>
                 <Card className="w-full max-w-sm border-none shadow-2xl rounded-[3rem] overflow-hidden">
                     <CardHeader className="bg-rose-600 text-white p-6 pb-4">

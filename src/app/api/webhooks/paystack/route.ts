@@ -21,6 +21,11 @@ export async function POST(req: NextRequest) {
   try {
     // Read the raw body for signature verification
     const text = await req.text();
+    
+    if (!text) {
+      return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
+    }
+
     const secret = process.env.PAYSTACK_SECRET_KEY;
 
     if (!secret) {
@@ -37,8 +42,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
-    // Parse the JSON body
-    const body = JSON.parse(text);
+    // Parse the JSON body safely
+    let body;
+    try {
+        body = JSON.parse(text);
+    } catch (e) {
+        return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+
     const event = body.event;
     const data = body.data;
 

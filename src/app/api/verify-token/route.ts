@@ -1,11 +1,26 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
-// This is your new API endpoint for token verification.
+/**
+ * Internal API endpoint for cross-platform token verification.
+ * Safely handles empty or invalid request bodies.
+ */
 export async function POST(req: NextRequest) {
   try {
-    const { token } = await req.json();
+    const text = await req.text();
+    
+    if (!text) {
+        return NextResponse.json({ error: 'Body is missing' }, { status: 400 });
+    }
+
+    let body;
+    try {
+        body = JSON.parse(text);
+    } catch (e) {
+        return NextResponse.json({ error: 'Invalid JSON format' }, { status: 400 });
+    }
+
+    const { token } = body;
     const secretKey = process.env.JWT_SECRET_KEY;
 
     if (!token) {
@@ -21,8 +36,6 @@ export async function POST(req: NextRequest) {
     // This will throw an error if the token is invalid or expired.
     jwt.verify(token, secretKey);
 
-    // If verification is successful, return a success response.
-    // In a real application, you might also check if the token has been used before (nonce check).
     return NextResponse.json({ valid: true });
 
   } catch (error: any) {

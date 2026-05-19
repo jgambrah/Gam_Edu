@@ -3,7 +3,20 @@ import { checkAndSpendCredits } from '@/app/actions/credits';
 
 export async function POST(req: NextRequest) {
   try {
-    const { schoolId, credits, feature } = await req.json();
+    const text = await req.text();
+    
+    if (!text) {
+        return NextResponse.json({ error: 'Request body is empty' }, { status: 400 });
+    }
+
+    let body;
+    try {
+        body = JSON.parse(text);
+    } catch (e) {
+        return NextResponse.json({ error: 'Malformed JSON input' }, { status: 400 });
+    }
+
+    const { schoolId, credits, feature } = body;
 
     if (!schoolId || !credits) {
       return NextResponse.json(

@@ -423,7 +423,7 @@ export default function SchoolProfilePage() {
 
                                 {(autoLockDebtors || autoLockStudents) && (
                                     <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                                        <Label className="text-red-800 font-bold uppercase text-[10px] tracking-widest">Lock threshold amount (GH₵)</Label>
+                                        <Label className="text-red-800 font-bold uppercase text-[10px] tracking-widest">Lock threshold amount PER CHILD (GH₵)</Label>
                                         <Input 
                                             type="number" 
                                             value={debtorLockThreshold} 
@@ -431,7 +431,7 @@ export default function SchoolProfilePage() {
                                             className="max-w-[200px] h-12 border-2 border-red-200 font-black text-red-600 text-lg rounded-xl focus:ring-red-500"
                                             placeholder="0.00"
                                         />
-                                        <p className="text-[10px] font-bold text-red-500 uppercase italic">Users owing more than this amount will be locked out of academic features.</p>
+                                        <p className="text-[10px] font-bold text-red-500 uppercase italic">Example: If set to 500, a parent with 3 children is locked out only if their total debt exceeds 1,500 GH₵.</p>
                                     </div>
                                 )}
                             </div>
