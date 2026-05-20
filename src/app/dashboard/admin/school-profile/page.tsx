@@ -22,7 +22,8 @@ import {
   MessageCircle,
   CreditCard,
   DollarSign,
-  MapPin
+  MapPin,
+  Clock
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -74,6 +75,10 @@ export default function SchoolProfilePage() {
   const [schoolLat, setSchoolLat] = useState<number | ''>('');
   const [schoolLng, setSchoolLng] = useState<number | ''>('');
   const [allowedRadius, setAllowedRadius] = useState<number>(200);
+
+  // Time Tracking States
+  const [schoolStartTime, setSchoolStartTime] = useState('07:30');
+  const [schoolCloseTime, setSchoolCloseTime] = useState('15:00');
 
   // WhatsApp Automation States
   const [waInstanceId, setWaInstanceId] = useState('');
@@ -130,6 +135,9 @@ export default function SchoolProfilePage() {
         setSchoolLat(profile.schoolLat ?? '');
         setSchoolLng(profile.schoolLng ?? '');
         setAllowedRadius(profile.allowedRadius ?? 200);
+
+        setSchoolStartTime(profile.schoolStartTime || '07:30');
+        setSchoolCloseTime(profile.schoolCloseTime || '15:00');
 
         setWaInstanceId(profile.waInstanceId || '');
         setWaToken(profile.waToken || '');
@@ -230,6 +238,8 @@ export default function SchoolProfilePage() {
             schoolLat: schoolLat !== '' ? Number(schoolLat) : null,
             schoolLng: schoolLng !== '' ? Number(schoolLng) : null,
             allowedRadius: Number(allowedRadius),
+            schoolStartTime,
+            schoolCloseTime,
             waInstanceId,
             waToken,
             enableWhatsApp,
@@ -371,8 +381,34 @@ export default function SchoolProfilePage() {
                             <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Globe className="h-3 w-3"/> Website</Label><Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" className="h-11 border-2 rounded-xl" /></div>
                         </div>
 
-                        {/* --- GEOFENCING SECTION --- */}
+                        {/* --- WORKING HOURS SECTION --- */}
                         <div className="space-y-4 p-5 border-2 rounded-[2rem] bg-slate-50 border-slate-200 mt-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="space-y-0.5">
+                                    <Label className="text-base font-black text-slate-800 flex items-center gap-2 uppercase tracking-tight">
+                                        <Clock className="h-5 w-5 text-indigo-600"/> Official Working Hours
+                                    </Label>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Automatic flagging for late arrivals and early departures</p>
+                                </div>
+                            </div>
+                            <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                                Set the official times for your school. Staff who clock in after the start time (plus a 5-minute grace period) will be marked as "Late". Staff who clock out before the close time will be flagged as "Left Early".
+                            </p>
+                            
+                            <div className="grid md:grid-cols-2 gap-4 pt-2">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-slate-400">Clock-In Deadline (Start Time)</Label>
+                                    <Input type="time" value={schoolStartTime} onChange={e => setSchoolStartTime(e.target.value)} className="h-11 border-2 rounded-xl bg-white w-full sm:w-48" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-slate-400">Clock-Out Threshold (Close Time)</Label>
+                                    <Input type="time" value={schoolCloseTime} onChange={e => setSchoolCloseTime(e.target.value)} className="h-11 border-2 rounded-xl bg-white w-full sm:w-48" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* --- GEOFENCING SECTION --- */}
+                        <div className="space-y-4 p-5 border-2 rounded-[2rem] bg-slate-50 border-slate-200 mt-4 shadow-sm">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="space-y-0.5">
                                     <Label className="text-base font-black text-slate-800 flex items-center gap-2 uppercase tracking-tight">

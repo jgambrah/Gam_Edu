@@ -30,6 +30,17 @@ function getDistanceInMeters(lat1: number, lon1: number, lat2: number, lon2: num
   return R * c;
 }
 
+/**
+ * Converts HH:mm time string to a Date object for today.
+ */
+const getTodayTimeFromStr = (timeStr: string) => {
+    if (!timeStr) return null;
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    return date;
+};
+
 export default function StaffAttendancePage() {
   const { user, isUserLoading } = useUser();
   const { role, loading: isRoleLoading } = useRole();
@@ -44,7 +55,7 @@ export default function StaffAttendancePage() {
 
   const isStaff = role && !['Student', 'Parent'].includes(role);
 
-  // Fetch School Settings for Geofencing
+  // Fetch School Settings for Geofencing and Time Tracking
   const schoolSettingsRef = useMemoFirebase(
     () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
     [firestore, schoolId]
@@ -129,11 +140,30 @@ export default function StaffAttendancePage() {
         }
     }
 
+    // Time Tracking Logic
+    const now = new Date();
+    let calculatedStatus = 'Present';
+    let leftEarly = false;
+
+    if (type === 'In') {
+        const expectedStart = getTodayTimeFromStr(schoolSettings?.schoolStartTime);
+        if (expectedStart && now.getTime() > expectedStart.getTime() + (5 * 60 * 1000)) {
+            calculatedStatus = 'Late';
+        }
+    } else {
+        const expectedClose = getTodayTimeFromStr(schoolSettings?.schoolCloseTime);
+        if (expectedClose && now.getTime() < expectedClose.getTime()) {
+            leftEarly = true;
+        }
+    }
+
     try {
       await addDocumentNonBlocking(collection(firestore!, 'staff_attendance'), {
         staffId: user.uid,
         staffName: user.displayName || 'N/A',
         type,
+        status: calculatedStatus,
+        leftEarly,
         timestamp: serverTimestamp(),
         verificationPhotoUrl: imageDataUri,
         schoolId: schoolId,
@@ -258,7 +288,7 @@ export default function StaffAttendancePage() {
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                                <p className="font-semibold text-sm">{log.type === 'In' ? 'Clocked In' : 'Clocked Out'}</p>
+                                <p className="font-semibold text-sm">{log.type === 'In' ? (log.status === 'Late' ? 'Clocked In (Late)' : 'Clocked In') : (log.leftEarly ? 'Clocked Out (Early)' : 'Clocked Out')}</p>
                                 {(log as any).isFlagged && <Badge variant="destructive" className="h-4 text-[8px] uppercase px-1">Off Campus</Badge>}
                             </div>
                             <p className="text-xs text-muted-foreground">

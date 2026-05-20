@@ -12,16 +12,12 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer, MapPin, ShieldAlert } from 'lucide-react';
+import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { format, startOfDay, endOfDay, setHours, setMinutes } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import type { Staff, StaffAttendance } from '@/lib/types';
-
-// Define school start time (8:00 AM)
-const START_HOUR = 8;
-const START_MINUTE = 0;
 
 export default function StaffAttendanceRecordsPage() {
   const { role } = useRole();
@@ -51,7 +47,7 @@ export default function StaffAttendanceRecordsPage() {
 
   // 3. Filter and process data
   const { filteredLogs, stats } = useMemo(() => {
-    if (!attendanceLogs) return { filteredLogs: [], stats: { total: 0, late: 0, flagged: 0 } };
+    if (!attendanceLogs) return { filteredLogs: [], stats: { total: 0, late: 0, flagged: 0, early: 0 } };
 
     const filtered = attendanceLogs.filter(log => {
       if (!log.timestamp) return false;
@@ -67,18 +63,13 @@ export default function StaffAttendanceRecordsPage() {
       return true;
     });
 
-    const lateArrivals = filtered.filter(log => {
-        if (log.type !== 'In') return false;
-        const clockInTime = log.timestamp.toDate();
-        const schoolStartForDay = setMinutes(setHours(clockInTime, START_HOUR), START_MINUTE);
-        return clockInTime > schoolStartForDay;
-    }).length;
-
+    const lateArrivals = filtered.filter(log => log.type === 'In' && log.status === 'Late').length;
+    const earlyDepartures = filtered.filter(log => log.type === 'Out' && log.leftEarly === true).length;
     const flaggedCount = filtered.filter(log => (log as any).isFlagged === true).length;
 
     return { 
         filteredLogs: filtered,
-        stats: { total: filtered.length, late: lateArrivals, flagged: flaggedCount }
+        stats: { total: filtered.length, late: lateArrivals, flagged: flaggedCount, early: earlyDepartures }
     };
   }, [attendanceLogs, dateRange, selectedStaffId]);
   
@@ -93,12 +84,12 @@ export default function StaffAttendanceRecordsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2 text-slate-800"><UserCheck className="text-indigo-600"/> Staff Attendance Audit</h1>
-          <p className="text-muted-foreground">Monitor proximity verification and arrival punctuality.</p>
+          <p className="text-muted-foreground">Monitor proximity verification, arrival punctuality, and working hours.</p>
         </div>
         <Button onClick={() => window.print()} variant="outline"><Printer className="mr-2 h-4 w-4"/> Print Report</Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="border-l-4 border-l-blue-500">
           <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Total Logs</CardTitle></CardHeader>
           <CardContent><p className="text-3xl font-black">{stats.total}</p></CardContent>
@@ -110,6 +101,10 @@ export default function StaffAttendanceRecordsPage() {
         <Card className="border-l-4 border-l-amber-500">
           <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Late Arrivals</CardTitle></CardHeader>
           <CardContent><p className="text-3xl font-black text-amber-600">{stats.late}</p></CardContent>
+        </Card>
+        <Card className="border-l-4 border-l-rose-500">
+          <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Early Departures</CardTitle></CardHeader>
+          <CardContent><p className="text-3xl font-black text-rose-600">{stats.early}</p></CardContent>
         </Card>
       </div>
 
@@ -145,7 +140,7 @@ export default function StaffAttendanceRecordsPage() {
                 <TableRow>
                     <TableHead className="font-bold text-[10px] uppercase tracking-widest">Staff Member</TableHead>
                     <TableHead className="font-bold text-[10px] uppercase tracking-widest">Timestamp</TableHead>
-                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Activity</TableHead>
+                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Activity & Punctuality</TableHead>
                     <TableHead className="font-bold text-[10px] uppercase tracking-widest">Proximity</TableHead>
                     <TableHead className="font-bold text-[10px] uppercase tracking-widest">Identity</TableHead>
                     <TableHead className="text-right font-bold text-[10px] uppercase tracking-widest">Location</TableHead>
@@ -154,8 +149,6 @@ export default function StaffAttendanceRecordsPage() {
               <TableBody>
                 {filteredLogs.map(log => {
                     const logDate = log.timestamp.toDate();
-                    const schoolStartForDay = setMinutes(setHours(logDate, START_HOUR), START_MINUTE);
-                    const isLate = log.type === 'In' && logDate > schoolStartForDay;
                     const isFlagged = (log as any).isFlagged === true;
                     
                     return (
@@ -170,11 +163,22 @@ export default function StaffAttendanceRecordsPage() {
                             </TableCell>
                             <TableCell>
                                 <div className="flex items-center gap-2">
-                                    <Badge variant={log.type === 'In' ? 'default' : 'secondary'} className={log.type === 'In' ? 'bg-indigo-600' : ''}>
-                                        {log.type === 'In' ? 'Check-In' : 'Check-Out'}
-                                    </Badge>
-                                    {log.type === 'In' && isLate && (
-                                        <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">LATE</Badge>
+                                    {log.type === 'In' ? (
+                                        <>
+                                            <Badge className="bg-indigo-600 gap-1"><ArrowDownLeft className="h-3 w-3"/> In</Badge>
+                                            {log.status === 'Late' ? (
+                                                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">LATE</Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">ON TIME</Badge>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Badge variant="secondary" className="gap-1"><ArrowUpRight className="h-3 w-3"/> Out</Badge>
+                                            {log.leftEarly && (
+                                                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">LEFT EARLY</Badge>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </TableCell>
