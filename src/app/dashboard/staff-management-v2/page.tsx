@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useFirestore } from '@/firebase';
-import { collection, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, query, where } from 'firebase/firestore';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
 import { UserRole, STAFF_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 import { adminResetUserPassword } from '@/app/actions/admin-reset-password';
@@ -21,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import {
   UserCog, UserPlus, Trash2, Loader2, Search,
-  RefreshCw, Edit, Globe, GraduationCap, Heart, FileText, Save, KeyRound
+  RefreshCw, Edit, Globe, GraduationCap, Heart, FileText, Save, KeyRound, BookOpen
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
@@ -41,6 +42,12 @@ type StaffMember = {
   qualifications?: string;
   interests?: string;
   showOnWebsite?: boolean;
+};
+
+type Subject = {
+    id: string;
+    name: string;
+    teacherIds: string[];
 };
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -65,11 +72,17 @@ export default function StaffManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [newStaffRole, setNewStaffRole] = useState<UserRole>('Teacher');
 
-  // Controlled state for edit modal (Select & Switch don't use native form fields well with FormData)
+  // Controlled state for edit modal
   const [editRole, setEditRole] = useState<UserRole>('Teacher');
   const [editShowOnWebsite, setEditShowOnWebsite] = useState(false);
 
   // ── data loading ───────────────────────────────────────────────────────────
+  const subjectsQuery = useMemoFirebase(() => 
+    (firestore && adminSchoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', adminSchoolId)) : null, 
+    [firestore, adminSchoolId]
+  );
+  const { data: subjects } = useCollection<Subject>(subjectsQuery);
+
   const loadData = useCallback(async () => {
     if (!firestore || !adminSchoolId) return;
     setIsLoadingData(true);
@@ -81,7 +94,6 @@ export default function StaffManagementPage() {
           where('role', 'in', STAFF_ROLES)
         )
       );
-      // Map docs — always ensure showOnWebsite is handled
       const data = snap.docs.map(d => ({
         id: d.id,
         ...d.data(),
@@ -98,23 +110,6 @@ export default function StaffManagementPage() {
   useEffect(() => {
     if (adminSchoolId) loadData();
   }, [loadData, adminSchoolId]);
-
-  // reset add-modal state
-  useEffect(() => {
-    if (isAddOpen) {
-      setIsSubmitting(false);
-      setNewStaffRole('Teacher');
-    }
-  }, [isAddOpen]);
-
-  // sync edit-modal state
-  useEffect(() => {
-    if (editingStaff) {
-      setIsSubmitting(false);
-      setEditRole(editingStaff.role);
-      setEditShowOnWebsite(!!editingStaff.showOnWebsite);
-    }
-  }, [editingStaff]);
 
   // ── add staff ──────────────────────────────────────────────────────────────
   const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -169,10 +164,8 @@ export default function StaffManagementPage() {
         updatedAt: serverTimestamp(),
       };
 
-      // 1. Update the staff document
       await updateDoc(staffRef, updateData);
 
-      // 2. Sync role to users mapping (using UID stored in the staff doc)
       const targetUid = editingStaff.uid || editingStaff.id;
       if (targetUid) {
         try {
@@ -182,27 +175,9 @@ export default function StaffManagementPage() {
         }
       }
 
-      // 3. Update local state directly so the UI reflects changes instantly
-      setStaff(prev =>
-        prev.map(m =>
-          m.id === editingStaff.id
-            ? {
-                ...m,
-                firstName,
-                lastName,
-                role: editRole,
-                showOnWebsite: editShowOnWebsite,
-                publicPhotoUrl,
-                publicBio,
-                qualifications,
-                interests,
-              }
-            : m
-        )
-      );
-
       toast({ title: 'Saved', description: `${firstName}'s details have been updated.` });
       setEditingStaff(null);
+      loadData();
     } catch (error: any) {
       console.error('Update error:', error);
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to update staff member.' });
@@ -283,44 +258,53 @@ export default function StaffManagementPage() {
                 <TableHeader className="bg-slate-50">
                   <TableRow>
                     <TableHead>Name</TableHead>
+                    <TableHead>Role & Expertise</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Public Profile</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredStaff.map(member => (
-                    <TableRow key={member.id} className="hover:bg-slate-50/50 transition-colors">
-                      <TableCell className="font-semibold">{member.firstName} {member.lastName}</TableCell>
-                      <TableCell className="text-slate-500">{member.email}</TableCell>
-                      <TableCell><Badge variant="secondary" className="font-bold">{member.role}</Badge></TableCell>
-                      <TableCell>
-                        {member.showOnWebsite ? (
-                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 uppercase text-[9px] font-black tracking-widest">
-                            Live
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="bg-slate-50 text-slate-400 uppercase text-[9px] font-black tracking-widest">
-                            Private
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(member)} title="Reset Password">
-                              <KeyRound className="h-4 w-4 text-orange-500"/>
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => setEditingStaff(member)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleDelete(member.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {filteredStaff.map(member => {
+                      const mySubjects = subjects?.filter(s => s.teacherIds?.includes(member.uid || member.id)) || [];
+                      return (
+                        <TableRow key={member.id} className="hover:bg-slate-50/50 transition-colors">
+                            <TableCell>
+                                <div className="font-semibold text-slate-900">{member.firstName} {member.lastName}</div>
+                                <div className="text-[10px] text-slate-400 font-bold uppercase">{member.id.slice(0,8)}</div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="flex flex-col gap-1.5">
+                                    <Badge variant="secondary" className="font-bold w-fit">{member.role}</Badge>
+                                    {member.role === 'Teacher' && (
+                                        <div className="flex flex-wrap gap-1">
+                                            {mySubjects.length > 0 ? mySubjects.map(s => (
+                                                <Badge key={s.id} variant="outline" className="text-[8px] bg-emerald-50 text-emerald-700 border-emerald-100 font-black uppercase tracking-widest px-1.5">
+                                                    {s.name}
+                                                </Badge>
+                                            )) : (
+                                                <span className="text-[9px] text-orange-400 italic">No subjects assigned</span>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </TableCell>
+                            <TableCell className="text-slate-500 text-sm">{member.email}</TableCell>
+                            <TableCell className="text-right">
+                                <div className="flex justify-end gap-1">
+                                <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(member)} title="Reset Password">
+                                    <KeyRound className="h-4 w-4 text-orange-500"/>
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => setEditingStaff(member)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => handleDelete(member.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                      );
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -388,7 +372,6 @@ export default function StaffManagementPage() {
                   <div className="space-y-2">
                     <Label>Email</Label>
                     <Input value={editingStaff.email} disabled className="bg-slate-100 cursor-not-allowed" />
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Email is used for authentication and cannot be changed.</p>
                   </div>
                   <div className="space-y-2">
                     <Label>System Role</Label>
@@ -420,11 +403,11 @@ export default function StaffManagementPage() {
                     </div>
                     <div className="space-y-2">
                       <Label className="flex items-center gap-2"><GraduationCap className="h-3 w-3" /> Qualifications</Label>
-                      <Input name="qualifications" defaultValue={editingStaff.qualifications} placeholder="e.g. B.Ed Mathematics, M.Sc Education" />
+                      <Input name="qualifications" defaultValue={editingStaff.qualifications} placeholder="e.g. B.Ed Mathematics" />
                     </div>
                     <div className="space-y-2">
                       <Label className="flex items-center gap-2"><Heart className="h-3 w-3" /> Interests & Skills</Label>
-                      <Input name="interests" defaultValue={editingStaff.interests} placeholder="e.g. Robotics, Football, Chess" />
+                      <Input name="interests" defaultValue={editingStaff.interests} placeholder="e.g. Robotics, Football" />
                     </div>
                     <div className="space-y-2">
                       <Label className="flex items-center gap-2"><FileText className="h-3 w-3" /> Public Biography</Label>
@@ -456,7 +439,6 @@ export default function StaffManagementPage() {
                   <DialogTitle>Reset Password</DialogTitle>
                   <DialogDescription>
                       Set a temporary password for <strong>{resetPasswordUser?.firstName} {resetPasswordUser?.lastName}</strong>. 
-                      They will be forced to change it upon their next login.
                   </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
@@ -473,13 +455,10 @@ export default function StaffManagementPage() {
                       onClick={async () => {
                           if (!resetPasswordUser || newTempPassword.length < 6) return;
                           setIsResetting(true);
-                          
                           const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'staff');
-                          
                           if (res.success) {
                               toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
                               setResetPasswordUser(null);
-                              setNewTempPassword('password123'); // Reset for next use
                           } else {
                               toast({ variant: 'destructive', title: "Error", description: res.error });
                           }
