@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import TimetableSeeder from '@/components/TimetableSeeder';
 
-type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
+type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
 // --- SUB-COMPONENT: MANUAL ASSIGNMENT ---
 function ManualAssignmentDialog({ 
@@ -71,6 +71,8 @@ function ManualAssignmentDialog({
                 classId,
                 schoolId,
                 day: slot?.day || '',
+                startTime: slot?.startTime || '',
+                endTime: slot?.endTime || '',
                 createdAt: serverTimestamp()
             });
             toast({ title: "Entry Added", description: "The lesson has been assigned to the timetable." });
@@ -147,7 +149,6 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
 
-    // New Slot Form
     const [newSlot, setNewSlot] = useState({ day: 'Monday', start: '08:00', end: '08:45' });
     const [newRoom, setNewRoom] = useState('');
 
@@ -198,7 +199,6 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
             <TimetableSeeder />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* TIME SLOTS */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4"/> Daily Time Slots</CardTitle>
@@ -225,7 +225,6 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                     </CardContent>
                 </Card>
 
-                {/* ROOMS */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-sm font-bold flex items-center gap-2"><MapPin className="h-4 w-4"/> School Rooms</CardTitle>
@@ -263,18 +262,16 @@ export default function TimetablePage() {
   const [isManualOpen, setIsManualOpen] = useState(false);
   const [customConstraint, setCustomConstraint] = useState('');
 
-  // Role Checks
   const canAccess = ['Student', 'Teacher', 'Admin', 'Administrator', 'Director'].includes(role || '');
   const canManage = ['Admin', 'Administrator', 'Director'].includes(role || '');
 
-  // SAAS-AWARE QUERIES
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: classes } = useCollection<Class>(classesQuery);
 
   const allTeachersQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !canManage) return null;
+    if (!firestore || !schoolId) return null;
     return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', '==', 'Teacher'));
-  }, [firestore, schoolId, canManage]);
+  }, [firestore, schoolId]);
   const { data: allTeachers } = useCollection<Teacher>(allTeachersQuery);
 
   const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -293,7 +290,6 @@ export default function TimetablePage() {
   const { data: students } = useCollection<Student>(studentsQuery);
 
 
-  // Auto-select class for Students
   useEffect(() => {
     if (role === 'Student' && user && students && students.length > 0) {
       const currentStudent = students.find(s => s.uid === user.uid);
@@ -317,8 +313,7 @@ export default function TimetablePage() {
     toast({ title: "AI is on the job!", description: "Generating a new timetable. This may take a moment." });
 
     try {
-      const validTeachers = allTeachers.filter(t => t.uid && t.firstName && t.lastName);
-      const simplifiedTeachers = validTeachers.map(t => ({
+      const simplifiedTeachers = allTeachers.map(t => ({
         uid: t.uid,
         firstName: t.firstName,
         lastName: t.lastName,
@@ -357,7 +352,7 @@ export default function TimetablePage() {
       }
       
       await batch.commit();
-      toast({ title: "Success!", description: "A new timetable has been generated and saved." });
+      toast({ title: "Success!", description: `A new timetable has been generated with ${result.timetable.length} lessons.` });
       refetchTimetable(); 
     } catch (error: any) {
       console.error("Error generating timetable:", error);
@@ -367,22 +362,14 @@ export default function TimetablePage() {
     }
   };
 
-  const handleClearTimetable = async () => {
-    if (!firestore || !timetable || !confirm("Wipe the entire school timetable?")) return;
-    const batch = writeBatch(firestore);
-    timetable.forEach(e => batch.delete(doc(firestore, 'timetables', e.id)));
-    await batch.commit();
-    toast({ title: "Timetable Cleared" });
-    refetchTimetable();
-  };
-
   const filteredTimetable = useMemo(() => {
       return timetable?.filter(entry => entry.classId === selectedClassId) || [];
   }, [timetable, selectedClassId]);
 
+  if (!canAccess && !isRoleLoading) return <Card className="p-8 text-center text-red-500">Access Denied</Card>;
+
   return (
     <div className="space-y-6">
-      
       <Tabs defaultValue="view" className="w-full">
         <div className="flex justify-between items-center mb-6">
             <TabsList className="bg-slate-100 p-1 rounded-xl">
@@ -425,13 +412,20 @@ export default function TimetablePage() {
                     {isTimetableLoading ? (
                         <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>
                     ) : selectedClassId ? (
-                        <TimetableDisplay 
-                            timetable={filteredTimetable}
-                            subjects={subjects || []}
-                            teachers={allTeachers || []}
-                            rooms={rooms || []}
-                            timeSlots={timeSlots || []}
-                        />
+                        <div className="space-y-4">
+                            <div className="flex justify-end px-2">
+                                <p className="text-[10px] font-black uppercase text-indigo-600 tracking-widest bg-indigo-50 px-3 py-1 rounded-full">
+                                    {filteredTimetable.length} Lessons Scheduled
+                                </p>
+                            </div>
+                            <TimetableDisplay 
+                                timetable={filteredTimetable}
+                                subjects={subjects || []}
+                                teachers={allTeachers || []}
+                                rooms={rooms || []}
+                                timeSlots={timeSlots || []}
+                            />
+                        </div>
                     ) : (
                         <div className="text-center py-20 bg-slate-50 border-2 border-dashed rounded-3xl">
                             <Info className="h-10 w-10 text-slate-300 mx-auto mb-2" />
