@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, writeBatch, query, where, orderBy, addDoc, serverTimestamp, deleteDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, writeBatch, query, where, orderBy, addDoc, serverTimestamp, deleteDoc, getDocs, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TimetableDisplay } from './timetable-display';
@@ -12,7 +11,7 @@ import { TimeSlot, TimetableEntry, Subject, Room, Student, Class } from '@/lib/t
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2 } from 'lucide-react';
+import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
@@ -20,6 +19,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
 
