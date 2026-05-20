@@ -26,7 +26,9 @@ export default function MyGradesPage() {
     const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0] || 'First Term');
 
     const parentStudentIds = useMemo(() => {
-        return profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+        const ids = profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
+        // Cap at 30 to respect Firestore 'in' query limits
+        return ids.slice(0, 30);
     }, [profile]);
     const parentStudentIdsStr = parentStudentIds.join(',');
 

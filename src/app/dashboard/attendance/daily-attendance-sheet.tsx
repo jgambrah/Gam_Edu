@@ -188,14 +188,30 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const alertRecords = data.records.filter(r => r.status === 'Absent' || r.status === 'Late');
             
             if (alertRecords.length > 0) {
-                const parentsSnap = await getDocs(query(
-                    collection(firestore, 'parents'), 
-                    where('schoolId', '==', schoolId), 
-                    where('studentIds', 'array-contains-any', gradedStudentIds)
+                const alertedStudentIds = alertRecords.map(r => r.studentId);
+                
+                // Chunk IDs into groups of 30 to respect Firestore query limits
+                const chunks: string[][] = [];
+                for (let i = 0; i < alertedStudentIds.length; i += 30) {
+                    chunks.push(alertedStudentIds.slice(i, i + 30));
+                }
+
+                // Execute queries in parallel
+                const parentResults = await Promise.all(chunks.map(chunk => 
+                    getDocs(query(
+                        collection(firestore, 'parents'), 
+                        where('schoolId', '==', schoolId), 
+                        where('studentIds', 'array-contains-any', chunk)
+                    ))
                 ));
                 
-                parentsSnap.docs.forEach(parentDoc => {
-                    const parent = parentDoc.data();
+                // Flatten and deduplicate parents
+                const parentsMap = new Map();
+                parentResults.forEach(snap => {
+                    snap.docs.forEach(d => parentsMap.set(d.id, d.data()));
+                });
+                
+                parentsMap.forEach(parent => {
                     if (!parent.phone) return;
 
                     const childAlerts = alertRecords.filter(r => parent.studentIds?.includes(r.studentId));

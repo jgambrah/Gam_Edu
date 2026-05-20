@@ -23,6 +23,7 @@ function getAdminApp() {
 
 /**
  * Sends a push notification to parents linked to specific students.
+ * Handles Firestore 'array-contains-any' limit of 30 by chunking studentIds.
  * 
  * @param studentIds - Array of student UIDs whose parents should be notified.
  * @param title - The title of the notification.
@@ -39,33 +40,41 @@ export async function notifyParents(studentIds: string[], title: string, body: s
     const db = getFirestore(adminApp);
     const messaging = getMessaging(adminApp);
 
-    // 1. Find all parents linked to these students
-    // We query the 'parents' collection where 'studentIds' array contains any of the target students
-    // Note: If you renamed this field to 'linkedStudentIds' etc., ensure this query matches your DB.
-    const parentsQuery = db.collection('parents').where('studentIds', 'array-contains-any', studentIds);
-    const parentsSnap = await parentsQuery.get();
-
-    if (parentsSnap.empty) {
-      return { success: true, message: 'No linked parents found to notify.' };
+    // 1. Chunk studentIds into groups of 30 (Firestore limit for array-contains-any)
+    const chunks: string[][] = [];
+    for (let i = 0; i < studentIds.length; i += 30) {
+      chunks.push(studentIds.slice(i, i + 30));
     }
 
-    // 2. Collect all FCM Tokens from the matched parents
-    let tokens: string[] = [];
-    parentsSnap.docs.forEach(doc => {
-      const data = doc.data();
-      if (data.fcmTokens && Array.isArray(data.fcmTokens)) {
-        tokens = tokens.concat(data.fcmTokens);
-      }
+    // 2. Fetch all parents linked to these students in parallel
+    const parentSnapshots = await Promise.all(
+      chunks.map(chunk => 
+        db.collection('parents').where('studentIds', 'array-contains-any', chunk).get()
+      )
+    );
+
+    // 3. Collect all unique parent FCM Tokens
+    const tokensSet = new Set<string>();
+    parentSnapshots.forEach(snap => {
+      snap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.fcmTokens && Array.isArray(data.fcmTokens)) {
+          data.fcmTokens.forEach((token: string) => tokensSet.add(token));
+        }
+      });
     });
 
+    const tokens = Array.from(tokensSet);
+
     if (tokens.length === 0) {
-      return { success: true, message: 'Parents found, but no devices are registered for push notifications.' };
+      return { success: true, message: 'No devices are registered for push notifications.' };
     }
 
-    // 3. Send the Multicast Message
+    // 4. Send the Multicast Message (FCM limit is 500 tokens per multicast)
+    // For very large schools, we'd chunk tokens here too, but for one class it's safe.
     const messagePayload = {
       notification: { title, body },
-      data: { url }, // Custom data used by the service worker to route the user
+      data: { url }, 
       tokens: tokens,
     };
 
