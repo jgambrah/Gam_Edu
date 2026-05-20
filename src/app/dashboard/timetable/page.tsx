@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, writeBatch, query, where, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, writeBatch, query, where, orderBy, addDoc, serverTimestamp, deleteDoc, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TimetableDisplay } from './timetable-display';
@@ -12,16 +12,18 @@ import { TimeSlot, TimetableEntry, Subject, Room, Student, Class } from '@/lib/t
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info } from 'lucide-react';
+import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2 } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
-import TimetableSeeder from '@/components/TimetableSeeder';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 
 type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
 
+// --- SUB-COMPONENT: MANUAL ASSIGNMENT ---
 function ManualAssignmentDialog({ 
     open, 
     setOpen, 
@@ -138,6 +140,112 @@ function ManualAssignmentDialog({
     );
 }
 
+// --- SUB-COMPONENT: CONFIGURATION TAB ---
+function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: string, timeSlots: TimeSlot[], rooms: Room[], onRefresh: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [loading, setLoading] = useState(false);
+
+    // New Slot Form
+    const [newSlot, setNewSlot] = useState({ day: 'Monday', start: '08:00', end: '08:45' });
+    const [newRoom, setNewRoom] = useState('');
+
+    const handleAddSlot = async () => {
+        if (!firestore || !schoolId) return;
+        setLoading(true);
+        try {
+            const id = `${schoolId}-${newSlot.day.substring(0,3)}-${newSlot.start.replace(':','')}`;
+            await setDoc(doc(firestore, 'timeSlots', id), {
+                id,
+                day: newSlot.day,
+                startTime: newSlot.start,
+                endTime: newSlot.end,
+                type: 'Lesson',
+                schoolId
+            });
+            toast({ title: "Slot Added" });
+            onRefresh();
+        } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
+        finally { setLoading(false); }
+    };
+
+    const handleAddRoom = async () => {
+        if (!firestore || !schoolId || !newRoom) return;
+        setLoading(true);
+        try {
+            await addDoc(collection(firestore, 'rooms'), {
+                name: newRoom,
+                capacity: 30,
+                schoolId
+            });
+            toast({ title: "Room Added" });
+            setNewRoom('');
+            onRefresh();
+        } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
+        finally { setLoading(false); }
+    };
+
+    const handleDelete = async (coll: string, id: string) => {
+        if (!firestore) return;
+        await deleteDoc(doc(firestore, coll, id));
+        toast({ title: "Deleted" });
+        onRefresh();
+    };
+
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in">
+            {/* TIME SLOTS */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4"/> Daily Time Slots</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-xl border">
+                        <Select value={newSlot.day} onValueChange={(v) => setNewSlot({...newSlot, day: v})}>
+                            <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                        <Input type="time" value={newSlot.start} onChange={e => setNewSlot({...newSlot, start: e.target.value})} className="h-9 text-xs" />
+                        <Button onClick={handleAddSlot} disabled={loading} size="sm" className="h-9"><Plus className="h-3 w-3"/></Button>
+                    </div>
+                    <div className="max-h-[300px] overflow-y-auto space-y-1">
+                        {timeSlots.sort((a,b) => a.startTime.localeCompare(b.startTime)).map(ts => (
+                            <div key={ts.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
+                                <span><strong>{ts.day.substring(0,3)}:</strong> {ts.startTime} - {ts.endTime}</span>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('timeSlots', ts.id)}><Trash2 className="h-3 w-3"/></Button>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* ROOMS */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-sm font-bold flex items-center gap-2"><MapPin className="h-4 w-4"/> School Rooms</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex gap-2 p-3 bg-slate-50 rounded-xl border">
+                        <Input placeholder="Room Name..." value={newRoom} onChange={e => setNewRoom(e.target.value)} className="h-9 text-xs bg-white" />
+                        <Button onClick={handleAddRoom} disabled={loading || !newRoom} size="sm" className="h-9 px-4">Add</Button>
+                    </div>
+                    <div className="max-h-[300px] overflow-y-auto space-y-1">
+                        {rooms.map(r => (
+                            <div key={r.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
+                                <span>{r.name}</span>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('rooms', r.id)}><Trash2 className="h-3 w-3"/></Button>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+// --- MAIN PAGE ---
 export default function TimetablePage() {
   const { user } = useUser();
   const { role } = useRole();
@@ -152,29 +260,29 @@ export default function TimetablePage() {
 
   // Role Checks
   const canAccess = ['Student', 'Teacher', 'Admin', 'Administrator', 'Director'].includes(role || '');
-  const canGenerate = ['Admin', 'Administrator', 'Director'].includes(role || '');
+  const canManage = ['Admin', 'Administrator', 'Director'].includes(role || '');
 
   // SAAS-AWARE QUERIES
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+  const { data: classes } = useCollection<Class>(classesQuery);
 
   const allTeachersQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !canGenerate) return null;
+    if (!firestore || !schoolId || !canManage) return null;
     return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', '==', 'Teacher'));
-  }, [firestore, schoolId, canGenerate]);
+  }, [firestore, schoolId, canManage]);
   const { data: allTeachers } = useCollection<Teacher>(allTeachersQuery);
 
   const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: subjects } = useCollection<Subject>(subjectsQuery);
 
   const roomsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: rooms } = useCollection<Room>(roomsQuery);
+  const { data: rooms, forceRefetch: refetchRooms } = useCollection<Room>(roomsQuery);
 
   const timeSlotsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'timeSlots'), where('schoolId', '==', schoolId), orderBy('startTime')) : null, [firestore, schoolId]);
-  const { data: timeSlots } = useCollection<TimeSlot>(timeSlotsQuery);
+  const { data: timeSlots, forceRefetch: refetchSlots } = useCollection<TimeSlot>(timeSlotsQuery);
 
   const timetableQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: timetable, isLoading: isTimetableLoading, forceRefetch } = useCollection<TimetableEntry>(timetableQuery);
+  const { data: timetable, isLoading: isTimetableLoading, forceRefetch: refetchTimetable } = useCollection<TimetableEntry>(timetableQuery);
   
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: students } = useCollection<Student>(studentsQuery);
@@ -191,7 +299,7 @@ export default function TimetablePage() {
   }, [role, user, students]);
 
   const handleGenerateTimetable = async () => {
-    if (!canGenerate || !allTeachers || !subjects || !classes || !rooms || !timeSlots || !firestore || !schoolId) return;
+    if (!canManage || !allTeachers || !subjects || !classes || !rooms || !timeSlots || !firestore || !schoolId) return;
     
     setIsGenerating(true);
     const creditResult = await checkAndSpendCredits(schoolId, 50);
@@ -235,13 +343,17 @@ export default function TimetablePage() {
       if (result && result.timetable) {
           result.timetable.forEach((entry: any) => {
             const newDocRef = doc(collection(firestore, 'timetables'));
-            batch.set(newDocRef, { ...entry, schoolId });
+            batch.set(newDocRef, { 
+                ...entry, 
+                schoolId,
+                createdAt: serverTimestamp()
+            });
           });
       }
       
       await batch.commit();
       toast({ title: "Success!", description: "A new timetable has been generated and saved." });
-      forceRefetch(); 
+      refetchTimetable(); 
     } catch (error: any) {
       console.error("Error generating timetable:", error);
       toast({ variant: 'destructive', title: "AI Error", description: error.message || "Could not generate timetable." });
@@ -256,90 +368,129 @@ export default function TimetablePage() {
     timetable.forEach(e => batch.delete(doc(firestore, 'timetables', e.id)));
     await batch.commit();
     toast({ title: "Timetable Cleared" });
-    forceRefetch();
+    refetchTimetable();
   };
-
-  if (!canAccess) return <div className="p-8">Access Denied.</div>;
 
   const filteredTimetable = timetable?.filter(entry => entry.classId === selectedClassId) || [];
 
   return (
-    <div className="space-y-6 p-6">
-      {canGenerate && <TimetableSeeder />}
+    <div className="space-y-6">
       
-      <Card className="border-t-4 border-t-indigo-600 shadow-sm">
-        <CardHeader>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <CardTitle className="text-2xl flex items-center gap-2 italic uppercase">
-                  <CalendarDays className="h-6 w-6 text-indigo-600"/> Class Schedules
-              </CardTitle>
-              <CardDescription>View or manage weekly lessons.</CardDescription>
-            </div>
+      <Tabs defaultValue="view" className="w-full">
+        <div className="flex justify-between items-center mb-6">
+            <TabsList className="bg-slate-100 p-1 rounded-xl">
+                <TabsTrigger value="view" className="rounded-lg font-bold px-6">Timetable View</TabsTrigger>
+                {canManage && <TabsTrigger value="config" className="rounded-lg font-bold px-6">Configuration</TabsTrigger>}
+            </TabsList>
             <div className="flex gap-2">
-                {canGenerate && (
-                    <>
-                        <Button variant="outline" onClick={handleClearTimetable} className="text-red-600 border-red-200 hover:bg-red-50">
-                            <Trash2 className="h-4 w-4 mr-2"/> Clear All
-                        </Button>
-                        <Button onClick={() => setIsManualOpen(true)} disabled={!selectedClassId} className="bg-slate-800">
-                            <Plus className="h-4 w-4 mr-2"/> Manual Assign
-                        </Button>
-                    </>
+                {canManage && selectedClassId && (
+                    <Button onClick={() => setIsManualOpen(true)} className="bg-slate-800">
+                        <Plus className="mr-2 h-4 w-4"/> Manual Assignment
+                    </Button>
                 )}
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="w-full md:w-1/3">
-            <Label className="text-xs font-bold uppercase text-slate-400 mb-1 block">Selected Class</Label>
-            <Select onValueChange={setSelectedClassId} value={selectedClassId}>
-              <SelectTrigger className="bg-white border-2 h-11"><SelectValue placeholder="Choose Class..." /></SelectTrigger>
-              <SelectContent>
-                  {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+        </div>
 
-          {isTimetableLoading ? (
-            <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>
-          ) : selectedClassId ? (
-            <TimetableDisplay 
-                timetable={filteredTimetable}
-                subjects={subjects || []}
-                teachers={allTeachers || []}
-                rooms={rooms || []}
-                timeSlots={timeSlots || []}
-            />
-          ) : (
-            <div className="text-center py-20 bg-slate-50 border-2 border-dashed rounded-3xl">
-                <Info className="h-10 w-10 text-slate-300 mx-auto mb-2" />
-                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Please select a class to view its timetable.</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        <TabsContent value="view" className="space-y-6">
+            <Card className="border-t-4 border-t-indigo-600 shadow-sm">
+                <CardHeader>
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <CardTitle className="text-2xl flex items-center gap-2 italic uppercase">
+                                <CalendarDays className="h-6 w-6 text-indigo-600"/> Weekly Schedule
+                            </CardTitle>
+                            <CardDescription>View official class lessons.</CardDescription>
+                        </div>
+                        <div className="w-full md:w-64">
+                            <Select onValueChange={setSelectedClassId} value={selectedClassId}>
+                                <SelectTrigger className="bg-white border-2 h-11"><SelectValue placeholder="Select Class..." /></SelectTrigger>
+                                <SelectContent>
+                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {isTimetableLoading ? (
+                        <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>
+                    ) : selectedClassId ? (
+                        <TimetableDisplay 
+                            timetable={filteredTimetable}
+                            subjects={subjects || []}
+                            teachers={allTeachers || []}
+                            rooms={rooms || []}
+                            timeSlots={timeSlots || []}
+                        />
+                    ) : (
+                        <div className="text-center py-20 bg-slate-50 border-2 border-dashed rounded-3xl">
+                            <Info className="h-10 w-10 text-slate-300 mx-auto mb-2" />
+                            <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Please select a class to view its timetable.</p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
 
-      {canGenerate && (
-        <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
-          <CardHeader className="p-8">
-            <CardTitle className="flex items-center gap-2 text-emerald-400 uppercase italic tracking-tight"><Wand2 /> AI Scheduler</CardTitle>
-            <CardDescription className="text-slate-400">Generate a conflict-free school schedule automatically.</CardDescription>
-          </CardHeader>
-          <CardContent className="px-8 pb-8 space-y-4">
-            <Textarea
-              placeholder="Add constraints: e.g., 'Math classes must be in the morning' or 'Teachers shouldn't have more than 3 classes a day'."
-              value={customConstraint}
-              onChange={(e) => setCustomConstraint(e.target.value)}
-              className="bg-white/5 border-white/10 text-white min-h-[100px] rounded-2xl"
-            />
-            <Button onClick={handleGenerateTimetable} disabled={isGenerating || !classes?.length || !timeSlots?.length} className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl text-lg shadow-xl active:scale-95 transition-all">
-              {isGenerating ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : <Wand2 className="mr-2 h-6 w-6" />}
-              RUN AI SCHEDULER (-50 Credits)
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+            {canManage && (
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
+                    <CardHeader className="p-8">
+                        <CardTitle className="flex items-center gap-2 text-emerald-400 uppercase italic tracking-tight"><Wand2 /> AI Scheduler</CardTitle>
+                        <CardDescription className="text-slate-400">Generate a conflict-free school schedule automatically based on your configured time slots.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="px-8 pb-8 space-y-4">
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <Textarea
+                                    placeholder="Add constraints: e.g., 'Math classes must be in the morning' or 'Teachers shouldn't have more than 3 classes a day'."
+                                    value={customConstraint}
+                                    onChange={(e) => setCustomConstraint(e.target.value)}
+                                    className="bg-white/5 border-white/10 text-white min-h-[120px] rounded-2xl"
+                                />
+                                <Button onClick={handleGenerateTimetable} disabled={isGenerating || !timeSlots?.length} className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl text-lg shadow-xl active:scale-95 transition-all">
+                                    {isGenerating ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : <Wand2 className="mr-2 h-6 w-6" />}
+                                    RUN AI SCHEDULER (-50 Credits)
+                                </Button>
+                            </div>
+                            <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
+                                <h4 className="text-sm font-bold uppercase text-slate-400 tracking-widest">Generation Checklist</h4>
+                                <ul className="space-y-2 text-xs font-medium">
+                                    <li className="flex items-center gap-2">
+                                        <div className={cn("w-4 h-4 rounded-full flex items-center justify-center", timeSlots?.length ? "bg-green-500" : "bg-red-500")}>
+                                            {timeSlots?.length ? <CheckCircle2 className="h-3 w-3 text-white"/> : <XCircle className="h-3 w-3 text-white"/>}
+                                        </div>
+                                        <span>Time Slots Configured ({timeSlots?.length || 0})</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <div className={cn("w-4 h-4 rounded-full flex items-center justify-center", rooms?.length ? "bg-green-500" : "bg-red-500")}>
+                                            {rooms?.length ? <CheckCircle2 className="h-3 w-3 text-white"/> : <XCircle className="h-3 w-3 text-white"/>}
+                                        </div>
+                                        <span>Rooms Registered ({rooms?.length || 0})</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <div className={cn("w-4 h-4 rounded-full flex items-center justify-center", subjects?.length ? "bg-green-500" : "bg-red-500")}>
+                                            {subjects?.length ? <CheckCircle2 className="h-3 w-3 text-white"/> : <XCircle className="h-3 w-3 text-white"/>}
+                                        </div>
+                                        <span>Subjects Defined ({subjects?.length || 0})</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+        </TabsContent>
+
+        <TabsContent value="config">
+            {schoolId && (
+                <TimetableConfig 
+                    schoolId={schoolId} 
+                    timeSlots={timeSlots || []} 
+                    rooms={rooms || []} 
+                    onRefresh={() => { refetchSlots(); refetchRooms(); }} 
+                />
+            )}
+        </TabsContent>
+      </Tabs>
 
       {selectedClassId && schoolId && (
           <ManualAssignmentDialog 
@@ -350,7 +501,7 @@ export default function TimetablePage() {
             teachers={allTeachers || []}
             rooms={rooms || []}
             timeSlots={timeSlots || []}
-            onSuccess={forceRefetch}
+            onSuccess={refetchTimetable}
           />
       )}
     </div>

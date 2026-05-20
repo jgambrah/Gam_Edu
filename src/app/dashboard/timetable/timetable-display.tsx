@@ -17,51 +17,80 @@ type TimetableDisplayProps = {
 
 export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlots }: TimetableDisplayProps) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-  const sortedTimeSlots = timeSlots
-    .filter((ts, index, self) => self.findIndex(t => t.startTime === ts.startTime) === index)
-    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+  
+  // 1. Get unique start times to define the row structure
+  const uniqueTimePoints = Array.from(new Set(timeSlots.map(ts => ts.startTime))).sort();
 
-  const getEntry = (day: string, timeSlot: TimeSlot) => {
-    // Find a timeSlotId that matches the day and startTime
-    const matchingTimeSlot = timeSlots.find(ts => ts.day === day && ts.startTime === timeSlot.startTime);
-    if (!matchingTimeSlot) return undefined;
-    // Find the timetable entry using that ID
-    return timetable.find(entry => entry.timeSlotId === matchingTimeSlot.id);
+  const getEntry = (day: string, startTime: string) => {
+    // A. Find the specific slot for this day and time
+    const slot = timeSlots.find(ts => ts.day === day && ts.startTime === startTime);
+    if (!slot) return null;
+    
+    // B. Find the timetable entry for that slot
+    return timetable.find(entry => entry.timeSlotId === slot.id);
   };
 
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="border rounded-2xl overflow-hidden bg-white shadow-sm">
         <Table>
             <TableHeader>
-                <TableRow className="bg-slate-50">
-                    <TableHead className="w-[150px]">Time</TableHead>
-                    {days.map(day => <TableHead key={day}>{day}</TableHead>)}
+                <TableRow className="bg-slate-50 border-b-2">
+                    <TableHead className="w-[120px] font-black text-[10px] uppercase tracking-widest text-slate-400">Period</TableHead>
+                    {days.map(day => (
+                        <TableHead key={day} className="font-black text-[10px] uppercase tracking-widest text-slate-600 text-center border-l">
+                            {day}
+                        </TableHead>
+                    ))}
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {sortedTimeSlots.map(timeSlot => (
-                <TableRow key={timeSlot.id}>
-                    <TableCell className="font-medium bg-slate-50">{timeSlot.startTime} - {timeSlot.endTime}</TableCell>
-                    {days.map(day => {
-                    const entry = getEntry(day, timeSlot);
-                    if (entry) {
-                        const subject = subjects.find(s => s.id === entry.subjectId);
-                        const teacher = teachers.find(t => t.uid === entry.teacherId);
-                        const room = rooms.find(r => r.id === entry.roomId);
-                        return (
-                        <TableCell key={day} className="p-2 align-top">
-                            <div className="p-2 bg-muted rounded-md space-y-1 border-l-4 border-l-blue-500">
-                            <p className="font-semibold text-sm flex items-center gap-1.5"><Book className="h-4 w-4 text-blue-600" />{subject?.name || 'Unknown Subject'}</p>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1.5"><UserCircle className="h-4 w-4" />{teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unknown Teacher'}</p>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1.5"><Building className="h-4 w-4" />{room?.name || 'Unknown Room'}</p>
-                            </div>
+                {uniqueTimePoints.map(startTime => {
+                    // Get end time from any slot starting at this time
+                    const endTime = timeSlots.find(ts => ts.startTime === startTime)?.endTime || '';
+                    
+                    return (
+                        <TableRow key={startTime}>
+                            <TableCell className="font-bold bg-slate-50/50 py-4 text-center">
+                                <div className="text-sm text-slate-900">{startTime}</div>
+                                <div className="text-[9px] text-slate-400">{endTime}</div>
+                            </TableCell>
+                            {days.map(day => {
+                                const entry = getEntry(day, startTime);
+                                if (entry) {
+                                    const subject = subjects.find(s => s.id === entry.subjectId);
+                                    const teacher = teachers.find(t => t.uid === entry.teacherId);
+                                    const room = rooms.find(r => r.id === entry.roomId);
+                                    
+                                    return (
+                                        <TableCell key={day} className="p-1 border-l align-top">
+                                            <div className="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 h-full flex flex-col gap-1 min-h-[80px] hover:bg-indigo-50 transition-colors">
+                                                <p className="font-black text-xs text-indigo-900 leading-tight line-clamp-2">
+                                                    {subject?.name || 'N/A'}
+                                                </p>
+                                                <div className="mt-auto space-y-0.5">
+                                                    <p className="text-[9px] font-bold text-slate-500 uppercase truncate flex items-center gap-1">
+                                                        <UserCircle className="h-2.5 w-2.5 opacity-40" /> {teacher ? `${teacher.firstName} ${teacher.lastName}` : 'TBA'}
+                                                    </p>
+                                                    <p className="text-[9px] font-bold text-slate-500 uppercase truncate flex items-center gap-1">
+                                                        <Building className="h-2.5 w-2.5 opacity-40" /> {room?.name || 'TBA'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                    );
+                                }
+                                return <TableCell key={day} className="border-l bg-slate-50/20"></TableCell>;
+                            })}
+                        </TableRow>
+                    );
+                })}
+                {uniqueTimePoints.length === 0 && (
+                    <TableRow>
+                        <TableCell colSpan={6} className="py-20 text-center text-slate-400 italic">
+                            No time slots defined. Configure slots in the Configuration tab.
                         </TableCell>
-                        );
-                    }
-                    return <TableCell key={day}></TableCell>;
-                    })}
-                </TableRow>
-                ))}
+                    </TableRow>
+                )}
             </TableBody>
         </Table>
     </div>
