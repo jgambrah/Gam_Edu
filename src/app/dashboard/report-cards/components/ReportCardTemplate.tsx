@@ -162,6 +162,45 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     </tbody>
                 </table>
 
+                {/* OFFICIAL GES GRADING KEY */}
+                <div className="mb-4 mt-2">
+                    <h4 className="text-[10px] font-black uppercase mb-1 border-b-2 border-slate-800 w-max pr-4" style={{ color: secondaryTheme }}>
+                        Official GES Grading Scale
+                    </h4>
+                    <div className="grid grid-cols-6 text-[9px] border-2 border-slate-800 bg-slate-50 divide-x divide-slate-300">
+                        <div className="p-1.5 text-center flex flex-col">
+                            <span className="font-black text-slate-800">80 - 100%</span>
+                            <span className="font-bold text-blue-700">A</span>
+                            <span className="italic text-slate-500">Excellent</span>
+                        </div>
+                        <div className="p-1.5 text-center flex flex-col">
+                            <span className="font-black text-slate-800">70 - 79%</span>
+                            <span className="font-bold text-green-700">B</span>
+                            <span className="italic text-slate-500">Very Good</span>
+                        </div>
+                        <div className="p-1.5 text-center flex flex-col">
+                            <span className="font-black text-slate-800">60 - 69%</span>
+                            <span className="font-bold text-yellow-600">C</span>
+                            <span className="italic text-slate-500">Good</span>
+                        </div>
+                        <div className="p-1.5 text-center flex flex-col">
+                            <span className="font-black text-slate-800">50 - 59%</span>
+                            <span className="font-bold text-orange-500">D</span>
+                            <span className="italic text-slate-500">Credit</span>
+                        </div>
+                        <div className="p-1.5 text-center flex flex-col">
+                            <span className="font-black text-slate-800">40 - 49%</span>
+                            <span className="font-bold text-slate-500">E</span>
+                            <span className="italic text-slate-500">Pass</span>
+                        </div>
+                        <div className="p-1.5 text-center flex flex-col bg-red-50">
+                            <span className="font-black text-slate-800">0 - 39%</span>
+                            <span className="font-bold text-red-600">F</span>
+                            <span className="italic text-slate-500">Fail</span>
+                        </div>
+                    </div>
+                </div>
+
                 {/* ── REMARKS ── */}
                 <div className="grid grid-cols-2 gap-6 mb-12">
                     <div className="p-5 border-2 rounded-3xl bg-slate-50" style={{ borderColor: `${secondaryTheme}40` }}>
