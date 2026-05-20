@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -11,7 +12,7 @@ import { TimeSlot, TimetableEntry, Subject, Room, Student, Class } from '@/lib/t
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle } from 'lucide-react';
+import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
@@ -20,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import TimetableSeeder from '@/components/TimetableSeeder';
 
 type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
 
@@ -193,54 +195,58 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in">
-            {/* TIME SLOTS */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4"/> Daily Time Slots</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-xl border">
-                        <Select value={newSlot.day} onValueChange={(v) => setNewSlot({...newSlot, day: v})}>
-                            <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                        <Input type="time" value={newSlot.start} onChange={e => setNewSlot({...newSlot, start: e.target.value})} className="h-9 text-xs" />
-                        <Button onClick={handleAddSlot} disabled={loading} size="sm" className="h-9"><Plus className="h-3 w-3"/></Button>
-                    </div>
-                    <div className="max-h-[300px] overflow-y-auto space-y-1">
-                        {timeSlots.sort((a,b) => a.startTime.localeCompare(b.startTime)).map(ts => (
-                            <div key={ts.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
-                                <span><strong>{ts.day.substring(0,3)}:</strong> {ts.startTime} - {ts.endTime}</span>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('timeSlots', ts.id)}><Trash2 className="h-3 w-3"/></Button>
-                            </div>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
+        <div className="space-y-8 animate-in fade-in">
+            <TimetableSeeder />
 
-            {/* ROOMS */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-sm font-bold flex items-center gap-2"><MapPin className="h-4 w-4"/> School Rooms</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="flex gap-2 p-3 bg-slate-50 rounded-xl border">
-                        <Input placeholder="Room Name..." value={newRoom} onChange={e => setNewRoom(e.target.value)} className="h-9 text-xs bg-white" />
-                        <Button onClick={handleAddRoom} disabled={loading || !newRoom} size="sm" className="h-9 px-4">Add</Button>
-                    </div>
-                    <div className="max-h-[300px] overflow-y-auto space-y-1">
-                        {rooms.map(r => (
-                            <div key={r.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
-                                <span>{r.name}</span>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('rooms', r.id)}><Trash2 className="h-3 w-3"/></Button>
-                            </div>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* TIME SLOTS */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4"/> Daily Time Slots</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-xl border">
+                            <Select value={newSlot.day} onValueChange={(v) => setNewSlot({...newSlot, day: v})}>
+                                <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                            <Input type="time" value={newSlot.start} onChange={e => setNewSlot({...newSlot, start: e.target.value})} className="h-9 text-xs" />
+                            <Button onClick={handleAddSlot} disabled={loading} size="sm" className="h-9"><Plus className="h-3 w-3"/></Button>
+                        </div>
+                        <div className="max-h-[300px] overflow-y-auto space-y-1">
+                            {timeSlots.sort((a,b) => a.startTime.localeCompare(b.startTime)).map(ts => (
+                                <div key={ts.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
+                                    <span><strong>{ts.day.substring(0,3)}:</strong> {ts.startTime} - {ts.endTime}</span>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('timeSlots', ts.id)}><Trash2 className="h-3 w-3"/></Button>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* ROOMS */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-sm font-bold flex items-center gap-2"><MapPin className="h-4 w-4"/> School Rooms</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex gap-2 p-3 bg-slate-50 rounded-xl border">
+                            <Input placeholder="Room Name..." value={newRoom} onChange={e => setNewRoom(e.target.value)} className="h-9 text-xs bg-white" />
+                            <Button onClick={handleAddRoom} disabled={loading || !newRoom} size="sm" className="h-9 px-4">Add</Button>
+                        </div>
+                        <div className="max-h-[300px] overflow-y-auto space-y-1">
+                            {rooms.map(r => (
+                                <div key={r.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
+                                    <span>{r.name}</span>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('rooms', r.id)}><Trash2 className="h-3 w-3"/></Button>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
@@ -371,7 +377,9 @@ export default function TimetablePage() {
     refetchTimetable();
   };
 
-  const filteredTimetable = timetable?.filter(entry => entry.classId === selectedClassId) || [];
+  const filteredTimetable = useMemo(() => {
+      return timetable?.filter(entry => entry.classId === selectedClassId) || [];
+  }, [timetable, selectedClassId]);
 
   return (
     <div className="space-y-6">
@@ -383,6 +391,9 @@ export default function TimetablePage() {
                 {canManage && <TabsTrigger value="config" className="rounded-lg font-bold px-6">Configuration</TabsTrigger>}
             </TabsList>
             <div className="flex gap-2">
+                <Button variant="outline" onClick={() => { refetchTimetable(); refetchSlots(); refetchRooms(); }} className="gap-2">
+                    <RefreshCw className="h-4 w-4" /> Sync Data
+                </Button>
                 {canManage && selectedClassId && (
                     <Button onClick={() => setIsManualOpen(true)} className="bg-slate-800">
                         <Plus className="mr-2 h-4 w-4"/> Manual Assignment
@@ -473,6 +484,12 @@ export default function TimetablePage() {
                                         <span>Subjects Defined ({subjects?.length || 0})</span>
                                     </li>
                                 </ul>
+                                {(!timeSlots?.length || !rooms?.length) && (
+                                    <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-200 text-xs">
+                                        <AlertTriangle className="h-4 w-4 mb-1" />
+                                        You need to define your school's time slots and rooms in the <strong>Configuration</strong> tab before using the AI Scheduler.
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </CardContent>
