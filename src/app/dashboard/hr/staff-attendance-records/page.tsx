@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -14,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer, MapPin } from 'lucide-react';
+import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer, MapPin, ShieldAlert } from 'lucide-react';
 import { format, startOfDay, endOfDay, setHours, setMinutes } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
@@ -53,9 +51,7 @@ export default function StaffAttendanceRecordsPage() {
 
   // 3. Filter and process data
   const { filteredLogs, stats } = useMemo(() => {
-    if (!attendanceLogs) return { filteredLogs: [], stats: { total: 0, late: 0 } };
-
-    const schoolStartTime = setMinutes(setHours(new Date(), START_HOUR), START_MINUTE);
+    if (!attendanceLogs) return { filteredLogs: [], stats: { total: 0, late: 0, flagged: 0 } };
 
     const filtered = attendanceLogs.filter(log => {
       if (!log.timestamp) return false;
@@ -78,9 +74,11 @@ export default function StaffAttendanceRecordsPage() {
         return clockInTime > schoolStartForDay;
     }).length;
 
+    const flaggedCount = filtered.filter(log => (log as any).isFlagged === true).length;
+
     return { 
         filteredLogs: filtered,
-        stats: { total: filtered.length, late: lateArrivals }
+        stats: { total: filtered.length, late: lateArrivals, flagged: flaggedCount }
     };
   }, [attendanceLogs, dateRange, selectedStaffId]);
   
@@ -94,30 +92,34 @@ export default function StaffAttendanceRecordsPage() {
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2"><UserCheck /> Staff Attendance Audit</h1>
-          <p className="text-muted-foreground">Monitor and verify staff check-ins and check-outs.</p>
+          <h1 className="text-3xl font-bold flex items-center gap-2 text-slate-800"><UserCheck className="text-indigo-600"/> Staff Attendance Audit</h1>
+          <p className="text-muted-foreground">Monitor proximity verification and arrival punctuality.</p>
         </div>
-        <Button onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print Report</Button>
+        <Button onClick={() => window.print()} variant="outline"><Printer className="mr-2 h-4 w-4"/> Print Report</Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader><CardTitle>Total Logs</CardTitle><CardDescription>In selected period</CardDescription></CardHeader>
-          <CardContent><p className="text-3xl font-bold">{stats.total}</p></CardContent>
+        <Card className="border-l-4 border-l-blue-500">
+          <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Total Logs</CardTitle></CardHeader>
+          <CardContent><p className="text-3xl font-black">{stats.total}</p></CardContent>
         </Card>
-        <Card>
-          <CardHeader><CardTitle>Late Arrivals</CardTitle><CardDescription>Clock-ins after {START_HOUR}:{String(START_MINUTE).padStart(2, '0')} AM</CardDescription></CardHeader>
-          <CardContent><p className="text-3xl font-bold text-red-600">{stats.late}</p></CardContent>
+        <Card className="border-l-4 border-l-red-500">
+          <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Off-Campus Flags</CardTitle></CardHeader>
+          <CardContent><p className="text-3xl font-black text-red-600">{stats.flagged}</p></CardContent>
+        </Card>
+        <Card className="border-l-4 border-l-amber-500">
+          <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Late Arrivals</CardTitle></CardHeader>
+          <CardContent><p className="text-3xl font-black text-amber-600">{stats.late}</p></CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
+      <Card className="rounded-3xl border-none shadow-xl overflow-hidden bg-white">
+        <CardHeader className="bg-slate-50/50 border-b p-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className={cn("w-full sm:w-[300px] justify-start text-left font-normal")}>
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                <Button variant="outline" className={cn("w-full sm:w-[300px] justify-start text-left font-normal border-2 h-11 bg-white")}>
+                  <CalendarIcon className="mr-2 h-4 w-4 text-indigo-600" />
                   {dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</> : format(dateRange.from, "LLL dd, y")) : <span>Pick a date range</span>}
                 </Button>
               </PopoverTrigger>
@@ -126,7 +128,7 @@ export default function StaffAttendanceRecordsPage() {
               </PopoverContent>
             </Popover>
             <Select onValueChange={setSelectedStaffId} value={selectedStaffId}>
-              <SelectTrigger className="w-full sm:w-[250px]"><SelectValue placeholder="All Staff" /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-[250px] border-2 h-11 bg-white"><SelectValue placeholder="All Staff" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Staff</SelectItem>
                 {staffList?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
@@ -134,48 +136,80 @@ export default function StaffAttendanceRecordsPage() {
             </Select>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex justify-center p-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
+            <div className="flex justify-center p-20"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>
           ) : (
             <Table>
-              <TableHeader><TableRow><TableHead>Staff Name</TableHead><TableHead>Date</TableHead><TableHead>Time</TableHead><TableHead>Type</TableHead><TableHead>Punctuality</TableHead><TableHead>Verification</TableHead><TableHead>Location</TableHead></TableRow></TableHeader>
+              <TableHeader className="bg-slate-50/50">
+                <TableRow>
+                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Staff Member</TableHead>
+                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Timestamp</TableHead>
+                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Activity</TableHead>
+                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Proximity</TableHead>
+                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Identity</TableHead>
+                    <TableHead className="text-right font-bold text-[10px] uppercase tracking-widest">Location</TableHead>
+                </TableRow>
+              </TableHeader>
               <TableBody>
                 {filteredLogs.map(log => {
                     const logDate = log.timestamp.toDate();
                     const schoolStartForDay = setMinutes(setHours(logDate, START_HOUR), START_MINUTE);
                     const isLate = log.type === 'In' && logDate > schoolStartForDay;
+                    const isFlagged = (log as any).isFlagged === true;
                     
                     return (
-                        <TableRow key={log.id}>
-                            <TableCell className="font-medium">{log.staffName}</TableCell>
-                            <TableCell>{format(logDate, 'PPP')}</TableCell>
-                            <TableCell>{format(logDate, 'p')}</TableCell>
-                            <TableCell><Badge variant={log.type === 'In' ? 'default' : 'secondary'}>{log.type}</Badge></TableCell>
+                        <TableRow key={log.id} className={cn("hover:bg-slate-50 transition-colors", isFlagged && "bg-red-50/30")}>
                             <TableCell>
-                                {log.type === 'In' && (
-                                    <Badge variant={isLate ? 'destructive' : 'default'}>{isLate ? 'Late' : 'On Time'}</Badge>
+                                <div className="font-bold text-slate-800">{log.staffName}</div>
+                                <div className="text-[10px] font-medium text-slate-400 uppercase">{log.staffId.slice(0, 8)}</div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="text-sm font-medium">{format(logDate, 'PPP')}</div>
+                                <div className="text-xs text-slate-500 font-bold">{format(logDate, 'h:mm a')}</div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="flex items-center gap-2">
+                                    <Badge variant={log.type === 'In' ? 'default' : 'secondary'} className={log.type === 'In' ? 'bg-indigo-600' : ''}>
+                                        {log.type === 'In' ? 'Check-In' : 'Check-Out'}
+                                    </Badge>
+                                    {log.type === 'In' && isLate && (
+                                        <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">LATE</Badge>
+                                    )}
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                {isFlagged ? (
+                                    <div className="flex flex-col gap-1">
+                                        <Badge variant="destructive" className="w-fit text-[10px] font-black uppercase tracking-tighter">⚠️ Off Campus</Badge>
+                                        <span className="text-[10px] text-red-600 font-black">{(log as any).distanceMeters}m Away</span>
+                                    </div>
+                                ) : (
+                                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-black uppercase tracking-tighter">Verified On-Site</Badge>
                                 )}
                             </TableCell>
                             <TableCell>
-                                <Button variant="outline" size="sm" onClick={() => setPhotoToView(log.verificationPhotoUrl)}>View Photo</Button>
+                                <Button variant="ghost" size="sm" onClick={() => setPhotoToView(log.verificationPhotoUrl)} className="text-xs font-bold text-indigo-600 hover:bg-indigo-50">View Selfie</Button>
                             </TableCell>
-                             <TableCell>
+                             <TableCell className="text-right">
                                 {log.latitude && log.longitude ? (
                                     <a href={`https://www.google.com/maps?q=${log.latitude},${log.longitude}`} target="_blank" rel="noopener noreferrer">
-                                        <Button variant="ghost" size="sm" className="flex items-center gap-1 text-blue-600">
-                                            <MapPin className="h-4 w-4" />
-                                            Map
+                                        <Button variant="outline" size="sm" className="h-8 text-xs font-bold gap-1 rounded-xl">
+                                            <MapPin className="h-3 w-3" /> Map
                                         </Button>
                                     </a>
                                 ) : (
-                                    <span className="text-xs text-muted-foreground">N/A</span>
+                                    <span className="text-xs text-slate-300">N/A</span>
                                 )}
                             </TableCell>
                         </TableRow>
                     );
                 })}
-                 {filteredLogs.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No records match the selected filters.</TableCell></TableRow>}
+                {filteredLogs.length === 0 && (
+                    <TableRow>
+                        <TableCell colSpan={6} className="text-center py-20 text-slate-400 italic">No attendance records match your active filters.</TableCell>
+                    </TableRow>
+                )}
               </TableBody>
             </Table>
           )}
@@ -183,9 +217,10 @@ export default function StaffAttendanceRecordsPage() {
       </Card>
       
       <Dialog open={!!photoToView} onOpenChange={() => setPhotoToView(null)}>
-        <DialogContent>
-            <DialogHeader><DialogTitle>Verification Photo</DialogTitle></DialogHeader>
-            {photoToView && <img src={photoToView} alt="Verification" className="w-full aspect-video object-cover rounded-md" />}
+        <DialogContent className="rounded-[2.5rem] border-8 border-slate-100">
+            <DialogHeader><DialogTitle className="text-xl font-black uppercase tracking-tight">Identity Verification Photo</DialogTitle></DialogHeader>
+            {photoToView && <img src={photoToView} alt="Verification" className="w-full aspect-video object-cover rounded-2xl shadow-inner" />}
+            <p className="text-[10px] text-center font-bold text-slate-400 uppercase tracking-widest mt-2">Captured via secure browser terminal</p>
         </DialogContent>
       </Dialog>
     </div>

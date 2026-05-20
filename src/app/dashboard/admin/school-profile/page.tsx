@@ -21,7 +21,8 @@ import {
   MessageSquare,
   MessageCircle,
   CreditCard,
-  DollarSign
+  DollarSign,
+  MapPin
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -68,6 +69,11 @@ export default function SchoolProfilePage() {
   const [autoLockDebtors, setAutoLockDebtors] = useState(false);
   const [autoLockStudents, setAutoLockStudents] = useState(false);
   const [debtorLockThreshold, setDebtorLockThreshold] = useState(0);
+
+  // Geofencing States
+  const [schoolLat, setSchoolLat] = useState<number | ''>('');
+  const [schoolLng, setSchoolLng] = useState<number | ''>('');
+  const [allowedRadius, setAllowedRadius] = useState<number>(200);
 
   // WhatsApp Automation States
   const [waInstanceId, setWaInstanceId] = useState('');
@@ -120,6 +126,10 @@ export default function SchoolProfilePage() {
         setAutoLockDebtors(profile.autoLockDebtors === true);
         setAutoLockStudents(profile.autoLockStudents === true);
         setDebtorLockThreshold(Number(profile.debtorLockThreshold) || 0);
+
+        setSchoolLat(profile.schoolLat ?? '');
+        setSchoolLng(profile.schoolLng ?? '');
+        setAllowedRadius(profile.allowedRadius ?? 200);
 
         setWaInstanceId(profile.waInstanceId || '');
         setWaToken(profile.waToken || '');
@@ -216,7 +226,10 @@ export default function SchoolProfilePage() {
             allowAdminBillingToggles,
             autoLockDebtors,
             autoLockStudents,
-            debtorLockThreshold,
+            debtorLockThreshold: Number(debtorLockThreshold),
+            schoolLat: schoolLat !== '' ? Number(schoolLat) : null,
+            schoolLng: schoolLng !== '' ? Number(schoolLng) : null,
+            allowedRadius: Number(allowedRadius),
             waInstanceId,
             waToken,
             enableWhatsApp,
@@ -358,8 +371,55 @@ export default function SchoolProfilePage() {
                             <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Globe className="h-3 w-3"/> Website</Label><Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" className="h-11 border-2 rounded-xl" /></div>
                         </div>
 
+                        {/* --- GEOFENCING SECTION --- */}
+                        <div className="space-y-4 p-5 border-2 rounded-[2rem] bg-slate-50 border-slate-200 mt-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="space-y-0.5">
+                                    <Label className="text-base font-black text-slate-800 flex items-center gap-2 uppercase tracking-tight">
+                                        <MapPin className="h-5 w-5 text-indigo-600"/> Attendance Geofencing (GPS)
+                                    </Label>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Automatic flagging for off-campus staff check-ins</p>
+                                </div>
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="bg-white border-2 rounded-xl font-bold h-9"
+                                    onClick={() => {
+                                        if (navigator.geolocation) {
+                                            navigator.geolocation.getCurrentPosition((pos) => {
+                                                setSchoolLat(pos.coords.latitude);
+                                                setSchoolLng(pos.coords.longitude);
+                                                toast({ title: "Coordinates Captured", description: "School location set based on your current position." });
+                                            }, () => toast({ variant: "destructive", title: "Error", description: "Could not get location. Ensure GPS is enabled." }));
+                                        }
+                                    }}
+                                >
+                                    📍 Get Current Location
+                                </Button>
+                            </div>
+                            <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                                Set the official GPS coordinates of the school. When staff clock in, the system will calculate their distance and flag those outside the allowed radius.
+                            </p>
+                            
+                            <div className="grid md:grid-cols-3 gap-4 pt-2">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-slate-400">School Latitude</Label>
+                                    <Input type="number" step="any" value={schoolLat} onChange={e => setSchoolLat(e.target.value === '' ? '' : parseFloat(e.target.value))} className="h-11 border-2 rounded-xl bg-white" placeholder="e.g. 5.6037" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-slate-400">School Longitude</Label>
+                                    <Input type="number" step="any" value={schoolLng} onChange={e => setSchoolLng(e.target.value === '' ? '' : parseFloat(e.target.value))} className="h-11 border-2 rounded-xl bg-white" placeholder="e.g. -0.1870" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-slate-400">Allowed Radius (Meters)</Label>
+                                    <Input type="number" value={allowedRadius} onChange={e => setAllowedRadius(parseInt(e.target.value) || 0)} className="h-11 border-2 rounded-xl bg-white" placeholder="200" />
+                                </div>
+                            </div>
+                        </div>
+
                         {/* --- WHATSAPP AUTOMATION SECTION --- */}
-                        <div className="space-y-4 p-5 border-2 rounded-[2rem] bg-emerald-50/30 border-emerald-100 mt-6 shadow-sm">
+                        <div className="space-y-4 p-5 border-2 rounded-[2rem] bg-emerald-50/30 border-emerald-100 mt-4 shadow-sm">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <Label className="text-base font-black text-emerald-800 flex items-center gap-2 uppercase tracking-tight">

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, where, orderBy, addDoc, serverTimestamp, limit, getDocs } from 'firebase/firestore';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
+import { collection, query, where, orderBy, addDoc, serverTimestamp, limit, getDocs, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle, ShieldAlert } from 'lucide-react';
@@ -14,6 +14,21 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import type { StaffAttendance } from '@/lib/types';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useRole } from '@/context/role-context';
+
+/**
+ * Calculates the great-circle distance between two points (Haversine formula).
+ * @returns Distance in meters.
+ */
+function getDistanceInMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371e3; // Earth radius in meters
+  const p1 = lat1 * Math.PI / 180;
+  const p2 = lat2 * Math.PI / 180;
+  const dp = (lat2 - lat1) * Math.PI / 180;
+  const dl = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dp / 2) * Math.sin(dp / 2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) * Math.sin(dl / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 export default function StaffAttendancePage() {
   const { user, isUserLoading } = useUser();
@@ -29,7 +44,14 @@ export default function StaffAttendancePage() {
 
   const isStaff = role && !['Student', 'Parent'].includes(role);
 
-  // Fetch recent attendance logs for the current user (only if they are staff)
+  // Fetch School Settings for Geofencing
+  const schoolSettingsRef = useMemoFirebase(
+    () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
+    [firestore, schoolId]
+  );
+  const { data: schoolSettings } = useDoc<any>(schoolSettingsRef as any);
+
+  // Fetch recent attendance logs for the current user
   const attendanceQuery = useMemoFirebase(() => {
     if (!user || !schoolId || !firestore || !isStaff) return null;
     return query(
@@ -57,7 +79,7 @@ export default function StaffAttendancePage() {
           toast({
             variant: "destructive",
             title: "Location Error",
-            description: "Could not get your location. Please enable location services.",
+            description: "Could not get your location. Please enable location services to verify your campus proximity.",
           });
         }
       );
@@ -79,63 +101,59 @@ export default function StaffAttendancePage() {
   }, [lastAction, hasClockedInToday]);
 
 
-  const handleClockIn = async () => {
+  const handleClockAction = async (type: 'In' | 'Out') => {
     if (!user || !imageDataUri || !schoolId || !location) {
         toast({
             variant: 'destructive',
-            title: 'Cannot Clock In',
-            description: 'Please ensure photo is taken and location is enabled.'
-        })
+            title: `Cannot Clock ${type}`,
+            description: 'Please ensure photo is taken and location services are active.'
+        });
         return;
     }
+
     setIsSubmitting(true);
+
+    // Geofencing logic
+    let isFlagged = false;
+    let distance = 0;
+    
+    if (schoolSettings?.schoolLat && schoolSettings?.schoolLng) {
+        distance = getDistanceInMeters(
+            schoolSettings.schoolLat, 
+            schoolSettings.schoolLng, 
+            location.latitude, 
+            location.longitude
+        );
+        if (distance > (schoolSettings.allowedRadius || 200)) {
+            isFlagged = true;
+        }
+    }
+
     try {
-      await addDocumentNonBlocking(collection(firestore, 'staff_attendance'), {
+      await addDocumentNonBlocking(collection(firestore!, 'staff_attendance'), {
         staffId: user.uid,
         staffName: user.displayName || 'N/A',
-        type: 'In',
+        type,
         timestamp: serverTimestamp(),
         verificationPhotoUrl: imageDataUri,
         schoolId: schoolId,
         latitude: location.latitude,
         longitude: location.longitude,
+        isFlagged,
+        distanceMeters: Math.round(distance),
       });
-      toast({ title: 'Clocked In!', description: 'Your arrival has been recorded.' });
+
+      toast({ 
+          title: `Clocked ${type}!`, 
+          description: isFlagged 
+            ? `Your record has been flagged because you are ${Math.round(distance)}m from campus.` 
+            : `Your ${type === 'In' ? 'arrival' : 'departure'} has been recorded.` 
+      });
+
       setImageDataUri(null);
       forceRefetch();
     } catch (e) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to clock in.' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  const handleClockOut = async () => {
-    if (!user || !imageDataUri || !schoolId || !location) {
-        toast({
-            variant: 'destructive',
-            title: 'Cannot Clock Out',
-            description: 'Please ensure photo is taken and location is enabled.'
-        })
-        return;
-    }
-    setIsSubmitting(true);
-    try {
-        await addDocumentNonBlocking(collection(firestore, 'staff_attendance'), {
-            staffId: user.uid,
-            staffName: user.displayName || 'N/A',
-            type: 'Out',
-            timestamp: serverTimestamp(),
-            verificationPhotoUrl: imageDataUri,
-            schoolId: schoolId,
-            latitude: location.latitude,
-            longitude: location.longitude,
-        });
-        toast({ title: 'Clocked Out!', description: 'Your departure has been recorded.' });
-        setImageDataUri(null);
-        forceRefetch();
-    } catch (e) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to clock out.'});
+      toast({ variant: 'destructive', title: 'Error', description: `Failed to clock ${type}.` });
     } finally {
       setIsSubmitting(false);
     }
@@ -176,7 +194,7 @@ export default function StaffAttendancePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Camera/> Staff Attendance</CardTitle>
-            <CardDescription>Use your device&apos;s camera to clock in and out for the day.</CardDescription>
+            <CardDescription>Use your device's camera to clock in and out. Your location is verified against the school's geofence.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
             <WebcamCapture 
@@ -194,14 +212,14 @@ export default function StaffAttendancePage() {
             </div>
             <div className="flex w-full gap-4 mt-4">
               <Button 
-                onClick={handleClockIn} 
+                onClick={() => handleClockAction('In')} 
                 disabled={isSubmitting || !imageDataUri || hasClockedInToday || !location}
                 className="flex-1 bg-green-600 hover:bg-green-700 h-12 text-lg"
               >
                 {isSubmitting ? <Loader2 className="animate-spin"/> : <LogIn className="mr-2"/>} Clock In
               </Button>
               <Button 
-                onClick={handleClockOut}
+                onClick={() => handleClockAction('Out')}
                 disabled={isSubmitting || !imageDataUri || !hasClockedInToday || hasClockedOutToday || !location}
                 className="flex-1 bg-red-500 hover:bg-red-600 h-12 text-lg"
               >
@@ -233,15 +251,18 @@ export default function StaffAttendancePage() {
                   attendanceLogs.map((log, index) => {
                     const uniqueKey = log.id || `${log.staffId}-${log.type}-${log.timestamp?.toMillis()}-${index}`;
                     return (
-                      <li key={uniqueKey} className="flex items-center justify-between">
+                      <li key={uniqueKey} className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 transition-colors">
                         <div className="flex items-center gap-2">
                           <div className={`p-2 rounded-full ${log.type === 'In' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                             {log.type === 'In' ? <LogIn className="h-4 w-4"/> : <LogOut className="h-4 w-4"/>}
                           </div>
                           <div>
-                            <p className="font-semibold text-sm">{log.type === 'In' ? 'Clocked In' : 'Clocked Out'}</p>
+                            <div className="flex items-center gap-2">
+                                <p className="font-semibold text-sm">{log.type === 'In' ? 'Clocked In' : 'Clocked Out'}</p>
+                                {(log as any).isFlagged && <Badge variant="destructive" className="h-4 text-[8px] uppercase px-1">Off Campus</Badge>}
+                            </div>
                             <p className="text-xs text-muted-foreground">
-                              {log.timestamp ? format(log.timestamp.toDate(), 'PPP p') : 'Processing...'}
+                              {log.timestamp ? format(log.timestamp.toDate(), 'p') : 'Processing...'}
                             </p>
                           </div>
                         </div>
