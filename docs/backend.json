@@ -938,6 +938,7 @@
         "action": { "type": "string", "description": "A short, machine-readable code for the action (e.g., 'CREATE_STUDENT')." },
         "details": { "type": "string", "description": "A human-readable description of the action (e.g., 'Created student John Doe')." },
         "targetId": { "type": "string", "description": "The ID of the document or entity that was affected by the action." },
+        "targetName": { "type": "string", "description": "The name of the entity that was affected." },
         "timestamp": { "type": "string", "format": "date-time", "description": "When the action occurred." }
       },
       "required": ["userId", "userName", "action", "details", "timestamp"]
@@ -958,6 +959,24 @@
             "schoolId": { "type": "string" }
         },
         "required": ["name", "category", "quantity", "status", "schoolId"]
+    },
+    "SpotCheck": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SpotCheck",
+      "type": "object",
+      "description": "Represents a security presence check session.",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "initiatedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["active", "expired"] },
+        "responses": { 
+          "type": "array",
+          "items": { "type": "object" }
+        }
+      },
+      "required": ["id", "schoolId", "initiatedAt", "expiresAt", "status"]
     }
   },
   "auth": {
@@ -1057,6 +1076,17 @@
               "description": "Unique identifier for the inventory item."
             }
           ]
+        }
+      },
+      {
+        "path": "/spot_checks/{checkId}",
+        "definition": {
+          "entityName": "SpotCheck",
+          "schema": {
+            "$ref": "#/backend/entities/SpotCheck"
+          },
+          "description": "Stores security spot checks and staff responses.",
+          "params": [{ "name": "checkId" }]
         }
       }
     ],
