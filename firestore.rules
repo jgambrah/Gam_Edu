@@ -1,4 +1,4 @@
-// v1.8: [REDEPLOY] Simplified list access for spot_checks to ensure all staff can see alerts.
+// v1.9: [REDEPLOY] Consolidated spot_checks permissions and added role-based listener guards.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {

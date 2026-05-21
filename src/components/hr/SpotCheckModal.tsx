@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, orderBy, limit, doc, updateDoc, arrayUnion, getDoc, Timestamp } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { useRole } from '@/context/role-context';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +15,7 @@ import { getDistanceInMeters } from '@/lib/geo';
 export function SpotCheckModal() {
     const { user } = useUser();
     const { schoolId } = useCurrentSchool();
+    const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
     
@@ -26,14 +28,21 @@ export function SpotCheckModal() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    // 1. Listen for Active Spot Checks
-    const checkQuery = useMemoFirebase(() => (firestore && schoolId) ? query(
+    // Only staff who are NOT admins are targets for spot checks
+    const isTargetStaff = useMemo(() => {
+        if (!role) return false;
+        const targetRoles = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'];
+        return targetRoles.includes(role);
+    }, [role]);
+
+    // 1. Listen for Active Spot Checks - ONLY for target staff
+    const checkQuery = useMemoFirebase(() => (firestore && schoolId && isTargetStaff) ? query(
         collection(firestore, 'spot_checks'),
         where('schoolId', '==', schoolId),
         where('status', '==', 'active'),
         orderBy('initiatedAt', 'desc'),
         limit(1)
-    ) : null, [firestore, schoolId]);
+    ) : null, [firestore, schoolId, isTargetStaff]);
     
     const { data: checks } = useCollection<any>(checkQuery);
 
@@ -76,7 +85,7 @@ export function SpotCheckModal() {
     };
 
     useEffect(() => {
-        if (checks && checks.length > 0 && user) {
+        if (checks && checks.length > 0 && user && isTargetStaff) {
             const check = checks[0];
             const now = new Date();
             const expires = check.expiresAt?.toDate();
@@ -95,7 +104,7 @@ export function SpotCheckModal() {
         }
         
         return () => stopCamera();
-    }, [checks, user, startCamera, stopCamera]);
+    }, [checks, user, isTargetStaff, startCamera, stopCamera]);
 
     useEffect(() => {
         if (activeCheck && "geolocation" in navigator) {
