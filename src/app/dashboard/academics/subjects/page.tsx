@@ -59,9 +59,16 @@ function SubjectForm({
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Fix: Explicitly define all fields to prevent uncontrolled input errors
   const form = useForm<z.infer<typeof subjectSchema>>({
     resolver: zodResolver(subjectSchema),
-    defaultValues: initialData || { name: '', teacherIds: [], weeklyPeriods: 3, requiresLab: false, targetClasses: [] },
+    defaultValues: {
+      name: initialData?.name || '',
+      teacherIds: initialData?.teacherIds || [],
+      weeklyPeriods: initialData?.weeklyPeriods ?? 3,
+      requiresLab: initialData?.requiresLab ?? false,
+      targetClasses: initialData?.targetClasses || [],
+    },
   });
 
   async function onSubmit(values: z.infer<typeof subjectSchema>) {
