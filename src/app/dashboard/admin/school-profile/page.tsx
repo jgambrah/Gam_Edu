@@ -423,11 +423,12 @@ export default function SchoolProfilePage() {
                                     className="bg-white border-2 rounded-xl font-bold h-9"
                                     onClick={() => {
                                         if (navigator.geolocation) {
+                                            // Request high accuracy for the master location anchor
                                             navigator.geolocation.getCurrentPosition((pos) => {
                                                 setSchoolLat(pos.coords.latitude);
                                                 setSchoolLng(pos.coords.longitude);
                                                 toast({ title: "Coordinates Captured", description: "School location set based on your current position." });
-                                            }, () => toast({ variant: "destructive", title: "Error", description: "Could not get location. Ensure GPS is enabled." }));
+                                            }, () => toast({ variant: "destructive", title: "Error", description: "Could not get location. Ensure GPS is enabled." }), { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
                                         }
                                     }}
                                 >
