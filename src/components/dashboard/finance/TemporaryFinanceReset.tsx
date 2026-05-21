@@ -1,8 +1,7 @@
-/**
- * @fileOverview This component has been decommissioned and removed from the application 
- * to prevent accidental data deletion in production environments.
- */
 
+/**
+ * @fileOverview This component has been decommissioned.
+ */
 export function TemporaryFinanceReset() {
     return null;
 }
