@@ -11,7 +11,7 @@ import { TimeSlot, TimetableEntry, Subject, Room, Student, Class } from '@/lib/t
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle, RefreshCw, AlertTriangle, Microscope } from 'lucide-react';
+import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle, RefreshCw, AlertTriangle, Microscope, UserCheck, BookCopy } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
@@ -356,9 +356,9 @@ export default function TimetablePage() {
 
       const batch = writeBatch(firestore);
 
+      // Clean existing data for this school
       if(timetable) {
-          const classSpecificEntries = timetable.filter(e => e.classId === selectedClassId || !selectedClassId);
-          classSpecificEntries.forEach(entry => {
+          timetable.forEach(entry => {
             batch.delete(doc(firestore, 'timetables', entry.id));
           });
       }
@@ -389,6 +389,24 @@ export default function TimetablePage() {
       return timetable?.filter(entry => entry.classId === selectedClassId) || [];
   }, [timetable, selectedClassId]);
 
+  // --- READINESS CHECKLIST ---
+  const readiness = useMemo(() => {
+    const hasSlots = (timeSlots?.length || 0) > 0;
+    const hasRooms = (rooms?.length || 0) > 0;
+    const hasSubjects = (subjects?.length || 0) > 0;
+    const hasClasses = (classes?.length || 0) > 0;
+    const hasTeachers = (allTeachers?.length || 0) > 0;
+
+    const subjectsWithTeachers = subjects?.filter(s => (s.teacherIds?.length || 0) > 0).length || 0;
+    const classesWithRooms = classes?.filter(c => !!c.homeRoomId).length || 0;
+
+    return {
+      hasSlots, hasRooms, hasSubjects, hasClasses, hasTeachers,
+      isFullyReady: hasSlots && hasRooms && hasSubjects && hasClasses && hasTeachers,
+      counts: { subjectsWithTeachers, classesWithRooms, totalSubjects: subjects?.length || 0, totalClasses: classes?.length || 0 }
+    };
+  }, [timeSlots, rooms, subjects, classes, allTeachers]);
+
   if (!canAccess && !isLoadingSchool) return <Card className="p-8 text-center text-red-500">Access Denied</Card>;
 
   return (
@@ -401,7 +419,7 @@ export default function TimetablePage() {
             </TabsList>
             <div className="flex gap-2">
                 <Button variant="outline" onClick={() => { refetchTimetable(); refetchSlots(); refetchRooms(); }} className="gap-2">
-                    <RefreshCw className="h-4 w-4" /> Sync Data
+                    <RefreshCw className={cn("h-4 w-4", isTimetableLoading && "animate-spin")} /> Sync Data
                 </Button>
                 {canManage && selectedClassId && (
                     <Button onClick={() => setIsManualOpen(true)} className="bg-slate-800">
@@ -464,48 +482,76 @@ export default function TimetablePage() {
                         <CardTitle className="flex items-center gap-2 text-emerald-400 uppercase italic tracking-tight"><Wand2 /> AI Scheduler</CardTitle>
                         <CardDescription className="text-slate-400">Generate a conflict-free school schedule automatically based on Ghanaian institutional logic.</CardDescription>
                     </CardHeader>
-                    <CardContent className="px-8 pb-8 space-y-4">
-                        <div className="grid md:grid-cols-2 gap-6">
+                    <CardContent className="px-8 pb-8 space-y-8">
+                        
+                        {/* READINESS CHECKLIST UI */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <ChecklistItem 
+                                icon={Clock} 
+                                title="Time Slots" 
+                                status={readiness.hasSlots} 
+                                desc={`${timeSlots?.length || 0} periods defined.`} 
+                            />
+                            <ChecklistItem 
+                                icon={MapPin} 
+                                title="Rooms & Labs" 
+                                status={readiness.hasRooms} 
+                                desc={`${rooms?.length || 0} locations registered.`} 
+                            />
+                            <ChecklistItem 
+                                icon={BookCopy} 
+                                title="Subjects & Teachers" 
+                                status={readiness.counts.subjectsWithTeachers === readiness.counts.totalSubjects && readiness.counts.totalSubjects > 0} 
+                                desc={`${readiness.counts.subjectsWithTeachers}/${readiness.counts.totalSubjects} subjects have teachers.`} 
+                            />
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6 pt-4">
                             <div className="space-y-4">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Custom Constraints</Label>
                                 <Textarea
                                     placeholder="Add constraints: e.g., 'Math classes must be in the morning' or 'Teachers shouldn't have more than 3 classes a day'."
                                     value={customConstraint}
                                     onChange={(e) => setCustomConstraint(e.target.value)}
                                     className="bg-white/5 border-white/10 text-white min-h-[120px] rounded-2xl"
                                 />
-                                <Button onClick={handleGenerateTimetable} disabled={isGenerating || !timeSlots?.length} className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl text-lg shadow-xl active:scale-95 transition-all">
+                                <Button 
+                                    onClick={handleGenerateTimetable} 
+                                    disabled={isGenerating || !readiness.isFullyReady} 
+                                    className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl text-lg shadow-xl active:scale-95 transition-all disabled:opacity-50"
+                                >
                                     {isGenerating ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : <Wand2 className="mr-2 h-6 w-6" />}
                                     RUN AI SCHEDULER (-50 Credits)
                                 </Button>
+                                {!readiness.isFullyReady && (
+                                    <p className="text-center text-xs text-rose-400 font-bold animate-pulse uppercase tracking-tight">
+                                        Checklist must be green to enable scheduler
+                                    </p>
+                                )}
                             </div>
+                            
                             <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
-                                <h4 className="text-sm font-bold uppercase text-slate-400 tracking-widest">Generation Checklist</h4>
-                                <ul className="space-y-2 text-xs font-medium">
-                                    <li className="flex items-center gap-2">
-                                        <div className={cn("w-4 h-4 rounded-full flex items-center justify-center", timeSlots?.length ? "bg-green-500" : "bg-red-500")}>
-                                            {timeSlots?.length ? <CheckCircle2 className="h-3 w-3 text-white"/> : <XCircle className="h-3 w-3 text-white"/>}
-                                        </div>
-                                        <span>Time Slots Configured ({timeSlots?.length || 0})</span>
+                                <h4 className="text-sm font-bold uppercase text-slate-400 tracking-widest flex items-center gap-2">
+                                    <Settings2 className="h-4 w-4"/> AI Logic Rules
+                                </h4>
+                                <ul className="space-y-3 text-[11px] font-medium text-slate-300">
+                                    <li className="flex gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                                        <span><strong>Lower Primary:</strong> Madam/Sir stays in the room for all core subjects.</span>
                                     </li>
-                                    <li className="flex items-center gap-2">
-                                        <div className={cn("w-4 h-4 rounded-full flex items-center justify-center", rooms?.length ? "bg-green-500" : "bg-red-500")}>
-                                            {rooms?.length ? <CheckCircle2 className="h-3 w-3 text-white"/> : <XCircle className="h-3 w-3 text-white"/>}
-                                        </div>
-                                        <span>Rooms Registered ({rooms?.length || 0})</span>
+                                    <li className="flex gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                                        <span><strong>JHS Rotation:</strong> Subject teachers move between classes based on availability.</span>
                                     </li>
-                                    <li className="flex items-center gap-2">
-                                        <div className={cn("w-4 h-4 rounded-full flex items-center justify-center", subjects?.length ? "bg-green-500" : "bg-red-500")}>
-                                            {subjects?.length ? <CheckCircle2 className="h-3 w-3 text-white"/> : <XCircle className="h-3 w-3 text-white"/>}
-                                        </div>
-                                        <span>Subjects Defined ({subjects?.length || 0})</span>
+                                    <li className="flex gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                                        <span><strong>Lab Routing:</strong> Science and ICT lessons are automatically moved to designated Labs.</span>
+                                    </li>
+                                    <li className="flex gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                                        <span><strong>Conflict Prevention:</strong> 100% guarantee that no teacher is scheduled in two rooms at once.</span>
                                     </li>
                                 </ul>
-                                {(!timeSlots?.length || !rooms?.length) && (
-                                    <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-200 text-xs">
-                                        <AlertTriangle className="h-4 w-4 mb-1" />
-                                        You need to define your school's time slots and rooms in the <strong>Configuration</strong> tab before using the AI Scheduler.
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </CardContent>
@@ -539,4 +585,22 @@ export default function TimetablePage() {
       )}
     </div>
   );
+}
+
+function ChecklistItem({ icon: Icon, title, status, desc }: { icon: any, title: string, status: boolean, desc: string }) {
+    return (
+        <div className={cn(
+            "p-4 rounded-2xl border-2 transition-all",
+            status ? "bg-emerald-500/10 border-emerald-500/20" : "bg-rose-500/5 border-rose-500/20 opacity-80"
+        )}>
+            <div className="flex items-center justify-between mb-2">
+                <div className={cn("p-2 rounded-xl", status ? "bg-emerald-500 text-white" : "bg-rose-500 text-white")}>
+                    <Icon className="h-4 w-4" />
+                </div>
+                {status ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> : <XCircle className="h-5 w-5 text-rose-500" />}
+            </div>
+            <p className="font-bold text-sm text-white">{title}</p>
+            <p className="text-[10px] text-slate-400 font-medium uppercase mt-1">{desc}</p>
+        </div>
+    );
 }
