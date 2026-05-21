@@ -1,4 +1,4 @@
-// v1.6: [REDEPLOY] Restricted attendance listing to owners and admins only.
+// v1.7: [REDEPLOY] Explicitly allowed list for spot_checks and guarded admin queries.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -61,7 +61,7 @@ service cloud.firestore {
     // =========================================================
 
     match /spot_checks/{checkId} {
-        allow read: if isSignedIn(); // Necessary for all staff to query active checks
+        allow read, list: if isSignedIn(); // Explicitly allow list for all staff to see alerts
         allow create: if isAdmin();
         allow update: if isSignedIn(); 
         allow delete: if isAdmin();

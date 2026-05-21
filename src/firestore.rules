@@ -1,4 +1,4 @@
-// v1.5: [REDEPLOY] Updated at 2024-05-20T10:00:00Z
+// v1.7: [REDEPLOY] Explicitly allowed list for spot_checks and guarded admin queries.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -61,7 +61,7 @@ service cloud.firestore {
     // =========================================================
 
     match /spot_checks/{checkId} {
-        allow read: if isSignedIn();
+        allow read, list: if isSignedIn(); // Explicitly allow list for all staff to see alerts
         allow create: if isAdmin();
         allow update: if isSignedIn(); 
         allow delete: if isAdmin();
@@ -127,7 +127,7 @@ service cloud.firestore {
     }
 
     match /auditLogs/{logId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isAdmin(); // Restricted
       allow create: if isSignedIn();
       allow update, delete: if false;
     }
@@ -210,7 +210,7 @@ service cloud.firestore {
     match /staff_attendance/{attendanceId} {
       allow create: if isSignedIn();
       allow read: if isAdmin() || isOwner(resource.data.staffId);
-      allow list: if isAdmin() || (isSignedIn() && isStaff());
+      allow list: if isAdmin(); // Restricted to admins only for bulk viewing
     }
 
     match /report-cards/{reportId} {

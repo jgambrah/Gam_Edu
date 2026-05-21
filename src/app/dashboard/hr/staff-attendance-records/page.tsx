@@ -79,7 +79,7 @@ function SpotCheckResultView({ checkData, allStaff }: { checkData: any, allStaff
                                 <div key={r.staffId} className="flex justify-between items-center p-4 bg-red-50 border-2 border-red-100 rounded-2xl shadow-sm transition-all hover:bg-red-100/50">
                                     <div className="flex items-center gap-4">
                                         <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-red-200">
-                                            {r.photoUrl ? <img src={r.photoUrl} className="h-full w-full object-cover" /> : <Loader2 size={12}/>}
+                                            {r.photoUrl ? <img src={r.photoUrl} className="h-full w-full object-cover" alt="" /> : <Loader2 size={12}/>}
                                         </div>
                                         <div>
                                             <span className="font-black text-red-900 uppercase text-sm tracking-tight">{r.staffName || 'Personnel'}</span>
@@ -130,7 +130,7 @@ function SpotCheckResultView({ checkData, allStaff }: { checkData: any, allStaff
                                     <div key={r.staffId} className="flex justify-between items-center p-4 bg-white border-2 border-slate-50 rounded-2xl text-sm transition-all hover:border-emerald-200 group">
                                         <div className="flex items-center gap-3">
                                             <div className="h-8 w-8 rounded-full overflow-hidden bg-slate-100 border border-slate-200 group-hover:scale-110 transition-transform">
-                                                {r.photoUrl ? <img src={r.photoUrl} className="h-full w-full object-cover" /> : <div className="h-full w-full bg-slate-200"/>}
+                                                {r.photoUrl ? <img src={r.photoUrl} className="h-full w-full object-cover" alt="" /> : <div className="h-full w-full bg-slate-200"/>}
                                             </div>
                                             <span className="font-bold text-slate-700">{r.staffName || 'Staff Member'}</span>
                                         </div>
@@ -205,7 +205,7 @@ export default function StaffAttendanceRecordsPage() {
     if (!spotChecks || !firestore) return;
     
     const now = new Date();
-    const expiredActiveChecks = spotChecks.filter(c => c.status === 'active' && c.expiresAt.toDate() < now);
+    const expiredActiveChecks = spotChecks.filter(c => c.status === 'active' && c.expiresAt?.toDate && c.expiresAt.toDate() < now);
     
     if (expiredActiveChecks.length > 0) {
       const batch = writeBatch(firestore);
