@@ -14,9 +14,11 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Search, CheckCircle2, CalendarIcon, Coins } from 'lucide-react';
+import { Loader2, Search, CheckCircle2, CalendarIcon, Coins, AlertCircle, RefreshCw, Users, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { generateNextReceiptId } from '@/lib/student-utils';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 type BillRecord = {
     id: string;
@@ -29,6 +31,13 @@ type BillRecord = {
     waiverAmount?: number;
     type: string;
 };
+
+interface AuditSummary {
+    totalPresent: number;
+    billsFound: number;
+    missingInvoices: number;
+    alreadyPaid: number;
+}
 
 export default function BulkDailyReceiptsPage() {
     const firestore = useFirestore();
@@ -47,6 +56,7 @@ export default function BulkDailyReceiptsPage() {
     
     const [isLoading, setIsLoading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [auditSummary, setAuditSummary] = useState<AuditSummary | null>(null);
 
     // 1. Load Classes for Dropdown
     useEffect(() => {
@@ -59,7 +69,7 @@ export default function BulkDailyReceiptsPage() {
         fetchClasses();
     }, [firestore, schoolId]);
 
-    // 2. Load the REAL unpaid bills for this date
+    // 2. Load the REAL unpaid bills for this date + Cross-reference Attendance
     const handleLoadBills = async () => {
         if (!firestore || !schoolId) {
             toast({ variant: 'destructive', title: "System Error", description: "School ID not found. Please refresh." });
@@ -69,54 +79,94 @@ export default function BulkDailyReceiptsPage() {
         setIsLoading(true);
         setPendingBills([]);
         setPaymentData({});
+        setAuditSummary(null);
         setSearchTerm('');
 
         try {
-            // BEST PRACTICE: Use a range query for dates to avoid precision/timezone mismatches
             const dayStart = startOfDay(date);
             const dayEnd = endOfDay(date);
+            const dateStr = format(date, 'yyyy-MM-dd');
             
-            console.log(`[Reconciliation] Scanning ${serviceType} for ${format(date, 'yyyy-MM-dd')} in School ${schoolId}`);
+            // A. FETCH ATTENDANCE (To see who should have been billed)
+            const attQuery = query(
+                collection(firestore, 'attendance'),
+                where('schoolId', '==', schoolId),
+                where('date', '==', Timestamp.fromDate(dayStart)),
+                where('status', 'in', ['Present', 'Late'])
+            );
+            const attSnap = await getDocs(attQuery);
+            const studentsPresent = attSnap.docs
+                .map(d => d.data())
+                .filter(d => selectedClassId === 'all' || d.classId === selectedClassId);
 
+            // B. FETCH EXISTING BILLS
             const billsQuery = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
                 where('dueDate', '>=', Timestamp.fromDate(dayStart)),
                 where('dueDate', '<=', Timestamp.fromDate(dayEnd))
             );
-            
-            const snap = await getDocs(billsQuery);
+            const billsSnap = await getDocs(billsQuery);
             
             const relevantBills: BillRecord[] = [];
             const newPaymentData: Record<string, number> = {};
+            
+            // Map of studentId -> existing bill for this service
+            const existingBillsMap = new Map<string, any>();
 
-            snap.docs.forEach(d => {
+            billsSnap.docs.forEach(d => {
                 const data = d.data();
-                const type = data.type || '';
-                const billed = Number(data.billedAmount) || 0;
-                const paid = Number(data.amountPaid) || 0;
-                const waiver = Number(data.waiverAmount) || 0;
-                const balance = billed - paid - waiver;
-
-                // 1. Filter by Service Name (Case-insensitive check)
-                const isCorrectService = type.toLowerCase().includes(serviceType.toLowerCase());
+                const type = (data.type || '').toLowerCase();
+                const isCorrectService = type.includes(serviceType.toLowerCase());
                 
-                // 2. Filter by Class
-                const matchesClass = selectedClassId === 'all' || data.classId === selectedClassId;
+                if (isCorrectService) {
+                    existingBillsMap.set(data.studentId, { id: d.id, ...data });
 
-                if (isCorrectService && balance > 0.01 && matchesClass) {
-                    relevantBills.push({ id: d.id, ...data } as BillRecord);
-                    newPaymentData[d.id] = parseFloat(balance.toFixed(2));
+                    const billed = Number(data.billedAmount) || 0;
+                    const paid = Number(data.amountPaid) || 0;
+                    const waiver = Number(data.waiverAmount) || 0;
+                    const balance = billed - paid - waiver;
+
+                    const matchesClass = selectedClassId === 'all' || data.classId === selectedClassId;
+
+                    if (balance > 0.01 && matchesClass) {
+                        relevantBills.push({ id: d.id, ...data } as BillRecord);
+                        newPaymentData[d.id] = parseFloat(balance.toFixed(2));
+                    }
                 }
             });
 
-            if (relevantBills.length === 0) {
+            // C. CALCULATE AUDIT
+            let missingCount = 0;
+            let alreadyPaidCount = 0;
+
+            studentsPresent.forEach(att => {
+                const bill = existingBillsMap.get(att.studentId);
+                if (!bill) {
+                    // Logic check: only flag as missing if not explicitly marked as Termly in attendance (future proofing)
+                    if (att.canteenMode !== 'Termly' && att.transportMode !== 'Termly') {
+                        missingCount++;
+                    }
+                } else {
+                    const balance = bill.billedAmount - (bill.amountPaid || 0) - (bill.waiverAmount || 0);
+                    if (balance <= 0.01) alreadyPaidCount++;
+                }
+            });
+
+            setAuditSummary({
+                totalPresent: studentsPresent.length,
+                billsFound: relevantBills.length,
+                missingInvoices: missingCount,
+                alreadyPaid: alreadyPaidCount
+            });
+
+            if (relevantBills.length === 0 && missingCount === 0) {
                 toast({ 
-                    title: "No Bills Found", 
-                    description: "No unpaid bills match your selection. Ensure attendance was taken and services are set to 'Daily' billing." 
+                    title: "No Action Needed", 
+                    description: "No pending bills found. Everyone present is either billed & paid or not required to pay today." 
                 });
             } else {
-                toast({ title: "Bills Found", description: `Located ${relevantBills.length} pending receipts.` });
+                toast({ title: "Scanning Complete", description: `Located ${relevantBills.length} pending receipts.` });
             }
 
             setPendingBills(relevantBills);
@@ -130,7 +180,6 @@ export default function BulkDailyReceiptsPage() {
         }
     };
 
-    // Filtered bills based on search term
     const filteredPendingBills = useMemo(() => {
         if (!searchTerm.trim()) return pendingBills;
         const term = searchTerm.toLowerCase().trim();
@@ -140,7 +189,6 @@ export default function BulkDailyReceiptsPage() {
         );
     }, [pendingBills, searchTerm]);
 
-    // 3. Process the Payments
     const handleProcessPayments = async () => {
         if (!firestore || !schoolId || !user) return;
         
@@ -225,6 +273,7 @@ export default function BulkDailyReceiptsPage() {
             
             setPendingBills([]);
             setPaymentData({});
+            setAuditSummary(null);
             setSearchTerm('');
 
         } catch (error: any) {
@@ -239,7 +288,7 @@ export default function BulkDailyReceiptsPage() {
         <div className="p-6 max-w-5xl mx-auto space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2 italic uppercase">
                         <Coins className="h-8 w-8 text-green-600" /> Bulk Daily Receipts
                     </h1>
                     <p className="text-muted-foreground font-medium italic">Quickly process cash payments for daily Canteen or Transport bills.</p>
@@ -256,8 +305,8 @@ export default function BulkDailyReceiptsPage() {
 
             <Card className="border-t-4 border-t-green-500 shadow-sm rounded-2xl">
                 <CardHeader>
-                    <CardTitle className="text-lg">1. Load Pending Bills</CardTitle>
-                    <CardDescription>Fetch unpaid daily bills generated by the attendance system.</CardDescription>
+                    <CardTitle className="text-lg">1. Load Records for Reconcilliation</CardTitle>
+                    <CardDescription>Fetch attendance logs and unpaid bills to generate the receipting roster.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col md:flex-row gap-4 items-end">
                     <div className="flex-1 space-y-2 w-full">
@@ -297,22 +346,78 @@ export default function BulkDailyReceiptsPage() {
 
                     <Button onClick={handleLoadBills} disabled={isLoading} className="bg-green-600 hover:bg-green-700 w-full md:w-auto h-12 px-8 font-black uppercase tracking-widest">
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4"/>}
-                        Find Bills
+                        Scan & Find
                     </Button>
                 </CardContent>
             </Card>
+
+            {auditSummary && (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in duration-500">
+                    <Card className="bg-blue-50 border-blue-100">
+                        <CardContent className="p-4 flex items-center gap-3">
+                            <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><Users size={20}/></div>
+                            <div>
+                                <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Present Today</p>
+                                <p className="text-xl font-black text-blue-900">{auditSummary.totalPresent}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-emerald-50 border-emerald-100">
+                        <CardContent className="p-4 flex items-center gap-3">
+                            <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600"><Coins size={20}/></div>
+                            <div>
+                                <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Bills for Receipting</p>
+                                <p className="text-xl font-black text-emerald-900">{auditSummary.billsFound}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-slate-50 border-slate-200 opacity-60">
+                        <CardContent className="p-4 flex items-center gap-3">
+                            <div className="p-2 bg-slate-200 rounded-lg text-slate-500"><CheckCircle2 size={20}/></div>
+                            <div>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Already Paid</p>
+                                <p className="text-xl font-black text-slate-800">{auditSummary.alreadyPaid}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className={cn("border-2 transition-all", auditSummary.missingInvoices > 0 ? "bg-amber-50 border-amber-200" : "bg-slate-50 border-slate-100 opacity-60")}>
+                        <CardContent className="p-4 flex items-center gap-3">
+                            <div className={cn("p-2 rounded-lg", auditSummary.missingInvoices > 0 ? "bg-amber-100 text-amber-600" : "bg-slate-200 text-slate-500")}><AlertCircle size={20}/></div>
+                            <div>
+                                <p className={cn("text-[10px] font-black uppercase tracking-widest", auditSummary.missingInvoices > 0 ? "text-amber-600" : "text-slate-500")}>Missing Invoices</p>
+                                <p className={cn("text-xl font-black", auditSummary.missingInvoices > 0 ? "text-amber-900" : "text-slate-800")}>{auditSummary.missingInvoices}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
+            {auditSummary && auditSummary.missingInvoices > 0 && (
+                <Alert className="bg-amber-50 border-amber-200 border-2 rounded-2xl animate-in slide-in-from-top-2">
+                    <Info className="h-5 w-5 text-amber-600" />
+                    <AlertTitle className="font-black text-amber-900 uppercase text-xs tracking-tight">Audit Warning: Bill/Attendance Mismatch</AlertTitle>
+                    <AlertDescription className="text-amber-800 text-xs font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+                        <span>We found {auditSummary.missingInvoices} students who were marked present but have no daily bill for {serviceType}. This usually happens if attendance was taken before service rates were set or if the student profile is incomplete.</span>
+                        <Button asChild size="sm" variant="outline" className="border-amber-300 text-amber-700 bg-white hover:bg-amber-100 font-bold rounded-xl shrink-0">
+                            <Link href="/dashboard/finance/settings">
+                                <RefreshCw className="mr-2 h-3 w-3" /> Sync Missing Invoices
+                            </Link>
+                        </Button>
+                    </AlertDescription>
+                </Alert>
+            )}
 
             {pendingBills.length > 0 && (
                 <Card className="border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem] overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
                     <CardHeader className="bg-slate-50 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <CardTitle className="text-xl">2. Review & Process Payments</CardTitle>
-                            <CardDescription>Search and verify cash received for the selected batch.</CardDescription>
+                            <CardDescription>Verify cash received for the found invoices.</CardDescription>
                         </div>
                         <div className="relative w-full md:w-[250px]">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input 
-                                placeholder="Search student name..." 
+                                placeholder="Search by student name..." 
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                                 className="pl-9 h-10 border-2 rounded-xl bg-white"
@@ -367,7 +472,7 @@ export default function BulkDailyReceiptsPage() {
                                     {filteredPendingBills.length === 0 && (
                                         <TableRow>
                                             <TableCell colSpan={4} className="py-20 text-center text-muted-foreground italic">
-                                                No results matching "{searchTerm}"
+                                                No records match your search.
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -376,10 +481,10 @@ export default function BulkDailyReceiptsPage() {
                         </div>
                     </CardContent>
                     <CardFooter className="bg-slate-50 border-t p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <Button variant="ghost" className="font-bold text-slate-400" onClick={() => {setPendingBills([]); setPaymentData({}); setSearchTerm('');}}>Discard List</Button>
+                        <Button variant="ghost" className="font-bold text-slate-400" onClick={() => {setPendingBills([]); setPaymentData({}); setAuditSummary(null); setSearchTerm('');}}>Clear Batch</Button>
                         <Button onClick={handleProcessPayments} disabled={isProcessing} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 h-16 px-12 text-xl font-black rounded-2xl shadow-xl shadow-indigo-200 uppercase tracking-tighter">
                             {isProcessing ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <CheckCircle2 className="mr-2 h-6 w-6"/>}
-                            Post GH₵{pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)} to Till
+                            Receive GH₵{pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)}
                         </Button>
                     </CardFooter>
                 </Card>
