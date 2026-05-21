@@ -174,30 +174,30 @@ export default function StaffAttendanceRecordsPage() {
 
   const canAccess = role === 'Director' || role === 'Administrator';
 
-  // --- DATA FETCHING ---
+  // --- DATA FETCHING (Guarded by canAccess to prevent Permission Denied errors for others) ---
   
   // 1. Staff List
   const staffQuery = useMemoFirebase(() =>
-    (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), orderBy('firstName')) : null
-  , [firestore, schoolId]);
+    (firestore && schoolId && canAccess) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), orderBy('firstName')) : null
+  , [firestore, schoolId, canAccess]);
   const { data: staffList, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
 
   // 2. Attendance Logs
   const attendanceQuery = useMemoFirebase(() =>
-    (firestore && schoolId) ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc')) : null
-  , [firestore, schoolId]);
+    (firestore && schoolId && canAccess) ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc')) : null
+  , [firestore, schoolId, canAccess]);
   const { data: attendanceLogs, isLoading: isLoadingLogs } = useCollection<StaffAttendance>(attendanceQuery);
 
   // 3. Spot Check History
   const spotChecksQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId) return null;
+    if (!firestore || !schoolId || !canAccess) return null;
     return query(
         collection(firestore, 'spot_checks'),
         where('schoolId', '==', schoolId),
         orderBy('initiatedAt', 'desc'),
         limit(20)
     );
-  }, [firestore, schoolId]);
+  }, [firestore, schoolId, canAccess]);
   const { data: spotChecks, isLoading: isLoadingSpotChecks } = useCollection<any>(spotChecksQuery);
 
   // --- AUTO-COMPLETE EXPIRED CHECKS ---
@@ -300,7 +300,21 @@ export default function StaffAttendanceRecordsPage() {
   const isLoading = isLoadingSchool || isLoadingStaff || isLoadingLogs;
 
   if (!canAccess && !isLoadingSchool) {
-    return <Card className="p-8 text-center text-red-600 font-black uppercase tracking-widest"><ShieldAlert size={48} className="mx-auto mb-4"/> Access Denied</Card>;
+    return (
+        <div className="p-8 flex justify-center">
+            <Card className="max-w-md w-full border-red-100 bg-red-50/50">
+                <CardHeader className="text-center">
+                    <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4">
+                        <ShieldAlert className="h-8 w-8 text-red-600" />
+                    </div>
+                    <CardTitle>Access Restricted</CardTitle>
+                    <CardDescription>
+                        Attendance logs and security check history are restricted to administrative personnel.
+                    </CardDescription>
+                </CardHeader>
+            </Card>
+        </div>
+    );
   }
 
   return (
@@ -534,7 +548,7 @@ export default function StaffAttendanceRecordsPage() {
                 </div>
                 <button 
                   onClick={() => setPhotoToView(null)}
-                  className="absolute top-6 right-6 bg-white/10 hover:bg-red-500 hover:scale-110 p-3 rounded-2xl text-white transition-all backdrop-blur-md shadow-2xl"
+                  className="absolute top-6 right-6 bg-white/10 hover:bg-red-50 hover:scale-110 p-3 rounded-2xl text-white transition-all backdrop-blur-md shadow-2xl"
                 >
                   <XCircle size={24}/>
                 </button>
