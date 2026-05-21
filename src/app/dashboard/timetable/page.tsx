@@ -525,7 +525,7 @@ export default function TimetablePage() {
                                         <AlertTriangle className="h-4 w-4" />
                                         <AlertTitle className="font-bold">Missing Teachers</AlertTitle>
                                         <AlertDescription className="text-xs">
-                                            The following subjects need at least one teacher assigned:
+                                            The following subjects need at least one teacher assigned in Academics &gt; Subjects:
                                             <div className="flex flex-wrap gap-2 mt-2">
                                                 {readiness.missingSubjects.map(s => (
                                                     <Badge key={s.id} variant="secondary" className="bg-red-500/20 text-red-200 border-red-500/30">
@@ -542,7 +542,7 @@ export default function TimetablePage() {
                                         <MapPin className="h-4 w-4" />
                                         <AlertTitle className="font-bold">Missing Home Rooms</AlertTitle>
                                         <AlertDescription className="text-xs">
-                                            These classes need a 'Primary Room' assigned in Academics > Classes:
+                                            These classes need a 'Primary Room' assigned in Academics &gt; Classes:
                                             <div className="flex flex-wrap gap-2 mt-2">
                                                 {readiness.missingRooms.map(c => (
                                                     <Badge key={c.id} variant="secondary" className="bg-orange-500/20 text-orange-200 border-orange-500/30">
