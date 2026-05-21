@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -12,9 +11,7 @@ export async function chatAIAction(schoolId: string, message: string) {
 
   try {
     const response = await ai.generate({
-      // FAILSAFE MODEL: Gemini 1.0 Pro
-      // This is the most stable string available
-      model: 'googleai/gemini-3-flash-preview', 
+      model: 'googleai/gemini-1.5-flash', 
       prompt: `You are a helpful AI Tutor. User: ${message}`,
       config: { temperature: 0.7 }
     });
@@ -23,7 +20,6 @@ export async function chatAIAction(schoolId: string, message: string) {
 
   } catch (e: any) {
     console.error("AI Chat Error:", e);
-    // If this fails, we know it's a Key/Billing issue, not a model name issue.
     return { success: false, text: `AI Service Error: ${e.message}` };
   }
 }

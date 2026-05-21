@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -57,7 +56,7 @@ export async function generateLearningInsights(input: { classData: any[], school
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-3-flash-preview',
+      model: 'googleai/gemini-1.5-flash',
       prompt: prompt,
       output: { schema: AnalysisOutputSchema },
     });

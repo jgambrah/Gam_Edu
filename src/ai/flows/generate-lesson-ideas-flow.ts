@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for generating lesson plan ideas.
@@ -37,6 +36,6 @@ Format each section as a bulleted list.`,
 
 
 export async function generateLessonIdeas(input: GenerateLessonIdeasInput): Promise<GenerateLessonIdeasOutput> {
-  const { output } = await generateLessonIdeasPrompt(input, { model: 'googleai/gemini-3-flash-preview' });
+  const { output } = await generateLessonIdeasPrompt(input, { model: 'googleai/gemini-1.5-flash' });
   return output!;
 }

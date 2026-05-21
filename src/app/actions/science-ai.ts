@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit'; 
@@ -9,9 +8,8 @@ export async function generateScienceFactAction(topic?: string) {
       ? `Tell me a fascinating scientific fact about ${topic} for a curious student. Keep it under 50 words.`
       : `Tell me a random fascinating scientific fact for a curious student. Keep it under 50 words.`;
 
-    // 🔥 FIX: Reverted to the stable gemini-pro model
     const response = await ai.generate({
-      model: 'googleai/gemini-3-flash-preview', 
+      model: 'googleai/gemini-1.5-flash', 
       prompt: promptText,
       config: {
         temperature: 0.7,

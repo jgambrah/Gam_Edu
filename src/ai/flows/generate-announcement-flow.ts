@@ -37,6 +37,6 @@ Instructions:
 });
 
 export async function generateAnnouncement(input: GenerateAnnouncementInput): Promise<GenerateAnnouncementOutput> {
-  const { output } = await generateAnnouncementPrompt(input, { model: 'googleai/gemini-3-flash-preview' });
+  const { output } = await generateAnnouncementPrompt(input, { model: 'googleai/gemini-1.5-flash' });
   return output!;
 }

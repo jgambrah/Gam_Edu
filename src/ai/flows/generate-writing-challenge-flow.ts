@@ -34,6 +34,6 @@ Based on the above, generate a suitable title and a detailed, creative prompt fo
 });
 
 export async function generateWritingChallenge(input: GenerateWritingChallengeInput): Promise<GenerateWritingChallengeOutput> {
-  const { output } = await generateWritingChallengePrompt(input, { model: 'googleai/gemini-3-flash-preview' });
+  const { output } = await generateWritingChallengePrompt(input, { model: 'googleai/gemini-1.5-flash' });
   return output!;
 }

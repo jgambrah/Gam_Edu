@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for generating practice problems for various subjects.
@@ -50,6 +49,6 @@ For each question, you must:
 
 
 export async function generatePracticeProblems(input: GeneratePracticeProblemsInput): Promise<GeneratePracticeProblemsOutput> {
-  const { output } = await prompt(input, { model: 'googleai/gemini-3-flash-preview' });
+  const { output } = await prompt(input, { model: 'googleai/gemini-1.5-flash' });
   return output!;
 }

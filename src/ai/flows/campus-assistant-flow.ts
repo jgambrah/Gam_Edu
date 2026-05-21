@@ -88,9 +88,8 @@ const campusAssistantFlow = ai.defineFlow(
     outputSchema: CampusAssistantOutputSchema,
   },
   async (input) => {
-    // Calling the prompt - model is handled by the default system configuration
     const { output } = await assistantPrompt(input, {
-        model: 'googleai/gemini-3-flash-preview',
+        model: 'googleai/gemini-1.5-flash',
         config: {
             temperature: 0.5,
         }
@@ -109,7 +108,6 @@ export async function campusAssistant(input: CampusAssistantInput): Promise<Camp
   try {
     return await campusAssistantFlow(input);
   } catch (error: any) {
-    // Log the detailed error to the server console for debugging
     console.error("DETAILED CAMPUS ASSISTANT ERROR:", error);
     
     return { 

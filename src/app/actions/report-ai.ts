@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -47,7 +46,7 @@ export async function generateReportCommentAction(
     } else if (role === 'Headmaster') {
         const tone = average >= 75 ? "congratulatory and commending their excellence" : 
                      average >= 50 ? "acknowledging satisfactory performance and urging them to strive for higher goals" : 
-                     "formal, expressing concern over their academic standing and requesting a meeting with parents";
+                     "formal, expressions of concern over their academic standing and requesting a meeting with parents";
 
         // Only mention promotion if it is the Third Term
         const promotionContext = term.toLowerCase().includes("third") 
@@ -68,7 +67,7 @@ export async function generateReportCommentAction(
     }
 
     const response = await ai.generate({
-      model: 'googleai/gemini-3-flash-preview', 
+      model: 'googleai/gemini-1.5-flash', 
       prompt: prompt,
       config: { temperature: 0.7 }
     });

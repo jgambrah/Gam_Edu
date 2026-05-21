@@ -1,16 +1,14 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { MOCK_CROSSWORD_PUZZLES } from '@/lib/data';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // --- HELPER TO PREVENT 500 CRASHES ---
 async function callAi(prompt: string, schema: any) {
     try {
         const { output } = await ai.generate({
-            model: 'googleai/gemini-3-flash-preview',
+            model: 'googleai/gemini-1.5-flash',
             prompt,
             output: { schema },
         });
@@ -99,10 +97,4 @@ export async function generateDebateTopic(input: { targetGroup: string; schoolId
   } catch (e: any) {
     throw new Error(e.message || "Failed to generate debate topic.");
   }
-}
-
-// No AI used here, so no changes needed
-export async function generateCrosswordAction(topic: string) {
-    const randomIndex = Math.floor(Math.random() * MOCK_CROSSWORD_PUZZLES.length);
-    return MOCK_CROSSWORD_PUZZLES[randomIndex];
 }

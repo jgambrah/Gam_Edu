@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for generating a daily science fact.
@@ -28,6 +27,6 @@ const generateDailyFactPrompt = ai.definePrompt({
 });
 
 export async function generateDailyFact(): Promise<GenerateDailyFactOutput> {
-  const { output } = await generateDailyFactPrompt(undefined, { model: 'googleai/gemini-3-flash-preview' });
+  const { output } = await generateDailyFactPrompt(undefined, { model: 'googleai/gemini-1.5-flash' });
   return output!;
 }

@@ -36,7 +36,6 @@ export async function generateTimetable(input: any) {
     let completeTimetable: any[] = [];
     
     // Create a tracker for how many times a subject has been scheduled so far
-    // This helps the AI not exceed the 'weeklyPeriods' across the separate daily calls
     const scheduledCounts: Record<string, number> = {}; 
 
     for (const day of daysOfWeek) {
@@ -78,7 +77,7 @@ export async function generateTimetable(input: any) {
         // 3. Call the AI for just this day
         try {
             const { output } = await ai.generate({
-                model: 'googleai/gemini-3-flash-preview', 
+                model: 'googleai/gemini-1.5-flash', 
                 prompt: dayPrompt,
                 output: { schema: TimetableOutputSchema },
                 config: { temperature: 0.1, maxOutputTokens: 8192 }
@@ -99,7 +98,6 @@ export async function generateTimetable(input: any) {
             }
         } catch (error) {
             console.error(`❌ Failed to generate schedule for ${day}:`, error);
-            // We log the error but allow the loop to continue to other days so it doesn't totally crash
         }
     }
 
@@ -113,10 +111,10 @@ export async function generateTimetable(input: any) {
         const matchSlot = input.timeSlots.find((ts: any) => ts.id === entry.timeSlotId);
         return {
             ...entry,
+            id: `entry-${Math.random().toString(36).substr(2, 9)}`,
             day: matchSlot?.day || '',
             startTime: matchSlot?.startTime || '',
             endTime: matchSlot?.endTime || '',
-            // Ensure compatibility with frontend fallback logic
             teacherId: entry.teacherId || "TBA",
             roomId: entry.roomId || "TBA"
         };
