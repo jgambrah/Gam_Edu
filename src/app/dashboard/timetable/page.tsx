@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, writeBatch, query, where, orderBy, addDoc, serverTimestamp, deleteDoc, getDocs, setDoc } from 'firebase/firestore';
@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import TimetableSeeder from '@/components/TimetableSeeder';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
@@ -481,7 +482,7 @@ export default function TimetablePage() {
                     ) : (
                         <div className="text-center py-20 bg-slate-50 border-2 border-dashed rounded-3xl">
                             <Info className="h-10 w-10 text-slate-300 mx-auto mb-2" />
-                            <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Please select a class to view its timetable.</p>
+                            <p className="text-slate-50 font-bold uppercase tracking-widest text-xs">Please select a class to view its timetable.</p>
                         </div>
                     )}
                 </CardContent>
@@ -570,7 +571,7 @@ export default function TimetablePage() {
                                     disabled={isGenerating || !readiness.isFullyReady} 
                                     className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl text-lg shadow-xl active:scale-95 transition-all disabled:opacity-50"
                                 >
-                                    {isGenerating ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : <Wand2 className="mr-2 h-6 w-6" />}
+                                    {isGenerating ? <Loader2 className="mr-2 h-4 w-6 animate-spin" /> : <Wand2 className="mr-2 h-4 w-6" />}
                                     RUN AI SCHEDULER (-50 Credits)
                                 </Button>
                                 {!readiness.isFullyReady && (
