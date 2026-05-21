@@ -110,7 +110,12 @@ export function SpotCheckModal() {
         if (activeCheck && "geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
-                () => toast({ variant: 'destructive', title: "GPS Error", description: "Enable location services to verify." })
+                () => toast({ variant: 'destructive', title: "GPS Error", description: "Enable location services to verify." }),
+                { 
+                    enableHighAccuracy: true, 
+                    timeout: 15000, 
+                    maximumAge: 0 
+                }
             );
         }
     }, [activeCheck, toast]);

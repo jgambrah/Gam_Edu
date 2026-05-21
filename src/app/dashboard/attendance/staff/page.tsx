@@ -64,6 +64,7 @@ export default function StaffAttendancePage() {
 
   useEffect(() => {
     if (isStaff && "geolocation" in navigator) {
+      // Use high accuracy settings to prevent false off-campus flags
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocation({
@@ -79,6 +80,11 @@ export default function StaffAttendancePage() {
             title: "Location Error",
             description: "Could not get your location. Please enable location services to verify your campus proximity.",
           });
+        },
+        { 
+            enableHighAccuracy: true, 
+            timeout: 15000, 
+            maximumAge: 0 
         }
       );
     }
