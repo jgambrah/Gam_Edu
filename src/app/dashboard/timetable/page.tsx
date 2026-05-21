@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import TimetableSeeder from '@/components/TimetableSeeder';
 import { Switch } from '@/components/ui/switch';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
@@ -397,13 +398,23 @@ export default function TimetablePage() {
     const hasClasses = (classes?.length || 0) > 0;
     const hasTeachers = (allTeachers?.length || 0) > 0;
 
-    const subjectsWithTeachers = subjects?.filter(s => (s.teacherIds?.length || 0) > 0).length || 0;
-    const classesWithRooms = classes?.filter(c => !!c.homeRoomId).length || 0;
+    const subjectsMissingTeachers = subjects?.filter(s => (s.teacherIds?.length || 0) === 0) || [];
+    const classesMissingRooms = classes?.filter(c => !c.homeRoomId) || [];
+
+    const isFullyReady = hasSlots && hasRooms && hasSubjects && hasClasses && hasTeachers && 
+                         subjectsMissingTeachers.length === 0 && classesMissingRooms.length === 0;
 
     return {
       hasSlots, hasRooms, hasSubjects, hasClasses, hasTeachers,
-      isFullyReady: hasSlots && hasRooms && hasSubjects && hasClasses && hasTeachers,
-      counts: { subjectsWithTeachers, classesWithRooms, totalSubjects: subjects?.length || 0, totalClasses: classes?.length || 0 }
+      isFullyReady,
+      missingSubjects: subjectsMissingTeachers,
+      missingRooms: classesMissingRooms,
+      counts: { 
+        subjectsWithTeachers: (subjects?.length || 0) - subjectsMissingTeachers.length, 
+        classesWithRooms: (classes?.length || 0) - classesMissingRooms.length, 
+        totalSubjects: subjects?.length || 0, 
+        totalClasses: classes?.length || 0 
+      }
     };
   }, [timeSlots, rooms, subjects, classes, allTeachers]);
 
@@ -495,8 +506,8 @@ export default function TimetablePage() {
                             <ChecklistItem 
                                 icon={MapPin} 
                                 title="Rooms & Labs" 
-                                status={readiness.hasRooms} 
-                                desc={`${rooms?.length || 0} locations registered.`} 
+                                status={readiness.counts.classesWithRooms === readiness.counts.totalClasses && readiness.counts.totalClasses > 0} 
+                                desc={`${readiness.counts.classesWithRooms}/${readiness.counts.totalClasses} classes have rooms.`} 
                             />
                             <ChecklistItem 
                                 icon={BookCopy} 
@@ -505,6 +516,45 @@ export default function TimetablePage() {
                                 desc={`${readiness.counts.subjectsWithTeachers}/${readiness.counts.totalSubjects} subjects have teachers.`} 
                             />
                         </div>
+
+                        {/* DIAGNOSTIC ALERTS */}
+                        {!readiness.isFullyReady && (
+                            <div className="space-y-4 animate-in fade-in duration-500">
+                                {readiness.missingSubjects.length > 0 && (
+                                    <Alert variant="destructive" className="bg-red-900/20 border-red-500/50 text-red-200">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        <AlertTitle className="font-bold">Missing Teachers</AlertTitle>
+                                        <AlertDescription className="text-xs">
+                                            The following subjects need at least one teacher assigned:
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                {readiness.missingSubjects.map(s => (
+                                                    <Badge key={s.id} variant="secondary" className="bg-red-500/20 text-red-200 border-red-500/30">
+                                                        {s.name}
+                                                    </Badge>
+                                                ))}
+                                            </div>
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+
+                                {readiness.missingRooms.length > 0 && (
+                                    <Alert variant="destructive" className="bg-orange-900/20 border-orange-500/50 text-orange-200">
+                                        <MapPin className="h-4 w-4" />
+                                        <AlertTitle className="font-bold">Missing Home Rooms</AlertTitle>
+                                        <AlertDescription className="text-xs">
+                                            These classes need a 'Primary Room' assigned in Academics > Classes:
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                {readiness.missingRooms.map(c => (
+                                                    <Badge key={c.id} variant="secondary" className="bg-orange-500/20 text-orange-200 border-orange-500/30">
+                                                        {c.name}
+                                                    </Badge>
+                                                ))}
+                                            </div>
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+                            </div>
+                        )}
 
                         <div className="grid md:grid-cols-2 gap-6 pt-4">
                             <div className="space-y-4">
@@ -525,7 +575,7 @@ export default function TimetablePage() {
                                 </Button>
                                 {!readiness.isFullyReady && (
                                     <p className="text-center text-xs text-rose-400 font-bold animate-pulse uppercase tracking-tight">
-                                        Checklist must be green to enable scheduler
+                                        Checklist must be complete to enable scheduler
                                     </p>
                                 )}
                             </div>
