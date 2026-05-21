@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
-import { collection, query, where, orderBy, addDoc, serverTimestamp, limit, getDocs, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, addDoc, serverTimestamp, limit, getDocs, doc, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -14,6 +14,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import type { StaffAttendance } from '@/lib/types';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useRole } from '@/context/role-context';
+import { verifyStaffIdentityAction } from '@/app/actions/verify-identity';
 
 /**
  * Calculates the great-circle distance between two points (Haversine formula).
@@ -124,6 +125,37 @@ export default function StaffAttendancePage() {
 
     setIsSubmitting(true);
 
+    // 1. AI IDENTITY VERIFICATION
+    let isIdentityFlagged = false;
+    let identityNotes = "";
+    
+    try {
+        const staffDoc = await getDoc(doc(firestore!, 'staff', user.uid));
+        const profilePic = staffDoc.data()?.photoURL;
+
+        if (profilePic && imageDataUri) {
+            toast({ title: "Verifying Identity...", description: "AI is checking facial match." });
+            const verifyRes = await verifyStaffIdentityAction(profilePic, imageDataUri);
+            
+            if (verifyRes.success && verifyRes.data) {
+                if (verifyRes.data.isMatch === false) {
+                    isIdentityFlagged = true;
+                    identityNotes = verifyRes.data.confidence;
+                    toast({ variant: 'destructive', title: "Identity Flag", description: "Your photo does not match our records. Logged for review." });
+                } else {
+                    identityNotes = "Identity Verified by AI.";
+                }
+            } else {
+                identityNotes = "AI Comparison Failed. Manual review required.";
+            }
+        } else {
+            identityNotes = "Profile picture missing. Could not perform AI verification.";
+        }
+    } catch (err) {
+        console.error("Identity verification error:", err);
+        identityNotes = "System error during identity check.";
+    }
+
     // Geofencing logic
     let isFlagged = false;
     let distance = 0;
@@ -171,6 +203,8 @@ export default function StaffAttendancePage() {
         longitude: location.longitude,
         isFlagged,
         distanceMeters: Math.round(distance),
+        isIdentityFlagged,
+        identityNotes,
       });
 
       toast({ 
@@ -224,7 +258,7 @@ export default function StaffAttendancePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Camera/> Staff Attendance</CardTitle>
-            <CardDescription>Use your device's camera to clock in and out. Your location is verified against the school's geofence.</CardDescription>
+            <CardDescription>Capture a live photo to clock in. Your identity will be verified by AI.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
             <WebcamCapture 
@@ -233,11 +267,11 @@ export default function StaffAttendancePage() {
             />
              <div className="w-full text-center p-2 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium">
                 {location ? (
-                    <span className="flex items-center justify-center gap-1 text-green-600"><CheckCircle2 className="h-4 w-4"/> Location Acquired</span>
+                    <span className="flex items-center justify-center gap-1 text-green-600"><CheckCircle2 className="h-4 w-4"/> Location & Identity Ready</span>
                 ) : locationError ? (
                     <span className="text-red-600">{locationError}</span>
                 ) : (
-                    <span className="flex items-center justify-center gap-1"><Loader2 className="h-4 w-4 animate-spin"/> Acquiring location...</span>
+                    <span className="flex items-center justify-center gap-1"><Loader2 className="h-4 w-4 animate-spin"/> Acquiring context...</span>
                 )}
             </div>
             <div className="flex w-full gap-4 mt-4">
@@ -289,12 +323,15 @@ export default function StaffAttendancePage() {
                           <div>
                             <div className="flex items-center gap-2">
                                 <p className="font-semibold text-sm">{log.type === 'In' ? (log.status === 'Late' ? 'Clocked In (Late)' : 'Clocked In') : (log.leftEarly ? 'Clocked Out (Early)' : 'Clocked Out')}</p>
-                                {(log as any).isFlagged && <Badge variant="destructive" className="h-4 text-[8px] uppercase px-1">Off Campus</Badge>}
                             </div>
                             <p className="text-xs text-muted-foreground">
                               {log.timestamp ? format(log.timestamp.toDate(), 'p') : 'Processing...'}
                             </p>
                           </div>
+                        </div>
+                        <div className="flex flex-col gap-1 items-end">
+                            {log.isIdentityFlagged && <Badge variant="destructive" className="h-4 text-[7px] uppercase px-1">Mismatch</Badge>}
+                            {log.isFlagged && <Badge variant="outline" className="h-4 text-[7px] uppercase px-1 border-red-200 text-red-600">Off-Site</Badge>}
                         </div>
                       </li>
                     );

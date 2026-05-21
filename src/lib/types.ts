@@ -616,6 +616,7 @@ export type Staff = {
     email: string;
     schoolId?: string;
     signatureUrl?: string;
+    photoURL?: string;
 };
 
 // Payroll Schemas
@@ -705,3 +706,21 @@ export interface DictionaryWord {
   category: string;
   imagePrompt: string;
 }
+
+export type StaffAttendance = {
+    id: string;
+    staffId: string;
+    staffName: string;
+    type: 'In' | 'Out';
+    status: 'Present' | 'Late';
+    leftEarly?: boolean;
+    timestamp: any;
+    verificationPhotoUrl: string;
+    schoolId: string;
+    latitude?: number;
+    longitude?: number;
+    isFlagged?: boolean;
+    distanceMeters?: number;
+    isIdentityFlagged?: boolean;
+    identityNotes?: string;
+};

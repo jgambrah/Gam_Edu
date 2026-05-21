@@ -3,6 +3,7 @@
 import { useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import SignatureManager from '@/components/profile/SignatureManager';
+import ProfilePhotoManager from '@/components/profile/ProfilePhotoManager';
 import { Mail, ShieldCheck, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,8 +26,12 @@ export default function MyProfilePage() {
         <div className="md:col-span-1 space-y-6">
             <Card className="rounded-[40px] shadow-xl border-4 border-slate-900 overflow-hidden">
                 <CardHeader className="bg-slate-50 text-center pb-8 pt-10 border-b">
-                    <div className="h-24 w-24 rounded-full bg-indigo-100 mx-auto flex items-center justify-center text-indigo-600 font-black text-3xl mb-4 border-4 border-white shadow-lg">
-                        {profile?.firstName?.[0]}{profile?.lastName?.[0]}
+                    <div className="h-24 w-24 rounded-full bg-indigo-100 mx-auto flex items-center justify-center text-indigo-600 font-black text-3xl mb-4 border-4 border-white shadow-lg overflow-hidden">
+                        {profile?.photoURL ? (
+                          <img src={profile.photoURL} alt="Profile" className="h-full w-full object-cover" />
+                        ) : (
+                          <span>{profile?.firstName?.[0]}{profile?.lastName?.[0]}</span>
+                        )}
                     </div>
                     <CardTitle className="text-xl font-black uppercase tracking-tight">{profile?.firstName} {profile?.lastName}</CardTitle>
                     <div className="flex justify-center mt-2">
@@ -51,13 +56,14 @@ export default function MyProfilePage() {
                 <Shield className="h-6 w-6 text-indigo-400 mb-2"/>
                 <h4 className="font-bold text-sm uppercase tracking-tight">Enterprise Security</h4>
                 <p className="text-[10px] leading-relaxed opacity-70 font-medium">
-                    Your profile is part of the school's verified cloud directory. Digital signatures are cryptographically tied to your specific credentials.
+                    Your profile is part of the school's verified cloud directory. Digital signatures and photo IDs are cryptographically tied to your specific credentials.
                 </p>
             </div>
         </div>
 
-        {/* RIGHT: SIGNATURE MANAGEMENT */}
-        <div className="md:col-span-2">
+        {/* RIGHT: SIGNATURE & PHOTO MANAGEMENT */}
+        <div className="md:col-span-2 space-y-8">
+            <ProfilePhotoManager />
             <SignatureManager />
         </div>
       </div>

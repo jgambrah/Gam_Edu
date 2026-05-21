@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight, Camera } from 'lucide-react';
 import { format, startOfDay, endOfDay, setHours, setMinutes } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
@@ -47,7 +47,7 @@ export default function StaffAttendanceRecordsPage() {
 
   // 3. Filter and process data
   const { filteredLogs, stats } = useMemo(() => {
-    if (!attendanceLogs) return { filteredLogs: [], stats: { total: 0, late: 0, flagged: 0, early: 0 } };
+    if (!attendanceLogs) return { filteredLogs: [], stats: { total: 0, late: 0, flagged: 0, early: 0, identityIssues: 0 } };
 
     const filtered = attendanceLogs.filter(log => {
       if (!log.timestamp) return false;
@@ -65,11 +65,12 @@ export default function StaffAttendanceRecordsPage() {
 
     const lateArrivals = filtered.filter(log => log.type === 'In' && log.status === 'Late').length;
     const earlyDepartures = filtered.filter(log => log.type === 'Out' && log.leftEarly === true).length;
-    const flaggedCount = filtered.filter(log => (log as any).isFlagged === true).length;
+    const flaggedCount = filtered.filter(log => log.isFlagged === true).length;
+    const identityIssues = filtered.filter(log => log.isIdentityFlagged === true).length;
 
     return { 
         filteredLogs: filtered,
-        stats: { total: filtered.length, late: lateArrivals, flagged: flaggedCount, early: earlyDepartures }
+        stats: { total: filtered.length, late: lateArrivals, flagged: flaggedCount, early: earlyDepartures, identityIssues }
     };
   }, [attendanceLogs, dateRange, selectedStaffId]);
   
@@ -84,27 +85,31 @@ export default function StaffAttendanceRecordsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2 text-slate-800"><UserCheck className="text-indigo-600"/> Staff Attendance Audit</h1>
-          <p className="text-muted-foreground">Monitor proximity verification, arrival punctuality, and working hours.</p>
+          <p className="text-muted-foreground">Monitor proximity verification, identity matching, and working hours.</p>
         </div>
         <Button onClick={() => window.print()} variant="outline"><Printer className="mr-2 h-4 w-4"/> Print Report</Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card className="border-l-4 border-l-blue-500">
-          <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Total Logs</CardTitle></CardHeader>
-          <CardContent><p className="text-3xl font-black">{stats.total}</p></CardContent>
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Total Logs</CardTitle></CardHeader>
+          <CardContent><p className="text-2xl font-black">{stats.total}</p></CardContent>
+        </Card>
+        <Card className="border-l-4 border-l-orange-500">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase text-orange-400 tracking-widest">Identity Flags</CardTitle></CardHeader>
+          <CardContent><p className="text-2xl font-black text-orange-600">{stats.identityIssues}</p></CardContent>
         </Card>
         <Card className="border-l-4 border-l-red-500">
-          <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Off-Campus Flags</CardTitle></CardHeader>
-          <CardContent><p className="text-3xl font-black text-red-600">{stats.flagged}</p></CardContent>
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase text-red-400 tracking-widest">GPS Flags</CardTitle></CardHeader>
+          <CardContent><p className="text-2xl font-black text-red-600">{stats.flagged}</p></CardContent>
         </Card>
         <Card className="border-l-4 border-l-amber-500">
-          <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Late Arrivals</CardTitle></CardHeader>
-          <CardContent><p className="text-3xl font-black text-amber-600">{stats.late}</p></CardContent>
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase text-amber-400 tracking-widest">Late Arrivals</CardTitle></CardHeader>
+          <CardContent><p className="text-2xl font-black text-amber-600">{stats.late}</p></CardContent>
         </Card>
         <Card className="border-l-4 border-l-rose-500">
-          <CardHeader className="pb-2"><CardTitle className="text-xs font-black uppercase text-slate-400 tracking-widest">Early Departures</CardTitle></CardHeader>
-          <CardContent><p className="text-3xl font-black text-rose-600">{stats.early}</p></CardContent>
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase text-rose-400 tracking-widest">Early Leavers</CardTitle></CardHeader>
+          <CardContent><p className="text-2xl font-black text-rose-600">{stats.early}</p></CardContent>
         </Card>
       </div>
 
@@ -140,22 +145,20 @@ export default function StaffAttendanceRecordsPage() {
                 <TableRow>
                     <TableHead className="font-bold text-[10px] uppercase tracking-widest">Staff Member</TableHead>
                     <TableHead className="font-bold text-[10px] uppercase tracking-widest">Timestamp</TableHead>
-                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Activity & Punctuality</TableHead>
-                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Proximity</TableHead>
+                    <TableHead className="font-bold text-[10px] uppercase tracking-widest">Timing</TableHead>
                     <TableHead className="font-bold text-[10px] uppercase tracking-widest">Identity</TableHead>
-                    <TableHead className="text-right font-bold text-[10px] uppercase tracking-widest">Location</TableHead>
+                    <TableHead className="font-bold text-[10px] uppercase tracking-widest text-right">Location</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredLogs.map(log => {
                     const logDate = log.timestamp.toDate();
-                    const isFlagged = (log as any).isFlagged === true;
                     
                     return (
-                        <TableRow key={log.id} className={cn("hover:bg-slate-50 transition-colors", isFlagged && "bg-red-50/30")}>
+                        <TableRow key={log.id} className={cn("hover:bg-slate-50 transition-colors", (log.isIdentityFlagged || log.isFlagged) && "bg-red-50/20")}>
                             <TableCell>
                                 <div className="font-bold text-slate-800">{log.staffName}</div>
-                                <div className="text-[10px] font-medium text-slate-400 uppercase">{log.staffId.slice(0, 8)}</div>
+                                <div className="text-[10px] text-slate-400 font-medium uppercase">{log.staffId.slice(0, 8)}</div>
                             </TableCell>
                             <TableCell>
                                 <div className="text-sm font-medium">{format(logDate, 'PPP')}</div>
@@ -166,52 +169,62 @@ export default function StaffAttendanceRecordsPage() {
                                     {log.type === 'In' ? (
                                         <>
                                             <Badge className="bg-indigo-600 gap-1"><ArrowDownLeft className="h-3 w-3"/> In</Badge>
-                                            {log.status === 'Late' ? (
+                                            {log.status === 'Late' && (
                                                 <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">LATE</Badge>
-                                            ) : (
-                                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">ON TIME</Badge>
                                             )}
                                         </>
                                     ) : (
                                         <>
                                             <Badge variant="secondary" className="gap-1"><ArrowUpRight className="h-3 w-3"/> Out</Badge>
                                             {log.leftEarly && (
-                                                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">LEFT EARLY</Badge>
+                                                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">EARLY</Badge>
                                             )}
                                         </>
                                     )}
                                 </div>
                             </TableCell>
                             <TableCell>
-                                {isFlagged ? (
+                                {log.isIdentityFlagged ? (
                                     <div className="flex flex-col gap-1">
-                                        <Badge variant="destructive" className="w-fit text-[10px] font-black uppercase tracking-tighter">⚠️ Off Campus</Badge>
-                                        <span className="text-[10px] text-red-600 font-black">{(log as any).distanceMeters}m Away</span>
+                                        <Badge variant="destructive" className="w-fit text-[10px] uppercase font-black">⚠️ Identity Mismatch</Badge>
+                                        <span className="text-[9px] text-red-600 max-w-[150px] leading-tight truncate font-bold" title={log.identityNotes}>
+                                            {log.identityNotes}
+                                        </span>
                                     </div>
+                                ) : log.identityNotes?.includes('missing') ? (
+                                    <Badge variant="secondary" className="bg-yellow-50 text-yellow-700 text-[9px] font-black uppercase">No Profile Pic</Badge>
                                 ) : (
-                                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-black uppercase tracking-tighter">Verified On-Site</Badge>
+                                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[9px] font-black uppercase">Verified ID</Badge>
                                 )}
-                            </TableCell>
-                            <TableCell>
-                                <Button variant="ghost" size="sm" onClick={() => setPhotoToView(log.verificationPhotoUrl)} className="text-xs font-bold text-indigo-600 hover:bg-indigo-50">View Selfie</Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => setPhotoToView(log.verificationPhotoUrl)} 
+                                  className="text-[10px] font-black text-indigo-600 h-6 px-1 mt-1 block"
+                                >
+                                  <Camera className="h-3 w-3 inline mr-1"/> View Proof
+                                </Button>
                             </TableCell>
                              <TableCell className="text-right">
-                                {log.latitude && log.longitude ? (
-                                    <a href={`https://www.google.com/maps?q=${log.latitude},${log.longitude}`} target="_blank" rel="noopener noreferrer">
-                                        <Button variant="outline" size="sm" className="h-8 text-xs font-bold gap-1 rounded-xl">
-                                            <MapPin className="h-3 w-3" /> Map
-                                        </Button>
-                                    </a>
-                                ) : (
-                                    <span className="text-xs text-slate-300">N/A</span>
-                                )}
+                                <div className="flex flex-col items-end gap-1">
+                                    {log.isFlagged ? (
+                                        <Badge variant="destructive" className="text-[9px] font-black uppercase">⚠️ Off-Site ({log.distanceMeters}m)</Badge>
+                                    ) : (
+                                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[9px] font-black uppercase">On-Site</Badge>
+                                    )}
+                                    {log.latitude && log.longitude && (
+                                        <a href={`https://www.google.com/maps?q=${log.latitude},${log.longitude}`} target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold text-blue-600 hover:underline">
+                                            Map View
+                                        </a>
+                                    )}
+                                </div>
                             </TableCell>
                         </TableRow>
                     );
                 })}
                 {filteredLogs.length === 0 && (
                     <TableRow>
-                        <TableCell colSpan={6} className="text-center py-20 text-slate-400 italic">No attendance records match your active filters.</TableCell>
+                        <TableCell colSpan={5} className="text-center py-20 text-slate-400 italic">No records match the current filters.</TableCell>
                     </TableRow>
                 )}
               </TableBody>
@@ -224,7 +237,7 @@ export default function StaffAttendanceRecordsPage() {
         <DialogContent className="rounded-[2.5rem] border-8 border-slate-100">
             <DialogHeader><DialogTitle className="text-xl font-black uppercase tracking-tight">Identity Verification Photo</DialogTitle></DialogHeader>
             {photoToView && <img src={photoToView} alt="Verification" className="w-full aspect-video object-cover rounded-2xl shadow-inner" />}
-            <p className="text-[10px] text-center font-bold text-slate-400 uppercase tracking-widest mt-2">Captured via secure browser terminal</p>
+            <p className="text-[10px] text-center font-bold text-slate-400 uppercase tracking-widest mt-2">Captured during clock-in event</p>
         </DialogContent>
       </Dialog>
     </div>
