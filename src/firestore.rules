@@ -105,8 +105,9 @@ service cloud.firestore {
       allow write: if isAdmin() || isOwner(parentId);
     }
 
+    // v1.1: Added explicit list permission for spot checks
     match /spot_checks/{checkId} {
-        allow read: if isSignedIn();
+        allow get, list: if isSignedIn();
         allow create: if isAdmin();
         allow update: if isSignedIn() && request.resource.data.responses.size() > resource.data.responses.size();
     }
