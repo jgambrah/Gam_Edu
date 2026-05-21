@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw, UserCheck, BookOpen, Save } from 'lucide-react';
+import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw, UserCheck, BookOpen, Save, Layers, Microscope } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,6 +18,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Switch } from '@/components/ui/switch';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Class, Subject } from '@/lib/types';
 
 // --- TYPES ---
 type Staff = {
@@ -28,28 +31,26 @@ type Staff = {
     role: string;
 };
 
-type Subject = {
-    id: string;
-    name: string;
-    teacherIds: string[];
-    schoolId?: string;
-};
-
 const subjectSchema = z.object({
   name: z.string().min(1, 'Subject name is required.'),
   teacherIds: z.array(z.string()).default([]),
+  weeklyPeriods: z.coerce.number().min(1, "Weekly periods must be at least 1"),
+  requiresLab: z.boolean().default(false),
+  targetClasses: z.array(z.string()).default([]),
 });
 
 // --- FORM COMPONENT ---
 function SubjectForm({
   setOpen,
   allTeachers,
+  classes,
   initialData,
   onSuccess,
   schoolId
 }: {
   setOpen: (open: boolean) => void;
   allTeachers: Staff[];
+  classes: Class[];
   initialData?: Subject;
   onSuccess: () => void;
   schoolId: string;
@@ -60,7 +61,7 @@ function SubjectForm({
 
   const form = useForm<z.infer<typeof subjectSchema>>({
     resolver: zodResolver(subjectSchema),
-    defaultValues: initialData || { name: '', teacherIds: [] },
+    defaultValues: initialData || { name: '', teacherIds: [], weeklyPeriods: 3, requiresLab: false, targetClasses: [] },
   });
 
   async function onSubmit(values: z.infer<typeof subjectSchema>) {
@@ -92,62 +93,133 @@ function SubjectForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Subject Name</FormLabel>
+                <FormControl><Input placeholder="e.g., Biology" {...field} /></FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="weeklyPeriods"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Periods per Week</FormLabel>
+                <FormControl><Input type="number" {...field} /></FormControl>
+                <FormDescription>Standard is 3-5 periods.</FormDescription>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
+
         <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Subject Name</FormLabel>
-              <FormControl><Input placeholder="e.g., Biology" {...field} /></FormControl>
-              <FormMessage />
+            control={form.control}
+            name="requiresLab"
+            render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 bg-slate-50">
+                <div className="space-y-0.5">
+                    <FormLabel className="text-base">Requires Lab Space?</FormLabel>
+                    <FormDescription>Flags this subject for Science/ICT labs instead of homerooms.</FormDescription>
+                </div>
+                <FormControl>
+                    <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                    />
+                </FormControl>
             </FormItem>
-          )}
+            )}
         />
-        <FormField
-          control={form.control}
-          name="teacherIds"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel>Assign Subject Teachers</FormLabel>
-                <FormDescription>Select all teachers qualified to teach this subject.</FormDescription>
-              </div>
-              <div className="space-y-2 max-h-64 overflow-y-auto border p-3 rounded-xl bg-slate-50/50 shadow-inner">
-                {allTeachers.length === 0 && <p className="text-sm text-muted-foreground text-center py-4 italic">No teachers found for this school.</p>}
-                {allTeachers.map((teacher) => (
-                  <FormField
-                    key={teacher.uid}
-                    control={form.control}
-                    name="teacherIds"
-                    render={({ field }) => {
-                      return (
-                        <FormItem
-                          key={teacher.uid}
-                          className="flex flex-row items-center space-x-3 space-y-0 py-2.5 hover:bg-white rounded-lg px-2 transition-colors border border-transparent hover:border-slate-200"
-                        >
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value?.includes(teacher.uid)}
-                              onCheckedChange={(checked) => {
-                                return checked
-                                  ? field.onChange([...(field.value || []), teacher.uid])
-                                  : field.onChange(field.value?.filter((value) => value !== teacher.uid));
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="font-bold cursor-pointer w-full text-slate-700">
-                             {teacher.firstName} {teacher.lastName}
-                          </FormLabel>
-                        </FormItem>
-                      );
-                    }}
-                  />
-                ))}
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+            control={form.control}
+            name="teacherIds"
+            render={() => (
+                <FormItem>
+                <div className="mb-2">
+                    <FormLabel>Qualified Teachers</FormLabel>
+                </div>
+                <ScrollArea className="h-48 border p-3 rounded-xl bg-slate-50/50">
+                    {allTeachers.map((teacher) => (
+                    <FormField
+                        key={teacher.uid}
+                        control={form.control}
+                        name="teacherIds"
+                        render={({ field }) => {
+                        return (
+                            <FormItem key={teacher.uid} className="flex flex-row items-center space-x-3 space-y-0 py-1">
+                            <FormControl>
+                                <Checkbox
+                                checked={field.value?.includes(teacher.uid)}
+                                onCheckedChange={(checked) => {
+                                    return checked
+                                    ? field.onChange([...(field.value || []), teacher.uid])
+                                    : field.onChange(field.value?.filter((value) => value !== teacher.uid));
+                                }}
+                                />
+                            </FormControl>
+                            <FormLabel className="text-xs cursor-pointer w-full text-slate-700">
+                                {teacher.firstName} {teacher.lastName}
+                            </FormLabel>
+                            </FormItem>
+                        );
+                        }}
+                    />
+                    ))}
+                </ScrollArea>
+                </FormItem>
+            )}
+            />
+
+            <FormField
+            control={form.control}
+            name="targetClasses"
+            render={() => (
+                <FormItem>
+                <div className="mb-2">
+                    <FormLabel>Applicable Classes</FormLabel>
+                </div>
+                <ScrollArea className="h-48 border p-3 rounded-xl bg-slate-50/50">
+                    {classes.map((cls) => (
+                    <FormField
+                        key={cls.id}
+                        control={form.control}
+                        name="targetClasses"
+                        render={({ field }) => {
+                        return (
+                            <FormItem key={cls.id} className="flex flex-row items-center space-x-3 space-y-0 py-1">
+                            <FormControl>
+                                <Checkbox
+                                checked={field.value?.includes(cls.id)}
+                                onCheckedChange={(checked) => {
+                                    return checked
+                                    ? field.onChange([...(field.value || []), cls.id])
+                                    : field.onChange(field.value?.filter((value) => value !== cls.id));
+                                }}
+                                />
+                            </FormControl>
+                            <FormLabel className="text-xs cursor-pointer w-full text-slate-700">
+                                {cls.name}
+                            </FormLabel>
+                            </FormItem>
+                        );
+                        }}
+                    />
+                    ))}
+                </ScrollArea>
+                </FormItem>
+            )}
+            />
+        </div>
+
         <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg font-bold bg-indigo-600 hover:bg-indigo-700">
           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4"/>}
           {initialData ? 'Save Changes' : 'Create Subject'}
@@ -183,6 +255,12 @@ export default function SubjectsPage() {
     return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId));
   }, [firestore, canManage, refetchKey, schoolId]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
+
+  const classesQuery = useMemoFirebase(() => 
+    (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, 
+    [firestore, schoolId]
+  );
+  const { data: classes } = useCollection<Class>(classesQuery);
 
   const isLoading = isLoadingSchool || isLoadingSubjects || (canManage && isLoadingTeachers);
 
@@ -231,7 +309,7 @@ export default function SubjectsPage() {
                 <BookOpen className="text-indigo-600" /> Subject Catalog
               </CardTitle>
               <CardDescription className="text-slate-500 font-medium">
-                Register academic subjects and link them to qualified faculty members.
+                Register subjects and set weekly period requirements for the AI scheduler.
               </CardDescription>
             </div>
             <div className="flex gap-2">
@@ -265,8 +343,13 @@ export default function SubjectsPage() {
                         <h3 className="font-black text-xl text-slate-800 tracking-tight uppercase italic">{subject.name}</h3>
                         <div className="flex flex-wrap gap-1">
                             <Badge variant="outline" className="text-[10px] uppercase bg-indigo-50 border-indigo-100 text-indigo-600 font-black tracking-tighter">
-                                {subject.teacherIds?.length || 0} Teachers Assigned
+                                {subject.weeklyPeriods || 3} Periods/Week
                             </Badge>
+                            {subject.requiresLab && (
+                                <Badge variant="outline" className="text-[10px] uppercase bg-orange-50 border-orange-100 text-orange-600 font-black tracking-tighter">
+                                    <Microscope className="h-2 w-2 mr-1"/> Lab Req.
+                                </Badge>
+                            )}
                         </div>
                     </div>
                     <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
@@ -304,7 +387,7 @@ export default function SubjectsPage() {
       </Card>
 
       <Dialog open={isFormOpen} onOpenChange={handleCloseDialog}>
-        <DialogContent className="sm:max-w-md rounded-3xl border-4">
+        <DialogContent className="sm:max-w-xl rounded-3xl border-4 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black uppercase italic tracking-tighter">
                 {editingSubject ? 'Edit Subject' : 'Register New Subject'}
@@ -314,6 +397,7 @@ export default function SubjectsPage() {
             <SubjectForm
                 setOpen={handleCloseDialog}
                 allTeachers={teachers || []}
+                classes={classes || []}
                 initialData={editingSubject}
                 onSuccess={forceRefetch}
                 schoolId={schoolId}

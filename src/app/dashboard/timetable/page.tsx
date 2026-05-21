@@ -11,7 +11,7 @@ import { TimeSlot, TimetableEntry, Subject, Room, Student, Class } from '@/lib/t
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle, RefreshCw, AlertTriangle, Microscope } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import TimetableSeeder from '@/components/TimetableSeeder';
+import { Switch } from '@/components/ui/switch';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
@@ -150,7 +151,7 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
     const [loading, setLoading] = useState(false);
 
     const [newSlot, setNewSlot] = useState({ day: 'Monday', start: '08:00', end: '08:45' });
-    const [newRoom, setNewRoom] = useState('');
+    const [newRoom, setNewRoom] = useState({ name: '', isLab: false });
 
     const handleAddSlot = async () => {
         if (!firestore || !schoolId) return;
@@ -172,16 +173,17 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
     };
 
     const handleAddRoom = async () => {
-        if (!firestore || !schoolId || !newRoom) return;
+        if (!firestore || !schoolId || !newRoom.name) return;
         setLoading(true);
         try {
             await addDoc(collection(firestore, 'rooms'), {
-                name: newRoom,
+                name: newRoom.name,
+                isLab: newRoom.isLab,
                 capacity: 30,
                 schoolId
             });
             toast({ title: "Room Added" });
-            setNewRoom('');
+            setNewRoom({ name: '', isLab: false });
             onRefresh();
         } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
         finally { setLoading(false); }
@@ -230,14 +232,21 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                         <CardTitle className="text-sm font-bold flex items-center gap-2"><MapPin className="h-4 w-4"/> School Rooms</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex gap-2 p-3 bg-slate-50 rounded-xl border">
-                            <Input placeholder="Room Name..." value={newRoom} onChange={e => setNewRoom(e.target.value)} className="h-9 text-xs bg-white" />
-                            <Button onClick={handleAddRoom} disabled={loading || !newRoom} size="sm" className="h-9 px-4">Add</Button>
+                        <div className="space-y-3 p-3 bg-slate-50 rounded-xl border">
+                            <Input placeholder="Room Name..." value={newRoom.name} onChange={e => setNewRoom({...newRoom, name: e.target.value})} className="h-9 text-xs bg-white" />
+                            <div className="flex items-center justify-between px-2">
+                                <Label className="text-[10px] uppercase font-black text-slate-500">Specialized Lab?</Label>
+                                <Switch checked={newRoom.isLab} onCheckedChange={(v) => setNewRoom({...newRoom, isLab: v})} />
+                            </div>
+                            <Button onClick={handleAddRoom} disabled={loading || !newRoom.name} size="sm" className="h-9 w-full">Add Room</Button>
                         </div>
                         <div className="max-h-[300px] overflow-y-auto space-y-1">
                             {rooms.map(r => (
                                 <div key={r.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
-                                    <span>{r.name}</span>
+                                    <span className="flex items-center gap-2">
+                                        {r.name}
+                                        {r.isLab && <Badge variant="outline" className="text-[8px] bg-orange-50 text-orange-700 h-4 uppercase">Lab</Badge>}
+                                    </span>
                                     <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('rooms', r.id)}><Trash2 className="h-3 w-3"/></Button>
                                 </div>
                             ))}
@@ -310,24 +319,40 @@ export default function TimetablePage() {
         return;
     }
     
-    toast({ title: "AI is on the job!", description: "Generating a new timetable. This may take a moment." });
+    toast({ title: "AI is on the job!", description: "Generating a new timetable based on Ghanaian institutional logic." });
 
     try {
-      const simplifiedTeachers = allTeachers.map(t => ({
-        uid: t.uid,
-        firstName: t.firstName,
-        lastName: t.lastName,
-        subjects: subjects.filter(s => s.teacherIds?.includes(t.uid)).map(s => s.id)
-      }));
+      const enrichedClasses = classes?.map(c => ({
+        id: c.id,
+        name: c.name,
+        homeRoomId: c.homeRoomId || null,
+        classTeacherId: c.teacherId || null,
+        teachingModel: c.teachingModel || 'SubjectTeacher'
+      })) || [];
+
+      const enrichedSubjects = subjects?.map(s => ({
+        id: s.id,
+        name: s.name,
+        weeklyPeriods: s.weeklyPeriods || 3,
+        requiresLab: s.requiresLab || false,
+        targetClasses: s.targetClasses || [],
+        allowedTeacherIds: s.teacherIds || []
+      })) || [];
 
       const input = {
-        teachers: simplifiedTeachers,
-        subjects: subjects.map(({ id, name }) => ({ id, name })),
-        classes: classes?.map(({ id, name }) => ({ id, name })) || [],
-        rooms: rooms?.map(({ id, name }) => ({ id, name })) || [],
+        teachers: allTeachers.map(t => ({ id: t.uid, name: `${t.firstName} ${t.lastName}` })),
+        subjects: enrichedSubjects,
+        classes: enrichedClasses,
+        rooms: rooms?.map(({ id, name, isLab }) => ({ id, name, isLab: isLab || false })) || [],
         timeSlots: timeSlots?.map(({ id, day, startTime, endTime }) => ({ id, day, startTime, endTime })) || [],
         customConstraint: customConstraint,
         schoolId: schoolId,
+        systemRules: [
+          "LOWER PRIMARY LOGIC: If a class teachingModel is 'ClassTeacher', prioritize assigning their classTeacherId to all non-lab subjects.",
+          "HOME ROOM LOGIC: By default, assign lessons to the class's homeRoomId UNLESS the subject requiresLab is true.",
+          "FREQUENCY LOGIC: Do not schedule a subject more times per week than its weeklyPeriods value.",
+          "DOUBLE PERIODS: If weeklyPeriods is 4 or more, attempt to schedule one double-period block (back-to-back)."
+        ]
       };
 
       const result = await generateTimetable(input);
@@ -439,7 +464,7 @@ export default function TimetablePage() {
                 <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
                     <CardHeader className="p-8">
                         <CardTitle className="flex items-center gap-2 text-emerald-400 uppercase italic tracking-tight"><Wand2 /> AI Scheduler</CardTitle>
-                        <CardDescription className="text-slate-400">Generate a conflict-free school schedule automatically based on your configured time slots.</CardDescription>
+                        <CardDescription className="text-slate-400">Generate a conflict-free school schedule automatically based on Ghanaian institutional logic.</CardDescription>
                     </CardHeader>
                     <CardContent className="px-8 pb-8 space-y-4">
                         <div className="grid md:grid-cols-2 gap-6">

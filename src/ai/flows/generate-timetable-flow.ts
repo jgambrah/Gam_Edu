@@ -1,9 +1,8 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { checkAndSpendCredits } from '@/app/actions/credits'; // Import the action
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // Define the Schema for the AI response
 const TimetableSchema = z.object({
@@ -15,7 +14,7 @@ const TimetableSchema = z.object({
     classId: z.string(),
     teacherId: z.string().nullable().optional(),
     roomId: z.string().nullable().optional(),
-    timeSlotId: z.string().optional() // Make optional as AI might miss it
+    timeSlotId: z.string().optional()
   }))
 });
 
@@ -23,31 +22,33 @@ export async function generateTimetable(input: any) {
   console.log("🚀 AI Timetable Generation Started...");
 
   try {
-    // The credit check is now done on the client-side *before* calling this.
-    // A server-side check is a good backup.
     if (input.schoolId) {
-        const creditResult = await checkAndSpendCredits(input.schoolId, 50); // High cost
+        const creditResult = await checkAndSpendCredits(input.schoolId, 50);
         if (!creditResult.success) {
             return { success: false, error: creditResult.error };
         }
     }
 
-    // 1. Validate Input Size
     const prompt = `
-      You are a School Timetable Scheduler.
+      You are an Expert Ghanaian School Timetable Scheduler.
       
-      TASK: Generate a conflict-free weekly timetable.
+      TASK: Generate a conflict-free weekly timetable that adheres to strict institutional logic.
       
-      CONSTRAINTS:
+      CRITICAL CONSTRAINTS TO FOLLOW:
+      {{#each systemRules}}
+      - {{this}}
+      {{/each}}
+      
+      ADDITIONAL CONSTRAINTS:
       1. Use the provided TimeSlots exactly.
-      2. Assign a Subject, Teacher, and Room to every 'Lesson' slot for every Class.
-      3. Teachers cannot be in two classes at once.
-      4. Rooms cannot be used twice at once.
-      5. ${input.customConstraint || "Distribute hard subjects (Math, Science) in mornings."}
+      2. Teachers cannot be in two classes at once.
+      3. Rooms cannot be used twice at once.
+      4. Assign a Subject, Teacher, and Room to every slot for every Class.
+      5. ${input.customConstraint || "Distribute hard subjects in mornings."}
 
       DATA:
-      - Classes: ${JSON.stringify(input.classes.map((c:any) => ({id: c.id, name: c.name})))}
-      - Teachers: ${JSON.stringify(input.teachers.map((t:any) => ({id: t.uid, subjects: t.subjects})))}
+      - Classes: ${JSON.stringify(input.classes)}
+      - Teachers: ${JSON.stringify(input.teachers)}
       - Subjects: ${JSON.stringify(input.subjects)}
       - Rooms: ${JSON.stringify(input.rooms)}
       - TimeSlots: ${JSON.stringify(input.timeSlots)}
@@ -56,7 +57,6 @@ export async function generateTimetable(input: any) {
       Return a JSON object containing a "timetable" array.
     `;
 
-    // 2. Call AI with Timeout Config
     const response = await ai.generate({
       model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
@@ -65,18 +65,17 @@ export async function generateTimetable(input: any) {
         format: "json"
       },
       config: {
-        temperature: 0.2, // Low creativity = fewer errors
-        maxOutputTokens: 8192, // Allow large response
+        temperature: 0.2,
+        maxOutputTokens: 8192,
       }
     });
 
-    if (!response) {
+    if (!response || !response.output) {
       throw new Error("AI returned empty response.");
     }
 
-    // 3. Post-Process Data
     const rawData = response.output;
-    const fixedTimetable = rawData?.timetable.map((entry: any) => {
+    const fixedTimetable = rawData.timetable.map((entry: any) => {
         const matchSlot = input.timeSlots.find((ts: any) => 
             ts.day === entry.day && ts.startTime === entry.startTime
         );
@@ -93,7 +92,6 @@ export async function generateTimetable(input: any) {
 
   } catch (error: any) {
     console.error("❌ AI Generation Failed:", error);
-    
     return { 
         success: false, 
         error: error.message || "Server Timeout or Model Error" 

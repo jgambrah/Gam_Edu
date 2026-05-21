@@ -43,8 +43,8 @@ import {
 import { useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError, useCollection } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import React, { useState, useMemo } from 'react';
-import { collection, doc, query, where, updateDoc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
-import { Loader2, PlusCircle, User, Users, BookOpen, UserCircle, Trash2, ArrowLeft, CalendarCheck, Clock, ShieldCheck, ChevronRight, Edit, Baby, Venus, Mars } from 'lucide-react';
+import { collection, doc, query, where, updateDoc, deleteDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { Loader2, PlusCircle, User, Users, BookOpen, UserCircle, Trash2, ArrowLeft, CalendarCheck, Clock, ShieldCheck, ChevronRight, Edit, Baby, Venus, Mars, Home, GraduationCap } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/context/role-context';
 import {
@@ -56,7 +56,7 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DailyAttendanceSheet } from '../attendance/daily-attendance-sheet';
-import { Subject, TimetableEntry, Student, Class } from '@/lib/types';
+import { Subject, TimetableEntry, Student, Class, Room } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -70,6 +70,8 @@ const classSchema = z.object({
   description: z.string().optional(),
   teacherId: z.string().optional(),
   capacity: z.coerce.number().min(1, "Capacity must be at least 1"),
+  homeRoomId: z.string().optional(),
+  teachingModel: z.enum(['ClassTeacher', 'SubjectTeacher']).default('SubjectTeacher'),
 });
 
 function ClassDetailView({ 
@@ -140,9 +142,14 @@ function ClassDetailView({
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <CardTitle className="text-3xl font-black text-slate-900 tracking-tight">{selectedClass.name}</CardTitle>
-                            <CardDescription className="flex items-center gap-2 mt-1">
-                                <User className="h-3 w-3" /> Form Teacher: {teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unassigned'}
-                            </CardDescription>
+                            <div className="flex flex-wrap gap-4 mt-2">
+                                <CardDescription className="flex items-center gap-2">
+                                    <User className="h-3 w-3" /> Form Teacher: {teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unassigned'}
+                                </CardDescription>
+                                <CardDescription className="flex items-center gap-2">
+                                    <Badge variant="outline" className="text-[10px] font-black uppercase">{selectedClass.teachingModel || 'Subject Teacher'}</Badge>
+                                </CardDescription>
+                            </div>
                         </div>
                     </div>
                 </CardHeader>
@@ -241,7 +248,7 @@ export default function AcademicsPageContent() {
 
   const form = useForm<z.infer<typeof classSchema>>({
     resolver: zodResolver(classSchema),
-    defaultValues: { name: '', description: '', teacherId: '', capacity: 30 },
+    defaultValues: { name: '', description: '', teacherId: '', capacity: 30, teachingModel: 'SubjectTeacher', homeRoomId: '' },
   });
 
   // Handle Edit Click
@@ -252,7 +259,9 @@ export default function AcademicsPageContent() {
           name: c.name,
           description: c.description || '',
           teacherId: c.teacherId || '',
-          capacity: c.capacity || 30
+          capacity: c.capacity || 30,
+          homeRoomId: c.homeRoomId || '',
+          teachingModel: c.teachingModel || 'SubjectTeacher'
       });
       setIsDialogOpen(true);
   };
@@ -260,7 +269,7 @@ export default function AcademicsPageContent() {
   // Handle Create Click
   const handleCreateClick = () => {
       setEditingClass(null);
-      form.reset({ name: '', description: '', teacherId: '', capacity: 30 });
+      form.reset({ name: '', description: '', teacherId: '', capacity: 30, teachingModel: 'SubjectTeacher', homeRoomId: '' });
       setIsDialogOpen(true);
   };
 
@@ -282,6 +291,11 @@ export default function AcademicsPageContent() {
       : null, 
   [firestore, schoolId, canListStaff]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection(teachersQuery);
+
+  const roomsQuery = useMemoFirebase(() => 
+    (firestore && schoolId) ? query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId)) : null,
+  [firestore, schoolId]);
+  const { data: rooms } = useCollection<Room>(roomsQuery);
 
   const studentsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isStaff)
@@ -391,7 +405,7 @@ export default function AcademicsPageContent() {
                   Create Class
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{editingClass ? 'Edit Class' : 'Create a New Class'}</DialogTitle>
                   <DialogDescription>
@@ -403,8 +417,33 @@ export default function AcademicsPageContent() {
                         <FormField control={form.control} name="name" render={({ field }) => (
                             <FormItem><FormLabel>Class Name</FormLabel><FormControl><Input placeholder="e.g. BS 3" {...field}/></FormControl><FormMessage/></FormItem>
                         )}/>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name="teachingModel" render={({ field }) => (
+                                <FormItem><FormLabel>Teaching Model</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl><SelectTrigger><SelectValue placeholder="Model"/></SelectTrigger></FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="ClassTeacher">Class Teacher (Nursery-BS3)</SelectItem>
+                                            <SelectItem value="SubjectTeacher">Subject Teacher (BS4+)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )}/>
+                            <FormField control={form.control} name="homeRoomId" render={({ field }) => (
+                                <FormItem><FormLabel>Primary Room</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl><SelectTrigger><SelectValue placeholder="Select Room..."/></SelectTrigger></FormControl>
+                                        <SelectContent>
+                                            {rooms?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )}/>
+                        </div>
+
                         <FormField control={form.control} name="teacherId" render={({ field }) => (
-                            <FormItem><FormLabel>Assign Teacher</FormLabel>
+                            <FormItem><FormLabel>Primary Teacher (Form Tutor)</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl><SelectTrigger><SelectValue placeholder="Select teacher..."/></SelectTrigger></FormControl>
                                     <SelectContent>
@@ -418,7 +457,7 @@ export default function AcademicsPageContent() {
                         <FormField control={form.control} name="capacity" render={({ field }) => (
                             <FormItem><FormLabel>Target Capacity</FormLabel><FormControl><Input type="number" {...field}/></FormControl><FormMessage/></FormItem>
                         )}/>
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>
                             {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : (editingClass ? "Save Changes" : "Create Class")}
                         </Button>
                     </form>
@@ -487,7 +526,11 @@ export default function AcademicsPageContent() {
                               <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 transition-transform group-hover:translate-x-1" />
                           </div>
                       </div>
-                      <CardDescription className="line-clamp-1">{c.description || 'No description available.'}</CardDescription>
+                      <div className="flex gap-2 mt-1">
+                        <Badge variant="outline" className="text-[9px] uppercase font-bold text-slate-400">
+                            {c.teachingModel === 'ClassTeacher' ? 'Class Teacher Model' : 'Subject Teacher Model'}
+                        </Badge>
+                      </div>
                     </CardHeader>
                     <CardContent className="space-y-3 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
@@ -498,13 +541,9 @@ export default function AcademicsPageContent() {
                           <div className="p-1.5 bg-emerald-50 rounded-lg text-emerald-600"><User className="h-4 w-4"/></div>
                           <span className="font-medium text-slate-700">Teacher: {classTeacher ? `${classTeacher.firstName} ${classTeacher.lastName}` : 'Not Assigned'}</span>
                       </div>
-                      <div className="flex gap-2 pt-1">
-                          <Badge variant="outline" className="text-[10px] uppercase tracking-tighter text-blue-600 border-blue-100">
-                              {maleCount} Boys
-                          </Badge>
-                          <Badge variant="outline" className="text-[10px] uppercase tracking-tighter text-pink-600 border-pink-100">
-                              {femaleCount} Girls
-                          </Badge>
+                      <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-blue-50 rounded-lg text-blue-600"><Home className="h-4 w-4"/></div>
+                          <span className="font-medium text-slate-700">Homeroom: {rooms?.find(r => r.id === c.homeRoomId)?.name || 'Not Set'}</span>
                       </div>
                     </CardContent>
                     <CardFooter className="bg-slate-50/50 border-t py-3 text-xs font-bold text-indigo-600 uppercase tracking-widest">
