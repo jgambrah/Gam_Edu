@@ -15,7 +15,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
 import { 
     History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, 
-    Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight, Camera, Zap, 
+    Printer, MapPin, ShieldAlert, ShieldCheck, ArrowDownLeft, ArrowUpRight, Camera, Zap, 
     CheckCircle2, Info, Search, XCircle, Activity, LayoutDashboard
 } from 'lucide-react';
 import { format, startOfDay, endOfDay } from 'date-fns';
