@@ -312,14 +312,7 @@ export default function TimetablePage() {
     if (!canManage || !allTeachers || !subjects || !classes || !rooms || !timeSlots || !firestore || !schoolId) return;
     
     setIsGenerating(true);
-    const creditResult = await checkAndSpendCredits(schoolId, 50);
-    if (!creditResult.success) {
-        toast({ variant: 'destructive', title: "Insufficient AI Credits", description: creditResult.error });
-        setIsGenerating(false);
-        return;
-    }
-    
-    toast({ title: "AI is on the job!", description: "Generating a new timetable based on Ghanaian institutional logic." });
+    toast({ title: "AI is on the job!", description: "Generating a 5-day schedule day-by-day. This will take about 15-20 seconds. Please wait..." });
 
     try {
       const enrichedClasses = classes?.map(c => ({
@@ -356,6 +349,11 @@ export default function TimetablePage() {
       };
 
       const result = await generateTimetable(input);
+      
+      if (!result.success) {
+          throw new Error(result.error);
+      }
+
       const batch = writeBatch(firestore);
 
       if(timetable) {
@@ -391,7 +389,7 @@ export default function TimetablePage() {
       return timetable?.filter(entry => entry.classId === selectedClassId) || [];
   }, [timetable, selectedClassId]);
 
-  if (!canAccess && !isRoleLoading) return <Card className="p-8 text-center text-red-500">Access Denied</Card>;
+  if (!canAccess && !isLoadingSchool) return <Card className="p-8 text-center text-red-500">Access Denied</Card>;
 
   return (
     <div className="space-y-6">
