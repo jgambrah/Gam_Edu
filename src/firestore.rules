@@ -45,7 +45,7 @@ service cloud.firestore {
       return false;
     }
 
-    // STRICT DIRECTOR CHECK: Only the Director role can manage sensitive school settings
+    // STRICT DIRECTOR CHECK
     function isDirector() { return isSignedIn() && getUserRole() == 'Director'; }
 
     function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian'; }
@@ -68,7 +68,6 @@ service cloud.firestore {
 
     match /schoolSettings/{schoolId} {
       allow read: if isSuperAdmin() || isAnyStaff(schoolId);
-      // Restricted from 'isAdmin()' to strictly CEO or Director
       allow write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isDirector();
 
       match /{allPaths=**} {
@@ -90,7 +89,6 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-      // Allow public to read if showOnWebsite is true, otherwise require sign-in
       allow get: if (resource.data.showOnWebsite == true) || isSignedIn();
       allow list: if (resource.data.showOnWebsite == true) || isAdmin() || isFinanceStaff() || isTransportStaff();
       allow write: if isAdmin() || isOwner(staffId);
@@ -107,6 +105,12 @@ service cloud.firestore {
     match /parents/{parentId} {
       allow read, list: if isSignedIn();
       allow write: if isAdmin() || isOwner(parentId);
+    }
+
+    match /spot_checks/{checkId} {
+        allow read: if isSignedIn();
+        allow create: if isAdmin();
+        allow update: if isSignedIn() && request.resource.data.responses.size() > resource.data.responses.size();
     }
 
     match /notifications/{notificationId} {
@@ -429,7 +433,7 @@ service cloud.firestore {
 
     match /admissionApplications/{applicationId} {
       allow read, write, list: if isAdmin();
-      allow create: if true; // Public submission
+      allow create: if true; 
       allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
     }
 
@@ -581,7 +585,6 @@ service cloud.firestore {
       allow delete: if request.auth.uid == resource.data.userId || isAdmin();
     }
 
-    // ELA Rules
     match /ela_grammar_drills/{drillId} {
       allow read: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
@@ -618,7 +621,6 @@ service cloud.firestore {
       allow write: if isOwner(userId) || isAdmin();
     }
 
-    // Logic/Think Tank
     match /think_tank_paradoxes/{paradoxId} {
       allow read: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
@@ -675,7 +677,6 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
-    // Communication
     match /forumThreads/{threadId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn();
@@ -721,7 +722,6 @@ service cloud.firestore {
       allow delete: if isLibrarian() || isAdmin();
     }
 
-    // GLOBAL FALLBACK
     match /{document=**} {
       allow read, write: if isAdmin();
     }

@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, Timestamp, getDocs } from 'firebase/firestore';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,16 +12,20 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight, Camera } from 'lucide-react';
-import { format, startOfDay, endOfDay, setHours, setMinutes } from 'date-fns';
+import { History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight, Camera, Zap } from 'lucide-react';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import type { Staff, StaffAttendance } from '@/lib/types';
+import { notifyStaffByUidAction } from '@/app/actions/notifications';
+import { useToast } from '@/hooks/use-toast';
 
 export default function StaffAttendanceRecordsPage() {
   const { role } = useRole();
+  const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -30,10 +34,11 @@ export default function StaffAttendanceRecordsPage() {
   });
   const [selectedStaffId, setSelectedStaffId] = useState<string>('all');
   const [photoToView, setPhotoToView] = useState<string | null>(null);
+  const [isInitiating, setIsInitiating] = useState(false);
 
   const canAccess = role === 'Director' || role === 'Administrator';
 
-  // 1. Fetch Staff (for the filter dropdown)
+  // 1. Fetch Staff
   const staffQuery = useMemoFirebase(() =>
     (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), orderBy('firstName')) : null
   , [firestore, schoolId]);
@@ -45,6 +50,61 @@ export default function StaffAttendanceRecordsPage() {
   , [firestore, schoolId]);
   const { data: attendanceLogs, isLoading: isLoadingLogs } = useCollection<StaffAttendance>(attendanceQuery);
 
+  const handleInitiateSpotCheck = async () => {
+    if (!firestore || !schoolId || !user) return;
+    setIsInitiating(true);
+    try {
+        const checkRef = doc(collection(firestore, 'spot_checks'));
+        const expiresAt = new Date(Date.now() + 15 * 60000);
+        
+        await setDoc(checkRef, {
+            id: checkRef.id,
+            schoolId,
+            initiatedAt: serverTimestamp(),
+            initiatedBy: user.uid,
+            expiresAt: Timestamp.fromDate(expiresAt),
+            status: 'active',
+            responses: []
+        });
+        
+        // Find active staff (those who clocked in today but haven't clocked out)
+        const todayStart = startOfDay(new Date());
+        
+        const qIn = query(
+            collection(firestore, 'staff_attendance'),
+            where('schoolId', '==', schoolId),
+            where('type', '==', 'In'),
+            where('timestamp', '>=', Timestamp.fromDate(todayStart))
+        );
+        const inSnap = await getDocs(qIn);
+        
+        const qOut = query(
+            collection(firestore, 'staff_attendance'),
+            where('schoolId', '==', schoolId),
+            where('type', '==', 'Out'),
+            where('timestamp', '>=', Timestamp.fromDate(todayStart))
+        );
+        const outSnap = await getDocs(qOut);
+        const clockedOutIds = new Set(outSnap.docs.map(d => d.data().staffId));
+        
+        const activeStaffIds = Array.from(new Set(
+            inSnap.docs
+                .map(d => d.data().staffId)
+                .filter(id => !clockedOutIds.has(id))
+        ));
+        
+        if (activeStaffIds.length > 0) {
+            await notifyStaffByUidAction(activeStaffIds, "🚨 Security Spot Check", "Please verify your location immediately. You have 15 minutes.", "/dashboard");
+        }
+        
+        toast({ title: "Spot Check Active", description: `Notified ${activeStaffIds.length} currently clocked-in staff.` });
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: "Error", description: e.message });
+    } finally {
+        setIsInitiating(false);
+    }
+  };
+
   // 3. Filter and process data
   const { filteredLogs, stats } = useMemo(() => {
     if (!attendanceLogs) return { filteredLogs: [], stats: { total: 0, late: 0, flagged: 0, early: 0, identityIssues: 0 } };
@@ -52,14 +112,9 @@ export default function StaffAttendanceRecordsPage() {
     const filtered = attendanceLogs.filter(log => {
       if (!log.timestamp) return false;
       const logDate = log.timestamp.toDate();
-
-      // Date range filter
       if (dateRange?.from && logDate < startOfDay(dateRange.from)) return false;
       if (dateRange?.to && logDate > endOfDay(dateRange.to)) return false;
-
-      // Staff filter
       if (selectedStaffId !== 'all' && log.staffId !== selectedStaffId) return false;
-
       return true;
     });
 
@@ -82,12 +137,23 @@ export default function StaffAttendanceRecordsPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2 text-slate-800"><UserCheck className="text-indigo-600"/> Staff Attendance Audit</h1>
           <p className="text-muted-foreground">Monitor proximity verification, identity matching, and working hours.</p>
         </div>
-        <Button onClick={() => window.print()} variant="outline"><Printer className="mr-2 h-4 w-4"/> Print Report</Button>
+        <div className="flex gap-2">
+            <Button 
+                onClick={handleInitiateSpotCheck} 
+                disabled={isInitiating} 
+                variant="destructive" 
+                className="bg-red-600 hover:bg-red-700 h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-red-200"
+            >
+                {isInitiating ? <Loader2 className="animate-spin h-4 w-4 mr-2"/> : <Zap className="h-4 w-4 mr-2"/>}
+                Trigger Liveness Check
+            </Button>
+            <Button onClick={() => window.print()} variant="outline" className="h-11 border-2 font-bold"><Printer className="mr-2 h-4 w-4"/> Print Report</Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">

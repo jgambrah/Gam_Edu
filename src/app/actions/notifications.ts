@@ -71,7 +71,6 @@ export async function notifyParents(studentIds: string[], title: string, body: s
     }
 
     // 4. Send the Multicast Message (FCM limit is 500 tokens per multicast)
-    // For very large schools, we'd chunk tokens here too, but for one class it's safe.
     const messagePayload = {
       notification: { title, body },
       data: { url }, 
@@ -91,5 +90,61 @@ export async function notifyParents(studentIds: string[], title: string, body: s
   } catch (error: any) {
     console.error('Push Notification Error:', error);
     return { success: false, error: error.message || 'Failed to send notification.' };
+  }
+}
+
+/**
+ * Sends a push notification to specific staff members by their UID.
+ * 
+ * @param staffUids - Array of staff UIDs to notify.
+ * @param title - The title of the notification.
+ * @param body - The body text of the notification.
+ * @param url - The dashboard URL to open when the notification is tapped.
+ */
+export async function notifyStaffByUidAction(staffUids: string[], title: string, body: string, url: string) {
+  if (!staffUids || staffUids.length === 0) {
+    return { success: true };
+  }
+
+  try {
+    const adminApp = getAdminApp();
+    const db = getFirestore(adminApp);
+    const messaging = getMessaging(adminApp);
+
+    const chunks: string[][] = [];
+    for (let i = 0; i < staffUids.length; i += 30) {
+      chunks.push(staffUids.slice(i, i + 30));
+    }
+
+    const staffSnapshots = await Promise.all(
+      chunks.map(chunk => 
+        db.collection('staff').where('uid', 'in', chunk).get()
+      )
+    );
+
+    const tokensSet = new Set<string>();
+    staffSnapshots.forEach(snap => {
+      snap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.fcmTokens && Array.isArray(data.fcmTokens)) {
+          data.fcmTokens.forEach((token: string) => tokensSet.add(token));
+        }
+      });
+    });
+
+    const tokens = Array.from(tokensSet);
+    if (tokens.length === 0) return { success: true, message: 'No devices found' };
+
+    const messagePayload = {
+      notification: { title, body },
+      data: { url }, 
+      tokens: tokens,
+    };
+
+    const response = await messaging.sendEachForMulticast(messagePayload);
+    return { success: true, sentCount: response.successCount };
+  } catch (error: any) {
+    console.error('Staff Notification Error:', error);
+    return { success: false, error: error.message };
   }
 }

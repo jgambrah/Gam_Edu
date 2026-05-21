@@ -15,21 +15,7 @@ import type { StaffAttendance } from '@/lib/types';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useRole } from '@/context/role-context';
 import { verifyStaffIdentityAction } from '@/app/actions/verify-identity';
-
-/**
- * Calculates the great-circle distance between two points (Haversine formula).
- * @returns Distance in meters.
- */
-function getDistanceInMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const R = 6371e3; // Earth radius in meters
-  const p1 = lat1 * Math.PI / 180;
-  const p2 = lat2 * Math.PI / 180;
-  const dp = (lat2 - lat1) * Math.PI / 180;
-  const dl = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dp / 2) * Math.sin(dp / 2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) * Math.sin(dl / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
+import { getDistanceInMeters } from '@/lib/geo';
 
 /**
  * Converts HH:mm time string to a Date object for today.
