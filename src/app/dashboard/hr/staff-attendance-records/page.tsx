@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Label } from '@/components/ui/label';
 import { 
     History, Clock, AlertTriangle, UserCheck, Loader2, Calendar as CalendarIcon, 
     Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight, Camera, Zap, 
@@ -381,7 +382,7 @@ export default function StaffAttendanceRecordsPage() {
                         </PopoverContent>
                         </Popover>
                     </div>
-                    <div className="space-y-2 flex-grow max-w-sm">
+                    <div className="space-y-2 flex-grow max-sm">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Staff Filter</Label>
                         <Select onValueChange={setSelectedStaffId} value={selectedStaffId}>
                         <SelectTrigger className="w-full border-2 rounded-2xl h-12 bg-white shadow-sm font-bold"><SelectValue placeholder="All Personnel" /></SelectTrigger>
