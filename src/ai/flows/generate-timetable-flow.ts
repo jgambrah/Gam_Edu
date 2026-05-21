@@ -4,6 +4,12 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
+/**
+ * @fileOverview Timetable Generation Flow
+ * 
+ * - generateTimetable - Optimized action that generates a 5-day schedule in parallel
+ */
+
 // Minimal Output Schema to save tokens
 const TimetableEntrySchema = z.object({
   classId: z.string(),
@@ -18,11 +24,12 @@ const TimetableOutputSchema = z.object({
 });
 
 /**
- * Generates a full school timetable by chunking the task day-by-day.
- * This prevents the AI from hitting token limits or losing focus on large matrices.
+ * Generates a full school timetable by parallelizing the task day-by-day.
+ * This prevents the AI from hitting token limits, improves attention,
+ * and ensures the operation finishes within standard server action timeouts.
  */
 export async function generateTimetable(input: any) {
-  console.log("🚀 AI Timetable Generation Started (Day-by-Day Mode)...");
+  console.log("🚀 AI Timetable Generation Started (Parallel Mode)...");
 
   try {
     if (input.schoolId) {
@@ -33,34 +40,24 @@ export async function generateTimetable(input: any) {
     }
 
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    let completeTimetable: any[] = [];
     
-    // Create a tracker for how many times a subject has been scheduled so far
-    const scheduledCounts: Record<string, number> = {}; 
-
-    for (const day of daysOfWeek) {
-        // 1. Get only the slots for this specific day
+    // Create an array of Promises so all 5 days generate at the exact same time
+    const dailyPromises = daysOfWeek.map(async (day) => {
         const dailySlots = input.timeSlots.filter((ts: any) => ts.day === day);
         
         if (dailySlots.length === 0) {
-            console.log(`Skipping ${day}: No time slots defined.`);
-            continue;
+            return [];
         }
 
-        console.log(`Generating schedule for ${day}...`);
-
-        // 2. Build a day-specific prompt
         const dayPrompt = `
-            You are a master school administrator.
+            You are a master school administrator scheduling a timetable.
             Generate the timetable for ONE DAY ONLY: ${day}.
             
             CRITICAL DIRECTIVES:
             1. You MUST generate exactly ONE entry for EVERY 'classId' in EVERY 'timeSlotId' provided below.
-            2. DO NOT exceed the weekly limits. Here is how many times subjects have already been scheduled this week: ${JSON.stringify(scheduledCounts)}. 
-               Reference the 'weeklyPeriods' field in the 'Subjects' array.
-            3. Use ONLY the IDs provided in the JSON format.
-            4. If a class has a free period, output the entry but leave the subjectId and teacherId empty strings "".
-            5. Resolve conflicts: A teacher cannot be in two rooms. A room cannot have two classes.
+            2. For subjects, divide their 'weeklyPeriods' by 5 to know roughly how many times to schedule them today.
+            3. Use ONLY the exact IDs provided.
+            4. If a class has a free period, leave subjectId empty (""), but the entry MUST exist in the JSON array.
             
             Input Data for ${day}:
             TimeSlots: ${JSON.stringify(dailySlots)}
@@ -69,12 +66,11 @@ export async function generateTimetable(input: any) {
             Subjects: ${JSON.stringify(input.subjects)}
             Rooms: ${JSON.stringify(input.rooms)}
             
-            System Rules & Constraints:
+            System Rules & Custom Constraints:
             ${JSON.stringify(input.systemRules)}
             ${input.customConstraint}
         `;
 
-        // 3. Call the AI for just this day
         try {
             const { output } = await ai.generate({
                 model: 'googleai/gemini-1.5-flash', 
@@ -83,27 +79,21 @@ export async function generateTimetable(input: any) {
                 config: { temperature: 0.1, maxOutputTokens: 8192 }
             });
 
-            if (output && output.timetable) {
-                // Add today's schedule to the master list
-                completeTimetable = completeTimetable.concat(output.timetable);
-                
-                // Update our running count of scheduled subjects to pass to the next day
-                output.timetable.forEach(entry => {
-                    if (entry.subjectId) {
-                        const key = `${entry.classId}_${entry.subjectId}`;
-                        scheduledCounts[key] = (scheduledCounts[key] || 0) + 1;
-                    }
-                });
-                console.log(`✅ ${day} processed successfully.`);
-            }
+            return output?.timetable || [];
         } catch (error) {
-            console.error(`❌ Failed to generate schedule for ${day}:`, error);
+            console.error(`Failed to generate schedule for ${day}:`, error);
+            return []; // Return empty for this day so it doesn't crash the whole week
         }
-    }
+    });
 
-    // 4. Final Validation
+    // Wait for all 5 days to generate simultaneously
+    const dailyResults = await Promise.all(dailyPromises);
+    
+    // Flatten the array of arrays into one single timetable array
+    const completeTimetable = dailyResults.flat();
+
     if (completeTimetable.length === 0) {
-        throw new Error("AI failed to generate any timetable entries.");
+        throw new Error("AI failed to generate any timetable entries. Please try again.");
     }
 
     // Re-hydrate IDs into the format expected by the frontend grid
@@ -120,14 +110,16 @@ export async function generateTimetable(input: any) {
         };
     });
 
-    console.log(`✅ Full Week Generated! Total entries: ${fixedTimetable.length}`);
-    return { success: true, timetable: fixedTimetable };
+    console.log(`✅ Full Week Generated Parallelly! Total entries: ${fixedTimetable.length}`);
+    
+    // Ensure we return a plain object so React Server Actions don't throw serialization errors
+    return JSON.parse(JSON.stringify({ success: true, timetable: fixedTimetable }));
 
   } catch (error: any) {
     console.error("❌ AI Generation Failed:", error);
     return { 
         success: false, 
-        error: error.message || "Server Timeout or Model Error" 
+        error: error.message || "Server Error" 
     };
   }
 }
