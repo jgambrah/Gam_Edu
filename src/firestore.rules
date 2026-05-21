@@ -1,4 +1,4 @@
-// v1.7: [REDEPLOY] Explicitly allowed list for spot_checks and guarded admin queries.
+// v1.8: [REDEPLOY] Simplified list access for spot_checks to ensure all staff can see alerts.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -61,7 +61,8 @@ service cloud.firestore {
     // =========================================================
 
     match /spot_checks/{checkId} {
-        allow read, list: if isSignedIn(); // Explicitly allow list for all staff to see alerts
+        // Broadly allow all signed-in users to list and get checks for the liveness modal
+        allow read, list: if isSignedIn(); 
         allow create: if isAdmin();
         allow update: if isSignedIn(); 
         allow delete: if isAdmin();
