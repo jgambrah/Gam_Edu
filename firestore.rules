@@ -56,7 +56,19 @@ service cloud.firestore {
     }
 
     // =========================================================
-    // 2. SAAS CORE & SECURITY
+    // 2. SECURITY & AUDIT (SPOT CHECKS)
+    // =========================================================
+
+    // v1.4: Consolidated rule to fix 'list' permissions for all users
+    match /spot_checks/{checkId} {
+        allow get, list: if isSignedIn();
+        allow create: if isAdmin();
+        allow update: if isSignedIn(); // Allow staff to submit responses
+        allow delete: if isAdmin();
+    }
+
+    // =========================================================
+    // 3. SAAS CORE
     // =========================================================
 
     match /schools/{schoolId} {
@@ -76,20 +88,12 @@ service cloud.firestore {
       }
     }
 
-    // v1.3: Explicitly standardizing spot_checks for real-time listeners
-    match /spot_checks/{checkId} {
-        allow get, list: if isSignedIn();
-        allow create: if isAdmin();
-        allow update: if isSignedIn();
-        allow delete: if isAdmin();
-    }
-
     match /leads/{leadId} {
       allow read, write: if isSuperAdmin();
     }
 
     // =========================================================
-    // 3. CORE COLLECTIONS
+    // 4. CORE COLLECTIONS
     // =========================================================
 
     match /users/{userId} {
