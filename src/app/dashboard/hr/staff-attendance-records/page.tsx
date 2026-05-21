@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, Timestamp, getDocs } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, Timestamp, getDocs, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

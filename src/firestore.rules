@@ -22,16 +22,11 @@ service cloud.firestore {
            : '');
     }
 
-    function isAnyStaff(schoolId) {
-      return isSignedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId;
-    }
-
-    function isDirectorOrAdmin(schoolId) {
-      return isSuperAdmin() || (isAnyStaff(schoolId) && getUserRole() in ['Director', 'Administrator', 'Admin']);
-    }
-
     function isAdmin() {
-      return isSuperAdmin() || (isSignedIn() && getUserRole() in ['Director', 'Administrator', 'Admin']);
+      return isSignedIn() && (
+        isSuperAdmin() ||
+        getUserRole() in ['Director', 'Administrator', 'Admin']
+      );
     }
 
     function isTeacher() { return isSignedIn() && getUserRole() == 'Teacher'; }
@@ -45,14 +40,16 @@ service cloud.firestore {
       return false;
     }
 
-    // STRICT DIRECTOR CHECK
-    function isDirector() { return isSignedIn() && getUserRole() == 'Director'; }
-
+    function isDirector() { return isAdmin(); }
     function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian'; }
     function isTransportStaff() { return isAdmin() || getUserRole() == 'Transport Staff'; }
 
     function parentOwnsStudent(studentId) {
       return isParent() && studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentIds;
+    }
+
+    function isAnyStaff(schoolId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId;
     }
 
     // =========================================================
@@ -68,11 +65,11 @@ service cloud.firestore {
 
     match /schoolSettings/{schoolId} {
       allow read: if isSuperAdmin() || isAnyStaff(schoolId);
-      allow write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isDirector();
+      allow write: if isSuperAdmin() || isDirector();
 
       match /{allPaths=**} {
         allow read: if isSuperAdmin() || isAnyStaff(schoolId);
-        allow write: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isDirector();
+        allow write: if isSuperAdmin() || isDirector();
       }
     }
 
@@ -86,6 +83,7 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
+      allow read, write: if isAdmin();
     }
 
     match /staff/{staffId} {
@@ -163,6 +161,11 @@ service cloud.firestore {
     match /subjects/{subjectId} {
       allow read, list: if isSignedIn();
       allow write: if isAdmin();
+    }
+
+    match /subjects/{subjectId}/assessments/{assessmentId} {
+        allow read, list: if isSignedIn();
+        allow write: if isAdmin() || isTeacher();
     }
 
     match /timetables/{timetableId} {
@@ -336,9 +339,6 @@ service cloud.firestore {
     match /inventory/{itemId} {
       allow read, list: if isSuperAdmin() || (isSignedIn() && isStaff());
       allow write: if isSuperAdmin() || isFinanceStaff() || isAdmin() || isDirector();
-      match /transactions/{transactionId} {
-        allow read, write, list: if isSuperAdmin() || isFinanceStaff() || isAdmin();
-      }
     }
 
     match /suppliers/{id} {
@@ -435,291 +435,6 @@ service cloud.firestore {
       allow read, write, list: if isAdmin();
       allow create: if true; 
       allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
-    }
-
-    // =========================================================
-    // 8. JUNIOR / SENIOR ACADEMY & CLUBS
-    // =========================================================
-
-    match /junior_stories/{storyId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if request.auth.uid == resource.data.createdBy || isTeacher() || isAdmin();
-    }
-
-    match /junior_science/{factId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if request.auth.uid == resource.data.createdBy || isTeacher() || isAdmin();
-    }
-
-    match /junior_phonics/{wordId} {
-      allow read, list: if isSignedIn();
-      allow create: if isTeacher() || isAdmin();
-      allow delete: if isTeacher() || isAdmin();
-    }
-
-    match /junior_puzzles/{puzzleId} {
-      allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /junior_stickers/{stickerId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
-    }
-
-    match /junior_sorter_items/{itemId} {
-      allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /junior_science_materials/{materialId} {
-      allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /junior_art_quests/{questId} {
-      allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /senior_stories/{id} {
-      allow read, list: if true;
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /senior_math/{id} {
-      allow read, list: if true;
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /senior_labs/{id} {
-      allow read, list: if true;
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /curriculum/{gradeId} {
-      allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-      match /units/{unitId} {
-        allow read, list: if isSignedIn();
-        allow write: if isTeacher() || isAdmin();
-        match /lessons/{lessonId} {
-          allow read, list: if isSignedIn();
-          allow write: if isTeacher() || isAdmin();
-        }
-      }
-    }
-
-    match /logic_lab_missions/{missionId} {
-      allow read, list: if isSignedIn();
-      allow write: if isAdmin();
-    }
-
-    match /logic_lab_curriculum/{docId} {
-      allow read, list: if isSignedIn();
-      allow write: if isAdmin();
-    }
-
-    match /student_progress/{userId} {
-      allow read, write: if request.auth.uid == userId;
-    }
-
-    match /math_problems/{problemId} {
-      allow read, list: if isSignedIn();
-      allow write: if isStaff() || isAdmin();
-    }
-
-    match /user_results/{resultId} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, list: if isOwner(resource.data.userId) || isStaff();
-      allow update, delete: if false;
-    }
-
-    match /global_leaderboard/{userId} {
-      allow read, list: if isSignedIn();
-      allow write: if request.auth.uid == userId || isAdmin();
-    }
-
-    match /math_learning_history/{id} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, list: if request.auth.uid == resource.data.userId || isTeacher() || isAdmin();
-      allow delete: if request.auth.uid == resource.data.userId || isAdmin();
-    }
-
-    match /science_problems/{problemId} {
-      allow read: if true;
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /daily_facts/{factId} {
-      allow read: if true;
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /science_leaderboard/{userId} {
-      allow read: if isSignedIn();
-      allow write: if request.auth.uid == userId;
-    }
-
-    match /science_results/{resultId} {
-      allow create: if (isSignedIn() && request.resource.data.userId == request.auth.uid) || isStaff();
-      allow read, list: if isOwner(resource.data.userId) || isStaff();
-      allow update, delete: if false;
-    }
-
-    match /science_lab_questions/{id} {
-      allow read, write: if isSignedIn();
-    }
-
-    match /science_lab_results/{id} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-    }
-
-    match /science_learning_history/{id} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, list: if request.auth.uid == resource.data.userId || isTeacher() || isAdmin();
-      allow delete: if request.auth.uid == resource.data.userId || isAdmin();
-    }
-
-    match /ela_grammar_drills/{drillId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /ela_reading_passages/{passageId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /ela_writing_challenges/{challengeId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /ela_user_submissions/{submissionId} {
-      allow get: if isSignedIn() && (
-        resource.data.userId == request.auth.uid ||
-        isTeacher() || isStaff() || isAdmin() || isDirector()
-      );
-      allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isTeacher() || isStaff() || isAdmin() || isDirector();
-    }
-
-    match /ela_learning_history/{id} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, list: if isSignedIn();
-      allow delete: if request.auth.uid == resource.data.userId || isAdmin();
-    }
-
-    match /ela_leaderboard/{userId} {
-      allow read: if isSignedIn();
-      allow write: if isOwner(userId) || isAdmin();
-    }
-
-    match /think_tank_paradoxes/{paradoxId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /think_tank_detective_cases/{caseId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /think_tank_debates/{debateId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /think_tank_crosswords/{puzzleId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /think_tank_submissions/{submissionId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isTeacher() || isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow delete: if isTeacher() || isAdmin();
-    }
-
-    match /think_tank_responses/{responseId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-    }
-
-    match /scratch_assets/{assetId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /coding_curriculum/{lessonId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    match /student_coding_progress/{progressId} {
-      allow read, write: if isSignedIn() && (
-        progressId.startsWith(request.auth.uid) ||
-        resource.data.userId == request.auth.uid ||
-        request.resource.data.userId == request.auth.uid
-      );
-      allow read: if isTeacher() || isAdmin();
-    }
-
-    match /coding-club-projects/{userId} {
-      allow read, write: if isOwner(userId);
-    }
-
-    match /forumThreads/{threadId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
-      allow delete: if isAdmin() || request.auth.uid == resource.data.createdBy.uid;
-      match /replies/{replyId} {
-        allow read: if isSignedIn();
-        allow create: if isSignedIn();
-        allow update, delete: if isAdmin() || request.auth.uid == resource.data.author.uid;
-      }
-    }
-
-    match /direct_messages/{chatId} {
-      allow read, update: if isSignedIn() && request.auth.uid in resource.data.participants;
-      allow list: if isSignedIn();
-      allow create: if isSignedIn();
-      match /messages/{messageId} {
-        allow read, write: if isSignedIn();
-      }
-    }
-
-    match /lectures/{lectureId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
-      match /messages/{messageId} {
-        allow read, create: if isSignedIn();
-      }
-    }
-
-    match /active_classes/{classId} {
-      allow read, write: if isSignedIn();
-      match /{document=**} {
-        allow read, write: if isSignedIn();
-      }
-    }
-
-    match /library/{itemId} {
-      allow read: if isSignedIn();
-      allow create: if isLibrarian() || isAdmin() || isTeacher();
-      allow update: if isLibrarian() || isAdmin() || isTeacher() ||
-                    (isStudent() && request.resource.data.status == 'Requested' && request.resource.data.currentHolderId == request.auth.uid) ||
-                    (isStudent() && resource.data.currentHolderId == request.auth.uid && request.resource.data.status == 'Pending Return');
-      allow delete: if isLibrarian() || isAdmin();
     }
 
     match /{document=**} {
