@@ -1,3 +1,4 @@
+// v1.5: [REDEPLOY] Updated at 2024-05-20T10:00:00Z
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -49,18 +50,20 @@ service cloud.firestore {
     }
 
     function isAnyStaff(schoolId) {
-      return isSignedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId;
+      return isSignedIn() && (
+        isSuperAdmin() || 
+        (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId)
+      );
     }
 
     // =========================================================
     // 2. SECURITY & AUDIT (SPOT CHECKS)
     // =========================================================
 
-    // v1.4: Consolidated rule to fix 'list' permissions for all users
     match /spot_checks/{checkId} {
-        allow get, list: if isSignedIn();
+        allow read: if isSignedIn();
         allow create: if isAdmin();
-        allow update: if isSignedIn(); // Allow staff to submit responses
+        allow update: if isSignedIn(); 
         allow delete: if isAdmin();
     }
 
@@ -391,57 +394,9 @@ service cloud.firestore {
       allow write: if isFinanceStaff() || isAdmin();
     }
 
-    match /journal_entries/{entryId} {
-      allow read, list: if isFinanceStaff() || isAdmin();
-      allow create: if isFinanceStaff() || isAdmin();
-      allow update: if false;
-    }
-
-    match /payment_vouchers/{voucherId} {
-      allow read, write, list: if isFinanceStaff() || isAdmin();
-    }
-
-    match /payrollSettings/{settingsId} {
-      allow read, list: if isFinanceStaff();
-      allow write: if isAdmin();
-    }
-
-    match /payroll_settings/{docId} {
-      allow read, list: if isSignedIn();
-      allow write: if isFinanceStaff() || isAdmin();
-    }
-
-    match /payroll_runs/{runId} {
-      allow read, list: if isFinanceStaff() || isAdmin() || (isSignedIn() && request.auth.uid == resource.data.staffId);
-      allow write: if isFinanceStaff() || isAdmin();
-    }
-
-    match /payrollRecords/{recordId} {
-      allow read, write: if isAdmin() || isFinanceStaff();
-      allow get: if isSignedIn() && (isAdmin() || isFinanceStaff() || resource.data.staffId == request.auth.uid);
-      allow list: if isSignedIn() && (isAdmin() || isFinanceStaff() || request.query.where.staffId == request.auth.uid);
-    }
-
-    match /staff_salary_details/{userId} {
-      allow read, list: if isFinanceStaff() || isAdmin() || request.auth.uid == userId;
-      allow write: if isFinanceStaff() || isAdmin();
-    }
-
-    match /routes/{routeId} {
-      allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isFinanceStaff() || isTransportStaff();
-    }
-
-    match /buses/{busId} {
-      allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isFinanceStaff() || isTransportStaff();
-    }
-
-    match /admissionApplications/{applicationId} {
-      allow read, write, list: if isAdmin();
-      allow create: if true; 
-      allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
-    }
+    // =========================================================
+    // 8. CATCH-ALL
+    // =========================================================
 
     match /{document=**} {
       allow read, write: if isAdmin();
