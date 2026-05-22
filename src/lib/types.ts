@@ -233,8 +233,9 @@ export type TimeSlot = {
   day: string; 
   startTime: string; 
   endTime: string; 
-  type?: 'Lesson' | 'Break' | 'Lunch' | 'Worship' | 'Event';
+  type: 'Lesson' | 'Break' | 'Lunch' | 'Worship' | 'Event';
   label?: string;
+  classId?: string | null; // NULL means global/all classes
 };
 export type TimetableEntry = {
   id: string;
@@ -730,4 +731,96 @@ export type StaffAttendance = {
     distanceMeters?: number;
     isIdentityFlagged?: boolean;
     identityNotes?: string;
+};
+
+export type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
+export const ACCOUNT_TYPES: AccountType[] = ['Asset', 'Liability', 'Equity', 'Revenue', 'Expense'];
+
+export const accountSchema = z.object({
+  name: z.string().min(1, 'Name is required.'),
+  type: z.enum(['Asset', 'Liability', 'Equity', 'Revenue', 'Expense']),
+  parentAccountId: z.string().optional(),
+  description: z.string().optional(),
+});
+
+export type Account = {
+    id: string;
+    code: string;
+    name: string;
+    type: AccountType;
+    isControlAccount: boolean;
+    parentAccountId?: string | null;
+    description?: string;
+    balance: number;
+    schoolId: string;
+};
+
+export type JournalLine = {
+    accountId: string;
+    accountName: string;
+    debit: number;
+    credit: number;
+};
+
+export type JournalEntry = {
+    id: string;
+    date: any;
+    description: string;
+    reference?: string;
+    lines: JournalLine[];
+    totalAmount: number;
+    createdBy: string;
+    createdAt: any;
+    schoolId: string;
+};
+
+export const journalEntrySchema = z.object({
+    description: z.string().min(1, "Description is required"),
+    amount: z.coerce.number().min(0.01, "Amount must be positive"),
+    debitAccountId: z.string().min(1, "Debit account is required"),
+    creditAccountId: z.string().min(1, "Credit account is required"),
+});
+
+export type InventoryTransaction = {
+    id: string;
+    itemId: string;
+    transactionType: 'Creation' | 'Check-Out' | 'Check-In' | 'Sale' | 'Adjustment' | 'Restock';
+    quantityChange?: number;
+    timestamp: any;
+    staffId?: string;
+    notes?: string;
+    schoolId: string;
+}
+
+export const checkoutSchema = z.object({
+    staffId: z.string().min(1, 'Please select a staff member.'),
+});
+
+export const inventoryItemSchema = z.object({
+    name: z.string().min(1, 'Item name is required.'),
+    category: z.enum(['IT Equipment', 'Furniture', 'Office Supplies', 'Lab Equipment', 'Sports Gear', 'Other']),
+    quantity: z.coerce.number().int().min(1, 'Quantity must be at least 1.'),
+    location: z.string().min(1, 'Location is required.'),
+    unitPrice: z.coerce.number().min(0, 'Unit price cannot be negative.').optional(),
+    supplier: z.string().optional(),
+    purchaseDate: z.date().optional(),
+    condition: z.enum(['New', 'Good', 'Fair', 'Poor', 'For Repair']),
+});
+
+export type Paradox = {
+    id: string;
+    question: string;
+    answer: string;
+    explanation: string;
+    targetGroup: string;
+    difficulty: string;
+    createdAt: any;
+};
+
+export type DebateTopic = {
+    id: string;
+    topic: string;
+    context: string;
+    targetGroup: string;
+    createdAt: any;
 };

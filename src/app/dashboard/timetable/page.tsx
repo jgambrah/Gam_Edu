@@ -198,25 +198,27 @@ function LessonAssignmentDialog({
 }
 
 // --- SUB-COMPONENT: CONFIGURATION TAB ---
-function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: string, timeSlots: TimeSlot[], rooms: Room[], onRefresh: () => void }) {
+function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { schoolId: string, timeSlots: TimeSlot[], rooms: Room[], classes: Class[], onRefresh: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
 
-    const [newSlot, setNewSlot] = useState({ day: 'Monday', start: '08:00', end: '08:45', type: 'Lesson' as any });
+    const [newSlot, setNewSlot] = useState({ day: 'Monday', start: '08:00', end: '08:45', type: 'Lesson' as any, classId: 'all' });
     const [editingSlot, setEditingSlot] = useState<TimeSlot | null>(null);
 
     const handleAddSlot = async () => {
         if (!firestore || !schoolId) return;
         setLoading(true);
         try {
-            const id = `${schoolId}-${newSlot.day.substring(0,3)}-${newSlot.start.replace(':','')}`;
+            const classStamp = newSlot.classId === 'all' ? 'global' : newSlot.classId;
+            const id = `${schoolId}-${classStamp}-${newSlot.day.substring(0,3)}-${newSlot.start.replace(':','')}`;
             await setDoc(doc(firestore, 'timeSlots', id), {
                 id,
                 day: newSlot.day,
                 startTime: newSlot.start,
                 endTime: newSlot.end,
                 type: newSlot.type,
+                classId: newSlot.classId === 'all' ? null : newSlot.classId,
                 schoolId
             });
             toast({ title: "Slot Added" });
@@ -233,7 +235,8 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                 type: slot.type,
                 startTime: slot.startTime,
                 endTime: slot.endTime,
-                day: slot.day
+                day: slot.day,
+                classId: slot.classId === 'all' ? null : slot.classId,
             });
             toast({ title: "Slot Updated" });
             setEditingSlot(null);
@@ -271,13 +274,21 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                                         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
+                                <Select value={newSlot.classId} onValueChange={(v) => setNewSlot({...newSlot, classId: v})}>
+                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue placeholder="Target Class..." /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Classes (Global)</SelectItem>
+                                        {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
                                 <Select value={newSlot.type} onValueChange={(v) => setNewSlot({...newSlot, type: v})}>
                                     <SelectTrigger className="h-9 text-xs bg-white"><SelectValue /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="Lesson">Lesson</SelectItem>
                                         <SelectItem value="Break">Short Break</SelectItem>
                                         <SelectItem value="Lunch">Lunch</SelectItem>
-                                        <SelectItem value="Event">Event</SelectItem>
+                                        <SelectItem value="Worship">Worship/Assembly</SelectItem>
+                                        <SelectItem value="Event">Other Event</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -293,21 +304,25 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                                 const dayMap: any = { 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5 };
                                 if (dayMap[a.day] !== dayMap[b.day]) return dayMap[a.day] - dayMap[b.day];
                                 return a.startTime.localeCompare(b.startTime);
-                            }).map(ts => (
-                                <div key={ts.id} className="flex items-center justify-between p-3 text-xs border rounded-xl hover:bg-slate-50 group">
-                                    <div className="flex items-center gap-2">
-                                        <Badge variant="outline" className="text-[10px] w-12 justify-center">{ts.day.substring(0,3)}</Badge>
-                                        <span className="font-bold">{ts.startTime} - {ts.endTime}</span>
-                                        <Badge variant="secondary" className={cn("text-[9px] uppercase", ts.type === 'Break' ? "bg-orange-100 text-orange-700" : ts.type === 'Lunch' ? "bg-green-100 text-green-700" : "")}>
-                                            {ts.type || 'Lesson'}
-                                        </Badge>
+                            }).map(ts => {
+                                const targetClassName = ts.classId ? classes.find(c => c.id === ts.classId)?.name : 'Global';
+                                return (
+                                    <div key={ts.id} className="flex items-center justify-between p-3 text-xs border rounded-xl hover:bg-slate-50 group">
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="outline" className="text-[10px] w-12 justify-center">{ts.day.substring(0,3)}</Badge>
+                                            <span className="font-bold">{ts.startTime} - {ts.endTime}</span>
+                                            <Badge variant="secondary" className={cn("text-[9px] uppercase", ts.type === 'Break' ? "bg-orange-100 text-orange-700" : ts.type === 'Lunch' ? "bg-green-100 text-green-700" : "")}>
+                                                {ts.type || 'Lesson'}
+                                            </Badge>
+                                            <span className="text-[10px] text-slate-400 font-bold ml-2">({targetClassName})</span>
+                                        </div>
+                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button variant="ghost" size="icon" className="h-7 w-7 text-indigo-600" onClick={() => setEditingSlot(ts)}><Edit className="h-3.5 w-3.5"/></Button>
+                                            <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600" onClick={() => handleDelete('timeSlots', ts.id)}><Trash2 className="h-3.5 w-3.5"/></Button>
+                                        </div>
                                     </div>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-indigo-600" onClick={() => setEditingSlot(ts)}><Edit className="h-3.5 w-3.5"/></Button>
-                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600" onClick={() => handleDelete('timeSlots', ts.id)}><Trash2 className="h-3.5 w-3.5"/></Button>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </CardContent>
                 </Card>
@@ -337,6 +352,18 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
+                                    <Label>Class Scope</Label>
+                                    <Select value={editingSlot.classId || 'all'} onValueChange={(v) => setEditingSlot({...editingSlot, classId: v === 'all' ? null : v})}>
+                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Classes (Global)</SelectItem>
+                                            {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
                                     <Label>Type</Label>
                                     <Select value={editingSlot.type} onValueChange={(v: any) => setEditingSlot({...editingSlot, type: v})}>
                                         <SelectTrigger><SelectValue /></SelectTrigger>
@@ -344,7 +371,8 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                                             <SelectItem value="Lesson">Lesson</SelectItem>
                                             <SelectItem value="Break">Short Break</SelectItem>
                                             <SelectItem value="Lunch">Lunch</SelectItem>
-                                            <SelectItem value="Event">Event</SelectItem>
+                                            <SelectItem value="Worship">Worship/Assembly</SelectItem>
+                                            <SelectItem value="Event">Other Event</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -495,15 +523,13 @@ export default function TimetablePage() {
         allowedTeacherIds: s.teacherIds || []
       })) || [];
 
-      // Filter out non-lesson slots
-      const academicTimeSlots = timeSlots?.filter(ts => ts.type === 'Lesson' || !ts.type);
-
+      // Pass slots correctly grouped for AI logic
       const input = {
         teachers: allTeachers.map(t => ({ id: t.uid, name: `${t.firstName} ${t.lastName}` })),
         subjects: enrichedSubjects,
         classes: enrichedClasses,
         rooms: rooms?.map(({ id, name, isLab }) => ({ id, name, isLab: isLab || false })) || [],
-        timeSlots: academicTimeSlots?.map(({ id, day, startTime, endTime }) => ({ id, day, startTime, endTime })) || [],
+        timeSlots: timeSlots?.map(({ id, day, startTime, endTime, type, classId }) => ({ id, day, startTime, endTime, type, classId })) || [],
         customConstraint: customConstraint,
         schoolId: schoolId,
         systemRules: [
@@ -551,6 +577,12 @@ export default function TimetablePage() {
   const filteredTimetable = useMemo(() => {
       return timetable?.filter(entry => entry.classId === selectedClassId) || [];
   }, [timetable, selectedClassId]);
+
+  const filteredTimeSlots = useMemo(() => {
+      if (!timeSlots || !selectedClassId) return [];
+      // Show slots that are EITHER Global (classId is null) OR assigned to this class
+      return timeSlots.filter(ts => !ts.classId || ts.classId === selectedClassId);
+  }, [timeSlots, selectedClassId]);
 
   const readiness = useMemo(() => {
     const hasSlots = (timeSlots?.length || 0) > 0;
@@ -636,7 +668,7 @@ export default function TimetablePage() {
                                 subjects={subjects || []}
                                 teachers={allTeachers || []}
                                 rooms={rooms || []}
-                                timeSlots={timeSlots || []}
+                                timeSlots={filteredTimeSlots}
                                 onEditEntry={canManage ? (entry) => { setEditingEntry(entry); setIsManualOpen(true); } : undefined}
                             />
                         </div>
@@ -766,6 +798,7 @@ export default function TimetablePage() {
                     schoolId={schoolId} 
                     timeSlots={timeSlots || []} 
                     rooms={rooms || []} 
+                    classes={classes || []}
                     onRefresh={() => { refetchSlots(); refetchRooms(); }} 
                 />
             )}
@@ -780,7 +813,7 @@ export default function TimetablePage() {
             subjects={subjects || []}
             teachers={allTeachers || []}
             rooms={rooms || []}
-            timeSlots={timeSlots || []}
+            timeSlots={filteredTimeSlots}
             editingEntry={editingEntry}
             onSuccess={refetchTimetable}
           />
