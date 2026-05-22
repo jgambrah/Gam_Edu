@@ -114,7 +114,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/forum',
             title: 'Forum',
             icon: MessageSquare,
-            roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Student', 'Secretary'],
         },
         {
             path: '/dashboard/messages',
@@ -126,7 +126,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/communication/sms',
             title: 'Bulk SMS',
             icon: MessageSquare,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Secretary'],
         }
     ]
   },
@@ -140,37 +140,37 @@ export const navItems: NavItem[] = [
     path: '/dashboard/people',
     title: 'People Management',
     icon: Users,
-    roles: ['Director', 'Administrator'],
+    roles: ['Director', 'Administrator', 'Secretary', 'Receptionist'],
     subItems: [
         {
             path: '/dashboard/admissions',
             title: 'Admissions',
             icon: PenLine,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Secretary'],
         },
         {
             path: '/dashboard/staff-management-v2',
             title: 'Staff Management',
             icon: UserCog,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Secretary'],
         },
         {
             path: '/dashboard/students-v3',
             title: 'Students',
             icon: GraduationCap,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Secretary', 'Receptionist'],
         },
         {
             path: '/dashboard/parents-v2',
             title: 'Parents',
             icon: HeartHandshake,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Secretary'],
         },
         {
             path: '/dashboard/students/id-cards',
             title: 'ID Card Generator',
             icon: IdCard,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Secretary'],
         },
         {
             path: '/dashboard/admin/promotion',
@@ -182,7 +182,13 @@ export const navItems: NavItem[] = [
             path: '/dashboard/alumni',
             title: 'Alumni',
             icon: UserCheckIcon,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Secretary'],
+        },
+        {
+            path: '/dashboard/student-registration',
+            title: 'Apply for Admission',
+            icon: PenLine,
+            roles: ['Parent'],
         },
     ]
   },
@@ -190,31 +196,31 @@ export const navItems: NavItem[] = [
     path: '/dashboard/academics',
     title: 'Academics',
     icon: BookOpen,
-    roles: ['Director', 'Administrator', 'Teacher'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Secretary'],
     subItems: [
         {
             path: '/dashboard/attendance',
             title: 'Student Attendance',
             icon: CalendarCheck,
-            roles: ['Director', 'Administrator', 'Teacher'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Secretary', 'Receptionist'],
         },
         {
             path: '/dashboard/academics',
             title: 'Classes',
             icon: Users,
-            roles: ['Director', 'Administrator', 'Teacher'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Secretary'],
         },
         {
             path: '/dashboard/academics/subjects',
             title: 'Subjects',
             icon: BookCopy,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Secretary'],
         },
         {
             path: '/dashboard/assignments',
             title: 'Assignments & Quizzes',
             icon: BookMarked,
-            roles: ['Director', 'Administrator', 'Teacher'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Secretary'],
         },
         {
             path: '/dashboard/lesson-planning',
@@ -250,25 +256,19 @@ export const navItems: NavItem[] = [
             path: '/dashboard/report-cards',
             title: 'Report Cards',
             icon: FileText,
-            roles: ['Teacher', 'Administrator', 'Director'],
+            roles: ['Teacher', 'Administrator', 'Director', 'Secretary'],
         },
         {
             path: '/dashboard/timetable',
             title: 'Timetable',
             icon: CalendarDays,
-            roles: ['Teacher', 'Administrator', 'Director'],
-        },
-        {
-            path: '/dashboard/smart-schedule',
-            title: 'Smart Schedule',
-            icon: CalendarCheck,
-            roles: ['Teacher'],
+            roles: ['Teacher', 'Administrator', 'Director', 'Secretary', 'Student', 'Parent'],
         },
         {
             path: '/dashboard/calendar',
             title: 'School Calendar',
             icon: CalendarDays,
-            roles: ['Teacher', 'Administrator', 'Director'],
+            roles: ['Teacher', 'Administrator', 'Director', 'Secretary', 'Receptionist', 'Student', 'Parent'],
         },
     ]
   },
@@ -344,25 +344,25 @@ export const navItems: NavItem[] = [
     path: '/dashboard/hr',
     title: 'Human Resources',
     icon: UserCog,
-    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer', 'Secretary'],
     subItems: [
         {
             path: '/dashboard/attendance/staff',
             title: 'Staff Clock-In',
             icon: UserCheckIcon,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer', 'Secretary', 'Receptionist'],
         },
         {
             path: '/dashboard/hr/staff-attendance-records',
             title: 'Staff Attendance Records',
             icon: CalendarCheck,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Secretary'],
         },
         {
             path: '/dashboard/hr/leave-management',
             title: 'Leave Management',
             icon: Plane,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer', 'Secretary'],
         },
         {
             path: '/dashboard/staff/performance',
@@ -376,7 +376,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/financials',
     title: 'Financials',
     icon: Banknote,
-    roles: ['Director', 'Administrator', 'Accountant'],
+    roles: ['Director', 'Administrator', 'Accountant', 'Secretary'],
     subItems: [
       {
         path: '/dashboard/accounts',
@@ -412,13 +412,13 @@ export const navItems: NavItem[] = [
         path: '/dashboard/finance/procurement',
         title: 'Procurement',
         icon: Truck,
-        roles: ['Director', 'Administrator', 'Accountant'],
+        roles: ['Director', 'Administrator', 'Accountant', 'Secretary'],
       },
       {
         path: '/dashboard/finance/shop',
         title: 'School Shop',
         icon: ShoppingBag,
-        roles: ['Director', 'Administrator', 'Accountant'],
+        roles: ['Director', 'Administrator', 'Accountant', 'Secretary'],
       },
       {
         path: '/dashboard/accounts/cash-till',
@@ -444,25 +444,25 @@ export const navItems: NavItem[] = [
     path: '/dashboard/operations',
     title: 'Operations',
     icon: Boxes,
-    roles: ['Director', 'Administrator', 'Librarian', 'Transport Staff', 'Student', 'Teacher', 'Accountant'],
+    roles: ['Director', 'Administrator', 'Librarian', 'Transport Staff', 'Student', 'Teacher', 'Accountant', 'Secretary', 'Receptionist'],
      subItems: [
         {
             path: '/dashboard/library',
             title: 'Library',
             icon: Library,
-            roles: ['Librarian', 'Student', 'Teacher', 'Administrator', 'Director'],
+            roles: ['Librarian', 'Student', 'Teacher', 'Administrator', 'Director', 'Secretary'],
         },
         {
             path: '/dashboard/inventory',
             title: 'Inventory',
             icon: Boxes,
-            roles: ['Administrator', 'Director', 'Accountant'],
+            roles: ['Administrator', 'Director', 'Accountant', 'Secretary'],
         },
         {
             path: '/dashboard/transport',
             title: 'Transport',
             icon: RouteIcon,
-            roles: ['Administrator', 'Director', 'Transport Staff'],
+            roles: ['Administrator', 'Director', 'Transport Staff', 'Secretary', 'Receptionist'],
         },
     ]
   },
@@ -470,31 +470,31 @@ export const navItems: NavItem[] = [
     path: '/dashboard/reports',
     title: 'Reporting & Analytics',
     icon: BarChart,
-    roles: ['Director', 'Administrator', 'Teacher'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Secretary'],
      subItems: [
       {
         path: '/dashboard/reports/academics',
         title: 'Academic',
         icon: GraduationCap,
-        roles: ['Director', 'Administrator', 'Teacher'],
+        roles: ['Director', 'Administrator', 'Teacher', 'Secretary'],
       },
       {
         path: '/dashboard/reports/attendance',
         title: 'Attendance',
         icon: CalendarCheck,
-        roles: ['Director', 'Administrator', 'Teacher'],
+        roles: ['Director', 'Administrator', 'Teacher', 'Secretary', 'Receptionist'],
       },
       {
         path: '/dashboard/reports/enrollment',
         title: 'Enrollment',
         icon: Users,
-        roles: ['Director', 'Administrator'],
+        roles: ['Director', 'Administrator', 'Secretary'],
       },
       {
         path: '/dashboard/reports/inventory',
         title: 'Inventory',
         icon: Boxes,
-        roles: ['Director', 'Administrator'],
+        roles: ['Director', 'Administrator', 'Secretary'],
       },
     ]
   },

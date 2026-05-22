@@ -37,8 +37,8 @@ function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess
   if (item.roles === 'all') return true;
   if (!role) return false;
 
-  // SUPPORT STAFF RESTRICTIONS
-  const isSupportStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook' || role === 'Transport Staff';
+  // SUPPORT STAFF RESTRICTIONS (Excluding Secretary/Receptionist who are Desk-based)
+  const isLaborStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook';
   const isRestrictedPath = 
     item.path.includes('/dashboard/academics') || 
     item.path.includes('/dashboard/financials') || 
@@ -47,7 +47,7 @@ function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess
     item.path.includes('/dashboard/reports') ||
     item.path.includes('/dashboard/system');
 
-  if (isSupportStaff && isRestrictedPath) {
+  if (isLaborStaff && isRestrictedPath) {
     return false;
   }
 
@@ -67,35 +67,6 @@ function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess
   const effectiveRole =
     role === 'Administrator' || role === 'Director' ? 'Admin' : role;
   return item.roles.includes(effectiveRole) || item.roles.includes(role);
-}
-
-function NavLink({
-  item,
-  isSubItem = false,
-}: {
-  item: NavItem;
-  isSubItem?: boolean;
-}) {
-  const pathname = usePathname();
-  const isActive = pathname === item.path;
-
-  return (
-    <Link
-      href={item.path}
-      target={item.path.startsWith('http') ? '_blank' : undefined}
-      rel={item.path.startsWith('http') ? 'noopener noreferrer' : undefined}
-      className={cn(
-        'flex w-full items-center gap-2 rounded-xl p-2.5 text-left text-sm outline-none transition-all duration-200',
-        isActive 
-          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-indigo-500/20 scale-[1.02] font-bold' 
-          : 'text-slate-400 hover:text-slate-100 hover:bg-white/5',
-        isSubItem ? 'h-8 text-xs' : 'h-10 text-sm'
-      )}
-    >
-      <item.icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-white' : 'text-slate-500')} />
-      <span className="truncate">{item.title}</span>
-    </Link>
-  );
 }
 
 export function AppSidebarContent() {

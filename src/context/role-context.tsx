@@ -5,7 +5,7 @@ import { useFirestore, useUser } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { User } from 'firebase/auth';
 
-type Role = 'Director' | 'Administrator' | 'Teacher' | 'Accountant' | 'Student' | 'Parent' | 'Librarian' | 'Cook' | 'Transport Staff' | 'Cleaner' | 'Security Officer' | null;
+type Role = 'Director' | 'Administrator' | 'Teacher' | 'Accountant' | 'Student' | 'Parent' | 'Librarian' | 'Cook' | 'Transport Staff' | 'Cleaner' | 'Security Officer' | 'Secretary' | 'Receptionist' | null;
 
 interface RoleContextType {
   role: Role;

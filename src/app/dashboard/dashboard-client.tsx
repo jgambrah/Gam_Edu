@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -16,7 +15,11 @@ import {
   Database,
   Award,
   MessageSquare,
-  UserCheck
+  UserCheck,
+  LayoutTemplate,
+  CalendarDays,
+  PenLine,
+  Search
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
@@ -283,6 +286,121 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
                         </CardContent>
                     </Card>
                 </div>
+            </div>
+        </div>
+    );
+}
+
+function SecretaryDashboard({ profile, students, staff, classes, announcements, isLoading }: any) {
+    const { user } = useUser();
+    const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Secretary';
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col gap-1 mb-2">
+                <h1 className="text-3xl font-black text-slate-800 tracking-tighter uppercase italic">Administrative <span className="text-blue-600">Command</span></h1>
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Managing school documentation and logistics.</p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} link="/dashboard/students-v3" isLoading={isLoading} />
+                <StatCard title="Active Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard title="Live Notices" value={announcements?.length || 0} icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} color="text-orange-500" />
+                <StatCard title="Faculty" value={staff?.length || 0} icon={Users} link="/dashboard/staff-management-v2" isLoading={isLoading} color="text-purple-600" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+                    <CardHeader className="bg-slate-50 border-b p-8">
+                        <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Secretary Quick Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 space-y-3">
+                        <QuickActionCard title="Post Announcement" description="Send news to parents and students" icon={Megaphone} link="/dashboard/announcements" />
+                        <QuickActionCard title="School Calendar" description="Update events and holidays" icon={CalendarDays} link="/dashboard/calendar" />
+                        <QuickActionCard title="Admissions Hub" description="Review student applications" icon={PenLine} link="/dashboard/admissions" />
+                        <QuickActionCard title="ID Card Center" description="Generate printable student IDs" icon={FileText} link="/dashboard/students/id-cards" />
+                    </CardContent>
+                </Card>
+
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
+                    <CardHeader className="p-8 pb-4">
+                        <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-indigo-400">Institutional Bulletin</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 pt-0 space-y-6">
+                        {announcements?.slice(0, 4).map((a: any) => (
+                            <ActivityItem 
+                                key={a.id}
+                                title={a.title}
+                                description={a.content}
+                                time={a.publishedAt ? formatDistanceToNow(a.publishedAt.toDate(), { addSuffix: true }) : 'Just now'}
+                                icon={Megaphone}
+                                iconColor="text-indigo-400"
+                            />
+                        ))}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
+function ReceptionistDashboard({ profile, announcements, attendance, students, isLoading }: any) {
+    const { user } = useUser();
+    const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Receptionist';
+
+    const todayAttendance = useMemo(() => {
+        if (!attendance || !students) return 0;
+        const today = startOfDay(new Date());
+        const presentCount = attendance.filter((r: any) => {
+            const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
+            return startOfDay(d).getTime() === today.getTime() && (r.status === 'Present' || r.status === 'Late');
+        }).length;
+        return presentCount;
+    }, [attendance, students]);
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col gap-1 mb-2">
+                <h1 className="text-3xl font-black text-slate-800 tracking-tighter uppercase italic">Front Desk <span className="text-orange-500">Hub</span></h1>
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Welcoming the school community.</p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <StatCard title="Students Present" value={todayAttendance} icon={CheckCircle2} link="/dashboard/attendance" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard title="Today's Notices" value={announcements?.length || 0} icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Staff Directory" value="Active" icon={Users} link="/dashboard/staff-management-v2" isLoading={isLoading} color="text-purple-600" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+                    <CardHeader className="bg-slate-50 border-b p-8">
+                        <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Front Desk Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 space-y-3">
+                        <QuickActionCard title="Global Search" description="Find students, staff, or parents" icon={Search} link="/dashboard" />
+                        <QuickActionCard title="Take Attendance" description="Record daily student arrival" icon={CalendarCheck} link="/dashboard/attendance" />
+                        <QuickActionCard title="Staff Clock-In" description="Record staff daily arrival" icon={UserCheck} link="/dashboard/attendance/staff" />
+                        <QuickActionCard title="View Calendar" description="Check daily school events" icon={CalendarDays} link="/dashboard/calendar" />
+                    </CardContent>
+                </Card>
+
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
+                    <CardHeader className="p-8 pb-4">
+                        <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-orange-400">Live School Buzz</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 pt-0 space-y-6">
+                        {announcements?.slice(0, 4).map((a: any) => (
+                            <ActivityItem 
+                                key={a.id}
+                                title={a.title}
+                                description={a.content}
+                                time={a.publishedAt ? formatDistanceToNow(a.publishedAt.toDate(), { addSuffix: true }) : 'Just now'}
+                                icon={Megaphone}
+                                iconColor="text-orange-400"
+                            />
+                        ))}
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );
@@ -822,12 +940,14 @@ export default function DashboardClient() {
   const { user } = useUser();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
-  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'].includes(role || '');
+  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff', 'Librarian', 'Cook', 'Cleaner', 'Security Officer', 'Secretary', 'Receptionist'].includes(role || '');
   const isParent = role === 'Parent';
   const isAccountant = role === 'Accountant';
   const isTransportStaff = role === 'Transport Staff';
+  const isSecretary = role === 'Secretary';
+  const isReceptionist = role === 'Receptionist';
   const isAdmin = ['Administrator', 'Director'].includes(role || '');
-  const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
+  const canListStaff = ['Administrator', 'Director', 'Accountant', 'Secretary'].includes(role || '');
   const isSupportStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook' || role === 'Transport Staff';
 
   // Core Data Queries
@@ -852,7 +972,7 @@ export default function DashboardClient() {
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
 
-  const attendanceQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
+  const attendanceQuery = useMemoFirebase(() => (firestore && schoolId && (isAdmin || isReceptionist || isSecretary)) ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, isReceptionist, isSecretary]);
   const { data: attendance } = useCollection(attendanceQuery);
 
   const routesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
@@ -861,7 +981,7 @@ export default function DashboardClient() {
   const busesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
   const { data: buses } = useCollection<Bus>(busesQuery);
 
-  const leaveQuery = useMemoFirebase(() => (firestore && user && schoolId && isSupportStaff) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), where('staffId', '==', user.uid)) : null, [firestore, user, schoolId, isSupportStaff]);
+  const leaveQuery = useMemoFirebase(() => (firestore && user && schoolId && (isSupportStaff || isSecretary)) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), where('staffId', '==', user.uid)) : null, [firestore, user, schoolId, isSupportStaff, isSecretary]);
   const { data: leaveRequests, isLoading: loadingLeaves } = useCollection(leaveQuery);
 
   const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
@@ -888,6 +1008,14 @@ export default function DashboardClient() {
 
   if (role === 'Administrator' || role === 'Director') {
     return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} />;
+  }
+
+  if (role === 'Secretary') {
+    return <SecretaryDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses} />;
+  }
+
+  if (role === 'Receptionist') {
+    return <ReceptionistDashboard profile={profile} announcements={announcements} attendance={attendance} students={students} isLoading={loadingAnnouncements || loadingStudents} />;
   }
 
   if (role === 'Accountant') {
