@@ -1,9 +1,9 @@
-
 'use client';
 
+import { useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TimetableEntry, Subject, Room, TimeSlot } from "@/lib/types";
-import { Book, Building, UserCircle } from "lucide-react";
+import { Building, UserCircle, Edit2 } from "lucide-react";
 
 type Teacher = { uid: string; firstName: string; lastName: string; };
 
@@ -13,13 +13,18 @@ type TimetableDisplayProps = {
   teachers: Teacher[];
   rooms: Room[];
   timeSlots: TimeSlot[];
+  onEditEntry?: (entry: TimetableEntry) => void; // New prop for editing
 };
 
-export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlots }: TimetableDisplayProps) {
+export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlots, onEditEntry }: TimetableDisplayProps) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   
-  // 1. Get unique start times to define the row structure
-  const uniqueTimePoints = Array.from(new Set(timeSlots.map(ts => ts.startTime))).sort();
+  // 1. Get unique start times to define the row structure, sorted numerically
+  const uniqueTimePoints = useMemo(() => {
+    return Array.from(new Set(timeSlots.map(ts => ts.startTime))).sort((a, b) => {
+        return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+    });
+  }, [timeSlots]);
 
   const getEntry = (day: string, startTime: string) => {
     // A. Find the specific slot for this day and time
@@ -27,7 +32,7 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
     if (!slot) return null;
     
     // B. Find the timetable entry for that slot
-    return timetable.find(entry => entry.timeSlotId === slot.id);
+    return timetable.find(entry => entry.timeSlotId === slot.id || (entry.day === day && entry.startTime === startTime));
   };
 
   return (
@@ -35,7 +40,7 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
         <Table>
             <TableHeader>
                 <TableRow className="bg-slate-50 border-b-2">
-                    <TableHead className="w-[120px] font-black text-[10px] uppercase tracking-widest text-slate-400">Period</TableHead>
+                    <TableHead className="w-[120px] font-black text-[10px] uppercase tracking-widest text-slate-400 text-center">Period</TableHead>
                     {days.map(day => (
                         <TableHead key={day} className="font-black text-[10px] uppercase tracking-widest text-slate-600 text-center border-l">
                             {day}
@@ -63,8 +68,14 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
                                     
                                     return (
                                         <TableCell key={day} className="p-1 border-l align-top">
-                                            <div className="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 h-full flex flex-col gap-1 min-h-[80px] hover:bg-indigo-50 transition-colors">
-                                                <p className="font-black text-xs text-indigo-900 leading-tight line-clamp-2">
+                                            <button 
+                                                onClick={() => onEditEntry?.(entry)}
+                                                className="w-full text-left p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 h-full flex flex-col gap-1 min-h-[90px] hover:bg-indigo-100 hover:border-indigo-300 transition-all group relative"
+                                            >
+                                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Edit2 className="h-3 w-3 text-indigo-400" />
+                                                </div>
+                                                <p className="font-black text-xs text-indigo-900 leading-tight line-clamp-2 pr-4">
                                                     {subject?.name || 'N/A'}
                                                 </p>
                                                 <div className="mt-auto space-y-0.5">
@@ -75,11 +86,11 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
                                                         <Building className="h-2.5 w-2.5 opacity-40" /> {room?.name || 'TBA'}
                                                     </p>
                                                 </div>
-                                            </div>
+                                            </button>
                                         </TableCell>
                                     );
                                 }
-                                return <TableCell key={day} className="border-l bg-slate-50/20"></TableCell>;
+                                return <TableCell key={day} className="border-l bg-slate-50/10"></TableCell>;
                             })}
                         </TableRow>
                     );
@@ -87,7 +98,7 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
                 {uniqueTimePoints.length === 0 && (
                     <TableRow>
                         <TableCell colSpan={6} className="py-20 text-center text-slate-400 italic">
-                            No time slots defined. Configure slots in the Configuration tab.
+                            No time slots defined. Go to the <strong>Configuration</strong> tab to initialize your school schedule.
                         </TableCell>
                     </TableRow>
                 )}

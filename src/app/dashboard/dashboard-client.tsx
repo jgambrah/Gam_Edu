@@ -89,27 +89,40 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
     const pulseStats = useMemo(() => {
         if (!attendance || !financialRecords || !students) return { attendanceRate: 0, collectionRate: 0 };
         
-        // Today's Attendance Pulse
+        // 1. Today's Attendance Pulse
         const today = startOfDay(new Date());
         const todayRecords = attendance.filter((r: any) => {
             const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
             return startOfDay(d).getTime() === today.getTime();
         });
         const present = todayRecords.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
+        
+        // Filter for ACTIVE Students only
         const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
         const totalExpected = activeStudents.length || 1;
         const attendanceRate = Math.round((present / totalExpected) * 100);
 
-        // Collection Pulse (Active Students and Non-Reversed Only)
+        // 2. Unified Collection Pulse (Matches Student Billing Page)
         const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
         const activeRecords = financialRecords.filter((r: any) => 
             activeStudentIds.has(r.studentId) && 
             r.status !== 'Pending Reversal'
         );
 
-        const totalBilled = activeRecords.reduce((sum: number, r: any) => sum + (Number(r.billedAmount) || 0), 0);
-        const totalPaid = activeRecords.reduce((sum: number, r: any) => sum + (Number(r.amountPaid) || 0), 0);
-        const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
+        let totalPaid = 0;
+        let totalBilled = 0;
+        let totalWaivers = 0;
+
+        activeRecords.forEach((r: any) => {
+            const billed = Number(r.billedAmount) || 0;
+            const paid = Number(r.amountPaid) || 0;
+            const waiver = Number(r.waiverAmount) || 0;
+            totalBilled += billed;
+            totalPaid += paid;
+            totalWaivers += waiver;
+        });
+
+        const collectionRate = totalBilled > 0 ? Math.round((totalPaid / (totalBilled - totalWaivers)) * 100) : 0;
 
         return { attendanceRate, collectionRate };
     }, [attendance, financialRecords, students]);
@@ -118,7 +131,7 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
         if (!classes || !students) return [];
         return classes.map((c: any) => ({
             name: c.name,
-            students: students.filter((s: any) => s.classId === c.id).length
+            students: students.filter((s: any) => s.classId === c.id && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)).length
         })).sort((a: any, b: any) => b.students - a.students).slice(0, 6);
     }, [classes, students]);
 
@@ -146,8 +159,8 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard 
-                    title="Student Body" 
-                    value={students?.length || 0} 
+                    title="Active Students" 
+                    value={students?.filter((s:any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length || 0} 
                     icon={GraduationCap} 
                     link="/dashboard/students-v3" 
                     isLoading={isLoading}
@@ -281,7 +294,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
     const stats = useMemo(() => {
         if (!records || !students) return { totalOutstanding: 0, totalRevenue: 0, revenueByType: [] };
         
-        // Unify logic: Filter by Active Students and ignore Pending Reversals
+        // Unified Logic: Filter by Active Students and ignore Pending Reversals
         const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
         const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
         const activeRecords = records.filter((r: any) => 
@@ -338,9 +351,9 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="Outstanding Debt" value={`GH₵${stats.totalOutstanding.toLocaleString()}`} icon={AlertCircle} link="/dashboard/accounts" isLoading={isLoading} color="text-rose-600" />
-                <StatCard title="Total Collections" value={`GH₵${stats.totalRevenue.toLocaleString()}`} icon={CheckCircle2} link="/dashboard/reports/financials" isLoading={isLoading} color="text-emerald-600" />
-                <StatCard title="Billed Population" value={students?.length || 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Outstanding Debt" value={`GH₵${Math.round(stats.totalOutstanding).toLocaleString()}`} icon={AlertCircle} link="/dashboard/accounts" isLoading={isLoading} color="text-rose-600" />
+                <StatCard title="Total Collections" value={`GH₵${Math.round(stats.totalRevenue).toLocaleString()}`} icon={CheckCircle2} link="/dashboard/reports/financials" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard title="Active Students" value={students?.filter((s:any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length || 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
                 <StatCard title="Payment Vouchers" value="--" icon={Receipt} link="/dashboard/finance/payment-vouchers" isLoading={isLoading} color="text-indigo-600" />
             </div>
 

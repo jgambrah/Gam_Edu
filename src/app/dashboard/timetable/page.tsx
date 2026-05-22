@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, writeBatch, query, where, orderBy, addDoc, serverTimestamp, deleteDoc, getDocs, setDoc } from 'firebase/firestore';
+import { collection, doc, writeBatch, query, where, orderBy, addDoc, serverTimestamp, deleteDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TimetableDisplay } from './timetable-display';
@@ -11,7 +11,7 @@ import { TimeSlot, TimetableEntry, Subject, Room, Student, Class } from '@/lib/t
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle, RefreshCw, AlertTriangle, Microscope, UserCheck, BookCopy } from 'lucide-react';
+import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle, RefreshCw, AlertTriangle, Save } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
@@ -27,8 +27,8 @@ import { Badge } from '@/components/ui/badge';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
-// --- SUB-COMPONENT: MANUAL ASSIGNMENT ---
-function ManualAssignmentDialog({ 
+// --- SUB-COMPONENT: LESSON ASSIGNMENT DIALOG (Handles both Create and Edit) ---
+function LessonAssignmentDialog({ 
     open, 
     setOpen, 
     classId, 
@@ -36,6 +36,7 @@ function ManualAssignmentDialog({
     teachers, 
     rooms, 
     timeSlots,
+    editingEntry,
     onSuccess 
 }: { 
     open: boolean; 
@@ -45,12 +46,14 @@ function ManualAssignmentDialog({
     teachers: any[];
     rooms: Room[];
     timeSlots: TimeSlot[];
+    editingEntry?: TimetableEntry | null;
     onSuccess: () => void;
 }) {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const [form, setForm] = useState({
         timeSlotId: '',
@@ -58,6 +61,22 @@ function ManualAssignmentDialog({
         teacherId: '',
         roomId: ''
     });
+
+    // Sync form with editingEntry
+    useEffect(() => {
+        if (open) {
+            if (editingEntry) {
+                setForm({
+                    timeSlotId: editingEntry.timeSlotId || '',
+                    subjectId: editingEntry.subjectId || '',
+                    teacherId: editingEntry.teacherId || '',
+                    roomId: editingEntry.roomId || ''
+                });
+            } else {
+                setForm({ timeSlotId: '', subjectId: '', teacherId: '', roomId: '' });
+            }
+        }
+    }, [open, editingEntry]);
 
     const handleSubmit = async () => {
         if (!firestore || !schoolId || !classId) return;
@@ -69,16 +88,26 @@ function ManualAssignmentDialog({
         setIsSubmitting(true);
         try {
             const slot = timeSlots.find(ts => ts.id === form.timeSlotId);
-            await addDoc(collection(firestore, 'timetables'), {
+            const data = {
                 ...form,
                 classId,
                 schoolId,
                 day: slot?.day || '',
                 startTime: slot?.startTime || '',
                 endTime: slot?.endTime || '',
-                createdAt: serverTimestamp()
-            });
-            toast({ title: "Entry Added", description: "The lesson has been assigned to the timetable." });
+                updatedAt: serverTimestamp()
+            };
+
+            if (editingEntry) {
+                await updateDoc(doc(firestore, 'timetables', editingEntry.id), data);
+                toast({ title: "Assignment Updated" });
+            } else {
+                await addDoc(collection(firestore, 'timetables'), {
+                    ...data,
+                    createdAt: serverTimestamp()
+                });
+                toast({ title: "Entry Added", description: "The lesson has been assigned to the timetable." });
+            }
             onSuccess();
             setOpen(false);
         } catch (e: any) {
@@ -88,18 +117,33 @@ function ManualAssignmentDialog({
         }
     };
 
+    const handleDelete = async () => {
+        if (!firestore || !editingEntry) return;
+        setIsDeleting(true);
+        try {
+            await deleteDoc(doc(firestore, 'timetables', editingEntry.id));
+            toast({ title: "Lesson Removed", description: "The slot is now empty." });
+            onSuccess();
+            setOpen(false);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Error", description: e.message });
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Manual Lesson Assignment</DialogTitle>
+                    <DialogTitle>{editingEntry ? 'Edit Lesson Assignment' : 'Manual Lesson Assignment'}</DialogTitle>
                     <DialogDescription>Assign a subject, teacher, and room to a specific time slot.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                     <div className="space-y-2">
                         <Label>Time Slot</Label>
-                        <Select onValueChange={(v) => setForm({...form, timeSlotId: v})}>
-                            <SelectTrigger><SelectValue placeholder="Select Slot..." /></SelectTrigger>
+                        <Select onValueChange={(v) => setForm({...form, timeSlotId: v})} value={form.timeSlotId} disabled={!!editingEntry}>
+                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Slot..." /></SelectTrigger>
                             <SelectContent>
                                 {timeSlots.sort((a,b) => a.startTime.localeCompare(b.startTime)).map(ts => (
                                     <SelectItem key={ts.id} value={ts.id}>{ts.day} @ {ts.startTime}</SelectItem>
@@ -109,7 +153,7 @@ function ManualAssignmentDialog({
                     </div>
                     <div className="space-y-2">
                         <Label>Subject</Label>
-                        <Select onValueChange={(v) => setForm({...form, subjectId: v})}>
+                        <Select onValueChange={(v) => setForm({...form, subjectId: v})} value={form.subjectId}>
                             <SelectTrigger><SelectValue placeholder="Select Subject..." /></SelectTrigger>
                             <SelectContent>
                                 {subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
@@ -118,7 +162,7 @@ function ManualAssignmentDialog({
                     </div>
                     <div className="space-y-2">
                         <Label>Teacher</Label>
-                        <Select onValueChange={(v) => setForm({...form, teacherId: v})}>
+                        <Select onValueChange={(v) => setForm({...form, teacherId: v})} value={form.teacherId}>
                             <SelectTrigger><SelectValue placeholder="Select Teacher..." /></SelectTrigger>
                             <SelectContent>
                                 {teachers.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}
@@ -127,7 +171,7 @@ function ManualAssignmentDialog({
                     </div>
                     <div className="space-y-2">
                         <Label>Room</Label>
-                        <Select onValueChange={(v) => setForm({...form, roomId: v})}>
+                        <Select onValueChange={(v) => setForm({...form, roomId: v})} value={form.roomId}>
                             <SelectTrigger><SelectValue placeholder="Select Room..." /></SelectTrigger>
                             <SelectContent>
                                 {rooms.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
@@ -135,10 +179,16 @@ function ManualAssignmentDialog({
                         </Select>
                     </div>
                 </div>
-                <DialogFooter>
-                    <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full">
-                        {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Plus className="mr-2 h-4 w-4"/>}
-                        Add to Timetable
+                <DialogFooter className="flex flex-col sm:flex-row gap-2">
+                    {editingEntry && (
+                        <Button variant="ghost" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={handleDelete} disabled={isDeleting || isSubmitting}>
+                            {isDeleting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Trash2 className="mr-2 h-4 w-4"/>}
+                            Remove from Timetable
+                        </Button>
+                    )}
+                    <Button onClick={handleSubmit} disabled={isSubmitting || isDeleting} className="flex-1">
+                        {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
+                        {editingEntry ? 'Save Changes' : 'Add to Timetable'}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -249,7 +299,7 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                                         {r.name}
                                         {r.isLab && <Badge variant="outline" className="text-[8px] bg-orange-50 text-orange-700 h-4 uppercase">Lab</Badge>}
                                     </span>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('rooms', r.id)}><Trash2 className="h-3 w-3"/></Button>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('rooms', r.id)}><Trash2 className="h-4 w-4"/></Button>
                                 </div>
                             ))}
                         </div>
@@ -271,6 +321,7 @@ export default function TimetablePage() {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isManualOpen, setIsManualOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<TimetableEntry | null>(null);
   const [customConstraint, setCustomConstraint] = useState('');
 
   const canAccess = ['Student', 'Teacher', 'Admin', 'Administrator', 'Director'].includes(role || '');
@@ -434,7 +485,7 @@ export default function TimetablePage() {
                     <RefreshCw className={cn("h-4 w-4", isTimetableLoading && "animate-spin")} /> Sync Data
                 </Button>
                 {canManage && selectedClassId && (
-                    <Button onClick={() => setIsManualOpen(true)} className="bg-slate-800">
+                    <Button onClick={() => { setEditingEntry(null); setIsManualOpen(true); }} className="bg-slate-800">
                         <Plus className="mr-2 h-4 w-4"/> Manual Assignment
                     </Button>
                 )}
@@ -477,6 +528,7 @@ export default function TimetablePage() {
                                 teachers={allTeachers || []}
                                 rooms={rooms || []}
                                 timeSlots={timeSlots || []}
+                                onEditEntry={canManage ? (entry) => { setEditingEntry(entry); setIsManualOpen(true); } : undefined}
                             />
                         </div>
                     ) : (
@@ -623,7 +675,7 @@ export default function TimetablePage() {
       </Tabs>
 
       {selectedClassId && schoolId && (
-          <ManualAssignmentDialog 
+          <LessonAssignmentDialog 
             open={isManualOpen}
             setOpen={setIsManualOpen}
             classId={selectedClassId}
@@ -631,6 +683,7 @@ export default function TimetablePage() {
             teachers={allTeachers || []}
             rooms={rooms || []}
             timeSlots={timeSlots || []}
+            editingEntry={editingEntry}
             onSuccess={refetchTimetable}
           />
       )}
