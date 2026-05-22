@@ -96,11 +96,12 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
             return startOfDay(d).getTime() === today.getTime();
         });
         const present = todayRecords.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
-        const totalExpected = students.length || 1;
+        const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+        const totalExpected = activeStudents.length || 1;
         const attendanceRate = Math.round((present / totalExpected) * 100);
 
         // Collection Pulse (Active Students and Non-Reversed Only)
-        const activeStudentIds = new Set(students.map((s: any) => s.uid));
+        const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
         const activeRecords = financialRecords.filter((r: any) => 
             activeStudentIds.has(r.studentId) && 
             r.status !== 'Pending Reversal'
@@ -281,7 +282,8 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
         if (!records || !students) return { totalOutstanding: 0, totalRevenue: 0, revenueByType: [] };
         
         // Filter by Active Students and ignore Pending Reversals
-        const activeStudentIds = new Set(students.map((s: any) => s.uid));
+        const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+        const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
         const activeRecords = records.filter((r: any) => 
             activeStudentIds.has(r.studentId) && 
             r.status !== 'Pending Reversal'

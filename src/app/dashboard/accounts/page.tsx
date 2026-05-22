@@ -210,7 +210,7 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <FormControl>
-                                                <Button variant="outline" className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                                <Button variant={'outline'} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
                                                     {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                                 </Button>
@@ -547,7 +547,8 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
             <FormField 
                 control={form.control} 
                 name="studentId" 
-                render={({ field }) => (
+                render={({ field }) => {
+                  return (
                     <FormItem>
                         <FormLabel>Search & Select Student</FormLabel>
                         <div className="space-y-2">
@@ -570,14 +571,16 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                         </div>
                         <FormMessage />
                     </FormItem>
-                )}
+                  );
+                }}
             />
 
             {isOpeningBalance ? null : (
                 <FormField 
                     control={form.control} 
                     name="type" 
-                    render={({ field }) => (
+                    render={({ field }) => {
+                      return (
                         <FormItem>
                             <FormLabel>Fee Type</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -604,42 +607,48 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                             </Select>
                             <FormMessage />
                         </FormItem>
-                    )}
+                      );
+                    }}
                 />
             )}
 
             <FormField 
                 control={form.control} 
                 name="description" 
-                render={({ field }) => (
+                render={({ field }) => {
+                  return (
                     <FormItem>
-                        <FormLabel>Description</Label>
+                        <FormLabel>Description</FormLabel>
                         <FormControl>
                             <Input placeholder="Brief description of charge" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
-                )}
+                  );
+                }}
             />
 
             <div className="grid grid-cols-2 gap-4">
                 <FormField 
                     control={form.control} 
                     name="billedAmount" 
-                    render={({ field }) => (
+                    render={({ field }) => {
+                      return (
                         <FormItem>
-                            <FormLabel>Amount (GH₵)</Label>
+                            <FormLabel>Amount (GH₵)</FormLabel>
                             <FormControl>
                                 <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
-                    )}
+                      );
+                    }}
                 />
                 <FormField 
                     control={form.control} 
                     name="dueDate" 
-                    render={({ field }) => (
+                    render={({ field }) => {
+                      return (
                         <FormItem className="flex flex-col">
                             <FormLabel>Due Date</FormLabel>
                             <Popover>
@@ -657,7 +666,8 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                             </Popover>
                             <FormMessage />
                         </FormItem>
-                    )}
+                      );
+                    }}
                 />
             </div>
             <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
@@ -736,7 +746,8 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
             <FormField 
                 control={form.control} 
                 name="classId" 
-                render={({ field }) => (
+                render={({ field }) => {
+                  return (
                     <FormItem>
                         <FormLabel>Class / Target</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
@@ -751,12 +762,14 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                         </Select>
                         <FormMessage />
                     </FormItem>
-                )}
+                  );
+                }}
             />
             <FormField 
                 control={form.control} 
                 name="type" 
-                render={({ field }) => (
+                render={({ field }) => {
+                  return (
                     <FormItem>
                         <FormLabel>Fee Type</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
@@ -782,12 +795,14 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                         </Select>
                         <FormMessage />
                     </FormItem>
-                )}
+                  );
+                }}
             />
             <FormField 
                 control={form.control} 
                 name="description" 
-                render={({ field }) => (
+                render={({ field }) => {
+                  return (
                     <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
@@ -795,13 +810,15 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                         </FormControl>
                         <FormMessage />
                     </FormItem>
-                )}
+                  );
+                }}
             />
             <div className="grid grid-cols-2 gap-4">
                 <FormField 
                     control={form.control} 
                     name="billedAmount" 
-                    render={({ field }) => (
+                    render={({ field }) => {
+                      return (
                         <FormItem>
                             <FormLabel>Amount per Student (GH₵)</Label>
                             <FormControl>
@@ -809,12 +826,14 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                             </FormControl>
                             <FormMessage />
                         </FormItem>
-                    )}
+                      );
+                    }}
                 />
                 <FormField 
                     control={form.control} 
                     name="dueDate" 
-                    render={({ field }) => (
+                    render={({ field }) => {
+                      return (
                         <FormItem className="flex flex-col">
                             <FormLabel>Due Date</FormLabel>
                             <Popover>
@@ -832,7 +851,8 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                             </Popover>
                             <FormMessage />
                         </FormItem>
-                    )}
+                      );
+                    }}
                 />
             </div>
             <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
@@ -918,8 +938,25 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                         <FormField control={form.control} name="amount" render={({ field }) => (
                             <FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))}/></FormControl><FormMessage /></FormItem>
                         )}/>
-                        <FormField control={form.control} name="method" render={({ field }) => (<FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)}/>
-                        <FormField control={form.control} name="notes" render={({ field }) => (<FormItem><FormLabel>Reference / Notes (Optional)</FormLabel><FormControl><Textarea placeholder="Ref or notes..." {...field}/></FormControl><FormMessage /></FormItem>)}/>
+                        <FormField control={form.control} name="method" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Payment Method</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        {['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}/>
+                        <FormField control={form.control} name="notes" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Reference / Notes (Optional)</FormLabel>
+                                <FormControl><Textarea placeholder="Ref or notes..." {...field}/></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}/>
                         <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
                     </form>
                 </Form>
@@ -1188,8 +1225,8 @@ export default function AccountsPage() {
 
     // Consolidate filters for accuracy
     const activeRecords = records.filter(r => 
-        r.status !== 'Pending Reversal' && 
-        activeStudentIds.has(r.studentId)
+        activeStudentIds.has(r.studentId) && 
+        r.status !== 'Pending Reversal'
     );
 
     let totalPaid = 0, totalBilled = 0, totalWaivers = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0;
@@ -1497,10 +1534,18 @@ export default function AccountsPage() {
             </TabsContent>
         </Tabs>
 
-        {dialogState.record && dialogState.type === 'payment' ? (<RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={forceRefetch} />) : null}
-        {dialogState.record && dialogState.type === 'waiver' ? (<ApplyWaiverDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'waiver', record: null})} onUpdate={forceRefetch} />) : null}
-        {dialogState.record && dialogState.type === 'reversal' ? (<ReversalRequestDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={forceRefetch} />) : null}
-        {editingRecord && (<EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={forceRefetch} />)}
+        {dialogState.record && dialogState.type === 'payment' && (
+            <RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={forceRefetch} />
+        )}
+        {dialogState.record && dialogState.type === 'waiver' && (
+            <ApplyWaiverDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'waiver', record: null})} onUpdate={forceRefetch} />
+        )}
+        {dialogState.record && dialogState.type === 'reversal' && (
+            <ReversalRequestDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={forceRefetch} />
+        )}
+        {editingRecord && (
+            <EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={forceRefetch} />
+        )}
     </div>
   );
 }
