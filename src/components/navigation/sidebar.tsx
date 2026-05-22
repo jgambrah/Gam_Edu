@@ -33,6 +33,31 @@ import { AppLogo } from '@/components/icons/app-logo';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { doc } from 'firebase/firestore';
 
+/**
+ * NavLink Component
+ * Handles individual link rendering with active state logic.
+ */
+function NavLink({ item, isSubItem = false }: { item: NavItem, isSubItem?: boolean }) {
+  const pathname = usePathname();
+  const isActive = pathname === item.path;
+  
+  return (
+    <Link
+      href={item.path}
+      className={cn(
+        'flex w-full items-center gap-2 rounded-xl p-2.5 text-left text-sm transition-all duration-200',
+        isActive 
+          ? 'bg-white/10 text-white font-bold shadow-sm' 
+          : 'text-slate-400 hover:text-slate-100 hover:bg-white/5',
+        isSubItem && 'py-1.5 h-8 text-xs'
+      )}
+    >
+      <item.icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-indigo-400' : 'text-slate-500')} />
+      <span className="truncate">{item.title}</span>
+    </Link>
+  );
+}
+
 function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess: boolean) {
   if (item.roles === 'all') return true;
   if (!role) return false;
