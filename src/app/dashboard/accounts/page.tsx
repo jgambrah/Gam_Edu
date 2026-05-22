@@ -103,20 +103,24 @@ function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: Financ
                             <p className="text-xs uppercase font-bold text-orange-600">Current Outstanding</p>
                             <p className="text-2xl font-bold text-orange-900">GH₵{balance.toFixed(2)}</p>
                         </div>
-                        <FormField control={form.control} name="amount" render={({ field }) => (
+                        <FormField control={form.control} name="amount" render={({ field }) => {
+                          return (
                             <FormItem>
                                 <FormLabel>Waiver Amount (GH₵)</FormLabel>
                                 <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))}/></FormControl>
                                 <FormMessage />
                             </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="reason" render={({ field }) => (
+                          );
+                        }}/>
+                        <FormField control={form.control} name="reason" render={({ field }) => {
+                          return (
                             <FormItem>
                                 <FormLabel>Reason for Waiver</FormLabel>
                                 <FormControl><Textarea placeholder="e.g. Scholarship discount, Administrative correction" {...field}/></FormControl>
                                 <FormMessage />
                             </FormItem>
-                        )}/>
+                          );
+                        }}/>
                         <Button type="submit" disabled={isSubmitting} className="w-full">
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Apply Waiver
                         </Button>
@@ -178,7 +182,8 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField control={form.control} name="type" render={({ field }) => (
+                        <FormField control={form.control} name="type" render={({ field }) => {
+                          return (
                             <FormItem>
                                 <FormLabel>Fee Type</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -190,21 +195,27 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
                                     </SelectContent>
                                 </Select>
                             </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="description" render={({ field }) => (
+                          );
+                        }}/>
+                        <FormField control={form.control} name="description" render={({ field }) => {
+                          return (
                             <FormItem>
                                 <FormLabel>Description</FormLabel>
                                 <FormControl><Input {...field} /></FormControl>
                             </FormItem>
-                        )}/>
+                          );
+                        }}/>
                         <div className="grid grid-cols-2 gap-4">
-                            <FormField control={form.control} name="billedAmount" render={({ field }) => (
+                            <FormField control={form.control} name="billedAmount" render={({ field }) => {
+                              return (
                                 <FormItem>
                                     <FormLabel>Total Bill (GH₵)</FormLabel>
                                     <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))}/></FormControl>
                                 </FormItem>
-                            )}/>
-                            <FormField control={form.control} name="dueDate" render={({ field }) => (
+                              );
+                            }}/>
+                            <FormField control={form.control} name="dueDate" render={({ field }) => {
+                              return (
                                 <FormItem className="flex flex-col">
                                     <FormLabel>Due Date</FormLabel>
                                     <Popover>
@@ -221,7 +232,8 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
                                         </PopoverContent>
                                     </Popover>
                                 </FormItem>
-                            )}/>
+                              );
+                            }}/>
                         </div>
                         <Button type="submit" disabled={isSubmitting} className="w-full">
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Changes
@@ -820,7 +832,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     render={({ field }) => {
                       return (
                         <FormItem>
-                            <FormLabel>Amount per Student (GH₵)</Label>
+                            <FormLabel>Amount per Student (GH₵)</FormLabel>
                             <FormControl>
                                 <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} />
                             </FormControl>
@@ -935,10 +947,13 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                             <p className="text-xs uppercase font-semibold text-slate-500">{balance <= 0 ? "Current Credit" : "Outstanding Balance"}</p>
                             <p className={`text-3xl font-bold ${balance <= 0 ? "text-green-700" : "text-indigo-900"}`}>GH₵{Math.abs(balance).toFixed(2)}</p>
                         </div>
-                        <FormField control={form.control} name="amount" render={({ field }) => (
+                        <FormField control={form.control} name="amount" render={({ field }) => {
+                          return (
                             <FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))}/></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={form.control} name="method" render={({ field }) => (
+                          );
+                        }}/>
+                        <FormField control={form.control} name="method" render={({ field }) => {
+                          return (
                             <FormItem>
                                 <FormLabel>Payment Method</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -949,14 +964,17 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                                 </Select>
                                 <FormMessage />
                             </FormItem>
-                        )}/>
-                        <FormField control={form.control} name="notes" render={({ field }) => (
+                          );
+                        }}/>
+                        <FormField control={form.control} name="notes" render={({ field }) => {
+                          return (
                             <FormItem>
                                 <FormLabel>Reference / Notes (Optional)</FormLabel>
                                 <FormControl><Textarea placeholder="Ref or notes..." {...field}/></FormControl>
                                 <FormMessage />
                             </FormItem>
-                        )}/>
+                          );
+                        }}/>
                         <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
                     </form>
                 </Form>
@@ -1044,8 +1062,8 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
 
     const overallSummary = useMemo(() => {
         const activeRecords = records.filter(r => r.status !== 'Pending Reversal');
-        const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
+        const totalBilled = activeRecords.reduce((acc, r) => acc + (Number(r.billedAmount) || 0), 0);
+        const totalPaid = activeRecords.reduce((acc, r) => acc + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
         return { totalBilled, totalPaid, balance: totalBilled - totalPaid };
     }, [records]);
 
@@ -1107,7 +1125,7 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
                   </TableHeader>
                   <TableBody>
                       {filteredRecords.map(rec => {
-                          const balance = rec.billedAmount - (rec.amountPaid || 0) - (rec.waiverAmount || 0);
+                          const balance = (Number(rec.billedAmount) || 0) - (Number(rec.amountPaid) || 0) - (Number(rec.waiverAmount) || 0);
                           return (
                               <React.Fragment key={rec.id}>
                                   <TableRow>
@@ -1232,9 +1250,9 @@ export default function AccountsPage() {
     let totalPaid = 0, totalBilled = 0, totalWaivers = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0;
 
     for (const record of activeRecords) {
-        const billed = record.billedAmount || 0;
-        const paid = record.amountPaid || 0;
-        const waiver = record.waiverAmount || 0;
+        const billed = Number(record.billedAmount) || 0;
+        const paid = Number(record.amountPaid) || 0;
+        const waiver = Number(record.waiverAmount) || 0;
         const balance = billed - paid - waiver;
         totalBilled += billed; totalPaid += paid; totalWaivers += waiver;
         
@@ -1265,8 +1283,8 @@ export default function AccountsPage() {
     return students.map(student => {
           const studentRecords = recordsByStudent[student.uid] || [];
           const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal');
-          const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-          const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
+          const totalBilled = activeRecords.reduce((acc, r) => acc + (Number(r.billedAmount) || 0), 0);
+          const totalPaid = activeRecords.reduce((acc, r) => acc + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
           return { student, balance: totalBilled - totalPaid, hasOverdue: activeRecords.some(r => r.status === 'Overdue'), records: studentRecords };
       }).sort((a, b) => b.balance - a.balance);
 }, [records, students]);

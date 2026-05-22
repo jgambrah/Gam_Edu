@@ -107,8 +107,8 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
             r.status !== 'Pending Reversal'
         );
 
-        const totalBilled = activeRecords.reduce((sum: number, r: any) => sum + (r.billedAmount || 0), 0);
-        const totalPaid = activeRecords.reduce((sum: number, r: any) => sum + (r.amountPaid || 0), 0);
+        const totalBilled = activeRecords.reduce((sum: number, r: any) => sum + (Number(r.billedAmount) || 0), 0);
+        const totalPaid = activeRecords.reduce((sum: number, r: any) => sum + (Number(r.amountPaid) || 0), 0);
         const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
 
         return { attendanceRate, collectionRate };
@@ -274,14 +274,14 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
     );
 }
 
-function AccountantDashboard({ profile, students, classes, records, tills, announcements, isLoading }) {
+function AccountantDashboard({ profile, students, classes, records, tills, announcements, isLoading }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Accountant';
 
     const stats = useMemo(() => {
         if (!records || !students) return { totalOutstanding: 0, totalRevenue: 0, revenueByType: [] };
         
-        // Filter by Active Students and ignore Pending Reversals
+        // Unify logic: Filter by Active Students and ignore Pending Reversals
         const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
         const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
         const activeRecords = records.filter((r: any) => 
@@ -289,16 +289,19 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             r.status !== 'Pending Reversal'
         );
 
-        let outstanding = 0;
+        let totalBilled = 0;
         let totalPaid = 0;
+        let totalWaivers = 0;
         const types: Record<string, number> = {};
 
         activeRecords.forEach((r: any) => {
-            const billed = r.billedAmount || 0;
-            const paid = r.amountPaid || 0;
-            const waiver = r.waiverAmount || 0;
-            outstanding += (billed - paid - waiver);
+            const billed = Number(r.billedAmount) || 0;
+            const paid = Number(r.amountPaid) || 0;
+            const waiver = Number(r.waiverAmount) || 0;
+            
+            totalBilled += billed;
             totalPaid += paid;
+            totalWaivers += waiver;
 
             if (paid > 0) {
                 const type = r.type || 'Other';
@@ -310,7 +313,11 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             .sort((a, b) => b.value - a.value)
             .slice(0, 5);
 
-        return { totalOutstanding: outstanding, totalRevenue: totalPaid, revenueByType };
+        return { 
+            totalOutstanding: totalBilled - totalPaid - totalWaivers, 
+            totalRevenue: totalPaid, 
+            revenueByType 
+        };
     }, [records, students]);
 
     const activeTill = useMemo(() => tills?.find((t: any) => t.status === 'Open'), [tills]);
@@ -396,7 +403,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
     );
 }
 
-function TransportStaffDashboard({ profile, routes, buses, students, announcements, isLoading }) {
+function TransportStaffDashboard({ profile, routes, buses, students, announcements, isLoading }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Member';
 
@@ -410,7 +417,7 @@ function TransportStaffDashboard({ profile, routes, buses, students, announcemen
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <StatCard title="Active Routes" value={routes?.length || 0} icon={RouteIcon} link="/dashboard/transport" isLoading={isLoading} color="text-indigo-600" />
                 <StatCard title="Total Buses" value={buses?.length || 0} icon={BusIcon} link="/dashboard/transport" isLoading={isLoading} color="text-blue-600" />
-                <StatCard title="Bus Students" value={students?.filter(s => s.usesBusService).length || 0} icon={Users} link="/dashboard/transport" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard title="Bus Students" value={students?.filter((s:any) => s.usesBusService).length || 0} icon={Users} link="/dashboard/transport" isLoading={isLoading} color="text-emerald-600" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -557,7 +564,7 @@ function SupportStaffDashboard({ profile, leaveRequests, announcements, isLoadin
     );
 }
 
-function TeacherDashboard({ profile, classes, isLoading }) {
+function TeacherDashboard({ profile, classes, isLoading }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Teacher';
 
@@ -619,7 +626,7 @@ function TeacherDashboard({ profile, classes, isLoading }) {
     );
 }
 
-function ParentDashboard({ profile, children, financials, announcements, isLoading, schoolSettings }) {
+function ParentDashboard({ profile, children, financials, announcements, isLoading, schoolSettings }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Parent';
 
@@ -627,7 +634,7 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
         if (!financials) return 0;
         return financials.reduce((sum: number, r: any) => {
             if (r.status === 'Pending Reversal' || r.status === 'Rejected Reversal') return sum;
-            const balance = (r.billedAmount || 0) - (r.amountPaid || 0) - (r.waiverAmount || 0);
+            const balance = (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
             return sum + Math.max(0, balance);
         }, 0);
     }, [financials]);
@@ -723,7 +730,7 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
     );
 }
 
-function StudentDashboard({ profile }) {
+function StudentDashboard({ profile }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Member';
 
