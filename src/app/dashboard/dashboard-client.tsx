@@ -99,9 +99,15 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
         const totalExpected = students.length || 1;
         const attendanceRate = Math.round((present / totalExpected) * 100);
 
-        // Collection Pulse (Revenue vs Outstanding)
-        const totalBilled = financialRecords.reduce((sum: number, r: any) => sum + (r.billedAmount || 0), 0);
-        const totalPaid = financialRecords.reduce((sum: number, r: any) => sum + (r.amountPaid || 0), 0);
+        // Collection Pulse (Active Students and Non-Reversed Only)
+        const activeStudentIds = new Set(students.map((s: any) => s.uid));
+        const activeRecords = financialRecords.filter((r: any) => 
+            activeStudentIds.has(r.studentId) && 
+            r.status !== 'Pending Reversal'
+        );
+
+        const totalBilled = activeRecords.reduce((sum: number, r: any) => sum + (r.billedAmount || 0), 0);
+        const totalPaid = activeRecords.reduce((sum: number, r: any) => sum + (r.amountPaid || 0), 0);
         const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
 
         return { attendanceRate, collectionRate };
@@ -272,13 +278,20 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Accountant';
 
     const stats = useMemo(() => {
-        if (!records) return { totalOutstanding: 0, totalRevenue: 0, revenueByType: [] };
+        if (!records || !students) return { totalOutstanding: 0, totalRevenue: 0, revenueByType: [] };
         
+        // Filter by Active Students and ignore Pending Reversals
+        const activeStudentIds = new Set(students.map((s: any) => s.uid));
+        const activeRecords = records.filter((r: any) => 
+            activeStudentIds.has(r.studentId) && 
+            r.status !== 'Pending Reversal'
+        );
+
         let outstanding = 0;
         let totalPaid = 0;
         const types: Record<string, number> = {};
 
-        records.forEach((r: any) => {
+        activeRecords.forEach((r: any) => {
             const billed = r.billedAmount || 0;
             const paid = r.amountPaid || 0;
             const waiver = r.waiverAmount || 0;
@@ -296,7 +309,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             .slice(0, 5);
 
         return { totalOutstanding: outstanding, totalRevenue: totalPaid, revenueByType };
-    }, [records]);
+    }, [records, students]);
 
     const activeTill = useMemo(() => tills?.find((t: any) => t.status === 'Open'), [tills]);
 

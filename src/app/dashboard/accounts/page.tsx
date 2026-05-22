@@ -613,7 +613,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                 name="description" 
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>Description</Label>
                         <FormControl>
                             <Input placeholder="Brief description of charge" {...field} />
                         </FormControl>
@@ -628,7 +628,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                     name="billedAmount" 
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Amount (GH₵)</FormLabel>
+                            <FormLabel>Amount (GH₵)</Label>
                             <FormControl>
                                 <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} />
                             </FormControl>
@@ -803,7 +803,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     name="billedAmount" 
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Amount per Student (GH₵)</FormLabel>
+                            <FormLabel>Amount per Student (GH₵)</Label>
                             <FormControl>
                                 <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} />
                             </FormControl>
@@ -1006,7 +1006,7 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
     }, [records, dateRange]);
 
     const overallSummary = useMemo(() => {
-        const activeRecords = records.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
+        const activeRecords = records.filter(r => r.status !== 'Pending Reversal');
         const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
         const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
         return { totalBilled, totalPaid, balance: totalBilled - totalPaid };
@@ -1186,9 +1186,9 @@ export default function AccountsPage() {
     
     const activeStudentIds = new Set(students.map(s => s.uid));
 
+    // Consolidate filters for accuracy
     const activeRecords = records.filter(r => 
         r.status !== 'Pending Reversal' && 
-        r.status !== 'Rejected Reversal' &&
         activeStudentIds.has(r.studentId)
     );
 
@@ -1227,7 +1227,7 @@ export default function AccountsPage() {
     
     return students.map(student => {
           const studentRecords = recordsByStudent[student.uid] || [];
-          const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal' && r.status !== 'Rejected Reversal');
+          const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal');
           const totalBilled = activeRecords.reduce((acc, r) => acc + r.billedAmount, 0);
           const totalPaid = activeRecords.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
           return { student, balance: totalBilled - totalPaid, hasOverdue: activeRecords.some(r => r.status === 'Overdue'), records: studentRecords };
