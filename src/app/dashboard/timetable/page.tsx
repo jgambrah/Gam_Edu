@@ -157,7 +157,11 @@ function LessonAssignmentDialog({
                         <Select onValueChange={(v) => setForm({...form, timeSlotId: v})} value={form.timeSlotId} disabled={!!editingEntry}>
                             <SelectTrigger className="bg-white"><SelectValue placeholder="Select Slot..." /></SelectTrigger>
                             <SelectContent>
-                                {lessonTimeSlots.sort((a,b) => a.startTime.localeCompare(b.startTime)).map(ts => (
+                                {lessonTimeSlots.sort((a,b) => {
+                                    const dayMap: any = { 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5 };
+                                    if (dayMap[a.day] !== dayMap[b.day]) return dayMap[a.day] - dayMap[b.day];
+                                    return a.startTime.localeCompare(b.startTime);
+                                }).map(ts => (
                                     <SelectItem key={ts.id} value={ts.id}>{ts.day} @ {ts.startTime}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -199,7 +203,7 @@ function LessonAssignmentDialog({
                         </Button>
                     )}
                     <Button onClick={handleSubmit} disabled={isSubmitting || isDeleting} className="flex-1">
-                        {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
                         {editingEntry ? 'Save Changes' : 'Add to Timetable'}
                     </Button>
                 </DialogFooter>
@@ -214,25 +218,39 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
 
-    const [newSlot, setNewSlot] = useState({ day: 'Monday', start: '08:00', end: '08:45', type: 'Lesson' as any, classId: 'all' });
+    const [newSlot, setNewSlot] = useState({ 
+        days: ['Monday'], 
+        start: '08:00', 
+        end: '08:45', 
+        type: 'Lesson' as any, 
+        classId: 'all' 
+    });
+    
     const [editingSlot, setEditingSlot] = useState<TimeSlot | null>(null);
 
     const handleAddSlot = async () => {
-        if (!firestore || !schoolId) return;
+        if (!firestore || !schoolId || newSlot.days.length === 0) return;
         setLoading(true);
         try {
+            const batch = writeBatch(firestore);
             const classStamp = newSlot.classId === 'all' ? 'global' : newSlot.classId;
-            const id = `${schoolId}-${classStamp}-${newSlot.day.substring(0,3)}-${newSlot.start.replace(':','')}`;
-            await setDoc(doc(firestore, 'timeSlots', id), {
-                id,
-                day: newSlot.day,
-                startTime: newSlot.start,
-                endTime: newSlot.end,
-                type: newSlot.type,
-                classId: newSlot.classId === 'all' ? null : newSlot.classId,
-                schoolId
+            
+            newSlot.days.forEach(d => {
+                const id = `${schoolId}-${classStamp}-${d.substring(0,3)}-${newSlot.start.replace(':','')}`;
+                const ref = doc(firestore, 'timeSlots', id);
+                batch.set(ref, {
+                    id,
+                    day: d,
+                    startTime: newSlot.start,
+                    endTime: newSlot.end,
+                    type: newSlot.type,
+                    classId: newSlot.classId === 'all' ? null : newSlot.classId,
+                    schoolId
+                });
             });
-            toast({ title: "Slot Added" });
+
+            await batch.commit();
+            toast({ title: newSlot.days.length > 1 ? "Multiple Slots Added" : "Slot Added" });
             onRefresh();
         } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
         finally { setLoading(false); }
@@ -265,6 +283,22 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
         } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
     };
 
+    const toggleDay = (day: string) => {
+        setNewSlot(prev => ({
+            ...prev,
+            days: prev.days.includes(day) 
+                ? prev.days.filter(d => d !== day) 
+                : [...prev.days, day]
+        }));
+    };
+
+    const applyAllWeekdays = () => {
+        setNewSlot(prev => ({
+            ...prev,
+            days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+        }));
+    };
+
     return (
         <div className="space-y-8 animate-in fade-in">
             <TimetableSeeder />
@@ -276,37 +310,69 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
                         <CardDescription>Define periods, breaks, and lunch times.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="space-y-3 p-4 bg-slate-50 rounded-2xl border">
-                            <Label className="text-[10px] font-black uppercase text-slate-400">Add New Period</Label>
-                            <div className="grid grid-cols-2 gap-2">
-                                <Select value={newSlot.day} onValueChange={(v) => setNewSlot({...newSlot, day: v})}>
-                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                                <Select value={newSlot.classId} onValueChange={(v) => setNewSlot({...newSlot, classId: v})}>
-                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue placeholder="Target Class..." /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Classes (Global)</SelectItem>
-                                        {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                                <Select value={newSlot.type} onValueChange={(v) => setNewSlot({...newSlot, type: v})}>
-                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Lesson">Lesson</SelectItem>
-                                        <SelectItem value="Break">Short Break</SelectItem>
-                                        <SelectItem value="Lunch">Lunch</SelectItem>
-                                        <SelectItem value="Worship">Worship/Assembly</SelectItem>
-                                        <SelectItem value="Event">Other Event</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                        <div className="space-y-4 p-4 bg-slate-50 rounded-2xl border">
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Apply to Days</Label>
+                                    <Button variant="ghost" size="sm" onClick={applyAllWeekdays} className="h-6 text-[9px] font-black uppercase text-indigo-600 px-2 rounded-lg hover:bg-indigo-50">Mon - Fri</Button>
+                                </div>
+                                <div className="flex gap-2">
+                                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => (
+                                        <button 
+                                            key={d}
+                                            type="button"
+                                            onClick={() => toggleDay(d)}
+                                            className={cn(
+                                                "w-9 h-9 rounded-xl text-xs font-black transition-all flex items-center justify-center border-2",
+                                                newSlot.days.includes(d) 
+                                                    ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100" 
+                                                    : "bg-white border-slate-200 text-slate-400 hover:border-indigo-200"
+                                            )}
+                                        >
+                                            {d.substring(0,1)}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="grid grid-cols-3 gap-2">
-                                <Input type="time" value={newSlot.start} onChange={e => setNewSlot({...newSlot, start: e.target.value})} className="h-9 text-xs bg-white" />
-                                <Input type="time" value={newSlot.end} onChange={e => setNewSlot({...newSlot, end: e.target.value})} className="h-9 text-xs bg-white" />
-                                <Button onClick={handleAddSlot} disabled={loading} size="sm" className="h-9 bg-indigo-600"><Plus className="h-4 w-4"/></Button>
+
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-1">
+                                    <Label className="text-[9px] font-bold uppercase text-slate-400 ml-1">Class Scope</Label>
+                                    <Select value={newSlot.classId} onValueChange={(v) => setNewSlot({...newSlot, classId: v})}>
+                                        <SelectTrigger className="h-10 text-xs bg-white border-2 rounded-xl"><SelectValue placeholder="Scope" /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Global (All Classes)</SelectItem>
+                                            {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-[9px] font-bold uppercase text-slate-400 ml-1">Slot Type</Label>
+                                    <Select value={newSlot.type} onValueChange={(v) => setNewSlot({...newSlot, type: v})}>
+                                        <SelectTrigger className="h-10 text-xs bg-white border-2 rounded-xl"><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Lesson">Lesson</SelectItem>
+                                            <SelectItem value="Break">Short Break</SelectItem>
+                                            <SelectItem value="Lunch">Lunch</SelectItem>
+                                            <SelectItem value="Worship">Worship</SelectItem>
+                                            <SelectItem value="Event">Event</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-2 items-end">
+                                <div className="space-y-1">
+                                    <Label className="text-[9px] font-bold uppercase text-slate-400 ml-1">Start</Label>
+                                    <Input type="time" value={newSlot.start} onChange={e => setNewSlot({...newSlot, start: e.target.value})} className="h-10 text-xs bg-white border-2 rounded-xl" />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-[9px] font-bold uppercase text-slate-400 ml-1">End</Label>
+                                    <Input type="time" value={newSlot.end} onChange={e => setNewSlot({...newSlot, end: e.target.value})} className="h-10 text-xs bg-white border-2 rounded-xl" />
+                                </div>
+                                <Button onClick={handleAddSlot} disabled={loading || newSlot.days.length === 0} className="h-10 bg-indigo-600 rounded-xl font-bold shadow-md shadow-indigo-100">
+                                    {loading ? <Loader2 className="animate-spin h-4 w-4"/> : <Plus className="h-4 w-4"/>}
+                                </Button>
                             </div>
                         </div>
                         
@@ -333,16 +399,16 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
                                                 <AlertDialogTrigger asChild>
                                                     <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5"/></Button>
                                                 </AlertDialogTrigger>
-                                                <AlertDialogContent>
+                                                <AlertDialogContent className="rounded-3xl border-4 border-slate-900">
                                                     <AlertDialogHeader>
-                                                        <AlertDialogTitle>Delete Time Slot?</AlertDialogTitle>
-                                                        <AlertDialogDescription>
+                                                        <AlertDialogTitle className="text-xl font-black uppercase italic">Delete Slot?</AlertDialogTitle>
+                                                        <AlertDialogDescription className="font-bold text-slate-600">
                                                             Are you sure you want to remove the {ts.startTime} slot on {ts.day}? This may affect existing scheduled lessons.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => handleDelete('timeSlots', ts.id)} className="bg-red-600">Confirm Delete</AlertDialogAction>
+                                                        <AlertDialogCancel className="rounded-xl font-bold">Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleDelete('timeSlots', ts.id)} className="bg-red-600 rounded-xl font-black uppercase">Confirm Delete</AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>
@@ -473,14 +539,14 @@ function TimetableConfigRooms({ schoolId, rooms, onRefresh }: { schoolId: string
                             <AlertDialogTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-3.5 w-3.5"/></Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent>
+                            <AlertDialogContent className="rounded-3xl border-4 border-slate-900">
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Remove Room?</AlertDialogTitle>
-                                    <AlertDialogDescription>Permanently delete <strong>{r.name}</strong> from the school's room directory?</AlertDialogDescription>
+                                    <AlertDialogTitle className="text-xl font-black uppercase italic">Remove Room?</AlertDialogTitle>
+                                    <AlertDialogDescription className="font-bold text-slate-600">Permanently delete <strong>{r.name}</strong> from the school's room directory?</AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDelete(r.id)} className="bg-red-600">Confirm Delete</AlertDialogAction>
+                                    <AlertDialogCancel className="rounded-xl font-bold">Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(r.id)} className="bg-red-600 rounded-xl font-black uppercase">Confirm Delete</AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
