@@ -27,7 +27,7 @@ import { Badge } from '@/components/ui/badge';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
-// --- SUB-COMPONENT: LESSON ASSIGNMENT DIALOG (Handles both Create and Edit) ---
+// --- SUB-COMPONENT: LESSON ASSIGNMENT DIALOG ---
 function LessonAssignmentDialog({ 
     open, 
     setOpen, 
@@ -62,7 +62,6 @@ function LessonAssignmentDialog({
         roomId: ''
     });
 
-    // Sync form with editingEntry
     useEffect(() => {
         if (open) {
             if (editingEntry) {
@@ -132,6 +131,8 @@ function LessonAssignmentDialog({
         }
     };
 
+    const lessonTimeSlots = timeSlots.filter(ts => ts.type === 'Lesson' || !ts.type);
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-md">
@@ -145,7 +146,7 @@ function LessonAssignmentDialog({
                         <Select onValueChange={(v) => setForm({...form, timeSlotId: v})} value={form.timeSlotId} disabled={!!editingEntry}>
                             <SelectTrigger className="bg-white"><SelectValue placeholder="Select Slot..." /></SelectTrigger>
                             <SelectContent>
-                                {timeSlots.sort((a,b) => a.startTime.localeCompare(b.startTime)).map(ts => (
+                                {lessonTimeSlots.sort((a,b) => a.startTime.localeCompare(b.startTime)).map(ts => (
                                     <SelectItem key={ts.id} value={ts.id}>{ts.day} @ {ts.startTime}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -202,7 +203,7 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
 
-    const [newSlot, setNewSlot] = useState({ day: 'Monday', start: '08:00', end: '08:45' });
+    const [newSlot, setNewSlot] = useState({ day: 'Monday', start: '08:00', end: '08:45', type: 'Lesson' as any });
     const [newRoom, setNewRoom] = useState({ name: '', isLab: false });
 
     const handleAddSlot = async () => {
@@ -215,7 +216,7 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                 day: newSlot.day,
                 startTime: newSlot.start,
                 endTime: newSlot.end,
-                type: 'Lesson',
+                type: newSlot.type,
                 schoolId
             });
             toast({ title: "Slot Added" });
@@ -255,23 +256,41 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4"/> Daily Time Slots</CardTitle>
+                        <CardTitle className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4"/> Schedule Intervals</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-xl border">
-                            <Select value={newSlot.day} onValueChange={(v) => setNewSlot({...newSlot, day: v})}>
-                                <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                            <Input type="time" value={newSlot.start} onChange={e => setNewSlot({...newSlot, start: e.target.value})} className="h-9 text-xs" />
-                            <Button onClick={handleAddSlot} disabled={loading} size="sm" className="h-9"><Plus className="h-3 w-3"/></Button>
+                        <div className="space-y-3 p-3 bg-slate-50 rounded-xl border">
+                            <div className="grid grid-cols-2 gap-2">
+                                <Select value={newSlot.day} onValueChange={(v) => setNewSlot({...newSlot, day: v})}>
+                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <Select value={newSlot.type} onValueChange={(v) => setNewSlot({...newSlot, type: v})}>
+                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Lesson">Academic Lesson</SelectItem>
+                                        <SelectItem value="Break">Short Break</SelectItem>
+                                        <SelectItem value="Lunch">Lunch Break</SelectItem>
+                                        <SelectItem value="Event">General Event</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                                <Input type="time" value={newSlot.start} onChange={e => setNewSlot({...newSlot, start: e.target.value})} className="h-9 text-xs bg-white" />
+                                <Input type="time" value={newSlot.end} onChange={e => setNewSlot({...newSlot, end: e.target.value})} className="h-9 text-xs bg-white" />
+                                <Button onClick={handleAddSlot} disabled={loading} size="sm" className="h-9"><Plus className="h-3 w-3"/></Button>
+                            </div>
                         </div>
                         <div className="max-h-[300px] overflow-y-auto space-y-1">
                             {timeSlots.sort((a,b) => a.startTime.localeCompare(b.startTime)).map(ts => (
                                 <div key={ts.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
-                                    <span><strong>{ts.day.substring(0,3)}:</strong> {ts.startTime} - {ts.endTime}</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-bold">{ts.day.substring(0,3)}:</span>
+                                        <span>{ts.startTime} - {ts.endTime}</span>
+                                        <Badge variant="outline" className="text-[8px] uppercase">{ts.type || 'Lesson'}</Badge>
+                                    </div>
                                     <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('timeSlots', ts.id)}><Trash2 className="h-3 w-3"/></Button>
                                 </div>
                             ))}
@@ -299,7 +318,7 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
                                         {r.name}
                                         {r.isLab && <Badge variant="outline" className="text-[8px] bg-orange-50 text-orange-700 h-4 uppercase">Lab</Badge>}
                                     </span>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('rooms', r.id)}><Trash2 className="h-4 w-4"/></Button>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('rooms', r.id)}><Trash2 className="h-3 w-3"/></Button>
                                 </div>
                             ))}
                         </div>
@@ -365,7 +384,7 @@ export default function TimetablePage() {
     if (!canManage || !allTeachers || !subjects || !classes || !rooms || !timeSlots || !firestore || !schoolId) return;
     
     setIsGenerating(true);
-    toast({ title: "AI is on the job!", description: "Generating a 5-day schedule day-by-day. This will take about 15-20 seconds. Please wait..." });
+    toast({ title: "AI is on the job!", description: "Generating a 5-day schedule Day-by-Day. Please wait..." });
 
     try {
       const enrichedClasses = classes?.map(c => ({
@@ -385,12 +404,15 @@ export default function TimetablePage() {
         allowedTeacherIds: s.teacherIds || []
       })) || [];
 
+      // IMPORTANT: Filter out Breaks/Lunch so the AI doesn't try to schedule them.
+      const academicTimeSlots = timeSlots?.filter(ts => ts.type === 'Lesson' || !ts.type);
+
       const input = {
         teachers: allTeachers.map(t => ({ id: t.uid, name: `${t.firstName} ${t.lastName}` })),
         subjects: enrichedSubjects,
         classes: enrichedClasses,
         rooms: rooms?.map(({ id, name, isLab }) => ({ id, name, isLab: isLab || false })) || [],
-        timeSlots: timeSlots?.map(({ id, day, startTime, endTime }) => ({ id, day, startTime, endTime })) || [],
+        timeSlots: academicTimeSlots?.map(({ id, day, startTime, endTime }) => ({ id, day, startTime, endTime })) || [],
         customConstraint: customConstraint,
         schoolId: schoolId,
         systemRules: [
@@ -403,9 +425,7 @@ export default function TimetablePage() {
 
       const result = await generateTimetable(input);
       
-      if (!result.success) {
-          throw new Error(result.error);
-      }
+      if (!result.success) throw new Error(result.error);
 
       const batch = writeBatch(firestore);
 
@@ -428,7 +448,7 @@ export default function TimetablePage() {
       }
       
       await batch.commit();
-      toast({ title: "Success!", description: `A new timetable has been generated with ${result.timetable.length} lessons.` });
+      toast({ title: "Success!", description: `A new timetable has been generated.` });
       refetchTimetable(); 
     } catch (error: any) {
       console.error("Error generating timetable:", error);
@@ -442,7 +462,6 @@ export default function TimetablePage() {
       return timetable?.filter(entry => entry.classId === selectedClassId) || [];
   }, [timetable, selectedClassId]);
 
-  // --- READINESS CHECKLIST ---
   const readiness = useMemo(() => {
     const hasSlots = (timeSlots?.length || 0) > 0;
     const hasRooms = (rooms?.length || 0) > 0;
@@ -500,7 +519,7 @@ export default function TimetablePage() {
                             <CardTitle className="text-2xl font-black text-slate-900 tracking-tight italic uppercase">
                                 <CalendarDays className="h-6 w-6 text-indigo-600"/> Weekly Schedule
                             </CardTitle>
-                            <CardDescription>View official class lessons.</CardDescription>
+                            <CardDescription>View official class lessons and automated break periods.</CardDescription>
                         </div>
                         <div className="w-full md:w-64">
                             <Select onValueChange={setSelectedClassId} value={selectedClassId}>
@@ -538,17 +557,20 @@ export default function TimetablePage() {
                         </div>
                     )}
                 </CardContent>
+                <CardFooter className="bg-slate-50 p-4 flex gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-t">
+                    <span className="flex items-center gap-1"><BookCopy size={12}/> PE, Worship, and Club time should be added as 'Subjects'</span>
+                    <span className="flex items-center gap-1"><Clock size={12}/> Breaks are configured in the 'Configuration' tab</span>
+                </CardFooter>
             </Card>
 
             {canManage && (
                 <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
                     <CardHeader className="p-8">
                         <CardTitle className="flex items-center gap-2 text-emerald-400 uppercase italic tracking-tight"><Wand2 /> AI Scheduler</CardTitle>
-                        <CardDescription className="text-slate-400">Generate a conflict-free school schedule automatically based on Ghanaian institutional logic.</CardDescription>
+                        <CardDescription className="text-slate-400">Generate a conflict-free school schedule automatically based on institutional logic.</CardDescription>
                     </CardHeader>
                     <CardContent className="px-8 pb-8 space-y-8">
                         
-                        {/* READINESS CHECKLIST UI */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <ChecklistItem 
                                 icon={Clock} 
@@ -570,7 +592,6 @@ export default function TimetablePage() {
                             />
                         </div>
 
-                        {/* DIAGNOSTIC ALERTS */}
                         {!readiness.isFullyReady && (
                             <div className="space-y-4 animate-in fade-in duration-500">
                                 {readiness.missingSubjects.length > 0 && (
@@ -613,7 +634,7 @@ export default function TimetablePage() {
                             <div className="space-y-4">
                                 <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Custom Constraints</Label>
                                 <Textarea
-                                    placeholder="Add constraints: e.g., 'Math classes must be in the morning' or 'Teachers shouldn't have more than 3 classes a day'."
+                                    placeholder="Add constraints: e.g., 'Math classes must be in the morning'."
                                     value={customConstraint}
                                     onChange={(e) => setCustomConstraint(e.target.value)}
                                     className="bg-white/5 border-white/10 text-white min-h-[120px] rounded-2xl"
@@ -626,11 +647,6 @@ export default function TimetablePage() {
                                     {isGenerating ? <Loader2 className="mr-2 h-4 w-6 animate-spin" /> : <Wand2 className="mr-2 h-4 w-6" />}
                                     RUN AI SCHEDULER (-50 Credits)
                                 </Button>
-                                {!readiness.isFullyReady && (
-                                    <p className="text-center text-xs text-rose-400 font-bold animate-pulse uppercase tracking-tight">
-                                        Checklist must be complete to enable scheduler
-                                    </p>
-                                )}
                             </div>
                             
                             <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
@@ -640,15 +656,7 @@ export default function TimetablePage() {
                                 <ul className="space-y-3 text-[11px] font-medium text-slate-300">
                                     <li className="flex gap-2">
                                         <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                                        <span><strong>Lower Primary:</strong> Madam/Sir stays in the room for all core subjects.</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                                        <span><strong>JHS Rotation:</strong> Subject teachers move between classes based on availability.</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                                        <span><strong>Lab Routing:</strong> Science and ICT lessons are automatically moved to designated Labs.</span>
+                                        <span><strong>Auto-Skip Breaks:</strong> The AI will not assign subjects to any time slot marked as 'Break' or 'Lunch'.</span>
                                     </li>
                                     <li className="flex gap-2">
                                         <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />

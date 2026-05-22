@@ -228,7 +228,14 @@ export type Subject = {
     targetClasses?: string[];
 };
 export type Room = { id: string; name: string; capacity: number; isLab?: boolean };
-export type TimeSlot = { id: string; day: string; startTime: string; endTime: string };
+export type TimeSlot = { 
+  id: string; 
+  day: string; 
+  startTime: string; 
+  endTime: string; 
+  type?: 'Lesson' | 'Break' | 'Lunch' | 'Worship' | 'Event';
+  label?: string;
+};
 export type TimetableEntry = {
   id: string;
   classId: string;
