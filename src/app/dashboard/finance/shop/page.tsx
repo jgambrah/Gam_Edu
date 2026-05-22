@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -131,7 +130,7 @@ function EditItemDialog({ item, open, onOpenChange, onUpdateComplete }: { item: 
                             )} />
                             <FormField control={form.control} name="price" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Price (GH₵)</FormLabel>
+                                    <FormLabel>{"Price (GH₵)"}</FormLabel>
                                     <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -251,8 +250,8 @@ function ShopManager({ schoolId, onAddItem }: { schoolId: string; onAddItem: () 
             await addDoc(collection(firestore, 'school_shop_items'), {
                 name,
                 category,
-                price: parseFloat(price),
-                stock: parseInt(stock),
+                price: parseFloat(price) || 0,
+                stock: parseInt(stock) || 0,
                 minStock: 10, 
                 description: desc,
                 createdAt: serverTimestamp(),
@@ -293,7 +292,7 @@ function ShopManager({ schoolId, onAddItem }: { schoolId: string; onAddItem: () 
                     <div><Label>Item Name</Label><Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Lacoste Shirt (Large)" required/></div>
                     
                     <div className="grid grid-cols-2 gap-4">
-                        <div><Label>Price (GH₵)</Label><Input type="number" step="0.01" value={price} onChange={e => setPrice(e.target.value)} required/></div>
+                        <div><Label>{"Price (GH₵)"}</Label><Input type="number" step="0.01" value={price} onChange={e => setPrice(e.target.value)} required/></div>
                         <div><Label>Initial Stock</Label><Input type="number" value={stock} onChange={e => setStock(e.target.value)} required/></div>
                     </div>
 
@@ -621,5 +620,3 @@ export default function SchoolShopPage() {
         </>
     );
 }
-
-      

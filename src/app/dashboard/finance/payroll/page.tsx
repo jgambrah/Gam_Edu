@@ -193,7 +193,7 @@ function RemittanceReports({ schoolId }: { schoolId: string }) {
                     {/* SSNIT REPORT */}
                     <div className="space-y-4">
                         <div className="border-b pb-2">
-                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">SSNIT Remittance Schedule - {period}</h3>
+                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{"SSNIT Remittance Schedule - " + period}</h3>
                             <p className="text-sm text-slate-500">Tier 1 & Tier 2 Contributions (18.5% Total)</p>
                         </div>
                         <Table>
@@ -232,7 +232,7 @@ function RemittanceReports({ schoolId }: { schoolId: string }) {
                     {/* PAYE REPORT */}
                     <div className="space-y-4 pt-8 border-t-2">
                         <div className="border-b pb-2">
-                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PAYE Tax Remittance (GRA) - {period}</h3>
+                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{"PAYE Tax Remittance (GRA) - " + period}</h3>
                             <p className="text-sm text-slate-500">Monthly Individual Income Tax Summary</p>
                         </div>
                         <Table>
@@ -346,7 +346,7 @@ function PayrollHistory({ schoolId }: { schoolId: string }) {
             ) : records.length === 0 ? (
                 <div className="text-center py-20 bg-white border-2 border-dashed rounded-3xl">
                     <History className="mx-auto h-12 w-12 text-slate-200 mb-2"/>
-                    <p className="text-slate-500">No payroll records found for {period}.</p>
+                    <p className="text-slate-500">{"No payroll records found for " + period + "."}</p>
                 </div>
             ) : (
                 <>
@@ -500,7 +500,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
                 <Card className="animate-in slide-in-from-bottom-2 duration-500">
                     <CardHeader className="flex flex-row justify-between items-center bg-slate-50 border-b">
                         <div>
-                            <CardTitle>Approval Required: {month}</CardTitle>
+                            <CardTitle>{"Approval Required: " + month}</CardTitle>
                             <CardDescription>Review the net payouts before committing to the ledger.</CardDescription>
                         </div>
                         <Button onClick={handleCommit} disabled={isProcessing} className="bg-green-600 hover:bg-green-700 h-12 px-10 font-black shadow-lg shadow-green-900/10">
@@ -524,8 +524,8 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
                                     <TableRow key={p.staffId}>
                                         <TableCell className="font-bold">{p.staffName}</TableCell>
                                         <TableCell className="text-right text-slate-500">GH₵{(p.grossSalary || 0).toFixed(2)}</TableCell>
-                                        <TableCell className="text-right text-rose-500">-{p.statutory?.ssnitEmployee?.toFixed(2) || '0.00'}</TableCell>
-                                        <TableCell className="text-right text-rose-500">-{p.statutory?.paye?.toFixed(2) || '0.00'}</TableCell>
+                                        <TableCell className="text-right text-rose-500">{"-GH₵" + (p.statutory?.ssnitEmployee?.toFixed(2) || '0.00')}</TableCell>
+                                        <TableCell className="text-right text-rose-500">{"-GH₵" + (p.statutory?.paye?.toFixed(2) || '0.00')}</TableCell>
                                         <TableCell className="text-right font-black text-emerald-700">GH₵{(p.netSalary || 0).toFixed(2)}</TableCell>
                                     </TableRow>
                                 ))}

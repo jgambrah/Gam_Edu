@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -101,10 +102,10 @@ function LessonAssignmentDialog({
             const slot = timeSlots.find(ts => ts.id === form.timeSlotId);
             const data = {
                 timeSlotId: form.timeSlotId,
-                subjectId: form.subjectId,
-                teacherId: form.teacherId,
-                roomId: form.roomId,
-                classId,
+                subjectId: form.subjectId || null,
+                teacherId: form.teacherId || null,
+                roomId: form.roomId || null,
+                classId: classId || null,
                 schoolId,
                 day: slot?.day || '',
                 startTime: slot?.startTime || '',
@@ -669,7 +670,7 @@ export default function TimetablePage() {
             const newDocRef = doc(collection(firestore, 'timetables'));
             batch.set(newDocRef, { 
                 ...entry, 
-                schoolId,
+                schoolId: schoolId || null,
                 createdAt: serverTimestamp()
             });
           });
@@ -832,7 +833,7 @@ export default function TimetablePage() {
                                         <AlertTriangle className="h-4 w-4" />
                                         <AlertTitle className="font-bold">Missing Teachers</AlertTitle>
                                         <AlertDescription className="text-xs">
-                                            The following subjects need at least one teacher assigned in Academics &gt; Subjects:
+                                            The following subjects need at least one teacher assigned in Academics {`&gt;`} Subjects:
                                             <div className="flex flex-wrap gap-2 mt-2">
                                                 {readiness.missingSubjects.map(s => (
                                                     <Badge key={s.id} variant="secondary" className="bg-red-500/20 text-red-200 border-red-500/30">
@@ -849,7 +850,7 @@ export default function TimetablePage() {
                                         <MapPin className="h-4 w-4" />
                                         <AlertTitle className="font-bold">Missing Home Rooms</AlertTitle>
                                         <AlertDescription className="text-xs">
-                                            These classes need a 'Primary Room' assigned in Academics &gt; Classes:
+                                            These classes need a 'Primary Room' assigned in Academics {`&gt;`} Classes:
                                             <div className="flex flex-wrap gap-2 mt-2">
                                                 {readiness.missingRooms.map(c => (
                                                     <Badge key={c.id} variant="secondary" className="bg-orange-50/20 text-orange-200 border-orange-500/30">

@@ -287,7 +287,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                                                 {bill.type}
                                             </span>
                                         </TableCell>
-                                        <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
+                                        <TableCell>{"GH₵" + bill.amount.toFixed(2)}</TableCell>
                                         <TableCell className="text-muted-foreground text-xs">{bill.reason}</TableCell>
                                     </TableRow>
                                 ))}

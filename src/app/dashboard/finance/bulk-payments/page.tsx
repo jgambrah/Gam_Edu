@@ -297,7 +297,7 @@ export default function BulkDailyReceiptsPage() {
                     <div className="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl shadow-sm text-center min-w-[200px] animate-in zoom-in">
                         <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Total Batch Cash</p>
                         <p className="text-3xl font-black text-emerald-900">
-                            GH₵{pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)}
+                            {"GH₵" + pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)}
                         </p>
                     </div>
                 )}
@@ -431,7 +431,7 @@ export default function BulkDailyReceiptsPage() {
                                     <TableRow>
                                         <TableHead className="font-black text-[10px] uppercase tracking-widest">Student Name</TableHead>
                                         <TableHead className="font-black text-[10px] uppercase tracking-widest">Description</TableHead>
-                                        <TableHead className="text-right font-black text-[10px] uppercase tracking-widest">Due (GH₵)</TableHead>
+                                        <TableHead className="text-right font-black text-[10px] uppercase tracking-widest">{"Due (GH₵)"}</TableHead>
                                         <TableHead className="w-[180px] font-black text-[10px] uppercase tracking-widest">Cash Received</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -453,7 +453,7 @@ export default function BulkDailyReceiptsPage() {
                                                             value={paymentData[bill.id] ?? ''}
                                                             onChange={e => setPaymentData(prev => ({ 
                                                                 ...prev, 
-                                                                [bill.id]: e.target.value === '' ? 0 : Number(e.target.value) 
+                                                                [bill.id]: e.target.value === '' ? 0 : (parseFloat(e.target.value) || 0) 
                                                             }))}
                                                             className={cn(
                                                                 "font-black text-right pr-4 border-2 transition-all",
@@ -484,7 +484,7 @@ export default function BulkDailyReceiptsPage() {
                         <Button variant="ghost" className="font-bold text-slate-400" onClick={() => {setPendingBills([]); setPaymentData({}); setAuditSummary(null); setSearchTerm('');}}>Clear Batch</Button>
                         <Button onClick={handleProcessPayments} disabled={isProcessing} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 h-16 px-12 text-xl font-black rounded-2xl shadow-xl shadow-indigo-200 uppercase tracking-tighter">
                             {isProcessing ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <CheckCircle2 className="mr-2 h-6 w-6"/>}
-                            Receive GH₵{pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)}
+                            {"Receive GH₵" + pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)}
                         </Button>
                     </CardFooter>
                 </Card>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -182,7 +181,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                                 name="dailyRate"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Daily Fee (Flat) (GH₵)</FormLabel>
+                                        <FormLabel>{"Daily Fee (Flat) (GH₵)"}</FormLabel>
                                         <FormControl>
                                             <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
                                         </FormControl>
@@ -195,7 +194,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                                 name="termlyRate"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Termly Fee (Flat) (GH₵)</FormLabel>
+                                        <FormLabel>{"Termly Fee (Flat) (GH₵)"}</FormLabel>
                                         <FormControl>
                                             <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
                                         </FormControl>
@@ -219,7 +218,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                                                 name={`classRates.${c.id}`}
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel className="text-[10px] font-bold text-slate-500 uppercase">Daily Rate (GH₵)</FormLabel>
+                                                        <FormLabel className="text-[10px] font-bold text-slate-500 uppercase">{"Daily Rate (GH₵)"}</FormLabel>
                                                         <FormControl>
                                                             <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="bg-white" placeholder="0.00" />
                                                         </FormControl>
@@ -232,7 +231,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                                                 name={`classTermlyRates.${c.id}`}
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel className="text-[10px] font-bold text-slate-500 uppercase">Termly Rate (GH₵)</FormLabel>
+                                                        <FormLabel className="text-[10px] font-bold text-slate-500 uppercase">{"Termly Rate (GH₵)"}</FormLabel>
                                                         <FormControl>
                                                             <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="bg-white" placeholder="0.00" />
                                                         </FormControl>
@@ -323,7 +322,7 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
                             name="dailyRate"
                             render={({ field }) => (
                                 <FormItem className="flex-grow">
-                                    <FormLabel>Default Daily Transport Fee (GH₵)</FormLabel>
+                                    <FormLabel>{"Default Daily Transport Fee (GH₵)"}</FormLabel>
                                     <FormControl>
                                         <Input type="number" step="0.01" placeholder="e.g., 10.00" {...field} value={field.value ?? 0} disabled={isLoading} className="h-12 border-2" />
                                     </FormControl>

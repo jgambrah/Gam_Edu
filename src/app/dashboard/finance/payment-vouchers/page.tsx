@@ -273,7 +273,7 @@ function PaymentVoucherForm({
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <div className="space-y-2">
-                    <Label>Gross Amount (GH₵)</Label>
+                    <Label>{"Gross Amount (GH₵)"}</Label>
                     <Input type="number" step="0.01" {...form.register('grossAmount')} className="font-bold text-lg" />
                 </div>
                 <div className="space-y-2">
@@ -297,9 +297,9 @@ function PaymentVoucherForm({
             </div>
 
             <div className="grid grid-cols-3 gap-2 py-4 border-y border-dashed text-center">
-                <div><p className="text-[10px] uppercase text-slate-400 font-bold">VAT Added</p><p className="text-sm font-bold text-emerald-600">+GH₵{calculations.vat.toFixed(2)}</p></div>
-                <div><p className="text-[10px] uppercase text-slate-400 font-bold">WHT Deducted</p><p className="text-sm font-bold text-rose-600">-GH₵{calculations.wht.toFixed(2)}</p></div>
-                <div className="text-center bg-indigo-50 rounded-lg py-1"><p className="text-[10px] uppercase text-indigo-400 font-bold">Net Payable</p><p className="text-sm font-black text-indigo-700">GH₵{calculations.net.toFixed(2)}</p></div>
+                <div><p className="text-[10px] uppercase text-slate-400 font-bold">VAT Added</p><p className="text-sm font-bold text-emerald-600">{" +GH₵ " + calculations.vat.toFixed(2)}</p></div>
+                <div><p className="text-[10px] uppercase text-slate-400 font-bold">WHT Deducted</p><p className="text-sm font-bold text-rose-600">{" -GH₵ " + calculations.wht.toFixed(2)}</p></div>
+                <div className="text-center bg-indigo-50 rounded-lg py-1"><p className="text-[10px] uppercase text-indigo-400 font-bold">Net Payable</p><p className="text-sm font-black text-indigo-700">{" GH₵ " + calculations.net.toFixed(2)}</p></div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">

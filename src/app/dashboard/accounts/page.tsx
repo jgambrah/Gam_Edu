@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -106,8 +107,8 @@ function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: Financ
                         <FormField control={form.control} name="amount" render={({ field }) => {
                           return (
                             <FormItem>
-                                <FormLabel>Waiver Amount (GH₵)</FormLabel>
-                                <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))}/></FormControl>
+                                <FormLabel>{"Waiver Amount (GH₵)"}</FormLabel>
+                                <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl>
                                 <FormMessage />
                             </FormItem>
                           );
@@ -209,8 +210,8 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
                             <FormField control={form.control} name="billedAmount" render={({ field }) => {
                               return (
                                 <FormItem>
-                                    <FormLabel>Total Bill (GH₵)</Label>
-                                    <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))}/></FormControl>
+                                    <FormLabel>{"Total Bill (GH₵)"}</FormLabel>
+                                    <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl>
                                 </FormItem>
                               );
                             }}/>
@@ -642,7 +643,7 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
                     render={({ field }) => {
                       return (
                         <FormItem>
-                            <FormLabel>Amount (GH₵)</FormLabel>
+                            <FormLabel>{"Amount (GH₵)"}</FormLabel>
                             <FormControl>
                                 <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} />
                             </FormControl>
@@ -827,7 +828,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                     render={({ field }) => {
                       return (
                         <FormItem>
-                            <FormLabel>Amount per Student (GH₵)</FormLabel>
+                            <FormLabel>{"Amount per Student (GH₵)"}</FormLabel>
                             <FormControl>
                                 <Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))} />
                             </FormControl>
@@ -944,7 +945,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                         </div>
                         <FormField control={form.control} name="amount" render={({ field }) => {
                           return (
-                            <FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value))}/></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>{"Payment Amount (GH₵)"}</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl><FormMessage /></FormItem>
                           );
                         }}/>
                         <FormField control={form.control} name="method" render={({ field }) => {
@@ -1438,7 +1439,7 @@ export default function AccountsPage() {
                         
                         {activeForm === 'bulk' && schoolId && (
                             <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4 text-blue-900">Bulk Class Billing (Tuition/Levies)</h3>
+                                <h3 className="font-bold mb-4 text-blue-900">{"Bulk Class Billing (Tuition/Levies)"}</h3>
                                 <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
                         )}

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -367,7 +368,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
                     <CardContent className="h-[350px] p-8 pt-4">
                         {stats.revenueByType.length > 0 ? (
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={stats.revenueByType} layout="vertical" margin={{ left: 20 }}>
+                                <BarChart chartData={stats.revenueByType} layout="vertical" margin={{ left: 20 }}>
                                     <XAxis type="number" hide />
                                     <YAxis dataKey="name" type="category" fontSize={10} width={100} axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontWeight: 'bold'}} />
                                     <Tooltip 
