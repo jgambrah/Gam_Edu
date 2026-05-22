@@ -494,8 +494,6 @@ export default function AcademicsPageContent() {
                     s.classId === c.id && 
                     (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
                 ) || [];
-                const maleCount = classStudents.filter(s => s.gender === 'Male').length;
-                const femaleCount = classStudents.filter(s => s.gender === 'Female').length;
 
                 return (
                   <Card 

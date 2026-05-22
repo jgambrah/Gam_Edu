@@ -19,7 +19,7 @@ type TimetableDisplayProps = {
 export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlots, onEditEntry }: TimetableDisplayProps) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   
-  // Get unique start times for the row structure
+  // Get unique start times for the row structure, sorted numerically
   const uniqueTimePoints = useMemo(() => {
     return Array.from(new Set(timeSlots.map(ts => ts.startTime))).sort((a, b) => {
         return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
@@ -44,9 +44,8 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
                     const slotsAtTime = timeSlots.filter(ts => ts.startTime === startTime);
                     
                     // Logic: If all slots at this time across all 5 days are the same non-lesson type, render a unified bar.
-                    // This creates the "Lunch Bar" or "Break Bar" effect.
                     const firstSlot = slotsAtTime[0];
-                    const isUnifiedBar = firstSlot && (firstSlot.type === 'Break' || firstSlot.type === 'Lunch') && 
+                    const isUnifiedBar = firstSlot && (firstSlot.type === 'Break' || firstSlot.type === 'Lunch' || firstSlot.type === 'Worship') && 
                                        slotsAtTime.length >= 5 && 
                                        slotsAtTime.every(s => s.type === firstSlot.type);
 
@@ -70,13 +69,12 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
                                     const slot = timeSlots.find(ts => ts.day === day && ts.startTime === startTime);
                                     if (!slot) return <TableCell key={day} className="border-l bg-slate-50/10"></TableCell>;
 
-                                    // Render specific break/lunch cell if not unified
-                                    if (slot.type === 'Break' || slot.type === 'Lunch') {
+                                    if (slot.type === 'Break' || slot.type === 'Lunch' || slot.type === 'Worship') {
                                         return (
                                             <TableCell key={day} className="p-1 border-l align-middle text-center bg-slate-50/50">
-                                                <div className="flex flex-col items-center justify-center py-4">
-                                                    {slot.type === 'Break' ? <Coffee className="h-3 w-3 text-slate-300 mb-1" /> : <Utensils className="h-3 w-3 text-slate-300 mb-1" />}
-                                                    <span className="text-[8px] font-black uppercase text-slate-300 tracking-widest">{slot.type}</span>
+                                                <div className="flex flex-col items-center justify-center py-4 opacity-50">
+                                                    {slot.type === 'Break' ? <Coffee className="h-3 w-3 mb-1" /> : <Utensils className="h-3 w-3 mb-1" />}
+                                                    <span className="text-[8px] font-black uppercase tracking-widest">{slot.type}</span>
                                                 </div>
                                             </TableCell>
                                         );

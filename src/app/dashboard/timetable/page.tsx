@@ -100,7 +100,10 @@ function LessonAssignmentDialog({
         try {
             const slot = timeSlots.find(ts => ts.id === form.timeSlotId);
             const data = {
-                ...form,
+                timeSlotId: form.timeSlotId,
+                subjectId: form.subjectId,
+                teacherId: form.teacherId,
+                roomId: form.roomId,
                 classId,
                 schoolId,
                 day: slot?.day || '',
@@ -947,4 +950,3 @@ function ChecklistItem({ icon: Icon, title, status, desc }: { icon: any, title: 
         </div>
     );
 }
-

@@ -209,7 +209,7 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
                             <FormField control={form.control} name="billedAmount" render={({ field }) => {
                               return (
                                 <FormItem>
-                                    <FormLabel>Total Bill (GH₵)</FormLabel>
+                                    <FormLabel>Total Bill (GH₵)</Label>
                                     <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))}/></FormControl>
                                 </FormItem>
                               );
@@ -970,7 +970,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                             </FormItem>
                           );
                         }}/>
-                        <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
+                        <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Confirm Payment</Button>
                     </form>
                 </Form>
             </DialogContent>
