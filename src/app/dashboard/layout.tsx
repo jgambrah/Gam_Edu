@@ -16,7 +16,6 @@ import { AiChat } from '@/components/ai-chat';
 import { PushNotificationManager } from '@/components/PushNotificationManager';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { SpotCheckModal } from '@/components/hr/SpotCheckModal';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -177,7 +176,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       <AiChat />
-      <SpotCheckModal />
       <PushNotificationManager collectionName={collectionName} />
       <SchoolSetupWizard />
     </div>

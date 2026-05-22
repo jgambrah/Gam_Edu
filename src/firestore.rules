@@ -1,7 +1,25 @@
-// v1.9: [REDEPLOY] Consolidated spot_checks permissions and added role-based listener guards.
+// v2.1: [SECURITY PATCH] Explicitly handling spot_checks permission denial for staff roles.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // =========================================================
+    // 0. GLOBAL ALERT SYSTEM (SPOT CHECKS) - HIGH PRIORITY
+    // =========================================================
+    
+    match /spot_checks/{checkId} {
+        // Broadly allow all signed-in users to list and get checks for the liveness alert system.
+        allow read, list: if request.auth != null; 
+        allow create: if request.auth != null && (
+          exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin']
+        );
+        allow update: if request.auth != null; 
+        allow delete: if request.auth != null && (
+          exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin']
+        );
+    }
 
     // =========================================================
     // 1. HELPER FUNCTIONS
@@ -54,18 +72,6 @@ service cloud.firestore {
         isSuperAdmin() || 
         (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId)
       );
-    }
-
-    // =========================================================
-    // 2. SECURITY & AUDIT (SPOT CHECKS)
-    // =========================================================
-
-    match /spot_checks/{checkId} {
-        // Broadly allow all signed-in users to list and get checks for the liveness modal
-        allow read, list: if isSignedIn(); 
-        allow create: if isAdmin();
-        allow update: if isSignedIn(); 
-        allow delete: if isAdmin();
     }
 
     // =========================================================
