@@ -1,4 +1,4 @@
-// v2.1: [SECURITY PATCH] Explicitly handling spot_checks permission denial for staff roles.
+// v2.2: [SECURITY PATCH] Added Secretary and Receptionist roles to authorized staff lists.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -12,12 +12,12 @@ service cloud.firestore {
         allow read, list: if request.auth != null; 
         allow create: if request.auth != null && (
           exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && 
-          get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin']
+          get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin', 'Secretary']
         );
         allow update: if request.auth != null; 
         allow delete: if request.auth != null && (
           exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && 
-          get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin']
+          get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin', 'Secretary']
         );
     }
 
@@ -44,7 +44,7 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         isSuperAdmin() ||
-        getUserRole() in ['Director', 'Administrator', 'Admin']
+        getUserRole() in ['Director', 'Administrator', 'Admin', 'Secretary']
       );
     }
 
@@ -110,7 +110,7 @@ service cloud.firestore {
 
     match /staff/{staffId} {
       allow get: if (resource.data.showOnWebsite == true) || isSignedIn();
-      allow list: if (resource.data.showOnWebsite == true) || isAdmin() || isFinanceStaff() || isTransportStaff();
+      allow list: if (resource.data.showOnWebsite == true) || isAdmin() || isFinanceStaff() || isTransportStaff() || getUserRole() == 'Receptionist';
       allow write: if isAdmin() || isOwner(staffId);
       match /payroll/{configId} {
         allow read, write: if isFinanceStaff() || isAdmin();
