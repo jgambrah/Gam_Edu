@@ -16,6 +16,17 @@ import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -246,7 +257,7 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
     };
 
     const handleDelete = async (coll: string, id: string) => {
-        if (!firestore || !confirm("Permanently delete this entry?")) return;
+        if (!firestore) return;
         try {
             await deleteDoc(doc(firestore, coll, id));
             toast({ title: "Deleted" });
@@ -318,7 +329,23 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
                                         </div>
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button variant="ghost" size="icon" className="h-7 w-7 text-indigo-600" onClick={() => setEditingSlot(ts)}><Edit className="h-3.5 w-3.5"/></Button>
-                                            <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600" onClick={() => handleDelete('timeSlots', ts.id)}><Trash2 className="h-3.5 w-3.5"/></Button>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5"/></Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Delete Time Slot?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Are you sure you want to remove the {ts.startTime} slot on {ts.day}? This may affect existing scheduled lessons.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleDelete('timeSlots', ts.id)} className="bg-red-600">Confirm Delete</AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
                                         </div>
                                     </div>
                                 );
@@ -417,10 +444,12 @@ function TimetableConfigRooms({ schoolId, rooms, onRefresh }: { schoolId: string
     };
 
     const handleDelete = async (id: string) => {
-        if (!firestore || !confirm("Delete this room?")) return;
-        await deleteDoc(doc(firestore, 'rooms', id));
-        toast({ title: "Deleted" });
-        onRefresh();
+        if (!firestore) return;
+        try {
+            await deleteDoc(doc(firestore, 'rooms', id));
+            toast({ title: "Deleted" });
+            onRefresh();
+        } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
     };
 
     return (
@@ -440,7 +469,21 @@ function TimetableConfigRooms({ schoolId, rooms, onRefresh }: { schoolId: string
                             {r.name}
                             {r.isLab && <Badge variant="outline" className="text-[8px] bg-orange-50 text-orange-700 h-4 uppercase border-orange-200">Lab</Badge>}
                         </span>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDelete(r.id)}><Trash2 className="h-3.5 w-3.5"/></Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-3.5 w-3.5"/></Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Remove Room?</AlertDialogTitle>
+                                    <AlertDialogDescription>Permanently delete <strong>{r.name}</strong> from the school's room directory?</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(r.id)} className="bg-red-600">Confirm Delete</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 ))}
             </div>
@@ -523,7 +566,6 @@ export default function TimetablePage() {
         allowedTeacherIds: s.teacherIds || []
       })) || [];
 
-      // Pass slots correctly grouped for AI logic
       const input = {
         teachers: allTeachers.map(t => ({ id: t.uid, name: `${t.firstName} ${t.lastName}` })),
         subjects: enrichedSubjects,
@@ -580,7 +622,6 @@ export default function TimetablePage() {
 
   const filteredTimeSlots = useMemo(() => {
       if (!timeSlots || !selectedClassId) return [];
-      // Show slots that are EITHER Global (classId is null) OR assigned to this class
       return timeSlots.filter(ts => !ts.classId || ts.classId === selectedClassId);
   }, [timeSlots, selectedClassId]);
 
