@@ -1,7 +1,26 @@
-// v1.9: [REDEPLOY] Consolidated spot_checks permissions and added role-based listener guards.
+// v2.0: [REINTRODUCE] Re-enabling spot_checks with high-priority permissions.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // =========================================================
+    // 0. GLOBAL ALERT SYSTEM (SPOT CHECKS) - HIGHEST PRIORITY
+    // =========================================================
+    
+    match /spot_checks/{checkId} {
+        // Explicitly allow all signed-in users to list and get checks for the liveness alert system.
+        // This is isolated from role-based logic to ensure Accountants, Teachers, etc. can always respond.
+        allow read, list: if request.auth != null; 
+        allow create: if request.auth != null && (
+          exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin']
+        );
+        allow update: if request.auth != null; 
+        allow delete: if request.auth != null && (
+          exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin']
+        );
+    }
 
     // =========================================================
     // 1. HELPER FUNCTIONS
@@ -54,18 +73,6 @@ service cloud.firestore {
         isSuperAdmin() || 
         (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId == schoolId)
       );
-    }
-
-    // =========================================================
-    // 2. SECURITY & AUDIT (SPOT CHECKS)
-    // =========================================================
-
-    match /spot_checks/{checkId} {
-        // Broadly allow all signed-in users to list and get checks for the liveness modal
-        allow read, list: if isSignedIn(); 
-        allow create: if isAdmin();
-        allow update: if isSignedIn(); 
-        allow delete: if isAdmin();
     }
 
     // =========================================================
@@ -367,6 +374,11 @@ service cloud.firestore {
     }
 
     match /products/{productId} {
+      allow read, list: if isSignedIn();
+      allow write: if isFinanceStaff();
+    }
+
+    match /products_v2/{productId} {
       allow read, list: if isSignedIn();
       allow write: if isFinanceStaff();
     }
