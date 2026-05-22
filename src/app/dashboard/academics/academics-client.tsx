@@ -64,6 +64,7 @@ import { TimetableDisplay } from '../timetable/timetable-display';
 import { StudentDisplay } from '@/components/student-display';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const classSchema = z.object({
   name: z.string().min(1, "Class name is required"),
@@ -322,15 +323,25 @@ export default function AcademicsPageContent() {
     if (!firestore || !schoolId) return;
     setIsSubmitting(true);
     try {
+        // Normalize undefined fields to null for Firestore
+        const normalizedValues = {
+            name: values.name,
+            description: values.description || null,
+            teacherId: values.teacherId === 'unassigned' ? null : (values.teacherId || null),
+            capacity: values.capacity,
+            homeRoomId: values.homeRoomId || null,
+            teachingModel: values.teachingModel,
+        };
+
         if (editingClass) {
-            await updateDoc(doc(firestore, 'classes', editingClass.id), {
-                ...values,
+            updateDocumentNonBlocking(doc(firestore, 'classes', editingClass.id), {
+                ...normalizedValues,
                 updatedAt: serverTimestamp(),
             });
             toast({ title: "Class Updated", description: `"${values.name}" has been modified.` });
         } else {
             await addDoc(collection(firestore, 'classes'), {
-                ...values,
+                ...normalizedValues,
                 schoolId,
                 createdAt: serverTimestamp(),
             });

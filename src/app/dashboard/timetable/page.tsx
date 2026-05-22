@@ -35,6 +35,7 @@ import TimetableSeeder from '@/components/TimetableSeeder';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
@@ -109,7 +110,7 @@ function LessonAssignmentDialog({
             };
 
             if (editingEntry) {
-                await updateDoc(doc(firestore, 'timetables', editingEntry.id), data);
+                updateDocumentNonBlocking(doc(firestore, 'timetables', editingEntry.id), data);
                 toast({ title: "Assignment Updated" });
             } else {
                 await addDoc(collection(firestore, 'timetables'), {
@@ -260,12 +261,12 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
         if (!firestore) return;
         setLoading(true);
         try {
-            await updateDoc(doc(firestore, 'timeSlots', slot.id), {
+            updateDocumentNonBlocking(doc(firestore, 'timeSlots', slot.id), {
                 type: slot.type,
                 startTime: slot.startTime,
                 endTime: slot.endTime,
                 day: slot.day,
-                classId: slot.classId === 'all' ? null : slot.classId,
+                classId: (slot.classId === 'all' || !slot.classId) ? null : slot.classId,
             });
             toast({ title: "Slot Updated" });
             setEditingSlot(null);
@@ -946,3 +947,4 @@ function ChecklistItem({ icon: Icon, title, status, desc }: { icon: any, title: 
         </div>
     );
 }
+
