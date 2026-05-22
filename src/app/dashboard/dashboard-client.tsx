@@ -486,7 +486,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
                     <CardContent className="h-[350px] p-8 pt-4">
                         {stats.revenueByType.length > 0 ? (
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart chartData={stats.revenueByType} layout="vertical" margin={{ left: 20 }}>
+                                <BarChart data={stats.revenueByType} layout="vertical" margin={{ left: 20 }}>
                                     <XAxis type="number" hide />
                                     <YAxis dataKey="name" type="category" fontSize={10} width={100} axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontWeight: 'bold'}} />
                                     <Tooltip 
@@ -940,14 +940,14 @@ export default function DashboardClient() {
   const { user } = useUser();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
-  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff', 'Librarian', 'Cook', 'Cleaner', 'Security Officer', 'Secretary', 'Receptionist'].includes(role || '');
+  const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer', 'Secretary', 'Receptionist'].includes(role || '');
   const isParent = role === 'Parent';
   const isAccountant = role === 'Accountant';
   const isTransportStaff = role === 'Transport Staff';
   const isSecretary = role === 'Secretary';
   const isReceptionist = role === 'Receptionist';
   const isAdmin = ['Administrator', 'Director'].includes(role || '');
-  const canListStaff = ['Administrator', 'Director', 'Accountant', 'Secretary'].includes(role || '');
+  const canListStaff = ['Administrator', 'Director', 'Accountant', 'Secretary', 'Receptionist'].includes(role || '');
   const isSupportStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook' || role === 'Transport Staff';
 
   // Core Data Queries
