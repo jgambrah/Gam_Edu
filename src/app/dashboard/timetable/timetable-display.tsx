@@ -13,7 +13,7 @@ type TimetableDisplayProps = {
   teachers: Teacher[];
   rooms: Room[];
   timeSlots: TimeSlot[];
-  onEditEntry?: (entry: TimetableEntry) => void; // New prop for editing
+  onEditEntry?: (entry: TimetableEntry) => void; 
 };
 
 export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlots, onEditEntry }: TimetableDisplayProps) {

@@ -447,12 +447,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                         <div className="space-y-3">
                             <div className="relative">
                                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input 
-                                    placeholder="Search student in class..." 
-                                    className="pl-8 h-9" 
-                                    value={studentSearch} 
-                                    onChange={e => setStudentSearch(e.target.value)} 
-                                />
+                                <StudentSearchInput value={studentSearch} onChange={setStudentSearch} placeholder="Search student in class..." className="pl-8 h-9" />
                             </div>
                             <div className="border rounded-md max-h-[300px] overflow-y-auto p-2 bg-slate-50/50">
                                 <div className="flex items-center gap-2 p-2 border-b mb-2 sticky top-0 bg-white z-10">
