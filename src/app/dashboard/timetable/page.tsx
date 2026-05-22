@@ -11,7 +11,7 @@ import { TimeSlot, TimetableEntry, Subject, Room, Student, Class } from '@/lib/t
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle, RefreshCw, AlertTriangle, Save, BookCopy } from 'lucide-react';
+import { Loader2, Wand2, Plus, Trash2, CalendarDays, Info, Settings2, Clock, MapPin, CheckCircle2, XCircle, RefreshCw, AlertTriangle, Save, BookCopy, Edit } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
@@ -204,7 +204,7 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
     const [loading, setLoading] = useState(false);
 
     const [newSlot, setNewSlot] = useState({ day: 'Monday', start: '08:00', end: '08:45', type: 'Lesson' as any });
-    const [newRoom, setNewRoom] = useState({ name: '', isLab: false });
+    const [editingSlot, setEditingSlot] = useState<TimeSlot | null>(null);
 
     const handleAddSlot = async () => {
         if (!firestore || !schoolId) return;
@@ -225,6 +225,152 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
         finally { setLoading(false); }
     };
 
+    const handleUpdateSlot = async (slot: TimeSlot) => {
+        if (!firestore) return;
+        setLoading(true);
+        try {
+            await updateDoc(doc(firestore, 'timeSlots', slot.id), {
+                type: slot.type,
+                startTime: slot.startTime,
+                endTime: slot.endTime,
+                day: slot.day
+            });
+            toast({ title: "Slot Updated" });
+            setEditingSlot(null);
+            onRefresh();
+        } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
+        finally { setLoading(false); }
+    };
+
+    const handleDelete = async (coll: string, id: string) => {
+        if (!firestore || !confirm("Permanently delete this entry?")) return;
+        try {
+            await deleteDoc(doc(firestore, coll, id));
+            toast({ title: "Deleted" });
+            onRefresh();
+        } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
+    };
+
+    return (
+        <div className="space-y-8 animate-in fade-in">
+            <TimetableSeeder />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4"/> Schedule Intervals</CardTitle>
+                        <CardDescription>Define periods, breaks, and lunch times.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-3 p-4 bg-slate-50 rounded-2xl border">
+                            <Label className="text-[10px] font-black uppercase text-slate-400">Add New Period</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                                <Select value={newSlot.day} onValueChange={(v) => setNewSlot({...newSlot, day: v})}>
+                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <Select value={newSlot.type} onValueChange={(v) => setNewSlot({...newSlot, type: v})}>
+                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Lesson">Lesson</SelectItem>
+                                        <SelectItem value="Break">Short Break</SelectItem>
+                                        <SelectItem value="Lunch">Lunch</SelectItem>
+                                        <SelectItem value="Event">Event</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                                <Input type="time" value={newSlot.start} onChange={e => setNewSlot({...newSlot, start: e.target.value})} className="h-9 text-xs bg-white" />
+                                <Input type="time" value={newSlot.end} onChange={e => setNewSlot({...newSlot, end: e.target.value})} className="h-9 text-xs bg-white" />
+                                <Button onClick={handleAddSlot} disabled={loading} size="sm" className="h-9 bg-indigo-600"><Plus className="h-4 w-4"/></Button>
+                            </div>
+                        </div>
+                        
+                        <div className="max-h-[400px] overflow-y-auto space-y-1 pr-2">
+                            {timeSlots.sort((a,b) => {
+                                const dayMap: any = { 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5 };
+                                if (dayMap[a.day] !== dayMap[b.day]) return dayMap[a.day] - dayMap[b.day];
+                                return a.startTime.localeCompare(b.startTime);
+                            }).map(ts => (
+                                <div key={ts.id} className="flex items-center justify-between p-3 text-xs border rounded-xl hover:bg-slate-50 group">
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="outline" className="text-[10px] w-12 justify-center">{ts.day.substring(0,3)}</Badge>
+                                        <span className="font-bold">{ts.startTime} - {ts.endTime}</span>
+                                        <Badge variant="secondary" className={cn("text-[9px] uppercase", ts.type === 'Break' ? "bg-orange-100 text-orange-700" : ts.type === 'Lunch' ? "bg-green-100 text-green-700" : "")}>
+                                            {ts.type || 'Lesson'}
+                                        </Badge>
+                                    </div>
+                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-indigo-600" onClick={() => setEditingSlot(ts)}><Edit className="h-3.5 w-3.5"/></Button>
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600" onClick={() => handleDelete('timeSlots', ts.id)}><Trash2 className="h-3.5 w-3.5"/></Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-sm font-bold flex items-center gap-2"><MapPin className="h-4 w-4"/> Physical Locations</CardTitle>
+                        <CardDescription>Rooms, labs, and fields.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <TimetableConfigRooms schoolId={schoolId} rooms={rooms} onRefresh={onRefresh} />
+                    </CardContent>
+                </Card>
+            </div>
+
+            {editingSlot && (
+                <Dialog open={!!editingSlot} onOpenChange={() => setEditingSlot(null)}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader><DialogTitle>Edit Time Slot</DialogTitle></DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Day</Label>
+                                    <Select value={editingSlot.day} onValueChange={(v) => setEditingSlot({...editingSlot, day: v})}>
+                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectContent>{['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Type</Label>
+                                    <Select value={editingSlot.type} onValueChange={(v: any) => setEditingSlot({...editingSlot, type: v})}>
+                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Lesson">Lesson</SelectItem>
+                                            <SelectItem value="Break">Short Break</SelectItem>
+                                            <SelectItem value="Lunch">Lunch</SelectItem>
+                                            <SelectItem value="Event">Event</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2"><Label>Start Time</Label><Input type="time" value={editingSlot.startTime} onChange={e => setEditingSlot({...editingSlot, startTime: e.target.value})} /></div>
+                                <div className="space-y-2"><Label>End Time</Label><Input type="time" value={editingSlot.endTime} onChange={e => setEditingSlot({...editingSlot, endTime: e.target.value})} /></div>
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setEditingSlot(null)}>Cancel</Button>
+                            <Button onClick={() => handleUpdateSlot(editingSlot)}>Save Changes</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
+        </div>
+    );
+}
+
+function TimetableConfigRooms({ schoolId, rooms, onRefresh }: { schoolId: string, rooms: Room[], onRefresh: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [loading, setLoading] = useState(false);
+    const [newRoom, setNewRoom] = useState({ name: '', isLab: false });
+
     const handleAddRoom = async () => {
         if (!firestore || !schoolId || !newRoom.name) return;
         setLoading(true);
@@ -242,88 +388,33 @@ function TimetableConfig({ schoolId, timeSlots, rooms, onRefresh }: { schoolId: 
         finally { setLoading(false); }
     };
 
-    const handleDelete = async (coll: string, id: string) => {
-        if (!firestore) return;
-        await deleteDoc(doc(firestore, coll, id));
+    const handleDelete = async (id: string) => {
+        if (!firestore || !confirm("Delete this room?")) return;
+        await deleteDoc(doc(firestore, 'rooms', id));
         toast({ title: "Deleted" });
         onRefresh();
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in">
-            <TimetableSeeder />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4"/> Schedule Intervals</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-3 p-3 bg-slate-50 rounded-xl border">
-                            <div className="grid grid-cols-2 gap-2">
-                                <Select value={newSlot.day} onValueChange={(v) => setNewSlot({...newSlot, day: v})}>
-                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                                <Select value={newSlot.type} onValueChange={(v) => setNewSlot({...newSlot, type: v})}>
-                                    <SelectTrigger className="h-9 text-xs bg-white"><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Lesson">Academic Lesson</SelectItem>
-                                        <SelectItem value="Break">Short Break</SelectItem>
-                                        <SelectItem value="Lunch">Lunch Break</SelectItem>
-                                        <SelectItem value="Event">General Event</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                                <Input type="time" value={newSlot.start} onChange={e => setNewSlot({...newSlot, start: e.target.value})} className="h-9 text-xs bg-white" />
-                                <Input type="time" value={newSlot.end} onChange={e => setNewSlot({...newSlot, end: e.target.value})} className="h-9 text-xs bg-white" />
-                                <Button onClick={handleAddSlot} disabled={loading} size="sm" className="h-9"><Plus className="h-3 w-3"/></Button>
-                            </div>
-                        </div>
-                        <div className="max-h-[300px] overflow-y-auto space-y-1">
-                            {timeSlots.sort((a,b) => a.startTime.localeCompare(b.startTime)).map(ts => (
-                                <div key={ts.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-bold">{ts.day.substring(0,3)}:</span>
-                                        <span>{ts.startTime} - {ts.endTime}</span>
-                                        <Badge variant="outline" className="text-[8px] uppercase">{ts.type || 'Lesson'}</Badge>
-                                    </div>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('timeSlots', ts.id)}><Trash2 className="h-3 w-3"/></Button>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-sm font-bold flex items-center gap-2"><MapPin className="h-4 w-4"/> School Rooms</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-3 p-3 bg-slate-50 rounded-xl border">
-                            <Input placeholder="Room Name..." value={newRoom.name} onChange={e => setNewRoom({...newRoom, name: e.target.value})} className="h-9 text-xs bg-white" />
-                            <div className="flex items-center justify-between px-2">
-                                <Label className="text-[10px] uppercase font-black text-slate-500">Specialized Lab?</Label>
-                                <Switch checked={newRoom.isLab} onCheckedChange={(v) => setNewRoom({...newRoom, isLab: v})} />
-                            </div>
-                            <Button onClick={handleAddRoom} disabled={loading || !newRoom.name} size="sm" className="h-9 w-full">Add Room</Button>
-                        </div>
-                        <div className="max-h-[300px] overflow-y-auto space-y-1">
-                            {rooms.map(r => (
-                                <div key={r.id} className="flex items-center justify-between p-2 text-xs border rounded hover:bg-slate-50">
-                                    <span className="flex items-center gap-2">
-                                        {r.name}
-                                        {r.isLab && <Badge variant="outline" className="text-[8px] bg-orange-50 text-orange-700 h-4 uppercase">Lab</Badge>}
-                                    </span>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete('rooms', r.id)}><Trash2 className="h-3 w-3"/></Button>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+        <div className="space-y-4">
+            <div className="space-y-3 p-4 bg-slate-50 rounded-2xl border">
+                <Input placeholder="Room Name..." value={newRoom.name} onChange={e => setNewRoom({...newRoom, name: e.target.value})} className="h-10 text-sm bg-white" />
+                <div className="flex items-center justify-between px-2">
+                    <Label className="text-[10px] uppercase font-black text-slate-500">Specialized Lab?</Label>
+                    <Switch checked={newRoom.isLab} onCheckedChange={(v) => setNewRoom({...newRoom, isLab: v})} />
+                </div>
+                <Button onClick={handleAddRoom} disabled={loading || !newRoom.name} size="sm" className="w-full bg-indigo-600 h-10">Add Room</Button>
+            </div>
+            <div className="max-h-[300px] overflow-y-auto space-y-1">
+                {rooms.map(r => (
+                    <div key={r.id} className="flex items-center justify-between p-3 text-sm border rounded-xl hover:bg-slate-50 group">
+                        <span className="flex items-center gap-2 font-medium">
+                            {r.name}
+                            {r.isLab && <Badge variant="outline" className="text-[8px] bg-orange-50 text-orange-700 h-4 uppercase border-orange-200">Lab</Badge>}
+                        </span>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDelete(r.id)}><Trash2 className="h-3.5 w-3.5"/></Button>
+                    </div>
+                ))}
             </div>
         </div>
     );
@@ -404,7 +495,7 @@ export default function TimetablePage() {
         allowedTeacherIds: s.teacherIds || []
       })) || [];
 
-      // IMPORTANT: Filter out Breaks/Lunch so the AI doesn't try to schedule them.
+      // Filter out non-lesson slots
       const academicTimeSlots = timeSlots?.filter(ts => ts.type === 'Lesson' || !ts.type);
 
       const input = {
@@ -429,7 +520,6 @@ export default function TimetablePage() {
 
       const batch = writeBatch(firestore);
 
-      // Clean existing data for this school
       if(timetable) {
           timetable.forEach(entry => {
             batch.delete(doc(firestore, 'timetables', entry.id));
@@ -619,7 +709,7 @@ export default function TimetablePage() {
                                             These classes need a 'Primary Room' assigned in Academics &gt; Classes:
                                             <div className="flex flex-wrap gap-2 mt-2">
                                                 {readiness.missingRooms.map(c => (
-                                                    <Badge key={c.id} variant="secondary" className="bg-orange-500/20 text-orange-200 border-orange-500/30">
+                                                    <Badge key={c.id} variant="secondary" className="bg-orange-50/20 text-orange-200 border-orange-500/30">
                                                         {c.name}
                                                     </Badge>
                                                 ))}

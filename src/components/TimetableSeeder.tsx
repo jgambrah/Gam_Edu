@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -25,12 +24,12 @@ export default function TimetableSeeder() {
     try {
       const batch = writeBatch(firestore);
 
-      // 1. Create Standard Time Slots (8 periods)
+      // 1. Create Standard Time Slots (Typical 8 AM - 1 PM day)
       const times = [
         { startTime: '08:00', endTime: '08:45', type: 'Lesson' },
         { startTime: '08:45', endTime: '09:30', type: 'Lesson' },
         { startTime: '09:30', endTime: '10:15', type: 'Lesson' },
-        { startTime: '10:15', endTime: '10:45', type: 'Break' }, // Break
+        { startTime: '10:15', endTime: '10:45', type: 'Break' },
         { startTime: '10:45', endTime: '11:30', type: 'Lesson' },
         { startTime: '11:30', endTime: '12:15', type: 'Lesson' },
         { startTime: '12:15', endTime: '13:00', type: 'Lesson' },
@@ -56,12 +55,13 @@ export default function TimetableSeeder() {
       });
 
       // 2. Create Standard Rooms with schoolId stamp
-      const rooms = ['Room 101', 'Room 102', 'Room 103', 'Science Lab', 'Library', 'Art Studio'];
+      const rooms = ['Room 101', 'Room 102', 'Science Lab', 'Library', 'Field'];
       rooms.forEach(roomName => {
           const ref = doc(collection(firestore, 'rooms'));
           batch.set(ref, { 
               name: roomName, 
               capacity: 30,
+              isLab: roomName.toLowerCase().includes('lab'),
               schoolId: schoolId
           });
       });
@@ -83,12 +83,12 @@ export default function TimetableSeeder() {
         <Clock className="h-4 w-4"/> Timetable Setup
       </h3>
       <p className="text-sm text-blue-700 mb-3">
-        Click this to create standard Time Slots (8:00 AM - 1:00 PM) and Rooms for your school. 
-        This is required before generating a timetable.
+        The system is currently using standard 10:15 AM breaks. Use this tool to reset your school to a standard 8:00 AM - 1:00 PM schedule. 
+        You can then edit any specific slot in the list below.
       </p>
       <Button onClick={seedData} disabled={loading} className="bg-blue-600 hover:bg-blue-700 w-full">
         {loading ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Database className="mr-2 h-4 w-4" />}
-        Initialize Time Slots & Rooms
+        Reset to Standard Intervals
       </Button>
     </div>
   );
