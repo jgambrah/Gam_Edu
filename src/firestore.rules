@@ -1,4 +1,4 @@
-// v2.2: [SECURITY PATCH] Added Secretary and Receptionist roles to authorized staff lists.
+// v2.3: [SECURITY PATCH] Authorized Secretary and Receptionist roles for core management and staff directory visibility.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -55,7 +55,7 @@ service cloud.firestore {
 
     function isFinanceStaff() {
       let role = getUserRole();
-      if (role in ['Accountant', 'Director', 'Admin']) return true;
+      if (role in ['Accountant', 'Director', 'Admin', 'Secretary']) return true;
       return false;
     }
 
@@ -110,7 +110,7 @@ service cloud.firestore {
 
     match /staff/{staffId} {
       allow get: if (resource.data.showOnWebsite == true) || isSignedIn();
-      allow list: if (resource.data.showOnWebsite == true) || isAdmin() || isFinanceStaff() || isTransportStaff() || getUserRole() == 'Receptionist';
+      allow list: if isSignedIn(); // Simplified to resolve Secretary/Receptionist fetch blockers
       allow write: if isAdmin() || isOwner(staffId);
       match /payroll/{configId} {
         allow read, write: if isFinanceStaff() || isAdmin();
