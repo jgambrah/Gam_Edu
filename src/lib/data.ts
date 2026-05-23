@@ -152,7 +152,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/staff-management-v2',
             title: 'Staff Management',
             icon: UserCog,
-            roles: ['Director', 'Administrator', 'Secretary'],
+            roles: ['Director', 'Administrator'],
         },
         {
             path: '/dashboard/students-v3',
@@ -356,7 +356,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/hr/staff-attendance-records',
             title: 'Staff Attendance Records',
             icon: CalendarCheck,
-            roles: ['Director', 'Administrator', 'Secretary'],
+            roles: ['Director', 'Administrator'],
         },
         {
             path: '/dashboard/hr/leave-management',

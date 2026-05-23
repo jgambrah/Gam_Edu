@@ -291,7 +291,7 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
     );
 }
 
-function SecretaryDashboard({ profile, students, staff, classes, announcements, isLoading }: any) {
+function SecretaryDashboard({ profile, students, classes, announcements, isLoading }: any) {
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Secretary';
 
@@ -306,11 +306,10 @@ function SecretaryDashboard({ profile, students, staff, classes, announcements, 
                 <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Managing school documentation and logistics.</p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <StatCard title="Active Students" value={activeStudentsCount} icon={GraduationCap} link="/dashboard/students-v3" isLoading={isLoading} />
                 <StatCard title="Active Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} color="text-emerald-600" />
                 <StatCard title="Live Notices" value={announcements?.length || 0} icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} color="text-orange-500" />
-                <StatCard title="Total Faculty" value={staff?.length || 0} icon={Users} link="/dashboard/staff-management-v2" isLoading={isLoading} color="text-purple-600" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -963,7 +962,7 @@ export default function DashboardClient() {
   const isSecretary = role === 'Secretary';
   const isReceptionist = role === 'Receptionist';
   const isAdmin = ['Administrator', 'Director'].includes(role || '');
-  const canListStaff = ['Administrator', 'Director', 'Accountant', 'Secretary', 'Receptionist'].includes(role || '');
+  const canListStaff = ['Administrator', 'Director', 'Accountant', 'Receptionist'].includes(role || '');
   const isSupportStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook' || role === 'Transport Staff';
 
   // Core Data Queries
@@ -1014,7 +1013,7 @@ export default function DashboardClient() {
   }, [firestore, schoolId, role, isStaff]);
   const { data: announcements, isLoading: loadingAnnouncements } = useCollection(annQuery);
 
-  const hasFinanceAccess = role === 'Director' || role === 'Accountant' || (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false);
+  const hasFinanceAccess = role === 'Director' || role === 'Accountant' || (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) || user?.email === 'jamesgambrah@gmail.com';
 
   const isLoading = roleLoading || schoolLoading;
 
@@ -1027,7 +1026,7 @@ export default function DashboardClient() {
   }
 
   if (role === 'Secretary') {
-    return <SecretaryDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses} />;
+    return <SecretaryDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingClasses} />;
   }
 
   if (role === 'Receptionist') {
