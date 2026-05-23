@@ -110,7 +110,7 @@ service cloud.firestore {
 
     match /staff/{staffId} {
       allow get: if (resource.data.showOnWebsite == true) || isSignedIn();
-      allow list: if (resource.data.showOnWebsite == true) || isAdmin() || isFinanceStaff() || isTransportStaff();
+      allow list: if (resource.data.showOnWebsite == true) || isAdmin() || isFinanceStaff() || isTransportStaff() || getUserRole() == 'Receptionist';
       allow write: if isAdmin() || isOwner(staffId);
       match /payroll/{configId} {
         allow read, write: if isFinanceStaff() || isAdmin();
