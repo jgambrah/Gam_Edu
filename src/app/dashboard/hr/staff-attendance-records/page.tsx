@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { 
     Clock, Loader2, Calendar as CalendarIcon, 
     Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight, Camera, 
-    XCircle
+    XCircle, ShieldCheck
 } from 'lucide-react';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { DateRange } from 'react-day-picker';
