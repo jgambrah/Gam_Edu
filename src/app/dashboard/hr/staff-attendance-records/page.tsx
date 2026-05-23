@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, limit, startOfDay, endOfDay } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -18,7 +18,7 @@ import {
     Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight, Camera, 
     XCircle
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -36,7 +36,7 @@ export default function StaffAttendanceRecordsPage() {
   const [selectedStaffId, setSelectedStaffId] = useState<string>('all');
   const [photoToView, setPhotoToView] = useState<string | null>(null);
 
-  const canAccess = role === 'Director' || role === 'Administrator';
+  const canAccess = role === 'Director' || role === 'Administrator' || role === 'Secretary';
 
   // --- DATA FETCHING (Guarded by canAccess) ---
   const staffQuery = useMemoFirebase(() =>
@@ -181,7 +181,7 @@ export default function StaffAttendanceRecordsPage() {
                       const logDate = log.timestamp?.toDate ? log.timestamp.toDate() : new Date();
                       
                       return (
-                          <TableRow key={log.id} className={cn("hover:bg-slate-50 transition-colors h-20", (log.isIdentityFlagged || log.isFlagged) && "bg-red-50/10")}>
+                          <TableRow key={log.id} className={cn("hover:bg-slate-50/50 transition-colors h-20", (log.isIdentityFlagged || log.isFlagged) && "bg-red-50/10")}>
                               <TableCell className="pl-8">
                                   <div className="font-black text-slate-800 uppercase tracking-tight">{log.staffName}</div>
                                   <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">ID: {log.staffId.slice(0, 8)}</div>
