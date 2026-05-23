@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -245,21 +246,21 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
                             <Link href="/dashboard/students-v3" className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-indigo-500/20 rounded-xl"><PlusCircle className="h-4 w-4 text-indigo-300"/></div>
-                                    <span className="text-sm font-bold uppercase tracking-tight">Onboard Student</span>
+                                    <span className="text-sm font-bold uppercase tracking-tight text-white">Onboard Student</span>
                                 </div>
                                 <ChevronRight className="h-4 w-4 text-white/20 group-hover:translate-x-1 transition-transform"/>
                             </Link>
                             <Link href="/dashboard/academics/gradebook/manual-entry" className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-orange-500/20 rounded-xl"><FileText className="h-4 w-4 text-orange-300"/></div>
-                                    <span className="text-sm font-bold uppercase tracking-tight">Audit Gradebook</span>
+                                    <span className="text-sm font-bold uppercase tracking-tight text-white">Audit Gradebook</span>
                                 </div>
                                 <ChevronRight className="h-4 w-4 text-white/20 group-hover:translate-x-1 transition-transform"/>
                             </Link>
                             <Link href="/dashboard/admin/migration" className="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-emerald-500/20 rounded-xl"><Database className="h-4 w-4 text-emerald-300"/></div>
-                                    <span className="text-sm font-bold uppercase tracking-tight">Data Import Hub</span>
+                                    <span className="text-sm font-bold uppercase tracking-tight text-white">Data Import Hub</span>
                                 </div>
                                 <ChevronRight className="h-4 w-4 text-white/20 group-hover:translate-x-1 transition-transform"/>
                             </Link>
@@ -291,13 +292,19 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
     );
 }
 
-function SecretaryDashboard({ profile, students, classes, announcements, isLoading }: any) {
+function SecretaryDashboard({ profile, students, announcements, isLoading }: any) {
     const { user } = useUser();
+    const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Secretary';
 
     const activeStudentsCount = useMemo(() => {
         return students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length || 0;
     }, [students]);
+
+    const { data: pendingApps } = useCollection<any>(
+        useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId), where('status', '==', 'Pending Review')) : null, [firestore, schoolId])
+    );
 
     return (
         <div className="space-y-6">
@@ -308,20 +315,20 @@ function SecretaryDashboard({ profile, students, classes, announcements, isLoadi
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <StatCard title="Active Students" value={activeStudentsCount} icon={GraduationCap} link="/dashboard/students-v3" isLoading={isLoading} />
-                <StatCard title="Active Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard title="Pending Admissions" value={pendingApps?.length || 0} icon={PenLine} link="/dashboard/admissions" isLoading={isLoading} color="text-emerald-600" />
                 <StatCard title="Live Notices" value={announcements?.length || 0} icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} color="text-orange-500" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
                     <CardHeader className="bg-slate-50 border-b p-8">
-                        <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Secretary Quick Actions</CardTitle>
+                        <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">General Admin Actions</CardTitle>
                     </CardHeader>
                     <CardContent className="p-8 space-y-3">
                         <QuickActionCard title="Post Announcement" description="Send news to parents and students" icon={Megaphone} link="/dashboard/announcements" />
-                        <QuickActionCard title="School Calendar" description="Update events and holidays" icon={CalendarDays} link="/dashboard/calendar" />
+                        <QuickActionCard title="Manage Students" description="Review profiles and IDs" icon={Users} link="/dashboard/students-v3" />
                         <QuickActionCard title="Admissions Hub" description="Review student applications" icon={PenLine} link="/dashboard/admissions" />
-                        <QuickActionCard title="ID Card Center" description="Generate printable student IDs" icon={FileText} link="/dashboard/students/id-cards" />
+                        <QuickActionCard title="Communication Hub" description="Send bulk SMS or WhatsApp alerts" icon={MessageCircle} link="/dashboard/communication/sms" />
                     </CardContent>
                 </Card>
 
@@ -736,19 +743,19 @@ function TeacherDashboard({ profile, classes, isLoading }: any) {
                     <CardContent className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Link href="/dashboard/attendance" className="p-6 bg-slate-50 rounded-[2rem] border-2 border-transparent hover:border-indigo-200 hover:bg-indigo-50/50 transition-all group">
                             <CalendarCheck className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight">Take Attendance</p>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight text-slate-800">Take Attendance</p>
                         </Link>
                         <Link href="/dashboard/lesson-planning" className="p-6 bg-slate-50 rounded-[2rem] border-2 border-transparent hover:border-indigo-200 hover:bg-indigo-50/50 transition-all group">
                             <FileText className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight">Lesson Planning</p>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight text-slate-800">Lesson Planning</p>
                         </Link>
                         <Link href="/dashboard/academics/gradebook/manual-entry" className="p-6 bg-slate-50 rounded-[2rem] border-2 border-transparent hover:border-indigo-200 hover:bg-indigo-50/50 transition-all group">
                             <TrendingUp className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight">Grade Records</p>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight text-slate-800">Grade Records</p>
                         </Link>
                         <Link href="/dashboard/assignments" className="p-6 bg-slate-50 rounded-[2rem] border-2 border-transparent hover:border-indigo-200 hover:bg-indigo-50/50 transition-all group">
                             <PlusCircle className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight">Create Quiz</p>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-tight text-slate-800">Create Quiz</p>
                         </Link>
                     </CardContent>
                 </Card>
@@ -843,12 +850,12 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
                                         {child.firstName?.[0]}{child.lastName?.[0]}
                                     </div>
                                     <div>
-                                        <p className="font-black text-slate-800 uppercase tracking-tight">{child.firstName} {child.lastName}</p>
+                                        <p className="font-black text-slate-800 uppercase tracking-tight text-slate-800">{child.firstName} {child.lastName}</p>
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{child.classId || 'Unassigned'}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <Badge variant="outline" className="text-[9px] font-black bg-white border-slate-200">92% Attendance</Badge>
+                                    <Badge variant="outline" className="text-[9px] font-black bg-white border-slate-200 text-slate-800">92% Attendance</Badge>
                                     <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform"/>
                                 </div>
                             </Link>
@@ -867,7 +874,7 @@ function ParentDashboard({ profile, children, financials, announcements, isLoadi
                                  <p className="text-[10px] font-medium leading-relaxed opacity-60 line-clamp-2">{ann.content}</p>
                              </div>
                          ))}
-                         <Button asChild variant="ghost" className="w-full text-indigo-400 font-black uppercase text-[10px] tracking-[0.2em] mt-2">
+                         <Button asChild variant="ghost" className="w-full text-indigo-400 font-black uppercase text-[10px] tracking-[0.2em] mt-2 text-white">
                              <Link href="/dashboard/announcements">VIEW FULL NOTICEBOARD</Link>
                          </Button>
                     </CardContent>
@@ -903,19 +910,19 @@ function StudentDashboard({ profile }: any) {
                     <CardContent className="p-8 grid grid-cols-2 gap-4">
                         <Link href="/dashboard/my-grades" className="p-6 bg-slate-50 rounded-3xl border-2 border-transparent hover:border-indigo-500 transition-all group text-center">
                             <TrendingUp className="h-10 w-10 text-indigo-600 mx-auto mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest">Live Grades</p>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest text-slate-800">Live Grades</p>
                         </Link>
                         <Link href="/dashboard/my-reports" className="p-6 bg-slate-50 rounded-3xl border-2 border-transparent hover:border-indigo-500 transition-all group text-center">
                             <FileText className="h-10 w-10 text-indigo-600 mx-auto mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest">Reports</p>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest text-slate-800">Reports</p>
                         </Link>
                         <Link href="/dashboard/my-bills" className="p-6 bg-slate-50 rounded-3xl border-2 border-transparent hover:border-indigo-500 transition-all group text-center">
                             <Banknote className="h-10 w-10 text-indigo-600 mx-auto mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest">Fees</p>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest text-slate-800">Fees</p>
                         </Link>
                         <Link href="/dashboard/assignments" className="p-6 bg-slate-50 rounded-3xl border-2 border-transparent hover:border-indigo-500 transition-all group text-center">
                             <CalendarCheck className="h-10 w-10 text-indigo-600 mx-auto mb-3 group-hover:scale-110 transition-transform"/>
-                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest">My Tasks</p>
+                            <p className="font-black text-slate-800 uppercase text-xs tracking-widest text-slate-800">My Tasks</p>
                         </Link>
                     </CardContent>
                 </Card>
@@ -978,7 +985,7 @@ export default function DashboardClient() {
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && canListStaff) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canListStaff]);
   const { data: staff, isLoading: loadingStaff } = useCollection(staffQuery);
 
-  const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff && !isSupportStaff) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff]);
+  const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff && !isSupportStaff && !isSecretary && !isReceptionist) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
   const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin || isParent)) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, isParent]);
@@ -1026,7 +1033,7 @@ export default function DashboardClient() {
   }
 
   if (role === 'Secretary') {
-    return <SecretaryDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingClasses} />;
+    return <SecretaryDashboard profile={profile} students={students} announcements={announcements} isLoading={loadingStudents} />;
   }
 
   if (role === 'Receptionist') {

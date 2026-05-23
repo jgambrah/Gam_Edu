@@ -1,3 +1,4 @@
+
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -196,31 +197,31 @@ export const navItems: NavItem[] = [
     path: '/dashboard/academics',
     title: 'Academics',
     icon: BookOpen,
-    roles: ['Director', 'Administrator', 'Teacher', 'Secretary'],
+    roles: ['Director', 'Administrator', 'Teacher'],
     subItems: [
         {
             path: '/dashboard/attendance',
             title: 'Student Attendance',
             icon: CalendarCheck,
-            roles: ['Director', 'Administrator', 'Teacher', 'Secretary', 'Receptionist'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Receptionist'],
         },
         {
             path: '/dashboard/academics',
             title: 'Classes',
             icon: Users,
-            roles: ['Director', 'Administrator', 'Teacher', 'Secretary'],
+            roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
             path: '/dashboard/academics/subjects',
             title: 'Subjects',
             icon: BookCopy,
-            roles: ['Director', 'Administrator', 'Secretary'],
+            roles: ['Director', 'Administrator'],
         },
         {
             path: '/dashboard/assignments',
             title: 'Assignments & Quizzes',
             icon: BookMarked,
-            roles: ['Director', 'Administrator', 'Teacher', 'Secretary'],
+            roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
             path: '/dashboard/lesson-planning',
@@ -256,19 +257,19 @@ export const navItems: NavItem[] = [
             path: '/dashboard/report-cards',
             title: 'Report Cards',
             icon: FileText,
-            roles: ['Teacher', 'Administrator', 'Director', 'Secretary'],
+            roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
             path: '/dashboard/timetable',
             title: 'Timetable',
             icon: CalendarDays,
-            roles: ['Teacher', 'Administrator', 'Director', 'Secretary', 'Student', 'Parent'],
+            roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
         },
         {
             path: '/dashboard/calendar',
             title: 'School Calendar',
             icon: CalendarDays,
-            roles: ['Teacher', 'Administrator', 'Director', 'Secretary', 'Receptionist', 'Student', 'Parent'],
+            roles: ['Teacher', 'Administrator', 'Director', 'Receptionist', 'Student', 'Parent'],
         },
     ]
   },
@@ -476,13 +477,13 @@ export const navItems: NavItem[] = [
         path: '/dashboard/reports/academics',
         title: 'Academic',
         icon: GraduationCap,
-        roles: ['Director', 'Administrator', 'Teacher', 'Secretary'],
+        roles: ['Director', 'Administrator', 'Teacher'],
       },
       {
         path: '/dashboard/reports/attendance',
         title: 'Attendance',
         icon: CalendarCheck,
-        roles: ['Director', 'Administrator', 'Teacher', 'Secretary', 'Receptionist'],
+        roles: ['Director', 'Administrator', 'Teacher', 'Receptionist'],
       },
       {
         path: '/dashboard/reports/enrollment',

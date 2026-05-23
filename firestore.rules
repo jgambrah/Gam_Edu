@@ -1,4 +1,5 @@
-// v2.6: [PRIVACY PATCH] Restricted Secretary role from staff sensitive records and attendance audits.
+
+// v2.7: [SECURITY PATCH] Explicitly restricted Secretary role from Academic write permissions.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -40,7 +41,7 @@ service cloud.firestore {
            : '');
     }
 
-    // Secretaries are NOT considered Admins for sensitive staff/HR data
+    // Secretaries are NOT considered Admins for sensitive staff/HR data OR Academics
     function isAdmin() {
       return isSignedIn() && (
         isSuperAdmin() ||
@@ -148,6 +149,10 @@ service cloud.firestore {
       allow write: if isAdmin() || getUserRole() == 'Secretary';
     }
 
+    match /admissionApplications/{appId} {
+      allow read, write, list: if isAdmin() || getUserRole() == 'Secretary';
+    }
+
     // =========================================================
     // 5. HR & STAFF
     // =========================================================
@@ -170,12 +175,12 @@ service cloud.firestore {
 
     match /classes/{classId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isTeacher() || getUserRole() == 'Secretary';
+      allow write: if isAdmin() || isTeacher();
     }
 
     match /subjects/{subjectId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || getUserRole() == 'Secretary';
+      allow write: if isAdmin();
     }
 
     match /subjects/{subjectId}/assessments/{assessmentId} {
@@ -185,17 +190,17 @@ service cloud.firestore {
 
     match /timetables/{timetableId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || getUserRole() == 'Secretary';
+      allow write: if isAdmin();
     }
 
     match /rooms/{roomId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || getUserRole() == 'Secretary';
+      allow write: if isAdmin();
     }
 
     match /timeSlots/{timeSlotId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isTeacher() || getUserRole() == 'Secretary';
+      allow write: if isAdmin() || isTeacher();
     }
 
     match /school_calendar/{eventId} {
@@ -210,7 +215,7 @@ service cloud.firestore {
         parentOwnsStudent(resource.data.studentId)
       );
       allow list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin() || isDirector() || getUserRole() == 'Secretary';
+      allow write: if isTeacher() || isAdmin() || isDirector();
     }
 
     match /staff_attendance/{attendanceId} {
@@ -226,17 +231,17 @@ service cloud.firestore {
         parentOwnsStudent(resource.data.studentId)
       );
       allow list: if isSignedIn();
-      allow write: if isTeacher() || isStaff() || isAdmin() || getUserRole() == 'Secretary';
+      allow write: if isTeacher() || isStaff() || isAdmin();
     }
 
     match /report_card_remarks/{id} {
       allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin() || getUserRole() == 'Secretary';
+      allow write: if isTeacher() || isAdmin();
     }
 
     match /assignments/{assignmentId} {
       allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin() || getUserRole() == 'Secretary';
+      allow write: if isTeacher() || isAdmin();
       match /submissions/{submissionId} {
         allow read, list: if isTeacher() || isAdmin() || request.auth.uid == resource.data.studentId;
         allow create: if isStudent();
