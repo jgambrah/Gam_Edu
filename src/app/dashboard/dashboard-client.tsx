@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -16,6 +15,7 @@ import {
   Database,
   Award,
   MessageSquare,
+  MessageCircle,
   UserCheck,
   LayoutTemplate,
   CalendarDays,
@@ -1020,7 +1020,11 @@ export default function DashboardClient() {
   }, [firestore, schoolId, role, isStaff]);
   const { data: announcements, isLoading: loadingAnnouncements } = useCollection(annQuery);
 
-  const hasFinanceAccess = role === 'Director' || role === 'Accountant' || (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) || user?.email === 'jamesgambrah@gmail.com';
+  const hasFinanceAccess = 
+    role === 'Director' || 
+    role === 'Accountant' || 
+    (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
+    user?.email === 'jamesgambrah@gmail.com';
 
   const isLoading = roleLoading || schoolLoading;
 
