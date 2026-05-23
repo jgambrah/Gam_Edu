@@ -295,6 +295,10 @@ function SecretaryDashboard({ profile, students, staff, classes, announcements, 
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Secretary';
 
+    const activeStudentsCount = useMemo(() => {
+        return students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length || 0;
+    }, [students]);
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-1 mb-2">
@@ -303,10 +307,10 @@ function SecretaryDashboard({ profile, students, staff, classes, announcements, 
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} link="/dashboard/students-v3" isLoading={isLoading} />
+                <StatCard title="Active Students" value={activeStudentsCount} icon={GraduationCap} link="/dashboard/students-v3" isLoading={isLoading} />
                 <StatCard title="Active Classes" value={classes?.length || 0} icon={School} link="/dashboard/academics" isLoading={isLoading} color="text-emerald-600" />
                 <StatCard title="Live Notices" value={announcements?.length || 0} icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} color="text-orange-500" />
-                <StatCard title="Faculty" value={staff?.length || 0} icon={Users} link="/dashboard/staff-management-v2" isLoading={isLoading} color="text-purple-600" />
+                <StatCard title="Total Faculty" value={staff?.length || 0} icon={Users} link="/dashboard/staff-management-v2" isLoading={isLoading} color="text-purple-600" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -358,6 +362,10 @@ function ReceptionistDashboard({ profile, announcements, attendance, students, i
         return presentCount;
     }, [attendance, students]);
 
+    const activeStudentsCount = useMemo(() => {
+        return students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length || 0;
+    }, [students]);
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-1 mb-2">
@@ -366,7 +374,15 @@ function ReceptionistDashboard({ profile, announcements, attendance, students, i
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <StatCard title="Students Present" value={todayAttendance} icon={CheckCircle2} link="/dashboard/attendance" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard 
+                    title="Students Present" 
+                    value={todayAttendance} 
+                    icon={CheckCircle2} 
+                    link="/dashboard/attendance" 
+                    isLoading={isLoading} 
+                    color="text-emerald-600" 
+                    subtitle={`of ${activeStudentsCount} Active`}
+                />
                 <StatCard title="Today's Notices" value={announcements?.length || 0} icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} color="text-blue-600" />
                 <StatCard title="Staff Directory" value="Active" icon={Users} link="/dashboard/staff-management-v2" isLoading={isLoading} color="text-purple-600" />
             </div>
