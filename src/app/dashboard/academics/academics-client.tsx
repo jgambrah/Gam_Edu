@@ -240,11 +240,12 @@ export default function AcademicsPageContent() {
   const [editingClass, setEditingClass] = useState<Class | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const canManageClasses = role === 'Director' || role === 'Administrator';
-  const canListStaff = ['Administrator', 'Director', 'Accountant'].includes(role || '');
+  const canManageClasses = role === 'Director' || role === 'Administrator' || role === 'Secretary';
+  const canListStaff = ['Administrator', 'Director', 'Accountant', 'Secretary', 'Receptionist'].includes(role || '');
   const isStaff = !isRoleLoading && (
     role === 'Teacher' || role === 'Administrator' || 
-    role === 'Director' || role === 'Accountant'
+    role === 'Director' || role === 'Accountant' ||
+    role === 'Secretary' || role === 'Receptionist'
   );
 
   const form = useForm<z.infer<typeof classSchema>>({
