@@ -1,4 +1,4 @@
-// v2.3: [SECURITY PATCH] Authorized Secretary and Receptionist roles for core management and staff directory visibility.
+// v2.4: [FIX] Corrected CEL syntax in helper functions and ensured Secretary/Receptionist role support.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -54,9 +54,7 @@ service cloud.firestore {
     function isParent() { return exists(/databases/$(database)/documents/parents/$(request.auth.uid)); }
 
     function isFinanceStaff() {
-      let role = getUserRole();
-      if (role in ['Accountant', 'Director', 'Admin', 'Secretary']) return true;
-      return false;
+      return getUserRole() in ['Accountant', 'Director', 'Admin', 'Secretary'];
     }
 
     function isDirector() { return isAdmin(); }
@@ -110,7 +108,7 @@ service cloud.firestore {
 
     match /staff/{staffId} {
       allow get: if (resource.data.showOnWebsite == true) || isSignedIn();
-      allow list: if isSignedIn(); // Simplified to resolve Secretary/Receptionist fetch blockers
+      allow list: if isSignedIn(); 
       allow write: if isAdmin() || isOwner(staffId);
       match /payroll/{configId} {
         allow read, write: if isFinanceStaff() || isAdmin();
@@ -134,7 +132,7 @@ service cloud.firestore {
     }
 
     match /auditLogs/{logId} {
-      allow read, list: if isAdmin(); // Restricted
+      allow read, list: if isAdmin(); 
       allow create: if isSignedIn();
       allow update, delete: if false;
     }
@@ -217,7 +215,7 @@ service cloud.firestore {
     match /staff_attendance/{attendanceId} {
       allow create: if isSignedIn();
       allow read: if isAdmin() || isOwner(resource.data.staffId);
-      allow list: if isAdmin(); // Restricted to admins only for bulk viewing
+      allow list: if isAdmin(); 
     }
 
     match /report-cards/{reportId} {
