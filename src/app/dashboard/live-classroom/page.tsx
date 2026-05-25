@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
@@ -8,7 +7,7 @@ import { generateLessonImage } from './services/gemini';
 import { saasService } from './services/saas';
 import { AI_COSTS } from './types';
 import { Button } from '@/components/ui/button';
-import { Loader2, X, Bot, Sparkles, Play, ArrowLeft } from 'lucide-react';
+import { Loader2, X, Bot, Sparkles, Play, ArrowLeft, MicOff } from 'lucide-react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -64,7 +63,6 @@ const TutorSession: React.FC = () => {
   const transcriptBufferRef = useRef('');
   const requestIdRef = useRef(0);
   const lastProcessedCommandRef = useRef<string>('');
-  const isUserSpeakingRef = useRef(false);
 
   // --- SAAS & DATA HOOKS ---
   const { schoolId } = useCurrentSchool();
@@ -81,10 +79,8 @@ const TutorSession: React.FC = () => {
       saasService.initialize(schoolId, schoolData.aiCredits);
     }
   }, [schoolId, schoolData]);
-  // --- END SAAS & DATA HOOKS ---
 
-
-  const endSession = () => {
+  const endSession = useCallback(() => {
     setIsActive(false); 
     setIsConnecting(false);
     
@@ -106,8 +102,8 @@ const TutorSession: React.FC = () => {
 
     setActiveVisual(null); 
     lastProcessedCommandRef.current = "";
-    isUserSpeakingRef.current = false;
-  };
+    transcriptBufferRef.current = "";
+  }, []);
 
   const updateVisualsFromText = async (fullText: string) => {
     const cleanText = fullText.toUpperCase();
@@ -143,7 +139,6 @@ const TutorSession: React.FC = () => {
     
     if (audioContextRef.current.state === 'suspended') {
       await audioContextRef.current.resume();
-      console.log("Audio Engine: AWAKE");
     }
 
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
@@ -154,38 +149,38 @@ const TutorSession: React.FC = () => {
         description: "API Key not configured",
         duration: 10000,
       });
-      setIsConnecting(false);
       return;
     }
 
     setIsConnecting(true);
-
-    // --- SAAS CREDIT DEDUCTION ---
-    const deductionSuccess = await saasService.deductCredits(5, 'Live Classroom Session Start');
-    if (!deductionSuccess) {
-        toast({
-            variant: "destructive",
-            title: "Insufficient Credits",
-            description: "Your school is out of AI Sparks. Please contact your administrator.",
-        });
-        setIsConnecting(false);
-        return;
-    }
-    // --- END SAAS CREDIT DEDUCTION ---
     
     try {
-      const ai = new GoogleGenAI({ apiKey });
-      
+      // 1. First, request microphone access. 
+      // If the user denies this, we catch the NotAllowedError and STOP before spending credits.
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       micStreamRef.current = stream;
 
+      // 2. Only if microphone is granted, we deduct credits.
+      const deductionSuccess = await saasService.deductCredits(5, 'Live Classroom Session Start');
+      if (!deductionSuccess) {
+          toast({
+              variant: "destructive",
+              title: "Insufficient Credits",
+              description: "Your school is out of AI Sparks. Please contact your administrator.",
+          });
+          // Cleanup the stream we just opened
+          stream.getTracks().forEach(track => track.stop());
+          setIsConnecting(false);
+          return;
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
           onopen: () => {
-            console.log("✅ DR. GAM IS LIVE!");
             setIsConnecting(false);
             setIsActive(true);
             
@@ -194,13 +189,9 @@ const TutorSession: React.FC = () => {
             scriptProcessorRef.current = scriptProcessor;
             
             scriptProcessor.onaudioprocess = (e) => {
-              if (!sessionRef.current) {
-                console.warn('⚠️ Session ref is null, skipping audio send');
-                return;
-              }
+              if (!sessionRef.current) return;
               const inputData = e.inputBuffer.getChannelData(0);
               const pcmBlob = createBlob(inputData);
-              
               try {
                 sessionRef.current.sendRealtimeInput({ media: pcmBlob });
               } catch (err) {
@@ -210,24 +201,23 @@ const TutorSession: React.FC = () => {
             
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
-            console.log('🎤 Microphone connected and listening');
           },
           
           onclose: (event: any) => {
-            console.log("🚪 WebSocket CLOSED");
-            console.log("  Code:", event?.code);
-            console.log("  Reason:", event?.reason);
-            console.log("  Was clean:", event?.wasClean);
+            console.log("🚪 WebSocket CLOSED", event);
+            if (event && !event.wasClean) {
+                toast({
+                    title: "Class Ended",
+                    description: "The connection was interrupted. You can restart the session when you're ready.",
+                });
+            }
             endSession();
           },
 
           onmessage: async (message: LiveServerMessage) => {
-            console.log('📨 Full message:', message);
-            
             const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             
             if (base64 && audioContextRef.current) {
-              console.log("🎵 DR. GAM IS SPEAKING...");
               nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
               const bytes = decode(base64);
               const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
@@ -236,22 +226,17 @@ const TutorSession: React.FC = () => {
               source.connect(audioContextRef.current.destination);
               source.start(nextStartTimeRef.current);
               nextStartTimeRef.current += buffer.duration;
-              console.log('✅ Playing audio!');
-            } else {
-              console.log('⚠️ No audio data. Message structure:', message);
             }
 
             if (message.serverContent?.outputTranscription) {
               const text = message.serverContent.outputTranscription.text;
-              console.log('📝 Transcript:', text);
               transcriptBufferRef.current = (transcriptBufferRef.current + text).slice(-2000);
               updateVisualsFromText(transcriptBufferRef.current);
             }
           },
 
           onerror: (err: any) => {
-            console.error("🚨 ERROR:", err);
-            console.error("Full error object:", JSON.stringify(err, null, 2));
+            console.error("🚨 WebSocket Error:", err);
             endSession();
           },
         },
@@ -262,21 +247,24 @@ const TutorSession: React.FC = () => {
       });
       
       sessionRef.current = await sessionPromise;
-      console.log("✅ Session stored in ref");
       
     } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);
-      console.error("  Error name:", err?.name);
-      console.error("  Error message:", err?.message);
-      console.error("  Error stack:", err?.stack);
-      
       setIsConnecting(false);
       endSession();
       
+      let errorTitle = "Connection Failed";
+      let errorDesc = "Could not wake up Dr. GAM. Please check your network.";
+
+      if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+          errorTitle = "Microphone Denied";
+          errorDesc = "Dr. GAM needs to hear you! Please allow microphone access in your browser settings and try again.";
+      }
+      
       toast({
         variant: "destructive",
-        title: "Failed to Start",
-        description: err?.message || "Could not connect to Dr. GAM. Please check your network and API key.",
+        title: errorTitle,
+        description: errorDesc,
       });
     }
   };
@@ -302,29 +290,21 @@ const TutorSession: React.FC = () => {
                </span>
             </div>
             
-            {!isActive && !isConnecting && (
-              <div className="mb-4 p-2 bg-white rounded text-xs text-slate-500 w-full">
-                <div>School ID: {schoolId ? '✅' : '❌'}</div>
-                <div>Credits: {schoolData?.aiCredits ?? 'Loading...'}</div>
-                <div>SAAS: {saasService.getSession() ? '✅' : '❌'}</div>
-              </div>
-            )}
-            
             {isActive && <Button onClick={endSession} variant="destructive" className="w-full py-4 text-white rounded-2xl font-black uppercase text-sm border-4 border-white shadow-lg transition-transform active:scale-95">End Class</Button>}
         </div>
 
         <div className="lg:col-span-8">
             <div className="w-full aspect-video bg-white rounded-[3rem] border-[10px] border-slate-100 shadow-2xl flex items-center justify-center relative overflow-hidden font-black">
                 {!activeVisual ? (
-                    <div className="text-center opacity-10 flex flex-col items-center gap-6 font-black">
-                        <Sparkles className="text-[10rem]"/>
-                        <p className="font-black text-3xl uppercase tracking-widest font-black">Magic Board</p>
+                    <div className="text-center opacity-10 flex flex-col items-center gap-6 font-black text-slate-400">
+                        <Sparkles className="h-32 w-32" />
+                        <p className="font-black text-3xl uppercase tracking-widest">Magic Board</p>
                     </div>
                 ) : (
                     <div className="w-full h-full p-8 animate-in zoom-in font-black">
                         {isVisualLoading ? (
                           <div className="flex flex-col items-center justify-center h-full gap-4 font-black">
-                             <Loader2 className="animate-spin text-6xl text-slate-200"/>
+                             <Loader2 className="animate-spin h-12 w-12 text-slate-200"/>
                              <p className="text-slate-300 uppercase text-xs font-black">Dr. GAM is drawing...</p>
                           </div>
                         ) : activeVisual.url && <img src={activeVisual.url} className="w-full h-full object-cover rounded-[2rem] shadow-xl border-4 border-white" alt="lesson visual" />}
@@ -350,7 +330,7 @@ const TutorSession: React.FC = () => {
       {isConnecting && (
         <div className="mt-12 flex flex-col items-center w-full font-black">
            <div className="px-20 py-8 bg-slate-100 text-slate-400 text-3xl font-black rounded-[3rem] uppercase tracking-tighter border-8 border-white flex items-center gap-4">
-             <Loader2 className="animate-spin" />
+             <Loader2 className="animate-spin h-8 w-8" />
              Waking up Dr. GAM...
            </div>
         </div>
