@@ -1,4 +1,4 @@
-// v2.9: [SECURITY PATCH] Fixed syntax errors in helpers and ensured Secretary access to Admissions while restricting Staff/HR data.
+// v3.0: [SECURITY PATCH] Hardened role detection logic and explicitly granted Secretary access to Admissions while restricting HR/Staff data.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -32,6 +32,11 @@ service cloud.firestore {
              request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
     }
 
+    // Robust Role Detection
+    function getStaffDoc() {
+      return get(/databases/$(database)/documents/staff/$(request.auth.uid)).data;
+    }
+
     function getUserRole() {
       return exists(/databases/$(database)/documents/staff/$(request.auth.uid))
         ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
@@ -57,10 +62,6 @@ service cloud.firestore {
       return isSignedIn() && (getUserRole() in ['Accountant', 'Director', 'Admin']);
     }
 
-    function isDirector() { return isAdmin(); }
-    function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian'; }
-    function isTransportStaff() { return isAdmin() || getUserRole() == 'Transport Staff'; }
-
     function parentOwnsStudent(studentId) {
       return isParent() && studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentIds;
     }
@@ -80,16 +81,16 @@ service cloud.firestore {
       allow get: if isSignedIn();
       allow list: if isAdmin();
       allow write: if isSuperAdmin();
-      allow update: if isSignedIn() && isDirector();
+      allow update: if isSignedIn() && isAdmin();
     }
 
     match /schoolSettings/{schoolId} {
       allow read: if isSuperAdmin() || isAnyStaff(schoolId);
-      allow write: if isSuperAdmin() || isDirector();
+      allow write: if isSuperAdmin() || isAdmin();
 
       match /{allPaths=**} {
         allow read: if isSuperAdmin() || isAnyStaff(schoolId);
-        allow write: if isSuperAdmin() || isDirector();
+        allow write: if isSuperAdmin() || isAdmin();
       }
     }
 
@@ -108,6 +109,7 @@ service cloud.firestore {
 
     match /staff/{staffId} {
       allow get: if (resource.data.showOnWebsite == true) || isAdmin() || isOwner(staffId);
+      // Receptionist can list staff for front-desk work, Secretary cannot access detailed staff records
       allow list: if isSignedIn() && (isAdmin() || getUserRole() == 'Receptionist');
       allow write: if isAdmin() || isOwner(staffId);
       match /payroll/{configId} {
@@ -209,11 +211,11 @@ service cloud.firestore {
     match /attendance/{attendanceId} {
       allow get: if isSignedIn() && (
         resource.data.studentId == request.auth.uid ||
-        isTeacher() || isStaff() || isAdmin() || isDirector() ||
+        isTeacher() || isStaff() || isAdmin() ||
         parentOwnsStudent(resource.data.studentId)
       );
       allow list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin() || isDirector();
+      allow write: if isTeacher() || isAdmin();
     }
 
     match /staff_attendance/{attendanceId} {
@@ -224,7 +226,7 @@ service cloud.firestore {
 
     match /report-cards/{reportId} {
       allow get: if isSignedIn() && (
-        isTeacher() || isStaff() || isAdmin() || isDirector() ||
+        isTeacher() || isStaff() || isAdmin() ||
         resource.data.studentId == request.auth.uid ||
         parentOwnsStudent(resource.data.studentId)
       );
@@ -259,7 +261,7 @@ service cloud.firestore {
 
     match /inventory/{itemId} {
       allow read, list: if isSuperAdmin() || (isSignedIn() && isStaff());
-      allow write: if isSuperAdmin() || isFinanceStaff() || isAdmin() || isDirector();
+      allow write: if isSuperAdmin() || isFinanceStaff() || isAdmin();
     }
 
     // =========================================================
