@@ -182,7 +182,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/alumni',
             title: 'Alumni',
             icon: UserCheckIcon,
-            roles: ['Director', 'Administrator', 'Secretary'],
+            roles: ['Director', 'Administrator'],
         },
         {
             path: '/dashboard/student-registration',
@@ -462,7 +462,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/transport',
             title: 'Transport',
             icon: RouteIcon,
-            roles: ['Administrator', 'Director', 'Transport Staff', 'Secretary', 'Receptionist'],
+            roles: ['Administrator', 'Director', 'Transport Staff', 'Receptionist'],
         },
     ]
   },

@@ -1,4 +1,4 @@
-// v3.2: [SECURITY PATCH] Explicitly restricted Secretary role from Admissions data calls.
+// v3.3: [SECURITY PATCH] Explicitly restricted Secretary role from Transport and Alumni management.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -269,6 +269,16 @@ service cloud.firestore {
     match /school_shop_items/{itemId} {
         allow read, list: if isSignedIn();
         allow write: if isFinanceStaff() || isAdmin() || getUserRole() == 'Secretary';
+    }
+
+    // Transport Security
+    match /routes/{routeId} {
+        allow read, list: if isSignedIn();
+        allow write: if isAdmin() || getUserRole() == 'Transport Staff';
+    }
+    match /buses/{busId} {
+        allow read, list: if isSignedIn();
+        allow write: if isAdmin() || getUserRole() == 'Transport Staff';
     }
 
     // =========================================================
