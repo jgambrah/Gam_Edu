@@ -31,7 +31,7 @@ export default function Header() {
   const router = useRouter();
   const { auth: authInstance } = useFirebase();
   const { user } = useUser();
-  const { role } = useRole();
+  const { role, profile } = useRole();
   
   const pageTitle = useMemo(() => {
     // Find item with correct role
@@ -120,7 +120,7 @@ export default function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full border-2 border-slate-100 shadow-sm overflow-hidden p-0">
               <Avatar className="h-full w-full rounded-none">
-                <AvatarImage src={user?.photoURL || ''} alt="User Avatar" className="object-cover" />
+                <AvatarImage src={profile?.photoURL || user?.photoURL || ''} alt="User Avatar" className="object-cover" />
                 <AvatarFallback className="bg-slate-50 text-indigo-600 font-bold">{getInitials(user?.email)}</AvatarFallback>
               </Avatar>
             </Button>

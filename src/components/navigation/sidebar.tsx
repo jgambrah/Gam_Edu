@@ -226,7 +226,7 @@ export function AppSidebarContent() {
         {process.env.NODE_ENV === 'development' && <RoleSwitcher />}
         <div className="flex items-center gap-3 p-1">
           <Avatar className="h-10 w-10 border-2 border-indigo-900/50 shadow-inner">
-            <AvatarImage src={user?.photoURL || ''} alt="User Avatar" className="object-cover" />
+            <AvatarImage src={profile?.photoURL || user?.photoURL || ''} alt="User Avatar" className="object-cover" />
             <AvatarFallback className="bg-indigo-900 text-indigo-200 font-bold">{getInitials(user?.email)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col min-w-0">
