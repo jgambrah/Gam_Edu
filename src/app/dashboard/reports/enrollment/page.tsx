@@ -27,11 +27,10 @@ export default function EnrollmentReportsPage() {
     const firestore = useFirestore();
     const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
 
-    const isAdmin = ['Administrator', 'Director'].includes(role || '');
-    const canAccess = isAdmin;
+    const canAccess = ['Administrator', 'Director', 'Secretary'].includes(role || '');
 
     useEffect(() => {
-        if (!isRoleLoading && role === 'Student') {
+        if (!isRoleLoading && (role === 'Student' || role === 'Parent')) {
             router.replace('/dashboard');
         }
     }, [role, isRoleLoading, router]);
@@ -72,7 +71,7 @@ export default function EnrollmentReportsPage() {
                     <CardHeader className="text-center">
                         <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4"><ShieldAlert className="h-8 w-8 text-red-600" /></div>
                         <CardTitle>Access Restricted</CardTitle>
-                        <CardDescription>Enrollment reports are restricted to administrators.</CardDescription>
+                        <CardDescription>Enrollment reports are restricted to authorized administrative staff.</CardDescription>
                     </CardHeader>
                     <CardFooter className="justify-center"><Button asChild variant="outline"><Link href="/dashboard">Back to Dashboard</Link></Button></CardFooter>
                 </Card>
@@ -107,7 +106,9 @@ export default function EnrollmentReportsPage() {
                             <CardHeader><CardTitle>Demographics</CardTitle></CardHeader>
                             <CardContent>
                                 <ResponsiveContainer width="100%" height={250}>
-                                    <PieChart><Pie data={reportData.genderPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{reportData.genderPieData.map((entry, index) => (<Cell key={`cell-${index}`} fill={GENDER_COLORS[entry.name as keyof typeof GENDER_COLORS]} />))}</Pie><Tooltip /><Legend /></PieChart>
+                                    <PieChart><Pie data={reportData.genderPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{reportData.genderPieData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={GENDER_COLORS[entry.name as keyof typeof GENDER_COLORS]} />
+                                    ))}</Pie><Tooltip /><Legend /></PieChart>
                                 </ResponsiveContainer>
                             </CardContent>
                         </Card>

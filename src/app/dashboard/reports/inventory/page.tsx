@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -36,7 +35,7 @@ export default function InventoryReportsPage() {
     const firestore = useFirestore();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
-    const canAccess = ['Administrator', 'Director'].includes(role);
+    const canAccess = ['Administrator', 'Director', 'Secretary'].includes(role || '');
 
     const { data: inventory, isLoading: isLoadingInventory } = useCollection<InventoryItem>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'inventory'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
@@ -89,7 +88,7 @@ export default function InventoryReportsPage() {
             <Card>
                 <CardHeader>
                     <CardTitle>Access Denied</CardTitle>
-                    <CardDescription>This module is restricted to Administrators and Directors.</CardDescription>
+                    <CardDescription>This module is restricted to authorized administrative staff.</CardDescription>
                 </CardHeader>
             </Card>
         );
