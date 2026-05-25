@@ -24,9 +24,23 @@ import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { LeaveRequest, leaveApplicationSchema, managerApprovalSchema, managerRejectionSchema, PublicHoliday, LeaveStatus, Staff, LEAVE_TYPES } from '@/lib/types';
-import { MOCK_PUBLIC_HOLIDAYS } from '@/lib/data';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
+const MOCK_PUBLIC_HOLIDAYS = [
+  { name: "New Year's Day", date: new Date(new Date().getFullYear(), 0, 1) },
+  { name: "Constitution Day", date: new Date(new Date().getFullYear(), 0, 7) },
+  { name: "Independence Day", date: new Date(new Date().getFullYear(), 2, 6) },
+  { name: "Good Friday", date: new Date(2025, 3, 18) },
+  { name: "Easter Monday", date: new Date(2025, 3, 21) },
+  { name: "May Day", date: new Date(new Date().getFullYear(), 4, 1) },
+  { name: "Eid-ul-Fitr", date: new Date(2025, 2, 31) },
+  { name: "Eid-ul-Adha", date: new Date(2025, 5, 7) },
+  { name: "Founder's Day", date: new Date(new Date().getFullYear(), 7, 4) },
+  { name: "Kwame Nkrumah Memorial Day", date: new Date(new Date().getFullYear(), 8, 21) },
+  { name: "Farmer's Day", date: new Date(new Date().getFullYear(), 11, 5) },
+  { name: "Christmas Day", date: new Date(new Date().getFullYear(), 11, 25) },
+  { name: "Boxing Day", date: new Date(new Date().getFullYear(), 11, 26) }
+];
 
 // --- Staff View: Form for applying for leave ---
 function LeaveApplicationForm({ setOpen, schoolId }: { setOpen: (open: boolean) => void, schoolId: string }) {
