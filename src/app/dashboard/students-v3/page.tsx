@@ -92,6 +92,13 @@ export default function StudentsV3Page() {
   );
   const { data: schoolSettings } = useDoc<any>(schoolSettingsQuery as any);
 
+  const canManage = useMemo(() => {
+    if (!role) return false;
+    return role === 'Director' || role === 'Administrator';
+  }, [role]);
+
+  const isSecretary = role === 'Secretary';
+
   const canEditBillingToggles = useMemo(() => {
       if (!role) return false;
       return role === 'Director' || role === 'Accountant' || (role === 'Administrator' && schoolSettings?.allowAdminBillingToggles === true);
@@ -350,9 +357,11 @@ export default function StudentsV3Page() {
                 <Button variant="outline" onClick={loadData} disabled={overallLoading}>
                     <RefreshCw className={cn("h-4 w-4 mr-2", overallLoading && "animate-spin")}/> Refresh
                 </Button>
-                <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700" disabled={!adminSchoolId}>
-                    <UserPlus className="h-4 w-4 mr-2"/> Add Student
-                </Button>
+                {canManage && (
+                    <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700" disabled={!adminSchoolId}>
+                        <UserPlus className="h-4 w-4 mr-2"/> Add Student
+                    </Button>
+                )}
             </div>
         </CardHeader>
         
@@ -442,24 +451,33 @@ export default function StudentsV3Page() {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-1">
-                                                <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(s)} title="Reset Password">
-                                                    <KeyRound className="h-4 w-4 text-orange-500"/>
-                                                </Button>
-                                                <Button variant="outline" size="sm" onClick={() => toast({ title: "Opening direct SMS...", description: "Feature being integrated." })} title="Send Bill Reminder">
-                                                    <MessageSquare className="h-4 w-4" />
-                                                </Button>
-                                                <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
-                                                
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="sm" 
-                                                    type="button"
-                                                    onClick={() => triggerArchive(s.id, s.enrollmentStatus)}
-                                                    className={cn(isInactive ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" : "text-slate-400 hover:text-red-600 hover:bg-red-50")}
-                                                    title={isInactive ? "Restore Student" : "Archive Student"}
-                                                >
-                                                    {isInactive ? <RotateCcw className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
-                                                </Button>
+                                                {canManage && (
+                                                    <>
+                                                        <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(s)} title="Reset Password">
+                                                            <KeyRound className="h-4 w-4 text-orange-500"/>
+                                                        </Button>
+                                                        <Button variant="outline" size="sm" onClick={() => toast({ title: "Opening direct SMS...", description: "Feature being integrated." })} title="Send Bill Reminder">
+                                                            <MessageSquare className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                                        
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="sm" 
+                                                            type="button"
+                                                            onClick={() => triggerArchive(s.id, s.enrollmentStatus)}
+                                                            className={cn(isInactive ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" : "text-slate-400 hover:text-red-600 hover:bg-red-50")}
+                                                            title={isInactive ? "Restore Student" : "Archive Student"}
+                                                        >
+                                                            {isInactive ? <RotateCcw className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+                                                        </Button>
+                                                    </>
+                                                )}
+                                                {isSecretary && (
+                                                    <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)} className="text-indigo-600">
+                                                        <Search className="h-4 w-4 mr-2" /> View Details
+                                                    </Button>
+                                                )}
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -571,10 +589,10 @@ export default function StudentsV3Page() {
         </DialogContent>
       </Dialog>
 
-      {/* EDIT MODAL */}
+      {/* EDIT/VIEW MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader><DialogTitle>Edit Student Profile</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{canManage ? 'Edit Student Profile' : 'Student Profile'}</DialogTitle></DialogHeader>
             {editingStudent && (
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
                     <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
@@ -587,37 +605,39 @@ export default function StudentsV3Page() {
                                 <Camera className="h-8 w-8 text-slate-300" />
                             )}
                         </div>
-                        <div className="flex flex-col items-center">
-                            <Label htmlFor="photo-upload-edit" className="cursor-pointer bg-white border px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 flex items-center gap-2 shadow-sm">
-                                <Upload className="h-3 w-3"/> Change Profile Photo
-                            </Label>
-                            <input id="photo-upload-edit" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
-                        </div>
+                        {!isSecretary && (
+                            <div className="flex flex-col items-center">
+                                <Label htmlFor="photo-upload-edit" className="cursor-pointer bg-white border px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 flex items-center gap-2 shadow-sm">
+                                    <Upload className="h-3 w-3"/> Change Profile Photo
+                                </Label>
+                                <input id="photo-upload-edit" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
+                            </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required /></div>
-                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
+                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required disabled={isSecretary} /></div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required disabled={isSecretary} /></div>
                     </div>
-                     <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
+                     <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100 cursor-not-allowed" /></div>
                     <div className="space-y-2">
                         <Label>Class</Label>
-                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId} disabled={isSecretary}>
                             <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
                             <SelectContent>{classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} /></div>
+                        <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} disabled={isSecretary} /></div>
                         <div className="space-y-2">
                             <Label>Gender</Label>
-                            <Select value={selectedGender} onValueChange={setSelectedGender}>
+                            <Select value={selectedGender} onValueChange={setSelectedGender} disabled={isSecretary}>
                                 <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
                                 <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
                             </Select>
                         </div>
                     </div>
-                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
+                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} disabled={isSecretary} /></div>
                     
                     {canEditBillingToggles ? (
                         <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
@@ -655,14 +675,18 @@ export default function StudentsV3Page() {
                     ) : (
                         <div className="p-4 bg-slate-50 border rounded-xl flex items-center gap-3 opacity-60">
                             <Lock className="h-4 w-4 text-slate-400" />
-                            <p className="text-xs text-slate-500 font-medium italic">Service toggles are locked by administration.</p>
+                            <p className="text-xs text-slate-500 font-medium italic">Service details are read-only.</p>
                         </div>
                     )}
 
-                    <DialogFooter>
-                        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
-                            {isSubmitting || isUploadingPhoto ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Save Changes"}
-                        </Button>
+                    <DialogFooter className="pt-4 border-t mt-6">
+                        {canManage ? (
+                            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
+                                {isSubmitting || isUploadingPhoto ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Save Changes"}
+                            </Button>
+                        ) : (
+                            <Button type="button" variant="outline" className="w-full h-12" onClick={() => setEditingStudent(null)}>Close Profile</Button>
+                        )}
                     </DialogFooter>
                 </form>
             )}
@@ -699,6 +723,7 @@ export default function StudentsV3Page() {
                           if (res.success) {
                               toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
                               setResetPasswordUser(null);
+                              setNewTempPassword('password123'); // Reset for next use
                           } else {
                               toast({ variant: 'destructive', title: "Error", description: res.error });
                           }

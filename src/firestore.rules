@@ -1,4 +1,4 @@
-// v3.3: [SECURITY PATCH] Explicitly restricted Secretary role from Transport and Alumni management.
+// v3.4: [SECURITY PATCH] Enforced view-only access for Secretary role on Students and Parents collections.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -115,12 +115,12 @@ service cloud.firestore {
 
     match /students/{studentId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || getUserRole() == 'Secretary' || isOwner(studentId);
+      allow write: if isAdmin() || isOwner(studentId);
     }
 
     match /parents/{parentId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || getUserRole() == 'Secretary' || isOwner(parentId);
+      allow write: if isAdmin() || isOwner(parentId);
     }
 
     match /notifications/{notificationId} {

@@ -7,6 +7,7 @@ import { createNewUser } from '@/app/actions/create-user';
 import { adminResetUserPassword } from '@/app/actions/admin-reset-password';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
 import { cn } from '@/lib/utils';
+import { useRole } from '@/context/role-context';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -60,6 +61,7 @@ type Student = {
 export default function ParentsPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { role } = useRole();
   const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool();
 
   const [parents, setParents] = useState<ParentMember[]>([]);
@@ -83,6 +85,10 @@ export default function ParentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [studentSearch, setStudentSearch] = useState('');
   const [showOnlyUnlinked, setShowOnlyUnlinked] = useState(false);
+
+  // Permissions
+  const isSecretary = role === 'Secretary';
+  const canManage = role === 'Director' || role === 'Administrator';
 
   const toggleStudentSelection = (uid: string) => {
     setSelectedStudentIds(prev =>
@@ -269,9 +275,11 @@ export default function ParentsPage() {
                 <Button variant="outline" onClick={loadData} disabled={overallLoading || !adminSchoolId}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${overallLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
-                <Button onClick={() => setIsAddOpen(true)} className="bg-pink-500 hover:bg-pink-600" disabled={!adminSchoolId}>
-                    <UserPlus className="h-4 w-4 mr-2"/> Add Parent
-                </Button>
+                {canManage && (
+                    <Button onClick={() => setIsAddOpen(true)} className="bg-pink-500 hover:bg-pink-600" disabled={!adminSchoolId}>
+                        <UserPlus className="h-4 w-4 mr-2"/> Add Parent
+                    </Button>
+                )}
             </div>
         </CardHeader>
         
@@ -312,32 +320,41 @@ export default function ParentsPage() {
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-1">
-                                            <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(p)} title="Reset Password">
-                                                <KeyRound className="h-4 w-4 text-orange-500"/>
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                                                <Edit className="h-4 w-4"/>
-                                            </Button>
-                                            
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                                                        <Trash2 className="h-4 w-4"/>
+                                            {canManage && (
+                                                <>
+                                                    <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(p)} title="Reset Password">
+                                                        <KeyRound className="h-4 w-4 text-orange-500"/>
                                                     </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                        <AlertDialogTitle>Remove Parent Profile?</AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            Are you sure you want to delete the profile for <strong>{p.firstName} {p.lastName}</strong>? This will unlink all associated students.
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => handleDelete(p.id)} className="bg-red-600 hover:bg-red-700">Delete Profile</AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
+                                                    <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                                                        <Edit className="h-4 w-4"/>
+                                                    </Button>
+                                                    
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                                                                <Trash2 className="h-4 w-4"/>
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Remove Parent Profile?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Are you sure you want to delete the profile for <strong>{p.firstName} {p.lastName}</strong>? This will unlink all associated students.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDelete(p.id)} className="bg-red-600 hover:bg-red-700">Delete Profile</AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </>
+                                            )}
+                                            {isSecretary && (
+                                                <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)} className="text-indigo-600">
+                                                    <Search className="h-4 w-4 mr-2" /> View Details
+                                                </Button>
+                                            )}
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -422,22 +439,37 @@ export default function ParentsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* EDIT MODAL */}
+      {/* EDIT/VIEW MODAL */}
       <Dialog open={!!editingParent} onOpenChange={(open) => !open && setEditingParent(null)}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Edit Parent Details</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{canManage ? 'Edit Parent Details' : 'Parent Profile'}</DialogTitle></DialogHeader>
             {editingParent && (
                 <form onSubmit={handleUpdateParent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingParent.firstName} required /></div>
-                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingParent.lastName} required /></div>
+                        <div className="space-y-2">
+                            <Label>First Name</Label>
+                            <Input name="firstName" defaultValue={editingParent.firstName} required disabled={isSecretary} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Last Name</Label>
+                            <Input name="lastName" defaultValue={editingParent.lastName} required disabled={isSecretary} />
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Email</Label><Input value={editingParent.email} disabled className="bg-slate-100" /></div>
-                        <div className="space-y-2"><Label>Phone</Label><Input name="phone" defaultValue={editingParent.phone} /></div>
+                        <div className="space-y-2">
+                            <Label>Email</Label>
+                            <Input value={editingParent.email} disabled className="bg-slate-100 cursor-not-allowed" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Phone</Label>
+                            <Input name="phone" defaultValue={editingParent.phone} disabled={isSecretary} />
+                        </div>
                     </div>
-                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingParent.address} /></div>
+                    <div className="space-y-2">
+                        <Label>Address</Label>
+                        <Input name="address" defaultValue={editingParent.address} disabled={isSecretary} />
+                    </div>
 
                      <div className="space-y-3 pt-2 border-t mt-4">
                         <div className="flex items-center justify-between">
@@ -447,45 +479,59 @@ export default function ParentsPage() {
                                     <span className="ml-2 text-xs font-normal text-pink-600">({selectedStudentIds.length} selected)</span>
                                 )}
                             </Label>
-                            <div className="flex items-center space-x-2 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100">
-                                <Checkbox 
-                                    id="unlinked-only-edit" 
-                                    checked={showOnlyUnlinked} 
-                                    onCheckedChange={(v) => setShowOnlyUnlinked(!!v)} 
-                                />
-                                <Label htmlFor="unlinked-only-edit" className="text-xs cursor-pointer text-indigo-700 font-black uppercase tracking-tighter">Only Unlinked</Label>
-                            </div>
+                            {!isSecretary && (
+                                <div className="flex items-center space-x-2 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100">
+                                    <Checkbox 
+                                        id="unlinked-only-edit" 
+                                        checked={showOnlyUnlinked} 
+                                        onCheckedChange={(v) => setShowOnlyUnlinked(!!v)} 
+                                    />
+                                    <Label htmlFor="unlinked-only-edit" className="text-xs cursor-pointer text-indigo-700 font-black uppercase tracking-tighter">Only Unlinked</Label>
+                                </div>
+                            )}
                         </div>
-                        <StudentSearchInput value={studentSearch} onChange={setStudentSearch} placeholder="Search students to link..." />
+                        
+                        {!isSecretary && <StudentSearchInput value={studentSearch} onChange={setStudentSearch} placeholder="Search students to link..." />}
+                        
                         <div className="max-h-48 overflow-y-auto space-y-1 rounded-xl border-2 p-2 mt-2 bg-slate-50/50">
                             {filteredStudentsForModal.length > 0 ? (
-                                filteredStudentsForModal.map(s => (
-                                    <div
-                                        key={s.id}
-                                        className="flex items-center justify-between p-2.5 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all cursor-pointer"
-                                        onClick={() => toggleStudentSelection(s.uid)}
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <Checkbox 
-                                                id={`edit-${s.id}`} 
-                                                checked={selectedStudentIds.includes(s.uid)}
-                                                onCheckedChange={() => toggleStudentSelection(s.uid)}
-                                                onClick={(e) => e.stopPropagation()}
-                                            />
-                                            <div className="flex flex-col">
-                                                <Label htmlFor={`edit-${s.id}`} className="cursor-pointer font-bold text-slate-700">{s.firstName} {s.lastName}</Label>
-                                                <span className="text-[10px] text-slate-400 font-mono">ID: {s.uid.slice(0,8)}</span>
+                                filteredStudentsForModal.map(s => {
+                                    const isAttached = selectedStudentIds.includes(s.uid);
+                                    if (isSecretary && !isAttached) return null;
+
+                                    return (
+                                        <div
+                                            key={s.id}
+                                            className={cn(
+                                                "flex items-center justify-between p-2.5 rounded-lg border transition-all",
+                                                isSecretary ? "bg-white border-slate-100" : "hover:bg-white border-transparent hover:border-slate-200 cursor-pointer"
+                                            )}
+                                            onClick={() => !isSecretary && toggleStudentSelection(s.uid)}
+                                        >
+                                            <div className="flex items-center space-x-3">
+                                                {!isSecretary && (
+                                                    <Checkbox 
+                                                        id={`edit-${s.id}`} 
+                                                        checked={isAttached}
+                                                        onCheckedChange={() => toggleStudentSelection(s.uid)}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    />
+                                                )}
+                                                <div className="flex flex-col">
+                                                    <Label htmlFor={`edit-${s.id}`} className="font-bold text-slate-700">{s.firstName} {s.lastName}</Label>
+                                                    <span className="text-[10px] text-slate-400 font-mono">ID: {s.uid.slice(0,8)}</span>
+                                                </div>
                                             </div>
+                                            {s.parentId ? (
+                                                <Badge variant="outline" className={cn("text-[10px]", s.parentId === editingParent.uid ? "bg-green-100 text-green-700 border-green-200" : "bg-slate-100 text-slate-500 border-slate-200")}>
+                                                    {s.parentId === editingParent.uid ? "Assigned Here" : "Linked Elsewhere"}
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 font-bold uppercase tracking-widest">Unlinked</Badge>
+                                            )}
                                         </div>
-                                        {s.parentId ? (
-                                            <Badge variant="outline" className={cn("text-[10px]", s.parentId === editingParent.uid ? "bg-green-100 text-green-700 border-green-200" : "bg-slate-100 text-slate-500 border-slate-200")}>
-                                                {s.parentId === editingParent.uid ? "Assigned Here" : "Linked Elsewhere"}
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="outline" className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 font-bold uppercase tracking-widest">Unlinked</Badge>
-                                        )}
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <div className="py-10 text-center opacity-40">
                                     <p className="text-xs font-bold uppercase tracking-widest">No matching students</p>
@@ -493,7 +539,13 @@ export default function ParentsPage() {
                             )}
                         </div>
                     </div>
-                    <DialogFooter className="pt-4 border-t"><Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}</Button></DialogFooter>
+                    <DialogFooter className="pt-4 border-t mt-6">
+                        {canManage ? (
+                            <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}</Button>
+                        ) : (
+                            <Button type="button" variant="outline" className="w-full h-12" onClick={() => setEditingParent(null)}>Close Profile</Button>
+                        )}
+                    </DialogFooter>
                 </form>
             )}
         </DialogContent>
