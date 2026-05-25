@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, updateDoc, serverTimestamp, addDoc } from 'firebase/firestore';
+import { collection, query, where, addDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -28,7 +28,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 const MOCK_PUBLIC_HOLIDAYS = [
   { name: "New Year's Day", date: new Date(new Date().getFullYear(), 0, 1) },
   { name: "Constitution Day", date: new Date(new Date().getFullYear(), 0, 7) },
-  { name: "Independence Day", date: new Date(new Date().getFullYear(), 0, 7) }, // Ghana actually observes 7th Jan and 6th March, but keeping logic consistent
+  { name: "Independence Day", date: new Date(new Date().getFullYear(), 0, 7) }, 
   { name: "March 6th", date: new Date(new Date().getFullYear(), 2, 6) },
   { name: "May Day", date: new Date(new Date().getFullYear(), 4, 1) },
   { name: "Founder's Day", date: new Date(new Date().getFullYear(), 7, 4) },
@@ -436,7 +436,7 @@ export default function LeaveManagementPage() {
   const { role } = useRole();
 
   const isManager = role === 'Administrator' || role === 'Director';
-  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'].includes(role || '') || isManager;
+  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer', 'Secretary', 'Receptionist'].includes(role || '') || isManager;
   
   if (!isStaff) {
     return (

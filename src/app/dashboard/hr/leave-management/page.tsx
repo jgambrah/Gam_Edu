@@ -144,7 +144,7 @@ function StaffLeaveView() {
                                 {myRequests?.map(req => (
                                     <TableRow key={req.id}>
                                         <TableCell>{req.leaveType}</TableCell>
-                                        <TableCell>{format(req.startDate.toDate(), 'PPP')} - {format(req.endDate.toDate(), 'PPP')}</TableCell>
+                                        <TableCell>{req.startDate.toDate ? format(req.startDate.toDate(), 'PPP') : 'N/A'} - {req.endDate.toDate ? format(req.endDate.toDate(), 'PPP') : 'N/A'}</TableCell>
                                         <TableCell className="max-w-xs truncate">{req.reason}</TableCell>
                                         <TableCell><Badge>{req.status}</Badge></TableCell>
                                     </TableRow>
@@ -364,7 +364,7 @@ export default function LeaveManagementPage() {
   const { role } = useRole();
 
   const isManager = role === 'Administrator' || role === 'Director';
-  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer'].includes(role || '') || isManager;
+  const isStaff = ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer', 'Secretary', 'Receptionist'].includes(role || '') || isManager;
   
   if (!isStaff) {
     return (
