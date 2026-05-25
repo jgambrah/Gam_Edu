@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
@@ -257,6 +257,10 @@ export default function StaffAttendanceRecordsPage() {
       {/* ── IMAGE PROOF MODAL ── */}
       <Dialog open={!!photoToView} onOpenChange={() => setPhotoToView(null)}>
         <DialogContent className="rounded-[3rem] border-[12px] border-slate-900 p-0 overflow-hidden bg-black max-w-2xl">
+            <DialogHeader className="sr-only">
+                <DialogTitle>Staff Verification Photo</DialogTitle>
+                <DialogDescription>Viewing the verification photo captured during staff clock-in/out.</DialogDescription>
+            </DialogHeader>
             <div className="relative aspect-video">
                 <img src={photoToView || ''} alt="Verification" className="w-full h-full object-cover" />
                 <div className="absolute top-6 left-6 flex items-center gap-3 bg-black/40 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20 shadow-2xl">
