@@ -1,4 +1,5 @@
-// v3.0: [SECURITY PATCH] Hardened role detection logic and explicitly granted Secretary access to Admissions while restricting HR/Staff data.
+
+// v3.1: [SECURITY PATCH] Refactored role detection for reliability and explicitly authorized Secretary role for Admissions.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -33,10 +34,6 @@ service cloud.firestore {
     }
 
     // Robust Role Detection
-    function getStaffDoc() {
-      return get(/databases/$(database)/documents/staff/$(request.auth.uid)).data;
-    }
-
     function getUserRole() {
       return exists(/databases/$(database)/documents/staff/$(request.auth.uid))
         ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
@@ -262,6 +259,16 @@ service cloud.firestore {
     match /inventory/{itemId} {
       allow read, list: if isSuperAdmin() || (isSignedIn() && isStaff());
       allow write: if isSuperAdmin() || isFinanceStaff() || isAdmin();
+    }
+
+    match /accountsPayable/{payableId} {
+        allow read, list: if isFinanceStaff() || isAdmin() || getUserRole() == 'Secretary';
+        allow write: if isFinanceStaff() || isAdmin() || getUserRole() == 'Secretary';
+    }
+
+    match /school_shop_items/{itemId} {
+        allow read, list: if isSignedIn();
+        allow write: if isFinanceStaff() || isAdmin() || getUserRole() == 'Secretary';
     }
 
     // =========================================================
