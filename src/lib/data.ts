@@ -1,4 +1,3 @@
-
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -147,7 +146,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/admissions',
             title: 'Admissions',
             icon: PenLine,
-            roles: ['Director', 'Administrator', 'Secretary'],
+            roles: ['Director', 'Administrator'],
         },
         {
             path: '/dashboard/staff-management-v2',
@@ -229,7 +228,7 @@ export const navItems: NavItem[] = [
             icon: ClipboardList,
             roles: ['Director', 'Administrator', 'Teacher'],
         },
-         {
+        {
             path: '/dashboard/academics/learning-materials',
             title: 'Learning Materials',
             icon: FolderKanban,

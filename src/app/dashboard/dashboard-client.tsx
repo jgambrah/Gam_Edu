@@ -294,17 +294,11 @@ function AdminDashboard({ profile, students, staff, classes, announcements, isLo
 
 function SecretaryDashboard({ profile, students, announcements, isLoading }: any) {
     const { user } = useUser();
-    const firestore = useFirestore();
-    const { schoolId } = useCurrentSchool();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Secretary';
 
     const activeStudentsCount = useMemo(() => {
         return students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length || 0;
     }, [students]);
-
-    const { data: pendingApps } = useCollection<any>(
-        useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId), where('status', '==', 'Pending Review')) : null, [firestore, schoolId])
-    );
 
     return (
         <div className="space-y-6">
@@ -313,9 +307,8 @@ function SecretaryDashboard({ profile, students, announcements, isLoading }: any
                 <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Greetings, {displayName}! Managing school documentation and logistics.</p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
                 <StatCard title="Active Students" value={activeStudentsCount} icon={GraduationCap} link="/dashboard/students-v3" isLoading={isLoading} />
-                <StatCard title="Pending Admissions" value={pendingApps?.length || 0} icon={PenLine} link="/dashboard/admissions" isLoading={isLoading} color="text-emerald-600" />
                 <StatCard title="Live Notices" value={announcements?.length || 0} icon={Megaphone} link="/dashboard/announcements" isLoading={isLoading} color="text-orange-500" />
             </div>
 
@@ -327,7 +320,6 @@ function SecretaryDashboard({ profile, students, announcements, isLoading }: any
                     <CardContent className="p-8 space-y-3">
                         <QuickActionCard title="Post Announcement" description="Send news to parents and students" icon={Megaphone} link="/dashboard/announcements" />
                         <QuickActionCard title="Manage Students" description="Review profiles and IDs" icon={Users} link="/dashboard/students-v3" />
-                        <QuickActionCard title="Admissions Hub" description="Review student applications" icon={PenLine} link="/dashboard/admissions" />
                         <QuickActionCard title="Communication Hub" description="Send bulk SMS or WhatsApp alerts" icon={MessageCircle} link="/dashboard/communication/sms" />
                     </CardContent>
                 </Card>
