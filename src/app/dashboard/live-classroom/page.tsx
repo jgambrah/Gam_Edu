@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
@@ -7,7 +8,7 @@ import { generateLessonImage } from './services/gemini';
 import { saasService } from './services/saas';
 import { AI_COSTS } from './types';
 import { Button } from '@/components/ui/button';
-import { Loader2, X, Bot, Sparkles, Play, ArrowLeft, MicOff } from 'lucide-react';
+import { Loader2, X, Bot, Sparkles, Play, ArrowLeft, MicOff, AlertTriangle } from 'lucide-react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -133,6 +134,7 @@ const TutorSession: React.FC = () => {
   const startSession = async () => {
     console.log("--- WAKING UP DR. GAM ---");
 
+    // Pre-initialize and resume AudioContext immediately on user interaction
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     }
@@ -155,12 +157,11 @@ const TutorSession: React.FC = () => {
     setIsConnecting(true);
     
     try {
-      // 1. First, request microphone access. 
-      // If the user denies this, we catch the NotAllowedError and STOP before spending credits.
+      // 1. Request microphone access first to confirm permission
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       micStreamRef.current = stream;
 
-      // 2. Only if microphone is granted, we deduct credits.
+      // 2. Deduct credits only after microphone is granted
       const deductionSuccess = await saasService.deductCredits(5, 'Live Classroom Session Start');
       if (!deductionSuccess) {
           toast({
@@ -168,7 +169,6 @@ const TutorSession: React.FC = () => {
               title: "Insufficient Credits",
               description: "Your school is out of AI Sparks. Please contact your administrator.",
           });
-          // Cleanup the stream we just opened
           stream.getTracks().forEach(track => track.stop());
           setIsConnecting(false);
           return;
@@ -177,10 +177,12 @@ const TutorSession: React.FC = () => {
       const ai = new GoogleGenAI({ apiKey });
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+      // Initialize Multimodal Live Session
+      const session = ai.live.connect({
+        model: 'gemini-2.0-flash-exp', // Standard model for Multimodal Live
         callbacks: {
           onopen: () => {
+            console.log("✅ WebSocket established with Dr. GAM");
             setIsConnecting(false);
             setIsActive(true);
             
@@ -201,6 +203,11 @@ const TutorSession: React.FC = () => {
             
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
+
+            // Kickstart the greeting
+            sessionRef.current.send({
+                text: "Hello Dr. GAM! I am ready to learn."
+            });
           },
           
           onclose: (event: any) => {
@@ -208,7 +215,7 @@ const TutorSession: React.FC = () => {
             if (event && !event.wasClean) {
                 toast({
                     title: "Class Ended",
-                    description: "The connection was interrupted. You can restart the session when you're ready.",
+                    description: "The connection was interrupted. Please try starting the session again.",
                 });
             }
             endSession();
@@ -242,11 +249,11 @@ const TutorSession: React.FC = () => {
         },
         config: {
           responseModalities: [Modality.AUDIO],
-          systemInstruction: `You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`,
+          systemInstruction: `You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds. Speak with energy and enthusiasm. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`,
         }
       });
       
-      sessionRef.current = await sessionPromise;
+      sessionRef.current = session;
       
     } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);
@@ -254,11 +261,11 @@ const TutorSession: React.FC = () => {
       endSession();
       
       let errorTitle = "Connection Failed";
-      let errorDesc = "Could not wake up Dr. GAM. Please check your network.";
+      let errorDesc = "Could not connect to Dr. GAM. Please check your network and try again.";
 
       if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
           errorTitle = "Microphone Denied";
-          errorDesc = "Dr. GAM needs to hear you! Please allow microphone access in your browser settings and try again.";
+          errorDesc = "Dr. GAM needs to hear you! Please allow microphone access in your browser settings.";
       }
       
       toast({
