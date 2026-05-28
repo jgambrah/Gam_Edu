@@ -262,7 +262,9 @@ export default function StaffAttendanceRecordsPage() {
                 <DialogDescription>Viewing the verification photo captured during staff clock-in/out.</DialogDescription>
             </DialogHeader>
             <div className="relative aspect-video">
-                <img src={photoToView || ''} alt="Verification" className="w-full h-full object-cover" />
+                {photoToView ? (
+                  <img src={photoToView} alt="Verification" className="w-full h-full object-cover" />
+                ) : null}
                 <div className="absolute top-6 left-6 flex items-center gap-3 bg-black/40 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20 shadow-2xl">
                     <ShieldCheck className="text-emerald-400 h-6 w-6" />
                     <span className="text-white font-black uppercase text-sm tracking-tight italic">Verified Identity Proof</span>
