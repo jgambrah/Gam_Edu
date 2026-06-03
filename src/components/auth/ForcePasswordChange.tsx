@@ -26,7 +26,7 @@ interface ForcePasswordChangeProps {
 export default function ForcePasswordChange({ user, profile }: ForcePasswordChangeProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { refreshRole } = useRole();
+  const { role, refreshRole } = useRole();
   
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -57,10 +57,10 @@ export default function ForcePasswordChange({ user, profile }: ForcePasswordChan
       // 2. Update Firestore profile status
       const batch = writeBatch(firestore);
       
-      // Determine collection name
+      // Determine collection name using the verified role from context
       let collectionName = 'staff';
-      if (profile.role === 'Student') collectionName = 'students';
-      if (profile.role === 'Parent') collectionName = 'parents';
+      if (role === 'Student') collectionName = 'students';
+      if (role === 'Parent') collectionName = 'parents';
 
       const userRef = doc(firestore, 'users', user.uid);
       const profileRef = doc(firestore, collectionName, user.uid);

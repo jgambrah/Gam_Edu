@@ -254,6 +254,7 @@ export default function StudentsV3Page() {
               firstName,
               lastName,
               email,
+              role: 'Student',
               classId: selectedClassId || null,
               gender: selectedGender || null,
               dateOfBirth: (values.dateOfBirth as string) || null,
@@ -303,6 +304,7 @@ export default function StudentsV3Page() {
             dateOfBirth: (values.dateOfBirth as string) || null,
             address: (values.address as string) || null,
             photoURL: photoURL || null,
+            role: 'Student',
             updatedAt: serverTimestamp()
         };
 

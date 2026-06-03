@@ -165,6 +165,7 @@ export default function ParentsPage() {
               firstName: values.firstName,
               lastName: values.lastName,
               email: values.email,
+              role: 'Parent',
               phone: values.phone,
               address: values.address,
               studentIds: studentIds,
@@ -204,6 +205,7 @@ export default function ParentsPage() {
         await updateDoc(parentRef, { 
             firstName: values.firstName,
             lastName: values.lastName,
+            role: 'Parent',
             phone: values.phone,
             address: values.address,
             studentIds, 
