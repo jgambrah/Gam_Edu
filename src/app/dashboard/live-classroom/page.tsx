@@ -134,7 +134,6 @@ const TutorSession: React.FC = () => {
   const startSession = async () => {
     console.log("--- WAKING UP DR. GAM ---");
 
-    // Pre-initialize and resume AudioContext immediately on user interaction
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     }
@@ -157,11 +156,9 @@ const TutorSession: React.FC = () => {
     setIsConnecting(true);
     
     try {
-      // 1. Request microphone access first to confirm permission
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       micStreamRef.current = stream;
 
-      // 2. Deduct credits only after microphone is granted
       const deductionSuccess = await saasService.deductCredits(5, 'Live Classroom Session Start');
       if (!deductionSuccess) {
           toast({
@@ -177,9 +174,8 @@ const TutorSession: React.FC = () => {
       const ai = new GoogleGenAI({ apiKey });
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      // Initialize Multimodal Live Session
       const session = ai.live.connect({
-        model: 'gemini-2.0-flash-exp', // Standard model for Multimodal Live
+        model: 'gemini-2.0-flash-exp',
         callbacks: {
           onopen: () => {
             console.log("✅ WebSocket established with Dr. GAM");
@@ -191,11 +187,13 @@ const TutorSession: React.FC = () => {
             scriptProcessorRef.current = scriptProcessor;
             
             scriptProcessor.onaudioprocess = (e) => {
-              if (!sessionRef.current) return;
+              // Use the session directly to avoid potential race conditions with sessionRef.current
+              if (!session || typeof session.sendRealtimeInput !== 'function') return;
+              
               const inputData = e.inputBuffer.getChannelData(0);
               const pcmBlob = createBlob(inputData);
               try {
-                sessionRef.current.sendRealtimeInput({ media: pcmBlob });
+                session.sendRealtimeInput({ media: pcmBlob });
               } catch (err) {
                 console.error('❌ Error sending audio:', err);
               }
@@ -204,10 +202,11 @@ const TutorSession: React.FC = () => {
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
 
-            // Kickstart the greeting
-            sessionRef.current.send({
-                text: "Hello Dr. GAM! I am ready to learn."
-            });
+            if (session && typeof session.send === 'function') {
+                session.send({
+                    text: "Hello Dr. GAM! I am ready to learn."
+                });
+            }
           },
           
           onclose: (event: any) => {

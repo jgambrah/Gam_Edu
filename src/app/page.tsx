@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -91,8 +92,8 @@ export default function LoginPage() {
       let message = "Invalid email or password.";
       
       // Clearer error feedback for common issues
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        message = "Incorrect email or password. Please check your credentials and try again.";
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-email' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        message = "The email or password you entered is incorrect. Please check your credentials and try again.";
       } else if (error.code === 'auth/too-many-requests') {
         message = "Too many attempts. Your account is temporarily locked for security. Try again later.";
       } else if (error.code === 'auth/network-request-failed') {
