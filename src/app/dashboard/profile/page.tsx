@@ -12,13 +12,15 @@ export default function MyProfilePage() {
   const { user } = useUser();
   const { profile, role } = useRole();
 
+  const isStaff = role && role !== 'Student' && role !== 'Parent';
+
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900">
           My <span className="text-blue-600">Identity</span>
         </h1>
-        <p className="text-slate-500 font-bold text-xs uppercase italic tracking-widest">Personal Verification & Digital Autograph</p>
+        <p className="text-slate-500 font-bold text-xs uppercase italic tracking-widest">Personal Verification & Security Profile</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-8">
@@ -56,15 +58,15 @@ export default function MyProfilePage() {
                 <Shield className="h-6 w-6 text-indigo-400 mb-2"/>
                 <h4 className="font-bold text-sm uppercase tracking-tight">Enterprise Security</h4>
                 <p className="text-[10px] leading-relaxed opacity-70 font-medium">
-                    Your profile is part of the school's verified cloud directory. Digital signatures and photo IDs are cryptographically tied to your specific credentials.
+                    Your profile is part of the school's verified cloud directory. Photo IDs {isStaff ? 'and digital signatures' : ''} are cryptographically tied to your specific credentials.
                 </p>
             </div>
         </div>
 
-        {/* RIGHT: SIGNATURE & PHOTO MANAGEMENT */}
+        {/* RIGHT: PHOTO & SIGNATURE MANAGEMENT */}
         <div className="md:col-span-2 space-y-8">
             <ProfilePhotoManager />
-            <SignatureManager />
+            {isStaff && <SignatureManager />}
         </div>
       </div>
     </div>
