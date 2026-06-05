@@ -14,7 +14,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Search, CheckCircle2, CalendarIcon, Coins, AlertCircle, RefreshCw, Users, Info } from 'lucide-react';
+import { Loader2, Search, CheckCircle2, CalendarIcon, Coins, AlertCircle, RefreshCw, Users, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { generateNextReceiptId } from '@/lib/student-utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -37,6 +37,7 @@ interface AuditSummary {
     billsFound: number;
     missingInvoices: number;
     alreadyPaid: number;
+    missingStudents: { id: string, name: string }[];
 }
 
 export default function BulkDailyReceiptsPage() {
@@ -57,6 +58,7 @@ export default function BulkDailyReceiptsPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [auditSummary, setAuditSummary] = useState<AuditSummary | null>(null);
+    const [showMissingNames, setShowMissingNames] = useState(false);
 
     // 1. Load Classes for Dropdown
     useEffect(() => {
@@ -81,11 +83,11 @@ export default function BulkDailyReceiptsPage() {
         setPaymentData({});
         setAuditSummary(null);
         setSearchTerm('');
+        setShowMissingNames(false);
 
         try {
             const dayStart = startOfDay(date);
             const dayEnd = endOfDay(date);
-            const dateStr = format(date, 'yyyy-MM-dd');
             
             // A. FETCH ATTENDANCE (To see who should have been billed)
             const attQuery = query(
@@ -136,16 +138,25 @@ export default function BulkDailyReceiptsPage() {
                 }
             });
 
-            // C. CALCULATE AUDIT
+            // C. CALCULATE AUDIT & COLLECT NAMES
             let missingCount = 0;
             let alreadyPaidCount = 0;
+            const missingList: { id: string, name: string }[] = [];
+
+            // Get student metadata to ensure we have the names if attendance record is incomplete
+            const stuSnap = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
+            const stuMetaMap = new Map(stuSnap.docs.map(d => [d.id, d.data()]));
 
             studentsPresent.forEach(att => {
                 const bill = existingBillsMap.get(att.studentId);
                 if (!bill) {
-                    // Logic check: only flag as missing if not explicitly marked as Termly in attendance (future proofing)
                     if (att.canteenMode !== 'Termly' && att.transportMode !== 'Termly') {
                         missingCount++;
+                        const meta: any = stuMetaMap.get(att.studentId);
+                        missingList.push({
+                            id: att.studentId,
+                            name: att.studentName || (meta ? `${meta.firstName} ${meta.lastName}` : 'Unknown')
+                        });
                     }
                 } else {
                     const balance = bill.billedAmount - (bill.amountPaid || 0) - (bill.waiverAmount || 0);
@@ -157,7 +168,8 @@ export default function BulkDailyReceiptsPage() {
                 totalPresent: studentsPresent.length,
                 billsFound: relevantBills.length,
                 missingInvoices: missingCount,
-                alreadyPaid: alreadyPaidCount
+                alreadyPaid: alreadyPaidCount,
+                missingStudents: missingList
             });
 
             if (relevantBills.length === 0 && missingCount === 0) {
@@ -305,7 +317,7 @@ export default function BulkDailyReceiptsPage() {
 
             <Card className="border-t-4 border-t-green-500 shadow-sm rounded-2xl">
                 <CardHeader>
-                    <CardTitle className="text-lg">1. Load Records for Reconcilliation</CardTitle>
+                    <CardTitle className="text-lg">1. Load Records for Reconciliation</CardTitle>
                     <CardDescription>Fetch attendance logs and unpaid bills to generate the receipting roster.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col md:flex-row gap-4 items-end">
@@ -344,7 +356,7 @@ export default function BulkDailyReceiptsPage() {
                         </Select>
                     </div>
 
-                    <Button onClick={handleLoadBills} disabled={isLoading} className="bg-green-600 hover:bg-green-700 w-full md:w-auto h-12 px-8 font-black uppercase tracking-widest">
+                    <Button onClick={handleLoadBills} disabled={isLoading} className="bg-green-600 hover:bg-green-700 w-full md:w-auto h-12 px-8 font-black uppercase tracking-widest text-white transition-all active:scale-95">
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4"/>}
                         Scan & Find
                     </Button>
@@ -394,16 +406,46 @@ export default function BulkDailyReceiptsPage() {
 
             {auditSummary && auditSummary.missingInvoices > 0 && (
                 <Alert className="bg-amber-50 border-amber-200 border-2 rounded-2xl animate-in slide-in-from-top-2">
-                    <Info className="h-5 w-5 text-amber-600" />
-                    <AlertTitle className="font-black text-amber-900 uppercase text-xs tracking-tight">Audit Warning: Bill/Attendance Mismatch</AlertTitle>
-                    <AlertDescription className="text-amber-800 text-xs font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
-                        <span>We found {auditSummary.missingInvoices} students who were marked present but have no daily bill for {serviceType}. This usually happens if attendance was taken before service rates were set or if the student profile is incomplete.</span>
-                        <Button asChild size="sm" variant="outline" className="border-amber-300 text-amber-700 bg-white hover:bg-amber-100 font-bold rounded-xl shrink-0">
-                            <Link href="/dashboard/finance/settings">
-                                <RefreshCw className="mr-2 h-3 w-3" /> Sync Missing Invoices
-                            </Link>
-                        </Button>
-                    </AlertDescription>
+                    <div className="flex flex-col gap-4 w-full">
+                        <div className="flex items-start gap-3">
+                            <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                                <AlertTitle className="font-black text-amber-900 uppercase text-xs tracking-tight">Audit Warning: Bill/Attendance Mismatch</AlertTitle>
+                                <AlertDescription className="text-amber-800 text-xs font-medium mt-1">
+                                    We found {auditSummary.missingInvoices} students who were marked present but have no daily bill for {serviceType}.
+                                </AlertDescription>
+                            </div>
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => setShowMissingNames(!showMissingNames)}
+                                className="text-amber-700 hover:bg-amber-100 font-bold text-[10px] uppercase tracking-widest h-8 px-3"
+                            >
+                                {showMissingNames ? <ChevronUp className="mr-1 h-3 w-3"/> : <ChevronDown className="mr-1 h-3 w-3"/>}
+                                {showMissingNames ? "Hide Names" : "View Affected Students"}
+                            </Button>
+                        </div>
+
+                        {showMissingNames && (
+                            <div className="bg-white/50 border border-amber-200 rounded-xl p-3 animate-in fade-in slide-in-from-top-1">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                    {auditSummary.missingStudents.map((s) => (
+                                        <div key={s.id} className="flex flex-col p-2 bg-white rounded-lg border border-amber-100 shadow-sm">
+                                            <span className="font-bold text-slate-800 text-[11px] truncate">{s.name}</span>
+                                            <span className="text-[9px] font-mono text-slate-400 uppercase tracking-tighter">ID: {s.id.slice(0,8)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-4 flex justify-end">
+                                    <Button asChild size="sm" variant="outline" className="border-amber-300 text-amber-700 bg-white hover:bg-amber-100 font-bold rounded-xl h-9">
+                                        <Link href="/dashboard/finance/settings">
+                                            <RefreshCw className="mr-2 h-3 w-3" /> Sync Missing Invoices
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </Alert>
             )}
 
@@ -482,7 +524,7 @@ export default function BulkDailyReceiptsPage() {
                     </CardContent>
                     <CardFooter className="bg-slate-50 border-t p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                         <Button variant="ghost" className="font-bold text-slate-400" onClick={() => {setPendingBills([]); setPaymentData({}); setAuditSummary(null); setSearchTerm('');}}>Clear Batch</Button>
-                        <Button onClick={handleProcessPayments} disabled={isProcessing} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 h-16 px-12 text-xl font-black rounded-2xl shadow-xl shadow-indigo-200 uppercase tracking-tighter">
+                        <Button onClick={handleProcessPayments} disabled={isProcessing} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 h-16 px-12 text-xl font-black rounded-2xl shadow-xl shadow-indigo-200 uppercase tracking-tighter text-white">
                             {isProcessing ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <CheckCircle2 className="mr-2 h-6 w-6"/>}
                             {"Receive GH₵" + pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)}
                         </Button>
