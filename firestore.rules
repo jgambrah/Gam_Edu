@@ -449,6 +449,12 @@ service cloud.firestore {
       allow write: if isAdmin() || isFinanceStaff() || isTransportStaff();
     }
 
+    match /admissionApplications/{applicationId} {
+      allow read, write, list: if isAdmin();
+      allow create: if isSignedIn();
+      allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
+    }
+
     // =========================================================
     // 8. JUNIOR / SENIOR ACADEMY & CLUBS
     // =========================================================
