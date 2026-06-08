@@ -10,12 +10,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, TrendingUp, BookOpen, User as UserIcon, Calendar, History, Sparkles, X } from 'lucide-react';
+import { Loader2, TrendingUp, BookOpen, User as UserIcon, Calendar, History, Sparkles, X, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Assessment, Student, Subject } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 
 export default function MyGradesPage() {
     const { user } = useUser();
