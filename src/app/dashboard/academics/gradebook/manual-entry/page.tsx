@@ -357,7 +357,7 @@ export default function GradebookPage() {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead>Student Name</TableHead>
-                                            <TableHead className="w-[150px]">Score (/{maxScore})</TableHead>
+                                            <TableHead className="w-[100px] sm:w-[150px] min-w-[100px]">Score (/{maxScore})</TableHead>
                                             <TableHead>Teacher Remark (Optional)</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -366,14 +366,14 @@ export default function GradebookPage() {
                                         {students?.map((s:any) => (
                                             <TableRow key={s.uid}>
                                                 <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
-                                                <TableCell>
+                                                <TableCell className="min-w-[100px]">
                                                     <div className="relative">
                                                         <Input 
                                                             type="number" 
                                                             min="0" max={maxScore}
                                                             value={scores[s.uid] ?? ''} 
                                                             onChange={e => handleScoreChange(s.uid, e.target.value)}
-                                                            className={`font-bold pr-3 sm:pr-10 ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
+                                                            className={`font-bold w-24 sm:w-full pr-3 sm:pr-10 ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
                                                         />
                                                         <span className="hidden sm:inline absolute right-3 top-2 text-[10px] text-muted-foreground uppercase font-bold">PTS</span>
                                                     </div>
