@@ -4,6 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
+import { logAuditEvent } from '@/lib/audit';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, setDoc, writeBatch, where, getDocs, runTransaction, increment } from 'firebase/firestore';
 import { 
   Banknote, Calculator, Settings, UserCog, CheckCircle2, 
@@ -99,6 +100,9 @@ function calculatePayslip(staff: any, config: any) {
 function PayrollSettingsForm() {
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { user } = useUser();
+    const { profile } = useRole();
+    const { schoolId } = useCurrentSchool();
     const [loading, setLoading] = useState(false);
     
     const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
@@ -114,6 +118,15 @@ function PayrollSettingsForm() {
                 payeeBrackets: DEFAULT_TAX_BRACKETS,
                 updatedAt: serverTimestamp()
             }, { merge: true });
+
+            await logAuditEvent({
+                firestore,
+                schoolId: schoolId || 'global',
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+                action: 'UPDATE_PAYROLL_SETTINGS',
+                details: "Reset global tax table and SSNIT contributions to default values"
+            });
+
             toast({ title: "Updated", description: "Tax tables updated to Ghana 2024 defaults." });
         } catch (e) {
             toast({ variant: 'destructive', title: "Error" });
@@ -164,6 +177,7 @@ function PayrollSettingsForm() {
 function RunPayroll({ staff, config }: { staff: any[], config: any }) {
     const firestore = useFirestore();
     const { user } = useUser();
+    const { profile } = useRole();
     const { toast } = useToast();
     const [isProcessing, setIsProcessing] = useState(false);
     const [month, setMonth] = useState(format(new Date(), 'yyyy-MM'));
@@ -219,6 +233,14 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
             });
 
             await batch.commit();
+
+            await logAuditEvent({
+                firestore,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user.displayName || user.email || 'Anonymous'),
+                action: 'RUN_PAYROLL',
+                details: `Processed monthly payroll run for ${month} for ${previewData.length} employees`
+            });
 
             toast({ title: "Payroll Processed", description: `Paid ${previewData.length} employees for ${month}.` });
             setPreviewData([]);

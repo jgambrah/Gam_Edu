@@ -2,7 +2,9 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
+import { useRole } from '@/context/role-context';
+import { logAuditEvent } from '@/lib/audit';
 import { collection, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
 import { UserRole, STAFF_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
@@ -53,6 +55,8 @@ type Subject = {
 // ═════════════════════════════════════════════════════════════════════════════
 export default function StaffManagementPage() {
   const firestore = useFirestore();
+  const { user } = useUser();
+  const { profile } = useRole();
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool();
 
@@ -126,6 +130,14 @@ export default function StaffManagementPage() {
       const result = await createNewUser(email, 'password123', newStaffRole, { firstName, lastName }, adminSchoolId);
       if ('error' in result) throw new Error(result.error);
 
+      await logAuditEvent({
+        firestore,
+        schoolId: adminSchoolId,
+        userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+        action: 'ADD_STAFF',
+        details: `Created new staff account ${firstName} ${lastName} with role ${newStaffRole}`
+      });
+
       toast({ title: 'Staff added', description: `${firstName} ${lastName} has been created.` });
       setIsAddOpen(false);
       loadData();
@@ -175,6 +187,14 @@ export default function StaffManagementPage() {
         }
       }
 
+      await logAuditEvent({
+        firestore,
+        schoolId: adminSchoolId,
+        userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+        action: 'UPDATE_STAFF',
+        details: `Updated profile details and configurations for staff ${firstName} ${lastName}`
+      });
+
       toast({ title: 'Saved', description: `${firstName}'s details have been updated.` });
       setEditingStaff(null);
       loadData();
@@ -189,8 +209,19 @@ export default function StaffManagementPage() {
   // ── delete staff ───────────────────────────────────────────────────────────
   const handleDelete = async (id: string) => {
     if (!firestore || !confirm('Delete this staff member? This cannot be undone.')) return;
+    const staffObj = staff.find(m => m.id === id);
+    const staffName = staffObj ? `${staffObj.firstName} ${staffObj.lastName}` : `Staff UID ${id}`;
     try {
       await deleteDoc(doc(firestore, 'staff', id));
+
+      await logAuditEvent({
+        firestore,
+        schoolId: adminSchoolId,
+        userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+        action: 'DELETE_STAFF',
+        details: `Deleted staff account ${staffName}`
+      });
+
       setStaff(prev => prev.filter(m => m.id !== id));
       toast({ title: 'Deleted', description: 'Staff member removed.' });
     } catch (e: any) {

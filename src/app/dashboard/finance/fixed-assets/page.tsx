@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
+import { logAuditEvent } from '@/lib/audit';
 import { collection, query, orderBy, where, doc, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore';
 import { 
   Loader2, Plus, Landmark, Save, History, TrendingUp, PlusCircle, Calendar, Banknote, Eye, Trash2, ShieldCheck, Scale, FileText, Settings, Coins, Calculator
@@ -128,6 +129,8 @@ function calculateDepreciationSchedule(
 // --- SUB-COMPONENT: ADD ASSET FORM ---
 function AddAssetForm({ setOpen, schoolId, onSuccess }: { setOpen: (o: boolean) => void; schoolId: string; onSuccess: () => void }) {
   const firestore = useFirestore();
+  const { user } = useUser();
+  const { profile } = useRole();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -165,6 +168,14 @@ function AddAssetForm({ setOpen, schoolId, onSuccess }: { setOpen: (o: boolean) 
         currentBookValue: values.purchaseCost,
         status: 'Active',
         createdAt: serverTimestamp(),
+      });
+
+      await logAuditEvent({
+        firestore,
+        schoolId,
+        userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+        action: 'CREATE_FIXED_ASSET',
+        details: `Registered fixed asset ${values.name} (${values.assetCode}) with cost of GH₵${values.purchaseCost.toFixed(2)}`
       });
 
       toast({ title: "Asset Added", description: `${values.name} has been recorded in the fixed asset register.` });
@@ -260,7 +271,7 @@ function AddAssetForm({ setOpen, schoolId, onSuccess }: { setOpen: (o: boolean) 
 
 // --- MAIN PORTAL COMPONENT ---
 export default function FixedAssetPage() {
-  const { role } = useRole();
+  const { role, profile } = useRole();
   const firestore = useFirestore();
   const { user } = useUser();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
@@ -424,6 +435,15 @@ export default function FixedAssetPage() {
       });
 
       await batch.commit();
+
+      await logAuditEvent({
+        firestore,
+        schoolId,
+        userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user.displayName || user.email || 'Anonymous'),
+        action: 'RUN_DEPRECIATION',
+        details: `Processed depreciation run for period ${values.period} on ${previewDepreciation.length} assets totaling GH₵${totalPreviewDepreciation.toFixed(2)}`
+      });
+
       toast({ title: "Depreciation Completed", description: `Processed depreciation batch for ${previewDepreciation.length} assets.` });
       refetchAssets();
       refetchLogs();
@@ -493,6 +513,15 @@ export default function FixedAssetPage() {
       });
 
       await batch.commit();
+
+      await logAuditEvent({
+        firestore,
+        schoolId,
+        userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user.displayName || user.email || 'Anonymous'),
+        action: 'DISPOSE_ASSET',
+        details: `Disposed asset ${disposalAsset.name} (${disposalAsset.assetCode}) for proceeds of GH₵${values.proceeds.toFixed(2)}`
+      });
+
       toast({ title: "Asset Disposed", description: `${disposalAsset.name} disposed. Realized gain/loss recorded.` });
       refetchAssets();
       setIsDisposalOpen(false);

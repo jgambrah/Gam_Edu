@@ -4,6 +4,7 @@ import { useState, useMemo, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { logAuditEvent } from '@/lib/audit';
 import { collection, query, where, doc, writeBatch, serverTimestamp, orderBy } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -211,6 +212,7 @@ function PaymentVoucherForm({
 }) {
     const firestore = useFirestore();
     const { user } = useUser();
+    const { profile } = useRole();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -271,6 +273,9 @@ function PaymentVoucherForm({
             const whtRateVal = GHANA_WHT_RATES.find(r => r.id === values.whtRateId)?.rate ?? 0;
             const vatRateVal = GHANA_VAT_RATES.find(r => r.id === values.vatRateId)?.rate ?? 0;
 
+            let auditAction = '';
+            let auditDetails = '';
+
             if (values.mode === 'single') {
                 const pvNumber = `PV-${format(new Date(), 'yyyyMMdd')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
                 const pvRef = doc(collection(firestore, 'paymentVouchers'));
@@ -320,6 +325,9 @@ function PaymentVoucherForm({
                     createdAt: timestamp,
                     schoolId: schoolId
                 });
+
+                auditAction = 'CREATE_PAYMENT_VOUCHER';
+                auditDetails = `Created payment voucher ${pvNumber} for ${values.payee} of GH₵${net.toFixed(2)}`;
             } else {
                 const dateStr = format(new Date(), 'yyyyMMdd');
                 const randomPrefix = Math.floor(Math.random() * 100).toString().padStart(2, '0');
@@ -380,9 +388,21 @@ function PaymentVoucherForm({
                         schoolId: schoolId
                     });
                 }
+
+                auditAction = 'CREATE_PAYMENT_VOUCHER_BULK';
+                auditDetails = `Created batch of ${values.bulkPayees?.length} payment vouchers totaling GH₵${calculations.net.toFixed(2)}`;
             }
 
             await batch.commit();
+
+            await logAuditEvent({
+                firestore,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user.displayName || user.email || 'Anonymous'),
+                action: auditAction,
+                details: auditDetails
+            });
+
             toast({ 
                 title: "Vouchers Processed", 
                 description: values.mode === 'single' 

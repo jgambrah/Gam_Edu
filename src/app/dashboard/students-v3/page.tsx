@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
+import { logAuditEvent } from '@/lib/audit';
 import { 
   collection, 
   getDocs, 
@@ -46,7 +47,7 @@ import { sendSMSAction } from '@/app/actions/sms';
 export default function StudentsV3Page() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
-  const { role } = useRole();
+  const { role, profile } = useRole();
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchool } = useCurrentSchool();
 
@@ -209,11 +210,23 @@ export default function StudentsV3Page() {
     const isCurrentlyActive = currentStatus === 'Active' || !currentStatus;
     const newStatus = isCurrentlyActive ? 'Inactive' : 'Active';
 
+    const studentObj = students.find(s => s.id === id);
+    const studentName = studentObj ? `${studentObj.firstName} ${studentObj.lastName}` : `Student (UID: ${id})`;
+
     try {
         await updateDoc(doc(firestore, 'students', id), {
             enrollmentStatus: newStatus,
             updatedAt: serverTimestamp()
         });
+
+        await logAuditEvent({
+            firestore,
+            schoolId: adminSchoolId,
+            userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+            action: newStatus === 'Inactive' ? 'ARCHIVE_STUDENT' : 'RESTORE_STUDENT',
+            details: `${newStatus === 'Inactive' ? 'Archived' : 'Restored'} student ${studentName}`
+        });
+
         toast({ title: "Status Updated", description: `Student is now ${newStatus}.` });
         loadData();
     } catch (error: any) {
@@ -269,6 +282,14 @@ export default function StudentsV3Page() {
               schoolId: adminSchoolId
           });
 
+          await logAuditEvent({
+              firestore: firestore!,
+              schoolId: adminSchoolId,
+              userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+              action: 'ADD_STUDENT',
+              details: `Enrolled new student ${firstName} ${lastName} with Student ID ${newStudentId}`
+          });
+
           toast({ title: "Success", description: `Student ${firstName} enrolled. ID: ${newStudentId}.` });
           setIsAddOpen(false);
           loadData(); 
@@ -317,6 +338,14 @@ export default function StudentsV3Page() {
         }
 
         await updateDoc(studentRef, updateData);
+
+        await logAuditEvent({
+            firestore,
+            schoolId: adminSchoolId,
+            userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+            action: 'UPDATE_STUDENT',
+            details: `Updated student profile details for ${updateData.firstName} ${updateData.lastName}`
+        });
 
         toast({ title: "Updated", description: "Student profile saved." });
         setEditingStudent(null);
