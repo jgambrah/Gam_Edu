@@ -32,6 +32,7 @@ function initializeFirebaseOnClient(): FirebaseServices | null {
   }
 
   // Otherwise, initialize them for the first time
+  console.log("Firebase Config loaded in client:", firebaseConfig);
   const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
   
   let firestoreInstance: Firestore;
@@ -79,4 +80,4 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
 }
 
 // Re-export auth if needed elsewhere, though using the hook is preferred.
-export const auth = services?.auth as Auth;
+export const auth = (services as any)?.auth as Auth;

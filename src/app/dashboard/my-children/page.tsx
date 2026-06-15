@@ -18,6 +18,14 @@ import { cn } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { StudentDisplay } from '@/components/student-display';
+
+const toDateSafe = (d: any): Date => {
+  if (!d) return new Date();
+  if (typeof d.toDate === 'function') return d.toDate();
+  if (d instanceof Date) return d;
+  if (d.seconds) return new Date(d.seconds * 1000);
+  return new Date(d);
+};
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function AttendanceHistory({ studentId }: { studentId: string }) {
@@ -193,7 +201,7 @@ function BehavioralHistory({ studentId }: { studentId: string }) {
                                     <span className="font-bold text-slate-800 text-sm">{rec.incidentType}</span>
                                 </div>
                                 <span className="text-[10px] uppercase font-bold text-slate-400">
-                                    {rec.date?.toDate ? format(rec.date.toDate(), 'PPP') : 'N/A'}
+                                    {rec.date ? format(toDateSafe(rec.date), 'PPP') : 'N/A'}
                                 </span>
                             </CardHeader>
                             <CardContent className="pt-4">
@@ -368,7 +376,7 @@ function MyChildrenPageContent() {
                 </div>
 
                 <Accordion type="single" collapsible defaultValue={studentIds[0]} className="w-full">
-                    {studentIds.map(uid => (
+                    {studentIds.map((uid: string) => (
                         <StudentAccordionItem key={uid} studentUid={uid} />
                     ))}
                 </Accordion>

@@ -173,7 +173,7 @@ function DetectiveDeskTab({ schoolId }: { schoolId: string | null }) {
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]); 
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
 
-  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
+  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   // 1. Get Student Info
   const { data: studentData } = useCollection<Student>(
@@ -318,7 +318,7 @@ function DailyParadoxTab({ schoolId }: { schoolId: string | null }) {
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]); 
   const [selectedParadoxId, setSelectedParadoxId] = useState<string | null>(null);
 
-  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
+  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   const { data: studentData } = useCollection<Student>(
     useMemoFirebase(() => (role === 'Student' && user && schoolId) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, schoolId])
@@ -447,7 +447,7 @@ function DailyParadoxTab({ schoolId }: { schoolId: string | null }) {
 
 // --- SUB-COMPONENT: Debate Arena Tab ---
 function DebateArenaTab({ schoolId }: { schoolId: string | null }) {
-  const { user } = useAuth();
+  const { user } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -456,7 +456,7 @@ function DebateArenaTab({ schoolId }: { schoolId: string | null }) {
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]);
   const [customTopic, setCustomTopic] = useState('');
   
-  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
+  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role || '');
   
   const { data: studentData } = useCollection<Student>(
     useMemoFirebase(() => (role === 'Student' && user && schoolId) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, schoolId])
@@ -539,7 +539,7 @@ function DebateArenaTab({ schoolId }: { schoolId: string | null }) {
 // --- MAIN PAGE COMPONENT ---
 export default function ThinkTankPage() {
   const { role } = useRole();
-  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
+  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role || '');
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   if (isLoadingSchool) {

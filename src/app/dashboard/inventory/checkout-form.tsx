@@ -33,8 +33,8 @@ export function CheckoutForm({ item, staffList, setOpen, onCheckedOut }: Checkou
   });
 
   async function onSubmit(values: z.infer<typeof checkoutSchema>) {
-    if (!schoolId) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Cannot determine school context.' });
+    if (!schoolId || !firestore) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Cannot determine school context or connect to database.' });
         return;
     }
     setIsSubmitting(true);

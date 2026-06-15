@@ -39,6 +39,7 @@ function ResourceCreationForm({ setOpen }: { setOpen: (open: boolean) => void })
   });
 
   async function onSubmit(values: z.infer<typeof resourceSchema>) {
+    if (!firestore) return;
     setIsSubmitting(true);
     try {
       await addDoc(collection(firestore, 'resources'), values);

@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { useAuth, useFirestore } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { addDoc, collection } from 'firebase/firestore';
@@ -41,7 +41,7 @@ export function AssignmentSubmissionDialog({
   student
 }: AssignmentSubmissionDialogProps) {
   const firestore = useFirestore();
-  const {user} = useAuth();
+  const {user} = useUser();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,7 +53,7 @@ export function AssignmentSubmissionDialog({
   });
 
   async function onSubmit(values: z.infer<typeof studentSubmissionSchema>) {
-    if(!user || !student) return;
+    if(!user || !student || !firestore) return;
     setIsSubmitting(true);
     try {
       const submission: Omit<StudentSubmission, 'id'> = {
@@ -63,10 +63,10 @@ export function AssignmentSubmissionDialog({
         submissionType: 'text',
         content: values.content,
         submittedAt: new Date(),
-        status: new Date() > new Date(assignment.dueDate.toDate()) ? 'Late' : 'Submitted',
+        status: new Date() > (typeof (assignment.dueDate as any).toDate === 'function' ? (assignment.dueDate as any).toDate() : new Date(assignment.dueDate)) ? 'Late' : 'Submitted',
       };
 
-      await addDoc(collection(firestore, `assignments/${assignment.id}/submissions`), submission);
+      await addDoc(collection(firestore!, `assignments/${assignment.id}/submissions`), submission);
       
       toast({
         title: 'Submission Successful',

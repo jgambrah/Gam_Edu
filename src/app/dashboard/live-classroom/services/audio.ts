@@ -59,5 +59,5 @@ export const decodeAudioData = async (
  * @returns A Blob object.
  */
 export const createBlob = (data: Float32Array): Blob => {
-  return new Blob([data.buffer], { type: 'application/octet-stream' });
+  return new Blob([data.buffer as ArrayBuffer], { type: 'application/octet-stream' });
 };

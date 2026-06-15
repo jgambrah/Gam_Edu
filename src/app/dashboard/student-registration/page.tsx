@@ -27,7 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { useAuth, useFirestore } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { collection, serverTimestamp, doc } from 'firebase/firestore';
@@ -38,7 +38,7 @@ import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useRole } from '@/context/role-context';
 
 function StudentRegistrationForm() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,7 +76,7 @@ function StudentRegistrationForm() {
   const watchParent2AddressSame = form.watch('parent2.addressSameAsStudent');
 
   async function onSubmit(values: StudentRegistrationData) {
-    if (!user) return;
+    if (!user || !firestore) return;
     setIsSubmitting(true);
     try {
         const appId = `APP-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;

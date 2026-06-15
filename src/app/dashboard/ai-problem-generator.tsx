@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, writeBatch, doc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Wand2 } from 'lucide-react';
@@ -30,7 +30,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 type Subject = 'Math' | 'Science' | 'ELA Grammar';
 
 export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; setOpen: (open: boolean) => void }) {
-  const { user: hookUser } = useAuth();
+  const { user: hookUser } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
@@ -96,7 +96,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
         toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.'});
         return;
     }
-    if (!currentUser || !schoolId) {
+    if (!currentUser || !schoolId || !firestore) {
         toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out or missing school data. Please refresh the page.' });
         return;
     }
@@ -108,9 +108,9 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
         'ELA Grammar': 'ela_grammar_drills',
     };
     const collectionName = collectionNameMap[subject];
-    const problemsCollection = collection(firestore, collectionName);
+    const problemsCollection = collection(firestore!, collectionName);
 
-    const batch = writeBatch(firestore);
+    const batch = writeBatch(firestore!);
 
     generatedProblems.problems.forEach(problem => {
         const problemRef = doc(problemsCollection);

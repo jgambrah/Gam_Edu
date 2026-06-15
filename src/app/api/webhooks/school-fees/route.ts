@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
             accountantName: 'System (Online)',
             currentBalance: FieldValue.increment(amountFromPaystack),
             updatedAt: new Date(),
-            dateOpened: serverTimestamp()
+            dateOpened: FieldValue.serverTimestamp()
         }, { merge: true });
 
         // D. Log transaction to the online till for accounting audits

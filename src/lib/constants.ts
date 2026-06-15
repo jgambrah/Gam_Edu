@@ -1,4 +1,4 @@
-import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
+import type { NavItem, UserRole } from '@/lib/types';
 import {
   LayoutDashboard,
   Users,
@@ -274,13 +274,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/clubs',
     title: 'Clubs & Activities',
     icon: Activity,
-    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+    roles: ['Student', 'Teacher', 'Administrator', 'Director', 'Parent'],
     subItems: [
         {
             path: '/dashboard/nursery-bloom',
             title: 'Nursery Bloom',
             icon: Sparkles,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+            roles: ['Student', 'Teacher', 'Administrator', 'Director', 'Parent'],
         },
         {
             path: '/dashboard/senior-academy',
@@ -547,4 +547,110 @@ export const MOCK_TERMS = [
   'First Term',
   'Second Term',
   'Third Term',
+];
+
+export const NUMERACY_DATA = {
+  numbers: [
+    { value: 1, word: 'One', prompt: 'a cute single cartoon lion cub playing with a ball' },
+    { value: 2, word: 'Two', prompt: 'two cute cartoon penguins sliding on ice' },
+    { value: 3, word: 'Three', prompt: 'three cute friendly cartoon monkeys hanging on tree branches' },
+    { value: 4, word: 'Four', prompt: 'four cute cartoon puppies running in a garden' },
+    { value: 5, word: 'Five', prompt: 'five colorful cartoon butterflies flying around flowers' }
+  ],
+  sequence: [
+    { question: 'What number is missing?', sequence: [1, 2, null, 4], answer: 3, options: [2, 3, 5] },
+    { question: 'What number is missing?', sequence: [null, 6, 7, 8], answer: 5, options: [4, 5, 9] },
+    { question: 'What number is missing?', sequence: [2, 4, 6, null], answer: 8, options: [7, 8, 10] }
+  ],
+  numComparison: [
+    { q: 'Which number is bigger?', val1: 5, val2: 3, answer: 5 },
+    { q: 'Which number is smaller?', val1: 2, val2: 8, answer: 2 },
+    { q: 'Which number is bigger?', val1: 7, val2: 9, answer: 9 }
+  ],
+  numberWords: [
+    { digit: 1, word: 'One', prompt: 'cartoon number one with happy eyes and a smile' },
+    { digit: 2, word: 'Two', prompt: 'cartoon number two with happy eyes and a smile' },
+    { digit: 3, word: 'Three', prompt: 'cartoon number three with happy eyes and a smile' }
+  ],
+  numberBonds: [
+    { target: 5, part1: 2, part2: 3 },
+    { target: 5, part1: 4, part2: 1 },
+    { target: 4, part1: 2, part2: 2 }
+  ],
+  addition: [
+    { val1: 2, val2: 3, prompt: 'five cute cartoon apples arranged in a row', icon: 'fa-face-smile', theme: 'apples' },
+    { val1: 3, val2: 1, prompt: 'four cute cartoon stars smiling', icon: 'fa-magic', theme: 'stars' }
+  ],
+  subtraction: [
+    { val1: 5, val2: 2, prompt: 'three cute cartoon fish swimming in a bowl', icon: 'fa-face-smile' },
+    { val1: 4, val2: 1, prompt: 'three cute cartoon flowers in the garden', icon: 'fa-face-smile' }
+  ],
+  tensUnits: [
+    { number: 12, tens: 1, units: 2, prompt: 'a bundle of 10 cartoon sticks and 2 single sticks next to it' },
+    { number: 25, tens: 2, units: 5, prompt: 'two boxes of 10 cartoon blocks and 5 single blocks next to them' }
+  ],
+  grouping: [
+    { groupSize: 2, theme: 'shoes', totalItems: 6, prompt: 'three groups of two shoes on a bright floor' },
+    { groupSize: 3, theme: 'birds', totalItems: 9, prompt: 'three groups of three birds sitting on branches' }
+  ],
+  time: [
+    { hour: 3, phrase: "It is three o'clock" },
+    { hour: 9, phrase: "It is nine o'clock" }
+  ],
+  money: [
+    { amount: 5, prompt: 'five golden cartoon coins stacked neatly on a table' },
+    { amount: 8, prompt: 'eight cartoon coins spread out on a wooden table' }
+  ],
+  measurement: {
+    weight: [
+      {
+        q: 'Which one is heavier?',
+        items: [
+          { prompt: 'a cartoon elephant smiling', size: 'lg', label: 'Elephant' },
+          { prompt: 'a cartoon feather floating', size: 'sm', label: 'Feather' }
+        ],
+        correct: 0
+      }
+    ],
+    height: [
+      {
+        q: 'Which one is taller?',
+        items: [
+          { prompt: 'a cartoon giraffe standing tall', size: 'lg', label: 'Giraffe' },
+          { prompt: 'a cartoon mouse looking up', size: 'sm', label: 'Mouse' }
+        ],
+        correct: 0
+      }
+    ]
+  },
+  shapes: [
+    { name: 'Circle', prompt: 'a happy cartoon circle with googly eyes' },
+    { name: 'Square', prompt: 'a happy cartoon square with googly eyes' },
+    { name: 'Triangle', prompt: 'a happy cartoon triangle with googly eyes' }
+  ],
+  spatial: [
+    { target: 'bird', prompt: 'a cute yellow cartoon bird sitting above a red wooden birdhouse', position: 'above' as const },
+    { target: 'cat', prompt: 'a cute cartoon kitten sitting below a large green leaf', position: 'below' as const }
+  ],
+  comparisons: [
+    {
+      q: 'Which one is bigger?',
+      items: [
+        { prompt: 'a huge cartoon balloon', size: 'lg', label: 'Big Balloon' },
+        { prompt: 'a tiny cartoon balloon', size: 'sm', label: 'Small Balloon' }
+      ],
+      correct: 0
+    }
+  ],
+  patterns: [
+    { sequence: ['star', 'circle', 'star', 'circle'], options: ['star', 'circle'], next: 'star' }
+  ],
+  oneToOne: [
+    { name: 'bunnies', itemName: 'carrots', count: 3, character: 'Rabbit', item: 'Carrot' }
+  ]
+};
+
+export const COUNTING_TASK_DATA = [
+  { count: 3, theme: 'apples', prompt: 'three shiny red cartoon apples in a wooden basket' },
+  { count: 5, theme: 'dogs', prompt: 'five cute fluffy cartoon puppies playing in a garden' }
 ];

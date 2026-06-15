@@ -291,7 +291,7 @@ export default function PayrollPage() {
     const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
     const { data: config, isLoading: isLoadingSettings } = useDoc(settingsRef);
 
-    const canManage = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canManage = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
     const isLoading = isLoadingStaff || isLoadingSettings;
 

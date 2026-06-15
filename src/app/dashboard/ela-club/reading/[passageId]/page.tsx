@@ -4,7 +4,7 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuth, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { ElaReadingPassage } from '@/lib/types';
 import { doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -20,10 +20,10 @@ function ReadingTestComponent() {
     const { passageId } = useParams();
     const router = useRouter();
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user } = useUser();
     const { toast } = useToast();
 
-    const passageRef = useMemoFirebase(() => doc(firestore, 'ela_reading_passages', passageId as string), [firestore, passageId]);
+    const passageRef = useMemoFirebase(() => (firestore && passageId) ? doc(firestore, 'ela_reading_passages', passageId as string) : null, [firestore, passageId]);
     const { data: passage, isLoading } = useDoc<ElaReadingPassage>(passageRef);
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);

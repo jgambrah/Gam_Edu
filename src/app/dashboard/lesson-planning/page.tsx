@@ -16,6 +16,14 @@ import { LessonPlanForm } from './lesson-plan-form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
+const toDateSafe = (d: any): Date => {
+  if (!d) return new Date();
+  if (typeof d.toDate === 'function') return d.toDate();
+  if (d instanceof Date) return d;
+  if (d.seconds) return new Date(d.seconds * 1000);
+  return new Date(d);
+};
+
 type ClassData = { id: string, name: string };
 type StaffData = { uid: string, firstName: string, lastName: string };
 
@@ -154,7 +162,7 @@ export default function LessonPlanningPage() {
                         <div className='flex gap-4 text-muted-foreground'>
                             {role !== 'Teacher' && <span>{plan.teacherName}</span>}
                             <span>{plan.className}</span>
-                            <span>{format(plan.date.toDate(), 'PPP')}</span>
+                            <span>{format(toDateSafe(plan.date), 'PPP')}</span>
                         </div>
                     </div>
                   </AccordionTrigger>

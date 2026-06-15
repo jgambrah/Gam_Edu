@@ -55,9 +55,10 @@ export function GradeSubmissionDialog({
   });
 
   async function onSubmit(values: z.infer<typeof gradeSubmissionSchema>) {
+    if (!firestore) return;
     setIsSubmitting(true);
     try {
-      const submissionRef = doc(firestore, `assignments/${assignment.id}/submissions`, submission.id);
+      const submissionRef = doc(firestore!, `assignments/${assignment.id}/submissions`, submission.id);
       await updateDoc(submissionRef, {
         ...values,
         status: 'Graded',

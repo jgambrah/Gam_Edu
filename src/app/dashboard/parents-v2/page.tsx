@@ -249,10 +249,10 @@ export default function ParentsPage() {
     }
   };
 
-  const filteredParents = useMemo(() => parents.filter(p => searchStudent(p, searchTerm)), [parents, searchTerm]);
+  const filteredParents = useMemo(() => parents.filter(p => searchStudent(p as any, searchTerm)), [parents, searchTerm]);
   
   const filteredStudentsForModal = useMemo(() => {
-      let list = students.filter(s => searchStudent(s, studentSearch));
+      let list = students.filter(s => searchStudent(s as any, studentSearch));
       if (showOnlyUnlinked) {
           list = list.filter(s => !s.parentId || selectedStudentIds.includes(s.uid) || (editingParent && s.parentId === editingParent.uid));
       }

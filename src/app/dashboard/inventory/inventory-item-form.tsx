@@ -34,6 +34,7 @@ export function InventoryItemForm({ setOpen, onAdded, schoolId }: { setOpen: () 
   });
 
   async function onSubmit(values: z.infer<typeof inventoryItemSchema>) {
+    if (!firestore) return;
     setIsSubmitting(true);
     try {
       const batch = writeBatch(firestore);

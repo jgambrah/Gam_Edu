@@ -137,6 +137,7 @@ function MaterialEditorDialog({
   };
 
   const handleSave = async () => {
+    if (!firestore) return;
     if (!topicTitle) {
         toast({ variant: "destructive", title: "Missing Title", description: "Please enter a topic title." });
         return;
@@ -329,7 +330,7 @@ export default function BS7IntegratedSciencePage() {
   const [editorMode, setEditorMode] = useState<'create' | 'edit'>('create');
   const [selectedMaterial, setSelectedMaterial] = useState<LearningMaterial | undefined>(undefined);
 
-  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
+  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   const materialsQuery = useMemoFirebase(
     () => {
@@ -352,6 +353,7 @@ export default function BS7IntegratedSciencePage() {
     const groups: Record<string, Record<string, LearningMaterial[]>> = {};
 
     materials.forEach(mat => {
+        if (!mat.strand || !mat.subStrand) return;
         if (!groups[mat.strand]) groups[mat.strand] = {};
         if (!groups[mat.strand][mat.subStrand]) groups[mat.strand][mat.subStrand] = [];
         groups[mat.strand][mat.subStrand].push(mat);

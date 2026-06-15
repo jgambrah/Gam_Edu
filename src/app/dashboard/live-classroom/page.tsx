@@ -73,7 +73,7 @@ const TutorSession: React.FC = () => {
     () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
     [firestore, schoolId]
   );
-  const { data: schoolData, loading: isLoadingSchool } = useDoc(schoolRef);
+  const { data: schoolData, isLoading: isLoadingSchool } = useDoc(schoolRef);
 
   useEffect(() => {
     if (schoolId && schoolData && typeof schoolData.aiCredits === 'number') {
@@ -171,11 +171,11 @@ const TutorSession: React.FC = () => {
           return;
       }
 
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = new GoogleGenAI({ apiKey, apiVersion: 'v1alpha' });
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
-      const session = ai.live.connect({
-        model: 'gemini-2.0-flash-exp',
+      const session = await ai.live.connect({
+        model: 'gemini-2.0-flash-live-001',
         callbacks: {
           onopen: () => {
             console.log("✅ WebSocket established with Dr. GAM");
@@ -187,13 +187,34 @@ const TutorSession: React.FC = () => {
             scriptProcessorRef.current = scriptProcessor;
             
             scriptProcessor.onaudioprocess = (e) => {
-              // Use the session directly to avoid potential race conditions with sessionRef.current
-              if (!session || typeof session.sendRealtimeInput !== 'function') return;
+              // Access via sessionRef.current to avoid temporal dead zone / uninitialized access
+              if (!sessionRef.current || typeof sessionRef.current.sendRealtimeInput !== 'function') return;
               
               const inputData = e.inputBuffer.getChannelData(0);
-              const pcmBlob = createBlob(inputData);
+              
+              // Convert Float32Array to Int16 PCM
+              const pcm16 = new Int16Array(inputData.length);
+              for (let i = 0; i < inputData.length; i++) {
+                const s = Math.max(-1, Math.min(1, inputData[i]));
+                pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+              }
+              
+              // Convert ArrayBuffer to Base64
+              let binary = '';
+              const bytes = new Uint8Array(pcm16.buffer);
+              const len = bytes.byteLength;
+              for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+              }
+              const base64 = window.btoa(binary);
+
               try {
-                session.sendRealtimeInput({ media: pcmBlob });
+                sessionRef.current.sendRealtimeInput({
+                  audio: {
+                    data: base64,
+                    mimeType: "audio/pcm;rate=16000"
+                  }
+                });
               } catch (err) {
                 console.error('❌ Error sending audio:', err);
               }
@@ -201,27 +222,22 @@ const TutorSession: React.FC = () => {
             
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputAudioContext.destination);
-
-            if (session && typeof session.send === 'function') {
-                session.send({
-                    text: "Hello Dr. GAM! I am ready to learn."
-                });
-            }
           },
           
           onclose: (event: any) => {
-            console.log("🚪 WebSocket CLOSED", event);
+            console.log("🚪 WebSocket CLOSED", event?.code, event?.reason, event);
             if (event && !event.wasClean) {
                 toast({
-                    title: "Class Ended",
-                    description: "The connection was interrupted. Please try starting the session again.",
+                    variant: "destructive",
+                    title: `Class Ended (Code ${event?.code || 'unknown'})`,
+                    description: event?.reason || "The connection was closed by the server. Please try starting the session again.",
                 });
             }
             endSession();
           },
 
           onmessage: async (message: LiveServerMessage) => {
-            const base64 = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
+            const base64 = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
             
             if (base64 && audioContextRef.current) {
               nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
@@ -248,11 +264,21 @@ const TutorSession: React.FC = () => {
         },
         config: {
           responseModalities: [Modality.AUDIO],
-          systemInstruction: `You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds. Speak with energy and enthusiasm. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`,
+          systemInstruction: {
+            parts: [{
+              text: `You are Dr. GAM, a magical nursery teacher. Your name is Dr. GAM. Use very simple English for 3-year-olds. Speak with energy and enthusiasm. When you want to show a picture on the magic board, say exactly: "SHOW BOARD: [Concept Name]".`
+            }]
+          },
         }
       });
       
       sessionRef.current = session;
+
+      if (sessionRef.current && typeof sessionRef.current.sendRealtimeInput === 'function') {
+          sessionRef.current.sendRealtimeInput({
+              text: "Hello Dr. GAM! I am ready to learn."
+          });
+      }
       
     } catch (err: any) {
       console.error("CRITICAL FAILURE:", err);

@@ -69,9 +69,17 @@ export function PushNotificationManager({ collectionName }: { collectionName: st
 
     try {
       const messaging = getMessaging(app);
+      
+      // Get the existing ready service worker registration (typically /sw.js)
+      let serviceWorkerRegistration;
+      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+        serviceWorkerRegistration = await navigator.serviceWorker.ready.catch(() => undefined);
+      }
+
       // VAPID key must be generated in Firebase Console
       const currentToken = await getToken(messaging, { 
-        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY 
+        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+        ...(serviceWorkerRegistration ? { serviceWorkerRegistration } : {})
       });
 
       if (currentToken) {

@@ -2,14 +2,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth, useFirestore } from '@/firebase'; // Adjust path to your firebase config
+import { useUser, useFirestore } from '@/firebase'; // Adjust path to your firebase config
 import { doc, setDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Loader2, Wrench } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SystemRepair({ onRepair }: { onRepair: () => void }) {
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);

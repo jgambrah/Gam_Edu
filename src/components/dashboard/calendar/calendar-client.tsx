@@ -88,7 +88,7 @@ function AddEventForm({ open, setOpen, selectedDate, schoolId }: { open: boolean
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title || !dateStr) return;
+        if (!title || !dateStr || !firestore) return;
         
         setIsSubmitting(true);
         try {
@@ -180,7 +180,7 @@ export default function SchoolCalendarPageContent() {
   const { toast } = useToast();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
-  const canManage = ['Administrator', 'Director'].includes(role);
+  const canManage = ['Administrator', 'Director'].includes(role || '');
 
   // Calendar Navigation State
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -221,7 +221,7 @@ export default function SchoolCalendarPageContent() {
   }, [events, selectedDate]);
 
   const handleDelete = async (id: string) => {
-      if (!confirm("Delete this event?")) return;
+      if (!confirm("Delete this event?") || !firestore) return;
       try {
           await deleteDoc(doc(firestore, 'school_calendar', id));
           toast({ title: "Deleted" });

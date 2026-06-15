@@ -1,4 +1,4 @@
-import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
+import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction } from '@/lib/types';
 import {
   LayoutDashboard,
   Users,
@@ -276,13 +276,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/clubs',
     title: 'Clubs & Activities',
     icon: Activity,
-    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+    roles: ['Student', 'Teacher', 'Administrator', 'Director', 'Parent'],
     subItems: [
         {
             path: '/dashboard/nursery-bloom',
             title: 'Nursery Bloom',
             icon: Sparkles,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+            roles: ['Student', 'Teacher', 'Administrator', 'Director', 'Parent'],
         },
         {
             path: '/dashboard/senior-academy',
@@ -555,4 +555,46 @@ export const MOCK_TERMS = [
   'First Term',
   'Second Term',
   'Third Term',
+];
+
+export const MOCK_CHART_OF_ACCOUNTS: ChartOfAccount[] = [
+  { accountId: '1000', name: 'Assets', type: 'Asset', isControlAccount: true },
+  { accountId: '1010', name: 'Cash at Bank', type: 'Asset', isControlAccount: false, parentAccountId: '1000', balance: 50000, schoolId: 'default' },
+  { accountId: '1020', name: 'Petty Cash', type: 'Asset', isControlAccount: false, parentAccountId: '1000', balance: 1500, schoolId: 'default' },
+  { accountId: '2000', name: 'Liabilities', type: 'Liability', isControlAccount: true },
+  { accountId: '2010', name: 'Accounts Payable', type: 'Liability', isControlAccount: false, parentAccountId: '2000', balance: 3400, schoolId: 'default' },
+  { accountId: '3000', name: 'Equity', type: 'Equity', isControlAccount: true },
+  { accountId: '3010', name: 'Retained Earnings', type: 'Equity', isControlAccount: false, parentAccountId: '3000', balance: 48100, schoolId: 'default' },
+  { accountId: '4000', name: 'Revenue', type: 'Revenue', isControlAccount: true },
+  { accountId: '4010', name: 'Tuition Fees', type: 'Revenue', isControlAccount: false, parentAccountId: '4000', balance: 12000, schoolId: 'default' },
+  { accountId: '5000', name: 'Expenses', type: 'Expense', isControlAccount: true },
+  { accountId: '5010', name: 'Salaries Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000', balance: 8000, schoolId: 'default' },
+  { accountId: '5020', name: 'Rent Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000', balance: 2000, schoolId: 'default' }
+];
+
+export const MOCK_JOURNAL_ENTRIES: GeneralLedgerTransaction[] = [
+  {
+    id: 1,
+    ref: 'INIT-01',
+    date: '2026-06-01',
+    description: 'Initial balance transfer',
+    debits: [{ accountId: '1010', amount: 50000 }],
+    credits: [{ accountId: '3010', amount: 50000 }]
+  },
+  {
+    id: 2,
+    ref: 'PAY-01',
+    date: '2026-06-02',
+    description: 'Tuition fee collection',
+    debits: [{ accountId: '1010', amount: 12000 }],
+    credits: [{ accountId: '4010', amount: 12000 }]
+  },
+  {
+    id: 3,
+    ref: 'EXP-01',
+    date: '2026-06-03',
+    description: 'June staff salaries paid',
+    debits: [{ accountId: '5010', amount: 8000 }],
+    credits: [{ accountId: '1010', amount: 8000 }]
+  }
 ];

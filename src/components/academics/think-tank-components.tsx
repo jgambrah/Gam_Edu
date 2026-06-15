@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Paradox, DebateTopic } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 // --- PARADOX CARD ---
@@ -95,6 +96,7 @@ interface EvaluationResult {
 }
 
 export function DebateArena({ topic }: { topic: DebateTopic }) {
+    const { schoolId } = useCurrentSchool();
     const [messages, setMessages] = useState<Message[]>([
         { role: 'model', text: `The motion is: "${topic.topic}". \n\nI am ready to debate. Are you For or Against this motion?` }
     ]);
@@ -125,7 +127,8 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
             const result = await generateDebateResponse({
                 topic: topic.topic,
                 history: historyForAi.slice(0, -1),
-                lastMessage: input
+                lastMessage: input,
+                schoolId: schoolId || ''
             });
 
             if (result.success) {
@@ -151,7 +154,7 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
                 text: m.text 
             }));
             
-            const result = await evaluateDebateAction(historyForAi);
+            const result = await evaluateDebateAction(historyForAi, schoolId || '');
             
             if (result.success && result.data) {
                 setEvaluation(result.data);

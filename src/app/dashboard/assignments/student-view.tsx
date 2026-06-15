@@ -20,6 +20,12 @@ import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 
+const toDateSafe = (dateVal: any): Date => {
+  if (!dateVal) return new Date();
+  if (typeof dateVal.toDate === 'function') return dateVal.toDate();
+  return new Date(dateVal);
+};
+
 export default function StudentAssignmentsView() {
   const { user, isUserLoading } = useUser();
   const { role } = useRole();
@@ -81,7 +87,7 @@ export default function StudentAssignmentsView() {
       submissionType: 'file',
       content: 'placeholder-file.pdf',
       submittedAt: new Date(),
-      status: new Date() > new Date(assignment.dueDate.toDate()) ? 'Late' : 'Submitted',
+      status: new Date() > toDateSafe(assignment.dueDate) ? 'Late' : 'Submitted',
       // @ts-ignore
       schoolId: schoolId,
     };
@@ -168,17 +174,15 @@ export default function StudentAssignmentsView() {
                                 </Badge>
                              )}
                           </div>
-                          <CardTitle className="text-xl text-slate-800">
-                            {item.title}
-                          </CardTitle>
+                          <CardTitle className="text-xl text-slate-800 font-bold">{item.title}</CardTitle>
                           <CardDescription className="flex items-center gap-1.5">
-                            {isAssignment ? (
-                                <>Due: <span className="font-bold text-slate-700">{format(item.dueDate.toDate(), 'PPP')}</span></>
-                            ) : (
-                                <>Topic: <span className="font-bold text-slate-700">{item.topic}</span></>
-                            )}
-                          </CardDescription>
-                        </div>
+                             {isAssignment ? (
+                                 <>Due: <span className="font-bold text-slate-700">{item.dueDate ? format(toDateSafe(item.dueDate), 'PPP') : 'No due date'}</span></>
+                             ) : (
+                                 <>Topic: <span className="font-bold text-slate-700">{(item as any).topic || 'General'}</span></>
+                             )}
+                           </CardDescription>
+                      </div>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4 pb-6">

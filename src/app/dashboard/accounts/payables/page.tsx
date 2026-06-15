@@ -27,6 +27,11 @@ import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+const formatDateSafe = (date: any) => {
+    if (!date) return 'N/A';
+    if (typeof date.toDate === 'function') return format(date.toDate(), 'PPP');
+    return format(new Date(date), 'PPP');
+};
 
 function PayableForm({ setOpen, onBillAdded }: { setOpen: (open: boolean) => void; onBillAdded: () => void }) {
     const firestore = useFirestore();
@@ -141,7 +146,7 @@ export default function AccountsPayablePage() {
     const [isFormOpen, setFormOpen] = useState(false);
     const [payingBill, setPayingBill] = useState<AccountsPayableRecord | null>(null);
 
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canAccess = role ? ['Administrator', 'Director', 'Accountant'].includes(role) : false;
 
     const payablesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accountsPayable') : null, [firestore]);
     const { data: payables, isLoading, forceRefetch } = useCollection<AccountsPayableRecord>(payablesQuery);
@@ -190,7 +195,7 @@ export default function AccountsPayablePage() {
                                                 <TableCell>{getVendorName(bill.vendorId)}</TableCell>
                                                 <TableCell>{bill.description}</TableCell>
                                                 <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
-                                                <TableCell>{bill.dueDate.toDate ? format(bill.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                                <TableCell>{formatDateSafe(bill.dueDate)}</TableCell>
                                                 <TableCell><Button size="sm" onClick={() => setPayingBill(bill)}>Pay Bill</Button></TableCell>
                                             </TableRow>
                                         ))}
@@ -208,7 +213,7 @@ export default function AccountsPayablePage() {
                                                 <TableCell>{getVendorName(bill.vendorId)}</TableCell>
                                                 <TableCell>{bill.description}</TableCell>
                                                 <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
-                                                <TableCell>{bill.paidAt?.toDate ? format(bill.paidAt.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                                <TableCell>{formatDateSafe(bill.paidAt)}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>

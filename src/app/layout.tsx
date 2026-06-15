@@ -35,10 +35,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
       </head>
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         <PWARegister />
         <Providers>
             {children}

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 // A simple, stateless wrapper for the desktop sidebar.
 const Sidebar = React.forwardRef<
   HTMLElement,
-  React.HTMLAttributes<"aside">
+  React.HTMLAttributes<HTMLElement>
 >(({ className, ...props }, ref) => (
   <aside
     ref={ref}
@@ -47,7 +47,7 @@ SidebarContent.displayName = "SidebarContent"
 
 const SidebarMenu = React.forwardRef<
   HTMLUListElement,
-  React.HTMLAttributes<"ul">
+  React.HTMLAttributes<HTMLUListElement>
 >(({ className, ...props }, ref) => (
   <ul
     ref={ref}
@@ -59,7 +59,7 @@ SidebarMenu.displayName = "SidebarMenu"
 
 const SidebarMenuItem = React.forwardRef<
   HTMLLIElement,
-  React.HTMLAttributes<"li">
+  React.HTMLAttributes<HTMLLIElement>
 >(({ className, ...props }, ref) => (
   <li
     ref={ref}

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -7,12 +6,19 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { MOCK_SUBJECTS } from '@/lib/data';
-import { Assessment, ReportCardComment, ReportCard } from '@/lib/types';
-import { collection, query, where, doc } from 'firebase/firestore';
+import { Assessment, ReportCardComment, ReportCard, Subject } from '@/lib/types';
+import { collection, query, where } from 'firebase/firestore';
 import { useMemo } from 'react';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
+
+type ReportCardItem = {
+    subject: string;
+    finalGrade: string;
+    percentage: number;
+    comment: string;
+};
 
 // This is a mock function. A real implementation would be more complex.
 function calculateStudentGradeForSubject(studentId: string, subjectId: string, assessments: Assessment[]) {
@@ -35,24 +41,31 @@ function calculateStudentGradeForSubject(studentId: string, subjectId: string, a
 
 export function StudentReportCard({ student, term, year }: { student: Student, term: string, year: string }) {
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
 
     // Fetch all assessments for the student
     const assessmentsQuery = useMemoFirebase(
-      () => student ? query(collection(firestore, 'assessments'), where('studentId', '==', student.uid)) : null,
+      () => (student && firestore) ? query(collection(firestore, 'assessments'), where('studentId', '==', student.uid)) : null,
       [firestore, student]
     );
     const { data: assessments } = useCollection<Assessment>(assessmentsQuery);
 
     const reportCardId = `${student.uid}-${year}-${term}`;
     const commentsQuery = useMemoFirebase(
-      () => query(collection(firestore, `report-cards/${reportCardId}/comments`)),
+      () => (firestore) ? query(collection(firestore, `report-cards/${reportCardId}/comments`)) : null,
       [firestore, reportCardId]
     );
     const { data: comments } = useCollection<ReportCardComment>(commentsQuery);
 
-    const reportCardData = useMemo(() => {
-        if (!assessments) return [];
-        return MOCK_SUBJECTS.map(subject => {
+    const subjectsQuery = useMemoFirebase(
+      () => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null,
+      [firestore, schoolId]
+    );
+    const { data: subjects } = useCollection<Subject>(subjectsQuery);
+
+    const reportCardData = useMemo<ReportCardItem[]>(() => {
+        if (!assessments || !subjects) return [];
+        return subjects.map((subject: Subject) => {
             const { finalGrade, percentage } = calculateStudentGradeForSubject(student.uid, subject.id, assessments);
             const comment = comments?.find(c => c.subjectId === subject.id)?.comment || '';
             return {
@@ -60,14 +73,14 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
                 finalGrade,
                 percentage,
                 comment,
-            }
+            };
         });
-    }, [assessments, comments, student.uid]);
+    }, [assessments, comments, student.uid, subjects]);
 
     const overall = useMemo(() => {
-        const validGrades = reportCardData.filter(d => d.percentage > 0);
+        const validGrades = reportCardData.filter((d: ReportCardItem) => d.percentage > 0);
         if (validGrades.length === 0) return { finalGrade: 'N/A', percentage: 0 };
-        const totalPercentage = validGrades.reduce((acc, d) => acc + d.percentage, 0);
+        const totalPercentage = validGrades.reduce((acc: number, d: ReportCardItem) => acc + d.percentage, 0);
         const overallPercentage = totalPercentage / validGrades.length;
 
         let finalGrade = 'N/A';
@@ -108,7 +121,7 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {reportCardData.map(data => (
+                    {reportCardData.map((data: ReportCardItem) => (
                         <TableRow key={data.subject}>
                             <TableCell className="font-medium">{data.subject}</TableCell>
                             <TableCell className="text-center">{data.percentage > 0 ? data.percentage : 'N/A'}</TableCell>

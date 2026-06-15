@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -14,6 +14,7 @@ import { autoReconcileFlow } from '@/ai/flows/reconciliation-flow';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school'; // SAAS Import
+import { format } from 'date-fns';
 
 // --- TYPES ---
 type BankTx = { 
@@ -135,12 +136,29 @@ export default function ReconciliationPage() {
         const bankRef = collection(firestore, 'bank_transactions');
         const qBank = query(bankRef, where('schoolId', '==', schoolId), where('status', '==', 'Pending'));
         const bankSnap = await getDocs(qBank);
-        const realBankData = bankSnap.docs.map(doc => { /*...*/ }) as BankTx[];
+        const realBankData = bankSnap.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                date: data.date?.toDate ? format(data.date.toDate(), 'yyyy-MM-dd') : (data.date instanceof Date ? format(data.date, 'yyyy-MM-dd') : String(data.date || '')),
+                description: String(data.description || ''),
+                amount: Number(data.amount || 0),
+                status: data.status,
+            };
+        }) as BankTx[];
 
         const ledgerRef = collection(firestore, 'financialRecords');
         const qLedger = query(ledgerRef, where('schoolId', '==', schoolId), orderBy('date', 'desc'));
         const ledgerSnap = await getDocs(qLedger);
-        const realLedgerData = ledgerSnap.docs.map(doc => { /*...*/ }) as InternalTx[];
+        const realLedgerData = ledgerSnap.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                date: data.date?.toDate ? format(data.date.toDate(), 'yyyy-MM-dd') : (data.date instanceof Date ? format(data.date, 'yyyy-MM-dd') : String(data.date || '')),
+                description: String(data.description || ''),
+                amount: Number(data.amount || data.billedAmount || 0),
+            };
+        }) as InternalTx[];
 
         setBankData(realBankData);
         setLedgerData(realLedgerData);

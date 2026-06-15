@@ -1,19 +1,16 @@
-// 1. Firebase Background Messaging
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-// REPLACE "YOUR_API_KEY" with the raw string from your Firebase Console
 firebase.initializeApp({
-  apiKey: "YOUR_API_KEY", 
-  authDomain: "nursery-bloom-825774943692.firebaseapp.com",
-  projectId: "nursery-bloom-825774943692",
-  storageBucket: "nursery-bloom-825774943692.appspot.com",
-  messagingSenderId: "525105839",
-  appId: "1:525105839:web:3555a75225f187513b8655"
+  apiKey: "AIzaSyBwTYgwwcHA5C1UdHGBvhyVoE_-sULCyHI", 
+  authDomain: "gamedu-69888475-f5783.firebaseapp.com",
+  projectId: "gamedu-69888475-f5783",
+  storageBucket: "gamedu-69888475-f5783.firebasestorage.app",
+  messagingSenderId: "667443968578",
+  appId: "1:667443968578:web:bfddf34703726808e60bdb"
 });
 
 const messaging = firebase.messaging();
-
 messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || 'GAM Edu';
   const notificationOptions = {

@@ -86,7 +86,7 @@ export async function generateTimetable(input: any) {
         try {
             // Make the call for this specific day using Pro model for best results
             const { output } = await ai.generate({
-                model: 'googleai/gemini-1.5-pro',
+                model: 'googleai/gemini-3-flash-preview',
                 prompt: promptText,
                 output: { schema: TimetableOutputSchema },
                 config: { temperature: 0.0 } // 0.0 forces strict logic over creativity

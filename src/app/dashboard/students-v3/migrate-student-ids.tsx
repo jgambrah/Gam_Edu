@@ -34,7 +34,7 @@ export function MigrateStudentIds() {
     try {
       // 1. Get all students
       const studentsSnapshot = await getDocs(collection(firestore, 'students'));
-      const students = studentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const students = studentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
       
       setProgress({ current: 0, total: students.length });
 

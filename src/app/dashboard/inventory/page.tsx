@@ -9,11 +9,12 @@ import {
   Boxes, PlusCircle, Search, Loader2, Edit, Trash2, 
   History, ArrowUpRight, ArrowDownLeft, Package, 
   Warehouse, UserCheck, AlertTriangle, CheckCircle2,
-  MoreVertical
+  MoreVertical, ArrowRight
 } from 'lucide-react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

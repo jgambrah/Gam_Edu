@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useAuth, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { Quiz, QuizAttempt } from '@/lib/types';
 import { doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useParams, useRouter } from 'next/navigation';
@@ -30,7 +29,7 @@ export default function QuizPage() {
   const router = useRouter();
   const { role } = useRole();
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
 

@@ -93,7 +93,7 @@ export default function ChartOfAccountsPage() {
     const [isFormOpen, setFormOpen] = useState(false);
     const [accounts, setAccounts] = useState(MOCK_CHART_OF_ACCOUNTS);
 
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canAccess = role ? ['Administrator', 'Director', 'Accountant'].includes(role) : false;
 
     const sortedAccounts = useMemo(() => {
         const controlAccounts = accounts.filter(a => a.isControlAccount).sort((a, b) => a.accountId.localeCompare(b.accountId));

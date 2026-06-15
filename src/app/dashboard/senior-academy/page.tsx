@@ -184,7 +184,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                             </div>
                                         </AccordionTrigger>
                                         <AccordionContent className="pt-1 pl-4">
-                                            {Object.entries(subs).map(([subTitle, items]) => (
+                                            {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
                                                 <Accordion key={subTitle} type="single" collapsible>
                                                     <AccordionItem value={subTitle} className="border-none">
                                                         <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-indigo-600">
@@ -353,7 +353,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                             </div>
                                         </AccordionTrigger>
                                         <AccordionContent className="pt-1 pl-4 space-y-1">
-                                            {Object.entries(subTopics).map(([subTitle, items]) => (
+                                            {Object.entries(subTopics as any).map(([subTitle, items]: [string, any]) => (
                                                 <Accordion key={subTitle} type="single" collapsible>
                                                     <AccordionItem value={subTitle} className="border-none">
                                                         <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-emerald-600">
@@ -514,7 +514,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                             </div>
                                         </AccordionTrigger>
                                         <AccordionContent className="pt-1 pl-4">
-                                            {Object.entries(subs).map(([subTitle, items]) => (
+                                            {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
                                                 <Accordion key={subTitle} type="single" collapsible>
                                                     <AccordionItem value={subTitle} className="border-none">
                                                         <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2">{subTitle}</AccordionTrigger>

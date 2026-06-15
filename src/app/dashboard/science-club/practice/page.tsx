@@ -28,13 +28,13 @@ function QuizComponent() {
   const { toast } = useToast();
 
   const { data: studentData } = useCollection<Student>(
-    useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
+    useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
   );
   
   const problemCollection = version === '4' ? 'science_problems_v4' : 'science_problems';
 
   const problemsQuery = useMemoFirebase(
-    () => (topic && difficulty)
+    () => (topic && difficulty && firestore)
       ? query(
           collection(firestore, problemCollection),
           where('topic', '==', topic),

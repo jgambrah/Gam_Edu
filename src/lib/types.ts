@@ -423,7 +423,7 @@ export type Student = {
     dateOfBirth?: string;
     gender?: string;
     address?: string;
-    enrollmentStatus?: 'Active' | 'Graduated';
+    enrollmentStatus?: 'Active' | 'Graduated' | 'Inactive';
     graduationYear?: number;
     alumniDetails?: AlumniDetails;
     transportStopId?: string;
@@ -512,6 +512,7 @@ export type PerformanceReview = z.infer<typeof performanceReviewSchema> & {
   reviewerName: string;
   createdAt: any;
   schoolId?: string;
+  metrics?: { teaching: number; punctuality: number; engagement: number; professionalism: number; };
 };
 
 
@@ -828,3 +829,406 @@ export type DebateTopic = {
     targetGroup: string;
     createdAt: any;
 };
+
+export interface Bus {
+  id: string;
+  name: string;
+  capacity: number;
+  schoolId: string;
+}
+
+export interface Stop {
+  id: string;
+  name: string;
+  address: string;
+  order: number;
+  assignedStudentIds: string[];
+}
+
+export interface Route {
+  id: string;
+  name: string;
+  busId: string;
+  driverId: string;
+  dailyRate: number;
+  termlyRate?: number;
+  stops: Stop[];
+  schoolId?: string;
+  driverName?: string;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  studentId: string;
+  classId: string;
+  status: 'Present' | 'Late' | 'Absent';
+  date: any;
+  notes?: string;
+  schoolId?: string;
+}
+
+export interface VideoLink {
+  title: string;
+  url: string;
+}
+
+export interface Attachment {
+  name: string;
+  url: string;
+  type: 'PDF' | 'IMAGE' | 'DOC' | 'Spreadsheet' | 'Link';
+}
+
+export interface RichQuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation?: string;
+}
+
+export interface LearningMaterial {
+  id: string;
+  topicTitle: string;
+  content: string;
+  classId: string;
+  subject: string;
+  videoLinks: VideoLink[];
+  attachments: Attachment[];
+  practiceQuestions: RichQuizQuestion[];
+  uploadedBy: string;
+  createdAt: any;
+  updatedAt: any;
+  schoolId: string;
+  courseId?: string;
+  strand?: string;
+  subStrand?: string;
+}
+
+export interface Till {
+  id: string;
+  accountantId: string;
+  accountantName: string;
+  openingBalance: number;
+  currentBalance: number;
+  closingBalance: number | null;
+  dateOpened: any;
+  dateClosed: any;
+  status: string;
+  directorApproval: {
+    directorId: string | null;
+    directorName: string | null;
+    approvedAt: any;
+    rejectionReason?: string;
+  };
+  schoolId: string;
+}
+
+export interface TillTransaction {
+  id: string;
+  tillId: string;
+  amount: number;
+  description: string;
+  timestamp: any;
+  type: string;
+  status: string;
+  schoolId: string;
+  studentId?: string;
+  studentName?: string;
+  approverId?: string;
+  approverName?: string;
+  decisionAt?: any;
+}
+
+export interface BankTransaction {
+  id: string;
+  date: any;
+  description: string;
+  amount: number;
+  type: 'Deposit' | 'Withdrawal' | 'Fee' | 'Interest' | string;
+  reference?: string;
+  schoolId: string;
+}
+
+export interface ChartOfAccount {
+  accountId: string;
+  name: string;
+  type: AccountType;
+  isControlAccount: boolean;
+  parentAccountId?: string | null;
+  description?: string;
+  balance?: number;
+  schoolId?: string;
+}
+
+export interface GeneralLedgerTransaction {
+  id: number;
+  ref: string;
+  date: string;
+  description: string;
+  debits: { accountId: string; amount: number }[];
+  credits: { accountId: string; amount: number }[];
+}
+
+export const vendorSchema = z.object({
+  name: z.string().min(1, 'Vendor name is required.'),
+  category: z.enum(['Office Supplies', 'Maintenance', 'IT Services', 'Catering', 'Transportation', 'Utilities', 'Other']),
+  email: z.string().email('Invalid email address.').or(z.literal('')),
+  phone: z.string().min(1, 'Phone number is required.').or(z.literal('')),
+});
+
+export type Vendor = z.infer<typeof vendorSchema> & {
+  id: string;
+  schoolId: string;
+  createdAt: any;
+};
+
+export const payableSchema = z.object({
+  vendorId: z.string().min(1, 'Vendor is required.'),
+  description: z.string().min(1, 'Description is required.'),
+  amount: z.coerce.number().min(0.01, 'Amount must be positive.'),
+  dueDate: z.date({ required_error: 'Due date is required.' }),
+  invoiceNumber: z.string().optional(),
+  expenseAccountId: z.string().optional(),
+});
+
+export type AccountsPayableRecord = z.infer<typeof payableSchema> & {
+  id: string;
+  status: 'Unpaid' | 'Paid';
+  createdAt: any;
+  schoolId?: string;
+  paidAt?: any;
+  paymentAccountId?: string;
+};
+
+export interface AuditLog {
+  id: string;
+  timestamp: any;
+  userName: string;
+  action: string;
+  details: string;
+  schoolId: string;
+}
+
+export const staffPayrollConfigSchema = z.object({
+  basicSalary: z.coerce.number().min(0),
+  ssnitNumber: z.string().optional().or(z.literal('')),
+  tinNumber: z.string().optional().or(z.literal('')),
+  bankName: z.string().optional().or(z.literal('')),
+  accountNumber: z.string().optional().or(z.literal('')),
+  allowances: z.array(z.object({
+    name: z.string().min(1, 'Name is required.'),
+    amount: z.coerce.number().min(0),
+  })).default([]),
+  deductions: z.array(z.object({
+    name: z.string().min(1, 'Name is required.'),
+    amount: z.coerce.number().min(0),
+  })).default([]),
+});
+
+export type StaffPayrollConfig = z.infer<typeof staffPayrollConfigSchema> & {
+  schoolId?: string;
+};
+
+export type PayrollSettings = {
+  id?: string;
+  ssnitEmployeeContributionRate: number;
+  ssnitEmployerContributionRate: number;
+  payeeBrackets: { from: number; to: number; rate: number }[];
+  schoolId?: string;
+  updatedAt?: any;
+};
+
+export interface PayrollRecord {
+  id?: string;
+  staffId: string;
+  staffName: string;
+  basicSalary: number;
+  totalAllowances: number;
+  grossSalary: number;
+  taxableIncome: number;
+  netSalary: number;
+  totalDeductions: number;
+  allowances: { name: string; amount: number }[];
+  deductions: { name: string; amount: number }[];
+  ssnitNumber?: string;
+  tinNumber?: string;
+  statutory: {
+    ssnitEmployee: number;
+    ssnitEmployer: number;
+    paye: number;
+  };
+  schoolId: string;
+  period: string;
+  processedById: string;
+  processedByName: string;
+  createdAt: any;
+}
+
+export const elaGrammarDrillSchema = z.object({
+  topic: z.string().min(1),
+  question_prompt: z.string().min(1),
+  options: z.array(z.string()).min(2),
+  correct_answer: z.string().min(1),
+  explanation: z.string().optional(),
+  difficulty: z.string().optional(),
+});
+
+export type ElaGrammarDrill = z.infer<typeof elaGrammarDrillSchema> & {
+  id: string;
+  schoolId?: string;
+};
+
+export const elaReadingPassageSchema = z.object({
+  title: z.string().min(1),
+  reading_level: z.string().min(1),
+  passage_text: z.string().min(1),
+  question_set: z.array(z.object({
+    question: z.string().min(1),
+    type: z.enum(['MCQ', 'Short Answer']),
+    options: z.array(z.string()).optional(),
+    correct_answer_key: z.string().min(1),
+  })).min(1),
+});
+
+export type ElaReadingPassage = z.infer<typeof elaReadingPassageSchema> & {
+  id: string;
+  schoolId?: string;
+};
+
+export const elaWritingChallengeSchema = z.object({
+  title: z.string().min(1),
+  challengeType: z.string().min(1),
+  prompt: z.string().min(1),
+});
+
+export type ElaWritingChallenge = z.infer<typeof elaWritingChallengeSchema> & {
+  id: string;
+  schoolId?: string;
+};
+
+export interface ElaUserSubmission {
+  id: string;
+  userId: string;
+  challenge_id: string;
+  challenge_title: string;
+  type: string;
+  submission_text?: string;
+  user_answer?: string;
+  question?: string;
+  is_correct?: boolean;
+  teacher_score: number | null;
+  teacher_feedback?: string | null;
+  date_submitted: any;
+  status: string;
+  schoolId: string;
+}
+
+export interface ElaLeaderboardEntry {
+  userId: string;
+  userName: string;
+  profilePictureUrl: string;
+  total_correct_answers: number;
+  total_challenges_completed: number;
+  schoolId: string;
+}
+
+export type InventoryItem = z.infer<typeof inventoryItemSchema> & {
+    id: string;
+    status: 'Available' | 'In Use' | 'Under Maintenance' | 'Out of Stock';
+    currentHolderId?: string;
+    currentHolderName?: string;
+    schoolId?: string;
+};
+
+export interface ForumThread {
+    id: string;
+    title: string;
+    content: string;
+    createdBy: { uid: string; name: string };
+    createdAt: any;
+    aiModeratorEnabled: boolean;
+    replyCount: number;
+    lastReplyAt: any;
+    schoolId: string;
+}
+
+export interface ForumReply {
+    id: string;
+    threadId: string;
+    author: { uid: string; name: string };
+    content: string;
+    createdAt: any;
+    isAIMessage: boolean;
+}
+
+export const scienceProblemSchema = z.object({
+    topic: z.string().min(1, "Topic is required."),
+    difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+    question_text: z.string().min(1, "Question text is required."),
+    correct_answer: z.string().min(1, "Correct answer is required."),
+    options: z.array(z.string().min(1, "Option cannot be empty.")).length(4, "You must provide 4 options."),
+    classId: z.string().min(1, "Please select a class."),
+});
+
+export type ScienceProblem = z.infer<typeof scienceProblemSchema> & {
+    id: string;
+    schoolId: string;
+    explanation?: string;
+};
+
+export interface DailyFact {
+    id: string;
+    factText: string;
+    createdAt: any;
+    postedBy?: string;
+}
+
+export interface ScienceLeaderboardEntry {
+    userId: string;
+    userName: string;
+    profilePictureUrl?: string;
+    total_correct_answers: number;
+    total_quizzes_completed: number;
+    schoolId: string;
+}
+
+export interface ScienceLesson {
+    title: string;
+    explanation: string;
+    analogy: string;
+    keyTerms: string[];
+    quizQuestion: string;
+    quizAnswer: string;
+}
+
+export interface Lecture {
+    id: string;
+    title: string;
+    scheduledFor: any;
+    schoolId?: string;
+}
+
+export const mathProblemSchema = z.object({
+    topic: z.string().min(1, "Topic is required."),
+    difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+    question_text: z.string().min(1, "Question text is required."),
+    correct_answer: z.string().min(1, "Correct answer is required."),
+    options: z.array(z.string().min(1, "Option cannot be empty.")).length(4, "You must provide 4 options."),
+    classId: z.string().min(1, "Please select a class."),
+});
+
+export type MathProblem = z.infer<typeof mathProblemSchema> & {
+    id: string;
+    schoolId: string;
+    explanation?: string;
+};
+
+export interface GlobalLeaderboardEntry {
+    userId: string;
+    userName: string;
+    profilePictureUrl?: string;
+    total_correct_answers: number;
+    total_quizzes_completed: number;
+    schoolId: string;
+}
+
+

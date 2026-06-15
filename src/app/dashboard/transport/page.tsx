@@ -49,7 +49,7 @@ function StudentAssignmentDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const globallyAssignedIds = useMemo(() => {
-    return allRoutes?.flatMap(r => r.stops?.flatMap(stop => stop.assignedStudentIds || []) || []) || [];
+    return allRoutes?.flatMap((r: Route) => r.stops?.flatMap((stop: Stop) => stop.assignedStudentIds || []) || []) || [];
   }, [allRoutes]);
   
   const availableStudents = useMemo(() => {
@@ -69,8 +69,8 @@ function StudentAssignmentDialog({
     setIsSubmitting(true);
     const routeRef = doc(firestore!, 'routes', route.id);
     
-    const newStops = route.stops.map(stop => {
-        const filteredStudents = stop.assignedStudentIds.filter(id => id !== values.studentId);
+    const newStops = route.stops.map((stop: Stop) => {
+        const filteredStudents = stop.assignedStudentIds.filter((id: string) => id !== values.studentId);
         if (stop.id === values.stopId) {
             return { ...stop, assignedStudentIds: [...filteredStudents, values.studentId] };
         }
@@ -91,9 +91,9 @@ function StudentAssignmentDialog({
 
   const handleUnassign = async (studentId: string) => {
     const routeRef = doc(firestore!, 'routes', route.id);
-    const newStops = route.stops.map(stop => ({
+    const newStops = route.stops.map((stop: Stop) => ({
         ...stop,
-        assignedStudentIds: stop.assignedStudentIds.filter(id => id !== studentId)
+        assignedStudentIds: stop.assignedStudentIds.filter((id: string) => id !== studentId)
     }));
     try {
         await updateDocumentNonBlocking(routeRef, { stops: newStops });
@@ -105,8 +105,8 @@ function StudentAssignmentDialog({
   };
   
   const assignedInThisRoute = useMemo(() => {
-    return route.stops?.flatMap(stop => 
-        stop.assignedStudentIds.map(studentId => {
+    return route.stops?.flatMap((stop: Stop) => 
+        stop.assignedStudentIds.map((studentId: string) => {
             const student = students.find(s => s.uid === studentId);
             // Verify student exists and is ACTIVE
             if (student && (student.enrollmentStatus === 'Active' || !student.enrollmentStatus)) {
@@ -114,7 +114,7 @@ function StudentAssignmentDialog({
             }
             return null;
         })
-    ).filter((item): item is { student: Student, stop: Stop } => item !== null) || [];
+    ).filter((item: { student: Student | undefined; stop: Stop } | null): item is { student: Student; stop: Stop } => item !== null && item.student !== undefined) || [];
   }, [route, students]);
 
   return (
@@ -602,7 +602,7 @@ export default function TransportPage() {
                 <Card>
                 <CardHeader className="bg-slate-50 border-b"><CardTitle className="flex items-center gap-2 text-lg"><MapPin className="text-indigo-600 h-5 w-5"/> Route Stops & Assignments</CardTitle></CardHeader>
                 <CardContent className="space-y-4 pt-6">
-                    {selectedRoute.stops?.sort((a,b) => a.order - b.order).map(stop => (
+                    {selectedRoute.stops?.sort((a: Stop, b: Stop) => a.order - b.order).map((stop: Stop) => (
                     <div key={stop.id} className="p-4 border rounded-xl bg-white shadow-sm">
                         <div className="flex justify-between items-start mb-3">
                             <h4 className="font-bold text-slate-800">{stop.order}. {stop.name}</h4>
@@ -611,7 +611,7 @@ export default function TransportPage() {
                         <p className="text-xs text-muted-foreground mb-4">{stop.address}</p>
                         <div className="space-y-2 pl-4 border-l-2 border-indigo-100">
                             {stop.assignedStudentIds?.length > 0 ? (
-                                stop.assignedStudentIds.map(studentId => {
+                                stop.assignedStudentIds.map((studentId: string) => {
                                     const student = students?.find(s => s.uid === studentId);
                                     // Verify student exists and is ACTIVE
                                     if (student && (student.enrollmentStatus === 'Active' || !student.enrollmentStatus)) {
@@ -637,7 +637,7 @@ export default function TransportPage() {
                 {isLoading ? (
                      <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600"/></div>
                 ) : (
-                    <div className="rounded-md border overflow-hidden">
+                     <div className="rounded-md border overflow-hidden">
                         <Table>
                             <TableHeader className="bg-slate-50">
                                 <TableRow>
@@ -648,7 +648,7 @@ export default function TransportPage() {
                             </TableHeader>
                             <TableBody>
                                 {subscribedStudents.map(student => {
-                                    const isAssigned = routes?.some(r => r.stops?.some(s => s.assignedStudentIds?.includes(student.uid)));
+                                    const isAssigned = routes?.some((r: Route) => r.stops?.some((s: Stop) => s.assignedStudentIds?.includes(student.uid)));
                                     return (
                                         <TableRow key={student.uid}>
                                             <TableCell><StudentDisplay student={student} variant="list" /></TableCell>

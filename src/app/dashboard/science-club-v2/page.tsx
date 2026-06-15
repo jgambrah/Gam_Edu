@@ -249,8 +249,8 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     });
 
     async function onSubmit(values: z.infer<typeof scienceProblemSchema>) {
-        if (!schoolId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not determine school ID.' });
+        if (!schoolId || !firestore) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not determine school ID or database connection.' });
             return;
         }
         setIsSubmitting(true);
@@ -367,7 +367,7 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
     
     useEffect(() => {
         const generateNewFactIfNeeded = async () => {
-          if (!isStaff) return;
+          if (!isStaff || !firestore) return;
 
           // Check if fact is stale (older than 12 hours)
           let isStale = true;
@@ -405,7 +405,7 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
       }, [latestFact, isLoading, isStaff, firestore, toast, user]);
 
     const handlePostFact = async () => {
-        if (!factText.trim() || !user) return;
+        if (!factText.trim() || !user || !firestore) return;
         setIsPosting(true);
         try {
             await addDoc(collection(firestore, 'daily_facts'), {
@@ -455,7 +455,7 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
 export default function ScienceClubPage() {
   const router = useRouter();
   const firestore = useFirestore();
-  const { role, isRoleLoading } = useRole();
+  const { role, loading: isRoleLoading } = useRole();
   const { user, isUserLoading } = useUser();
   const { schoolId } = useCurrentSchool();
 

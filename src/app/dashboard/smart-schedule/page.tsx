@@ -50,34 +50,32 @@ export default function SmartSchedulePage() {
 
   // --- DATA FETCHING ---
   const assignmentsQuery = useMemoFirebase(() => 
-    user ? query(collection(firestore, 'assignments')) : null, 
+    (user && firestore) ? query(collection(firestore, 'assignments')) : null, 
   [firestore, user]);
   const { data: assignments } = useCollection<Assignment>(assignmentsQuery);
 
   const lecturesQuery = useMemoFirebase(() => 
-    user ? query(collection(firestore, 'lectures')) : null, 
+    (user && firestore) ? query(collection(firestore, 'lectures')) : null, 
   [firestore, user]);
   const { data: lectures } = useCollection<Lecture>(lecturesQuery);
 
   // --- DATA TRANSFORMATION ---
   const allEvents = useMemo(() => {
-    // FIX: Filter out assignments that don't have a valid dueDate before mapping.
     const assignmentEvents: CalendarEvent[] = (assignments || [])
-      .filter(a => a.dueDate && typeof a.dueDate.toDate === 'function')
+      .filter(a => a.dueDate)
       .map(a => ({
           id: `assign-${a.id}`,
           title: a.title,
-          date: a.dueDate.toDate(),
+          date: (a.dueDate as any).toDate ? (a.dueDate as any).toDate() : (a.dueDate instanceof Date ? a.dueDate : new Date(a.dueDate)),
           type: 'Assignment'
       }));
 
-    // FIX: Filter out lectures that don't have a valid scheduledFor date before mapping.
     const lectureEvents: CalendarEvent[] = (lectures || [])
-      .filter(l => l.scheduledFor && typeof l.scheduledFor.toDate === 'function')
+      .filter(l => l.scheduledFor)
       .map(l => ({
           id: `lecture-${l.id}`,
           title: l.title,
-          date: l.scheduledFor.toDate(),
+          date: (l.scheduledFor as any).toDate ? (l.scheduledFor as any).toDate() : (l.scheduledFor instanceof Date ? l.scheduledFor : new Date(l.scheduledFor)),
           type: 'Live Lecture'
       }));
     

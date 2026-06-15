@@ -4,8 +4,8 @@ import { use, useEffect, useState } from 'react';
 import { getPublicInvoiceDetails } from '@/app/actions/public-payment';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2, ShieldCheck } from 'lucide-react';
-// @ts-ignore
 import { PaystackButton } from 'react-paystack';
+const PaystackButtonComponent = PaystackButton as any;
 
 export default function PublicPaymentPage({ params }: { params: Promise<{ recordId: string }> }) {
     const { recordId } = use(params);
@@ -72,7 +72,7 @@ export default function PublicPaymentPage({ params }: { params: Promise<{ record
                         <p className="text-5xl font-black tracking-tighter" style={{ color: data.school.primaryColor }}>GH₵{data.invoice.balance.toFixed(2)}</p>
                     </div>
 
-                    <PaystackButton 
+                    <PaystackButtonComponent 
                         className="w-full h-16 rounded-2xl text-lg font-black uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 hover:brightness-110" 
                         style={{ backgroundColor: data.school.primaryColor }}
                         {...paymentProps} 

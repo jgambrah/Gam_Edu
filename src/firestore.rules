@@ -185,6 +185,11 @@ service cloud.firestore {
         allow write: if isAdmin() || isTeacher();
     }
 
+    match /assessments/{assessmentId} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin() || isTeacher();
+    }
+
     match /timetables/{timetableId} {
       allow read, list: if isSignedIn();
       allow write: if isAdmin();
@@ -279,6 +284,69 @@ service cloud.firestore {
     match /buses/{busId} {
         allow read, list: if isSignedIn();
         allow write: if isAdmin() || getUserRole() == 'Transport Staff';
+    }
+
+    // =========================================================
+    // 7.5. JUNIOR / SENIOR ACADEMY & CLUBS
+    // =========================================================
+
+    match /junior_abc_words/{docId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || isTeacher();
+    }
+
+    match /junior_phonics_sounds/{docId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || isTeacher();
+    }
+
+    match /junior_phonics_rhymes/{docId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || isTeacher();
+    }
+
+    match /junior_stories/{storyId} {
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if request.auth.uid == resource.data.createdBy || isTeacher() || isAdmin();
+    }
+
+    match /junior_science/{factId} {
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if request.auth.uid == resource.data.createdBy || isTeacher() || isAdmin();
+    }
+
+    match /junior_phonics/{wordId} {
+      allow read, list: if isSignedIn();
+      allow create: if isTeacher() || isAdmin();
+      allow delete: if isTeacher() || isAdmin();
+    }
+
+    match /junior_puzzles/{puzzleId} {
+      allow read, list: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    match /junior_stickers/{stickerId} {
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+
+    match /junior_sorter_items/{itemId} {
+      allow read, list: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    match /junior_science_materials/{materialId} {
+      allow read, list: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    match /junior_art_quests/{questId} {
+      allow read, list: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
     }
 
     // =========================================================

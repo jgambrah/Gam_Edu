@@ -46,7 +46,7 @@ export function BehavioralRecordForm() {
 
   const studentsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
-    return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
+    return query(collection(firestore!, 'students'), where('schoolId', '==', schoolId));
   }, [firestore, schoolId]);
   
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
@@ -71,7 +71,7 @@ export function BehavioralRecordForm() {
   });
 
   async function onSubmit(values: z.infer<typeof behavioralRecordSchema>) {
-    if (!user || !schoolId) {
+    if (!user || !schoolId || !firestore) {
         toast({
             variant: "destructive",
             title: "Cannot Save",
@@ -86,7 +86,7 @@ export function BehavioralRecordForm() {
       const student = sortedStudents.find(s => s.uid === values.studentId);
       const studentName = student ? `${student.firstName} ${student.lastName}` : 'Unknown Student';
 
-      await addDoc(collection(firestore, 'behavioral_records'), {
+      await addDoc(collection(firestore!, 'behavioral_records'), {
         ...values,
         studentName: studentName,
         recordedById: user.uid,

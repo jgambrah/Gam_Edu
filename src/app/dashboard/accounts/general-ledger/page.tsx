@@ -126,7 +126,7 @@ export default function GeneralLedgerPage() {
         }
     };
 
-    if (!['Administrator', 'Director', 'Accountant'].includes(role)) {
+    if (!role || !['Administrator', 'Director', 'Accountant'].includes(role)) {
         return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted to financial staff.</CardDescription></CardHeader></Card>;
     }
 

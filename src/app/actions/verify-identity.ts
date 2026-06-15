@@ -15,7 +15,7 @@ export async function verifyStaffIdentityAction(profilePicBase64: string, liveSe
     const cleanLiveSelfie = liveSelfieBase64.includes(',') ? liveSelfieBase64.split(',')[1] : liveSelfieBase64;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: [
         { text: "You are an HR security assistant. Compare Image 1 (Official Profile) and Image 2 (Live Selfie). Are they the exact same person? Focus on facial features. Ignore lighting or clothing differences." },
         { media: { url: `data:image/jpeg;base64,${cleanProfilePic}` } },

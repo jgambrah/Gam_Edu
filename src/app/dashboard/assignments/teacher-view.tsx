@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { Assignment, Quiz } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -18,15 +18,18 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function QuizList() {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { schoolId } = useCurrentSchool();
 
   const quizzesQuery = useMemoFirebase(
-    () => (user && schoolId) ? query(collection(firestore, 'quizzes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
+    () => (user && schoolId && firestore) ? query(collection(firestore, 'quizzes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
     [firestore, user, schoolId]
   );
   const { data: quizzes, isLoading } = useCollection<Quiz>(quizzesQuery);
-  const sortedQuizzes = quizzes?.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+  const sortedQuizzes = useMemo(() => {
+    if (!quizzes) return [];
+    return [...quizzes].sort((a, b) => (b.createdAt?.toDate?.()?.getTime() || 0) - (a.createdAt?.toDate?.()?.getTime() || 0));
+  }, [quizzes]);
 
   const { data: classes } = useCollection<{id: string, name: string}>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
@@ -51,7 +54,7 @@ function QuizList() {
             <CardHeader>
               <CardTitle>{quiz.title}</CardTitle>
               <CardDescription>
-                Topic: {quiz.topic} | Assigned to: {getClassName(quiz.classId)} on {format(quiz.createdAt.toDate(), 'PPP')}
+                Topic: {quiz.topic} | Assigned to: {getClassName(quiz.classId)} on {quiz.createdAt?.toDate ? format(quiz.createdAt.toDate(), 'PPP') : 'Unknown'}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -71,13 +74,13 @@ function QuizList() {
 
 export default function TeacherAssignmentsView() {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { schoolId } = useCurrentSchool();
   const [isAssignmentFormOpen, setAssignmentFormOpen] = useState(false);
   const [isQuizFormOpen, setQuizFormOpen] = useState(false);
 
   const assignmentsQuery = useMemoFirebase(
-    () => (user && schoolId) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
+    () => (user && schoolId && firestore) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
     [user, firestore, schoolId]
   );
   const { data: assignments, isLoading } = useCollection<Assignment>(assignmentsQuery);

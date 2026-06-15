@@ -7,7 +7,7 @@ import {
     generateLessonImageAction, 
     generateTTSAction, 
     generateMathWorldEntry 
-} from '@/ai/flows/junior-actions';
+} from '@/app/dashboard/junior-actions';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,19 +18,16 @@ import * as LucideIcons from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const {
-    Loader2, Wand2, ArrowLeft, ArrowRight, Volume2, Play, Smile, 
-    Ear, Layers, Image: ImageIcon, Sparkles, HelpCircle, 
-    Zap, CircleDot, User, Beaker, Eye, Hash, ListOrdered, Scale, 
-    Handshake, Plus, Minus, Coins, Ruler, Move, CheckSquare, ArrowLeftRight, PenTool, 
-    Clock, ObjectGroup, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
-    Type, FontAwesome, Palette, Utensils, Trash2, Calculator, Shapes
+    Loader2, ArrowLeft, ArrowRight, Wand2, ArrowLeftRight, HelpCircle, Plus, Minus,
+    Clock, Boxes, Users, Drama, BrainCircuit, Music, Atom, Heart, Star, Tv, Rabbit,
+    Type, Palette, Utensils, Trash2, Calculator, Shapes, Sparkles
 } = LucideIcons;
 
 // --- ROBUST ICON RENDERER ---
 export const IconRenderer = ({ iconName, className }: { iconName: string, className?: string }) => {
     const iconMap: Record<string, keyof typeof LucideIcons> = {
       'fa-1': 'Hash', 'fa-list-ol': 'ListOrdered', 'fa-arrow-right-long': 'ArrowRight', 'fa-scale-unbalanced': 'Scale', 'fa-font': 'Type', 
-      'fa-handshake': 'Handshake', 'fa-plus': 'Plus', 'fa-minus': 'Minus', 'fa-layer-group': 'Layers', 'fa-object-group': 'ObjectGroup', 
+      'fa-handshake': 'Handshake', 'fa-plus': 'Plus', 'fa-minus': 'Minus', 'fa-layer-group': 'Layers', 'fa-object-group': 'Boxes', 
       'fa-clock': 'Clock', 'fa-coins': 'Coins', 'fa-ruler-vertical': 'Ruler', 'fa-shapes': 'Shapes', 'fa-arrows-up-down-left-right': 'Move', 
       'fa-scale-balanced': 'Scale', 'fa-square-check': 'CheckSquare', 'fa-arrows-left-right': 'ArrowLeftRight', 'fa-pen-clip': 'PenTool',
       'fa-magic': 'Wand2', 'fa-spinner': 'Loader2', 'fa-volume-high': 'Volume2', 'fa-play': 'Play', 'fa-face-smile': 'Smile', 'fa-brain': 'BrainCircuit'
@@ -213,7 +210,7 @@ export const NumberWordsModule: React.FC<{ onSound: (t: string) => void, schoolI
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = items[index];
   useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then((res: any) => setImageUrl(res.data || null));
   }, [index, schoolId, current?.prompt]);
   if (!current) return null;
   return (
@@ -271,7 +268,7 @@ export const AdditionModule: React.FC<{ onSound: (t: string) => void, schoolId: 
     const [userAnswer, setUserAnswer] = useState<number | null>(null);
     const current = data[index];
     useEffect(() => {
-      generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+      generateLessonImageAction({ prompt: current?.prompt, schoolId }).then((res: any) => setImageUrl(res.data || null));
       setUserAnswer(null);
     }, [index, schoolId, current]);
     if (!current) return null;
@@ -310,7 +307,7 @@ export const SubtractionModule: React.FC<{ onSound: (t: string) => void, schoolI
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
   const current = data[index];
   useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then((res: any) => setImageUrl(res.data || null));
     setUserAnswer(null);
   }, [index, schoolId, current]);
   if (!current) return null;
@@ -342,7 +339,7 @@ export const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId:
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
   useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then((res: any) => setImageUrl(res.data || null));
   }, [index, schoolId, current]);
   if (!current) return null;
   return (
@@ -361,4 +358,8 @@ export const TensUnitsModule: React.FC<{ onSound: (t: string) => void, schoolId:
       </div>
       <div className="flex gap-4">
         <Button size="icon" onClick={() => setIndex(p => (p === 0 ? data.length - 1 : p - 1))} className="bg-slate-100 rounded-full"><ArrowLeft/></Button>
-        <Button size="icon" onClick={() => setIndex(p => (p + 1) % data.length)} className="bg-slate-100 rounded-full"><ArrowRight/></Button
+        <Button size="icon" onClick={() => setIndex(p => (p + 1) % data.length)} className="bg-slate-100 rounded-full"><ArrowRight/></Button>
+      </div>
+    </div>
+  );
+};

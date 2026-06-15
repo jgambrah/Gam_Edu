@@ -373,9 +373,9 @@ export default function GradebookPage() {
                                                             min="0" max={maxScore}
                                                             value={scores[s.uid] ?? ''} 
                                                             onChange={e => handleScoreChange(s.uid, e.target.value)}
-                                                            className={`font-bold pr-10 ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
+                                                            className={`font-bold pr-3 sm:pr-10 ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
                                                         />
-                                                        <span className="absolute right-3 top-2 text-[10px] text-muted-foreground uppercase font-bold">PTS</span>
+                                                        <span className="hidden sm:inline absolute right-3 top-2 text-[10px] text-muted-foreground uppercase font-bold">PTS</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>

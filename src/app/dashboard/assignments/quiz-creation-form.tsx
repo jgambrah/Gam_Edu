@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { collection, query, serverTimestamp, where, addDoc } from 'firebase/firestore';
@@ -28,13 +28,13 @@ import { errorEmitter, FirestorePermissionError } from '@/firebase';
 
 export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const classesQuery = useMemoFirebase(
-    () => (user && schoolId) ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
+    () => (user && schoolId && firestore) ? query(collection(firestore!, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
     [firestore, user, schoolId]
   );
   const { data: classes } = useCollection<Class>(classesQuery);
@@ -48,13 +48,13 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
   });
 
   async function onSubmit(values: z.infer<typeof quizSchema>) {
-    if (!user || !schoolId) return;
+    if (!user || !schoolId || !firestore) return;
     setIsSubmitting(true);
     try {
       toast({ title: 'Generating Quiz...', description: 'Please wait while the AI creates your quiz.' });
       const quizData = await generateQuiz({ topic: values.topic, numQuestions: values.numQuestions, forGradeLevel: 'Grade 9' });
       
-      const quizzesCollection = collection(firestore, 'quizzes');
+      const quizzesCollection = collection(firestore!, 'quizzes');
       const dataToSave = {
         ...quizData,
         classId: values.classId,

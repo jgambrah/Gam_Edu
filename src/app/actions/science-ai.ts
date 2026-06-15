@@ -9,7 +9,7 @@ export async function generateScienceFactAction(topic?: string) {
       : `Tell me a random fascinating scientific fact for a curious student. Keep it under 50 words.`;
 
     const response = await ai.generate({
-      model: 'googleai/gemini-1.5-flash', 
+      model: 'googleai/gemini-3-flash-preview', 
       prompt: promptText,
       config: {
         temperature: 0.7,

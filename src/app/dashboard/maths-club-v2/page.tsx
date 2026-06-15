@@ -11,7 +11,7 @@ import {
   Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database, PlusCircle, PenSquare
 } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
-import { generateMathLessonAction, GeneratedLesson } from '@/ai/flows/generate-math-lesson';
+import { generateMathLessonAction, GeneratedMathLesson } from '@/ai/flows/generate-math-lesson';
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 import ReactMarkdown from 'react-markdown';
@@ -78,7 +78,7 @@ function SafeMath({ formula, block = true }: { formula: string, block?: boolean 
   }
 }
 
-interface LessonCard extends GeneratedLesson {
+interface LessonCard extends GeneratedMathLesson {
     id?: string;
     timestamp?: any;
 }
@@ -158,7 +158,7 @@ function MathExplorerTab() {
                                 <ReactMarkdown
                                   components={{
                                     p: ({node, ...props}) => <p className="text-slate-700 leading-relaxed" {...props} />,
-                                    code({node, inline, className, children, ...props}) {
+                                    code({node, inline, className, children, ...props}: any) {
                                       if (!inline) {
                                         return <SafeMath formula={String(children)} block={true}/>
                                       }
@@ -175,7 +175,7 @@ function MathExplorerTab() {
                                 <ReactMarkdown
                                   components={{
                                     p: ({node, ...props}) => <p className="text-slate-700 italic" {...props} />,
-                                    code({node, inline, className, children, ...props}) {
+                                    code({node, inline, className, children, ...props}: any) {
                                       return <SafeMath formula={String(children)} block={!inline} />
                                     }
                                   }}
@@ -200,7 +200,7 @@ function MathExplorerTab() {
                                    <ReactMarkdown
                                       components={{
                                         p: ({node, ...props}) => <p className="font-medium" {...props} />,
-                                        code({node, inline, className, children, ...props}) {
+                                        code({node, inline, className, children, ...props}: any) {
                                           return <SafeMath formula={String(children)} block={!inline} />
                                         }
                                       }}
@@ -310,8 +310,8 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     });
 
     async function onSubmit(values: z.infer<typeof mathProblemSchema>) {
-        if (!schoolId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not determine school ID.' });
+        if (!schoolId || !firestore) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not determine school ID or database connection.' });
             return;
         }
         setIsSubmitting(true);
@@ -442,7 +442,7 @@ export default function MathsClubPage() {
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const router = useRouter();
-  const { role, isRoleLoading } = useRole();
+  const { role, loading: isRoleLoading } = useRole();
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();

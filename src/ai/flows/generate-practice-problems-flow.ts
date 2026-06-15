@@ -49,6 +49,6 @@ For each question, you must:
 
 
 export async function generatePracticeProblems(input: GeneratePracticeProblemsInput): Promise<GeneratePracticeProblemsOutput> {
-  const { output } = await prompt(input, { model: 'googleai/gemini-1.5-flash' });
+  const { output } = await prompt(input, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }

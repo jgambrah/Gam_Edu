@@ -104,7 +104,7 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
   };
 
   async function onSubmit(values: z.infer<typeof lessonPlanSchema>) {
-    if (!user || !schoolId) {
+    if (!user || !schoolId || !firestore) {
       return;
     }
     

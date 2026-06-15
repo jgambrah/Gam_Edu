@@ -105,14 +105,14 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
     const studentMap = useMemo(() => new Map(students?.map(s => [s.uid, s])), [students]);
     const classMap = useMemo(() => new Map(classes?.map(c => [c.id, c.name])), [classes]);
 
-    const tillQuery = useMemoFirebase(() => (user && schoolId) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', user.uid), where('status', '==', 'Open')) : null, [firestore, user, schoolId]);
+    const tillQuery = useMemoFirebase(() => (user && schoolId && firestore) ? query(collection(firestore!, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', user.uid), where('status', '==', 'Open')) : null, [firestore, user, schoolId]);
     const { data: openTills, isLoading: isLoadingTills, forceRefetch } = useCollection<Till>(tillQuery);
     const activeTill = openTills?.[0];
 
-    const transactionsQuery = useMemoFirebase(() => activeTill ? query(collection(firestore, `tills/${activeTill.id}/transactions`), orderBy('timestamp', 'desc')) : null, [firestore, activeTill]);
+    const transactionsQuery = useMemoFirebase(() => (activeTill && firestore) ? query(collection(firestore!, `tills/${activeTill.id}/transactions`), orderBy('timestamp', 'desc')) : null, [firestore, activeTill]);
     const { data: transactions, isLoading: isLoadingTransactions } = useCollection<TillTransaction>(transactionsQuery);
 
-    const historyQuery = useMemoFirebase(() => (user && schoolId) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', user.uid), where('status', '!=', 'Open'), orderBy('status'), orderBy('dateClosed', 'desc')) : null, [firestore, user, schoolId]);
+    const historyQuery = useMemoFirebase(() => (user && schoolId && firestore) ? query(collection(firestore!, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', user.uid), where('status', '!=', 'Open'), orderBy('status'), orderBy('dateClosed', 'desc')) : null, [firestore, user, schoolId]);
     const { data: historyTills, isLoading: isLoadingHistory } = useCollection<Till>(historyQuery);
 
     const totalCollected = useMemo(() => {
@@ -123,10 +123,10 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
     }, [transactions]);
 
     const handleOpenTill = async () => {
-        if (!user || !schoolId) return;
+        if (!user || !schoolId || !firestore) return;
         setIsSubmitting(true);
         try {
-            const newTillRef = doc(collection(firestore, 'tills'));
+            const newTillRef = doc(collection(firestore!, 'tills'));
             await setDoc(newTillRef, {
                 accountantId: user.uid,
                 accountantName: user.displayName || user.email,
@@ -150,10 +150,10 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
     };
 
     const handleSubmitForApproval = async () => {
-        if (!activeTill) return;
+        if (!activeTill || !firestore) return;
         setIsSubmitting(true);
         try {
-            await updateDoc(doc(firestore, 'tills', activeTill.id), {
+            await updateDoc(doc(firestore!, 'tills', activeTill.id), {
                 status: 'PendingApproval',
                 closingBalance: totalCollected,
             });
@@ -295,7 +295,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
     const studentMap = useMemo(() => new Map(students?.map(s => [s.uid, s])), [students]);
     const classMap = useMemo(() => new Map(classes?.map(c => [c.id, c.name])), [classes]);
 
-    const transactionsQuery = useMemoFirebase(() => (till ? query(collection(firestore, `tills/${till.id}/transactions`), orderBy('timestamp', 'desc')) : null), [firestore, till]);
+    const transactionsQuery = useMemoFirebase(() => ((till && firestore) ? query(collection(firestore!, `tills/${till.id}/transactions`), orderBy('timestamp', 'desc')) : null), [firestore, till]);
     const { data: transactions, isLoading: isLoadingTransactions, forceRefetch } = useCollection<TillTransaction>(transactionsQuery);
 
     if (!till) return null;

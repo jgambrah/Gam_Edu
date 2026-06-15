@@ -30,7 +30,7 @@ export default function PayrollReportsPage() {
     const [isFetching, setIsFetching] = useState(false);
     const [selectedPayslip, setSelectedPayslip] = useState<PayrollRecord | null>(null);
 
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
     const handleFetchRecords = async () => {
         if (!firestore || !schoolId) return;

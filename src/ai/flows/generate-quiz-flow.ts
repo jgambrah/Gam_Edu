@@ -48,6 +48,6 @@ For each question, you must:
 });
 
 export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQuizOutput> {
-  const { output } = await generateQuizPrompt(input, { model: 'googleai/gemini-1.5-flash' });
+  const { output } = await generateQuizPrompt(input, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }

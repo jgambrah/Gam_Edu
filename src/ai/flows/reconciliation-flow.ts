@@ -5,9 +5,8 @@ import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits'; // Import
 
 // Input Schemas from lib/types
-import type { FinancialRecord } from '@/lib/types';
 export type BankTx = { id: string; date: string; description: string; amount: number };
-export type InternalTx = FinancialRecord;
+export type InternalTx = { id: string; date: string; description: string; amount: number };
 
 // Output Schema (Structured JSON)
 const ReconciliationSchema = z.object({
@@ -57,11 +56,11 @@ export async function autoReconcileFlow(bankLines: BankTx[], ledgerLines: Intern
       ${JSON.stringify(bankLines)}
 
       [INTERNAL ENTRIES]:
-      ${JSON.stringify(ledgerLines.map(l => ({ id: l.id, date: l.createdAt, description: l.description, amount: l.billedAmount })))}
+      ${JSON.stringify(ledgerLines.map(l => ({ id: l.id, date: l.date, description: l.description, amount: l.amount })))}
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       output: {
         schema: ReconciliationSchema,

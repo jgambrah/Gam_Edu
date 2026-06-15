@@ -193,7 +193,7 @@ export default function AlumniPage() {
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const studentsQuery = useMemoFirebase(() => 
-    schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
+    (schoolId && firestore) ? query(collection(firestore!, 'students'), where('schoolId', '==', schoolId)) : null,
   [firestore, schoolId]);
 
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
@@ -203,7 +203,7 @@ export default function AlumniPage() {
   
   const isLoading = isLoadingSchool || isLoadingStudents;
 
-  if (!['Administrator', 'Director'].includes(role)) {
+  if (!role || !['Administrator', 'Director'].includes(role)) {
     return (
       <Card>
         <CardHeader>

@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import {
   Dialog,
   DialogContent,
@@ -36,20 +36,20 @@ export function StartGameDialog({
   setOpen: (open: boolean) => void;
 }) {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const [selectedQuizId, setSelectedQuizId] = useState('');
   const [isStarting, setIsStarting] = useState(false);
 
   const quizzesQuery = useMemoFirebase(
-    () => user && query(collection(firestore, 'quizzes'), where('teacherId', '==', user.uid)),
+    () => user && firestore && query(collection(firestore, 'quizzes'), where('teacherId', '==', user.uid)),
     [firestore, user]
   );
   const { data: quizzes, isLoading } = useCollection<Quiz>(quizzesQuery);
 
   const handleStartGame = async () => {
-    if (!selectedQuizId || !user) {
+    if (!firestore || !selectedQuizId || !user) {
       toast({
         variant: 'destructive',
         title: 'Error',

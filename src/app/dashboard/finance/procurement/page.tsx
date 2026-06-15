@@ -159,6 +159,12 @@ function PayBillDialog({ bill, setOpen, onBillPaid }: { bill: AccountsPayableRec
 }
 
 
+const formatDateSafe = (date: any) => {
+    if (!date) return 'N/A';
+    if (typeof date.toDate === 'function') return format(date.toDate(), 'PPP');
+    return format(new Date(date), 'PPP');
+};
+
 export default function AccountsPayablePage() {
     const { role } = useRole();
     const firestore = useFirestore();
@@ -228,7 +234,7 @@ export default function AccountsPayablePage() {
                                                     <TableCell className="font-medium">{getVendorName(bill.vendorId)}</TableCell>
                                                     <TableCell className="max-w-xs truncate">{bill.description}</TableCell>
                                                     <TableCell className="text-right font-bold">GH₵{bill.amount.toFixed(2)}</TableCell>
-                                                    <TableCell className="text-xs text-muted-foreground">{bill.dueDate?.toDate ? format(bill.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                                    <TableCell className="text-xs text-muted-foreground">{formatDateSafe(bill.dueDate)}</TableCell>
                                                     <TableCell className="text-right">
                                                         <Button size="sm" onClick={() => setPayingBill(bill)} className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200">
                                                             Process Payment
@@ -254,7 +260,7 @@ export default function AccountsPayablePage() {
                                                     <TableCell className="font-medium">{getVendorName(bill.vendorId)}</TableCell>
                                                     <TableCell className="max-w-xs truncate">{bill.description}</TableCell>
                                                     <TableCell className="text-right font-bold">GH₵{bill.amount.toFixed(2)}</TableCell>
-                                                    <TableCell className="text-xs text-muted-foreground">{bill.paidAt?.toDate ? format(bill.paidAt.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                                    <TableCell className="text-xs text-muted-foreground">{formatDateSafe(bill.paidAt)}</TableCell>
                                                 </TableRow>
                                             )) : (
                                                 <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">No payment history found.</TableCell></TableRow>

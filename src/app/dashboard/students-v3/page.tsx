@@ -447,8 +447,8 @@ export default function StudentsV3Page() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex gap-2">
-                                                {s.canteenBillingMode !== 'None' && <Utensils className="h-4 w-4 text-orange-500" title={`Canteen: ${s.canteenBillingMode}`}/>}
-                                                {s.usesBusService && <Bus className="h-4 w-4 text-blue-500" title={`Bus Subscriber (${s.transportBillingModel})`} />}
+                                                {s.canteenBillingMode !== 'None' && <span title={`Canteen: ${s.canteenBillingMode}`}><Utensils className="h-4 w-4 text-orange-500"/></span>}
+                                                {s.usesBusService && <span title={`Bus Subscriber (${s.transportBillingModel})`}><Bus className="h-4 w-4 text-blue-500" /></span>}
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right">

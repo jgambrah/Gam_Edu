@@ -82,7 +82,7 @@ function MaterialForm({
   schoolId: string;
 }) {
   const firestore = useFirestore();
-  const { user: hookUser } = useAuth();
+  const { user: hookUser } = useUser();
   const { toast } = useToast();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -356,7 +356,7 @@ export default function LearningMaterialsPage() {
   const [currentSubject, setCurrentSubject] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>(''); 
 
-  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
+  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   // 1. Student Profile & Class ID
   const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
@@ -480,7 +480,7 @@ export default function LearningMaterialsPage() {
                 <MaterialForm 
                     open={isFormOpen} 
                     setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
-                    classes={classes}
+                    classes={classes ?? undefined}
                     materialToEdit={editingMaterial}
                     subjectsList={subjectsList}
                     preSelectedSubject={currentSubject || undefined}
@@ -592,7 +592,7 @@ export default function LearningMaterialsPage() {
         <MaterialForm 
             open={isFormOpen} 
             setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
-            classes={classes}
+            classes={classes ?? undefined}
             materialToEdit={editingMaterial}
             subjectsList={subjectsList}
             preSelectedSubject={currentSubject || undefined}

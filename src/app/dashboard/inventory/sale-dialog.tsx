@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { doc, writeBatch, serverTimestamp, query, collection, where, getDocs } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { InventoryItem } from '@/lib/types';
@@ -29,7 +29,7 @@ interface SaleDialogProps {
 
 export function SaleDialog({ item, open, onOpenChange, onSaleComplete }: SaleDialogProps) {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { schoolId } = useCurrentSchool();
@@ -40,6 +40,10 @@ export function SaleDialog({ item, open, onOpenChange, onSaleComplete }: SaleDia
   });
 
   async function onSubmit(values: z.infer<typeof saleSchema>) {
+    if (!firestore) {
+        toast({ variant: "destructive", title: "Database Connection Error" });
+        return;
+    }
     if (!user) {
         toast({ variant: "destructive", title: "Authentication Error" });
         return;

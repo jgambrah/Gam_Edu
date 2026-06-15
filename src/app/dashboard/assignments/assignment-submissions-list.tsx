@@ -41,7 +41,7 @@ export function AssignmentSubmissionsList({ assignment, readOnly = false }: Assi
   const [selectedSubmission, setSelectedSubmission] = useState<StudentSubmission | null>(null);
   const [isGrading, setIsGrading] = useState(false);
   
-  const submissionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, `assignments/${assignment.id}/submissions`)) : null, [firestore, assignment.id]);
+  const submissionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore!, `assignments/${assignment.id}/submissions`)) : null, [firestore, assignment.id]);
   const { data: submissions, isLoading } = useCollection<StudentSubmission>(submissionsQuery);
 
   const handleGradeClick = (submission: StudentSubmission) => {
@@ -71,7 +71,7 @@ export function AssignmentSubmissionsList({ assignment, readOnly = false }: Assi
                 <div>
                     <CardTitle>{assignment.title}</CardTitle>
                     <CardDescription>
-                    Due: {format(new Date(assignment.dueDate.toDate()), 'PPP')} | Grading: {assignment.gradingType}
+                    Due: {assignment.dueDate ? (typeof (assignment.dueDate as any).toDate === 'function' ? format((assignment.dueDate as any).toDate(), 'PPP') : format(new Date(assignment.dueDate), 'PPP')) : 'N/A'} | Grading: {assignment.gradingType}
                     </CardDescription>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => setExpanded(!isExpanded)}>
@@ -100,7 +100,7 @@ export function AssignmentSubmissionsList({ assignment, readOnly = false }: Assi
                     <TableRow key={sub.id}>
                       <TableCell>{sub.studentName}</TableCell>
                       <TableCell><Badge variant={getStatusVariant(sub.status)}>{sub.status}</Badge></TableCell>
-                      <TableCell>{format(new Date(sub.submittedAt.toDate()), 'PPp')}</TableCell>
+                      <TableCell>{sub.submittedAt ? (typeof (sub.submittedAt as any).toDate === 'function' ? format((sub.submittedAt as any).toDate(), 'PPp') : format(new Date(sub.submittedAt), 'PPp')) : 'N/A'}</TableCell>
                       <TableCell className="space-x-2">
                         {sub.submissionType === 'file' ? (
                             <Button variant="outline" size="icon" disabled>

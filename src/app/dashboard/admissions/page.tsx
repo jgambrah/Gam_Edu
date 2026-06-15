@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useFirestore, useAuth, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where, getDocs, onSnapshot, updateDoc, serverTimestamp, addDoc } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs, onSnapshot, updateDoc, serverTimestamp, addDoc, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,7 +37,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { AdmissionApplication, Class, Student, studentRegistrationSchema, StudentRegistrationData, Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/lib/types';
+import { AdmissionApplication, Class, Student, studentRegistrationSchema, StudentRegistrationData } from '@/lib/types';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format, differenceInYears } from 'date-fns';
 import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2, AlertCircle } from 'lucide-react';
 import { updateDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -61,7 +63,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
 function ParentApplicationForm({ onSuccess, schoolId }: { onSuccess: () => void, schoolId: string }) {
-    const { user } = useAuth();
+    const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -183,7 +185,7 @@ function ParentApplicationForm({ onSuccess, schoolId }: { onSuccess: () => void,
 // --- ADMIN REVIEW DASHBOARD ---
 function AdminApplicationDashboard() {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user } = useUser();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
 
@@ -482,7 +484,7 @@ function AdminApplicationDashboard() {
 }
 
 function ParentDashboard({ schoolId }: { schoolId: string }) {
-     const { user } = useAuth();
+     const { user } = useUser();
     const firestore = useFirestore();
     const [myApps, setMyApps] = useState<any[]>([]);
     const [showForm, setShowForm] = useState(false);

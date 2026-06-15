@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { updatePassword, User } from 'firebase/auth';
-import { doc, writeBatch } from 'firebase/firestore';
+import { doc, writeBatch, getDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import {
@@ -57,10 +57,39 @@ export default function ForcePasswordChange({ user, profile }: ForcePasswordChan
       // 2. Update Firestore profile status
       const batch = writeBatch(firestore);
       
-      // Determine collection name using the verified role from context
+      // Determine collection name using verified role, profile fields, or checking database existence
       let collectionName = 'staff';
-      if (role === 'Student') collectionName = 'students';
-      if (role === 'Parent') collectionName = 'parents';
+      try {
+        const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const userRole = userData?.role;
+          if (userRole === 'Student') {
+            collectionName = 'students';
+          } else if (userRole === 'Parent') {
+            collectionName = 'parents';
+          } else {
+            collectionName = 'staff';
+          }
+        } else {
+          // Fallback to check role & profile props
+          const userRole = role || profile?.role;
+          if (userRole === 'Student' || profile?.studentId || 'rollNumber' in (profile || {})) {
+            collectionName = 'students';
+          } else if (userRole === 'Parent' || profile?.studentIds || 'studentIds' in (profile || {})) {
+            collectionName = 'parents';
+          }
+        }
+      } catch (dbErr) {
+        console.error('Error determining user collection in Firestore:', dbErr);
+        // Fallback to checking props directly if getDoc fails
+        const userRole = role || profile?.role;
+        if (userRole === 'Student' || profile?.studentId || 'rollNumber' in (profile || {})) {
+          collectionName = 'students';
+        } else if (userRole === 'Parent' || profile?.studentIds || 'studentIds' in (profile || {})) {
+          collectionName = 'parents';
+        }
+      }
 
       const userRef = doc(firestore, 'users', user.uid);
       const profileRef = doc(firestore, collectionName, user.uid);

@@ -25,7 +25,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, Loader2 } from 'lucide-react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo } from 'react';
 import { collection, query, serverTimestamp, where, addDoc } from 'firebase/firestore';
@@ -41,7 +41,7 @@ type AssignmentCreationFormProps = {
 
 export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps) {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { role } = useRole();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +49,7 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
 
   // 1. Fetch ALL classes for the school, regardless of role.
   const classesQuery = useMemoFirebase(
-    () => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null,
+    () => (firestore && schoolId) ? query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId)) : null,
     [firestore, schoolId]
   );
   const { data: allSchoolClasses } = useCollection(classesQuery);
@@ -75,10 +75,10 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
   });
 
   async function onSubmit(values: z.infer<typeof assignmentSchema>) {
-    if (!user || !schoolId) return;
+    if (!user || !schoolId || !firestore) return;
     setIsSubmitting(true);
     try {
-      await addDoc(collection(firestore, 'assignments'), {
+      await addDoc(collection(firestore!, 'assignments'), {
         ...values,
         teacherId: user.uid,
         schoolId: schoolId, // SAAS: Stamp with schoolId

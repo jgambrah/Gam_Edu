@@ -34,6 +34,7 @@ function CreateThreadForm({ setOpen, forceRefetch, schoolId }: { setOpen: (open:
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!firestore) return;
         
         const auth = getAuth();
         const currentUser = auth.currentUser;
@@ -120,7 +121,7 @@ function CreateThreadForm({ setOpen, forceRefetch, schoolId }: { setOpen: (open:
 // --- Thread View ---
 function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => void }) {
     const firestore = useFirestore();
-    const { user: hookUser } = useAuth();
+    const { user: hookUser } = useUser();
     const { toast } = useToast();
     const [reply, setReply] = useState('');
     const [isReplying, setIsReplying] = useState(false);
@@ -129,6 +130,7 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
     const { data: replies, isLoading } = useCollection<ForumReply>(repliesQuery);
 
     const handlePostReply = async () => {
+        if (!firestore) return;
         const auth = getAuth();
         const currentUser = auth.currentUser || hookUser;
 

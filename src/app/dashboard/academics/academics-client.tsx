@@ -186,7 +186,7 @@ function ClassDetailView({
                                             <TableRow key={student.uid}>
                                                 <TableCell><StudentDisplay student={student} variant="list" showAvatar /></TableCell>
                                                 <TableCell>
-                                                    <Badge variant="ghost" className={cn("text-[10px] font-bold uppercase", student.gender === 'Male' ? "text-blue-600" : "text-pink-600")}>
+                                                    <Badge variant="outline" className={cn("text-[10px] font-bold uppercase", student.gender === 'Male' ? "text-blue-600" : "text-pink-600")}>
                                                         {student.gender || 'N/A'}
                                                     </Badge>
                                                 </TableCell>

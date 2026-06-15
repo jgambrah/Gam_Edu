@@ -62,8 +62,10 @@ function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess
   if (item.roles === 'all') return true;
   if (!role) return false;
 
+  const normalizedRole = role.trim().toLowerCase();
+
   // SUPPORT STAFF RESTRICTIONS (Excluding Secretary/Receptionist who are Desk-based)
-  const isLaborStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook';
+  const isLaborStaff = normalizedRole === 'cleaner' || normalizedRole === 'security officer' || normalizedRole === 'cook';
   const isRestrictedPath = 
     item.path.includes('/dashboard/academics') || 
     item.path.includes('/dashboard/financials') || 
@@ -88,10 +90,17 @@ function isNavItemVisible(item: NavItem, role: UserRole | null, hasFinanceAccess
     return false;
   }
 
-  // Handle Admin alias
+  // Handle Admin alias and general role normalization
   const effectiveRole =
-    role === 'Administrator' || role === 'Director' ? 'Admin' : role;
-  return item.roles.includes(effectiveRole) || item.roles.includes(role);
+    (normalizedRole === 'administrator' || normalizedRole === 'director' ? 'admin' : normalizedRole);
+
+  const normalizedItemRoles = (item.roles as string[]).map(r => r.trim().toLowerCase());
+
+  return normalizedItemRoles.includes(effectiveRole) || 
+         normalizedItemRoles.includes(normalizedRole) ||
+         (role && item.roles.includes(role)) ||
+         (normalizedRole === 'parent' && normalizedItemRoles.includes('parent')) ||
+         (normalizedRole === 'parents' && normalizedItemRoles.includes('parent'));
 }
 
 export function AppSidebarContent() {

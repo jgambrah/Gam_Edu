@@ -59,16 +59,16 @@ export function AiQuizGenerator() {
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   
   const classesQuery = useMemoFirebase(() => {
-    if (!user) {
+    if (!user || !firestore) {
       return null;
     }
     
     if (role === 'Administrator' || role === 'Director') {
-      return collection(firestore, 'classes');
+      return collection(firestore!, 'classes');
     }
     
     if (role === 'Teacher') {
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+      return query(collection(firestore!, 'classes'), where('teacherId', '==', user.uid));
     }
     
     return null;
@@ -127,7 +127,7 @@ export function AiQuizGenerator() {
       return;
     }
     
-    if (!user) {
+    if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to assign a quiz.' });
       return;
     }
@@ -143,7 +143,7 @@ export function AiQuizGenerator() {
       createdAt: serverTimestamp(),
     };
     
-    const quizzesCollection = collection(firestore, 'quizzes');
+    const quizzesCollection = collection(firestore!, 'quizzes');
 
     addDoc(quizzesCollection, quizData)
       .then((docRef) => {

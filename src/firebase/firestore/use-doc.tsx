@@ -76,6 +76,7 @@ export function useDoc<T = any>(
         setIsLoading(false);
       },
       (error: FirestoreError) => {
+        console.error("Original FirestoreError in useDoc:", error);
         const contextualError = new FirestorePermissionError({
           operation: 'get',
           path: memoizedDocRef.path,

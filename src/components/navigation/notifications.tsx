@@ -24,7 +24,7 @@ export default function NotificationBell() {
     const [isOpen, setIsOpen] = useState(false);
 
     const notificationsQuery = useMemoFirebase(
-        () => user ? query(collection(firestore, 'notifications'), where('userId', '==', user.uid), orderBy('createdAt', 'desc')) : null,
+        () => (user && firestore) ? query(collection(firestore, 'notifications'), where('userId', '==', user.uid), orderBy('createdAt', 'desc')) : null,
         [firestore, user]
     );
     const { data: notifications } = useCollection<Notification>(notificationsQuery);

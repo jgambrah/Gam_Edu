@@ -46,7 +46,7 @@ export async function generateClassInsightsAction(
 
     // 3. Call AI using Genkit 1.x syntax
     const response = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       config: { temperature: 0.4 }
     });

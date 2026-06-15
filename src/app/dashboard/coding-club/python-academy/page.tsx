@@ -264,9 +264,9 @@ function PythonAcademy() {
         userCode: code,
         question: aiQuestion
       });
-      if (res.success) {
+      if (res.success && res.data) {
         setTutorResponse(res.data);
-        speak(res.data.explanation); 
+        speak(res.data.explanation);
       }
     } finally {
       setIsAiLoading(false);

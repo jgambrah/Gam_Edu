@@ -8,6 +8,12 @@ import Link from 'next/link';
 
 const clubModules = [
   {
+    path: '/dashboard/nursery-bloom',
+    title: 'Nursery Bloom',
+    icon: Rabbit,
+    description: 'Interactive AI suite with Phonics, voice coach, math playgrounds, science experiments and creative art studio.',
+  },
+  {
     path: '/dashboard/senior-academy',
     title: 'Senior Academy',
     icon: Rocket,

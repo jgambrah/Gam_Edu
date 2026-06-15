@@ -89,6 +89,7 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (error: FirestoreError) => {
+        console.error("Original FirestoreError in useCollection:", error);
         const path: string =
           'path' in memoizedTargetRefOrQuery
             ? (memoizedTargetRefOrQuery as CollectionReference).path

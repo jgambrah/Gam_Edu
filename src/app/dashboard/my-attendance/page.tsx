@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, limit, documentId } from 'firebase/firestore';
@@ -15,7 +15,7 @@ import { Loader2, CalendarCheck, Info } from 'lucide-react';
  * @fileOverview Personal attendance history for Students and Parents.
  */
 export default function MyAttendancePage() {
-    const { user } = useAuth();
+    const { user } = useUser();
     const { role, profile, loading: roleLoading } = useRole();
     const firestore = useFirestore();
     const { schoolId, loading: schoolLoading } = useCurrentSchool();

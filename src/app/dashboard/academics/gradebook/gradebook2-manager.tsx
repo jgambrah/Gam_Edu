@@ -295,7 +295,7 @@ function StudentGradesDetail({
 // --- MAIN PAGE ---
 export default function GradebookManager() {
   const { user, isUserLoading } = useUser();
-  const { role, isRoleLoading } = useRole();
+  const { role, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 

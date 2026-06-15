@@ -20,7 +20,7 @@ export async function validateContentSafety(input: { content: string }) {
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       output: { schema: SafetySchema },
     });
@@ -65,7 +65,7 @@ export async function generateAIModeratorComment(input: {
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       output: { schema: ModeratorSchema },
     });

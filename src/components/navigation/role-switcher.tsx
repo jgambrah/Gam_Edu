@@ -14,12 +14,12 @@ import { ALL_ROLES, type UserRole } from '@/lib/types';
 export default function RoleSwitcher() {
   const { role, setRole } = useRole();
 
-  const handleRoleChange = (newRole: UserRole) => {
-    setRole(newRole);
+  const handleRoleChange = (newRole: string) => {
+    setRole(newRole as UserRole);
   };
 
   return (
-    <Select value={role} onValueChange={handleRoleChange}>
+    <Select value={role || undefined} onValueChange={handleRoleChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select role" />
       </SelectTrigger>

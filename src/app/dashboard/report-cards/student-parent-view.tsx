@@ -52,7 +52,7 @@ function ReportListForStudent({ student }: { student: Student }) {
                     <div>
                         <p className="font-bold text-slate-900">{report.academicYear} - {report.term}</p>
                         <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-1">
-                            Average: <span className="text-indigo-600">{report.overallAverage}%</span> • Rank: <span className="text-indigo-600">{report.classPosition}</span>
+                            Average: <span className="text-indigo-600">{(report as any).overallAverage || report.finalPercentage || 0}%</span> • Rank: <span className="text-indigo-600">{report.classPosition}</span>
                         </p>
                     </div>
                     <Dialog>
@@ -189,7 +189,7 @@ export default function StudentParentReportCardView() {
                 </div>
 
                 <Accordion type="single" collapsible defaultValue={studentIds[0]} className="w-full">
-                    {studentIds.map(uid => (
+                    {studentIds.map((uid: string) => (
                         <StudentAccordionItem key={uid} studentUid={uid} />
                     ))}
                 </Accordion>

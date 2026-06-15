@@ -145,7 +145,7 @@ export const HTMLReportCard = ({
 
 
     const overallAverage = reportData.length > 0 
-        ? reportData.reduce((sum, i) => sum + i.totalPercent, 0) / reportData.length 
+        ? reportData.reduce((sum: number, i: any) => sum + i.totalPercent, 0) / reportData.length 
         : 0;
 
     // --- HTML TEMPLATE (A4 Sized) ---

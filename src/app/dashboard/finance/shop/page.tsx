@@ -77,7 +77,7 @@ function EditItemDialog({ item, open, onOpenChange, onUpdateComplete }: { item: 
         if (!firestore) return;
         setIsSubmitting(true);
         try {
-            const itemRef = doc(firestore, 'school_shop_items', item.id);
+            const itemRef = doc(firestore!, 'school_shop_items', item.id);
             await updateDoc(itemRef, {
                 ...values,
                 updatedAt: serverTimestamp()
@@ -176,12 +176,12 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
         if (!firestore || !schoolId) return;
         setIsSubmitting(true);
         try {
-            const batch = writeBatch(firestore);
+            const batch = writeBatch(firestore!);
 
-            const itemRef = doc(firestore, 'school_shop_items', item.id);
+            const itemRef = doc(firestore!, 'school_shop_items', item.id);
             batch.update(itemRef, { stock: increment(values.quantity) });
 
-            const transactionRef = doc(collection(firestore, `school_shop_items/${item.id}/transactions`));
+            const transactionRef = doc(collection(firestore!, `school_shop_items/${item.id}/transactions`));
             batch.set(transactionRef, {
                 itemId: item.id,
                 transactionType: 'RESTOCK',
@@ -245,9 +245,10 @@ function ShopManager({ schoolId, onAddItem }: { schoolId: string; onAddItem: () 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!firestore) return;
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'school_shop_items'), {
+            await addDoc(collection(firestore!, 'school_shop_items'), {
                 name,
                 category,
                 price: parseFloat(price) || 0,
@@ -341,15 +342,15 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
     };
 
     const handleCheckout = async () => {
-        if (cart.length === 0 || !user || !schoolId) return;
+        if (cart.length === 0 || !user || !schoolId || !firestore) return;
         setIsProcessing(true);
 
         try {
-            const batch = writeBatch(firestore);
+            const batch = writeBatch(firestore!);
             
             if (paymentMethod === 'Cash') {
                 const tillQ = query(
-                    collection(firestore, 'tills'), 
+                    collection(firestore!, 'tills'), 
                     where('accountantId', '==', user.uid), 
                     where('status', '==', 'Open'),
                     where('schoolId', '==', schoolId)
@@ -361,7 +362,7 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
                 }
 
                 const activeTill = tillSnap.docs[0];
-                const transRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
+                const transRef = doc(collection(firestore!, `tills/${activeTill.id}/transactions`));
                 
                 batch.set(transRef, {
                     tillId: activeTill.id,
@@ -372,16 +373,16 @@ function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string 
                     schoolId: schoolId,
                 });
                 
-                batch.update(doc(firestore, 'tills', activeTill.id), {
+                batch.update(doc(firestore!, 'tills', activeTill.id), {
                     currentBalance: increment(totalAmount)
                 });
             }
 
             cart.forEach(item => {
-                const itemRef = doc(firestore, 'school_shop_items', item.id);
+                const itemRef = doc(firestore!, 'school_shop_items', item.id);
                 batch.update(itemRef, { stock: increment(-item.quantity) });
 
-                const logRef = doc(collection(firestore, 'school_shop_transactions'));
+                const logRef = doc(collection(firestore!, 'school_shop_transactions'));
                 batch.set(logRef, {
                     type: 'SALE',
                     itemId: item.id,
@@ -516,7 +517,7 @@ export default function SchoolShopPage() {
     const itemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'school_shop_items'), where('schoolId', '==', schoolId), orderBy('name')) : null, [firestore, schoolId]);
     const { data: items, isLoading, forceRefetch } = useCollection<ShopItem>(itemsQuery);
 
-    const canManage = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canManage = role ? ['Administrator', 'Director', 'Accountant'].includes(role) : false;
 
     const isLoadingPage = isLoadingSchool || isLoading;
 

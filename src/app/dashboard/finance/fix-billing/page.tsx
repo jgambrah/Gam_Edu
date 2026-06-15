@@ -40,7 +40,7 @@ export default function FixBillingPage() {
     const [missingBills, setMissingBills] = useState<MissingBillItem[]>([]);
     const [selectedItems, setSelectedItems] = useState<string[]>([]); 
 
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canAccess = role ? ['Administrator', 'Director', 'Accountant'].includes(role) : false;
 
     // --- 1. SCAN LOGIC ---
     const handleCheck = async () => {

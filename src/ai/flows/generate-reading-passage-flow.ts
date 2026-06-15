@@ -47,6 +47,6 @@ Instructions:
 });
 
 export async function generateReadingPassage(input: GenerateReadingPassageInput): Promise<GenerateReadingPassageOutput> {
-  const { output } = await generateReadingPassagePrompt(input, { model: 'googleai/gemini-2.5-flash' });
+  const { output } = await generateReadingPassagePrompt(input, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }

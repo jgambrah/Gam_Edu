@@ -9,7 +9,7 @@ import 'blockly/javascript';
 import { javascriptGenerator } from 'blockly/javascript';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth, useFirestore } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Loader2, Code2, FolderOpen, Save, RotateCcw, Play } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -45,7 +45,7 @@ javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block
       "Water can boil and freeze at the same time."
   ];
   const code = `[${facts.map(f => `'${f}'`).join(',')}] [Math.floor(Math.random() * ${facts.length})]`;
-  return [code, javascriptGenerator.ORDER_ATOMIC];
+  return [code, (javascriptGenerator as any).ORDER_ATOMIC];
 };
 
 // --- 2. EXHAUSTIVE TOOLBOX CONFIGURATION ---
@@ -225,13 +225,13 @@ export default function BlocklyEditor() {
   const [logs, setLogs] = useState<string[]>([]);
   
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
 
   const blocklyDivRef = useRef<HTMLDivElement>(null);
 
   // --- INITIALIZE WORKSPACE ---
-  const { workspace } = useBlocklyWorkspace({
+  const { workspace, xml: currentXml } = useBlocklyWorkspace({
     ref: blocklyDivRef,
     toolboxConfiguration: toolboxCategories,
     workspaceConfiguration: {
@@ -240,8 +240,13 @@ export default function BlocklyEditor() {
         trashcan: true,
         renderer: 'geras',
     },
-    onXmlChange: setXml
   });
+
+  useEffect(() => {
+    if (currentXml !== null) {
+      setXml(currentXml);
+    }
+  }, [currentXml]);
 
   // --- CODE GENERATION & SAFETY ---
   useEffect(() => {
@@ -259,7 +264,7 @@ export default function BlocklyEditor() {
 
   // --- ACTIONS ---
   const handleSave = async () => {
-    if (!user || !workspace) {
+    if (!user || !workspace || !firestore) {
       toast({ variant: 'destructive', title: 'Login Required', description: 'Please login to save your work.' });
       return;
     }
@@ -275,12 +280,12 @@ export default function BlocklyEditor() {
   };
 
   const handleLoad = useCallback(async () => {
-    if (!user || !workspace) return;
+    if (!user || !workspace || !firestore) return;
     setIsFetching(true);
     try {
       const docSnap = await getDoc(doc(firestore, 'coding-club-projects', user.uid));
       if (docSnap.exists()) {
-        const dom = Blockly.Xml.textToDom(docSnap.data().xml);
+        const dom = Blockly.utils.xml.textToDom(docSnap.data().xml);
         Blockly.Xml.clearWorkspaceAndLoadFromXml(dom, workspace);
         toast({ title: 'Loaded!', description: 'Project loaded successfully.' });
       } else {

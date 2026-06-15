@@ -257,14 +257,14 @@ function PostAnnouncementForm({
 // --- MAIN PAGE ---
 export default function AnnouncementsPage() {
   const firestore = useFirestore();
-  const { role, isRoleLoading } = useRole();
+  const { role, loading: isRoleLoading } = useRole();
   const { user } = useUser();
   const { toast } = useToast();
   const { schoolId, loading: schoolLoading } = useCurrentSchool(); 
 
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const canManage = ['Administrator', 'Director'].includes(role);
+  const canManage = role ? ['Administrator', 'Director'].includes(role) : false;
 
   const announcementsQuery = useMemoFirebase(() => {
       if (!firestore || !schoolId) return null; 

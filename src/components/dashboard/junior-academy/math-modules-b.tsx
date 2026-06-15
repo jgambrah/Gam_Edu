@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import * as constants from '@/lib/constants';
-import { generateLessonImageAction } from '@/ai/flows/junior-actions';
+import { generateLessonImageAction } from '@/app/dashboard/junior-actions';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import * as LucideIcons from 'lucide-react';
@@ -112,7 +112,7 @@ export const MeasurementModule: React.FC<{ onSound: (t: string) => void, schoolI
   const fetchVisuals = useCallback(async () => {
     if (!current) return;
     const results = await Promise.all(current.items.map((i: any) => generateLessonImageAction({ prompt: i.prompt, schoolId })));
-    setImageUrls(results.map(r => r.data || null));
+    setImageUrls(results.map((r: any) => r.data || null));
   }, [current, schoolId]);
   useEffect(() => { setAnswered(false); fetchVisuals(); }, [index, subTab, data, fetchVisuals]);
   if (!current) return null;
@@ -135,7 +135,7 @@ export const ShapesModule: React.FC<{ onSound: (t: string) => void, schoolId: st
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const current = data[index];
   useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then((res: any) => setImageUrl(res.data || null));
   }, [index, schoolId, current?.prompt]);
   if (!current) return null;
   return (
@@ -161,7 +161,7 @@ export const SpatialModule: React.FC<{ onSound: (t: string) => void, schoolId: s
   const [answered, setAnswered] = useState(false);
   const current = data[index];
   useEffect(() => {
-    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then(res => setImageUrl(res.data || null));
+    generateLessonImageAction({ prompt: current?.prompt, schoolId }).then((res: any) => setImageUrl(res.data || null));
     setAnswered(false);
   }, [index, schoolId, current?.prompt]);
   if (!current) return null;
@@ -191,7 +191,7 @@ export const ComparisonGame: React.FC<{ onSound: (t: string) => void, schoolId: 
   const currentLevel = data[level];
   useEffect(() => {
     if (!currentLevel) return;
-    Promise.all(currentLevel.items.map((i: any) => generateLessonImageAction({ prompt: i.prompt, schoolId }))).then(res => setImageUrls(res.map(r => r.data || null)));
+    Promise.all(currentLevel.items.map((i: any) => generateLessonImageAction({ prompt: i.prompt, schoolId }))).then(res => setImageUrls(res.map((r: any) => r.data || null)));
     setAnswered(false);
   }, [level, schoolId, currentLevel]);
   if (!currentLevel) return null;

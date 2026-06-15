@@ -2,13 +2,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { AlertTriangle, Clock, Crown } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TrialBanner() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
   const [plan, setPlan] = useState<string | null>(null);

@@ -146,7 +146,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
                                                     schoolId: schoolId,
                                                     studentId: studentId,
                                                     recordId: rec.id
-                                                }}
+                                                } as any}
                                                 onSuccess={() => toast({ title: "Payment Received", description: "Verification in progress. Your balance will update shortly." })}
                                                 onClose={() => {}}
                                             />
@@ -160,7 +160,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
             </div>
             <div className="mt-4">
                 <GenerateStatement 
-                    student={student}
+                    student={student as any}
                     records={filteredRecords}
                     dateRange={dateRange}
                     summary={overallSummary}
@@ -275,7 +275,7 @@ function MyBillsPageContent() {
                 </div>
 
                 <Accordion type="single" collapsible defaultValue={studentIds[0]} className="w-full">
-                    {studentIds.map(uid => (
+                    {studentIds.map((uid: string) => (
                         <StudentAccordionItem key={uid} studentUid={uid} />
                     ))}
                 </Accordion>

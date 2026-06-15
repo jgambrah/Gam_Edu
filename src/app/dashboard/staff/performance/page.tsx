@@ -27,6 +27,15 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianG
 import { Slider } from "@/components/ui/slider";
 import PerformanceSetup from '@/components/PerformanceSetup';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
+const toDateSafe = (d: any): Date => {
+    if (!d) return new Date();
+    if (d instanceof Date) return d;
+    if (d.toDate && typeof d.toDate === 'function') return d.toDate();
+    if (d.seconds) return new Date(d.seconds * 1000);
+    return new Date(d);
+};
 
 // --- COMPONENTS ---
 
@@ -106,7 +115,7 @@ function PerformanceReviewForm({ setOpen, staffList, schoolId }: { setOpen: (ope
   };
 
   async function onSubmit(values: any) {
-    if (!user || !schoolId) return;
+    if (!firestore || !user || !schoolId) return;
     setIsSubmitting(true);
     try {
       await addDoc(collection(firestore, 'performanceReviews'), {
@@ -137,7 +146,7 @@ function PerformanceReviewForm({ setOpen, staffList, schoolId }: { setOpen: (ope
               {staffList
                 ?.filter(s => s.uid && s.firstName)
                 .map(s => (
-                  <SelectItem key={s.id} value={s.uid}>
+                  <SelectItem key={s.uid} value={s.uid}>
                     {s.firstName} {s.lastName}
                   </SelectItem>
                 ))
@@ -248,7 +257,7 @@ export default function PerformanceReviewsPage() {
   const chartData = useMemo(() => {
       if (!rawReviews) return [];
       return rawReviews.map(r => ({
-          date: r.reviewDate?.toDate ? format(r.reviewDate.toDate(), 'MMM dd') : 'N/A',
+          date: format(toDateSafe(r.reviewDate), 'MMM dd'),
           rating: r.rating,
           metrics: r.metrics 
       }));
@@ -366,7 +375,7 @@ export default function PerformanceReviewsPage() {
                                     <span className="font-bold">{review.rating}</span>
                                 </div>
                                 <div className="text-left flex-1">
-                                    <p className="font-semibold text-sm">Evaluation on {review.reviewDate?.toDate ? format(review.reviewDate.toDate(), 'PPP') : 'N/A'}</p>
+                                    <p className="font-semibold text-sm">Evaluation on {format(toDateSafe(review.reviewDate), 'PPP')}</p>
                                     <p className="text-xs text-muted-foreground">Reviewer: {review.reviewerName}</p>
                                 </div>
                             </div>

@@ -25,7 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType, accountSchema, MOCK_CHART_OF_ACCOUNTS, ACCOUNT_TYPES } from '@/lib/types';
+import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType, accountSchema, ACCOUNT_TYPES } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -381,7 +381,7 @@ export default function FinancialReportsPage() {
         to: endOfMonth(new Date()),
     });
 
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
     // Fetch school-specific data
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);

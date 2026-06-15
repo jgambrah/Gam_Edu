@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore, useDoc, useMemoFirebase, useAuth } from '@/firebase';
+import { useFirestore, useDoc, useMemoFirebase, useUser } from '@/firebase';
 import { doc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRole } from '@/context/role-context';
@@ -40,7 +40,7 @@ import {
 
 export default function SchoolProfilePage() {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { role, profile: userProfile } = useRole();
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
   const { toast } = useToast();

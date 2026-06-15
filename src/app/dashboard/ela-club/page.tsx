@@ -464,7 +464,6 @@ function ReadingPracticeTab() {
                                     </CardFooter>
                                 </Card>
                             ))}
-                            {passages?.length === 0 && <p className="col-span-full text-center py-10 text-muted-foreground">No passages found.</p>}
                         </div>
                     )}
                 </CardContent>
@@ -474,20 +473,19 @@ function ReadingPracticeTab() {
     );
 }
 
-// --- SUB-COMPONENT: WRITING MODAL ---
+// --- SUB-COMPONENT: WRITING CHALLENGE DIALOG ---
 function ActiveChallengeDialog({ challenge, existingSubmission, open, setOpen }: { challenge: ElaWritingChallenge | null, existingSubmission?: ElaUserSubmission, open: boolean, setOpen: (o: boolean) => void }) {
     const [draft, setDraft] = useState('');
     const [isEvaluating, setIsEvaluating] = useState(false);
     const [evaluation, setEvaluation] = useState<any>(null);
-    
-    const firestore = useFirestore();
-    const { user } = useUser();
     const { schoolId } = useCurrentSchool();
+    const { user } = useUser();
+    const firestore = useFirestore();
     const { toast } = useToast();
 
     useEffect(() => {
         if (existingSubmission) {
-            setDraft(existingSubmission.submission_text);
+            setDraft(existingSubmission.submission_text || '');
             setEvaluation(existingSubmission.teacher_score !== null ? { 
                 score: existingSubmission.teacher_score, 
                 summary: existingSubmission.teacher_feedback 
@@ -501,7 +499,7 @@ function ActiveChallengeDialog({ challenge, existingSubmission, open, setOpen }:
     if (!challenge) return null;
 
     const handleAutoGrade = async () => {
-        if (!draft.trim() || !schoolId) return;
+        if (!draft.trim() || !schoolId || !challenge) return;
         setIsEvaluating(true);
         try {
             const result = await evaluateWritingAction({

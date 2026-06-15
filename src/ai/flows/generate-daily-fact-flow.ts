@@ -27,6 +27,6 @@ const generateDailyFactPrompt = ai.definePrompt({
 });
 
 export async function generateDailyFact(): Promise<GenerateDailyFactOutput> {
-  const { output } = await generateDailyFactPrompt(undefined, { model: 'googleai/gemini-1.5-flash' });
+  const { output } = await generateDailyFactPrompt(undefined, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }

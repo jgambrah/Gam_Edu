@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { useUser } from '@/firebase/provider';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
-const getGradeForScore = (score: number): 'A' | 'B' | 'C' | 'D' | 'F' | 'N/A' => {
+const getGradeForScore = (score: number): 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'N/A' => {
     if (score >= 80) return 'A';
     if (score >= 70) return 'B';
     if (score >= 60) return 'C';

@@ -119,7 +119,7 @@ function StaffLeaveView() {
     const [isFormOpen, setFormOpen] = useState(false);
 
     const myRequestsQuery = useMemoFirebase(() => 
-        (user && schoolId) ? query(collection(firestore, 'leaveRequests'), where('staffId', '==', user.uid), where('schoolId', '==', schoolId)) : null, 
+        (user && schoolId && firestore) ? query(collection(firestore, 'leaveRequests'), where('staffId', '==', user.uid), where('schoolId', '==', schoolId)) : null, 
     [firestore, user, schoolId]);
     const { data: myRequests, isLoading } = useCollection<LeaveRequest>(myRequestsQuery);
 
@@ -230,7 +230,7 @@ function ManagerApprovalDialog({ request, setOpen, action }: { request: LeaveReq
     });
 
     async function handleDecision(values: z.infer<typeof formSchema>) {
-        if (!user) return;
+        if (!user || !firestore) return;
         setIsSubmitting(true);
         try {
             const requestRef = doc(firestore, 'leaveRequests', request.id);

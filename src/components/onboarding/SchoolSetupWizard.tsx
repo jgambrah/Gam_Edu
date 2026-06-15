@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore, useAuth } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRole } from '@/context/role-context';
 
 export default function SchoolSetupWizard() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
@@ -56,7 +56,7 @@ export default function SchoolSetupWizard() {
 
   // 2. Handle Step 1: Create Class
   const handleCreateClass = async () => {
-    if (!className || !schoolId) return;
+    if (!className || !schoolId || !firestore) return;
     setLoading(true);
     try {
       await addDoc(collection(firestore, 'classes'), {

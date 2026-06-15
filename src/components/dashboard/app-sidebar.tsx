@@ -28,7 +28,6 @@ import { Button } from '@/components/ui/button';
 import { useFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context'; 
 import { signOut } from 'firebase/auth';
-import { auth } from '@/firebase/client-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
 import type { NavItem, UserRole } from '@/lib/types';
@@ -38,8 +37,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 function isNavItemVisible(item: NavItem, role: UserRole | null) {
   if (item.roles === 'all') return true;
   if (!role) return false;
-  const effectiveRole = (role === 'Administrator' || role === 'Director') ? 'Admin' : role;
-  return item.roles.includes(effectiveRole) || item.roles.includes(role);
+  const effectiveRole = ((role === 'Administrator' || role === 'Director') ? 'Admin' : role) as any;
+  return (item.roles as any[]).includes(effectiveRole) || (item.roles as any[]).includes(role);
 }
 
 function NavLink({ item, isSubItem = false }: { item: NavItem, isSubItem?: boolean }) {
@@ -67,10 +66,13 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const { user } = useUser();
   const { role, profile, loading } = useRole(); 
+  const { auth } = useFirebase();
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      if (auth) {
+        await signOut(auth);
+      }
       window.location.href = '/';
     } catch (error) {
       console.error('Error signing out:', error);
