@@ -446,6 +446,8 @@ export type Class = {
     schoolId?: string;
     homeRoomId?: string;
     teachingModel?: 'ClassTeacher' | 'SubjectTeacher';
+    caWeight?: number;
+    examWeight?: number;
 };
 
 

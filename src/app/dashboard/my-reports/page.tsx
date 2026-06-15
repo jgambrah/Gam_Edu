@@ -154,8 +154,8 @@ export default function MyReportsPage() {
                             data={selectedReport}
                             classTeacherComment={selectedReport.classTeacherComment}
                             headmasterComment={selectedReport.headmasterComment}
-                            caWeight={CA_WEIGHT}
-                            examWeight={EXAM_WEIGHT}
+                            caWeight={selectedReport.caWeight ?? CA_WEIGHT}
+                            examWeight={selectedReport.examWeight ?? EXAM_WEIGHT}
                         />
                     </div>
                 </div>
@@ -168,8 +168,8 @@ export default function MyReportsPage() {
                         data={selectedReport}
                         classTeacherComment={selectedReport.classTeacherComment}
                         headmasterComment={selectedReport.headmasterComment}
-                        caWeight={CA_WEIGHT}
-                        examWeight={EXAM_WEIGHT}
+                        caWeight={selectedReport.caWeight ?? CA_WEIGHT}
+                        examWeight={selectedReport.examWeight ?? EXAM_WEIGHT}
                     />
                 </div>
             </div>

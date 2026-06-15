@@ -33,8 +33,12 @@ export const HTMLReportCard = ({
     totalStudents, 
     subjects, 
     schoolProfile,
-    customRemark 
+    customRemark,
+    caWeight,
+    examWeight
 }: any) => {
+    const currentCaWeight = caWeight ?? 30;
+    const currentExamWeight = examWeight ?? 70;
     
     const globalSubjectStats = useMemo(() => {
         const grouping: Record<string, Record<string, { ca: number, caMax: number, exam: number, examMax: number }>> = {};
@@ -67,8 +71,8 @@ export const HTMLReportCard = ({
             const scoresMap: Record<string, number> = {};
 
             Object.entries(studentsInSub).forEach(([uid, data]) => {
-                const caPct = data.caMax > 0 ? (data.ca / data.caMax) * 50 : 0;
-                const examPct = data.examMax > 0 ? (data.exam / data.examMax) * 50 : 0;
+                const caPct = data.caMax > 0 ? (data.ca / data.caMax) * currentCaWeight : 0;
+                const examPct = data.examMax > 0 ? (data.exam / data.examMax) * currentExamWeight : 0;
                 const final = caPct + examPct;
                 
                 scoresMap[uid] = final;
@@ -83,7 +87,7 @@ export const HTMLReportCard = ({
         });
         
         return stats;
-    }, [assessments]);
+    }, [assessments, currentCaWeight, currentExamWeight]);
 
     // 2. STUDENT SPECIFIC DATA (Display Logic) - FIXED TO ITERATE OVER SUBJECTS
     const reportData = useMemo(() => {
@@ -109,8 +113,8 @@ export const HTMLReportCard = ({
                 }
             });
 
-            const caWeighted = caMax > 0 ? (caObtained / caMax) * 50 : 0;
-            const examWeighted = examMax > 0 ? (examObtained / examMax) * 50 : 0;
+            const caWeighted = caMax > 0 ? (caObtained / caMax) * currentCaWeight : 0;
+            const examWeighted = examMax > 0 ? (examObtained / examMax) * currentExamWeight : 0;
             const totalPercent = caWeighted + examWeighted;
 
             const subStats = globalSubjectStats[subId];
@@ -141,7 +145,7 @@ export const HTMLReportCard = ({
                 ...getGrade(totalPercent) 
             };
         });
-    }, [assessments, student.uid, subjects, globalSubjectStats]);
+    }, [assessments, student.uid, subjects, globalSubjectStats, currentCaWeight, currentExamWeight]);
 
 
     const overallAverage = reportData.length > 0 
@@ -203,8 +207,8 @@ export const HTMLReportCard = ({
                     <thead>
                         <tr className="bg-gray-200 border-b border-black">
                             <th className="text-left p-2 border-r border-black w-[25%]">Subject</th>
-                            <th className="text-center p-2 border-r border-black w-[10%]">C.A. (50%)</th>
-                            <th className="text-center p-2 border-r border-black w-[10%]">Exam (50%)</th>
+                            <th className="text-center p-2 border-r border-black w-[10%]">C.A. ({currentCaWeight}%)</th>
+                            <th className="text-center p-2 border-r border-black w-[10%]">Exam ({currentExamWeight}%)</th>
                             <th className="text-center p-2 border-r border-black w-[10%]">Total</th>
                             <th className="text-center p-2 border-r border-black w-[10%]">Class Avg</th>
                             <th className="text-center p-2 border-r border-black w-[10%]">Pos</th>

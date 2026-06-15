@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
+import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { 
@@ -98,7 +98,9 @@ function StudentGradesDetail({
     rank, 
     totalStudents,
     term,
-    year 
+    year,
+    caWeight,
+    examWeight
 }: { 
     student: Student; 
     allAssessments: Assessment[];
@@ -107,6 +109,8 @@ function StudentGradesDetail({
     totalStudents: number;
     term: string;
     year: string;
+    caWeight: number;
+    examWeight: number;
 }) {
     // 1. GLOBAL STATS (The Fix: Calculate Weighted Averages for the whole class)
     const globalSubjectStats = useMemo(() => {
@@ -140,8 +144,8 @@ function StudentGradesDetail({
             const scoresMap: Record<string, number> = {};
 
             Object.entries(studentsInSub).forEach(([uid, data]) => {
-                const caPct = data.caMax > 0 ? (data.ca / data.caMax) * 50 : 0;
-                const examPct = data.examMax > 0 ? (data.exam / data.examMax) * 50 : 0;
+                const caPct = data.caMax > 0 ? (data.ca / data.caMax) * caWeight : 0;
+                const examPct = data.examMax > 0 ? (data.exam / data.examMax) * examWeight : 0;
                 const final = caPct + examPct;
                 
                 scoresMap[uid] = final;
@@ -156,7 +160,7 @@ function StudentGradesDetail({
         });
         
         return stats;
-    }, [allAssessments]);
+    }, [allAssessments, caWeight, examWeight]);
 
     // 2. STUDENT SPECIFIC DATA (Display Logic) - FIXED TO ITERATE OVER SUBJECTS
     const reportData = useMemo(() => {
@@ -182,8 +186,8 @@ function StudentGradesDetail({
                 }
             });
 
-            const caWeighted = caMax > 0 ? (caObtained / caMax) * 50 : 0;
-            const examWeighted = examMax > 0 ? (examObtained / examMax) * 50 : 0;
+            const caWeighted = caMax > 0 ? (caObtained / caMax) * caWeight : 0;
+            const examWeighted = examMax > 0 ? (examObtained / examMax) * examWeight : 0;
             const totalPercent = caWeighted + examWeighted;
 
             const subStats = globalSubjectStats[subId];
@@ -214,7 +218,7 @@ function StudentGradesDetail({
                 ...getGrade(totalPercent) 
             };
         });
-    }, [allAssessments, student.uid, allSubjects, globalSubjectStats]);
+    }, [allAssessments, student.uid, allSubjects, globalSubjectStats, caWeight, examWeight]);
 
 
     const overallAverage = reportData.length > 0 
@@ -252,6 +256,8 @@ function StudentGradesDetail({
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
+                            caWeight={caWeight}
+                            examWeight={examWeight}
                         />
                      </CardContent>
                 </Card>
@@ -262,8 +268,8 @@ function StudentGradesDetail({
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[25%]">Subject</TableHead>
-                            <TableHead className="text-center">C.A (50%)</TableHead>
-                            <TableHead className="text-center">Exam (50%)</TableHead>
+                            <TableHead className="text-center">C.A ({caWeight}%)</TableHead>
+                            <TableHead className="text-center">Exam ({examWeight}%)</TableHead>
                             <TableHead className="text-center font-bold">Total (%)</TableHead>
                             <TableHead className="text-center">Class Avg</TableHead>
                             <TableHead className="text-center">Pos</TableHead>
@@ -299,6 +305,9 @@ export default function GradebookManager() {
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
+  const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+  const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
+
   // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
@@ -318,6 +327,10 @@ export default function GradebookManager() {
   }, [firestore, user, role, isStaff, schoolId]);
   
   const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+
+  const selectedClassObj = teacherClasses?.find(c => c.id === selectedClassId);
+  const effectiveCaWeight = selectedClassObj?.caWeight ?? schoolSettings?.caWeight ?? 30;
+  const effectiveExamWeight = selectedClassObj?.examWeight ?? schoolSettings?.examWeight ?? 70;
 
   // 2. Fetch Students for the selected class (SAAS Aware)
   const studentsQuery = useMemoFirebase(() => 
@@ -535,6 +548,8 @@ export default function GradebookManager() {
                                                 totalStudents={studentStats.length}
                                                 term={selectedTerm}
                                                 year={selectedYear}
+                                                caWeight={effectiveCaWeight}
+                                                examWeight={effectiveExamWeight}
                                             />
                                         </TabsContent>
 

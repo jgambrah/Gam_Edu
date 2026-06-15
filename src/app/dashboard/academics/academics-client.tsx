@@ -73,6 +73,8 @@ const classSchema = z.object({
   capacity: z.coerce.number().min(1, "Capacity must be at least 1"),
   homeRoomId: z.string().optional(),
   teachingModel: z.enum(['ClassTeacher', 'SubjectTeacher']).default('SubjectTeacher'),
+  caWeight: z.coerce.number().min(0).max(100).optional(),
+  examWeight: z.coerce.number().min(0).max(100).optional(),
 });
 
 function ClassDetailView({ 
@@ -239,6 +241,7 @@ export default function AcademicsPageContent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingClass, setEditingClass] = useState<Class | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasCustomWeights, setHasCustomWeights] = useState(false);
 
   const canManageClasses = role === 'Director' || role === 'Administrator' || role === 'Secretary';
   const canListStaff = ['Administrator', 'Director', 'Accountant', 'Secretary', 'Receptionist'].includes(role || '');
@@ -250,20 +253,24 @@ export default function AcademicsPageContent() {
 
   const form = useForm<z.infer<typeof classSchema>>({
     resolver: zodResolver(classSchema),
-    defaultValues: { name: '', description: '', teacherId: '', capacity: 30, teachingModel: 'SubjectTeacher', homeRoomId: '' },
+    defaultValues: { name: '', description: '', teacherId: '', capacity: 30, teachingModel: 'SubjectTeacher', homeRoomId: '', caWeight: undefined, examWeight: undefined },
   });
 
   // Handle Edit Click
   const handleEditClick = (e: React.MouseEvent, c: Class) => {
       e.stopPropagation(); // Don't open detail view
       setEditingClass(c);
+      const isCustom = c.caWeight !== undefined && c.caWeight !== null;
+      setHasCustomWeights(isCustom);
       form.reset({
           name: c.name,
           description: c.description || '',
           teacherId: c.teacherId || '',
           capacity: c.capacity || 30,
           homeRoomId: c.homeRoomId || '',
-          teachingModel: c.teachingModel || 'SubjectTeacher'
+          teachingModel: c.teachingModel || 'SubjectTeacher',
+          caWeight: c.caWeight ?? undefined,
+          examWeight: c.examWeight ?? undefined,
       });
       setIsDialogOpen(true);
   };
@@ -271,7 +278,8 @@ export default function AcademicsPageContent() {
   // Handle Create Click
   const handleCreateClick = () => {
       setEditingClass(null);
-      form.reset({ name: '', description: '', teacherId: '', capacity: 30, teachingModel: 'SubjectTeacher', homeRoomId: '' });
+      setHasCustomWeights(false);
+      form.reset({ name: '', description: '', teacherId: '', capacity: 30, teachingModel: 'SubjectTeacher', homeRoomId: '', caWeight: undefined, examWeight: undefined });
       setIsDialogOpen(true);
   };
 
@@ -332,6 +340,8 @@ export default function AcademicsPageContent() {
             capacity: values.capacity,
             homeRoomId: values.homeRoomId || null,
             teachingModel: values.teachingModel,
+            caWeight: hasCustomWeights && values.caWeight !== undefined ? values.caWeight : null,
+            examWeight: hasCustomWeights && values.examWeight !== undefined ? values.examWeight : null,
         };
 
         if (editingClass) {
@@ -469,6 +479,73 @@ export default function AcademicsPageContent() {
                         <FormField control={form.control} name="capacity" render={({ field }) => (
                             <FormItem><FormLabel>Target Capacity</FormLabel><FormControl><Input type="number" {...field}/></FormControl><FormMessage/></FormItem>
                         )}/>
+
+                        <div className="flex items-center gap-2 py-2">
+                            <input 
+                                type="checkbox" 
+                                id="custom-weights-toggle"
+                                checked={hasCustomWeights} 
+                                onChange={(e) => {
+                                    const checked = e.target.checked;
+                                    setHasCustomWeights(checked);
+                                    if (checked) {
+                                        form.setValue('caWeight', 30);
+                                        form.setValue('examWeight', 70);
+                                    } else {
+                                        form.setValue('caWeight', undefined);
+                                        form.setValue('examWeight', undefined);
+                                    }
+                                }}
+                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            />
+                            <label htmlFor="custom-weights-toggle" className="text-sm font-semibold text-slate-700 cursor-pointer">
+                                Override School Assessment Weights
+                            </label>
+                        </div>
+
+                        {hasCustomWeights && (
+                            <div className="grid grid-cols-2 gap-4 border p-3 rounded-lg bg-slate-50 animate-in fade-in duration-200">
+                                <FormField control={form.control} name="caWeight" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs uppercase font-black tracking-wider text-slate-500">CA Weight (%)</FormLabel>
+                                        <FormControl>
+                                            <Input 
+                                                type="number" 
+                                                min={0} 
+                                                max={100} 
+                                                {...field}
+                                                onChange={(e) => {
+                                                    const val = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                                                    form.setValue('caWeight', val);
+                                                    form.setValue('examWeight', 100 - val);
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}/>
+                                <FormField control={form.control} name="examWeight" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs uppercase font-black tracking-wider text-slate-500">Exam Weight (%)</FormLabel>
+                                        <FormControl>
+                                            <Input 
+                                                type="number" 
+                                                min={0} 
+                                                max={100} 
+                                                {...field}
+                                                onChange={(e) => {
+                                                    const val = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                                                    form.setValue('examWeight', val);
+                                                    form.setValue('caWeight', 100 - val);
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}/>
+                            </div>
+                        )}
+
                         <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>
                             {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : (editingClass ? "Save Changes" : "Create Class")}
                         </Button>
@@ -536,10 +613,15 @@ export default function AcademicsPageContent() {
                               <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 transition-transform group-hover:translate-x-1" />
                           </div>
                       </div>
-                      <div className="flex gap-2 mt-1">
+                      <div className="flex flex-wrap gap-2 mt-1">
                         <Badge variant="outline" className="text-[9px] uppercase font-bold text-slate-400">
                             {c.teachingModel === 'ClassTeacher' ? 'Class Teacher Model' : 'Subject Teacher Model'}
                         </Badge>
+                        {(c.caWeight !== undefined && c.caWeight !== null && c.examWeight !== undefined && c.examWeight !== null) && (
+                          <Badge variant="secondary" className="text-[9px] font-bold bg-indigo-50 text-indigo-700">
+                              {c.caWeight}/{c.examWeight} Split
+                          </Badge>
+                        )}
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3 text-sm text-muted-foreground">

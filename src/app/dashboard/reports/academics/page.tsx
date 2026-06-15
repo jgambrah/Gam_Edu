@@ -82,6 +82,10 @@ export default function AcademicReportsPage() {
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
     const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
 
+    const selectedClass = classes?.find(c => c.id === selectedClassId);
+    const currentCaWeight = selectedClass?.caWeight ?? CA_WEIGHT;
+    const currentExamWeight = selectedClass?.examWeight ?? EXAM_WEIGHT;
+
     // Report Data Calculation (WEIGHTED)
     const reportData = useMemo(() => {
         if (!students || !assessments || students.length === 0) return null;
@@ -95,12 +99,12 @@ export default function AcademicReportsPage() {
             const cas = studentAssessments.filter(a => a.assessmentType?.includes('CA'));
             const caScore = cas.reduce((sum, a) => sum + (a.score || 0), 0);
             const caMax = cas.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-            const weightedCA = caMax > 0 ? (caScore / caMax) * CA_WEIGHT : 0;
+            const weightedCA = caMax > 0 ? (caScore / caMax) * currentCaWeight : 0;
 
             const exams = studentAssessments.filter(a => a.assessmentType?.includes('Exam'));
             const examScore = exams.reduce((sum, a) => sum + (a.score || 0), 0);
             const examMax = exams.reduce((sum, a) => sum + (a.maxScore || 100), 0);
-            const weightedExam = examMax > 0 ? (examScore / examMax) * EXAM_WEIGHT : 0;
+            const weightedExam = examMax > 0 ? (examScore / examMax) * currentExamWeight : 0;
 
             // Final Weighted Score (0-100)
             const total100 = weightedCA + weightedExam;
@@ -124,7 +128,7 @@ export default function AcademicReportsPage() {
             classAverage: parseFloat(classAverage.toFixed(1)), 
             chartData: ['A', 'B', 'C', 'D', 'E', 'F'].map(g => ({ name: g, count: gradeDistribution[g] || 0 })) 
         };
-    }, [students, assessments, CA_WEIGHT, EXAM_WEIGHT]);
+    }, [students, assessments, currentCaWeight, currentExamWeight]);
 
     const isLoading = isSchoolLoading || isRoleLoading || isLoadingClasses || isLoadingSubjects;
 
@@ -150,7 +154,7 @@ export default function AcademicReportsPage() {
             <div className="flex items-center justify-between print:hidden">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-2"><FileText /> Academic Reports</h1>
-                    <p className="text-muted-foreground">Analyze student performance using weighted grading logic ({CA_WEIGHT}% CA / {EXAM_WEIGHT}% Exam).</p>
+                    <p className="text-muted-foreground">Analyze student performance using weighted grading logic ({currentCaWeight}% CA / {currentExamWeight}% Exam).</p>
                 </div>
                 <div className="flex gap-2">
                     <Button asChild variant="outline"><Link href="/dashboard/reports/enrollment">Enrollment</Link></Button>

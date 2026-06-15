@@ -156,6 +156,10 @@ export default function ReportCardManager() {
         setProcessedReport(null);
 
         try {
+            const targetClass = classes?.find((c: any) => c.id === classId);
+            const currentCaWeight = targetClass?.caWeight ?? CA_WEIGHT;
+            const currentExamWeight = targetClass?.examWeight ?? EXAM_WEIGHT;
+
             // 1. Fetch Assessments
             const assessmentsRef = collection(firestore, 'assessments');
             const qAssessments = query(
@@ -208,9 +212,9 @@ export default function ReportCardManager() {
                     let total100 = 0;
                     if (stuSubjAssessments.length > 0) {
                         const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
-                        const rawCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * CA_WEIGHT;
+                        const rawCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentCaWeight;
                         const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
-                        const rawExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * EXAM_WEIGHT;
+                        const rawExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight;
                         
                         // FIX: Round components before adding to total
                         const finalCA = Math.round(rawCA);
@@ -237,9 +241,9 @@ export default function ReportCardManager() {
                 const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
                 if (myAssessments.length === 0) return;
                 const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
-                const rawCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * CA_WEIGHT;
+                const rawCA = cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentCaWeight;
                 const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
-                const rawExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * EXAM_WEIGHT;
+                const rawExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight;
                 
                 // FIX: Round components before adding to total to prevent addition errors on paper
                 const finalCA = Math.round(rawCA);
@@ -311,6 +315,8 @@ export default function ReportCardManager() {
                 term,
                 academicYear,
                 className: classes?.find((c: any) => c.id === classId)?.name || '',
+                caWeight: currentCaWeight,
+                examWeight: currentExamWeight,
             });
 
         } catch (error: any) {
@@ -552,8 +558,8 @@ export default function ReportCardManager() {
                                 data={processedReport}
                                 classTeacherComment={classTeacherComment}
                                 headmasterComment={headmasterComment}
-                                caWeight={CA_WEIGHT}
-                                examWeight={EXAM_WEIGHT}
+                                caWeight={processedReport?.caWeight ?? CA_WEIGHT}
+                                examWeight={processedReport?.examWeight ?? EXAM_WEIGHT}
                             />
                         </div>
                     </div>
@@ -569,8 +575,8 @@ export default function ReportCardManager() {
                         data={processedReport}
                         classTeacherComment={classTeacherComment}
                         headmasterComment={headmasterComment}
-                        caWeight={CA_WEIGHT}
-                        examWeight={EXAM_WEIGHT}
+                        caWeight={processedReport?.caWeight ?? CA_WEIGHT}
+                        examWeight={processedReport?.examWeight ?? EXAM_WEIGHT}
                     />
                 )}
             </div>
