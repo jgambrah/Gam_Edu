@@ -7,7 +7,7 @@ import {
   Loader2, MapPin, Phone, Mail, Globe,
   Camera, Info, Facebook, Instagram, Linkedin, Video,
   Megaphone, Calendar, ArrowRight, Sparkles, GraduationCap,
-  User, Users, ChevronDown, Star, BookOpen, Award
+  User, Users, ChevronDown, Star, BookOpen, Award, Menu, X
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,24 @@ import { Badge } from '@/components/ui/badge';
 function getYouTubeId(url: string) {
   const m = url?.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
   return m && m[2].length === 11 ? m[2] : null;
+}
+
+function isLightColor(colorHex: string) {
+  if (!colorHex || typeof colorHex !== 'string') return false;
+  const hex = colorHex.replace('#', '');
+  if (hex.length === 3) {
+    const r = parseInt(hex[0] + hex[0], 16);
+    const g = parseInt(hex[1] + hex[1], 16);
+    const b = parseInt(hex[2] + hex[2], 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 > 140;
+  }
+  if (hex.length === 6) {
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 > 140;
+  }
+  return false;
 }
 
 // ─── stat pill ──────────────────────────────────────────────
@@ -52,14 +70,23 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const firestore = useFirestore();
   const [school, setSchool] = useState<any>(null);
   const [team, setTeam] = useState<any[]>([]);
+  const [newsList, setNewsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [navScrolled, setNavScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // scroll detection for nav
+  // scroll detection for nav & body scroll override
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'auto';
+
     const handler = () => setNavScrolled(window.scrollY > 60);
     window.addEventListener('scroll', handler);
-    return () => window.removeEventListener('scroll', handler);
+
+    return () => {
+      window.removeEventListener('scroll', handler);
+      document.body.style.overflow = originalOverflow || 'hidden';
+    };
   }, []);
 
   // fetch school by slug
@@ -75,38 +102,13 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     fetch_();
   }, [firestore, slug]);
 
-  // fetch announcements
-  const announcementsQuery = useMemoFirebase(() => {
-    if (!firestore || !school?.id) return null;
-    return query(
-      collection(firestore, 'announcements_v2'),
-      where('schoolId', '==', school.id),
-      where('audience', 'array-contains', 'Everybody'),
-      orderBy('publishedAt', 'desc'),
-      limit(3)
-    );
-  }, [firestore, school?.id]);
-  const { data: announcements } = useCollection<any>(announcementsQuery);
-
-  // fetch team
+  // sync team and newsList from school data
   useEffect(() => {
-    if (!firestore || !school?.id) return;
-    const fetch_ = async () => {
-      try {
-        const snap = await getDocs(
-          query(collection(firestore, 'staff'),
-            where('schoolId', '==', school.id),
-            where('showOnWebsite', '==', true))
-        );
-        setTeam(
-          snap.docs
-            .map(d => ({ id: d.id, ...d.data() }))
-            .sort((a: any, b: any) => (a.role === 'Director' ? -1 : b.role === 'Director' ? 1 : 0))
-        );
-      } catch (e) { console.error(e); }
-    };
-    fetch_();
-  }, [firestore, school?.id]);
+    if (school) {
+      setTeam(school.customStaff || []);
+      setNewsList(school.customNews || []);
+    }
+  }, [school]);
 
   // ── loading / not found ────────────────────────────────────
   if (loading) return (
@@ -121,6 +123,10 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   );
 
   const brand = school.primaryColor || '#4f46e5';
+  const secondaryColor = school.secondaryColor || brand;
+  const tertiaryColor = school.tertiaryColor || brand;
+  const bannerBgColor = school.bannerBgColor || '#090d16';
+  const isLight = isLightColor(bannerBgColor);
 
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -128,8 +134,9 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const navLinks = [
     { label: 'About', id: 'about' },
     team.length > 0 && { label: 'Team', id: 'team' },
-    announcements && announcements.length > 0 && { label: 'News', id: 'news' },
+    newsList && newsList.length > 0 && { label: 'News', id: 'news' },
     school.gallery?.length > 0 && { label: 'Gallery', id: 'gallery' },
+    { label: 'Contact', id: 'contact' },
   ].filter(Boolean) as { label: string; id: string }[];
 
   // ── render ─────────────────────────────────────────────────
@@ -141,6 +148,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,900;1,9..40,700&family=DM+Serif+Display:ital@0;1&display=swap');
         .serif { font-family: 'DM Serif Display', Georgia, serif; }
         html { scroll-behavior: smooth; }
+        body { overflow: auto !important; }
         .hero-grain::after {
           content:''; position:absolute; inset:0;
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
@@ -164,7 +172,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
             )}
             <span
               className="text-xl font-black tracking-tight"
-              style={{ color: navScrolled ? brand : 'white' }}
+              style={{ color: navScrolled ? brand : (isLight ? '#0f172a' : 'white') }}
             >
               {school.name}
             </span>
@@ -177,7 +185,9 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                 key={link.id}
                 onClick={() => scrollTo(link.id)}
                 className={`text-sm font-bold uppercase tracking-widest transition-colors ${
-                  navScrolled ? 'text-slate-500 hover:text-slate-900' : 'text-white/80 hover:text-white'
+                  navScrolled 
+                    ? 'text-slate-500 hover:text-slate-900' 
+                    : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white')
                 }`}
               >
                 {link.label}
@@ -186,44 +196,116 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
             <button
               onClick={() => scrollTo('apply')}
               className="px-6 py-2.5 rounded-xl text-white text-sm font-black uppercase tracking-widest transition-opacity hover:opacity-90 shadow-lg"
-              style={{ backgroundColor: brand }}
+              style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
             >
               Apply Now
             </button>
           </div>
+
+          {/* Hamburger for Mobile */}
+          <button 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+            className="flex md:hidden p-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all"
+            style={{ color: navScrolled ? brand : (isLight ? '#0f172a' : 'white') }}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-x-0 top-[72px] z-40 bg-slate-950/95 backdrop-blur-md md:hidden animate-in fade-in slide-in-from-top duration-300 flex flex-col justify-between p-8 border-t border-slate-900 overflow-y-auto" style={{ height: 'calc(100vh - 72px)' }}>
+            <div className="flex flex-col gap-6 text-center pt-8">
+              {navLinks.map(link => (
+                <button
+                  key={link.id}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    scrollTo(link.id);
+                  }}
+                  className="text-xl font-bold uppercase tracking-widest text-slate-300 hover:text-white transition-colors py-3 border-b border-slate-900/60"
+                >
+                  {link.label}
+                </button>
+              ))}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  scrollTo('apply');
+                }}
+                className="w-full py-4 rounded-2xl text-white text-lg font-black uppercase tracking-tight transition-opacity hover:opacity-90 shadow-lg mt-4"
+                style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+              >
+                Apply Now
+              </button>
+            </div>
+            
+            <div className="text-center text-xs text-slate-650 font-bold uppercase tracking-widest pb-6">
+              Powered by GAM Edu
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ─── HERO ───────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden hero-grain bg-slate-950">
+      <section 
+        className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden hero-grain"
+        style={{ backgroundColor: bannerBgColor }}
+      >
         {/* cover image */}
         {school.coverImageUrl && (
           <img
             src={school.coverImageUrl}
             alt="Campus"
-            className="absolute inset-0 w-full h-full object-cover opacity-30"
+            className="absolute inset-0 w-full h-full object-cover opacity-75"
           />
         )}
 
         {/* gradient overlay */}
-        <div
-          className="absolute inset-0 opacity-60"
-          style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}55 0%, transparent 70%)` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/20 to-slate-950/80" />
+        {isLight ? (
+          <>
+            <div
+              className="absolute inset-0 opacity-20"
+              style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}22 0%, transparent 70%)` }}
+            />
+            <div className="absolute inset-0 bg-white/15" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/70" />
+          </>
+        ) : (
+          <>
+            <div
+              className="absolute inset-0 opacity-40"
+              style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}33 0%, transparent 70%)` }}
+            />
+            <div className="absolute inset-0 bg-black/30" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/70" />
+          </>
+        )}
 
         {/* content */}
         <div className="relative z-10 max-w-5xl fade-up space-y-8">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest backdrop-blur-sm">
-            <Sparkles className="h-3 w-3 text-yellow-400" /> Admissions Open
-          </span>
+          {isLight ? (
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/5 border border-black/10 text-slate-800 text-[10px] font-black uppercase tracking-widest backdrop-blur-sm animate-pulse">
+              <Sparkles className="h-3 w-3 text-yellow-500" /> Admissions Open
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest backdrop-blur-sm">
+              <Sparkles className="h-3 w-3 text-yellow-400" /> Admissions Open
+            </span>
+          )}
 
-          <h1 className="serif text-6xl md:text-9xl text-white leading-none italic drop-shadow-2xl">
-            {school.name}
-          </h1>
+          {isLight ? (
+            <h1 className="serif text-6xl md:text-9xl text-slate-900 leading-none italic">
+              {school.name}
+            </h1>
+          ) : (
+            <h1 className="serif text-6xl md:text-9xl text-white leading-none italic drop-shadow-2xl">
+              {school.name}
+            </h1>
+          )}
 
           {school.motto && (
-            <p className="text-xl md:text-2xl text-white/70 font-medium max-w-2xl mx-auto">
+            <p className={isLight ? "text-xl md:text-2xl text-slate-650 font-semibold max-w-2xl mx-auto" : "text-xl md:text-2xl text-white/70 font-medium max-w-2xl mx-auto"}>
               {school.motto}
             </p>
           )}
@@ -232,21 +314,30 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
             <button
               onClick={() => scrollTo('apply')}
               className="px-10 py-4 rounded-2xl text-white text-lg font-black uppercase tracking-tight shadow-2xl transition-transform hover:scale-105 active:scale-95"
-              style={{ backgroundColor: brand }}
+              style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
             >
               Start Application
             </button>
-            <button
-              onClick={() => scrollTo('about')}
-              className="px-10 py-4 rounded-2xl bg-white/10 border border-white/30 text-white text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-white/20 transition-colors"
-            >
-              Learn More
-            </button>
+            {isLight ? (
+              <button
+                onClick={() => scrollTo('about')}
+                className="px-10 py-4 rounded-2xl bg-black/5 border border-black/20 text-slate-800 text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-black/10 transition-colors"
+              >
+                Learn More
+              </button>
+            ) : (
+              <button
+                onClick={() => scrollTo('about')}
+                className="px-10 py-4 rounded-2xl bg-white/10 border border-white/30 text-white text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-white/20 transition-colors"
+              >
+                Learn More
+              </button>
+            )}
           </div>
         </div>
 
         {/* scroll cue */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/40">
+        <div className={isLight ? "absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-slate-500/70" : "absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/40"}>
           <span className="text-[9px] uppercase tracking-[0.3em] font-bold">Scroll</span>
           <ChevronDown className="h-5 w-5 animate-bounce" />
         </div>
@@ -254,7 +345,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
 
       {/* ─── STATS BAR ──────────────────────────────────────── */}
       {(school.studentCount || school.staffCount || school.yearsEstablished || school.programCount) && (
-        <div className="py-12 px-6" style={{ backgroundColor: brand }}>
+        <div className="py-12 px-6" style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor}, ${tertiaryColor})` }}>
           <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
             {school.studentCount && <StatPill icon={Users} label="Students" value={school.studentCount} color={brand} />}
             {school.staffCount && <StatPill icon={User} label="Staff" value={school.staffCount} color={brand} />}
@@ -285,74 +376,50 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
               </p>
             </div>
 
-            {/* mission / vision */}
-            {(school.mission || school.vision) && (
-              <div className="grid sm:grid-cols-2 gap-6">
-                {school.mission && (
-                  <div className="p-8 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: brand }}>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Mission</p>
-                    <p className="text-slate-800 font-semibold leading-relaxed">{school.mission}</p>
-                  </div>
-                )}
-                {school.vision && (
-                  <div className="p-8 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: brand }}>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Vision</p>
-                    <p className="text-slate-800 font-semibold leading-relaxed">{school.vision}</p>
+            {/* mission / vision / core values */}
+            {(school.mission || school.vision || school.coreValues) && (
+              <div className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {school.mission && (
+                    <div className="p-6 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: brand }}>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Mission</p>
+                      <p className="text-slate-800 text-sm font-semibold leading-relaxed">{school.mission}</p>
+                    </div>
+                  )}
+                  {school.vision && (
+                    <div className="p-6 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: secondaryColor }}>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Vision</p>
+                      <p className="text-slate-800 text-sm font-semibold leading-relaxed">{school.vision}</p>
+                    </div>
+                  )}
+                </div>
+                {school.coreValues && (
+                  <div className="p-6 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: tertiaryColor }}>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Core Values</p>
+                    <p className="text-slate-800 text-sm font-semibold leading-relaxed whitespace-pre-wrap">{school.coreValues}</p>
                   </div>
                 )}
               </div>
             )}
           </div>
 
-          {/* contact card */}
-          <div className="rounded-[2.5rem] overflow-hidden shadow-2xl sticky top-32">
-            {/* card header */}
-            <div className="p-10 text-white" style={{ backgroundColor: brand }}>
-              <h3 className="serif text-3xl italic mb-1">Get In Touch</h3>
-              <p className="text-white/70 text-sm font-medium">We'd love to hear from you</p>
-            </div>
-
-            {/* card body */}
-            <div className="bg-slate-900 p-10 space-y-6">
-              {[
-                { Icon: MapPin, value: school.address, label: 'Address' },
-                { Icon: Phone, value: school.phone, label: 'Phone' },
-                { Icon: Mail, value: school.email, label: 'Email' },
-              ].filter(x => x.value).map(({ Icon, value, label }) => (
-                <div key={label} className="flex items-start gap-4">
-                  <div className="p-2.5 rounded-xl" style={{ backgroundColor: `${brand}25` }}>
-                    <Icon className="h-5 w-5" style={{ color: brand }} />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-0.5">{label}</p>
-                    <p className="text-white font-semibold">{value}</p>
-                  </div>
-                </div>
-              ))}
-
-              {/* social */}
-              {(school.facebookUrl || school.instagramUrl || school.linkedinUrl) && (
-                <div className="flex gap-3 pt-6 border-t border-slate-800">
-                  {school.facebookUrl && (
-                    <a href={school.facebookUrl} target="_blank" rel="noreferrer"
-                      className="p-3 rounded-xl bg-slate-800 hover:bg-blue-600 transition-colors">
-                      <Facebook className="h-5 w-5 text-white" />
-                    </a>
-                  )}
-                  {school.instagramUrl && (
-                    <a href={school.instagramUrl} target="_blank" rel="noreferrer"
-                      className="p-3 rounded-xl bg-slate-800 hover:bg-pink-600 transition-colors">
-                      <Instagram className="h-5 w-5 text-white" />
-                    </a>
-                  )}
-                  {school.linkedinUrl && (
-                    <a href={school.linkedinUrl} target="_blank" rel="noreferrer"
-                      className="p-3 rounded-xl bg-slate-800 hover:bg-blue-800 transition-colors">
-                      <Linkedin className="h-5 w-5 text-white" />
-                    </a>
-                  )}
-                </div>
-              )}
+          {/* Visual campus banner */}
+          <div className="relative aspect-[4/3] w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-slate-100 group sticky top-32">
+            {school.coverImageUrl ? (
+              <img
+                src={school.coverImageUrl}
+                alt="Campus View"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                <GraduationCap className="h-20 w-20 text-slate-350" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+            <div className="absolute bottom-6 left-6 text-white z-10">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Our Campus</span>
+              <h4 className="serif text-2xl mt-1 font-bold">{school.name}</h4>
             </div>
           </div>
         </div>
@@ -365,48 +432,53 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
             <SectionHeader eyebrow="Our People" title="Meet the Educators" color={brand} />
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {team.map(member => (
-                <div key={member.id} className="bg-white rounded-3xl overflow-hidden border border-slate-100 card-hover">
-                  {/* photo */}
-                  <div className="h-64 bg-slate-100 flex items-center justify-center relative overflow-hidden">
-                    {member.publicPhotoUrl ? (
-                      <img
-                        src={member.publicPhotoUrl}
-                        alt={`${member.firstName} ${member.lastName}`}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-20 w-20 text-slate-300" />
-                    )}
-                    {/* role badge */}
-                    <div
-                      className="absolute top-4 right-4 px-3 py-1.5 rounded-xl text-white text-[9px] font-black uppercase tracking-widest"
-                      style={{ backgroundColor: brand }}
-                    >
-                      {member.role}
+              {team.map((member, idx) => {
+                const name = member.name || `${member.firstName || ''} ${member.lastName || ''}`.trim();
+                const photo = member.photoUrl || member.publicPhotoUrl;
+                const bio = member.bio || member.publicBio;
+                return (
+                  <div key={member.id || idx} className="bg-white rounded-3xl overflow-hidden border border-slate-100 card-hover">
+                    {/* photo */}
+                    <div className="h-64 bg-slate-100 flex items-center justify-center relative overflow-hidden">
+                      {photo ? (
+                        <img
+                          src={photo}
+                          alt={name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <User className="h-20 w-20 text-slate-350" />
+                      )}
+                      {/* role badge */}
+                      <div
+                        className="absolute top-4 right-4 px-3 py-1.5 rounded-xl text-white text-[9px] font-black uppercase tracking-widest shadow-md"
+                        style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+                      >
+                        {member.role}
+                      </div>
+                    </div>
+
+                    {/* info */}
+                    <div className="p-7 space-y-3">
+                      <h4 className="text-xl font-black text-slate-800">
+                        {name}
+                      </h4>
+                      {member.qualifications && (
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                          <GraduationCap size={13} style={{ color: brand }} />
+                          {member.qualifications}
+                        </p>
+                      )}
+                      {bio && (
+                        <p className="text-sm text-slate-500 leading-relaxed border-l-2 pl-4 italic"
+                          style={{ borderColor: `${secondaryColor}80` }}>
+                          "{bio}"
+                        </p>
+                      )}
                     </div>
                   </div>
-
-                  {/* info */}
-                  <div className="p-7 space-y-3">
-                    <h4 className="text-xl font-black text-slate-800">
-                      {member.firstName} {member.lastName}
-                    </h4>
-                    {member.qualifications && (
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                        <GraduationCap size={13} style={{ color: brand }} />
-                        {member.qualifications}
-                      </p>
-                    )}
-                    {member.publicBio && (
-                      <p className="text-sm text-slate-500 leading-relaxed border-l-2 pl-4 italic"
-                        style={{ borderColor: `${brand}50` }}>
-                        "{member.publicBio}"
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -470,50 +542,91 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       )}
 
       {/* ─── NEWS ───────────────────────────────────────────── */}
-      {announcements && announcements.length > 0 && (
+      {newsList && newsList.length > 0 && (
         <section id="news" className="py-32 px-6 bg-white">
           <div className="max-w-7xl mx-auto">
             <SectionHeader eyebrow="Bulletins" title="News & Updates" color={brand} />
 
             <div className="grid md:grid-cols-3 gap-8">
-              {announcements.map((news: any) => (
-                <article
-                  key={news.id}
-                  className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm card-hover flex flex-col"
-                >
-                  {/* header stripe */}
-                  <div className="h-1.5 w-full" style={{ backgroundColor: brand }} />
+              {newsList.map((news: any, idx: number) => {
+                const cardAccents = [brand, secondaryColor, tertiaryColor];
+                const currentAccent = cardAccents[idx % cardAccents.length];
+                
+                const formattedDate = (() => {
+                  if (!news.date) return 'Recent';
+                  try {
+                    const [y, m, d] = news.date.split('-');
+                    if (y && m && d) {
+                      return format(new Date(parseInt(y), parseInt(m) - 1, parseInt(d)), 'dd MMM yyyy');
+                    }
+                    return news.date;
+                  } catch {
+                    return news.date;
+                  }
+                })();
 
-                  <div className="p-8 flex flex-col flex-1">
-                    <div className="flex items-center justify-between mb-5">
-                      <span
-                        className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest text-white"
-                        style={{ backgroundColor: brand }}
-                      >
-                        {news.priority || 'Update'}
-                      </span>
-                      <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {news.publishedAt ? format(news.publishedAt.toDate(), 'dd MMM yyyy') : 'Recent'}
-                      </span>
+                return (
+                  <article
+                    key={idx}
+                    className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm card-hover flex flex-col"
+                  >
+                    {/* banner image */}
+                    {news.imageUrl && (
+                      <div className="h-48 w-full overflow-hidden bg-slate-100 relative">
+                        <img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+
+                    {/* header stripe if no image */}
+                    {!news.imageUrl && (
+                      <div className="h-1.5 w-full" style={{ backgroundColor: currentAccent }} />
+                    )}
+
+                    <div className="p-8 flex flex-col flex-1">
+                      <div className="flex items-center justify-between mb-5">
+                        <span
+                          className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest text-white"
+                          style={{ backgroundColor: currentAccent }}
+                        >
+                          {news.type || 'Update'}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {formattedDate}
+                        </span>
+                      </div>
+
+                      <h3 className="text-xl font-black text-slate-800 leading-snug mb-3">{news.title}</h3>
+                      <p className="text-sm text-slate-500 leading-relaxed line-clamp-4 flex-1">{news.content}</p>
+
+                      <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: currentAccent }}>
+                            Official Bulletin
+                          </span>
+                          <ArrowRight className="h-3 w-3" style={{ color: currentAccent }} />
+                        </div>
+                        {news.videoUrl && (
+                          <a
+                            href={news.videoUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-widest hover:opacity-85 transition-opacity"
+                            style={{ color: currentAccent }}
+                          >
+                            <Video className="h-3.5 w-3.5 mr-1" /> Watch ↗
+                          </a>
+                        )}
+                      </div>
                     </div>
-
-                    <h3 className="text-xl font-black text-slate-800 leading-snug mb-3">{news.title}</h3>
-                    <p className="text-sm text-slate-500 leading-relaxed line-clamp-4 flex-1">{news.content}</p>
-
-                    <div className="mt-6 pt-5 border-t border-slate-100 flex items-center gap-2">
-                      <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: brand }}>
-                        Official Bulletin
-                      </span>
-                      <ArrowRight className="h-3 w-3" style={{ color: brand }} />
-                    </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
       )}
+
 
       {/* ─── APPLY ──────────────────────────────────────────── */}
       <section id="apply" className="py-32 px-6" style={{ backgroundColor: `${brand}08` }}>
@@ -536,7 +649,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
 
           {/* form wrapper */}
           <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
-            <div className="h-2" style={{ backgroundColor: brand }} />
+            <div className="h-2" style={{ background: `linear-gradient(90deg, ${brand}, ${secondaryColor}, ${tertiaryColor})` }} />
             <div className="p-10 md:p-14">
               <AdmissionForm schoolId={school.id} primaryColor={brand} />
             </div>
@@ -544,62 +657,118 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         </div>
       </section>
 
-      {/* ─── FOOTER ─────────────────────────────────────────── */}
-      <footer className="bg-slate-950 text-slate-400 py-16 px-6">
-        <div className="max-w-7xl mx-auto">
-          {/* top row */}
-          <div className="flex flex-col md:flex-row justify-between items-start gap-12 pb-12 border-b border-slate-800">
-            {/* brand */}
-            <div className="space-y-3">
-              {school.logoUrl && (
-                <img src={school.logoUrl} alt="Logo" className="h-12 w-12 object-contain rounded-xl" />
-              )}
-              <h4 className="serif text-2xl italic text-white">{school.name}</h4>
-              {school.motto && (
-                <p className="text-sm text-slate-500 max-w-xs">{school.motto}</p>
-              )}
-            </div>
-
-            {/* quick links */}
-            <div className="space-y-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-600">Navigate</p>
-              <div className="flex flex-col gap-2">
-                {navLinks.map(link => (
-                  <button
-                    key={link.id}
-                    onClick={() => scrollTo(link.id)}
-                    className="text-sm font-semibold text-slate-400 hover:text-white transition-colors text-left"
-                  >
-                    {link.label}
-                  </button>
-                ))}
-                <button
-                  onClick={() => scrollTo('apply')}
-                  className="text-sm font-semibold hover:text-white transition-colors text-left"
-                  style={{ color: brand }}
-                >
-                  Apply Now
-                </button>
+      {/* ─── FOOTER & CONTACT US ───────────────────────────────── */}
+      <footer id="contact" className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-400 py-24 px-6 border-t border-slate-900 overflow-hidden">
+        {/* Soft glowing ambient circles in footer */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-[0.03] transition-all duration-1000" style={{ backgroundColor: brand }} />
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-[0.02] transition-all duration-1000" style={{ backgroundColor: secondaryColor }} />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Main Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-16 pb-16">
+            {/* Left Side: Brand & Copyright */}
+            <div className="md:col-span-5 flex flex-col justify-between space-y-10">
+              <div className="space-y-4">
+                {school.logoUrl ? (
+                  <div className="inline-block p-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl">
+                    <img src={school.logoUrl} alt="Logo" className="h-12 w-12 object-contain" />
+                  </div>
+                ) : (
+                  <div className="inline-block p-3 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl" style={{ backgroundImage: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}>
+                    <GraduationCap className="h-6 w-6 text-white" />
+                  </div>
+                )}
+                <div>
+                  <h4 className="serif text-3xl italic text-white tracking-wide">{school.name}</h4>
+                  {school.motto && (
+                    <p className="text-sm text-slate-500 max-w-sm mt-2 font-medium leading-relaxed italic">
+                      "{school.motto}"
+                    </p>
+                  )}
+                </div>
               </div>
+
+              <p className="text-xs text-slate-550 leading-relaxed font-medium">
+                &copy; {new Date().getFullYear()} {school.name} Portal. Assisted by GAM Edu Multitenant Core. All rights reserved.
+              </p>
             </div>
 
-            {/* contact */}
-            <div className="space-y-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-600">Contact</p>
-              <div className="space-y-2 text-sm">
-                {school.phone && <p className="flex items-center gap-2"><Phone className="h-3.5 w-3.5" />{school.phone}</p>}
-                {school.email && <p className="flex items-center gap-2"><Mail className="h-3.5 w-3.5" />{school.email}</p>}
-                {school.address && <p className="flex items-start gap-2"><MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5" />{school.address}</p>}
+            {/* Right Side: Contact & Socials */}
+            <div className="md:col-span-7 space-y-12">
+              {/* Connect & Locate Us */}
+              <div className="space-y-4">
+                <h5 className="text-xs font-black uppercase tracking-[0.2em] text-white">Connect & Locate Us</h5>
+                <div className="space-y-3 text-sm font-semibold">
+                  {school.address && (
+                    <div className="space-y-1">
+                      <p className="text-slate-300 font-bold">{school.address}</p>
+                      <a 
+                        href={`https://maps.google.com/?q=${encodeURIComponent(school.address)}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-350 transition-colors"
+                        style={{ color: brand }}
+                      >
+                        📍 Click to navigate map ↗
+                      </a>
+                    </div>
+                  )}
+                  {school.email && (
+                    <p>
+                      <a href={`mailto:${school.email}`} className="text-slate-400 hover:text-white transition-colors">
+                        {school.email}
+                      </a>
+                    </p>
+                  )}
+                  {school.phone && (
+                    <p>
+                      <a href={`tel:${school.phone}`} className="text-slate-400 hover:text-white transition-colors">
+                        {school.phone}
+                      </a>
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Digital Communities */}
+              <div className="space-y-4">
+                <h5 className="text-xs font-black uppercase tracking-[0.2em] text-white">Digital Communities</h5>
+                <p className="text-sm text-slate-400 leading-relaxed max-w-xl font-medium">
+                  Follow our school on authorized social networks for premium updates, campus highlights, and live events broadcasts.
+                </p>
+                
+                {(school.facebookUrl || school.instagramUrl || school.linkedinUrl) ? (
+                  <div className="flex gap-6 pt-2 text-sm font-bold">
+                    {school.facebookUrl && (
+                      <a href={school.facebookUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group/soc">
+                        <Facebook className="h-4 w-4" /> Facebook
+                      </a>
+                    )}
+                    {school.instagramUrl && (
+                      <a href={school.instagramUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group/soc">
+                        <Instagram className="h-4 w-4" /> Instagram
+                      </a>
+                    )}
+                    {school.linkedinUrl && (
+                      <a href={school.linkedinUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group/soc">
+                        <Linkedin className="h-4 w-4" /> LinkedIn
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 italic max-w-sm leading-relaxed font-medium">
+                    No social media links configured yet. Use the CMS admin panel tuner to apply your channels.
+                  </p>
+                )}
               </div>
             </div>
           </div>
 
-          {/* bottom row */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 text-xs font-bold uppercase tracking-widest text-slate-600">
-            <p>&copy; {new Date().getFullYear()} {school.name}. All rights reserved.</p>
-            <div className="flex items-center gap-2">
-              <Globe className="h-3 w-3" />
-              <span>Powered by GAM Edu</span>
+          {/* Bottom Bar: Powered by */}
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-8 text-xs font-bold uppercase tracking-widest text-slate-650 border-t border-slate-900">
+            <div className="flex items-center gap-2 bg-slate-900/60 px-4 py-2 rounded-full border border-slate-900/50 backdrop-blur-sm">
+              <Globe className="h-3.5 w-3.5 text-slate-500 animate-pulse" />
+              <span className="text-slate-500">Powered by <strong className="text-slate-450">GAM Edu</strong></span>
             </div>
           </div>
         </div>

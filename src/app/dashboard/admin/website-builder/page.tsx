@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -13,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check
+  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -24,19 +25,28 @@ export default function WebsiteBuilderPage() {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
 
   const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
   const { data: schoolData, isLoading } = useDoc<any>(schoolRef);
 
   const [formData, setFormData] = useState({
     slug: '', 
+    customDomain: '',
     mission: '', 
     vision: '', 
+    coreValues: '',
     aboutText: '', 
     coverImageUrl: '', 
     primaryColor: '#2563eb', 
+    secondaryColor: '',
+    tertiaryColor: '',
+    bannerBgColor: '',
     gallery: [] as { url: string, caption: string }[],
     videoUrls: [] as { url: string, title: string }[],
+    customStaff: [] as { name: string; role: string; qualifications: string; bio: string; photoUrl: string }[],
+    customNews: [] as { title: string; content: string; type: 'News' | 'Announcement' | 'Event'; date: string; imageUrl: string; videoUrl: string }[],
     phone: '',
     email: '',
     address: '',
@@ -49,6 +59,23 @@ export default function WebsiteBuilderPage() {
   const [newGalleryCaption, setNewGalleryCaption] = useState('');
   const [newVideoUrl, setNewVideoUrl] = useState('');
   const [newVideoTitle, setNewVideoTitle] = useState('');
+
+  // Custom Staff Form States
+  const [staffName, setStaffName] = useState('');
+  const [staffRole, setStaffRole] = useState('');
+  const [staffQualifications, setStaffQualifications] = useState('');
+  const [staffBio, setStaffBio] = useState('');
+  const [staffPhotoUrl, setStaffPhotoUrl] = useState('');
+  const [staffUploading, setStaffUploading] = useState(false);
+
+  // Custom News Form States
+  const [newsTitle, setNewsTitle] = useState('');
+  const [newsContent, setNewsContent] = useState('');
+  const [newsType, setNewsType] = useState<'News' | 'Announcement' | 'Event'>('News');
+  const [newsDate, setNewsDate] = useState('');
+  const [newsImageUrl, setNewsImageUrl] = useState('');
+  const [newsVideoUrl, setNewsVideoUrl] = useState('');
+  const [newsImageUploading, setNewsImageUploading] = useState(false);
 
   useEffect(() => {
     if (schoolData) {
@@ -65,13 +92,20 @@ export default function WebsiteBuilderPage() {
 
       setFormData({
         slug: schoolData.slug || schoolData.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || '',
+        customDomain: schoolData.customDomain || '',
         mission: schoolData.mission || '',
         vision: schoolData.vision || '',
+        coreValues: schoolData.coreValues || '',
         aboutText: schoolData.aboutText || '',
         coverImageUrl: schoolData.coverImageUrl || '',
         primaryColor: schoolData.primaryColor || '#2563eb',
+        secondaryColor: schoolData.secondaryColor || '',
+        tertiaryColor: schoolData.tertiaryColor || '',
+        bannerBgColor: schoolData.bannerBgColor || '',
         gallery: formattedGallery,
         videoUrls: formattedVideos,
+        customStaff: schoolData.customStaff || [],
+        customNews: schoolData.customNews || [],
         phone: schoolData.phone || '',
         email: schoolData.email || '',
         address: schoolData.address || '',
@@ -142,6 +176,146 @@ export default function WebsiteBuilderPage() {
     }));
   };
 
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !schoolId) return;
+    setCoverUploading(true);
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `schools/${schoolId}/website/cover`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      setFormData(prev => ({ ...prev, coverImageUrl: url }));
+      toast({ title: "Cover Image Uploaded", description: "Click SAVE & PUBLISH to save changes." });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: "Upload Failed", description: err.message });
+    } finally {
+      setCoverUploading(false);
+    }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !schoolId) return;
+    setGalleryUploading(true);
+    try {
+      const storage = getStorage();
+      const newImages: { url: string; caption: string }[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const storageRef = ref(storage, `schools/${schoolId}/website/gallery_${Date.now()}_${i}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        newImages.push({ url, caption: file.name.split('.')[0] });
+      }
+      setFormData(prev => ({
+        ...prev,
+        gallery: [...prev.gallery, ...newImages]
+      }));
+      toast({ title: "Gallery Images Uploaded", description: `Added ${newImages.length} images. Click SAVE & PUBLISH to save.` });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: "Upload Failed", description: err.message });
+    } finally {
+      setGalleryUploading(false);
+    }
+  };
+
+  const handleStaffPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !schoolId) return;
+    setStaffUploading(true);
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `schools/${schoolId}/website/staff_${Date.now()}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      setStaffPhotoUrl(url);
+      toast({ title: "Staff Photo Uploaded", description: "Photo is ready to add." });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: "Upload Failed", description: err.message });
+    } finally {
+      setStaffUploading(false);
+    }
+  };
+
+  const addCustomStaff = () => {
+    if (!staffName.trim() || !staffRole.trim()) {
+      toast({ variant: 'destructive', title: "Error", description: "Name and Role are required." });
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      customStaff: [...prev.customStaff, {
+        name: staffName.trim(),
+        role: staffRole.trim(),
+        qualifications: staffQualifications.trim(),
+        bio: staffBio.trim(),
+        photoUrl: staffPhotoUrl
+      }]
+    }));
+    setStaffName('');
+    setStaffRole('');
+    setStaffQualifications('');
+    setStaffBio('');
+    setStaffPhotoUrl('');
+  };
+
+  const removeCustomStaff = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      customStaff: prev.customStaff.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleNewsImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !schoolId) return;
+    setNewsImageUploading(true);
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `schools/${schoolId}/website/news_${Date.now()}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      setNewsImageUrl(url);
+      toast({ title: "News Image Uploaded", description: "Image is ready to add." });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: "Upload Failed", description: err.message });
+    } finally {
+      setNewsImageUploading(false);
+    }
+  };
+
+  const addCustomNews = () => {
+    if (!newsTitle.trim() || !newsContent.trim()) {
+      toast({ variant: 'destructive', title: "Error", description: "Title and Content are required." });
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      customNews: [...prev.customNews, {
+        title: newsTitle.trim(),
+        content: newsContent.trim(),
+        type: newsType,
+        date: newsDate || new Date().toISOString().split('T')[0],
+        imageUrl: newsImageUrl,
+        videoUrl: newsVideoUrl.trim()
+      }]
+    }));
+    setNewsTitle('');
+    setNewsContent('');
+    setNewsType('News');
+    setNewsDate('');
+    setNewsImageUrl('');
+    setNewsVideoUrl('');
+  };
+
+  const removeCustomNews = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      customNews: prev.customNews.filter((_, i) => i !== index)
+    }));
+  };
+
   if (isLoading) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-indigo-600"/></div>;
 
   return (
@@ -153,7 +327,7 @@ export default function WebsiteBuilderPage() {
                 </h1>
                 <p className="text-muted-foreground font-medium">Build and manage your school's public identity.</p>
             </div>
-            {schoolData?.slug && (
+            {formData.slug && (
                 <Link href={`/s/${formData.slug}`} target="_blank">
                     <Button variant="outline" className="border-indigo-200 text-indigo-700 bg-indigo-50 font-bold">
                         <ExternalLink className="mr-2 h-4 w-4"/> View Live Site
@@ -192,7 +366,7 @@ export default function WebsiteBuilderPage() {
                     <Card>
                         <CardHeader><CardTitle>Basic Identity</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="grid md:grid-cols-2 gap-6">
+                            <div className="grid md:grid-cols-2 gap-6 pb-4 border-b border-slate-100">
                                 <div className="space-y-2">
                                     <Label>Website URL Slug</Label>
                                     <div className="flex items-center gap-2">
@@ -207,10 +381,102 @@ export default function WebsiteBuilderPage() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="flex items-center gap-2"><Palette className="w-4 h-4"/> Primary Brand Color</Label>
+                                    <Label>Custom Domain (Optional)</Label>
+                                    <Input 
+                                        value={formData.customDomain} 
+                                        onChange={e => setFormData({...formData, customDomain: e.target.value.toLowerCase().replace(/[^a-z0-9.-]/g, '')})} 
+                                        className="font-bold" 
+                                        placeholder="www.myschool.com"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 mt-4 space-y-4">
+                                <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                                    <Globe className="h-4 w-4 text-indigo-650"/> Custom Domain & Billing Guide
+                                </h4>
+                                <div className="text-xs text-slate-650 space-y-3 leading-relaxed">
+                                    <p className="font-semibold text-slate-800">
+                                        Connect your custom domain (e.g. <code className="font-mono text-[11px] text-slate-900 bg-slate-200/50 px-1 py-0.5 rounded">www.yourschool.com</code>) by following these simple, self-serve steps:
+                                    </p>
+                                    <ol className="list-decimal pl-4 space-y-3 font-semibold text-slate-650">
+                                        <li>
+                                            <strong>Get Your Domain from a Provider:</strong> 
+                                            {" "}You must purchase a domain name directly from an external domain registrar. You pay them directly, and you own the domain. Click any of these popular, secure providers to get started:
+                                            <div className="flex flex-wrap gap-3 mt-2">
+                                                <a href="https://www.namecheap.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-indigo-600 hover:bg-slate-50 font-black shadow-sm transition-colors text-[10px]">
+                                                    🌐 Go to Namecheap ↗
+                                                </a>
+                                                <a href="https://www.godaddy.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-indigo-600 hover:bg-slate-50 font-black shadow-sm transition-colors text-[10px]">
+                                                    🌐 Go to GoDaddy ↗
+                                                </a>
+                                                <a href="https://www.hostinger.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-indigo-600 hover:bg-slate-50 font-black shadow-sm transition-colors text-[10px]">
+                                                    🌐 Go to Hostinger ↗
+                                                </a>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <strong>Configure DNS Settings:</strong> 
+                                            {" "}Log in to the account where you purchased your domain, locate your <strong>DNS Settings</strong> or <strong>DNS Zone Editor</strong>, and add one of these records:
+                                            <ul className="list-disc pl-4 mt-2 space-y-1 text-slate-500 font-bold">
+                                                <li>For a root domain (e.g. <code className="font-mono">yourschool.com</code>): Add an <strong>A Record</strong> with Host as <code className="font-mono text-slate-800">@</code> pointing to IP address: <strong className="text-slate-800">76.76.21.21</strong></li>
+                                                <li>For subdomains (e.g. <code className="font-mono">www.yourschool.com</code> or <code className="font-mono">portal.yourschool.com</code>): Add a <strong>CNAME Record</strong> with Host as <code className="font-mono text-slate-800">www</code> (or your subdomain prefix) pointing to value: <strong className="text-slate-800">cname.vercel-dns.com</strong></li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <strong>Link it in the Builder:</strong> 
+                                            {" "}Once DNS records are configured, type your domain in the <strong>Custom Domain</strong> input field above (e.g. <code className="font-mono">www.yourschool.com</code>) and click <strong>SAVE & PUBLISH</strong>.
+                                        </li>
+                                        <li>
+                                            <strong>SaaS Portal Subscription:</strong> 
+                                            {" "}To pay for your school portal hosting and builder subscription, go to the <Link href="/dashboard/subscription" className="text-indigo-600 hover:underline font-bold">Subscription Portal</Link> directly on your dashboard. You pay online securely via Card or Mobile Money without any manual admin involvement.
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-6 pt-2">
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2"><Palette className="w-4 h-4"/> Primary Color</Label>
                                     <div className="flex gap-2">
-                                        <input type="color" value={formData.primaryColor} onChange={e => setFormData({...formData, primaryColor: e.target.value})} className="h-10 w-10 rounded-lg cursor-pointer border-2 border-slate-200" />
-                                        <Input value={formData.primaryColor} onChange={e => setFormData({...formData, primaryColor: e.target.value})} className="font-mono uppercase" />
+                                        <input type="color" value={formData.primaryColor} onChange={e => setFormData({...formData, primaryColor: e.target.value})} className="h-10 w-10 rounded-lg cursor-pointer border-2 border-slate-200 shrink-0" />
+                                        <Input value={formData.primaryColor} onChange={e => setFormData({...formData, primaryColor: e.target.value})} className="font-mono uppercase text-xs font-bold" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                        <Label className="flex items-center gap-2"><Palette className="w-4 h-4"/> Secondary Color (Optional)</Label>
+                                        {formData.secondaryColor && (
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setFormData({...formData, secondaryColor: ''})} 
+                                                className="text-xs text-red-500 hover:text-red-600 font-bold"
+                                            >
+                                                Clear
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <input type="color" value={formData.secondaryColor || '#6366f1'} onChange={e => setFormData({...formData, secondaryColor: e.target.value})} className="h-10 w-10 rounded-lg cursor-pointer border-2 border-slate-200 shrink-0" />
+                                        <Input value={formData.secondaryColor} onChange={e => setFormData({...formData, secondaryColor: e.target.value})} placeholder="e.g. #6366f1" className="font-mono uppercase text-xs font-bold" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                        <Label className="flex items-center gap-2"><Palette className="w-4 h-4"/> Tertiary Color (Optional)</Label>
+                                        {formData.tertiaryColor && (
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setFormData({...formData, tertiaryColor: ''})} 
+                                                className="text-xs text-red-500 hover:text-red-600 font-bold"
+                                            >
+                                                Clear
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <input type="color" value={formData.tertiaryColor || '#10b981'} onChange={e => setFormData({...formData, tertiaryColor: e.target.value})} className="h-10 w-10 rounded-lg cursor-pointer border-2 border-slate-200 shrink-0" />
+                                        <Input value={formData.tertiaryColor} onChange={e => setFormData({...formData, tertiaryColor: e.target.value})} placeholder="e.g. #10b981" className="font-mono uppercase text-xs font-bold" />
                                     </div>
                                 </div>
                             </div>
@@ -222,6 +488,41 @@ export default function WebsiteBuilderPage() {
                                     onChange={e => setFormData({...formData, aboutText: e.target.value})} 
                                     rows={6} 
                                     placeholder="Tell prospective parents about your school's history and facilities..." 
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader><CardTitle>Mission, Vision & Core Values</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Mission Statement</Label>
+                                    <Textarea 
+                                        value={formData.mission} 
+                                        onChange={e => setFormData({...formData, mission: e.target.value})} 
+                                        rows={3} 
+                                        placeholder="Our mission is to..." 
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Vision Statement</Label>
+                                    <Textarea 
+                                        value={formData.vision} 
+                                        onChange={e => setFormData({...formData, vision: e.target.value})} 
+                                        rows={3} 
+                                        placeholder="Our vision is to..." 
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Core Values</Label>
+                                <Textarea 
+                                    value={formData.coreValues} 
+                                    onChange={e => setFormData({...formData, coreValues: e.target.value})} 
+                                    rows={3} 
+                                    placeholder="e.g. Excellence, Integrity, Collaboration..." 
                                 />
                             </div>
                         </CardContent>
@@ -255,15 +556,26 @@ export default function WebsiteBuilderPage() {
                     </Card>
 
                     <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5 text-indigo-600"/> Photo Gallery</CardTitle>
-                            <CardDescription>Add photos with captions to share your school's atmosphere.</CardDescription>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
+                            <div>
+                                <CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5 text-indigo-600"/> Photo Gallery (Activities)</CardTitle>
+                                <CardDescription>Add photos of school activities and environment.</CardDescription>
+                            </div>
+                            <div className="relative shrink-0">
+                                <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="hidden" id="gallery-file-input" disabled={galleryUploading} />
+                                <Button type="button" variant="outline" asChild disabled={galleryUploading}>
+                                    <label htmlFor="gallery-file-input" className="cursor-pointer flex items-center gap-1.5 font-bold">
+                                        {galleryUploading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
+                                        Upload Multiple Photos
+                                    </label>
+                                </Button>
+                            </div>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 pt-6">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <Input value={newGalleryCaption} onChange={e => setNewGalleryCaption(e.target.value)} placeholder="Caption (e.g. Science Lab)" />
                                 <div className="flex gap-2">
-                                    <Input value={newGalleryUrl} onChange={e => setNewGalleryUrl(e.target.value)} placeholder="Image URL" />
+                                    <Input value={newGalleryUrl} onChange={e => setNewGalleryUrl(e.target.value)} placeholder="Or paste image URL..." />
                                     <Button type="button" onClick={addGalleryImage} variant="secondary"><Plus/></Button>
                                 </div>
                             </div>
@@ -278,6 +590,196 @@ export default function WebsiteBuilderPage() {
                             </div>
                         </CardContent>
                     </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5 text-indigo-600"/> School Team / Staff</CardTitle>
+                            <CardDescription>Manage the educators and staff displayed on your public storefront.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Add Staff form */}
+                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-4">
+                                <h4 className="text-sm font-bold text-slate-800">Add Team Member</h4>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Full Name *</Label>
+                                        <Input value={staffName} onChange={e => setStaffName(e.target.value)} placeholder="e.g. Dr. John Doe" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Role / Position *</Label>
+                                        <Input value={staffRole} onChange={e => setStaffRole(e.target.value)} placeholder="e.g. Principal, Director" />
+                                    </div>
+                                </div>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Qualifications (Optional)</Label>
+                                        <Input value={staffQualifications} onChange={e => setStaffQualifications(e.target.value)} placeholder="e.g. PhD in Education" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Staff Photo</Label>
+                                        <div className="flex gap-2">
+                                            {staffPhotoUrl ? (
+                                                <div className="h-10 w-10 rounded-lg overflow-hidden border shrink-0 bg-slate-200">
+                                                    <img src={staffPhotoUrl} className="h-full w-full object-cover" />
+                                                </div>
+                                            ) : null}
+                                            <input type="file" accept="image/*" onChange={handleStaffPhotoUpload} className="hidden" id="staff-file-input" disabled={staffUploading} />
+                                            <Button type="button" variant="outline" asChild disabled={staffUploading} className="w-full">
+                                                <label htmlFor="staff-file-input" className="cursor-pointer flex items-center justify-center gap-1.5 font-bold">
+                                                    {staffUploading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
+                                                    Upload Photo
+                                                </label>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Brief Bio / Description</Label>
+                                    <Textarea value={staffBio} onChange={e => setStaffBio(e.target.value)} placeholder="Write a brief intro about this staff member..." rows={2} />
+                                </div>
+                                <Button type="button" onClick={addCustomStaff} className="bg-indigo-605 hover:bg-indigo-700 text-white w-full font-bold">
+                                    <Plus className="mr-2 h-4 w-4"/> Add Staff Member
+                                </Button>
+                            </div>
+
+                            {/* Staff List */}
+                            <div className="space-y-3">
+                                <Label>Current Website Staff</Label>
+                                {formData.customStaff.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground italic">No custom staff members added yet. Add some above.</p>
+                                ) : (
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        {formData.customStaff.map((member, i) => (
+                                            <div key={i} className="flex gap-3 items-center p-3 bg-white border rounded-2xl relative group animate-in fade-in">
+                                                <div className="h-12 w-12 rounded-xl bg-slate-100 overflow-hidden border shrink-0">
+                                                    {member.photoUrl ? (
+                                                        <img src={member.photoUrl} className="h-full w-full object-cover" />
+                                                    ) : (
+                                                        <User className="h-full w-full p-2 text-slate-300" />
+                                                    )}
+                                                </div>
+                                                <div className="truncate flex-1">
+                                                    <p className="text-sm font-bold text-slate-800 truncate">{member.name}</p>
+                                                    <p className="text-xs text-slate-500 truncate">{member.role}</p>
+                                                </div>
+                                                <Button type="button" variant="ghost" size="sm" onClick={() => removeCustomStaff(i)} className="text-red-500 hover:text-red-600 hover:bg-red-50 absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Trash2 className="h-4 w-4"/>
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><Megaphone className="h-5 w-5 text-indigo-600"/> News, Announcements & Events</CardTitle>
+                            <CardDescription>Compose public news, announcements, and events to display on the storefront.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Add News form */}
+                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-4">
+                                <h4 className="text-sm font-bold text-slate-800">Add Bulletin Item</h4>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Title *</Label>
+                                        <Input value={newsTitle} onChange={e => setNewsTitle(e.target.value)} placeholder="e.g. Annual Sports Day" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Type *</Label>
+                                        <select 
+                                            value={newsType} 
+                                            onChange={e => setNewsType(e.target.value as any)}
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-bold"
+                                        >
+                                            <option value="News">News</option>
+                                            <option value="Announcement">Announcement</option>
+                                            <option value="Event">Event</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Date (Optional)</Label>
+                                        <Input type="date" value={newsDate} onChange={e => setNewsDate(e.target.value)} className="font-bold" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Video URL (YouTube/Instagram)</Label>
+                                        <Input value={newsVideoUrl} onChange={e => setNewsVideoUrl(e.target.value)} placeholder="e.g. https://youtube.com/watch?v=..." />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Banner Image (Optional)</Label>
+                                    <div className="flex gap-2">
+                                        {newsImageUrl ? (
+                                            <div className="h-10 w-10 rounded-lg overflow-hidden border shrink-0 bg-slate-200">
+                                                <img src={newsImageUrl} className="h-full w-full object-cover" />
+                                            </div>
+                                        ) : null}
+                                        <Input value={newsImageUrl} onChange={e => setNewsImageUrl(e.target.value)} placeholder="Paste image URL or upload..." className="flex-1 bg-white" />
+                                        <input type="file" accept="image/*" onChange={handleNewsImageUpload} className="hidden" id="news-file-input" disabled={newsImageUploading} />
+                                        <Button type="button" variant="outline" asChild disabled={newsImageUploading} className="shrink-0">
+                                            <label htmlFor="news-file-input" className="cursor-pointer flex items-center gap-1.5 font-bold">
+                                                {newsImageUploading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
+                                                Upload Image
+                                            </label>
+                                        </Button>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Content / Description *</Label>
+                                    <Textarea value={newsContent} onChange={e => setNewsContent(e.target.value)} placeholder="Write details about the update..." rows={3} />
+                                </div>
+                                <Button type="button" onClick={addCustomNews} className="bg-indigo-600 hover:bg-indigo-700 text-white w-full font-bold">
+                                    <Plus className="mr-2 h-4 w-4"/> Add Bulletin Item
+                                </Button>
+                            </div>
+
+                            {/* News List */}
+                            <div className="space-y-3">
+                                <Label>Current Website Bulletins</Label>
+                                {formData.customNews.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground italic">No bulletins added yet. Create one above.</p>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {formData.customNews.map((item, i) => (
+                                            <div key={i} className="flex gap-4 p-4 bg-white border rounded-2xl relative group animate-in fade-in">
+                                                {item.imageUrl ? (
+                                                    <div className="h-16 w-16 rounded-xl overflow-hidden border shrink-0 bg-slate-100">
+                                                        <img src={item.imageUrl} className="h-full w-full object-cover" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="h-16 w-16 rounded-xl bg-slate-50 border flex items-center justify-center shrink-0">
+                                                        <Megaphone className="h-6 w-6 text-slate-300" />
+                                                    </div>
+                                                )}
+                                                <div className="truncate flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-650">
+                                                            {item.type}
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-400 font-semibold">{item.date}</span>
+                                                    </div>
+                                                    <h5 className="text-sm font-bold text-slate-800 truncate mt-1">{item.title}</h5>
+                                                    <p className="text-xs text-slate-500 truncate mt-0.5">{item.content}</p>
+                                                    {item.videoUrl && (
+                                                        <span className="inline-flex items-center gap-1 text-[10px] text-indigo-500 font-bold mt-1">
+                                                            <Video className="h-3 w-3"/> Video link attached
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <Button type="button" variant="ghost" size="sm" onClick={() => removeCustomNews(i)} className="text-red-500 hover:text-red-650 hover:bg-red-50 absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Trash2 className="h-4 w-4"/>
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
                 <div className="space-y-6">
@@ -285,8 +787,58 @@ export default function WebsiteBuilderPage() {
                         <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-indigo-600">Site Appearance</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Hero / Cover Image URL</Label>
-                                <Input value={formData.coverImageUrl} onChange={e => setFormData({...formData, coverImageUrl: e.target.value})} placeholder="https://..." />
+                                <Label>Hero / Cover Image (Main Banner)</Label>
+                                {formData.coverImageUrl && (
+                                    <div className="aspect-video w-full rounded-xl overflow-hidden border mb-2 bg-slate-100 relative group">
+                                        <img src={formData.coverImageUrl} alt="Banner Preview" className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <Button type="button" variant="destructive" size="sm" onClick={() => setFormData({...formData, coverImageUrl: ''})}><Trash2 className="h-4 w-4 mr-2"/> Remove</Button>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="flex gap-2">
+                                    <Input value={formData.coverImageUrl} onChange={e => setFormData({...formData, coverImageUrl: e.target.value})} placeholder="Paste image URL..." className="flex-1 bg-white" />
+                                    <div className="relative shrink-0">
+                                        <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" id="cover-file-input" disabled={coverUploading} />
+                                        <Button type="button" variant="outline" asChild disabled={coverUploading}>
+                                            <label htmlFor="cover-file-input" className="cursor-pointer flex items-center gap-1.5 font-bold">
+                                                {coverUploading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
+                                                Upload Image
+                                            </label>
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-2 pt-2 border-t border-indigo-100">
+                                <div className="flex justify-between items-center">
+                                    <Label className="flex items-center gap-2"><Palette className="w-4 h-4"/> Banner Background Color</Label>
+                                    {formData.bannerBgColor && (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setFormData({...formData, bannerBgColor: ''})} 
+                                            className="text-xs text-red-500 hover:text-red-650 font-bold"
+                                        >
+                                            Clear
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex gap-2">
+                                    <input 
+                                        type="color" 
+                                        value={formData.bannerBgColor || '#0f172a'} 
+                                        onChange={e => setFormData({...formData, bannerBgColor: e.target.value})} 
+                                        className="h-10 w-10 rounded-lg cursor-pointer border-2 border-slate-200 shrink-0 bg-white" 
+                                    />
+                                    <Input 
+                                        value={formData.bannerBgColor} 
+                                        onChange={e => setFormData({...formData, bannerBgColor: e.target.value})} 
+                                        placeholder="e.g. #0f172a" 
+                                        className="font-mono uppercase text-xs font-bold bg-white" 
+                                    />
+                                </div>
+                                <p className="text-[10px] text-indigo-650 font-semibold leading-relaxed">
+                                    This color shows behind the transparent banner image overlay. Use a lighter color (like white/beige) to make the image display brightly and clearly.
+                                </p>
                             </div>
                         </CardContent>
                     </Card>
