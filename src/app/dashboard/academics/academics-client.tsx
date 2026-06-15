@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Card,
   CardContent,
@@ -480,15 +481,14 @@ export default function AcademicsPageContent() {
                             <FormItem><FormLabel>Target Capacity</FormLabel><FormControl><Input type="number" {...field}/></FormControl><FormMessage/></FormItem>
                         )}/>
 
-                        <div className="flex items-center gap-2 py-2">
-                            <input 
-                                type="checkbox" 
+                        <div className="flex items-center space-x-2 py-2">
+                            <Checkbox 
                                 id="custom-weights-toggle"
                                 checked={hasCustomWeights} 
-                                onChange={(e) => {
-                                    const checked = e.target.checked;
-                                    setHasCustomWeights(checked);
-                                    if (checked) {
+                                onCheckedChange={(checked) => {
+                                    const isChecked = !!checked;
+                                    setHasCustomWeights(isChecked);
+                                    if (isChecked) {
                                         form.setValue('caWeight', 30);
                                         form.setValue('examWeight', 70);
                                     } else {
@@ -496,9 +496,8 @@ export default function AcademicsPageContent() {
                                         form.setValue('examWeight', undefined);
                                     }
                                 }}
-                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
-                            <label htmlFor="custom-weights-toggle" className="text-sm font-semibold text-slate-700 cursor-pointer">
+                            <label htmlFor="custom-weights-toggle" className="text-sm font-semibold text-slate-700 cursor-pointer select-none">
                                 Override School Assessment Weights
                             </label>
                         </div>
@@ -514,6 +513,7 @@ export default function AcademicsPageContent() {
                                                 min={0} 
                                                 max={100} 
                                                 {...field}
+                                                value={field.value ?? ''}
                                                 onChange={(e) => {
                                                     const val = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
                                                     form.setValue('caWeight', val);
@@ -533,6 +533,7 @@ export default function AcademicsPageContent() {
                                                 min={0} 
                                                 max={100} 
                                                 {...field}
+                                                value={field.value ?? ''}
                                                 onChange={(e) => {
                                                     const val = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
                                                     form.setValue('examWeight', val);
