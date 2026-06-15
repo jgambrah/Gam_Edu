@@ -6,6 +6,7 @@ import { doc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { logAuditEvent } from '@/lib/audit';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -264,6 +265,14 @@ export default function SchoolProfilePage() {
             caWeight,
             examWeight,
         }, { merge: true });
+        
+        await logAuditEvent({
+            firestore,
+            schoolId,
+            userName: userProfile ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+            action: 'UPDATE_SCHOOL_SETTINGS',
+            details: `Updated school settings: name="${name}", caWeight=${caWeight}%, examWeight=${examWeight}%`
+        });
         
         toast({ title: "Settings Saved", description: "School profile updated successfully." });
     } catch (error: any) {

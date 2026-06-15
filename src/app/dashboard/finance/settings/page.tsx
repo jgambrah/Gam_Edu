@@ -17,8 +17,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
+import { useFirestore, useMemoFirebase, useDoc, useCollection, useUser } from '@/firebase';
 import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
+import { logAuditEvent } from '@/lib/audit';
 import { Loader2, Utensils, Bus, RefreshCw, ListChecks, CalendarRange, Settings, Search, Save } from 'lucide-react';
 import { useRole } from '@/context/role-context';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -50,6 +51,8 @@ const transportRateSchema = z.object({
 // --- Canteen Rate Settings Component ---
 function CanteenSettings({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
+    const { user } = useUser();
+    const { profile } = useRole();
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
@@ -110,8 +113,15 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         }
         
         setDoc(settingsRef, data, { merge: true })
-          .then(() => {
+          .then(async () => {
             toast({ title: 'Settings Updated', description: 'Canteen billing logic has been saved.' });
+            await logAuditEvent({
+                firestore,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+                action: 'UPDATE_CANTEEN_SETTINGS',
+                details: `Updated canteen billing rate settings: dailyRate=GH₵${data.dailyRate}, termlyRate=GH₵${data.termlyRate}, pricingModel=${data.pricingModel}`
+            });
           })
           .catch((error: any) => {
             console.error("SAVE FAILED:", error.code, error.message, error);
@@ -262,6 +272,8 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
 // --- Transport Rate Settings Component ---
 function TransportSettings({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
+    const { user } = useUser();
+    const { profile } = useRole();
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
@@ -287,8 +299,15 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
         const data = { dailyRate: Number(values.dailyRate) || 0, updatedAt: serverTimestamp() };
         
         setDoc(settingsRef, data, { merge: true })
-          .then(() => {
+          .then(async () => {
             toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
+            await logAuditEvent({
+                firestore,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+                action: 'UPDATE_TRANSPORT_SETTINGS',
+                details: `Updated default daily transport rate to GH₵${data.dailyRate}`
+            });
           })
           .catch((error: any) => {
             console.error("SAVE FAILED:", error.code, error.message, error);
@@ -344,6 +363,8 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
 // --- Retrospective Billing Component ---
 function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
+    const { user } = useUser();
+    const { profile } = useRole();
     const { toast } = useToast();
     const [isProcessing, setIsProcessing] = useState(false);
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -481,7 +502,14 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
 
             await billingBatch.commit();
             toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} records.` });
-
+            
+            await logAuditEvent({
+                firestore,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+                action: 'RUN_RETRO_BILLING',
+                details: `Reprocessed retrospective billing for date range ${format(start, 'yyyy-MM-dd')} to ${format(end, 'yyyy-MM-dd')} (${recordsToProcess.length} attendance records)`
+            });
         } catch (error: any) {
             console.error('Error reprocessing billing:', error);
             toast({ variant: 'destructive', title: 'Error', description: error.message });

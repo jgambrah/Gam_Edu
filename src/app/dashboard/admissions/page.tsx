@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
+import { logAuditEvent } from '@/lib/audit';
 import { collection, doc, query, where, getDocs, onSnapshot, updateDoc, serverTimestamp, addDoc, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -186,6 +187,7 @@ function ParentApplicationForm({ onSuccess, schoolId }: { onSuccess: () => void,
 function AdminApplicationDashboard() {
     const firestore = useFirestore();
     const { user } = useUser();
+    const { profile } = useRole();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
 
@@ -329,6 +331,16 @@ function AdminApplicationDashboard() {
                 });
                 toast({ variant: "default", title: "Rejected", description: "Application status updated." });
             }
+
+            await logAuditEvent({
+                firestore,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user.displayName || user.email || 'Anonymous'),
+                action: decision === 'Approve' ? 'APPROVE_ADMISSION' : 'REJECT_ADMISSION',
+                details: decision === 'Approve'
+                    ? `Approved admission application (${selectedApp.applicationId}) for student ${selectedApp.student?.fullName || ''} and assigned to class ${availableClasses?.find(c => c.id === assignedClass)?.name || assignedClass}`
+                    : `Rejected admission application (${selectedApp.applicationId}) for student ${selectedApp.student?.fullName || ''}. Reason: ${rejectionReason || 'Does not meet criteria'}`
+            });
 
             setSelectedApp(null);
             setDecision(null);

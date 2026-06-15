@@ -4,7 +4,8 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc, Timestamp } from 'firebase/firestore';
+import { logAuditEvent } from '@/lib/audit';
+import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc, Timestamp, writeBatch } from 'firebase/firestore';
 import { format, parseISO, startOfDay, endOfDay } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,17 @@ import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
 import { generateReportCommentAction } from '@/app/actions/report-ai';
@@ -84,6 +96,7 @@ export default function ReportCardManager() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
+    const [isBulkPublishing, setIsBulkPublishing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isGeneratingTeacherComment, setIsGeneratingTeacherComment] = useState(false);
     const [isGeneratingHeadmasterComment, setIsGeneratingHeadmasterComment] = useState(false);
@@ -124,6 +137,39 @@ export default function ReportCardManager() {
         if (!students) return [];
         return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
     }, [students]);
+
+    const reportCardsQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || !classId || !academicYear || !term) return null;
+        return query(
+            collection(firestore, 'report-cards'),
+            where('schoolId', '==', schoolId),
+            where('classId', '==', classId),
+            where('academicYear', '==', academicYear),
+            where('term', '==', term)
+        );
+    }, [firestore, schoolId, classId, academicYear, term]);
+    const { data: classReportCards } = useCollection<any>(reportCardsQuery);
+
+    const classSummary = useMemo(() => {
+        if (!activeStudents || !classReportCards) return null;
+        
+        const drafts: any[] = [];
+        const published: any[] = [];
+        const missing: any[] = [];
+        
+        activeStudents.forEach((student: any) => {
+            const report = classReportCards.find((r: any) => r.studentId === student.uid);
+            if (!report) {
+                missing.push(student);
+            } else if (report.status === 'Published') {
+                published.push({ student, report });
+            } else {
+                drafts.push({ student, report });
+            }
+        });
+        
+        return { drafts, published, missing };
+    }, [activeStudents, classReportCards]);
 
     useEffect(() => {
         if (!selectedStudentId || !academicYear || !term || !firestore || !schoolId) return;
@@ -344,6 +390,14 @@ export default function ReportCardManager() {
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             toast({ title: "Draft Saved" });
+
+            await logAuditEvent({
+                firestore: firestore!,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+                action: 'SAVE_REPORT_CARD_DRAFT',
+                details: `Saved draft report card for student ${processedReport.student?.firstName || ''} ${processedReport.student?.lastName || ''}`
+            });
         } catch (e) {
             toast({ variant: 'destructive', title: "Error" });
         } finally {
@@ -375,11 +429,67 @@ export default function ReportCardManager() {
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             
             toast({ title: "Report Published!" });
+            
+            await logAuditEvent({
+                firestore: firestore!,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+                action: 'PUBLISH_REPORT_CARD',
+                details: `Published report card for student ${processedReport.student?.firstName || ''} ${processedReport.student?.lastName || ''} (${term}, ${academicYear})`
+            });
+
             await notifyParents([selectedStudentId!], "Report Card Ready 🎓", `Report for ${processedReport.student?.firstName} is now available.`, "/dashboard/my-reports");
         } catch (e) {
             toast({ variant: 'destructive', title: "Error" });
         } finally {
             setIsPublishing(false);
+        }
+    };
+
+    const handleBulkPublish = async () => {
+        if (!firestore || !schoolId || !classSummary || classSummary.drafts.length === 0 || isBulkPublishing) return;
+        setIsBulkPublishing(true);
+        try {
+            const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
+            const schoolData = schoolDoc.data();
+            const headmasterName = schoolData?.headmasterName || 'Head of School';
+            const headmasterSignatureUrl = schoolData?.headmasterSignatureUrl || null;
+
+            const batch = writeBatch(firestore);
+            const studentIdsToNotify: string[] = [];
+
+            classSummary.drafts.forEach(({ student, report }) => {
+                const reportRef = doc(firestore, 'report-cards', report.id);
+                batch.update(reportRef, {
+                    status: 'Published',
+                    publishedAt: serverTimestamp(),
+                    headmasterName,
+                    headmasterSignatureUrl,
+                    headmasterSignedAt: serverTimestamp(),
+                    digitalFingerprint: `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
+                });
+                studentIdsToNotify.push(student.uid);
+            });
+
+            await batch.commit();
+            toast({ title: "Bulk Publish Complete!", description: `Successfully published ${studentIdsToNotify.length} report cards.` });
+            
+            await logAuditEvent({
+                firestore,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+                action: 'BULK_PUBLISH_REPORT_CARDS',
+                details: `Bulk published ${studentIdsToNotify.length} report cards for class ${classes?.find(c => c.id === classId)?.name || classId} (${term}, ${academicYear})`
+            });
+
+            // Notify parents in background (non-blocking)
+            notifyParents(studentIdsToNotify, "Report Card Ready 🎓", "Terminal report cards are now available.", "/dashboard/my-reports")
+                .catch(err => console.error("Bulk notification failed:", err));
+        } catch (e) {
+            console.error("Bulk publish error:", e);
+            toast({ variant: 'destructive', title: "Bulk Publish Failed" });
+        } finally {
+            setIsBulkPublishing(false);
         }
     };
 
@@ -503,6 +613,144 @@ export default function ReportCardManager() {
                     </Button>
                 </CardFooter>
             </Card>
+
+            {classId && classSummary && (
+                <Card className="border-t-4 border-t-emerald-600 shadow-md print:hidden">
+                    <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                <GraduationCap className="text-emerald-600 h-5 w-5" /> 
+                                Class Status: {classes?.find((c: any) => c.id === classId)?.name || ''}
+                            </CardTitle>
+                            <CardDescription>
+                                Overview of terminal report cards compilation for this class.
+                            </CardDescription>
+                        </div>
+                        {isAdminOrDirector && (
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button 
+                                        disabled={classSummary.drafts.length === 0 || isBulkPublishing} 
+                                        className="bg-green-600 hover:bg-green-700 font-bold"
+                                    >
+                                        {isBulkPublishing ? (
+                                            <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                                        ) : (
+                                            <ShieldCheck className="mr-2 h-4 w-4" />
+                                        )}
+                                        Bulk Publish Drafts ({classSummary.drafts.length})
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Bulk Publish Report Cards?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This will sign and publish all **{classSummary.drafts.length}** draft report cards for this class. 
+                                            Parents will be notified immediately and will be able to view their children's terminal report cards.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction 
+                                            onClick={handleBulkPublish} 
+                                            className="bg-green-600 hover:bg-green-700"
+                                        >
+                                            Publish All Drafts
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        )}
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="p-4 rounded-xl bg-green-50 border border-green-100 flex items-center gap-3">
+                                <CheckCircle className="h-8 w-8 text-green-600" />
+                                <div>
+                                    <p className="text-xs font-semibold text-green-600 uppercase">Published</p>
+                                    <p className="text-2xl font-bold text-slate-800">{classSummary.published.length}</p>
+                                </div>
+                            </div>
+                            <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-center gap-3">
+                                <PenTool className="h-8 w-8 text-amber-600" />
+                                <div>
+                                    <p className="text-xs font-semibold text-amber-600 uppercase">Drafts Ready</p>
+                                    <p className="text-2xl font-bold text-slate-800">{classSummary.drafts.length}</p>
+                                </div>
+                            </div>
+                            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+                                <AlertCircle className="h-8 w-8 text-slate-400" />
+                                <div>
+                                    <p className="text-xs font-semibold text-slate-500 uppercase">Not Compiled</p>
+                                    <p className="text-2xl font-bold text-slate-800">{classSummary.missing.length}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* List breakdown */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 border-t">
+                            <div>
+                                <h4 className="text-xs font-bold text-green-700 mb-2 uppercase tracking-wide">Published ({classSummary.published.length})</h4>
+                                <ScrollArea className="h-32 border rounded-lg p-2 bg-white">
+                                    {classSummary.published.length > 0 ? (
+                                        classSummary.published.map(({ student }: any) => (
+                                            <div key={student.uid} className="text-xs py-1 border-b last:border-0 font-medium text-slate-700">
+                                                ✅ {student.firstName} {student.lastName}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-xs text-slate-400 italic p-2">No published report cards.</p>
+                                    )}
+                                </ScrollArea>
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-bold text-amber-700 mb-2 uppercase tracking-wide">Drafts Ready ({classSummary.drafts.length})</h4>
+                                <ScrollArea className="h-32 border rounded-lg p-2 bg-white">
+                                    {classSummary.drafts.length > 0 ? (
+                                        classSummary.drafts.map(({ student }: any) => (
+                                            <div key={student.uid} className="text-xs py-1 border-b last:border-0 font-medium text-slate-700 flex justify-between items-center">
+                                                <span>📝 {student.firstName} {student.lastName}</span>
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm" 
+                                                    className="h-5 text-[10px] text-indigo-600 font-bold hover:text-indigo-800 px-1"
+                                                    onClick={() => setSelectedStudentId(student.uid)}
+                                                >
+                                                    View
+                                                </Button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-xs text-slate-400 italic p-2">No drafts compiled.</p>
+                                    )}
+                                </ScrollArea>
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Not Compiled ({classSummary.missing.length})</h4>
+                                <ScrollArea className="h-32 border rounded-lg p-2 bg-white">
+                                    {classSummary.missing.length > 0 ? (
+                                        classSummary.missing.map((student: any) => (
+                                            <div key={student.uid} className="text-xs py-1 border-b last:border-0 font-medium text-slate-700 flex justify-between items-center">
+                                                <span>⚠️ {student.firstName} {student.lastName}</span>
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm" 
+                                                    className="h-5 text-[10px] text-indigo-600 font-bold hover:text-indigo-800 px-1"
+                                                    onClick={() => setSelectedStudentId(student.uid)}
+                                                >
+                                                    Compile
+                                                </Button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-xs text-slate-400 italic p-2">All report cards compiled!</p>
+                                    )}
+                                </ScrollArea>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {processedReport && (
                 <div className="space-y-6 animate-in slide-in-from-top-4 duration-500">

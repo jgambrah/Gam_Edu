@@ -15,7 +15,10 @@ export async function logAuditEvent({
   action,
   details
 }: LogAuditParams) {
-  if (!firestore || !schoolId) return;
+  if (!firestore || !schoolId) {
+    console.warn('logAuditEvent skipped: firestore or schoolId is missing', { hasFirestore: !!firestore, schoolId, action, details });
+    return;
+  }
   try {
     await addDoc(collection(firestore, 'auditLogs'), {
       schoolId,
