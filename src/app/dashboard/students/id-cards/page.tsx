@@ -18,6 +18,9 @@ import { Badge } from '@/components/ui/badge';
 
 // Helper to get base64 via proxy to avoid CORS issues with html2canvas
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
+    if (imageUrl.startsWith('data:')) {
+        return imageUrl;
+    }
     try {
         const fetchUrl = imageUrl.startsWith('https://firebasestorage.googleapis.com')
             ? `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
@@ -48,6 +51,7 @@ function IDCard({
     primaryColor,
     secondaryColor,
     forPrint = false,
+    photoBase64,
 }: {
     student: Student;
     className: string;
@@ -56,6 +60,7 @@ function IDCard({
     primaryColor: string;
     secondaryColor: string;
     forPrint?: boolean;
+    photoBase64?: string;
 }) {
     // For print: fixed CR80 card size in mm rendered at 96dpi equivalent.
     // We use px values sized to 86mm × 54mm at ~3.78px/mm ≈ 325px × 204px.
@@ -153,10 +158,10 @@ function IDCard({
                         overflow: 'hidden',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                        {student.photoURL ? (
+                        {photoBase64 || student.photoURL ? (
                             <img
-                                src={student.photoURL}
-                                crossOrigin="anonymous"
+                                src={photoBase64 || student.photoURL}
+                                crossOrigin={photoBase64 || (student.photoURL && student.photoURL.startsWith('data:')) ? undefined : "anonymous"}
                                 alt="Student"
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
@@ -234,8 +239,8 @@ function IDCard({
             </div>
             <div className="flex-1 flex flex-row items-center p-4 gap-4">
                 <div className="w-20 h-20 bg-slate-100 rounded-xl border-4 border-white shadow-md overflow-hidden flex items-center justify-center shrink-0">
-                    {student.photoURL ? (
-                        <img src={student.photoURL} crossOrigin="anonymous" alt="Student" className="w-full h-full object-cover" />
+                    {photoBase64 || student.photoURL ? (
+                        <img src={photoBase64 || student.photoURL} crossOrigin={photoBase64 || (student.photoURL && student.photoURL.startsWith('data:')) ? undefined : "anonymous"} alt="Student" className="w-full h-full object-cover" />
                     ) : (
                         <UserRound className="w-10 h-10 text-slate-200" />
                     )}
@@ -314,11 +319,59 @@ export default function IDCardGeneratorPage() {
         [allStudents]
     );
 
-    const studentsToExport = useMemo(() => {
+        const studentsToExport = useMemo(() => {
         if (!allStudents) return [];
         if (selectedStudentId === 'all') return sortedStudents;
         return sortedStudents.filter(s => (s.id || s.uid) === selectedStudentId);
     }, [allStudents, sortedStudents, selectedStudentId]);
+
+    const [resolvedPhotos, setResolvedPhotos] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        if (!studentsToExport.length) return;
+
+        let active = true;
+        
+        const loadPhotos = async () => {
+            const promises = studentsToExport.map(async (student) => {
+                const id = student.id || student.uid;
+                if (!id) return;
+                
+                // If we don't have a photoURL, resolve immediately to an empty string to avoid waiting
+                if (!student.photoURL) {
+                    if (resolvedPhotos[id] === undefined && active) {
+                        setResolvedPhotos(prev => ({
+                            ...prev,
+                            [id]: ""
+                        }));
+                    }
+                    return;
+                }
+                
+                // If already resolved, skip
+                if (resolvedPhotos[id] !== undefined) return;
+
+                const base64 = await getBase64ImageFromUrl(student.photoURL);
+                if (active) {
+                    setResolvedPhotos(prev => ({
+                        ...prev,
+                        [id]: base64 || ""
+                    }));
+                }
+            });
+            await Promise.all(promises);
+        };
+
+        loadPhotos();
+
+        return () => {
+            active = false;
+        };
+    }, [studentsToExport]);
+
+    const unresolvedPhotosCount = useMemo(() => {
+        return studentsToExport.filter(s => s.photoURL && !resolvedPhotos[s.id || s.uid]).length;
+    }, [studentsToExport, resolvedPhotos]);
 
     const previewStudent = useMemo(() => studentsToExport[0] || null, [studentsToExport]);
 
@@ -452,14 +505,25 @@ export default function IDCardGeneratorPage() {
                     {classId && (
                         <Button
                             onClick={handleDownloadPDF}
-                            disabled={isGenerating || !studentsToExport.length}
+                            disabled={isGenerating || !studentsToExport.length || unresolvedPhotosCount > 0}
                             className="flex-1 md:w-64 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black uppercase tracking-tight shadow-lg shadow-indigo-100"
                         >
-                            {isGenerating
-                                ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                : <Download className="mr-2 h-4 w-4" />
-                            }
-                            Export {studentsToExport.length} Card{studentsToExport.length !== 1 ? 's' : ''}
+                            {unresolvedPhotosCount > 0 ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Loading Photos ({unresolvedPhotosCount} left)
+                                </>
+                            ) : isGenerating ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Generating PDF...
+                                </>
+                            ) : (
+                                <>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Export {studentsToExport.length} Card{studentsToExport.length !== 1 ? 's' : ''}
+                                </>
+                            )}
                         </Button>
                     )}
                 </CardContent>
@@ -501,6 +565,7 @@ export default function IDCardGeneratorPage() {
                                         primaryColor={primaryColor}
                                         secondaryColor={secondaryColor}
                                         forPrint={false}
+                                        photoBase64={resolvedPhotos[previewStudent.id || previewStudent.uid]}
                                     />
                                     <p className="mt-14 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Sample Digital Proof
@@ -550,6 +615,7 @@ export default function IDCardGeneratorPage() {
                                     primaryColor={primaryColor}
                                     secondaryColor={secondaryColor}
                                     forPrint={true}
+                                    photoBase64={resolvedPhotos[student.id || student.uid]}
                                 />
                             ))}
                         </div>

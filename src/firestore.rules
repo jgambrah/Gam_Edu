@@ -276,6 +276,14 @@ service cloud.firestore {
         allow write: if isFinanceStaff() || isAdmin() || getUserRole() == 'Secretary';
     }
 
+    match /fixed_assets/{assetId} {
+      allow read, write: if isFinanceStaff() || isAdmin();
+    }
+
+    match /depreciation_logs/{logId} {
+      allow read, write: if isFinanceStaff() || isAdmin();
+    }
+
     // Transport Security
     match /routes/{routeId} {
         allow read, list: if isSignedIn();
