@@ -396,6 +396,12 @@ export const navItems: NavItem[] = [
         icon: Book,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
+      {
+        path: '/dashboard/finance/fixed-assets',
+        title: 'Fixed Asset Register',
+        icon: Landmark,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
        {
         path: '/dashboard/payroll/staff-config',
         title: 'Staff Payroll Config',
