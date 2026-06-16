@@ -390,7 +390,7 @@ function BalanceSheet({ data, netIncome }: { data: AccountBalance[], netIncome: 
                             </TableRow>
                              <TableRow className="font-bold bg-slate-200">
                                 <TableCell>Total Liabilities & Equity</TableCell>
-                                <TableCell className="text-right">GH₵{(totalLiabilities + totalEquity).toFixed(2)}</TableCell>
+                                <TableCell className="text-right">GH₵{totalEquityAndLiabilities.toFixed(2)}</TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
