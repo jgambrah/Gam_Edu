@@ -438,6 +438,12 @@ export const navItems: NavItem[] = [
         icon: BarChart,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
+      {
+        path: '/dashboard/finance/budget',
+        title: 'Budgeting & Variance',
+        icon: TrendingUp,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
        {
         path: '/dashboard/finance/settings',
         title: 'Financial Settings',

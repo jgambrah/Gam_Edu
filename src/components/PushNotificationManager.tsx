@@ -90,8 +90,12 @@ export function PushNotificationManager({ collectionName }: { collectionName: st
         });
         setShowPrompt(false);
       }
-    } catch (err) {
-      console.error('Failed to get FCM token:', err);
+    } catch (err: any) {
+      if (err.name === 'AbortError' || err.message?.includes('storage') || err.message?.includes('Storage')) {
+        console.warn('FCM registration skipped: Browser storage (IndexedDB) is blocked or disabled (e.g., in Incognito/Private Browsing).');
+      } else {
+        console.error('Failed to get FCM token:', err);
+      }
     }
   };
 

@@ -20,17 +20,34 @@ export function AdmissionForm({ schoolId, primaryColor }: { schoolId: string, pr
         const formData = new FormData(e.currentTarget);
         
         try {
+            const appId = `APP-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
             await addDoc(collection(firestore, 'admissionApplications'), {
                 schoolId,
-                parentName: formData.get('parentName'),
-                email: formData.get('email'),
-                phone: formData.get('phone'),
-                studentName: formData.get('studentName'),
-                gradeApplyingFor: formData.get('grade'),
+                applicationId: appId,
                 status: 'Pending Review',
-                submittedAt: serverTimestamp()
+                submittedAt: serverTimestamp(),
+                student: {
+                    fullName: formData.get('studentName') as string || '',
+                    desiredGrade: formData.get('grade') as string || '',
+                    gender: '',
+                    address: '',
+                    dateOfBirth: null,
+                },
+                parent1: {
+                    name: formData.get('parentName') as string || '',
+                    relationship: 'Parent/Guardian',
+                    phone: formData.get('phone') as string || '',
+                    email: formData.get('email') as string || '',
+                    addressSameAsStudent: true,
+                    address: '',
+                },
+                emergencyContact: {
+                    name: formData.get('parentName') as string || '',
+                    relationship: 'Parent/Guardian',
+                    phone: formData.get('phone') as string || '',
+                }
             });
-            toast({ title: "Application Submitted!", description: "The school will contact you shortly." });
+            toast({ title: "Application Submitted!", description: `The school will review your application. ID: ${appId}` });
             (e.target as HTMLFormElement).reset();
         } catch (err: any) {
             console.error("Admission Submit Error:", err);

@@ -31,6 +31,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { AppLogo } from '@/components/icons/app-logo';
 import { Account, JournalLine, JournalEntry, journalEntrySchema, ACCOUNT_TYPES, accountSchema } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { SearchableAccountSelect } from '@/components/ui/account-select';
 
 // --- CONSTANTS: GHANA TAX 2025/2026 (ACT 1151 COMPLIANT) ---
 const GHANA_WHT_RATES = [
@@ -72,7 +73,10 @@ function AccountForm({ setOpen, onAccountAdded, accounts, schoolId }: { setOpen:
     const form = useForm<z.infer<typeof accountSchema>>({
         resolver: zodResolver(accountSchema),
         defaultValues: {
+            name: '',
+            type: 'Asset',
             parentAccountId: 'None',
+            description: '',
         },
     });
 
@@ -147,6 +151,12 @@ function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Acco
 
     const form = useForm<z.infer<typeof journalEntrySchema>>({
         resolver: zodResolver(journalEntrySchema),
+        defaultValues: {
+            description: '',
+            amount: 0,
+            debitAccountId: '',
+            creditAccountId: '',
+        }
     });
 
     const postableAccounts = accounts.filter(a => !a.isControlAccount);
@@ -204,19 +214,31 @@ function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Acco
                         )} />
                         <div className="grid grid-cols-2 gap-4">
                             <FormField control={form.control} name="debitAccountId" render={({ field }) => (
-                                <FormItem><FormLabel>Debit Account</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder="Choose account..." /></SelectTrigger></FormControl>
-                                        <SelectContent>{postableAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
-                                    </Select><FormMessage />
+                                <FormItem className="flex flex-col">
+                                    <FormLabel className="mb-1">Debit Account</FormLabel>
+                                    <FormControl>
+                                        <SearchableAccountSelect
+                                            accounts={accounts}
+                                            value={field.value || ''}
+                                            onChange={field.onChange}
+                                            placeholder="Choose account..."
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
                                 </FormItem>
                             )} />
                             <FormField control={form.control} name="creditAccountId" render={({ field }) => (
-                                <FormItem><FormLabel>Credit Account</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder="Choose account..." /></SelectTrigger></FormControl>
-                                        <SelectContent>{postableAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
-                                    </Select><FormMessage />
+                                <FormItem className="flex flex-col">
+                                    <FormLabel className="mb-1">Credit Account</FormLabel>
+                                    <FormControl>
+                                        <SearchableAccountSelect
+                                            accounts={accounts}
+                                            value={field.value || ''}
+                                            onChange={field.onChange}
+                                            placeholder="Choose account..."
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
                                 </FormItem>
                             )} />
                         </div>
@@ -340,9 +362,13 @@ function PaymentVoucherForm({
     const form = useForm<PVFormValues>({
         resolver: zodResolver(pvSchema),
         defaultValues: {
+            payee: '',
+            description: '',
+            grossAmount: 0,
             whtRateId: 'wht-none',
             vatRateId: 'vat-none',
-            grossAmount: 0,
+            debitAccountId: '',
+            creditAccountId: '',
         }
     });
 
@@ -361,8 +387,8 @@ function PaymentVoucherForm({
         return { wht, vat, net };
     }, [watchGross, watchWHTId, watchVATId]);
 
-    const expenseAccounts = accounts.filter(a => ['Expense', 'Asset'].includes(a.type) && !a.isControlAccount);
-    const bankAccounts = accounts.filter(a => ['Asset'].includes(a.type) && !a.isControlAccount);
+    const expenseAccounts = accounts.filter(a => ['Expense', 'Asset'].includes(a.type));
+    const bankAccounts = accounts.filter(a => ['Asset'].includes(a.type));
 
     async function onSubmit(values: PVFormValues) {
         if (!firestore || !user || !schoolId) return;
@@ -400,11 +426,11 @@ function PaymentVoucherForm({
             journalLines.push({ accountId: values.creditAccountId, accountName: creditAcc?.name || 'Cash/Bank', debit: 0, credit: net });
 
             if (wht > 0) {
-                const whtAcc = accounts.find(a => a.name.toLowerCase().includes('withholding tax')) || accounts.find(a => a.type === 'Liability');
+                const whtAcc = accounts.find(a => a.name.toLowerCase().includes('withholding tax')) || accounts.find(a => a.name.toLowerCase().includes('wht'));
                 journalLines.push({ accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT', accountName: whtAcc?.name || 'WHT Payable', debit: 0, credit: wht });
             }
             if (vat > 0) {
-                const vatAcc = accounts.find(a => a.name.toLowerCase().includes('vat input')) || accounts.find(a => a.type === 'Asset');
+                const vatAcc = accounts.find(a => a.name.toLowerCase().includes('vat input')) || accounts.find(a => a.name.toLowerCase().includes('vat'));
                 journalLines.push({ accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT', accountName: vatAcc?.name || 'VAT Input', debit: vat, credit: 0 });
             }
 
@@ -476,19 +502,23 @@ function PaymentVoucherForm({
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label>Debit Account (Expense/Asset)</Label>
-                    <Select onValueChange={(v) => form.setValue('debitAccountId', v)}>
-                        <SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger>
-                        <SelectContent>{expenseAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
-                    </Select>
+                <div className="space-y-2 flex flex-col justify-end">
+                    <Label className="mb-1">Debit Account (Expense/Asset)</Label>
+                    <SearchableAccountSelect
+                        accounts={expenseAccounts}
+                        value={form.watch('debitAccountId') || ''}
+                        onChange={(v) => form.setValue('debitAccountId', v)}
+                        placeholder="Select account..."
+                    />
                 </div>
-                <div className="space-y-2">
-                    <Label>Credit Account (Bank/Cash)</Label>
-                    <Select onValueChange={(v) => form.setValue('creditAccountId', v)}>
-                        <SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger>
-                        <SelectContent>{bankAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
-                    </Select>
+                <div className="space-y-2 flex flex-col justify-end">
+                    <Label className="mb-1">Credit Account (Bank/Cash)</Label>
+                    <SearchableAccountSelect
+                        accounts={bankAccounts}
+                        value={form.watch('creditAccountId') || ''}
+                        onChange={(v) => form.setValue('creditAccountId', v)}
+                        placeholder="Select account..."
+                    />
                 </div>
             </div>
 

@@ -9,6 +9,18 @@ import { useEffect } from 'react';
 export function PWARegister() {
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      // Bypass service worker in development mode to prevent cached chunk loading timeouts
+      if (process.env.NODE_ENV === 'development') {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          for (const registration of registrations) {
+            registration.unregister().then(() => {
+              console.log('Successfully unregistered stale service worker for development');
+            });
+          }
+        });
+        return;
+      }
+
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/sw.js').then(
           function(registration) {

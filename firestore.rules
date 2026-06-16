@@ -65,8 +65,7 @@ service cloud.firestore {
     // =========================================================
 
     match /schools/{schoolId} {
-      allow get: if isSignedIn();
-      allow list: if isAdmin();
+      allow get, list: if true;
       allow write: if isSuperAdmin();
       allow update: if isSignedIn() && isDirector();
     }
@@ -100,8 +99,7 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-      allow get: if isSignedIn();
-      allow list: if isAdmin() || isFinanceStaff() || isTransportStaff();
+      allow get, list: if isSignedIn() || resource.data.showOnWebsite == true;
       allow write: if isAdmin() || isOwner(staffId);
       match /payroll/{configId} {
         allow read, write: if isFinanceStaff() || isAdmin();
@@ -136,7 +134,7 @@ service cloud.firestore {
     }
 
     match /announcements_v2/{announcementId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isSignedIn() || 'Everybody' in resource.data.audience;
       allow write: if isAdmin();
     }
 
@@ -408,6 +406,16 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    match /budgets/{budgetId} {
+      allow read, list: if isFinanceStaff() || isAdmin();
+      allow write: if isFinanceStaff() || isAdmin();
+    }
+
+    match /budget_items/{itemId} {
+      allow read, list: if isFinanceStaff() || isAdmin();
+      allow write: if isFinanceStaff() || isAdmin();
+    }
+
     match /fixed_assets/{assetId} {
       allow read, write: if isFinanceStaff() || isAdmin();
     }
@@ -453,8 +461,8 @@ service cloud.firestore {
     }
 
     match /admissionApplications/{applicationId} {
-      allow read, write, list: if isAdmin();
-      allow create: if isSignedIn();
+      allow read, write, list: if isAdmin() || isSuperAdmin();
+      allow create: if true;
       allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
     }
 

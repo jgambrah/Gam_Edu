@@ -74,8 +74,7 @@ service cloud.firestore {
     // =========================================================
 
     match /schools/{schoolId} {
-      allow get: if isSignedIn();
-      allow list: if isAdmin();
+      allow get, list: if true;
       allow write: if isSuperAdmin();
       allow update: if isSignedIn() && isAdmin();
     }
@@ -104,9 +103,8 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-      allow get: if (resource.data.showOnWebsite == true) || isAdmin() || isOwner(staffId);
-      // Receptionist can list staff for front-desk work, Secretary cannot access detailed staff records
-      allow list: if isSignedIn() && (isAdmin() || getUserRole() == 'Receptionist');
+      allow get, list: if (resource.data.showOnWebsite == true) || isAdmin() || isOwner(staffId);
+      allow list: if (isSignedIn() && (isAdmin() || getUserRole() == 'Receptionist')) || resource.data.showOnWebsite == true;
       allow write: if isAdmin() || isOwner(staffId);
       match /payroll/{configId} {
         allow read, write: if isFinanceStaff() || isAdmin();
@@ -141,13 +139,15 @@ service cloud.firestore {
     }
 
     match /announcements_v2/{announcementId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isSignedIn() || 'Everybody' in resource.data.audience;
       allow write: if isAdmin() || getUserRole() == 'Secretary';
     }
 
     // Secretary role explicitly blocked from listing/reading admission data per user request
     match /admissionApplications/{appId} {
-      allow read, write, list: if isAdmin();
+      allow read, write, list: if isAdmin() || isSuperAdmin();
+      allow create: if true;
+      allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
     }
 
     // =========================================================

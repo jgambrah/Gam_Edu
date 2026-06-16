@@ -434,6 +434,7 @@ export type Student = {
     transportBillingModel?: 'Daily' | 'Termly';
     canteenBillingMode?: 'Daily' | 'Termly' | 'None';
     schoolId?: string;
+    biometricId?: string;
 };
 
 export type Class = {
@@ -1232,5 +1233,45 @@ export interface GlobalLeaderboardEntry {
     total_quizzes_completed: number;
     schoolId: string;
 }
+
+export interface Budget {
+    id: string;
+    schoolId: string;
+    name: string;
+    fiscalYear: string;
+    term: string;
+    startDate: any; // Firestore Timestamp
+    endDate: any;   // Firestore Timestamp
+    totalBudgetedRevenue: number;
+    totalBudgetedExpenses: number;
+    status: 'Draft' | 'Awaiting Review' | 'Approved' | 'Rejected' | 'Closed';
+    createdAt: any;
+    createdBy: string;
+    updatedAt?: any;
+    aiInsight?: string;
+}
+
+export interface BudgetItem {
+    id: string;
+    budgetId: string;
+    schoolId: string;
+    accountId: string;
+    accountCode: string;
+    accountName: string;
+    accountType: 'Revenue' | 'Expense';
+    budgetedAmount: number;
+    createdAt: any;
+}
+
+export const budgetFormSchema = z.object({
+    name: z.string().min(3, "Budget name must be at least 3 characters."),
+    fiscalYear: z.string().min(1, "Please select an academic year."),
+    term: z.string().min(1, "Please select a term."),
+    startDate: z.date({ required_error: "Start date is required." }),
+    endDate: z.date({ required_error: "End date is required." }),
+}).refine(data => data.endDate >= data.startDate, {
+    message: "End date cannot be before the start date.",
+    path: ["endDate"],
+});
 
 

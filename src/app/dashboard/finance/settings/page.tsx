@@ -360,6 +360,99 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
     );
 }
 
+// --- Budget Control Policy Settings Component ---
+const budgetSettingsSchema = z.object({
+    policy: z.enum(['warning', 'block', 'override'])
+});
+
+function BudgetPolicySettings({ schoolId }: { schoolId: string }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { profile } = useRole();
+    const { toast } = useToast();
+    const [isSaving, setIsSaving] = useState(false);
+
+    const settingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId, 'rates', 'budget') : null, [firestore, schoolId]);
+    const { data: settings, isLoading } = useDoc(settingsRef);
+
+    const form = useForm<z.infer<typeof budgetSettingsSchema>>({
+        resolver: zodResolver(budgetSettingsSchema),
+        defaultValues: { policy: 'warning' }
+    });
+
+    useEffect(() => {
+        if (settings && settings.policy) {
+            form.setValue('policy', settings.policy);
+        }
+    }, [settings, form]);
+
+    const handleSave = (values: z.infer<typeof budgetSettingsSchema>) => {
+        if (!firestore || !settingsRef) return;
+        
+        setIsSaving(true);
+        const data = { policy: values.policy, updatedAt: serverTimestamp() };
+        
+        setDoc(settingsRef, data, { merge: true })
+          .then(async () => {
+            toast({ title: 'Success', description: 'Budget exceeded control policy has been updated.' });
+            await logAuditEvent({
+                firestore,
+                schoolId,
+                userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
+                action: 'UPDATE_BUDGET_SETTINGS',
+                details: `Updated budget control policy to: ${values.policy}`
+            });
+          })
+          .catch((error: any) => {
+            toast({ variant: 'destructive', title: "Update Failed", description: error.message });
+          })
+          .finally(() => {
+            setIsSaving(false);
+          });
+    };
+
+    return (
+        <Card className="border-t-4 border-t-amber-500 shadow-sm flex flex-col justify-between">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl"><ListChecks className="text-amber-500"/> Budget Control Policy</CardTitle>
+                <CardDescription>Determine how the system handles payment vouchers that exceed the allocated budget.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-grow">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSave)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="policy"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Exceeded Budget Action</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-white border-2">
+                                                <SelectValue placeholder="Select policy..." />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="warning">Soft Warning (Notify but allow payment)</SelectItem>
+                                            <SelectItem value="block">Hard Block (Completely stop transaction)</SelectItem>
+                                            <SelectItem value="override">Director Override (Hold voucher for approval)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <Button type="submit" disabled={isSaving || isLoading} className="w-full h-12 font-bold bg-amber-600 hover:bg-amber-700 mt-4 text-white">
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                            Save Policy Setting
+                        </Button>
+                    </form>
+                </Form>
+            </CardContent>
+        </Card>
+    );
+}
+
 // --- Retrospective Billing Component ---
 function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
@@ -592,7 +685,10 @@ export default function FinancialSettingsPage() {
         
         <div className="grid lg:grid-cols-2 gap-6">
             <CanteenSettings schoolId={schoolId} />
-            <TransportSettings schoolId={schoolId} />
+            <div className="space-y-6">
+                <TransportSettings schoolId={schoolId} />
+                <BudgetPolicySettings schoolId={schoolId} />
+            </div>
         </div>
         
         <div className="space-y-6">

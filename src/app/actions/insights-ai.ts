@@ -63,3 +63,53 @@ export async function generateClassInsightsAction(
     return { success: false, error: `AI Error: ${e.message || "Could not generate insights."}` };
   }
 }
+
+/**
+ * Server action to generate operational budget and variance analysis reports.
+ */
+export async function generateBudgetInsightsAction(
+  schoolId: string,
+  budgetName: string,
+  fiscalYear: string,
+  term: string,
+  budgetItemsData: { accountCode: string; accountName: string; accountType: 'Revenue' | 'Expense'; budgetedAmount: number; actual: number; variance: number; percent: number }[]
+) {
+  if (!schoolId) return { success: false, error: "School ID missing" };
+
+  // 1. Check Credits (Cost: 5 credits per analysis)
+  const creditRes = await checkAndSpendCredits(schoolId, 5);
+  if (!creditRes.success) return { success: false, error: "Not enough AI credits to run analysis." };
+
+  try {
+    const prompt = `
+      You are an expert school financial consultant. Analyze the following budget performance and variance analysis data for "${budgetName}" (${term}, Fiscal Year ${fiscalYear}).
+      
+      Variance Data:
+      ${JSON.stringify(budgetItemsData)}
+      
+      Please provide a brief, professional financial analysis report containing:
+      1. General Performance Summary: Overall evaluation of revenues and expenses.
+      2. Significant Variances (Revenue & Expense): Highlight the key areas where the school is significantly under/over budget (favorable or unfavorable).
+      3. Actionable Financial Advice: Suggest 2-3 specific recommendations for adjusting spending, maximizing collection of fees, or optimizing resources for the next period.
+      
+      Format with clear headings, bold text, and bullet points. Keep it professional, constructive, and practical.
+    `;
+
+    const response = await ai.generate({
+      model: 'googleai/gemini-3-flash-preview',
+      prompt: prompt,
+      config: { temperature: 0.4 }
+    });
+
+    const text = response.text;
+    
+    if (!text) {
+        throw new Error("AI Service returned an empty response.");
+    }
+
+    return { success: true, text: text.trim() };
+  } catch (e: any) {
+    console.error("AI Budget Insights Error:", e);
+    return { success: false, error: `AI Error: ${e.message || "Could not generate insights."}` };
+  }
+}

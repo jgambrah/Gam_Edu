@@ -53,7 +53,7 @@ function GeneralLedger({
     accounts, 
     journals 
 }: { 
-    accounts: Account[], 
+    accounts: any[], 
     journals: JournalEntry[] 
 }) {
     const [selectedAccountId, setSelectedAccountId] = useState<string>('all');
@@ -162,8 +162,38 @@ function GeneralLedger({
 
 // --- COMPONENT: Trial Balance ---
 function TrialBalance({ data }: { data: AccountBalance[] }) {
-    const totalDebit = data.reduce((sum, a) => sum + a.debit, 0);
-    const totalCredit = data.reduce((sum, a) => sum + a.credit, 0);
+    const rows = useMemo(() => {
+        return data.map(account => {
+            const balance = account.net;
+            const isDebitNature = ['Asset', 'Expense'].includes(account.type);
+            
+            let debit = 0;
+            let credit = 0;
+
+            if (isDebitNature) {
+                if (balance >= 0) {
+                    debit = balance;
+                } else {
+                    credit = -balance;
+                }
+            } else {
+                if (balance <= 0) {
+                    credit = -balance;
+                } else {
+                    debit = balance;
+                }
+            }
+
+            return {
+                ...account,
+                displayDebit: debit,
+                displayCredit: credit
+            };
+        });
+    }, [data]);
+
+    const totalDebit = useMemo(() => rows.reduce((sum, r) => sum + r.displayDebit, 0), [rows]);
+    const totalCredit = useMemo(() => rows.reduce((sum, r) => sum + r.displayCredit, 0), [rows]);
     const isBalanced = Math.abs(totalDebit - totalCredit) < 0.1;
 
     return (
@@ -183,25 +213,28 @@ function TrialBalance({ data }: { data: AccountBalance[] }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {data.sort((a,b) => a.code.localeCompare(b.code)).map(account => {
-                            const balance = account.net;
-                            const isDebitNature = ['Asset', 'Expense'].includes(account.type);
-                            
-                            let debit = 0;
-                            let credit = 0;
-
-                            if (isDebitNature) {
-                                debit = balance;
-                            } else {
-                                credit = -balance;
+                        {rows.sort((a,b) => a.code.localeCompare(b.code)).map(account => {
+                            if (account.displayDebit === 0 && account.displayCredit === 0) {
+                                return (
+                                    <TableRow key={account.id}>
+                                        <TableCell className="font-mono text-xs">{account.code}</TableCell>
+                                        <TableCell>{account.name}</TableCell>
+                                        <TableCell className="text-right">-</TableCell>
+                                        <TableCell className="text-right">-</TableCell>
+                                    </TableRow>
+                                );
                             }
 
                             return (
                                 <TableRow key={account.id}>
                                     <TableCell className="font-mono text-xs">{account.code}</TableCell>
                                     <TableCell>{account.name}</TableCell>
-                                    <TableCell className="text-right">{debit > 0 ? `GH₵${debit.toFixed(2)}` : '-'}</TableCell>
-                                    <TableCell className="text-right">{credit > 0 ? `GH₵${credit.toFixed(2)}` : '-'}</TableCell>
+                                    <TableCell className="text-right">
+                                        {account.displayDebit > 0 ? `GH₵${account.displayDebit.toFixed(2)}` : '-'}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {account.displayCredit > 0 ? `GH₵${account.displayCredit.toFixed(2)}` : '-'}
+                                    </TableCell>
                                 </TableRow>
                             );
                         })}
@@ -401,26 +434,68 @@ export default function FinancialReportsPage() {
             return d >= start && d <= end;
         });
 
-        const balances: AccountBalance[] = accounts.map(acc => {
+        // Track virtual accounts from journal entries that are not in the main accounts chart
+        const journalAccountMap = new Map<string, { name: string; type: string }>();
+        filteredJournals.forEach(j => {
+            j.lines.forEach(l => {
+                if (!journalAccountMap.has(l.accountId)) {
+                    let type = 'Expense';
+                    if (l.accountId.includes('VAT') || l.accountId.toLowerCase().includes('asset') || l.accountId.includes('DEFAULT-VAT')) {
+                        type = 'Asset';
+                    } else if (l.accountId.includes('WHT') || l.accountId.toLowerCase().includes('payable') || l.accountId.toLowerCase().includes('liability') || l.accountId.includes('DEFAULT-WHT')) {
+                        type = 'Liability';
+                    }
+                    journalAccountMap.set(l.accountId, {
+                        name: l.accountName || l.accountId,
+                        type: type
+                    });
+                }
+            });
+        });
+
+        // Always ensure default virtual accounts are defined in journalAccountMap
+        if (!journalAccountMap.has('VAT-INPUT-DEFAULT')) {
+            journalAccountMap.set('VAT-INPUT-DEFAULT', { name: 'VAT Input', type: 'Asset' });
+        }
+        if (!journalAccountMap.has('WHT-PAYABLE-DEFAULT')) {
+            journalAccountMap.set('WHT-PAYABLE-DEFAULT', { name: 'WHT Payable', type: 'Liability' });
+        }
+
+        const allAccountIds = new Set([
+            ...accounts.map(a => a.id),
+            ...journalAccountMap.keys()
+        ]);
+
+        const balances: AccountBalance[] = Array.from(allAccountIds).map(id => {
+            const officialAcc = accounts.find(a => a.id === id);
+            const journalAcc = journalAccountMap.get(id);
+
+            const accName = officialAcc?.name || journalAcc?.name || id;
+            const accCode = officialAcc?.code || (id.includes('VAT') ? '1999' : id.includes('WHT') ? '2999' : '9999');
+            const accType = officialAcc?.type || journalAcc?.type || 'Expense';
+
             let debit = 0;
             let credit = 0;
 
             filteredJournals.forEach(j => {
-                const line = j.lines.find(l => l.accountId === acc.id);
+                const line = j.lines.find(l => l.accountId === id);
                 if (line) {
                     debit += line.debit;
                     credit += line.credit;
                 }
             });
 
-            let net = 0;
-            if (['Asset', 'Expense'].includes(acc.type)) {
-                net = debit - credit;
-            } else {
-                net = -(credit - debit); 
-            }
+            const net = debit - credit;
 
-            return { ...acc, debit, credit, net };
+            return {
+                id,
+                code: accCode,
+                name: accName,
+                type: accType,
+                debit,
+                credit,
+                net
+            };
         });
 
         const revenue = Math.abs(balances.filter(a => a.type === 'Revenue').reduce((sum, a) => sum + (a.net < 0 ? a.net : 0), 0));
@@ -460,7 +535,7 @@ export default function FinancialReportsPage() {
                     </TabsList>
 
                     <TabsContent value="ledger" className="mt-4">
-                        <GeneralLedger accounts={accounts || []} journals={allJournals || []} />
+                        <GeneralLedger accounts={calculatedBalances} journals={allJournals || []} />
                     </TabsContent>
                     <TabsContent value="tb" className="mt-4"><TrialBalance data={calculatedBalances} /></TabsContent>
                     <TabsContent value="pl" className="mt-4"><IncomeStatement data={calculatedBalances} /></TabsContent>
