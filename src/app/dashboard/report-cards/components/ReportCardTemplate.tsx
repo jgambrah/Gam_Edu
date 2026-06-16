@@ -4,6 +4,7 @@ import React from 'react';
 import { ShieldCheck } from 'lucide-react';
 import SignatureStamp from '@/components/shared/SignatureStamp';
 import { format, parseISO, isValid } from 'date-fns';
+import { DEFAULT_GRADING_SYSTEM, type GradeBracket } from '@/lib/utils';
 
 interface ReportCardTemplateProps {
     data: any;
@@ -117,10 +118,12 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                         <span className="text-slate-400 font-black uppercase text-[10px] tracking-widest">Attendance</span>
                         <span className="font-bold">{data.studentPresentDays || 0} / {data.totalClassDays || 0} Days</span>
                     </div>
-                    <div className="flex justify-between border-b border-slate-200 pb-1">
-                        <span className="text-slate-400 font-black uppercase text-[10px] tracking-widest">Rank in Class</span>
-                        <span className="font-black underline" style={{ color: primaryTheme }}>{data.classPosition || '-'} of {data.totalStudents || 0}</span>
-                    </div>
+                    {(data.reportCardPositionMode || 'both') === 'both' && (
+                        <div className="flex justify-between border-b border-slate-200 pb-1">
+                            <span className="text-slate-400 font-black uppercase text-[10px] tracking-widest">Rank in Class</span>
+                            <span className="font-black underline" style={{ color: primaryTheme }}>{data.classPosition || '-'} of {data.totalStudents || 0}</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* ── NEXT TERM ALERT ── */}
@@ -133,73 +136,85 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 </div>
 
                 {/* ── GRADES TABLE ── */}
-                <table className="w-full text-xs mb-8 border-collapse rounded-xl overflow-hidden shadow-sm" style={{ border: `2px solid ${secondaryTheme}` }}>
-                    <thead>
-                        <tr style={{ backgroundColor: secondaryTheme, color: '#ffffff' }}>
-                            <th className="p-3 text-left w-[25%] uppercase font-black text-[10px] tracking-widest">Subject</th>
-                            <th className="p-3 text-center w-[10%] uppercase font-black text-[10px] tracking-widest">CA ({caWeight})</th>
-                            <th className="p-3 text-center w-[10%] uppercase font-black text-[10px] tracking-widest">Exam ({examWeight})</th>
-                            <th className="p-3 text-center w-[10%] uppercase font-black text-[10px] tracking-widest bg-black/10">Total</th>
-                            <th className="p-3 text-center w-[8%] uppercase font-black text-[10px] tracking-widest">Avg</th>
-                            <th className="p-3 text-center w-[8%] uppercase font-black text-[10px] tracking-widest">Pos</th>
-                            <th className="p-3 text-center w-[8%] uppercase font-black text-[10px] tracking-widest">Grd</th>
-                            <th className="p-3 text-left w-[21%] uppercase font-black text-[10px] tracking-widest">Remark</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.rows?.map((row: any, i: number) => (
-                            <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                                <td className="p-3 font-bold uppercase border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.subjectName}</td>
-                                <td className="p-3 text-center border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.ca}</td>
-                                <td className="p-3 text-center border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.exam}</td>
-                                <td className="p-3 text-center font-black bg-slate-100/50 border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.total}</td>
-                                <td className="p-3 text-center text-slate-400 border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.classAverage}</td>
-                                <td className="p-3 text-center font-bold border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.position}</td>
-                                <td className="p-3 text-center font-black border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.grade}</td>
-                                <td className="p-3 italic text-slate-600 text-[10px]">{row.autoRemark}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                {(() => {
+                    const showSubjectPosition = (data.reportCardPositionMode || 'both') !== 'none';
+                    const subjectWidth = showSubjectPosition ? 'w-[25%]' : 'w-[33%]';
+                    return (
+                        <table className="w-full text-xs mb-8 border-collapse rounded-xl overflow-hidden shadow-sm" style={{ border: `2px solid ${secondaryTheme}` }}>
+                            <thead>
+                                <tr style={{ backgroundColor: secondaryTheme, color: '#ffffff' }}>
+                                    <th className={`p-3 text-left ${subjectWidth} uppercase font-black text-[10px] tracking-widest`}>Subject</th>
+                                    <th className="p-3 text-center w-[10%] uppercase font-black text-[10px] tracking-widest">CA ({caWeight})</th>
+                                    <th className="p-3 text-center w-[10%] uppercase font-black text-[10px] tracking-widest">Exam ({examWeight})</th>
+                                    <th className="p-3 text-center w-[10%] uppercase font-black text-[10px] tracking-widest bg-black/10">Total</th>
+                                    <th className="p-3 text-center w-[8%] uppercase font-black text-[10px] tracking-widest">Avg</th>
+                                    {showSubjectPosition && (
+                                        <th className="p-3 text-center w-[8%] uppercase font-black text-[10px] tracking-widest">Pos</th>
+                                    )}
+                                    <th className="p-3 text-center w-[8%] uppercase font-black text-[10px] tracking-widest">Grd</th>
+                                    <th className="p-3 text-left w-[21%] uppercase font-black text-[10px] tracking-widest">Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.rows?.map((row: any, i: number) => (
+                                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                                        <td className="p-3 font-bold uppercase border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.subjectName}</td>
+                                        <td className="p-3 text-center border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.ca}</td>
+                                        <td className="p-3 text-center border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.exam}</td>
+                                        <td className="p-3 text-center font-black bg-slate-100/50 border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.total}</td>
+                                        <td className="p-3 text-center text-slate-400 border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.classAverage}</td>
+                                        {showSubjectPosition && (
+                                            <td className="p-3 text-center font-bold border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.position}</td>
+                                        )}
+                                        <td className="p-3 text-center font-black border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.grade}</td>
+                                        <td className="p-3 italic text-slate-600 text-[10px]">{row.autoRemark}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    );
+                })()}
 
-                {/* OFFICIAL GES GRADING KEY */}
-                <div className="mb-4 mt-2">
-                    <h4 className="text-[10px] font-black uppercase mb-1 border-b-2 border-slate-800 w-max pr-4" style={{ color: secondaryTheme }}>
-                        Official GES Grading Scale
-                    </h4>
-                    <div className="grid grid-cols-6 text-[9px] border-2 border-slate-800 bg-slate-50 divide-x divide-slate-300">
-                        <div className="p-1.5 text-center flex flex-col">
-                            <span className="font-black text-slate-800">80 - 100%</span>
-                            <span className="font-bold text-blue-700">A</span>
-                            <span className="italic text-slate-500">Excellent</span>
+                {/* OFFICIAL GRADING KEY */}
+                {(() => {
+                    const gradingScale: GradeBracket[] = data.gradingSystem || DEFAULT_GRADING_SYSTEM;
+                    // Sort descending by minScore to look professional in the header key
+                    const sortedScale = [...gradingScale].sort((a, b) => b.minScore - a.minScore);
+                    
+                    const getGradeColorClass = (grade: string) => {
+                        const g = grade.toUpperCase();
+                        if (g.includes('A') || g.includes('*')) return 'text-blue-700';
+                        if (g.includes('B')) return 'text-green-700';
+                        if (g.includes('C')) return 'text-yellow-600';
+                        if (g.includes('D')) return 'text-orange-500';
+                        if (g.includes('E')) return 'text-slate-500';
+                        if (g.includes('F')) return 'text-red-600';
+                        return 'text-slate-600';
+                    };
+                    
+                    return (
+                        <div className="mb-4 mt-2">
+                            <h4 className="text-[10px] font-black uppercase mb-1 border-b-2 border-slate-800 w-max pr-4" style={{ color: secondaryTheme }}>
+                                Grading Scale Key
+                            </h4>
+                            <div 
+                                className="grid border-2 border-slate-800 bg-slate-50 divide-x divide-slate-300 text-[9px]"
+                                style={{ gridTemplateColumns: `repeat(${sortedScale.length}, minmax(0, 1fr))` }}
+                            >
+                                {sortedScale.map((bracket, index) => {
+                                    const isFail = bracket.grade.toUpperCase().includes('F');
+                                    return (
+                                        <div key={index} className={`p-1.5 text-center flex flex-col ${isFail ? 'bg-red-50' : ''}`}>
+                                            <span className="font-black text-slate-800">{bracket.minScore} - {bracket.maxScore}%</span>
+                                            <span className={`font-bold ${getGradeColorClass(bracket.grade)}`}>{bracket.grade}</span>
+                                            <span className="italic text-slate-500">{bracket.remark}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
-                        <div className="p-1.5 text-center flex flex-col">
-                            <span className="font-black text-slate-800">70 - 79%</span>
-                            <span className="font-bold text-green-700">B</span>
-                            <span className="italic text-slate-500">Very Good</span>
-                        </div>
-                        <div className="p-1.5 text-center flex flex-col">
-                            <span className="font-black text-slate-800">60 - 69%</span>
-                            <span className="font-bold text-yellow-600">C</span>
-                            <span className="italic text-slate-500">Good</span>
-                        </div>
-                        <div className="p-1.5 text-center flex flex-col">
-                            <span className="font-black text-slate-800">50 - 59%</span>
-                            <span className="font-bold text-orange-500">D</span>
-                            <span className="italic text-slate-500">Credit</span>
-                        </div>
-                        <div className="p-1.5 text-center flex flex-col">
-                            <span className="font-black text-slate-800">40 - 49%</span>
-                            <span className="font-bold text-slate-500">E</span>
-                            <span className="italic text-slate-500">Pass</span>
-                        </div>
-                        <div className="p-1.5 text-center flex flex-col bg-red-50">
-                            <span className="font-black text-slate-800">0 - 39%</span>
-                            <span className="font-bold text-red-600">F</span>
-                            <span className="italic text-slate-500">Fail</span>
-                        </div>
-                    </div>
-                </div>
+                    );
+                })()}
 
                 {/* ── REMARKS ── */}
                 <div className="grid grid-cols-2 gap-6 mb-12">

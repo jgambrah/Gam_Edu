@@ -4,16 +4,8 @@ import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { Assessment, Student } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
+import { getGradeFromScale } from '@/lib/utils';
 
-// Helper for Grading
-function getGrade(percentage: number) {
-    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
-    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
-    if (percentage >= 60) return { grade: 'C', remark: 'Good' };
-    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
-    if (percentage > 0) return { grade: 'F', remark: 'Fail' };
-    return { grade: 'N/A', remark: '' };
-}
 
 // Professional Ordinal Formatter
 function formatOrdinal(n: number): string {
@@ -142,10 +134,10 @@ export const HTMLReportCard = ({
                 classAvg, 
                 rank: subRank,
                 totalSubStudents,
-                ...getGrade(totalPercent) 
+                ...getGradeFromScale(totalPercent, schoolProfile?.gradingSystem) 
             };
         });
-    }, [assessments, student.uid, subjects, globalSubjectStats, currentCaWeight, currentExamWeight]);
+    }, [assessments, student.uid, subjects, globalSubjectStats, currentCaWeight, currentExamWeight, schoolProfile]);
 
 
     const overallAverage = reportData.length > 0 

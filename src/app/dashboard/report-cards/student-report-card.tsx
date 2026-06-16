@@ -64,7 +64,9 @@ export function StudentReportCard({ student, term, year, savedReport }: { studen
                             <p><span className="font-bold">Term:</span> {savedReport.term} ({savedReport.academicYear})</p>
                         </div>
                         <div className="text-right space-y-1">
-                            <p><span className="font-bold">Position:</span> {savedReport.classPosition} of {savedReport.totalStudents}</p>
+                            {(savedReport.reportCardPositionMode || 'both') === 'both' && (
+                                <p><span className="font-bold">Position:</span> {savedReport.classPosition} of {savedReport.totalStudents}</p>
+                            )}
                             <p><span className="font-bold">Average:</span> {savedReport.overallAverage}%</p>
                             <p><span className="font-bold">Attendance:</span> {savedReport.studentPresentDays} / {savedReport.totalClassDays}</p>
                         </div>

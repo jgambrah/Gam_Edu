@@ -122,6 +122,42 @@ export default function MigrationHubPage() {
     });
   };
 
+  const downloadTemplate = (type: MigrationTab) => {
+    let csvContent = "";
+    let filename = "";
+
+    if (type === 'students') {
+      csvContent = "Email,FirstName,LastName,Class,Gender\n" +
+                   "john.doe@school.com,John,Doe,Basic 1,Male\n" +
+                   "jane.smith@school.com,Jane,Smith,Basic 2,Female\n";
+      filename = "student_import_template.csv";
+    } else if (type === 'parents') {
+      csvContent = "Email,FirstName,LastName,Phone,StudentEmail\n" +
+                   "parent.doe@gmail.com,Robert,Doe,0240000000,john.doe@school.com\n" +
+                   "parent.smith@gmail.com,Mary,Smith,0500000000,jane.smith@school.com\n";
+      filename = "parent_import_template.csv";
+    } else if (type === 'grades') {
+      csvContent = "Email,SubjectName,CA,Exam,Year,Term\n" +
+                   "john.doe@school.com,Mathematics,30,70,2024-2025,First Term\n" +
+                   "jane.smith@school.com,English Language,25,65,2024-2025,First Term\n";
+      filename = "grade_import_template.csv";
+    } else if (type === 'balances') {
+      csvContent = "Email,Balance\n" +
+                   "john.doe@school.com,500.00\n" +
+                   "jane.smith@school.com,250.50\n";
+      filename = "arrears_import_template.csv";
+    }
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // --- HANDLERS: STUDENTS ---
 
   const handleAiExtract = async () => {
@@ -481,6 +517,9 @@ export default function MigrationHubPage() {
                       <p className="text-sm font-bold text-slate-600">Upload Student CSV</p>
                       <input type="file" accept=".csv" onChange={(e) => handleFileUpload(e, 'students')} className="absolute inset-0 opacity-0 cursor-pointer" />
                     </div>
+                    <Button variant="link" size="sm" onClick={() => downloadTemplate('students')} className="w-full text-xs font-bold text-indigo-650 flex items-center justify-center gap-1.5 hover:text-indigo-850">
+                      <FileSpreadsheet className="h-3.5 w-3.5"/> Download Student Template
+                    </Button>
                     <Button variant="ghost" className="w-full text-indigo-600 font-black uppercase text-[10px]" onClick={() => setShowTextPaste(true)}><Sparkles className="mr-2 h-3 w-3"/> AI Extract from Text</Button>
                   </div>
                 ) : (
@@ -541,6 +580,9 @@ export default function MigrationHubPage() {
                   <p className="text-sm font-bold text-slate-600">Upload Parent CSV</p>
                   <input type="file" accept=".csv" onChange={(e) => handleFileUpload(e, 'parents')} className="absolute inset-0 opacity-0 cursor-pointer" />
                 </div>
+                <Button variant="link" size="sm" onClick={() => downloadTemplate('parents')} className="w-full text-xs font-bold text-pink-650 flex items-center justify-center gap-1.5 hover:text-pink-850 mt-2">
+                  <FileSpreadsheet className="h-3.5 w-3.5"/> Download Parent Template
+                </Button>
               </CardContent>
             </Card>
             <Card className="lg:col-span-2 shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
@@ -590,6 +632,9 @@ export default function MigrationHubPage() {
                   <p className="text-sm font-bold text-slate-600">Upload Grades CSV</p>
                   <input type="file" accept=".csv" onChange={(e) => handleFileUpload(e, 'grades')} className="absolute inset-0 opacity-0 cursor-pointer" />
                 </div>
+                <Button variant="link" size="sm" onClick={() => downloadTemplate('grades')} className="w-full text-xs font-bold text-orange-650 flex items-center justify-center gap-1.5 hover:text-orange-850 mt-2">
+                  <FileSpreadsheet className="h-3.5 w-3.5"/> Download Grades Template
+                </Button>
               </CardContent>
             </Card>
             <Card className="lg:col-span-2 shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
@@ -639,6 +684,9 @@ export default function MigrationHubPage() {
                   <p className="text-sm font-bold text-slate-600">Upload Balance CSV</p>
                   <input type="file" accept=".csv" onChange={(e) => handleFileUpload(e, 'balances')} className="absolute inset-0 opacity-0 cursor-pointer" />
                 </div>
+                <Button variant="link" size="sm" onClick={() => downloadTemplate('balances')} className="w-full text-xs font-bold text-emerald-650 flex items-center justify-center gap-1.5 hover:text-emerald-850 mt-2">
+                  <FileSpreadsheet className="h-3.5 w-3.5"/> Download Arrears Template
+                </Button>
 
                 {balanceCsvData.length > 0 && (
                   <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 flex items-center justify-between">

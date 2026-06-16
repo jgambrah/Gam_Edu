@@ -24,10 +24,11 @@ import {
   CreditCard,
   DollarSign,
   MapPin,
-  Clock
+  Clock,
+  Trash2
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
+import { cn, DEFAULT_GRADING_SYSTEM, type GradeBracket } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -71,6 +72,8 @@ export default function SchoolProfilePage() {
   const [autoLockDebtors, setAutoLockDebtors] = useState(false);
   const [autoLockStudents, setAutoLockStudents] = useState(false);
   const [debtorLockThreshold, setDebtorLockThreshold] = useState(0);
+  const [reportCardPositionMode, setReportCardPositionMode] = useState<'both' | 'subject_only' | 'none'>('both');
+  const [gradingSystem, setGradingSystem] = useState<GradeBracket[]>([]);
 
   // Geofencing States
   const [schoolLat, setSchoolLat] = useState<number | ''>('');
@@ -109,6 +112,29 @@ export default function SchoolProfilePage() {
   const [termStartDate, setTermStartDate] = useState<Date | undefined>(undefined);
   const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
   const [nextTermDate, setNextTermDate] = useState<Date | undefined>(undefined);
+
+  const updateGradingBracket = (index: number, field: keyof GradeBracket, value: any) => {
+      const updated = [...gradingSystem];
+      if (field === 'minScore' || field === 'maxScore') {
+          updated[index] = { ...updated[index], [field]: Number(value) || 0 };
+      } else {
+          updated[index] = { ...updated[index], [field]: value };
+      }
+      setGradingSystem(updated);
+  };
+
+  const addGradingBracket = () => {
+      setGradingSystem([...gradingSystem, { minScore: 0, maxScore: 0, grade: '', remark: '' }]);
+  };
+
+  const deleteGradingBracket = (index: number) => {
+      const updated = gradingSystem.filter((_, i) => i !== index);
+      setGradingSystem(updated);
+  };
+
+  const resetGradingSystem = () => {
+      setGradingSystem(DEFAULT_GRADING_SYSTEM);
+  };
 
   useEffect(() => {
     if (profile) {
@@ -163,6 +189,8 @@ export default function SchoolProfilePage() {
         if (profile.nextTermDate) {
             setNextTermDate(typeof profile.nextTermDate === 'string' ? parseISO(profile.nextTermDate) : profile.nextTermDate.toDate());
         }
+        setReportCardPositionMode(profile.reportCardPositionMode || 'both');
+        setGradingSystem(profile.gradingSystem || DEFAULT_GRADING_SYSTEM);
     }
   }, [profile]);
 
@@ -252,6 +280,8 @@ export default function SchoolProfilePage() {
             paystackSecKey,
             enablePaystack,
             enableTransflow,
+            reportCardPositionMode,
+            gradingSystem,
             updatedAt: serverTimestamp()
         };
 
@@ -728,6 +758,115 @@ export default function SchoolProfilePage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2"><div className="flex justify-between"><Label className="font-black text-xs uppercase tracking-widest text-slate-500">CA Weight (%)</Label><span className="text-indigo-600 font-black">{caWeight}%</span></div><Input type="number" value={caWeight} onChange={e => { const val = parseInt(e.target.value) || 0; setCaWeight(val); setExamWeight(100 - val); }} min={0} max={100} className="h-12 border-2 rounded-xl font-bold"/></div>
                                 <div className="space-y-2"><div className="flex justify-between"><Label className="font-black text-xs uppercase tracking-widest text-slate-500">Exam Weight (%)</Label><span className="text-indigo-600 font-black">{examWeight}%</span></div><Input type="number" value={examWeight} onChange={e => { const val = parseInt(e.target.value) || 0; setExamWeight(val); setCaWeight(100 - val); }} min={0} max={100} className="h-12 border-2 rounded-xl font-bold"/></div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="font-black text-xs uppercase tracking-widest text-slate-500">Report Card Position Display Mode</Label>
+                                <Select value={reportCardPositionMode} onValueChange={(val: any) => setReportCardPositionMode(val)}>
+                                    <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold">
+                                        <SelectValue placeholder="Choose mode..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="both" className="font-semibold">Show Both (Overall Class Position & Subject Positions)</SelectItem>
+                                        <SelectItem value="subject_only" className="font-semibold">Show Subject Positions Only (Hide Overall Class Position)</SelectItem>
+                                        <SelectItem value="none" className="font-semibold">Hide Both (No positions on report card)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight mt-1">
+                                    Configure whether student ranks/positions are printed on official report transcripts.
+                                </p>
+                            </div>
+
+                            <div className="space-y-4 pt-2">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <Label className="font-black text-xs uppercase tracking-widest text-slate-500">Custom Grading Scale System</Label>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight mt-1">
+                                            Define the score ranges, letter grades, and auto-remarks displayed on report cards.
+                                        </p>
+                                    </div>
+                                    <Button type="button" variant="outline" size="sm" onClick={resetGradingSystem} className="rounded-lg font-bold text-xs h-8 border-2 border-slate-200">
+                                        Reset to Default
+                                    </Button>
+                                </div>
+
+                                <div className="bg-white p-4 rounded-[1.5rem] border-2 border-slate-200/60 space-y-3 shadow-sm">
+                                    <div className="grid grid-cols-12 gap-2 text-[9px] font-black uppercase tracking-wider text-slate-400 px-2">
+                                        <div className="col-span-3 text-center">Min Score (%)</div>
+                                        <div className="col-span-3 text-center">Max Score (%)</div>
+                                        <div className="col-span-2 text-center">Grade</div>
+                                        <div className="col-span-3 text-center">Remark</div>
+                                        <div className="col-span-1 text-center"></div>
+                                    </div>
+
+                                    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                                        {gradingSystem.map((bracket, index) => (
+                                            <div key={index} className="grid grid-cols-12 gap-2 items-center">
+                                                <div className="col-span-3">
+                                                    <Input 
+                                                        type="number" 
+                                                        value={bracket.minScore} 
+                                                        onChange={(e) => updateGradingBracket(index, 'minScore', e.target.value)} 
+                                                        min={0} max={100}
+                                                        className="h-10 border-2 rounded-lg font-bold text-xs text-center"
+                                                    />
+                                                </div>
+                                                <div className="col-span-3">
+                                                    <Input 
+                                                        type="number" 
+                                                        value={bracket.maxScore} 
+                                                        onChange={(e) => updateGradingBracket(index, 'maxScore', e.target.value)} 
+                                                        min={0} max={100}
+                                                        className="h-10 border-2 rounded-lg font-bold text-xs text-center"
+                                                    />
+                                                </div>
+                                                <div className="col-span-2">
+                                                    <Input 
+                                                        type="text" 
+                                                        value={bracket.grade} 
+                                                        onChange={(e) => updateGradingBracket(index, 'grade', e.target.value)} 
+                                                        className="h-10 border-2 rounded-lg font-bold text-xs text-center uppercase"
+                                                        placeholder="Grade"
+                                                    />
+                                                </div>
+                                                <div className="col-span-3">
+                                                    <Input 
+                                                        type="text" 
+                                                        value={bracket.remark} 
+                                                        onChange={(e) => updateGradingBracket(index, 'remark', e.target.value)} 
+                                                        className="h-10 border-2 rounded-lg font-semibold text-xs"
+                                                        placeholder="Remark"
+                                                    />
+                                                </div>
+                                                <div className="col-span-1 flex justify-center">
+                                                    <Button 
+                                                        type="button" 
+                                                        variant="ghost" 
+                                                        size="icon" 
+                                                        onClick={() => deleteGradingBracket(index)}
+                                                        className="h-9 w-9 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {gradingSystem.length === 0 && (
+                                            <div className="text-center py-6 text-xs text-slate-400 font-bold uppercase">
+                                                No grade brackets defined. Report cards will default to standard scale.
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <Button 
+                                        type="button" 
+                                        variant="outline" 
+                                        onClick={addGradingBracket} 
+                                        className="w-full border-dashed border-2 h-10 text-xs font-bold text-slate-500 hover:text-indigo-600 hover:border-indigo-300 rounded-xl mt-2 bg-slate-50/50"
+                                    >
+                                        + Add Grade Bracket
+                                    </Button>
+                                </div>
                             </div>
 
                             <div className="flex flex-row items-center justify-between rounded-2xl border-2 border-indigo-100 p-6 bg-white shadow-sm">

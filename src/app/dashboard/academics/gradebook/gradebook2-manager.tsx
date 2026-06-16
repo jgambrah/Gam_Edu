@@ -30,15 +30,8 @@ import { Assessment, FinancialRecord, Class, Student, Subject } from '@/lib/type
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent } from '@/lib/student-utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { getGradeFromScale } from '@/lib/utils';
 
-// --- HELPER: Grading Logic ---
-function getGrade(percentage: number) {
-    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
-    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
-    if (percentage >= 60) return { grade: 'C', remark: 'Good' };
-    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
-    return { grade: 'F', remark: 'Fail' };
-}
 
 // Professional Ordinal Formatter
 function formatOrdinal(n: number): string {
@@ -100,7 +93,8 @@ function StudentGradesDetail({
     term,
     year,
     caWeight,
-    examWeight
+    examWeight,
+    gradingScale
 }: { 
     student: Student; 
     allAssessments: Assessment[];
@@ -111,6 +105,7 @@ function StudentGradesDetail({
     year: string;
     caWeight: number;
     examWeight: number;
+    gradingScale?: any[];
 }) {
     // 1. GLOBAL STATS (The Fix: Calculate Weighted Averages for the whole class)
     const globalSubjectStats = useMemo(() => {
@@ -215,10 +210,10 @@ function StudentGradesDetail({
                 classAvg, 
                 rank: subRank,
                 totalSubStudents,
-                ...getGrade(totalPercent) 
+                ...getGradeFromScale(totalPercent, gradingScale) 
             };
         });
-    }, [allAssessments, student.uid, allSubjects, globalSubjectStats, caWeight, examWeight]);
+    }, [allAssessments, student.uid, allSubjects, globalSubjectStats, caWeight, examWeight, gradingScale]);
 
 
     const overallAverage = reportData.length > 0 
@@ -550,6 +545,7 @@ export default function GradebookManager() {
                                                 year={selectedYear}
                                                 caWeight={effectiveCaWeight}
                                                 examWeight={effectiveExamWeight}
+                                                gradingScale={schoolSettings?.gradingSystem}
                                             />
                                         </TabsContent>
 

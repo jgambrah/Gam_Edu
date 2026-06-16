@@ -220,6 +220,7 @@ export type ReportCard = {
     classTeacherSignatureUrl?: string;
     headmasterSignatureUrl?: string;
     digitalFingerprint?: string;
+    reportCardPositionMode?: 'both' | 'subject_only' | 'none';
 }
 
 // Timetable Schemas

@@ -52,7 +52,7 @@ function ReportListForStudent({ student }: { student: Student }) {
                     <div>
                         <p className="font-bold text-slate-900">{report.academicYear} - {report.term}</p>
                         <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-1">
-                            Average: <span className="text-indigo-600">{(report as any).overallAverage || report.finalPercentage || 0}%</span> • Rank: <span className="text-indigo-600">{report.classPosition}</span>
+                            Average: <span className="text-indigo-600">{(report as any).overallAverage || report.finalPercentage || 0}%</span>{(report.reportCardPositionMode || 'both') === 'both' && <> • Rank: <span className="text-indigo-600">{report.classPosition}</span></>}
                         </p>
                     </div>
                     <Dialog>

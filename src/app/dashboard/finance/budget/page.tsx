@@ -39,6 +39,7 @@ import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppLogo } from '@/components/icons/app-logo';
 import { SearchableAccountSelect } from '@/components/ui/account-select';
+import Papa from 'papaparse';
 
 import { Account, JournalEntry, Budget, BudgetItem, budgetFormSchema } from '@/lib/types';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -251,6 +252,111 @@ export default function BudgetPage() {
       totalActualExp,
     };
   }, [activeBudget, currentBudgetItems, journals]);
+
+  // Download CSV Template for Bulk Upload
+  const handleDownloadTemplate = () => {
+    if (!budgetedAccounts) return;
+    let csvContent = "AccountCode,AccountName,Amount\n";
+    budgetedAccounts.forEach(acc => {
+      csvContent += `"${acc.code}","${acc.name.replace(/"/g, '""')}",0.00\n`;
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `budget_template_${format(new Date(), 'yyyyMMdd')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Parse CSV file and load to budget list
+  const handleBulkUpload = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const parsedRows = results.data as any[];
+        let addedCount = 0;
+        let errors: string[] = [];
+        const newItems: any[] = [];
+
+        parsedRows.forEach((row, i) => {
+          const code = (row.AccountCode || row.accountcode || '').trim();
+          const amountStr = (row.Amount || row.amount || '').trim();
+          
+          if (!code) return; // skip if code is empty
+
+          const amount = parseFloat(amountStr);
+          if (isNaN(amount) || amount <= 0) {
+            errors.push(`Row ${i + 2}: Invalid or non-positive amount (${amountStr})`);
+            return;
+          }
+
+          const acc = budgetedAccounts.find(a => a.code === code);
+          if (!acc) {
+            errors.push(`Row ${i + 2}: Account code "${code}" not found or not a Revenue/Expense account.`);
+            return;
+          }
+
+          newItems.push({
+            accountId: acc.id,
+            accountCode: acc.code,
+            accountName: acc.name,
+            accountType: acc.type as 'Revenue' | 'Expense',
+            budgetedAmount: amount,
+          });
+          addedCount++;
+        });
+
+        if (errors.length > 0) {
+          toast({
+            variant: 'destructive',
+            title: "Bulk Upload Warnings",
+            description: `${errors.length} rows failed to upload. Check console for details.`,
+          });
+          console.warn("Bulk Upload Errors:", errors);
+        }
+
+        if (newItems.length > 0) {
+          if (isEdit) {
+            setEditTempItems(prev => {
+              const filtered = prev.filter(item => !newItems.some(n => n.accountId === item.accountId));
+              return [...filtered, ...newItems];
+            });
+          } else {
+            setTempItems(prev => {
+              const filtered = prev.filter(item => !newItems.some(n => n.accountId === item.accountId));
+              return [...filtered, ...newItems];
+            });
+          }
+          toast({
+            title: "Bulk Upload Complete",
+            description: `Successfully loaded ${addedCount} budget line items.`,
+          });
+        } else {
+          toast({
+            variant: 'destructive',
+            title: "Bulk Upload Failed",
+            description: "No valid budget line items were found in the uploaded file.",
+          });
+        }
+        
+        e.target.value = '';
+      },
+      error: (error) => {
+        toast({
+          variant: 'destructive',
+          title: "CSV Parse Error",
+          description: error.message,
+        });
+      }
+    });
+  };
 
   // Add line item to temporary list in form
   const addTempItem = () => {
@@ -783,6 +889,30 @@ export default function BudgetPage() {
                       </Button>
                     </div>
 
+                    {/* BULK UPLOAD SECTION */}
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4 text-xs font-bold text-slate-700">
+                      <div className="space-y-1 w-full md:w-auto flex-grow">
+                        <Label className="font-black text-xs text-slate-650 flex items-center gap-1.5"><Plus className="h-4 w-4 text-indigo-600"/> Bulk Upload Lines (CSV)</Label>
+                        <Input 
+                          type="file" 
+                          accept=".csv" 
+                          onChange={(e) => handleBulkUpload(e, false)} 
+                          className="bg-white rounded-xl cursor-pointer text-xs font-bold py-1.5 h-10 border border-slate-200 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:bg-slate-100 file:text-slate-800 file:font-bold hover:file:bg-slate-200"
+                        />
+                      </div>
+                      <div className="text-slate-400 font-semibold md:max-w-[320px] text-left leading-relaxed">
+                        Upload a CSV containing columns: <code className="font-mono text-indigo-600 bg-white px-1 py-0.5 rounded border border-slate-200">AccountCode,Amount</code>
+                      </div>
+                      <Button 
+                        type="button" 
+                        variant="link" 
+                        onClick={handleDownloadTemplate} 
+                        className="text-xs text-indigo-650 hover:text-indigo-850 font-bold p-0 h-auto shrink-0 flex items-center gap-1"
+                      >
+                        <Download className="h-3.5 w-3.5"/> Download Template CSV
+                      </Button>
+                    </div>
+
                     <div className="border border-slate-200 rounded-2xl overflow-hidden max-h-[250px] overflow-y-auto bg-white shadow-inner">
                       <Table>
                         <TableHeader className="bg-slate-50">
@@ -938,6 +1068,30 @@ export default function BudgetPage() {
 
                       <Button type="button" onClick={addEditTempItem} variant="secondary" className="w-full bg-slate-800 text-white font-bold hover:bg-slate-900 rounded-xl h-10">
                         <Plus className="mr-1 h-4 w-4" /> Add Line
+                      </Button>
+                    </div>
+
+                    {/* BULK UPLOAD SECTION */}
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4 text-xs font-bold text-slate-700">
+                      <div className="space-y-1 w-full md:w-auto flex-grow">
+                        <Label className="font-black text-xs text-slate-650 flex items-center gap-1.5"><Plus className="h-4 w-4 text-indigo-600"/> Bulk Upload Lines (CSV)</Label>
+                        <Input 
+                          type="file" 
+                          accept=".csv" 
+                          onChange={(e) => handleBulkUpload(e, true)} 
+                          className="bg-white rounded-xl cursor-pointer text-xs font-bold py-1.5 h-10 border border-slate-200 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:bg-slate-100 file:text-slate-800 file:font-bold hover:file:bg-slate-200"
+                        />
+                      </div>
+                      <div className="text-slate-400 font-semibold md:max-w-[320px] text-left leading-relaxed">
+                        Upload a CSV containing columns: <code className="font-mono text-indigo-600 bg-white px-1 py-0.5 rounded border border-slate-200">AccountCode,Amount</code>
+                      </div>
+                      <Button 
+                        type="button" 
+                        variant="link" 
+                        onClick={handleDownloadTemplate} 
+                        className="text-xs text-indigo-650 hover:text-indigo-850 font-bold p-0 h-auto shrink-0 flex items-center gap-1"
+                      >
+                        <Download className="h-3.5 w-3.5"/> Download Template CSV
                       </Button>
                     </div>
 

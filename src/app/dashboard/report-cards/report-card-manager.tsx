@@ -18,7 +18,7 @@ import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { cn } from '@/lib/utils';
+import { cn, getGradeFromScale } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -59,15 +59,6 @@ async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
         console.error("❌ getBase64ImageFromUrl failed:", error.message);
         return "";
     }
-}
-
-function getGradeAndRemark(score: number) {
-    if (score >= 80) return { grade: 'A', autoRemark: 'Excellent' };
-    if (score >= 70) return { grade: 'B', autoRemark: 'Very Good' };
-    if (score >= 60) return { grade: 'C', autoRemark: 'Good' };
-    if (score >= 50) return { grade: 'D', autoRemark: 'Credit' };
-    if (score >= 40) return { grade: 'E', autoRemark: 'Pass' };
-    return { grade: 'F', autoRemark: 'Fail' };
 }
 
 function formatOrdinal(n: number): string {
@@ -298,7 +289,7 @@ export default function ReportCardManager() {
 
                 myGrandTotal += total100;
                 subjectsTaken++;
-                const { grade, autoRemark } = getGradeAndRemark(total100);
+                const { grade, autoRemark } = getGradeFromScale(total100, schoolProfile?.gradingSystem);
                 reportRows.push({
                     subjectName: sub.name,
                     ca: finalCA,
@@ -363,6 +354,8 @@ export default function ReportCardManager() {
                 className: classes?.find((c: any) => c.id === classId)?.name || '',
                 caWeight: currentCaWeight,
                 examWeight: currentExamWeight,
+                reportCardPositionMode: schoolProfile?.reportCardPositionMode || 'both',
+                gradingSystem: schoolProfile?.gradingSystem || null,
             });
 
         } catch (error: any) {
