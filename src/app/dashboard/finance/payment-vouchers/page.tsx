@@ -27,7 +27,7 @@ import { Loader2, Plus, Receipt, Printer, Landmark, Banknote, ShieldCheck, Eye, 
 import { Account, JournalLine } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
 import { AppLogo } from '@/components/icons/app-logo';
-import { cn, COST_CENTERS } from '@/lib/utils';
+import { cn, getCostCenters } from '@/lib/utils';
 import { SearchableAccountSelect } from '@/components/ui/account-select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -207,17 +207,20 @@ function PaymentVoucherForm({
     setOpen, 
     accounts, 
     schoolId, 
+    schoolProfile,
     onSuccess 
 }: { 
     setOpen: (o: boolean) => void; 
     accounts: Account[]; 
     schoolId: string;
+    schoolProfile: any;
     onSuccess: () => void;
 }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { profile } = useRole();
     const { toast } = useToast();
+    const costCenters = getCostCenters(schoolProfile);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Fetch budget policy
@@ -271,9 +274,10 @@ function PaymentVoucherForm({
 
     // Calculate spent amount for a specific account inside active budget timeline
     const getBudgetStateForAccount = useMemo(() => {
-        return (accountId: string) => {
+        return (accountId: string, costCenter?: string) => {
             if (!activeBudget || !activeBudgetItems || !journals) return null;
-            const item = activeBudgetItems.find((i: any) => i.accountId === accountId);
+            const targetCC = costCenter || 'General';
+            const item = activeBudgetItems.find((i: any) => i.accountId === accountId && (i.costCenter || 'General') === targetCC);
             if (!item) return null;
 
             const start = activeBudget.startDate.toDate();
@@ -286,14 +290,15 @@ function PaymentVoucherForm({
             });
 
             activeJournals.forEach((j: any) => {
-                const line = j.lines.find((l: any) => l.accountId === accountId);
-                if (line) {
-                    if (item.accountType === 'Expense') {
-                        actual += (line.debit - line.credit);
-                    } else {
-                        actual += (line.credit - line.debit);
+                j.lines.forEach((l: any) => {
+                    if (l.accountId === accountId && (l.costCenter || 'General') === targetCC) {
+                        if (item.accountType === 'Expense') {
+                            actual += (l.debit - l.credit);
+                        } else {
+                            actual += (l.credit - l.debit);
+                        }
                     }
-                }
+                });
             });
 
             actual = Math.max(0, actual);
@@ -359,10 +364,10 @@ function PaymentVoucherForm({
 
     const isSubmitBlocked = useMemo(() => {
         if (!watchDebitAccountId || budgetPolicy !== 'block') return false;
-        const budgetState = getBudgetStateForAccount(watchDebitAccountId);
+        const budgetState = getBudgetStateForAccount(watchDebitAccountId, form.watch('costCenter'));
         if (!budgetState) return false;
         return calculations.totalGross > budgetState.remaining;
-    }, [watchDebitAccountId, budgetPolicy, getBudgetStateForAccount, calculations.totalGross]);
+    }, [watchDebitAccountId, budgetPolicy, getBudgetStateForAccount, calculations.totalGross, form.watch('costCenter')]);
 
     const expenseAccounts = accounts.filter(a => ['Expense', 'Asset'].includes(a.type));
     const bankAccounts = accounts.filter(a => ['Asset'].includes(a.type));
@@ -373,7 +378,7 @@ function PaymentVoucherForm({
 
         try {
             // Perform budget policy check
-            const budgetState = getBudgetStateForAccount(values.debitAccountId);
+            const budgetState = getBudgetStateForAccount(values.debitAccountId, values.costCenter);
             let remainingBudget = budgetState ? budgetState.remaining : Infinity;
             const totalGross = calculations.totalGross;
             const isOverBudget = budgetState && totalGross > remainingBudget;
@@ -730,7 +735,7 @@ function PaymentVoucherForm({
                         <SelectValue placeholder="Select Department..." />
                     </SelectTrigger>
                     <SelectContent>
-                        {COST_CENTERS.map(cc => (
+                        {costCenters.map(cc => (
                             <SelectItem key={cc.id} value={cc.id} className="font-semibold">{cc.name}</SelectItem>
                         ))}
                     </SelectContent>
@@ -752,7 +757,7 @@ function PaymentVoucherForm({
                     />
 
                     {watchDebitAccountId && (() => {
-                        const budgetState = getBudgetStateForAccount(watchDebitAccountId);
+                        const budgetState = getBudgetStateForAccount(watchDebitAccountId, form.watch('costCenter'));
                         if (!budgetState) return null;
 
                         const enteringAmount = calculations.totalGross;
@@ -1143,6 +1148,7 @@ export default function PaymentVouchersPage() {
                                 setOpen={setIsAddOpen} 
                                 accounts={accounts} 
                                 schoolId={schoolId} 
+                                schoolProfile={schoolProfile}
                                 onSuccess={forceRefetch} 
                             />
                         )}

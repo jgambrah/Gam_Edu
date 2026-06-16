@@ -25,7 +25,8 @@ import {
   DollarSign,
   MapPin,
   Clock,
-  Trash2
+  Trash2,
+  Layers
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn, DEFAULT_GRADING_SYSTEM, type GradeBracket } from '@/lib/utils';
@@ -74,6 +75,26 @@ export default function SchoolProfilePage() {
   const [debtorLockThreshold, setDebtorLockThreshold] = useState(0);
   const [reportCardPositionMode, setReportCardPositionMode] = useState<'both' | 'subject_only' | 'none'>('both');
   const [gradingSystem, setGradingSystem] = useState<GradeBracket[]>([]);
+  const [customCostCenters, setCustomCostCenters] = useState<{ id: string, name: string }[]>([]);
+
+  const addCostCenter = () => {
+    setCustomCostCenters(prev => [...prev, { id: '', name: '' }]);
+  };
+
+  const updateCostCenter = (index: number, field: 'id' | 'name', value: string) => {
+    setCustomCostCenters(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      if (field === 'id') {
+        updated[index].id = value.replace(/[^a-zA-Z0-9]/g, '');
+      }
+      return updated;
+    });
+  };
+
+  const deleteCostCenter = (index: number) => {
+    setCustomCostCenters(prev => prev.filter((_, i) => i !== index));
+  };
 
   // Geofencing States
   const [schoolLat, setSchoolLat] = useState<number | ''>('');
@@ -191,6 +212,7 @@ export default function SchoolProfilePage() {
         }
         setReportCardPositionMode(profile.reportCardPositionMode || 'both');
         setGradingSystem(profile.gradingSystem || DEFAULT_GRADING_SYSTEM);
+        setCustomCostCenters(profile.customCostCenters || []);
     }
   }, [profile]);
 
@@ -287,6 +309,7 @@ export default function SchoolProfilePage() {
             enableTransflow,
             reportCardPositionMode,
             gradingSystem: cleanedGrading,
+            customCostCenters: customCostCenters.filter(cc => cc.id.trim() !== '' && cc.name.trim() !== ''),
             updatedAt: serverTimestamp()
         };
 
@@ -871,6 +894,77 @@ export default function SchoolProfilePage() {
                                     >
                                         + Add Grade Bracket
                                     </Button>
+                                </div>
+                            </div>
+
+                            {/* --- CUSTOM COST CENTERS SECTION --- */}
+                            <div className="space-y-4 p-5 border-2 rounded-[2rem] bg-indigo-50/20 border-indigo-100 mt-4 shadow-sm">
+                                <div className="space-y-0.5">
+                                    <Label className="text-base font-black text-slate-800 flex items-center gap-2 uppercase tracking-tight">
+                                        <Layers className="h-5 w-5 text-indigo-600"/> Custom Departmental Cost Centers
+                                    </Label>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Add extra cost centers for budgeting, payments, and expenses</p>
+                                </div>
+
+                                <div className="space-y-4 pt-2">
+                                    <div className="space-y-2">
+                                        <div className="grid grid-cols-12 gap-2 text-[10px] font-black uppercase text-slate-400">
+                                            <div className="col-span-4 pl-2">Center ID (e.g. Sports)</div>
+                                            <div className="col-span-7 pl-2">Display Name (e.g. Sports & Athletics)</div>
+                                            <div className="col-span-1 text-center"></div>
+                                        </div>
+
+                                        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                                            {customCostCenters.map((cc, index) => (
+                                                <div key={index} className="grid grid-cols-12 gap-2 items-center">
+                                                    <div className="col-span-4">
+                                                        <Input 
+                                                            type="text" 
+                                                            value={cc.id} 
+                                                            onChange={(e) => updateCostCenter(index, 'id', e.target.value)} 
+                                                            className="h-10 border-2 rounded-lg font-bold text-xs"
+                                                            placeholder="ID (e.g. Catering)"
+                                                        />
+                                                    </div>
+                                                    <div className="col-span-7">
+                                                        <Input 
+                                                            type="text" 
+                                                            value={cc.name} 
+                                                            onChange={(e) => updateCostCenter(index, 'name', e.target.value)} 
+                                                            className="h-10 border-2 rounded-lg font-bold text-xs"
+                                                            placeholder="Display Name (e.g. Boarding)"
+                                                        />
+                                                    </div>
+                                                    <div className="col-span-1 flex justify-center">
+                                                        <Button 
+                                                            type="button" 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            onClick={() => deleteCostCenter(index)}
+                                                            className="h-9 w-9 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            ))}
+
+                                            {customCostCenters.length === 0 && (
+                                                <div className="text-center py-6 text-xs text-slate-400 font-bold uppercase">
+                                                    No custom cost centers added. Only default centers will be available.
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <Button 
+                                            type="button" 
+                                            variant="outline" 
+                                            onClick={addCostCenter} 
+                                            className="w-full border-dashed border-2 h-10 text-xs font-bold text-slate-500 hover:text-indigo-600 hover:border-indigo-300 rounded-xl mt-2 bg-slate-50/50"
+                                        >
+                                            + Add Cost Center
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
 

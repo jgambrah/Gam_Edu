@@ -1263,6 +1263,7 @@ export interface BudgetItem {
     accountName: string;
     accountType: 'Revenue' | 'Expense';
     budgetedAmount: number;
+    costCenter?: string;
     createdAt: any;
 }
 

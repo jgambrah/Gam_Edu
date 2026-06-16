@@ -36,7 +36,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getCostCenters } from '@/lib/utils';
 import { AppLogo } from '@/components/icons/app-logo';
 import { SearchableAccountSelect } from '@/components/ui/account-select';
 import Papa from 'papaparse';
@@ -104,12 +104,14 @@ export default function BudgetPage() {
   const [tempItems, setTempItems] = useState<Omit<BudgetItem, 'id' | 'budgetId' | 'schoolId' | 'createdAt'>[]>([]);
   const [tempAccountId, setTempAccountId] = useState<string>('');
   const [tempAmount, setTempAmount] = useState<string>('');
+  const [tempCostCenter, setTempCostCenter] = useState<string>('General');
 
   // Budget items editing state
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editTempItems, setEditTempItems] = useState<Omit<BudgetItem, 'id' | 'budgetId' | 'schoolId' | 'createdAt'>[]>([]);
   const [editTempAccountId, setEditTempAccountId] = useState<string>('');
   const [editTempAmount, setEditTempAmount] = useState<string>('');
+  const [editTempCostCenter, setEditTempCostCenter] = useState<string>('General');
 
   // 1. Fetch ledger accounts for budget configuration
   const accountsQuery = useMemoFirebase(
@@ -202,14 +204,15 @@ export default function BudgetPage() {
       let actual = 0;
 
       activeJournals.forEach(j => {
-        const line = j.lines.find(l => l.accountId === item.accountId);
-        if (line) {
-          if (item.accountType === 'Expense') {
-            actual += (line.debit - line.credit);
-          } else {
-            actual += (line.credit - line.debit);
+        j.lines.forEach(l => {
+          if (l.accountId === item.accountId && (l.costCenter || 'General') === (item.costCenter || 'General')) {
+            if (item.accountType === 'Expense') {
+              actual += (l.debit - l.credit);
+            } else {
+              actual += (l.credit - l.debit);
+            }
           }
-        }
+        });
       });
 
       // Avoid negative actual balances (represented as zero if fully reversed)
@@ -256,9 +259,9 @@ export default function BudgetPage() {
   // Download CSV Template for Bulk Upload
   const handleDownloadTemplate = () => {
     if (!budgetedAccounts) return;
-    let csvContent = "AccountCode,AccountName,Amount\n";
+    let csvContent = "AccountCode,AccountName,CostCenter,Amount\n";
     budgetedAccounts.forEach(acc => {
-      csvContent += `"${acc.code}","${acc.name.replace(/"/g, '""')}",0.00\n`;
+      csvContent += `"${acc.code}","${acc.name.replace(/"/g, '""')}","General",0.00\n`;
     });
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -288,6 +291,7 @@ export default function BudgetPage() {
         parsedRows.forEach((row, i) => {
           const code = (row.AccountCode || row.accountcode || '').trim();
           const amountStr = (row.Amount || row.amount || '').trim();
+          const costCenterRaw = (row.CostCenter || row.costcenter || 'General').trim();
           
           if (!code) return; // skip if code is empty
 
@@ -303,12 +307,20 @@ export default function BudgetPage() {
             return;
           }
 
+          const ccList = getCostCenters(schoolProfile);
+          const matchedCC = ccList.find(cc => 
+            cc.id.toLowerCase() === costCenterRaw.toLowerCase() || 
+            cc.name.toLowerCase() === costCenterRaw.toLowerCase()
+          );
+          const resolvedCostCenter = matchedCC ? matchedCC.id : 'General';
+
           newItems.push({
             accountId: acc.id,
             accountCode: acc.code,
             accountName: acc.name,
             accountType: acc.type as 'Revenue' | 'Expense',
             budgetedAmount: amount,
+            costCenter: resolvedCostCenter,
           });
           addedCount++;
         });
@@ -325,12 +337,12 @@ export default function BudgetPage() {
         if (newItems.length > 0) {
           if (isEdit) {
             setEditTempItems(prev => {
-              const filtered = prev.filter(item => !newItems.some(n => n.accountId === item.accountId));
+              const filtered = prev.filter(item => !newItems.some(n => n.accountId === item.accountId && (n.costCenter || 'General') === (item.costCenter || 'General')));
               return [...filtered, ...newItems];
             });
           } else {
             setTempItems(prev => {
-              const filtered = prev.filter(item => !newItems.some(n => n.accountId === item.accountId));
+              const filtered = prev.filter(item => !newItems.some(n => n.accountId === item.accountId && (n.costCenter || 'General') === (item.costCenter || 'General')));
               return [...filtered, ...newItems];
             });
           }
@@ -368,8 +380,8 @@ export default function BudgetPage() {
     const selectedAcc = accounts?.find(a => a.id === tempAccountId);
     if (!selectedAcc) return;
 
-    if (tempItems.some(item => item.accountId === tempAccountId)) {
-      toast({ variant: 'destructive', title: "Validation Error", description: "Account already added to this budget." });
+    if (tempItems.some(item => item.accountId === tempAccountId && (item.costCenter || 'General') === (tempCostCenter || 'General'))) {
+      toast({ variant: 'destructive', title: "Validation Error", description: "Account already added to this budget under the selected cost center." });
       return;
     }
 
@@ -381,11 +393,13 @@ export default function BudgetPage() {
         accountName: selectedAcc.name,
         accountType: selectedAcc.type as 'Revenue' | 'Expense',
         budgetedAmount: parseFloat(tempAmount),
+        costCenter: tempCostCenter || 'General',
       }
     ]);
 
     setTempAccountId('');
     setTempAmount('');
+    setTempCostCenter('General');
   };
 
   // Remove item from temporary list
@@ -444,6 +458,7 @@ export default function BudgetPage() {
           accountName: item.accountName,
           accountType: item.accountType,
           budgetedAmount: item.budgetedAmount,
+          costCenter: item.costCenter || 'General',
           createdAt: serverTimestamp(),
         });
       });
@@ -479,6 +494,7 @@ export default function BudgetPage() {
       accountName: item.accountName,
       accountType: item.accountType,
       budgetedAmount: item.budgetedAmount,
+      costCenter: item.costCenter || 'General',
     })));
     setIsEditOpen(true);
   };
@@ -492,8 +508,8 @@ export default function BudgetPage() {
     const selectedAcc = accounts?.find(a => a.id === editTempAccountId);
     if (!selectedAcc) return;
 
-    if (editTempItems.some(item => item.accountId === editTempAccountId)) {
-      toast({ variant: 'destructive', title: "Validation Error", description: "Account already added to this budget." });
+    if (editTempItems.some(item => item.accountId === editTempAccountId && (item.costCenter || 'General') === (editTempCostCenter || 'General'))) {
+      toast({ variant: 'destructive', title: "Validation Error", description: "Account already added to this budget under the selected cost center." });
       return;
     }
 
@@ -505,11 +521,13 @@ export default function BudgetPage() {
         accountName: selectedAcc.name,
         accountType: selectedAcc.type as 'Revenue' | 'Expense',
         budgetedAmount: parseFloat(editTempAmount),
+        costCenter: editTempCostCenter || 'General',
       }
     ]);
 
     setEditTempAccountId('');
     setEditTempAmount('');
+    setEditTempCostCenter('General');
   };
 
   const removeEditTempItem = (index: number) => {
@@ -569,6 +587,7 @@ export default function BudgetPage() {
           accountName: item.accountName,
           accountType: item.accountType,
           budgetedAmount: item.budgetedAmount,
+          costCenter: item.costCenter || 'General',
           createdAt: serverTimestamp(),
         });
       });
@@ -868,7 +887,7 @@ export default function BudgetPage() {
                   {/* LINE ITEM GENERATOR */}
                   <div className="border-t border-dashed pt-4">
                     <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider mb-2">Budget Line Items</h3>
-                    <div className="grid md:grid-cols-3 gap-2 items-end bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4">
+                    <div className="grid md:grid-cols-4 gap-2 items-end bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4">
                       <div className="space-y-1 flex flex-col justify-end">
                         <Label className="font-bold text-xs text-slate-500 mb-1">Ledger Account (GL)</Label>
                         <SearchableAccountSelect
@@ -877,6 +896,22 @@ export default function BudgetPage() {
                           onChange={setTempAccountId}
                           placeholder="Choose account..."
                         />
+                      </div>
+
+                      <div className="space-y-1">
+                        <Label className="font-bold text-xs text-slate-500 mb-1">Cost Center</Label>
+                        <Select value={tempCostCenter} onValueChange={setTempCostCenter}>
+                          <SelectTrigger className="rounded-xl font-bold bg-white">
+                            <SelectValue placeholder="Select Cost Center" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {getCostCenters(schoolProfile).map(cc => (
+                              <SelectItem key={cc.id} value={cc.id} className="font-bold">
+                                {cc.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       <div className="space-y-1">
@@ -901,7 +936,7 @@ export default function BudgetPage() {
                         />
                       </div>
                       <div className="text-slate-400 font-semibold md:max-w-[320px] text-left leading-relaxed">
-                        Upload a CSV containing columns: <code className="font-mono text-indigo-600 bg-white px-1 py-0.5 rounded border border-slate-200">AccountCode,Amount</code>
+                        Upload a CSV containing columns: <code className="font-mono text-indigo-600 bg-white px-1 py-0.5 rounded border border-slate-200">AccountCode,CostCenter,Amount</code>
                       </div>
                       <Button 
                         type="button" 
@@ -919,6 +954,7 @@ export default function BudgetPage() {
                           <TableRow>
                             <TableHead className="font-bold">Code</TableHead>
                             <TableHead className="font-bold">Account</TableHead>
+                            <TableHead className="font-bold">Cost Center</TableHead>
                             <TableHead className="font-bold">Type</TableHead>
                             <TableHead className="text-right font-bold">Budgeted (GH₵)</TableHead>
                             <TableHead className="text-center font-bold">Action</TableHead>
@@ -926,12 +962,17 @@ export default function BudgetPage() {
                         </TableHeader>
                         <TableBody>
                           {tempItems.length === 0 ? (
-                            <TableRow><TableCell colSpan={5} className="text-center text-slate-400 py-10 font-bold">No budget lines configured yet.</TableCell></TableRow>
+                            <TableRow><TableCell colSpan={6} className="text-center text-slate-400 py-10 font-bold">No budget lines configured yet.</TableCell></TableRow>
                           ) : (
                             tempItems.map((item, index) => (
                               <TableRow key={index} className="hover:bg-slate-50">
                                 <TableCell className="font-mono font-semibold text-xs">{item.accountCode}</TableCell>
                                 <TableCell className="font-bold text-slate-800">{item.accountName}</TableCell>
+                                <TableCell>
+                                  <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700">
+                                    {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
+                                  </Badge>
+                                </TableCell>
                                 <TableCell><Badge className={cn("text-[9px] uppercase font-black", item.accountType === 'Revenue' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700')}>{item.accountType}</Badge></TableCell>
                                 <TableCell className="text-right font-mono font-bold">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
                                 <TableCell className="text-center">
@@ -1050,7 +1091,7 @@ export default function BudgetPage() {
                   {/* LINE ITEM GENERATOR */}
                   <div className="border-t border-dashed pt-4">
                     <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider mb-2">Budget Line Items</h3>
-                    <div className="grid md:grid-cols-3 gap-2 items-end bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4">
+                    <div className="grid md:grid-cols-4 gap-2 items-end bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4">
                       <div className="space-y-1 flex flex-col justify-end">
                         <Label className="font-bold text-xs text-slate-500 mb-1">Ledger Account (GL)</Label>
                         <SearchableAccountSelect
@@ -1059,6 +1100,22 @@ export default function BudgetPage() {
                           onChange={setEditTempAccountId}
                           placeholder="Choose account..."
                         />
+                      </div>
+
+                      <div className="space-y-1">
+                        <Label className="font-bold text-xs text-slate-500 mb-1">Cost Center</Label>
+                        <Select value={editTempCostCenter} onValueChange={setEditTempCostCenter}>
+                          <SelectTrigger className="rounded-xl font-bold bg-white">
+                            <SelectValue placeholder="Select Cost Center" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {getCostCenters(schoolProfile).map(cc => (
+                              <SelectItem key={cc.id} value={cc.id} className="font-bold">
+                                {cc.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       <div className="space-y-1">
@@ -1083,7 +1140,7 @@ export default function BudgetPage() {
                         />
                       </div>
                       <div className="text-slate-400 font-semibold md:max-w-[320px] text-left leading-relaxed">
-                        Upload a CSV containing columns: <code className="font-mono text-indigo-600 bg-white px-1 py-0.5 rounded border border-slate-200">AccountCode,Amount</code>
+                        Upload a CSV containing columns: <code className="font-mono text-indigo-600 bg-white px-1 py-0.5 rounded border border-slate-200">AccountCode,CostCenter,Amount</code>
                       </div>
                       <Button 
                         type="button" 
@@ -1101,6 +1158,7 @@ export default function BudgetPage() {
                           <TableRow>
                             <TableHead className="font-bold">Code</TableHead>
                             <TableHead className="font-bold">Account</TableHead>
+                            <TableHead className="font-bold">Cost Center</TableHead>
                             <TableHead className="font-bold">Type</TableHead>
                             <TableHead className="text-right font-bold">Budgeted (GH₵)</TableHead>
                             <TableHead className="text-center font-bold">Action</TableHead>
@@ -1108,12 +1166,17 @@ export default function BudgetPage() {
                         </TableHeader>
                         <TableBody>
                           {editTempItems.length === 0 ? (
-                            <TableRow><TableCell colSpan={5} className="text-center text-slate-400 py-10 font-bold">No budget lines configured yet.</TableCell></TableRow>
+                            <TableRow><TableCell colSpan={6} className="text-center text-slate-400 py-10 font-bold">No budget lines configured yet.</TableCell></TableRow>
                           ) : (
                             editTempItems.map((item, index) => (
                               <TableRow key={index} className="hover:bg-slate-50">
                                 <TableCell className="font-mono font-semibold text-xs">{item.accountCode}</TableCell>
                                 <TableCell className="font-bold text-slate-800">{item.accountName}</TableCell>
+                                <TableCell>
+                                  <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700">
+                                    {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
+                                  </Badge>
+                                </TableCell>
                                 <TableCell><Badge className={cn("text-[9px] uppercase font-black", item.accountType === 'Revenue' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700')}>{item.accountType}</Badge></TableCell>
                                 <TableCell className="text-right font-mono font-bold">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
                                 <TableCell className="text-center">
@@ -1320,20 +1383,23 @@ export default function BudgetPage() {
                 <Card className="rounded-3xl border border-slate-100 shadow-md">
                   <CardHeader><CardTitle className="text-slate-800 text-lg flex items-center gap-1.5"><TrendingUp className="text-green-500"/> Revenue Target Breakdown</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
-                    {revenueAnalysisItems.map(item => (
-                      <div key={item.id} className="space-y-1 bg-slate-50/50 p-3.5 rounded-2xl border border-slate-100">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-slate-700">{item.accountName}</span>
-                          <span className="font-semibold text-slate-500 font-mono">GH₵{item.actual.toFixed(0)} / GH₵{item.budgetedAmount.toFixed(0)}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
-                            <div className="bg-emerald-500 h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(100, item.percent)}%` }}></div>
+                    {revenueAnalysisItems.map(item => {
+                      const costCenterName = getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General';
+                      return (
+                        <div key={item.id} className="space-y-1 bg-slate-50/50 p-3.5 rounded-2xl border border-slate-100">
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="font-bold text-slate-700">{item.accountName} <span className="text-slate-400 font-semibold text-[10px]">({costCenterName})</span></span>
+                            <span className="font-semibold text-slate-500 font-mono">GH₵{item.actual.toFixed(0)} / GH₵{item.budgetedAmount.toFixed(0)}</span>
                           </div>
-                          <span className="text-[10px] font-black w-10 text-right">{item.percent.toFixed(0)}%</span>
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
+                              <div className="bg-emerald-500 h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(100, item.percent)}%` }}></div>
+                            </div>
+                            <span className="text-[10px] font-black w-10 text-right">{item.percent.toFixed(0)}%</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </CardContent>
                 </Card>
 
@@ -1341,20 +1407,23 @@ export default function BudgetPage() {
                 <Card className="rounded-3xl border border-slate-100 shadow-md">
                   <CardHeader><CardTitle className="text-slate-800 text-lg flex items-center gap-1.5"><TrendingDown className="text-red-500"/> Expense Allocation Breakdown</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
-                    {expenseAnalysisItems.map(item => (
-                      <div key={item.id} className="space-y-1 bg-slate-50/50 p-3.5 rounded-2xl border border-slate-100">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-slate-700">{item.accountName}</span>
-                          <span className="font-semibold text-slate-500 font-mono">GH₵{item.actual.toFixed(0)} / GH₵{item.budgetedAmount.toFixed(0)}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
-                            <div className={cn("h-full rounded-full transition-all duration-300", item.percent >= 100 ? "bg-red-500" : "bg-indigo-500")} style={{ width: `${Math.min(100, item.percent)}%` }}></div>
+                    {expenseAnalysisItems.map(item => {
+                      const costCenterName = getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General';
+                      return (
+                        <div key={item.id} className="space-y-1 bg-slate-50/50 p-3.5 rounded-2xl border border-slate-100">
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="font-bold text-slate-700">{item.accountName} <span className="text-slate-400 font-semibold text-[10px]">({costCenterName})</span></span>
+                            <span className="font-semibold text-slate-500 font-mono">GH₵{item.actual.toFixed(0)} / GH₵{item.budgetedAmount.toFixed(0)}</span>
                           </div>
-                          <span className="text-[10px] font-black w-10 text-right">{item.percent.toFixed(0)}%</span>
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
+                              <div className={cn("h-full rounded-full transition-all duration-300", item.percent >= 100 ? "bg-red-500" : "bg-indigo-500")} style={{ width: `${Math.min(100, item.percent)}%` }}></div>
+                            </div>
+                            <span className="text-[10px] font-black w-10 text-right">{item.percent.toFixed(0)}%</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </CardContent>
                 </Card>
               </div>
@@ -1369,6 +1438,7 @@ export default function BudgetPage() {
                       <TableRow>
                         <TableHead>Code</TableHead>
                         <TableHead>Account Name</TableHead>
+                        <TableHead>Cost Center</TableHead>
                         <TableHead className="text-right">Budgeted (GH₵)</TableHead>
                         <TableHead className="text-right">Actual (GH₵)</TableHead>
                         <TableHead className="text-right">Variance (GH₵)</TableHead>
@@ -1378,12 +1448,17 @@ export default function BudgetPage() {
                     </TableHeader>
                     <TableBody>
                       {revenueAnalysisItems.length === 0 ? (
-                        <TableRow><TableCell colSpan={7} className="text-center py-20 text-slate-400 font-bold">No revenue items added to this budget.</TableCell></TableRow>
+                        <TableRow><TableCell colSpan={8} className="text-center py-20 text-slate-400 font-bold">No revenue items added to this budget.</TableCell></TableRow>
                       ) : (
                         revenueAnalysisItems.map(item => (
                           <TableRow key={item.id} className="hover:bg-slate-50/50">
                             <TableCell className="font-mono text-xs font-semibold">{item.accountCode}</TableCell>
                             <TableCell className="font-bold text-slate-800">{item.accountName}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700">
+                                {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
+                              </Badge>
+                            </TableCell>
                             <TableCell className="text-right font-mono font-medium">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
                             <TableCell className="text-right font-mono font-medium text-slate-650">GH₵{item.actual.toFixed(2)}</TableCell>
                             <TableCell className={cn("text-right font-mono font-black", item.variance >= 0 ? "text-emerald-600" : "text-rose-600")}>
@@ -1413,6 +1488,7 @@ export default function BudgetPage() {
                       <TableRow>
                         <TableHead>Code</TableHead>
                         <TableHead>Account Name</TableHead>
+                        <TableHead>Cost Center</TableHead>
                         <TableHead className="text-right">Budgeted (GH₵)</TableHead>
                         <TableHead className="text-right">Actual (GH₵)</TableHead>
                         <TableHead className="text-right">Variance (GH₵)</TableHead>
@@ -1422,12 +1498,17 @@ export default function BudgetPage() {
                     </TableHeader>
                     <TableBody>
                       {expenseAnalysisItems.length === 0 ? (
-                        <TableRow><TableCell colSpan={7} className="text-center py-20 text-slate-400 font-bold">No expense items added to this budget.</TableCell></TableRow>
+                        <TableRow><TableCell colSpan={8} className="text-center py-20 text-slate-400 font-bold">No expense items added to this budget.</TableCell></TableRow>
                       ) : (
                         expenseAnalysisItems.map(item => (
                           <TableRow key={item.id} className="hover:bg-slate-50/50">
                             <TableCell className="font-mono text-xs font-semibold">{item.accountCode}</TableCell>
                             <TableCell className="font-bold text-slate-800">{item.accountName}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700">
+                                {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
+                              </Badge>
+                            </TableCell>
                             <TableCell className="text-right font-mono font-medium">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
                             <TableCell className="text-right font-mono font-medium text-slate-650">GH₵{item.actual.toFixed(2)}</TableCell>
                             <TableCell className={cn("text-right font-mono font-black", item.variance >= 0 ? "text-emerald-600" : "text-rose-600")}>
@@ -1545,6 +1626,7 @@ export default function BudgetPage() {
                         <TableRow>
                           <TableHead>Code</TableHead>
                           <TableHead>Account Name</TableHead>
+                          <TableHead>Cost Center</TableHead>
                           <TableHead className="text-right">Budgeted (GH₵)</TableHead>
                           <TableHead className="text-right">Actual (GH₵)</TableHead>
                           <TableHead className="text-right">Variance (GH₵)</TableHead>
@@ -1556,6 +1638,9 @@ export default function BudgetPage() {
                           <TableRow key={item.id}>
                             <TableCell className="font-mono">{item.accountCode}</TableCell>
                             <TableCell className="font-bold">{item.accountName}</TableCell>
+                            <TableCell className="font-semibold text-slate-600">
+                              {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
+                            </TableCell>
                             <TableCell className="text-right font-mono">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
                             <TableCell className="text-right font-mono">GH₵{item.actual.toFixed(2)}</TableCell>
                             <TableCell className={cn("text-right font-mono font-bold", item.variance >= 0 ? "text-green-600" : "text-red-600")}>
@@ -1575,6 +1660,7 @@ export default function BudgetPage() {
                         <TableRow>
                           <TableHead>Code</TableHead>
                           <TableHead>Account Name</TableHead>
+                          <TableHead>Cost Center</TableHead>
                           <TableHead className="text-right">Budgeted (GH₵)</TableHead>
                           <TableHead className="text-right">Actual (GH₵)</TableHead>
                           <TableHead className="text-right">Variance (GH₵)</TableHead>
@@ -1586,6 +1672,9 @@ export default function BudgetPage() {
                           <TableRow key={item.id}>
                             <TableCell className="font-mono">{item.accountCode}</TableCell>
                             <TableCell className="font-bold">{item.accountName}</TableCell>
+                            <TableCell className="font-semibold text-slate-600">
+                              {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
+                            </TableCell>
                             <TableCell className="text-right font-mono">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
                             <TableCell className="text-right font-mono">GH₵{item.actual.toFixed(2)}</TableCell>
                             <TableCell className={cn("text-right font-mono font-bold", item.variance >= 0 ? "text-green-600" : "text-red-600")}>

@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useRef } from 'react';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
@@ -28,7 +28,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType, accountSchema, ACCOUNT_TYPES } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { cn, COST_CENTERS } from '@/lib/utils';
+import { cn, getCostCenters } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { useForm } from 'react-hook-form';
@@ -406,11 +406,13 @@ function BalanceSheet({ data, netIncome }: { data: AccountBalance[], netIncome: 
 function DepartmentalCosts({ 
     accounts, 
     journals, 
-    dateRange 
+    dateRange,
+    schoolProfile
 }: { 
     accounts: AccountBalance[], 
     journals: JournalEntry[], 
-    dateRange: DateRange | undefined 
+    dateRange: DateRange | undefined,
+    schoolProfile: any
 }) {
     const filteredJournals = useMemo(() => {
         if (!journals || !dateRange?.from) return [];
@@ -424,9 +426,10 @@ function DepartmentalCosts({
 
     const departmentalSummary = useMemo(() => {
         const summary: Record<string, { name: string; expenses: number; revenues: number; net: number }> = {};
+        const costCenters = getCostCenters(schoolProfile);
         
         // Initialize all known cost centers
-        COST_CENTERS.forEach(cc => {
+        costCenters.forEach(cc => {
             summary[cc.id] = { name: cc.name, expenses: 0, revenues: 0, net: 0 };
         });
 
@@ -635,6 +638,9 @@ export default function FinancialReportsPage() {
     const journalsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId), orderBy('date', 'asc')) : null, [firestore, schoolId]);
     const { data: allJournals, isLoading: jLoading } = useCollection<JournalEntry>(journalsQuery);
 
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
+
     const { calculatedBalances, netIncome } = useMemo(() => {
         if (!accounts || !allJournals || !dateRange?.from) return { calculatedBalances: [], netIncome: 0 };
         
@@ -754,7 +760,7 @@ export default function FinancialReportsPage() {
                     <TabsContent value="pl" className="mt-4"><IncomeStatement data={calculatedBalances} /></TabsContent>
                     <TabsContent value="bs" className="mt-4"><BalanceSheet data={calculatedBalances} netIncome={netIncome} /></TabsContent>
                     <TabsContent value="departments" className="mt-4">
-                        <DepartmentalCosts accounts={calculatedBalances} journals={allJournals || []} dateRange={dateRange} />
+                        <DepartmentalCosts accounts={calculatedBalances} journals={allJournals || []} dateRange={dateRange} schoolProfile={schoolProfile} />
                     </TabsContent>
                 </Tabs>
             )}

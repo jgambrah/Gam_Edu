@@ -30,7 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AppLogo } from '@/components/icons/app-logo';
 import { Account, JournalLine, JournalEntry, journalEntrySchema, ACCOUNT_TYPES, accountSchema } from '@/lib/types';
-import { cn, COST_CENTERS } from '@/lib/utils';
+import { cn, getCostCenters } from '@/lib/utils';
 import { SearchableAccountSelect } from '@/components/ui/account-select';
 
 // --- CONSTANTS: GHANA TAX 2025/2026 (ACT 1151 COMPLIANT) ---
@@ -144,11 +144,12 @@ function AccountForm({ setOpen, onAccountAdded, accounts, schoolId }: { setOpen:
 }
 
 // --- SUB-COMPONENT: JOURNAL ENTRY FORM ---
-function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Account[], schoolId: string, onEntryAdded: () => void }) {
+function JournalEntryForm({ accounts, schoolId, schoolProfile, onEntryAdded }: { accounts: Account[], schoolId: string, schoolProfile: any, onEntryAdded: () => void }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const costCenters = getCostCenters(schoolProfile);
 
     const form = useForm<z.infer<typeof journalEntrySchema>>({
         resolver: zodResolver(journalEntrySchema),
@@ -224,7 +225,7 @@ function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Acco
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {COST_CENTERS.map(cc => (
+                                        {costCenters.map(cc => (
                                             <SelectItem key={cc.id} value={cc.id}>{cc.name}</SelectItem>
                                         ))}
                                     </SelectContent>
@@ -367,17 +368,20 @@ function PaymentVoucherForm({
     setOpen, 
     accounts, 
     schoolId, 
+    schoolProfile,
     onSuccess 
 }: { 
     setOpen: (o: boolean) => void; 
     accounts: Account[]; 
     schoolId: string;
+    schoolProfile: any;
     onSuccess: () => void;
 }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const costCenters = getCostCenters(schoolProfile);
 
     const form = useForm<PVFormValues>({
         resolver: zodResolver(pvSchema),
@@ -533,7 +537,7 @@ function PaymentVoucherForm({
                         <SelectValue placeholder="Select Department..." />
                     </SelectTrigger>
                     <SelectContent>
-                        {COST_CENTERS.map(cc => (
+                        {costCenters.map(cc => (
                             <SelectItem key={cc.id} value={cc.id} className="font-semibold">{cc.name}</SelectItem>
                         ))}
                     </SelectContent>
@@ -687,7 +691,7 @@ export default function AccountingPage() {
                 <TabsContent value="journal" className="mt-4">
                     <div className="max-w-3xl mx-auto">
                         {accounts && schoolId && (
-                            <JournalEntryForm accounts={accounts} schoolId={schoolId} onEntryAdded={forceRefetchJournals} />
+                            <JournalEntryForm accounts={accounts} schoolId={schoolId} schoolProfile={schoolProfile} onEntryAdded={forceRefetchJournals} />
                         )}
                     </div>
                 </TabsContent>
@@ -737,6 +741,7 @@ export default function AccountingPage() {
                                             setOpen={(val) => {}} 
                                             accounts={accounts} 
                                             schoolId={schoolId} 
+                                            schoolProfile={schoolProfile}
                                             onSuccess={() => { forceRefetchPVs(); forceRefetchJournals(); }} 
                                         />
                                     )}

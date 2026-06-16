@@ -52,3 +52,19 @@ export const COST_CENTERS = [
   { id: 'Catering', name: 'Boarding & Catering' },
   { id: 'Maintenance', name: 'Maintenance & Utilities' }
 ];
+
+export function getCostCenters(schoolSettings?: any) {
+  if (schoolSettings?.customCostCenters && Array.isArray(schoolSettings.customCostCenters)) {
+    const all = [...COST_CENTERS];
+    schoolSettings.customCostCenters.forEach((cc: any) => {
+      const id = typeof cc === 'string' ? cc : cc.id;
+      const name = typeof cc === 'string' ? cc : cc.name;
+      if (id && !all.some(item => item.id === id)) {
+        all.push({ id, name });
+      }
+    });
+    return all;
+  }
+  return COST_CENTERS;
+}
+
