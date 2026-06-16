@@ -28,7 +28,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType, accountSchema, ACCOUNT_TYPES } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
+import { cn, COST_CENTERS } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { useForm } from 'react-hook-form';
@@ -402,6 +402,218 @@ function BalanceSheet({ data, netIncome }: { data: AccountBalance[], netIncome: 
 }
 
 
+// --- COMPONENT: Departmental Costs ---
+function DepartmentalCosts({ 
+    accounts, 
+    journals, 
+    dateRange 
+}: { 
+    accounts: AccountBalance[], 
+    journals: JournalEntry[], 
+    dateRange: DateRange | undefined 
+}) {
+    const filteredJournals = useMemo(() => {
+        if (!journals || !dateRange?.from) return [];
+        const start = startOfDay(dateRange.from);
+        const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+        return journals.filter(j => {
+            const d = j.date.toDate ? j.date.toDate() : new Date(j.date);
+            return d >= start && d <= end;
+        });
+    }, [journals, dateRange]);
+
+    const departmentalSummary = useMemo(() => {
+        const summary: Record<string, { name: string; expenses: number; revenues: number; net: number }> = {};
+        
+        // Initialize all known cost centers
+        COST_CENTERS.forEach(cc => {
+            summary[cc.id] = { name: cc.name, expenses: 0, revenues: 0, net: 0 };
+        });
+
+        filteredJournals.forEach(j => {
+            j.lines.forEach(l => {
+                const ccId = l.costCenter || 'General';
+                if (!summary[ccId]) {
+                    summary[ccId] = { name: ccId, expenses: 0, revenues: 0, net: 0 };
+                }
+
+                const balanceAcc = accounts.find(a => a.id === l.accountId);
+                const type = balanceAcc?.type || 'Expense';
+
+                if (type === 'Expense') {
+                    summary[ccId].expenses += (l.debit - l.credit);
+                } else if (type === 'Revenue') {
+                    summary[ccId].revenues += (l.credit - l.debit);
+                }
+            });
+        });
+
+        // Compute net allocation
+        Object.keys(summary).forEach(key => {
+            summary[key].net = summary[key].revenues - summary[key].expenses;
+        });
+
+        return summary;
+    }, [filteredJournals, accounts]);
+
+    const rows = useMemo(() => {
+        return Object.entries(departmentalSummary).map(([id, data]) => ({
+            id,
+            ...data
+        }));
+    }, [departmentalSummary]);
+
+    const totals = useMemo(() => {
+        let totalExpenses = 0;
+        let totalRevenues = 0;
+        rows.forEach(r => {
+            totalExpenses += r.expenses;
+            totalRevenues += r.revenues;
+        });
+        return {
+            expenses: totalExpenses,
+            revenues: totalRevenues,
+            net: totalRevenues - totalExpenses
+        };
+    }, [rows]);
+
+    const highestExpenseDept = useMemo(() => {
+        let highest = { name: 'None', val: 0 };
+        rows.forEach(r => {
+            if (r.expenses > highest.val) {
+                highest = { name: r.name, val: r.expenses };
+            }
+        });
+        return highest;
+    }, [rows]);
+
+    return (
+        <div className="space-y-6">
+            {/* Overview cards */}
+            <div className="grid md:grid-cols-3 gap-4 print:grid-cols-3">
+                <Card className="border-none shadow-md bg-gradient-to-br from-indigo-50 to-white">
+                    <CardHeader className="pb-2">
+                        <CardDescription className="text-indigo-600 font-bold uppercase tracking-wider text-xs">Total Departmental Expenses</CardDescription>
+                        <CardTitle className="text-2xl font-black text-slate-800">GH₵{totals.expenses.toFixed(2)}</CardTitle>
+                    </CardHeader>
+                </Card>
+                <Card className="border-none shadow-md bg-gradient-to-br from-emerald-50 to-white">
+                    <CardHeader className="pb-2">
+                        <CardDescription className="text-emerald-600 font-bold uppercase tracking-wider text-xs">Total Departmental Revenues</CardDescription>
+                        <CardTitle className="text-2xl font-black text-slate-800">GH₵{totals.revenues.toFixed(2)}</CardTitle>
+                    </CardHeader>
+                </Card>
+                <Card className="border-none shadow-md bg-gradient-to-br from-slate-50 to-white">
+                    <CardHeader className="pb-2">
+                        <CardDescription className="text-slate-500 font-bold uppercase tracking-wider text-xs">Highest Cost Center</CardDescription>
+                        <CardTitle className="text-xl font-black text-slate-800">
+                            {highestExpenseDept.val > 0 ? (
+                                <>{highestExpenseDept.name} <span className="text-xs text-slate-400 font-medium">(GH₵{highestExpenseDept.val.toFixed(2)})</span></>
+                            ) : 'None'}
+                        </CardTitle>
+                    </CardHeader>
+                </Card>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-6">
+                {/* Table Breakdown */}
+                <Card className="lg:col-span-2 border-none shadow-md">
+                    <CardHeader className="flex flex-row justify-between items-center pb-2">
+                        <div>
+                            <CardTitle className="text-lg font-bold text-slate-800">Departmental Allocation & Cost Breakdown</CardTitle>
+                            <CardDescription>Breakdown of revenues, expenses, and net allocation by cost center.</CardDescription>
+                        </div>
+                        <Button variant="outline" size="sm" onClick={() => window.print()} className="print:hidden">
+                            <Printer className="mr-2 h-4 w-4" /> Print
+                        </Button>
+                    </CardHeader>
+                    <CardContent className="pt-2">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Department / Cost Center</TableHead>
+                                    <TableHead className="text-right">Expenses</TableHead>
+                                    <TableHead className="text-right">Revenues</TableHead>
+                                    <TableHead className="text-right">Net Allocation</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {rows.map(r => (
+                                    <TableRow key={r.id} className="hover:bg-slate-50/50 transition-colors">
+                                        <TableCell className="font-bold text-slate-700">{r.name}</TableCell>
+                                        <TableCell className="text-right text-rose-600 font-mono">
+                                            {r.expenses > 0 ? `GH₵${r.expenses.toFixed(2)}` : 'GH₵0.00'}
+                                        </TableCell>
+                                        <TableCell className="text-right text-emerald-600 font-mono">
+                                            {r.revenues > 0 ? `GH₵${r.revenues.toFixed(2)}` : 'GH₵0.00'}
+                                        </TableCell>
+                                        <TableCell className={cn(
+                                            "text-right font-black font-mono",
+                                            r.net >= 0 ? "text-emerald-700" : "text-rose-700"
+                                        )}>
+                                            {r.net >= 0 ? '+' : ''}GH₵{r.net.toFixed(2)}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                <TableRow className="bg-slate-100 font-bold border-t-2 border-slate-300">
+                                    <TableCell>Totals</TableCell>
+                                    <TableCell className="text-right text-rose-700 font-mono">GH₵{totals.expenses.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right text-emerald-700 font-mono">GH₵{totals.revenues.toFixed(2)}</TableCell>
+                                    <TableCell className={cn(
+                                        "text-right font-black font-mono",
+                                        totals.net >= 0 ? "text-emerald-800" : "text-rose-800"
+                                    )}>
+                                        {totals.net >= 0 ? '+' : ''}GH₵{totals.net.toFixed(2)}
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+
+                {/* Progress Indicators */}
+                <Card className="border-none shadow-md">
+                    <CardHeader>
+                        <CardTitle className="text-lg font-bold text-slate-800">Expense Share %</CardTitle>
+                        <CardDescription>Visual distribution of departmental expenses.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {rows.map(r => {
+                            const percent = totals.expenses > 0 ? (r.expenses / totals.expenses) * 100 : 0;
+                            return (
+                                <div key={r.id} className="space-y-1">
+                                    <div className="flex justify-between text-xs font-bold text-slate-700">
+                                        <span>{r.name}</span>
+                                        <span className="font-mono text-slate-500">{percent.toFixed(1)}%</span>
+                                    </div>
+                                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                        <div 
+                                            className={cn(
+                                                "h-2 rounded-full transition-all duration-500",
+                                                r.id === 'General' ? "bg-slate-500" :
+                                                r.id === 'Academics' ? "bg-indigo-600" :
+                                                r.id === 'Sports' ? "bg-amber-500" :
+                                                r.id === 'Transport' ? "bg-blue-500" :
+                                                r.id === 'Catering' ? "bg-emerald-500" :
+                                                "bg-rose-500"
+                                            )} 
+                                            style={{ width: `${percent}%` }}
+                                        />
+                                    </div>
+                                    <div className="text-[10px] text-right text-slate-400 font-mono font-medium">
+                                        GH₵{r.expenses.toFixed(2)}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
+
 // --- MAIN PAGE ---
 export default function FinancialReportsPage() {
     const firestore = useFirestore();
@@ -532,6 +744,7 @@ export default function FinancialReportsPage() {
                         <TabsTrigger value="tb"><Scale className="h-4 w-4 mr-2"/> Trial Balance</TabsTrigger>
                         <TabsTrigger value="pl"><TrendingUp className="h-4 w-4 mr-2"/> Income Statement</TabsTrigger>
                         <TabsTrigger value="bs"><Landmark className="h-4 w-4 mr-2"/> Balance Sheet</TabsTrigger>
+                        <TabsTrigger value="departments"><BarChart className="h-4 w-4 mr-2"/> Departmental Costs</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="ledger" className="mt-4">
@@ -540,6 +753,9 @@ export default function FinancialReportsPage() {
                     <TabsContent value="tb" className="mt-4"><TrialBalance data={calculatedBalances} /></TabsContent>
                     <TabsContent value="pl" className="mt-4"><IncomeStatement data={calculatedBalances} /></TabsContent>
                     <TabsContent value="bs" className="mt-4"><BalanceSheet data={calculatedBalances} netIncome={netIncome} /></TabsContent>
+                    <TabsContent value="departments" className="mt-4">
+                        <DepartmentalCosts accounts={calculatedBalances} journals={allJournals || []} dateRange={dateRange} />
+                    </TabsContent>
                 </Tabs>
             )}
 

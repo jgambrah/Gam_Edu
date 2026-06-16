@@ -43,3 +43,12 @@ export function getGradeFromScale(score: number, gradingScale?: GradeBracket[]) 
     autoRemark: lowestBracket?.remark || 'Fail' 
   };
 }
+
+export const COST_CENTERS = [
+  { id: 'General', name: 'General / Admin' },
+  { id: 'Academics', name: 'Academics' },
+  { id: 'Sports', name: 'Sports & Athletics' },
+  { id: 'Transport', name: 'Transport & Fleet' },
+  { id: 'Catering', name: 'Boarding & Catering' },
+  { id: 'Maintenance', name: 'Maintenance & Utilities' }
+];

@@ -27,7 +27,7 @@ import { Loader2, Plus, Receipt, Printer, Landmark, Banknote, ShieldCheck, Eye, 
 import { Account, JournalLine } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
 import { AppLogo } from '@/components/icons/app-logo';
-import { cn } from '@/lib/utils';
+import { cn, COST_CENTERS } from '@/lib/utils';
 import { SearchableAccountSelect } from '@/components/ui/account-select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -56,6 +56,7 @@ const pvSchema = z.object({
     vatRateId: z.string(),
     debitAccountId: z.string().min(1, "Select an expense or asset account."),
     creditAccountId: z.string().min(1, "Select a bank or cash account."),
+    costCenter: z.string().default('General'),
     // Single mode fields
     payee: z.string().optional(),
     grossAmount: z.coerce.number().optional(),
@@ -317,6 +318,7 @@ function PaymentVoucherForm({
             debitAccountId: '',
             creditAccountId: '',
             grossAmount: 0,
+            costCenter: 'General',
             bulkPayees: [{ payee: '', grossAmount: 0, description: '' }]
         }
     });
@@ -414,6 +416,7 @@ function PaymentVoucherForm({
                     whtRateId: values.whtRateId,
                     vatRateId: values.vatRateId,
                     status: voucherStatus,
+                    costCenter: values.costCenter || 'General',
                     preparedBy: user.uid,
                     preparedByName: user.displayName || user.email,
                     schoolId: schoolId,
@@ -423,18 +426,18 @@ function PaymentVoucherForm({
                 if (voucherStatus === 'Processed') {
                     const journalLines: JournalLine[] = [];
                     const debitAcc = accounts.find(a => a.id === values.debitAccountId);
-                    journalLines.push({ accountId: values.debitAccountId, accountName: debitAcc?.name || 'Account', debit: values.grossAmount || 0, credit: 0 });
+                    journalLines.push({ accountId: values.debitAccountId, accountName: debitAcc?.name || 'Account', debit: values.grossAmount || 0, credit: 0, costCenter: values.costCenter || 'General' });
 
                     const creditAcc = accounts.find(a => a.id === values.creditAccountId);
-                    journalLines.push({ accountId: values.creditAccountId, accountName: creditAcc?.name || 'Cash/Bank', debit: 0, credit: net });
+                    journalLines.push({ accountId: values.creditAccountId, accountName: creditAcc?.name || 'Cash/Bank', debit: 0, credit: net, costCenter: values.costCenter || 'General' });
 
                     if (wht > 0) {
                         const whtAcc = accounts.find(a => a.name.toLowerCase().includes('withholding tax')) || accounts.find(a => a.name.toLowerCase().includes('wht'));
-                        journalLines.push({ accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT', accountName: whtAcc?.name || 'WHT Payable', debit: 0, credit: wht });
+                        journalLines.push({ accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT', accountName: whtAcc?.name || 'WHT Payable', debit: 0, credit: wht, costCenter: values.costCenter || 'General' });
                     }
                     if (vat > 0) {
                         const vatAcc = accounts.find(a => a.name.toLowerCase().includes('vat input')) || accounts.find(a => a.name.toLowerCase().includes('vat'));
-                        journalLines.push({ accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT', accountName: vatAcc?.name || 'VAT Input', debit: vat, credit: 0 });
+                        journalLines.push({ accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT', accountName: vatAcc?.name || 'VAT Input', debit: vat, credit: 0, costCenter: values.costCenter || 'General' });
                     }
 
                     const journalRef = doc(collection(firestore, 'journal_entries'));
@@ -489,6 +492,7 @@ function PaymentVoucherForm({
                         whtRateId: values.whtRateId,
                         vatRateId: values.vatRateId,
                         status: rowStatus,
+                        costCenter: values.costCenter || 'General',
                         preparedBy: user.uid,
                         preparedByName: user.displayName || user.email,
                         schoolId: schoolId,
@@ -503,18 +507,18 @@ function PaymentVoucherForm({
 
                         const journalLines: JournalLine[] = [];
                         const debitAcc = accounts.find(a => a.id === values.debitAccountId);
-                        journalLines.push({ accountId: values.debitAccountId, accountName: debitAcc?.name || 'Account', debit: gross, credit: 0 });
+                        journalLines.push({ accountId: values.debitAccountId, accountName: debitAcc?.name || 'Account', debit: gross, credit: 0, costCenter: values.costCenter || 'General' });
 
                         const creditAcc = accounts.find(a => a.id === values.creditAccountId);
-                        journalLines.push({ accountId: values.creditAccountId, accountName: creditAcc?.name || 'Cash/Bank', debit: 0, credit: net });
+                        journalLines.push({ accountId: values.creditAccountId, accountName: creditAcc?.name || 'Cash/Bank', debit: 0, credit: net, costCenter: values.costCenter || 'General' });
 
                         if (wht > 0) {
                             const whtAcc = accounts.find(a => a.name.toLowerCase().includes('withholding tax')) || accounts.find(a => a.name.toLowerCase().includes('wht'));
-                            journalLines.push({ accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT', accountName: whtAcc?.name || 'WHT Payable', debit: 0, credit: wht });
+                            journalLines.push({ accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT', accountName: whtAcc?.name || 'WHT Payable', debit: 0, credit: wht, costCenter: values.costCenter || 'General' });
                         }
                         if (vat > 0) {
                             const vatAcc = accounts.find(a => a.name.toLowerCase().includes('vat input')) || accounts.find(a => a.name.toLowerCase().includes('vat'));
-                            journalLines.push({ accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT', accountName: vatAcc?.name || 'VAT Input', debit: vat, credit: 0 });
+                            journalLines.push({ accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT', accountName: vatAcc?.name || 'VAT Input', debit: vat, credit: 0, costCenter: values.costCenter || 'General' });
                         }
 
                         const journalRef = doc(collection(firestore, 'journal_entries'));
@@ -715,6 +719,27 @@ function PaymentVoucherForm({
                 </div>
             </div>
 
+            {/* Department / Cost Center */}
+            <div className="space-y-2">
+                <Label className="font-bold text-xs uppercase tracking-widest text-slate-500">Department / Cost Center</Label>
+                <Select 
+                    value={form.watch('costCenter') || 'General'} 
+                    onValueChange={(val) => form.setValue('costCenter', val)}
+                >
+                    <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold">
+                        <SelectValue placeholder="Select Department..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {COST_CENTERS.map(cc => (
+                            <SelectItem key={cc.id} value={cc.id} className="font-semibold">{cc.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight mt-1">
+                    Categorize this expense by departmental cost center (e.g. Sports, Fleet/Transport, Academics).
+                </p>
+            </div>
+
             {/* Debit/Credit accounts */}
             <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2 flex flex-col justify-end">
@@ -826,7 +851,8 @@ export default function PaymentVouchersPage() {
                 accountId: pv.debitAccountId,
                 accountName: debitAcc?.name || 'Account',
                 debit: pv.grossAmount || 0,
-                credit: 0
+                credit: 0,
+                costCenter: pv.costCenter || 'General'
             });
 
             const creditAcc = accounts.find(a => a.id === pv.creditAccountId);
@@ -834,7 +860,8 @@ export default function PaymentVouchersPage() {
                 accountId: pv.creditAccountId,
                 accountName: creditAcc?.name || 'Cash/Bank',
                 debit: 0,
-                credit: pv.netPayable || 0
+                credit: pv.netPayable || 0,
+                costCenter: pv.costCenter || 'General'
             });
 
             if (pv.whtAmount > 0) {
@@ -843,7 +870,8 @@ export default function PaymentVouchersPage() {
                     accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT',
                     accountName: whtAcc?.name || 'WHT Payable',
                     debit: 0,
-                    credit: pv.whtAmount
+                    credit: pv.whtAmount,
+                    costCenter: pv.costCenter || 'General'
                 });
             }
             if (pv.vatAmount > 0) {
@@ -852,7 +880,8 @@ export default function PaymentVouchersPage() {
                     accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT',
                     accountName: vatAcc?.name || 'VAT Input',
                     debit: pv.vatAmount || 0,
-                    credit: 0
+                    credit: 0,
+                    costCenter: pv.costCenter || 'General'
                 });
             }
 

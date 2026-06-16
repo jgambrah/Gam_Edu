@@ -30,7 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AppLogo } from '@/components/icons/app-logo';
 import { Account, JournalLine, JournalEntry, journalEntrySchema, ACCOUNT_TYPES, accountSchema } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn, COST_CENTERS } from '@/lib/utils';
 import { SearchableAccountSelect } from '@/components/ui/account-select';
 
 // --- CONSTANTS: GHANA TAX 2025/2026 (ACT 1151 COMPLIANT) ---
@@ -58,6 +58,7 @@ const pvSchema = z.object({
     vatRateId: z.string(),
     debitAccountId: z.string().min(1, "Select an expense or asset account."),
     creditAccountId: z.string().min(1, "Select a bank or cash account."),
+    costCenter: z.string().default('General'),
 });
 
 type PVFormValues = z.infer<typeof pvSchema>;
@@ -156,6 +157,7 @@ function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Acco
             amount: 0,
             debitAccountId: '',
             creditAccountId: '',
+            costCenter: 'General',
         }
     });
 
@@ -174,8 +176,8 @@ function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Acco
             const creditAcc = accounts.find(a => a.id === values.creditAccountId);
 
             const lines: JournalLine[] = [
-                { accountId: values.debitAccountId, accountName: debitAcc?.name || 'Account', debit: values.amount, credit: 0 },
-                { accountId: values.creditAccountId, accountName: creditAcc?.name || 'Account', debit: 0, credit: values.amount }
+                { accountId: values.debitAccountId, accountName: debitAcc?.name || 'Account', debit: values.amount, credit: 0, costCenter: values.costCenter || 'General' },
+                { accountId: values.creditAccountId, accountName: creditAcc?.name || 'Account', debit: 0, credit: values.amount, costCenter: values.costCenter || 'General' }
             ];
 
             batch.set(journalRef, {
@@ -211,6 +213,24 @@ function JournalEntryForm({ accounts, schoolId, onEntryAdded }: { accounts: Acco
                         )} />
                         <FormField control={form.control} name="amount" render={({ field }) => (
                             <FormItem><FormLabel>{"Amount (GH₵)"}</FormLabel><FormControl><Input type="number" step="0.01" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="costCenter" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Department / Cost Center</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value || 'General'}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Department..." />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {COST_CENTERS.map(cc => (
+                                            <SelectItem key={cc.id} value={cc.id}>{cc.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
                         )} />
                         <div className="grid grid-cols-2 gap-4">
                             <FormField control={form.control} name="debitAccountId" render={({ field }) => (
@@ -369,6 +389,7 @@ function PaymentVoucherForm({
             vatRateId: 'vat-none',
             debitAccountId: '',
             creditAccountId: '',
+            costCenter: 'General',
         }
     });
 
@@ -415,23 +436,24 @@ function PaymentVoucherForm({
                 preparedBy: user.uid,
                 preparedByName: user.displayName || user.email,
                 schoolId: schoolId,
+                costCenter: values.costCenter || 'General',
                 createdAt: timestamp
             });
 
             const journalLines: JournalLine[] = [];
             const debitAcc = accounts.find(a => a.id === values.debitAccountId);
-            journalLines.push({ accountId: values.debitAccountId, accountName: debitAcc?.name || 'Account', debit: values.grossAmount, credit: 0 });
+            journalLines.push({ accountId: values.debitAccountId, accountName: debitAcc?.name || 'Account', debit: values.grossAmount, credit: 0, costCenter: values.costCenter || 'General' });
 
             const creditAcc = accounts.find(a => a.id === values.creditAccountId);
-            journalLines.push({ accountId: values.creditAccountId, accountName: creditAcc?.name || 'Cash/Bank', debit: 0, credit: net });
+            journalLines.push({ accountId: values.creditAccountId, accountName: creditAcc?.name || 'Cash/Bank', debit: 0, credit: net, costCenter: values.costCenter || 'General' });
 
             if (wht > 0) {
                 const whtAcc = accounts.find(a => a.name.toLowerCase().includes('withholding tax')) || accounts.find(a => a.name.toLowerCase().includes('wht'));
-                journalLines.push({ accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT', accountName: whtAcc?.name || 'WHT Payable', debit: 0, credit: wht });
+                journalLines.push({ accountId: whtAcc?.id || 'WHT-PAYABLE-DEFAULT', accountName: whtAcc?.name || 'WHT Payable', debit: 0, credit: wht, costCenter: values.costCenter || 'General' });
             }
             if (vat > 0) {
                 const vatAcc = accounts.find(a => a.name.toLowerCase().includes('vat input')) || accounts.find(a => a.name.toLowerCase().includes('vat'));
-                journalLines.push({ accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT', accountName: vatAcc?.name || 'VAT Input', debit: vat, credit: 0 });
+                journalLines.push({ accountId: vatAcc?.id || 'VAT-INPUT-DEFAULT', accountName: vatAcc?.name || 'VAT Input', debit: vat, credit: 0, costCenter: values.costCenter || 'General' });
             }
 
             const journalRef = doc(collection(firestore, 'journal_entries'));
@@ -499,6 +521,26 @@ function PaymentVoucherForm({
                 <div><p className="text-[10px] uppercase text-slate-400 font-bold">VAT Added</p><p className="text-sm font-bold text-emerald-600">{" +GH₵ " + calculations.vat.toFixed(2)}</p></div>
                 <div><p className="text-[10px] uppercase text-slate-400 font-bold">WHT Deducted</p><p className="text-sm font-bold text-rose-600">{" -GH₵ " + calculations.wht.toFixed(2)}</p></div>
                 <div className="bg-indigo-50 rounded-lg py-1"><p className="text-[10px] uppercase text-indigo-400 font-bold">Net Payable</p><p className="text-sm font-black text-indigo-700">{" GH₵ " + calculations.net.toFixed(2)}</p></div>
+            </div>
+
+            <div className="space-y-2">
+                <Label className="font-bold text-xs uppercase tracking-widest text-slate-500">Department / Cost Center</Label>
+                <Select 
+                    value={form.watch('costCenter') || 'General'} 
+                    onValueChange={(val) => form.setValue('costCenter', val)}
+                >
+                    <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold">
+                        <SelectValue placeholder="Select Department..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {COST_CENTERS.map(cc => (
+                            <SelectItem key={cc.id} value={cc.id} className="font-semibold">{cc.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight mt-1">
+                    Categorize this expense by departmental cost center (e.g. Sports, Fleet/Transport, Academics).
+                </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">

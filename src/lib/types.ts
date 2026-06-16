@@ -769,6 +769,7 @@ export type JournalLine = {
     accountName: string;
     debit: number;
     credit: number;
+    costCenter?: string; // Department / Cost Center e.g. "Sports", "Transport"
 };
 
 export type JournalEntry = {
@@ -788,6 +789,7 @@ export const journalEntrySchema = z.object({
     amount: z.coerce.number().min(0.01, "Amount must be positive"),
     debitAccountId: z.string().min(1, "Debit account is required"),
     creditAccountId: z.string().min(1, "Credit account is required"),
+    costCenter: z.string().optional(),
 });
 
 export type InventoryTransaction = {
