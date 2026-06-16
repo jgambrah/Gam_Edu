@@ -248,6 +248,11 @@ export default function SchoolProfilePage() {
 
     setIsSaving(true);
     try {
+        const cleanedGrading = gradingSystem
+            .filter((b) => b.grade && b.grade.trim() !== '')
+            .sort((a, b) => b.minScore - a.minScore);
+        setGradingSystem(cleanedGrading);
+
         const brandingData = {
             name, motto, address, phone, email, website, logoUrl, brandColor,
             secondaryColor,
@@ -281,7 +286,7 @@ export default function SchoolProfilePage() {
             enablePaystack,
             enableTransflow,
             reportCardPositionMode,
-            gradingSystem,
+            gradingSystem: cleanedGrading,
             updatedAt: serverTimestamp()
         };
 
