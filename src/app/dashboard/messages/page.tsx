@@ -1586,21 +1586,28 @@ export default function MessagesPage() {
                                 const chatRole = isGroup ? `${chat.participants.length} members` : other.role;
                                 const gradient = getAvatarGradient(chatName);
 
+                                const unreadCount = chat.unreadCount?.[user?.uid || ''] || 0;
+
                                 return (
                                     <button
                                         key={chat.id}
                                         onClick={() => setSelectedChatId(chat.id)}
                                         className={cn(
-                                            "w-full flex items-center gap-3 px-3 py-3.5 rounded-xl transition-all text-left group",
+                                            "w-full flex items-center gap-3 px-3.5 py-4 rounded-2xl transition-all text-left relative group/item overflow-hidden",
                                             isActive
-                                                ? "bg-indigo-50 border border-indigo-100"
-                                                : "hover:bg-slate-50 border border-transparent"
+                                                ? "bg-indigo-50/70 border border-indigo-100/50 shadow-sm"
+                                                : "hover:bg-slate-50 border border-transparent hover:translate-x-1"
                                         )}
                                     >
+                                        {/* Left Accent indicator for active */}
+                                        {isActive && (
+                                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-md" />
+                                        )}
+
                                         {/* Avatar */}
                                         <div className="relative shrink-0">
                                             <div className={cn(
-                                                "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-base bg-gradient-to-br shadow-sm overflow-hidden",
+                                                "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-base bg-gradient-to-br shadow-sm overflow-hidden transition-transform group-hover/item:scale-105",
                                                 gradient
                                             )}>
                                                 {isGroup ? (
@@ -1625,22 +1632,31 @@ export default function MessagesPage() {
                                             <div className="flex items-baseline justify-between gap-1">
                                                 <span className={cn(
                                                     "font-semibold text-sm truncate",
-                                                    isActive ? "text-indigo-900" : "text-slate-800"
+                                                    isActive ? "text-indigo-950 font-bold" : "text-slate-800"
                                                 )}>
                                                     {chatName}
                                                 </span>
-                                                <span className="text-[10px] text-slate-400 shrink-0 font-medium">
+                                                <span className="text-[10px] text-slate-400 shrink-0 font-medium font-mono">
                                                     {formatChatTime(chat.lastMessageTime)}
                                                 </span>
                                             </div>
                                             <div className="flex items-center justify-between gap-1 mt-0.5">
-                                                <p className="text-xs text-slate-400 truncate">{chat.lastMessage}</p>
-                                                <span className={cn(
-                                                    "text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0",
-                                                    isGroup ? "bg-indigo-100 text-indigo-700 border-indigo-200" : getRoleColor(other.role)
-                                                )}>
-                                                    {isGroup ? "Group" : other.role}
-                                                </span>
+                                                <p className={cn("text-xs truncate flex-1", unreadCount > 0 ? "text-slate-900 font-semibold" : "text-slate-400")}>
+                                                    {chat.lastMessage}
+                                                </p>
+                                                <div className="flex items-center gap-1.5 shrink-0">
+                                                    {unreadCount > 0 && (
+                                                        <span className="text-[10px] font-black h-5 min-w-[20px] px-1.5 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm shadow-rose-200 animate-pulse shrink-0">
+                                                            {unreadCount}
+                                                        </span>
+                                                    )}
+                                                    <span className={cn(
+                                                        "text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0",
+                                                        isGroup ? "bg-indigo-100 text-indigo-700 border-indigo-200" : getRoleColor(other.role)
+                                                    )}>
+                                                        {isGroup ? "Group" : other.role}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </button>
@@ -1662,8 +1678,8 @@ export default function MessagesPage() {
                         <div 
                             onClick={() => activeChat.isGroup && setIsGroupDetailsOpen(true)}
                             className={cn(
-                                "h-[72px] px-5 flex items-center justify-between bg-white border-b border-slate-100 shrink-0",
-                                activeChat.isGroup && "cursor-pointer hover:bg-slate-50 transition-colors"
+                                "h-[72px] px-5 flex items-center justify-between border-b border-slate-100/80 sticky top-0 backdrop-blur-md bg-white/75 z-20 shrink-0",
+                                activeChat.isGroup && "cursor-pointer hover:bg-white/90 transition-colors"
                             )}
                         >
                             <div className="flex items-center gap-3">
@@ -1832,12 +1848,12 @@ export default function MessagesPage() {
                                                             )}
 
                                                             {/* Bubble Wrapper */}
-                                                            <div className="flex flex-col max-w-[65%]">
+                                                            <div className="flex flex-col max-w-[65%] animate-in fade-in slide-in-from-bottom-2 duration-200 zoom-in-95">
                                                                 {/* Bubble */}
                                                                 <div className={cn(
                                                                     "px-4 py-2.5 text-sm leading-relaxed shadow-sm",
                                                                     isMe
-                                                                        ? "bg-indigo-600 text-white rounded-2xl rounded-br-sm"
+                                                                        ? "bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-100/30 border border-indigo-500/10 rounded-2xl rounded-br-sm"
                                                                         : "bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-bl-sm",
                                                                     !isLastInGroup && isMe && "rounded-br-2xl rounded-tr-sm",
                                                                     !isLastInGroup && !isMe && "rounded-bl-2xl rounded-tl-sm",
@@ -1851,11 +1867,11 @@ export default function MessagesPage() {
                                                                     {/* Quoted Message */}
                                                                     {msg.replyTo && !msg.isDeleted && (
                                                                         <div className={cn(
-                                                                            "border-l-4 rounded px-2.5 py-1 mb-2 text-xs flex flex-col gap-0.5 max-w-full truncate bg-black/5",
-                                                                            isMe ? "border-indigo-300 text-indigo-100" : "border-indigo-500 text-slate-600"
+                                                                            "border-l-4 rounded px-3 py-1.5 mb-2 text-xs flex flex-col gap-0.5 max-w-full truncate bg-black/10 backdrop-blur-sm",
+                                                                            isMe ? "border-indigo-300 text-indigo-100" : "border-indigo-600 text-slate-600"
                                                                         )}>
-                                                                            <span className="font-bold text-[10px] uppercase tracking-wider">{msg.replyTo.senderName}</span>
-                                                                            <span className="truncate">{msg.replyTo.text}</span>
+                                                                            <span className="font-bold text-[10px] uppercase tracking-wider opacity-90">{msg.replyTo.senderName}</span>
+                                                                            <span className="opacity-80 truncate">{msg.replyTo.text}</span>
                                                                         </div>
                                                                     )}
 
@@ -2009,7 +2025,7 @@ export default function MessagesPage() {
                                                             {/* Actions / Reactions overlay on Hover */}
                                                             {hoveredMessageId === msg.id && !msg.isDeleted && (
                                                                 <div className={cn(
-                                                                    "flex items-center gap-1.5 bg-white border border-slate-150/80 shadow-md rounded-full px-2 py-1 z-15 animate-in fade-in duration-100 mx-1 mb-1 shrink-0",
+                                                                    "flex items-center gap-1.5 backdrop-blur-md bg-white/90 border border-slate-100/85 shadow-lg rounded-full px-2 py-1 z-15 animate-in fade-in zoom-in-95 duration-150 mx-1 mb-1 shrink-0",
                                                                     isMe ? "order-first" : "order-last"
                                                                 )}>
                                                                     {/* Reactions Tray */}
@@ -2022,8 +2038,8 @@ export default function MessagesPage() {
                                                                                     key={emoji}
                                                                                     onClick={() => handleReactToMessage(msg.id, emoji)}
                                                                                     className={cn(
-                                                                                        "h-6 w-6 rounded-full flex items-center justify-center text-sm hover:bg-slate-100 transition-all hover:scale-125",
-                                                                                        hasReacted && "bg-indigo-50"
+                                                                                        "h-6 w-6 rounded-full flex items-center justify-center text-sm hover:bg-slate-100/50 transition-all hover:scale-130 active:scale-95",
+                                                                                        hasReacted && "bg-indigo-50/50"
                                                                                     )}
                                                                                 >
                                                                                     {emoji}
@@ -2088,7 +2104,7 @@ export default function MessagesPage() {
                         {/* Message Input */}
                         <div className="px-5 py-4 bg-white border-t border-slate-100 shrink-0 relative">
                             {isEmojiPickerOpen && (
-                                <div className="absolute bottom-[80px] left-5 bg-white border border-slate-150 shadow-2xl rounded-2xl p-3 z-30 animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[320px]">
+                                <div className="absolute bottom-[80px] left-5 bg-white/95 backdrop-blur-lg border border-slate-150 shadow-2xl rounded-2xl p-3 z-30 animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[320px]">
                                     <div className="flex justify-between items-center mb-2 pb-1 border-b border-slate-100">
                                         <span className="text-[10px] font-black uppercase text-slate-400">Quick Emojis</span>
                                         <button type="button" onClick={() => setIsEmojiPickerOpen(false)} className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full hover:bg-slate-100">
@@ -2254,26 +2270,31 @@ export default function MessagesPage() {
                     </>
                 ) : (
                     /* Empty state when no chat selected */
-                    <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-slate-50/50">
+                    <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-slate-50/60 relative overflow-hidden">
+                        {/* Soft decorative visual mesh blobs */}
+                        <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] rounded-full bg-indigo-100/30 blur-3xl pointer-events-none" />
+                        <div className="absolute bottom-[-10%] left-[-10%] w-[350px] h-[350px] rounded-full bg-violet-100/30 blur-3xl pointer-events-none" />
+
                         <div
-                            className="h-24 w-24 rounded-3xl flex items-center justify-center shadow-xl"
-                            style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+                            className="h-24 w-24 rounded-3xl flex items-center justify-center shadow-xl animate-bounce duration-3000"
+                            style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
                         >
-                            <MessageCircle className="h-11 w-11 text-white" />
+                            <MessageCircle className="h-11 w-11 text-white animate-pulse" />
                         </div>
-                        <div className="text-center space-y-2 max-w-xs">
-                            <h2 className="text-xl font-black text-slate-700 tracking-tight">Your Messages</h2>
-                            <p className="text-sm text-slate-400 leading-relaxed">
-                                Select a conversation from the sidebar, or start a new one with a teacher or classmate.
+                        <div className="text-center space-y-2 max-w-sm z-10 px-4">
+                            <h2 className="text-2xl font-black text-slate-800 tracking-tight leading-none">School Community Chat</h2>
+                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-1">GAM Edu Messaging</p>
+                            <p className="text-sm text-slate-500 leading-relaxed max-w-xs mx-auto mt-2">
+                                Select any active conversation on the left, or launch a direct thread to talk with classmates, parents, and school staff.
                             </p>
                         </div>
                         <button
                             onClick={() => setIsNewChatOpen(true)}
                             disabled={!schoolId}
-                            className="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                            className="flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-100 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 z-10"
                         >
                             <Plus className="h-4 w-4" />
-                            New Conversation
+                            Start New Chat
                         </button>
                     </div>
                 )}
