@@ -113,3 +113,123 @@ export async function generateBudgetInsightsAction(
     return { success: false, error: `AI Error: ${e.message || "Could not generate insights."}` };
   }
 }
+
+/**
+ * Server action to generate an AI staff appraisal draft based on metrics.
+ */
+export async function generateStaffAppraisalAction(
+  schoolId: string,
+  staffName: string,
+  metrics: { teaching: number; punctuality: number; engagement: number; professionalism: number; }
+) {
+  if (!schoolId) return { success: false, error: "School ID missing" };
+
+  const creditRes = await checkAndSpendCredits(schoolId, 5);
+  if (!creditRes.success) return { success: false, error: "Not enough AI credits to run analysis." };
+
+  try {
+    const prompt = `
+      You are an expert HR consultant specializing in school staff evaluations. 
+      Draft a professional performance appraisal review for the staff member "${staffName}".
+      
+      Performance Scores (scored 1 to 5, where 5 is outstanding):
+      - Teaching Quality / Core Job Execution: ${metrics.teaching}/5
+      - Punctuality & Attendance: ${metrics.punctuality}/5
+      - Student & Team Engagement: ${metrics.engagement}/5
+      - Professionalism & Behavior: ${metrics.professionalism}/5
+      
+      Based on these metrics, write a concise appraisal draft consisting of:
+      1. Strengths: Highlight 2 specific positive traits or key performance points aligned with these scores.
+      2. Areas for Improvement: Identify 1-2 growth opportunities that could help this employee progress.
+      3. Actionable Goals: Suggest 1-2 practical, professional development goals for the upcoming semester.
+      
+      Provide the output as a clean, structured JSON object with key fields:
+      - strengths: string
+      - improvements: string
+      - goals: string
+      
+      Output ONLY the raw JSON object, no markdown code block wrapper, no surrounding text.
+    `;
+
+    const response = await ai.generate({
+      model: 'googleai/gemini-3-flash-preview',
+      prompt: prompt,
+      config: { 
+        temperature: 0.5,
+        responseMimeType: 'application/json'
+      }
+    });
+
+    const text = response.text;
+    if (!text) {
+        throw new Error("AI Service returned empty.");
+    }
+
+    const data = JSON.parse(text.trim());
+    return { success: true, data };
+  } catch (e: any) {
+    console.error("AI Staff Appraisal Error:", e);
+    return { success: false, error: e.message || "Failed to generate AI appraisal draft." };
+  }
+}
+
+/**
+ * Server action to generate an AI Executive Briefing / Health Audit for the Director.
+ */
+export async function generateSchoolExecutiveBriefingAction(
+  schoolId: string,
+  schoolName: string,
+  stats: {
+    totalStudents: number;
+    attendanceRateToday: number;
+    totalStaff: number;
+    financials: {
+      totalOutstanding: number;
+      totalRevenue: number;
+      collectionRate: number;
+      revenueByType: { name: string; value: number }[];
+    };
+    classSizes: { name: string; students: number }[];
+    announcementsCount: number;
+  }
+) {
+  if (!schoolId) return { success: false, error: "School ID missing" };
+
+  // Cost: 5 credits per executive briefing analysis
+  const creditRes = await checkAndSpendCredits(schoolId, 5);
+  if (!creditRes.success) return { success: false, error: "Not enough AI credits to run the executive briefing." };
+
+  try {
+    const prompt = `
+      You are an elite educational executive advisor and school auditor. Analyze the following live health metrics for "${schoolName}".
+      
+      Metrics Dashboard Data:
+      ${JSON.stringify(stats, null, 2)}
+      
+      Please write a high-impact executive school briefing for the Executive Director:
+      1. EXECUTIVE SUMMARY: Provide a concise (2-3 sentences) health check of the institution's operations, academic balance, and financial stability.
+      2. RISK & CAUTIONS: Identify 2-3 specific risks based on these numbers (e.g., high outstanding student debt, low collection rate, class size imbalance, low attendance rate, or low communication metrics).
+      3. ACTIONABLE PATHWAYS: Provide 3 strategic, high-value steps for the Director to optimize revenue collection, balance academic workloads, and improve general operations.
+      
+      Format with clear markdown titles (bold H3/H4 tags), clean spacing, and bullet points. Make it look like a premium McKinsey or Silicon Valley consulting brief. Do not mention "Credits" or technical AI features.
+    `;
+
+    const response = await ai.generate({
+      model: 'googleai/gemini-3-flash-preview',
+      prompt: prompt,
+      config: { temperature: 0.4 }
+    });
+
+    const text = response.text;
+    if (!text) {
+      throw new Error("AI Service returned an empty response.");
+    }
+
+    return { success: true, text: text.trim() };
+  } catch (e: any) {
+    console.error("AI School Executive Briefing Error:", e);
+    return { success: false, error: e.message || "Failed to generate AI executive briefing." };
+  }
+}
+
+

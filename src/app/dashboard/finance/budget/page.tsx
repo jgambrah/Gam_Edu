@@ -9,7 +9,7 @@ import {
 import { 
   Loader2, Plus, Calculator, Save, FileText, Download, Printer, Trash2, 
   Eye, TrendingUp, TrendingDown, RefreshCw, Scale, AlertCircle, Percent,
-  Sparkles, ThumbsUp, ThumbsDown, CheckCircle2, XCircle, AlertTriangle, Edit
+  Sparkles, ThumbsUp, ThumbsDown, CheckCircle2, XCircle, AlertTriangle, Edit, Copy, Check
 } from 'lucide-react';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -26,6 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -95,10 +96,15 @@ export default function BudgetPage() {
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedBudgetId, setSelectedBudgetId] = useState<string>('');
+  const [selectedCostCenter, setSelectedCostCenter] = useState<string>('all');
   const [isExporting, setIsExporting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  
+  // Rejection Dialog state
+  const [isRejectOpen, setIsRejectOpen] = useState(false);
+  const [rejectionReasonInput, setRejectionReasonInput] = useState('');
 
   // Budget items creation state
   const [tempItems, setTempItems] = useState<Omit<BudgetItem, 'id' | 'budgetId' | 'schoolId' | 'createdAt'>[]>([]);
@@ -200,7 +206,12 @@ export default function BudgetPage() {
     let totalBudgetedExp = 0;
     let totalActualExp = 0;
 
-    const items = currentBudgetItems.map(item => {
+    // Filter currentBudgetItems by selectedCostCenter if not 'all'
+    const filteredBudgetItems = selectedCostCenter === 'all'
+      ? currentBudgetItems
+      : currentBudgetItems.filter(item => (item.costCenter || 'General') === selectedCostCenter);
+
+    const items = filteredBudgetItems.map(item => {
       let actual = 0;
 
       activeJournals.forEach(j => {
@@ -254,7 +265,7 @@ export default function BudgetPage() {
       totalBudgetedExp,
       totalActualExp,
     };
-  }, [activeBudget, currentBudgetItems, journals]);
+  }, [activeBudget, currentBudgetItems, journals, selectedCostCenter]);
 
   // Download CSV Template for Bulk Upload
   const handleDownloadTemplate = () => {
@@ -423,12 +434,12 @@ export default function BudgetPage() {
       const budgetId = budgetRef.id;
 
       const totalRevenue = tempItems
-        .filter(item => item.accountType === 'Revenue')
-        .reduce((sum, item) => sum + item.budgetedAmount, 0);
+          .filter(item => item.accountType === 'Revenue')
+          .reduce((sum, item) => sum + item.budgetedAmount, 0);
 
       const totalExpenses = tempItems
-        .filter(item => item.accountType === 'Expense')
-        .reduce((sum, item) => sum + item.budgetedAmount, 0);
+          .filter(item => item.accountType === 'Expense')
+          .reduce((sum, item) => sum + item.budgetedAmount, 0);
 
       // Save main budget details
       batch.set(budgetRef, {
@@ -548,12 +559,12 @@ export default function BudgetPage() {
       const budgetRef = doc(firestore, 'budgets', selectedBudgetId);
 
       const totalRevenue = editTempItems
-        .filter(item => item.accountType === 'Revenue')
-        .reduce((sum, item) => sum + item.budgetedAmount, 0);
+          .filter(item => item.accountType === 'Revenue')
+          .reduce((sum, item) => sum + item.budgetedAmount, 0);
 
       const totalExpenses = editTempItems
-        .filter(item => item.accountType === 'Expense')
-        .reduce((sum, item) => sum + item.budgetedAmount, 0);
+          .filter(item => item.accountType === 'Expense')
+          .reduce((sum, item) => sum + item.budgetedAmount, 0);
 
       // Save main budget details
       batch.update(budgetRef, {
@@ -638,18 +649,21 @@ export default function BudgetPage() {
   };
 
   // Update budget approval status
-  const handleUpdateStatus = async (newStatus: 'Approved' | 'Rejected') => {
+  const handleUpdateStatus = async (newStatus: 'Approved' | 'Rejected', reason?: string) => {
     if (!firestore || !selectedBudgetId) return;
     setIsUpdatingStatus(true);
     try {
       await updateDoc(doc(firestore, 'budgets', selectedBudgetId), {
         status: newStatus,
+        rejectionReason: reason || '',
         updatedAt: serverTimestamp(),
       });
       toast({
         title: `Budget ${newStatus}`,
         description: `The budget status has been updated to ${newStatus}.`,
       });
+      setIsRejectOpen(false);
+      setRejectionReasonInput('');
       forceRefetchBudgets();
     } catch (err: any) {
       toast({
@@ -713,6 +727,16 @@ export default function BudgetPage() {
     }
   };
 
+  // Copy AI Analysis text
+  const handleCopyAIAnalysis = () => {
+    if (!activeBudget?.aiInsight) return;
+    navigator.clipboard.writeText(activeBudget.aiInsight);
+    toast({
+      title: "Copied to Clipboard",
+      description: "AI budget variance audit insights copied."
+    });
+  };
+
   // PDF Export logic
   const handleDownloadPDF = async () => {
     const element = document.getElementById('printable-variance-report');
@@ -748,460 +772,313 @@ export default function BudgetPage() {
   const totalRevPercent = budgetAnalysis.totalBudgetedRev > 0 ? (budgetAnalysis.totalActualRev / budgetAnalysis.totalBudgetedRev) * 100 : 0;
   const totalExpPercent = budgetAnalysis.totalBudgetedExp > 0 ? (budgetAnalysis.totalActualExp / budgetAnalysis.totalBudgetedExp) * 100 : 0;
 
+  // Dynamic progress colors helper
+  const getExpenseProgressClass = (pct: number) => {
+    if (pct < 80) return "bg-emerald-500";
+    if (pct <= 100) return "bg-amber-500";
+    return "bg-red-500 animate-pulse";
+  }
+
+  const getRevenueProgressClass = (pct: number) => {
+    if (pct < 50) return "bg-red-500";
+    if (pct <= 90) return "bg-amber-500";
+    return "bg-emerald-500";
+  }
+
+  // Large deviation flag indicator (dev >15% and amount >500)
+  const isHighDeviation = (budgeted: number, actual: number) => {
+    const diff = Math.abs(budgeted - actual);
+    if (budgeted === 0) return false;
+    const pctDiff = (diff / budgeted) * 100;
+    return pctDiff > 15 && diff > 500;
+  };
+
   return (
-    <div className="space-y-6 p-6">
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-indigo-50 text-indigo-700 rounded-2xl">
-            <Calculator className="h-8 w-8"/>
-          </div>
-          <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Budgeting & Variance Analysis</h1>
-            <p className="text-muted-foreground font-medium">Create operational budgets and analyze actual variances in real time.</p>
-          </div>
+    <div className="space-y-6 flex flex-col h-full">
+      
+      {/* Premium Gradient Auditing Banner */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 shadow-lg border border-indigo-900/50">
+        <div className="absolute right-0 top-0 opacity-10 pointer-events-none transform translate-x-4 -translate-y-4">
+          <Calculator className="w-64 h-64" />
         </div>
+        <div className="flex justify-between items-start flex-wrap gap-4 relative z-10">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge className="bg-indigo-500 text-white font-bold px-2 py-0.5 text-[10px]">FISCAL PLANNER & AUDITS</Badge>
+              {activeBudget && (
+                <Badge className={cn(
+                  "text-[10px] font-bold uppercase",
+                  activeBudget.status === 'Approved' ? "bg-emerald-500 text-white" :
+                  activeBudget.status === 'Awaiting Review' ? "bg-amber-500 text-white animate-pulse" :
+                  "bg-red-500 text-white"
+                )}>
+                  {activeBudget.status}
+                </Badge>
+              )}
+            </div>
+            <h1 className="text-3xl font-black tracking-tight">Budgets & Variance Analysis</h1>
+            <p className="text-indigo-100/70 text-sm max-w-md">Reconcile academic year operational allocations, monitor cost overruns, and generate performance reports.</p>
+          </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {activeBudget && (
-            <Badge className={cn(
-              "text-xs font-black uppercase rounded-xl border px-3 py-1.5 shadow-sm h-10 flex items-center justify-center shrink-0",
-              activeBudget.status === 'Approved' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-              activeBudget.status === 'Awaiting Review' ? "bg-amber-50 text-amber-700 border-amber-200 animate-pulse" :
-              activeBudget.status === 'Rejected' ? "bg-red-50 text-red-700 border-red-200" :
-              "bg-slate-50 text-slate-700 border-slate-200"
-            )}>
-              {activeBudget.status}
-            </Badge>
-          )}
+          <div className="flex flex-wrap items-center gap-2">
+            {budgets && budgets.length > 0 && (
+              <Select value={selectedBudgetId} onValueChange={setSelectedBudgetId}>
+                <SelectTrigger className="w-[240px] bg-white text-slate-800 border-slate-200 rounded-xl font-bold shadow-sm h-9">
+                  <SelectValue placeholder="Select Active Budget" />
+                </SelectTrigger>
+                <SelectContent>
+                  {budgets.map(b => (
+                    <SelectItem key={b.id} value={b.id} className="font-bold">
+                      {b.name} ({b.fiscalYear})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
-          {budgets && budgets.length > 0 && (
-            <Select value={selectedBudgetId} onValueChange={setSelectedBudgetId}>
-              <SelectTrigger className="w-[280px] bg-white border-slate-200 rounded-xl font-bold shadow-sm">
-                <SelectValue placeholder="Select Active Budget" />
+            {/* Cost Center Filter Selection */}
+            <Select value={selectedCostCenter} onValueChange={setSelectedCostCenter}>
+              <SelectTrigger className="w-[180px] bg-white text-slate-800 border-slate-200 rounded-xl font-bold shadow-sm h-9">
+                <SelectValue placeholder="Filter Department" />
               </SelectTrigger>
               <SelectContent>
-                {budgets.map(b => (
-                  <SelectItem key={b.id} value={b.id} className="font-bold">
-                    {b.name} ({b.fiscalYear})
+                <SelectItem value="all" className="font-bold">All Departments</SelectItem>
+                {getCostCenters(schoolProfile).map(cc => (
+                  <SelectItem key={cc.id} value={cc.id} className="font-bold">
+                    {cc.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          )}
 
-          {/* CREATE BUDGET MODAL */}
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-indigo-600 hover:bg-indigo-700 font-bold px-5 py-6 rounded-xl shadow-md text-white">
-                <Plus className="mr-2 h-5 w-5" /> New Budget
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-black text-slate-900">Create Operational Budget</DialogTitle>
-                <DialogDescription className="font-medium">Define your academic year's financial allocations per ledger account.</DialogDescription>
-              </DialogHeader>
+            {/* CREATE BUDGET MODAL */}
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-9 shadow-md text-xs">
+                  <Plus className="mr-1.5 h-4 w-4" /> New Budget
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-black text-slate-900">Create Operational Budget</DialogTitle>
+                  <DialogDescription className="font-medium">Define your academic year's financial allocations per ledger account.</DialogDescription>
+                </DialogHeader>
 
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleCreateBudget)} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="name" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-bold text-slate-700">Budget Name</FormLabel>
-                        <FormControl><Input placeholder="e.g. 2026 Q3 Operating Budget" className="rounded-xl font-medium" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <FormField control={form.control} name="fiscalYear" render={({ field }) => (
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleCreateBudget)} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormField control={form.control} name="name" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-bold text-slate-700">Academic Year</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger className="rounded-xl font-semibold"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
-                            <SelectContent>{MOCK_ACADEMIC_YEARS.map((y: string) => <SelectItem key={y} value={y} className="font-bold">{y}</SelectItem>)}</SelectContent>
-                          </Select>
+                          <FormLabel className="font-bold text-slate-700">Budget Name</FormLabel>
+                          <FormControl><Input placeholder="e.g. 2026 Q3 Operating Budget" className="rounded-xl font-medium" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )} />
 
-                      <FormField control={form.control} name="term" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-bold text-slate-700">Term</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger className="rounded-xl font-semibold"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                      <div className="grid grid-cols-2 gap-2">
+                        <FormField control={form.control} name="fiscalYear" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-bold text-slate-700">Academic Year</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger className="rounded-xl font-semibold"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                              <SelectContent>{MOCK_ACADEMIC_YEARS.map((y: string) => <SelectItem key={y} value={y} className="font-bold">{y}</SelectItem>)}</SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+
+                        <FormField control={form.control} name="term" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-bold text-slate-700">Term</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger className="rounded-xl font-semibold"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                <SelectItem value="Full Year" className="font-bold">Full Year</SelectItem>
+                                {MOCK_TERMS.map((t: string) => <SelectItem key={t} value={t} className="font-bold">{t}</SelectItem>)}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormField control={form.control} name="startDate" render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel className="font-bold text-slate-700">Start Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button variant="outline" className={cn("w-full pl-3 text-left font-bold rounded-xl", !field.value && "text-muted-foreground")}>
+                                  {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+
+                      <FormField control={form.control} name="endDate" render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel className="font-bold text-slate-700">End Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button variant="outline" className={cn("w-full pl-3 text-left font-bold rounded-xl", !field.value && "text-muted-foreground")}>
+                                  {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+
+                    <div className="border-t border-dashed pt-4">
+                      <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider mb-2">Budget Line Items</h3>
+                      <div className="grid md:grid-cols-4 gap-2 items-end bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4">
+                        <div className="space-y-1 flex flex-col justify-end">
+                          <Label className="font-bold text-xs text-slate-500 mb-1">Ledger Account (GL)</Label>
+                          <SearchableAccountSelect
+                            accounts={budgetedAccounts || []}
+                            value={tempAccountId}
+                            onChange={setTempAccountId}
+                            placeholder="Choose account..."
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label className="font-bold text-xs text-slate-500 mb-1">Cost Center</Label>
+                          <Select value={tempCostCenter} onValueChange={setTempCostCenter}>
+                            <SelectTrigger className="rounded-xl font-bold bg-white">
+                              <SelectValue placeholder="Select Cost Center" />
+                            </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Full Year" className="font-bold">Full Year</SelectItem>
-                              {MOCK_TERMS.map((t: string) => <SelectItem key={t} value={t} className="font-bold">{t}</SelectItem>)}
+                              {getCostCenters(schoolProfile).map(cc => (
+                                <SelectItem key={cc.id} value={cc.id} className="font-bold">
+                                  {cc.name}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label className="font-bold text-xs text-slate-500">{"Allocated Amount (GH₵)"}</Label>
+                          <Input type="number" step="0.01" value={tempAmount} onChange={e => setTempAmount(e.target.value)} placeholder="0.00" className="bg-white rounded-xl font-bold" />
+                        </div>
+
+                        <Button type="button" onClick={addTempItem} variant="secondary" className="w-full bg-slate-800 text-white font-bold hover:bg-slate-900 rounded-xl h-10">
+                          <Plus className="mr-1 h-4 w-4" /> Add Line
+                        </Button>
+                      </div>
+
+                      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4 text-xs font-bold text-slate-700">
+                        <div className="space-y-1 w-full md:w-auto flex-grow">
+                          <Label className="font-black text-xs text-slate-650 flex items-center gap-1.5"><Plus className="h-4 w-4 text-indigo-600"/> Bulk Upload Lines (CSV)</Label>
+                          <Input 
+                            type="file" 
+                            accept=".csv" 
+                            onChange={(e) => handleBulkUpload(e, false)} 
+                            className="bg-white rounded-xl cursor-pointer text-xs font-bold py-1.5 h-10 border border-slate-200 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:bg-slate-100 file:text-slate-800 file:font-bold hover:file:bg-slate-200"
+                          />
+                        </div>
+                        <div className="text-slate-400 font-semibold md:max-w-[320px] text-left leading-relaxed">
+                          Upload CSV: <code className="font-mono text-indigo-600 bg-white px-1 py-0.5 rounded border border-slate-200">AccountCode,CostCenter,Amount</code>
+                        </div>
+                        <Button 
+                          type="button" 
+                          variant="link" 
+                          onClick={handleDownloadTemplate} 
+                          className="text-xs text-indigo-650 hover:text-indigo-850 font-bold p-0 h-auto shrink-0 flex items-center gap-1"
+                        >
+                          <Download className="h-3.5 w-3.5"/> Template CSV
+                        </Button>
+                      </div>
+
+                      <div className="border border-slate-200 rounded-2xl overflow-hidden max-h-[250px] overflow-y-auto bg-white shadow-inner">
+                        <Table>
+                          <TableHeader className="bg-slate-50">
+                            <TableRow>
+                              <TableHead className="font-bold">Code</TableHead>
+                              <TableHead className="font-bold">Account</TableHead>
+                              <TableHead className="font-bold">Cost Center</TableHead>
+                              <TableHead className="font-bold">Type</TableHead>
+                              <TableHead className="text-right font-bold">Budgeted (GH₵)</TableHead>
+                              <TableHead className="text-center font-bold">Action</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {tempItems.length === 0 ? (
+                              <TableRow><TableCell colSpan={6} className="text-center text-slate-400 py-10 font-bold">No budget lines configured yet.</TableCell></TableRow>
+                            ) : (
+                              tempItems.map((item, index) => (
+                                <TableRow key={index} className="hover:bg-slate-50">
+                                  <TableCell className="font-mono font-semibold text-xs">{item.accountCode}</TableCell>
+                                  <TableCell className="font-bold text-slate-800">{item.accountName}</TableCell>
+                                  <TableCell>
+                                    <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700">
+                                      {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell><Badge className={cn("text-[9px] uppercase font-black", item.accountType === 'Revenue' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700')}>{item.accountType}</Badge></TableCell>
+                                  <TableCell className="text-right font-mono font-bold">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
+                                  <TableCell className="text-center">
+                                    <Button type="button" variant="ghost" size="sm" onClick={() => removeTempItem(index)} className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                                      <Trash2 className="h-4 w-4"/>
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="startDate" render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="font-bold text-slate-700">Start Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button variant="outline" className={cn("w-full pl-3 text-left font-bold rounded-xl", !field.value && "text-muted-foreground")}>
-                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-
-                    <FormField control={form.control} name="endDate" render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="font-bold text-slate-700">End Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button variant="outline" className={cn("w-full pl-3 text-left font-bold rounded-xl", !field.value && "text-muted-foreground")}>
-                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
-
-                  {/* LINE ITEM GENERATOR */}
-                  <div className="border-t border-dashed pt-4">
-                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider mb-2">Budget Line Items</h3>
-                    <div className="grid md:grid-cols-4 gap-2 items-end bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4">
-                      <div className="space-y-1 flex flex-col justify-end">
-                        <Label className="font-bold text-xs text-slate-500 mb-1">Ledger Account (GL)</Label>
-                        <SearchableAccountSelect
-                          accounts={budgetedAccounts || []}
-                          value={tempAccountId}
-                          onChange={setTempAccountId}
-                          placeholder="Choose account..."
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <Label className="font-bold text-xs text-slate-500 mb-1">Cost Center</Label>
-                        <Select value={tempCostCenter} onValueChange={setTempCostCenter}>
-                          <SelectTrigger className="rounded-xl font-bold bg-white">
-                            <SelectValue placeholder="Select Cost Center" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {getCostCenters(schoolProfile).map(cc => (
-                              <SelectItem key={cc.id} value={cc.id} className="font-bold">
-                                {cc.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-1">
-                        <Label className="font-bold text-xs text-slate-500">{"Allocated Amount (GH₵)"}</Label>
-                        <Input type="number" step="0.01" value={tempAmount} onChange={e => setTempAmount(e.target.value)} placeholder="0.00" className="bg-white rounded-xl font-bold" />
-                      </div>
-
-                      <Button type="button" onClick={addTempItem} variant="secondary" className="w-full bg-slate-800 text-white font-bold hover:bg-slate-900 rounded-xl h-10">
-                        <Plus className="mr-1 h-4 w-4" /> Add Line
+                    <DialogFooter>
+                      <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-indigo-600 font-bold text-white hover:bg-indigo-700 rounded-xl mt-4">
+                        {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
+                        Activate & Publish Budget
                       </Button>
-                    </div>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
 
-                    {/* BULK UPLOAD SECTION */}
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4 text-xs font-bold text-slate-700">
-                      <div className="space-y-1 w-full md:w-auto flex-grow">
-                        <Label className="font-black text-xs text-slate-650 flex items-center gap-1.5"><Plus className="h-4 w-4 text-indigo-600"/> Bulk Upload Lines (CSV)</Label>
-                        <Input 
-                          type="file" 
-                          accept=".csv" 
-                          onChange={(e) => handleBulkUpload(e, false)} 
-                          className="bg-white rounded-xl cursor-pointer text-xs font-bold py-1.5 h-10 border border-slate-200 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:bg-slate-100 file:text-slate-800 file:font-bold hover:file:bg-slate-200"
-                        />
-                      </div>
-                      <div className="text-slate-400 font-semibold md:max-w-[320px] text-left leading-relaxed">
-                        Upload a CSV containing columns: <code className="font-mono text-indigo-600 bg-white px-1 py-0.5 rounded border border-slate-200">AccountCode,CostCenter,Amount</code>
-                      </div>
-                      <Button 
-                        type="button" 
-                        variant="link" 
-                        onClick={handleDownloadTemplate} 
-                        className="text-xs text-indigo-650 hover:text-indigo-850 font-bold p-0 h-auto shrink-0 flex items-center gap-1"
-                      >
-                        <Download className="h-3.5 w-3.5"/> Download Template CSV
-                      </Button>
-                    </div>
-
-                    <div className="border border-slate-200 rounded-2xl overflow-hidden max-h-[250px] overflow-y-auto bg-white shadow-inner">
-                      <Table>
-                        <TableHeader className="bg-slate-50">
-                          <TableRow>
-                            <TableHead className="font-bold">Code</TableHead>
-                            <TableHead className="font-bold">Account</TableHead>
-                            <TableHead className="font-bold">Cost Center</TableHead>
-                            <TableHead className="font-bold">Type</TableHead>
-                            <TableHead className="text-right font-bold">Budgeted (GH₵)</TableHead>
-                            <TableHead className="text-center font-bold">Action</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {tempItems.length === 0 ? (
-                            <TableRow><TableCell colSpan={6} className="text-center text-slate-400 py-10 font-bold">No budget lines configured yet.</TableCell></TableRow>
-                          ) : (
-                            tempItems.map((item, index) => (
-                              <TableRow key={index} className="hover:bg-slate-50">
-                                <TableCell className="font-mono font-semibold text-xs">{item.accountCode}</TableCell>
-                                <TableCell className="font-bold text-slate-800">{item.accountName}</TableCell>
-                                <TableCell>
-                                  <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700">
-                                    {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell><Badge className={cn("text-[9px] uppercase font-black", item.accountType === 'Revenue' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700')}>{item.accountType}</Badge></TableCell>
-                                <TableCell className="text-right font-mono font-bold">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
-                                <TableCell className="text-center">
-                                  <Button type="button" variant="ghost" size="sm" onClick={() => removeTempItem(index)} className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
-                                    <Trash2 className="h-4 w-4"/>
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-
-                  <DialogFooter>
-                    <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-indigo-600 font-bold text-white hover:bg-indigo-700 rounded-xl mt-4">
-                      {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
-                      Activate & Publish Budget
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
-
-          {/* EDIT BUDGET MODAL */}
-          <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-black text-slate-900">Edit Operational Budget</DialogTitle>
-                <DialogDescription className="font-medium">Revise your academic year's financial allocations per ledger account.</DialogDescription>
-              </DialogHeader>
-
-              <Form {...editForm}>
-                <form onSubmit={editForm.handleSubmit(handleUpdateBudget)} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={editForm.control} name="name" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-bold text-slate-700">Budget Name</FormLabel>
-                        <FormControl><Input placeholder="e.g. 2026 Q3 Operating Budget" className="rounded-xl font-medium" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <FormField control={editForm.control} name="fiscalYear" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-bold text-slate-700">Academic Year</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                            <FormControl><SelectTrigger className="rounded-xl font-semibold"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
-                            <SelectContent>{MOCK_ACADEMIC_YEARS.map((y: string) => <SelectItem key={y} value={y} className="font-bold">{y}</SelectItem>)}</SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-
-                      <FormField control={editForm.control} name="term" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-bold text-slate-700">Term</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                            <FormControl><SelectTrigger className="rounded-xl font-semibold"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              <SelectItem value="Full Year" className="font-bold">Full Year</SelectItem>
-                              {MOCK_TERMS.map((t: string) => <SelectItem key={t} value={t} className="font-bold">{t}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField control={editForm.control} name="startDate" render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="font-bold text-slate-700">Start Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button variant="outline" className={cn("w-full pl-3 text-left font-bold rounded-xl", !field.value && "text-muted-foreground")}>
-                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-
-                    <FormField control={editForm.control} name="endDate" render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="font-bold text-slate-700">End Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button variant="outline" className={cn("w-full pl-3 text-left font-bold rounded-xl", !field.value && "text-muted-foreground")}>
-                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
-
-                  {/* LINE ITEM GENERATOR */}
-                  <div className="border-t border-dashed pt-4">
-                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider mb-2">Budget Line Items</h3>
-                    <div className="grid md:grid-cols-4 gap-2 items-end bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4">
-                      <div className="space-y-1 flex flex-col justify-end">
-                        <Label className="font-bold text-xs text-slate-500 mb-1">Ledger Account (GL)</Label>
-                        <SearchableAccountSelect
-                          accounts={budgetedAccounts || []}
-                          value={editTempAccountId}
-                          onChange={setEditTempAccountId}
-                          placeholder="Choose account..."
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <Label className="font-bold text-xs text-slate-500 mb-1">Cost Center</Label>
-                        <Select value={editTempCostCenter} onValueChange={setEditTempCostCenter}>
-                          <SelectTrigger className="rounded-xl font-bold bg-white">
-                            <SelectValue placeholder="Select Cost Center" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {getCostCenters(schoolProfile).map(cc => (
-                              <SelectItem key={cc.id} value={cc.id} className="font-bold">
-                                {cc.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-1">
-                        <Label className="font-bold text-xs text-slate-500">{"Allocated Amount (GH₵)"}</Label>
-                        <Input type="number" step="0.01" value={editTempAmount} onChange={e => setEditTempAmount(e.target.value)} placeholder="0.00" className="bg-white rounded-xl font-bold" />
-                      </div>
-
-                      <Button type="button" onClick={addEditTempItem} variant="secondary" className="w-full bg-slate-800 text-white font-bold hover:bg-slate-900 rounded-xl h-10">
-                        <Plus className="mr-1 h-4 w-4" /> Add Line
-                      </Button>
-                    </div>
-
-                    {/* BULK UPLOAD SECTION */}
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-4 text-xs font-bold text-slate-700">
-                      <div className="space-y-1 w-full md:w-auto flex-grow">
-                        <Label className="font-black text-xs text-slate-650 flex items-center gap-1.5"><Plus className="h-4 w-4 text-indigo-600"/> Bulk Upload Lines (CSV)</Label>
-                        <Input 
-                          type="file" 
-                          accept=".csv" 
-                          onChange={(e) => handleBulkUpload(e, true)} 
-                          className="bg-white rounded-xl cursor-pointer text-xs font-bold py-1.5 h-10 border border-slate-200 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:bg-slate-100 file:text-slate-800 file:font-bold hover:file:bg-slate-200"
-                        />
-                      </div>
-                      <div className="text-slate-400 font-semibold md:max-w-[320px] text-left leading-relaxed">
-                        Upload a CSV containing columns: <code className="font-mono text-indigo-600 bg-white px-1 py-0.5 rounded border border-slate-200">AccountCode,CostCenter,Amount</code>
-                      </div>
-                      <Button 
-                        type="button" 
-                        variant="link" 
-                        onClick={handleDownloadTemplate} 
-                        className="text-xs text-indigo-650 hover:text-indigo-850 font-bold p-0 h-auto shrink-0 flex items-center gap-1"
-                      >
-                        <Download className="h-3.5 w-3.5"/> Download Template CSV
-                      </Button>
-                    </div>
-
-                    <div className="border border-slate-200 rounded-2xl overflow-hidden max-h-[250px] overflow-y-auto bg-white shadow-inner">
-                      <Table>
-                        <TableHeader className="bg-slate-50">
-                          <TableRow>
-                            <TableHead className="font-bold">Code</TableHead>
-                            <TableHead className="font-bold">Account</TableHead>
-                            <TableHead className="font-bold">Cost Center</TableHead>
-                            <TableHead className="font-bold">Type</TableHead>
-                            <TableHead className="text-right font-bold">Budgeted (GH₵)</TableHead>
-                            <TableHead className="text-center font-bold">Action</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {editTempItems.length === 0 ? (
-                            <TableRow><TableCell colSpan={6} className="text-center text-slate-400 py-10 font-bold">No budget lines configured yet.</TableCell></TableRow>
-                          ) : (
-                            editTempItems.map((item, index) => (
-                              <TableRow key={index} className="hover:bg-slate-50">
-                                <TableCell className="font-mono font-semibold text-xs">{item.accountCode}</TableCell>
-                                <TableCell className="font-bold text-slate-800">{item.accountName}</TableCell>
-                                <TableCell>
-                                  <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700">
-                                    {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell><Badge className={cn("text-[9px] uppercase font-black", item.accountType === 'Revenue' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700')}>{item.accountType}</Badge></TableCell>
-                                <TableCell className="text-right font-mono font-bold">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
-                                <TableCell className="text-center">
-                                  <Button type="button" variant="ghost" size="sm" onClick={() => removeEditTempItem(index)} className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
-                                    <Trash2 className="h-4 w-4"/>
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-
-                  <DialogFooter>
-                    <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-indigo-600 font-bold text-white hover:bg-indigo-700 rounded-xl mt-4">
-                      {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
-                      Save Changes
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-white/10 text-xs">
+          <div>
+            <span className="text-[10px] text-indigo-200/60 uppercase font-black tracking-wider block">Targeted Revenue Streams</span>
+            <span className="text-lg font-bold block text-emerald-400">GH₵{budgetAnalysis.totalBudgetedRev.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-indigo-200/60 uppercase font-black tracking-wider block">Targeted Expenditures</span>
+            <span className="text-lg font-bold block text-rose-450">GH₵{budgetAnalysis.totalBudgetedExp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-indigo-200/60 uppercase font-black tracking-wider block">Budgeted surplus / (deficit)</span>
+            <span className="text-lg font-bold block">GH₵{netBudgetedSurplus.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-indigo-200/60 uppercase font-black tracking-wider block">Active Filter Level</span>
+            <Badge variant="secondary" className="uppercase font-bold text-[9px] mt-1 bg-white/15 text-white hover:bg-white/20">
+              {selectedCostCenter === 'all' ? 'All cost centers' : getCostCenters(schoolProfile).find(c => c.id === selectedCostCenter)?.name || selectedCostCenter}
+            </Badge>
+          </div>
         </div>
       </div>
 
@@ -1217,9 +1094,9 @@ export default function BudgetPage() {
         </Card>
       ) : (
         <div className="space-y-6">
-          {/* APPROVAL STATUS BANNER */}
+          {/* APPROVAL STATUS BANNER WITH REJECTION COMMENT DETAILS */}
           {activeBudget.status === 'Awaiting Review' && (
-            <Card className="border-amber-200 bg-amber-50/40 rounded-3xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border shadow-sm">
+            <Card className="border-amber-200 bg-amber-50/40 rounded-3xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border shadow-sm">
               <div className="flex gap-3 items-center">
                 <div className="p-3 bg-amber-100 text-amber-700 rounded-2xl">
                   <AlertCircle className="h-6 w-6 animate-pulse" />
@@ -1231,18 +1108,46 @@ export default function BudgetPage() {
               </div>
               {['Director', 'Administrator'].includes(role || '') && (
                 <div className="flex gap-2 w-full md:w-auto shrink-0 mt-2 md:mt-0">
-                  <Button 
-                    variant="outline" 
-                    disabled={isUpdatingStatus}
-                    onClick={() => handleUpdateStatus('Rejected')} 
-                    className="bg-white border-red-200 text-red-650 hover:bg-red-50 font-bold rounded-xl px-4 py-5 h-auto"
-                  >
-                    <XCircle className="h-4 w-4 mr-1.5" /> Reject Budget
-                  </Button>
+                  <Dialog open={isRejectOpen} onOpenChange={setIsRejectOpen}>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setIsRejectOpen(true)}
+                      className="bg-white border-red-200 text-red-600 hover:bg-red-50 font-bold rounded-xl px-4 py-4 h-9 text-xs"
+                    >
+                      <XCircle className="h-4 w-4 mr-1.5" /> Reject Budget
+                    </Button>
+                    <DialogContent className="sm:max-w-[400px]">
+                      <DialogHeader>
+                        <DialogTitle>Reject Budget Allocation</DialogTitle>
+                        <DialogDescription>Input remarks explaining discrepancies or changes required.</DialogDescription>
+                      </DialogHeader>
+                      <div className="py-2">
+                        <Label>Auditor Rejection Comments</Label>
+                        <Textarea 
+                          value={rejectionReasonInput}
+                          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRejectionReasonInput(e.target.value)}
+                          placeholder="Stationery lines are overestimated..."
+                          className="mt-1"
+                          required
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsRejectOpen(false)}>Cancel</Button>
+                        <Button 
+                          variant="destructive"
+                          onClick={() => handleUpdateStatus('Rejected', rejectionReasonInput)}
+                          disabled={isUpdatingStatus || !rejectionReasonInput.trim()}
+                        >
+                          Confirm Rejection
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                  
                   <Button 
                     disabled={isUpdatingStatus}
                     onClick={() => handleUpdateStatus('Approved')} 
-                    className="bg-indigo-600 text-white hover:bg-indigo-700 font-bold rounded-xl px-5 py-5 h-auto shadow-md"
+                    className="bg-indigo-600 text-white hover:bg-indigo-700 font-bold rounded-xl px-4 py-4 h-9 text-xs shadow-sm"
                   >
                     <CheckCircle2 className="h-4 w-4 mr-1.5" /> Approve Budget
                   </Button>
@@ -1252,21 +1157,23 @@ export default function BudgetPage() {
           )}
 
           {activeBudget.status === 'Rejected' && (
-            <Card className="border-red-200 bg-red-50/30 rounded-3xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border shadow-sm">
+            <Card className="border-red-200 bg-red-50/30 rounded-3xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border shadow-sm">
               <div className="flex gap-3 items-center">
                 <div className="p-3 bg-red-100 text-red-750 rounded-2xl">
                   <AlertTriangle className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-black text-slate-950 text-base">Budget Rejected</h4>
-                  <p className="text-xs text-slate-500 font-semibold">This budget was reviewed and rejected. Please make necessary changes or delete it.</p>
+                  <h4 className="font-black text-slate-950 text-base">Budget Allocation Rejected</h4>
+                  <p className="text-xs text-red-800 font-extrabold">
+                    Comment: <span className="font-semibold text-slate-600 italic">"{activeBudget.rejectionReason || 'No notes left by director.'}"</span>
+                  </p>
                 </div>
               </div>
               {['Director', 'Administrator'].includes(role || '') && (
                 <Button 
                   disabled={isUpdatingStatus}
                   onClick={() => handleUpdateStatus('Approved')} 
-                  className="bg-slate-900 text-white hover:bg-slate-800 font-bold rounded-xl px-5 py-5 h-auto shadow-md"
+                  className="bg-slate-900 text-white hover:bg-slate-800 font-bold rounded-xl px-4 py-4 h-9 text-xs shadow-md"
                 >
                   <CheckCircle2 className="h-4 w-4 mr-1.5" /> Force Approve
                 </Button>
@@ -1277,10 +1184,10 @@ export default function BudgetPage() {
           {/* STATS HIGHLIGHTS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* REVENUE STATS */}
-            <Card className="border-none shadow-xl bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-3xl overflow-hidden relative group">
+            <Card className="border-none shadow-md bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-3xl overflow-hidden relative group">
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-center">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Revenues Tracker</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Revenues Target</p>
                   <TrendingUp className="h-5 w-5 opacity-80" />
                 </div>
                 <div>
@@ -1300,15 +1207,15 @@ export default function BudgetPage() {
             </Card>
 
             {/* EXPENSE STATS */}
-            <Card className="border-none shadow-xl bg-gradient-to-br from-rose-500 to-red-600 text-white rounded-3xl overflow-hidden relative group">
+            <Card className="border-none shadow-md bg-gradient-to-br from-rose-500 to-red-650 text-white rounded-3xl overflow-hidden relative group">
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-center">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Expenditures Tracker</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Expenditures Consumed</p>
                   <TrendingDown className="h-5 w-5 opacity-80" />
                 </div>
                 <div>
                   <h3 className="text-3xl font-black font-mono">GH₵{budgetAnalysis.totalActualExp.toFixed(2)}</h3>
-                  <p className="text-xs font-semibold opacity-90 mt-1">Budgeted: GH₵{budgetAnalysis.totalBudgetedExp.toFixed(2)}</p>
+                  <p className="text-xs font-semibold opacity-90 mt-1">Budgeted Limit: GH₵{budgetAnalysis.totalBudgetedExp.toFixed(2)}</p>
                 </div>
                 <div className="space-y-1.5 pt-2">
                   <div className="flex justify-between text-xs font-bold">
@@ -1324,12 +1231,12 @@ export default function BudgetPage() {
 
             {/* NET SURPLUS STATS */}
             <Card className={cn(
-              "border-none shadow-xl text-white rounded-3xl overflow-hidden relative group bg-gradient-to-br",
-              netActualSurplus >= 0 ? "from-indigo-600 to-violet-700" : "from-amber-600 to-orange-700"
+              "border-none shadow-md text-white rounded-3xl overflow-hidden relative group bg-gradient-to-br",
+              netActualSurplus >= 0 ? "from-slate-900 to-indigo-950" : "from-amber-600 to-orange-700"
             )}>
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-center">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Projected Net Surplus</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Actual Surplus / (Deficit)</p>
                   <Scale className="h-5 w-5 opacity-80" />
                 </div>
                 <div>
@@ -1348,14 +1255,14 @@ export default function BudgetPage() {
 
           {/* REPORT AND VARIANCE TABS */}
           <Tabs defaultValue="overview" className="space-y-6">
-            <div className="flex justify-between items-center bg-white border border-slate-100 p-2.5 rounded-2xl shadow-sm">
-              <TabsList className="bg-slate-100 rounded-xl p-1 shrink-0">
+            <div className="flex justify-between items-center bg-white border border-slate-100 p-2.5 rounded-2xl shadow-sm flex-wrap gap-4">
+              <TabsList className="bg-slate-100 rounded-xl p-1 shrink-0 flex-wrap">
                 <TabsTrigger value="overview" className="rounded-lg font-bold">Variance Dashboard</TabsTrigger>
                 <TabsTrigger value="revenue" className="rounded-lg font-bold">Revenue Variance</TabsTrigger>
                 <TabsTrigger value="expense" className="rounded-lg font-bold">Expense Variance</TabsTrigger>
                 <TabsTrigger value="report" className="rounded-lg font-bold">Variance Report</TabsTrigger>
                 <TabsTrigger value="ai-analysis" className="rounded-lg font-bold flex items-center gap-1.5">
-                  <Sparkles className="h-4 w-4 text-indigo-500 animate-pulse" /> AI Analysis
+                  <Sparkles className="h-4 w-4 text-indigo-500 animate-pulse" /> AI Performance Audit
                 </TabsTrigger>
               </TabsList>
 
@@ -1365,12 +1272,12 @@ export default function BudgetPage() {
                     variant="outline" 
                     size="sm" 
                     onClick={handleOpenEdit} 
-                    className="border-indigo-200 text-indigo-650 bg-indigo-50 hover:bg-indigo-100 font-bold rounded-lg"
+                    className="border-indigo-200 text-indigo-650 bg-indigo-50 hover:bg-indigo-100 font-bold rounded-lg h-8 text-xs"
                   >
                     <Edit className="h-4 w-4 mr-1"/> Edit Budget
                   </Button>
                 )}
-                <Button variant="outline" size="sm" onClick={() => handleDeleteBudget(selectedBudgetId)} className="text-red-500 hover:text-red-650 border-red-100 bg-red-50/20 font-bold rounded-lg">
+                <Button variant="outline" size="sm" onClick={() => handleDeleteBudget(selectedBudgetId)} className="text-red-500 hover:text-red-650 border-red-100 bg-red-50/20 font-bold rounded-lg h-8 text-xs">
                   <Trash2 className="h-4 w-4 mr-1"/> Delete Budget
                 </Button>
               </div>
@@ -1379,51 +1286,70 @@ export default function BudgetPage() {
             {/* TAB: DASHBOARD OVERVIEW */}
             <TabsContent value="overview" className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
+                
                 {/* Revenue progress gauge */}
-                <Card className="rounded-3xl border border-slate-100 shadow-md">
-                  <CardHeader><CardTitle className="text-slate-800 text-lg flex items-center gap-1.5"><TrendingUp className="text-green-500"/> Revenue Target Breakdown</CardTitle></CardHeader>
-                  <CardContent className="space-y-4">
-                    {revenueAnalysisItems.map(item => {
-                      const costCenterName = getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General';
-                      return (
-                        <div key={item.id} className="space-y-1 bg-slate-50/50 p-3.5 rounded-2xl border border-slate-100">
-                          <div className="flex justify-between items-center text-xs">
-                            <span className="font-bold text-slate-700">{item.accountName} <span className="text-slate-400 font-semibold text-[10px]">({costCenterName})</span></span>
-                            <span className="font-semibold text-slate-500 font-mono">GH₵{item.actual.toFixed(0)} / GH₵{item.budgetedAmount.toFixed(0)}</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
-                              <div className="bg-emerald-500 h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(100, item.percent)}%` }}></div>
+                <Card className="rounded-3xl border border-slate-200 shadow-sm bg-white overflow-hidden">
+                  <CardHeader className="bg-slate-50/30 border-b pb-3"><CardTitle className="text-slate-800 text-sm font-extrabold flex items-center gap-1.5 uppercase tracking-wider"><TrendingUp className="text-green-500 h-4 w-4"/> Revenue Target Breakdown</CardTitle></CardHeader>
+                  <CardContent className="space-y-4 pt-4">
+                    {revenueAnalysisItems.length === 0 ? (
+                      <p className="text-center text-xs text-slate-400 py-10 font-bold">No revenue items mapped under active filter.</p>
+                    ) : (
+                      revenueAnalysisItems.map(item => {
+                        const costCenterName = getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General';
+                        const isSevere = isHighDeviation(item.budgetedAmount, item.actual);
+                        return (
+                          <div key={item.id} className="space-y-1.5 bg-slate-50/40 p-3 rounded-2xl border border-slate-200">
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="font-bold text-slate-700 flex items-center gap-1">
+                                {item.accountName} 
+                                <span className="text-slate-400 font-semibold text-[10px]">({costCenterName})</span>
+                                {isSevere && <span title="High Deviation Alert"><AlertTriangle className="h-3.5 w-3.5 text-amber-500" /></span>}
+                              </span>
+                              <span className="font-semibold text-slate-500 font-mono text-[11px]">GH₵{item.actual.toFixed(0)} / GH₵{item.budgetedAmount.toFixed(0)}</span>
                             </div>
-                            <span className="text-[10px] font-black w-10 text-right">{item.percent.toFixed(0)}%</span>
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                                <div className={cn("h-full rounded-full transition-all duration-300", getRevenueProgressClass(item.percent))} style={{ width: `${Math.min(100, item.percent)}%` }}></div>
+                              </div>
+                              <span className="text-[10px] font-black w-10 text-right text-slate-650">{item.percent.toFixed(0)}%</span>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })
+                    )}
                   </CardContent>
                 </Card>
 
                 {/* Expense progress gauge */}
-                <Card className="rounded-3xl border border-slate-100 shadow-md">
-                  <CardHeader><CardTitle className="text-slate-800 text-lg flex items-center gap-1.5"><TrendingDown className="text-red-500"/> Expense Allocation Breakdown</CardTitle></CardHeader>
-                  <CardContent className="space-y-4">
-                    {expenseAnalysisItems.map(item => {
-                      const costCenterName = getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General';
-                      return (
-                        <div key={item.id} className="space-y-1 bg-slate-50/50 p-3.5 rounded-2xl border border-slate-100">
-                          <div className="flex justify-between items-center text-xs">
-                            <span className="font-bold text-slate-700">{item.accountName} <span className="text-slate-400 font-semibold text-[10px]">({costCenterName})</span></span>
-                            <span className="font-semibold text-slate-500 font-mono">GH₵{item.actual.toFixed(0)} / GH₵{item.budgetedAmount.toFixed(0)}</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
-                              <div className={cn("h-full rounded-full transition-all duration-300", item.percent >= 100 ? "bg-red-500" : "bg-indigo-500")} style={{ width: `${Math.min(100, item.percent)}%` }}></div>
+                <Card className="rounded-3xl border border-slate-200 shadow-sm bg-white overflow-hidden">
+                  <CardHeader className="bg-slate-50/30 border-b pb-3"><CardTitle className="text-slate-800 text-sm font-extrabold flex items-center gap-1.5 uppercase tracking-wider"><TrendingDown className="text-red-500 h-4 w-4"/> Expense Allocation Breakdown</CardTitle></CardHeader>
+                  <CardContent className="space-y-4 pt-4">
+                    {expenseAnalysisItems.length === 0 ? (
+                      <p className="text-center text-xs text-slate-400 py-10 font-bold">No expense items mapped under active filter.</p>
+                    ) : (
+                      expenseAnalysisItems.map(item => {
+                        const costCenterName = getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General';
+                        const isSevere = isHighDeviation(item.budgetedAmount, item.actual);
+                        return (
+                          <div key={item.id} className="space-y-1.5 bg-slate-50/40 p-3 rounded-2xl border border-slate-200">
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="font-bold text-slate-700 flex items-center gap-1">
+                                {item.accountName} 
+                                <span className="text-slate-400 font-semibold text-[10px]">({costCenterName})</span>
+                                {isSevere && <span title="Budget Overrun Warning"><AlertTriangle className="h-3.5 w-3.5 text-rose-500 animate-bounce" /></span>}
+                              </span>
+                              <span className="font-semibold text-slate-500 font-mono text-[11px]">GH₵{item.actual.toFixed(0)} / GH₵{item.budgetedAmount.toFixed(0)}</span>
                             </div>
-                            <span className="text-[10px] font-black w-10 text-right">{item.percent.toFixed(0)}%</span>
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                                <div className={cn("h-full rounded-full transition-all duration-300", getExpenseProgressClass(item.percent))} style={{ width: `${Math.min(100, item.percent)}%` }}></div>
+                              </div>
+                              <span className="text-[10px] font-black w-10 text-right text-slate-650">{item.percent.toFixed(0)}%</span>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -1431,47 +1357,53 @@ export default function BudgetPage() {
 
             {/* TAB: REVENUE TABLE */}
             <TabsContent value="revenue">
-              <Card className="border-none shadow-xl bg-white rounded-3xl overflow-hidden">
+              <Card className="border border-slate-250 shadow-md bg-white rounded-2xl overflow-hidden">
                 <CardContent className="p-0">
                   <Table>
                     <TableHeader className="bg-slate-50">
                       <TableRow>
-                        <TableHead>Code</TableHead>
-                        <TableHead>Account Name</TableHead>
-                        <TableHead>Cost Center</TableHead>
-                        <TableHead className="text-right">Budgeted (GH₵)</TableHead>
-                        <TableHead className="text-right">Actual (GH₵)</TableHead>
-                        <TableHead className="text-right">Variance (GH₵)</TableHead>
-                        <TableHead className="text-center">% Achieved</TableHead>
-                        <TableHead className="text-right">Status</TableHead>
+                        <TableHead className="pl-6 font-bold text-xs">Code</TableHead>
+                        <TableHead className="font-bold text-xs">Account Name</TableHead>
+                        <TableHead className="font-bold text-xs">Cost Center</TableHead>
+                        <TableHead className="text-right font-bold text-xs">Budgeted (GH₵)</TableHead>
+                        <TableHead className="text-right font-bold text-xs">Actual (GH₵)</TableHead>
+                        <TableHead className="text-right font-bold text-xs">Variance (GH₵)</TableHead>
+                        <TableHead className="text-center font-bold text-xs">% Achieved</TableHead>
+                        <TableHead className="text-right pr-6 font-bold text-xs">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {revenueAnalysisItems.length === 0 ? (
-                        <TableRow><TableCell colSpan={8} className="text-center py-20 text-slate-400 font-bold">No revenue items added to this budget.</TableCell></TableRow>
+                        <TableRow><TableCell colSpan={8} className="text-center py-20 text-slate-400 font-bold">No revenue items added or matching active filters.</TableCell></TableRow>
                       ) : (
-                        revenueAnalysisItems.map(item => (
-                          <TableRow key={item.id} className="hover:bg-slate-50/50">
-                            <TableCell className="font-mono text-xs font-semibold">{item.accountCode}</TableCell>
-                            <TableCell className="font-bold text-slate-800">{item.accountName}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700">
-                                {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right font-mono font-medium">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
-                            <TableCell className="text-right font-mono font-medium text-slate-650">GH₵{item.actual.toFixed(2)}</TableCell>
-                            <TableCell className={cn("text-right font-mono font-black", item.variance >= 0 ? "text-emerald-600" : "text-rose-600")}>
-                              {item.variance >= 0 ? "+" : ""}GH₵{item.variance.toFixed(2)}
-                            </TableCell>
-                            <TableCell className="text-center font-bold text-xs">{item.percent.toFixed(1)}%</TableCell>
-                            <TableCell className="text-right">
-                              <Badge className={cn("text-[9px] font-black uppercase rounded-lg border", item.isFavorable ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-rose-50 text-rose-700 border-rose-100")}>
-                                {item.isFavorable ? "Favorable" : "Unfavorable"}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))
+                        revenueAnalysisItems.map(item => {
+                          const isSevere = isHighDeviation(item.budgetedAmount, item.actual);
+                          return (
+                            <TableRow key={item.id} className={cn("hover:bg-slate-50/50", isSevere ? "bg-amber-50/30" : "")}>
+                              <TableCell className="font-mono text-xs font-semibold pl-6">{item.accountCode}</TableCell>
+                              <TableCell className="font-bold text-slate-800 text-xs flex items-center gap-1.5 py-3">
+                                {item.accountName}
+                                {isSevere && <span title="Large discrepancy variance (>15% and >GH₵500)"><AlertTriangle className="h-4 w-4 text-amber-500" /></span>}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700 text-[10px]">
+                                  {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right font-mono text-xs font-semibold text-slate-700">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
+                              <TableCell className="text-right font-mono text-xs font-semibold text-slate-650">GH₵{item.actual.toFixed(2)}</TableCell>
+                              <TableCell className={cn("text-right font-mono font-bold text-xs", item.variance >= 0 ? "text-emerald-700" : "text-rose-700")}>
+                                {item.variance >= 0 ? "+" : ""}GH₵{item.variance.toFixed(2)}
+                              </TableCell>
+                              <TableCell className="text-center font-bold text-xs font-mono">{item.percent.toFixed(1)}%</TableCell>
+                              <TableCell className="text-right pr-6">
+                                <Badge className={cn("text-[9px] font-black uppercase rounded-lg border", item.isFavorable ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-rose-50 text-rose-700 border-rose-100")}>
+                                  {item.isFavorable ? "Favorable" : "Deficit"}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
                       )}
                     </TableBody>
                   </Table>
@@ -1481,47 +1413,53 @@ export default function BudgetPage() {
 
             {/* TAB: EXPENSE TABLE */}
             <TabsContent value="expense">
-              <Card className="border-none shadow-xl bg-white rounded-3xl overflow-hidden">
+              <Card className="border border-slate-250 shadow-md bg-white rounded-2xl overflow-hidden">
                 <CardContent className="p-0">
                   <Table>
                     <TableHeader className="bg-slate-50">
                       <TableRow>
-                        <TableHead>Code</TableHead>
-                        <TableHead>Account Name</TableHead>
-                        <TableHead>Cost Center</TableHead>
-                        <TableHead className="text-right">Budgeted (GH₵)</TableHead>
-                        <TableHead className="text-right">Actual (GH₵)</TableHead>
-                        <TableHead className="text-right">Variance (GH₵)</TableHead>
-                        <TableHead className="text-center">% Consumed</TableHead>
-                        <TableHead className="text-right">Status</TableHead>
+                        <TableHead className="pl-6 font-bold text-xs">Code</TableHead>
+                        <TableHead className="font-bold text-xs">Account Name</TableHead>
+                        <TableHead className="font-bold text-xs">Cost Center</TableHead>
+                        <TableHead className="text-right font-bold text-xs">Budgeted (GH₵)</TableHead>
+                        <TableHead className="text-right font-bold text-xs">Actual (GH₵)</TableHead>
+                        <TableHead className="text-right font-bold text-xs">Variance (GH₵)</TableHead>
+                        <TableHead className="text-center font-bold text-xs">% Consumed</TableHead>
+                        <TableHead className="text-right pr-6 font-bold text-xs">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {expenseAnalysisItems.length === 0 ? (
-                        <TableRow><TableCell colSpan={8} className="text-center py-20 text-slate-400 font-bold">No expense items added to this budget.</TableCell></TableRow>
+                        <TableRow><TableCell colSpan={8} className="text-center py-20 text-slate-400 font-bold">No expense items added or matching active filters.</TableCell></TableRow>
                       ) : (
-                        expenseAnalysisItems.map(item => (
-                          <TableRow key={item.id} className="hover:bg-slate-50/50">
-                            <TableCell className="font-mono text-xs font-semibold">{item.accountCode}</TableCell>
-                            <TableCell className="font-bold text-slate-800">{item.accountName}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700">
-                                {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right font-mono font-medium">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
-                            <TableCell className="text-right font-mono font-medium text-slate-650">GH₵{item.actual.toFixed(2)}</TableCell>
-                            <TableCell className={cn("text-right font-mono font-black", item.variance >= 0 ? "text-emerald-600" : "text-rose-600")}>
-                              {item.variance >= 0 ? "+" : ""}GH₵{item.variance.toFixed(2)}
-                            </TableCell>
-                            <TableCell className="text-center font-bold text-xs">{item.percent.toFixed(1)}%</TableCell>
-                            <TableCell className="text-right">
-                              <Badge className={cn("text-[9px] font-black uppercase rounded-lg border", item.isFavorable ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-rose-50 text-rose-700 border-rose-100")}>
-                                {item.isFavorable ? "Favorable" : "Over Budget"}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))
+                        expenseAnalysisItems.map(item => {
+                          const isSevere = isHighDeviation(item.budgetedAmount, item.actual);
+                          return (
+                            <TableRow key={item.id} className={cn("hover:bg-slate-50/50", isSevere ? "bg-rose-50/20" : "")}>
+                              <TableCell className="font-mono text-xs font-semibold pl-6">{item.accountCode}</TableCell>
+                              <TableCell className="font-bold text-slate-800 text-xs flex items-center gap-1.5 py-3">
+                                {item.accountName}
+                                {isSevere && <span title="Large spending overrun (>15% and >GH₵500)"><AlertTriangle className="h-4 w-4 text-rose-500 animate-bounce" /></span>}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="font-bold bg-slate-100 text-slate-700 text-[10px]">
+                                  {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right font-mono text-xs font-semibold text-slate-700">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
+                              <TableCell className="text-right font-mono text-xs font-semibold text-slate-650">GH₵{item.actual.toFixed(2)}</TableCell>
+                              <TableCell className={cn("text-right font-mono font-bold text-xs", item.variance >= 0 ? "text-emerald-700" : "text-rose-705")}>
+                                {item.variance >= 0 ? "+" : ""}GH₵{item.variance.toFixed(2)}
+                              </TableCell>
+                              <TableCell className="text-center font-bold text-xs font-mono">{item.percent.toFixed(1)}%</TableCell>
+                              <TableCell className="text-right pr-6">
+                                <Badge className={cn("text-[9px] font-black uppercase rounded-lg border", item.isFavorable ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-rose-50 text-rose-700 border-rose-100 animate-pulse")}>
+                                  {item.isFavorable ? "Favorable" : "Over Budget"}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
                       )}
                     </TableBody>
                   </Table>
@@ -1532,16 +1470,15 @@ export default function BudgetPage() {
             {/* TAB: VARIANCE REPORT (PRINT & PDF VIEW) */}
             <TabsContent value="report" className="space-y-4">
               <div className="flex justify-end gap-2 print:hidden">
-                <Button variant="outline" onClick={() => window.print()} className="rounded-xl font-bold"><Printer className="mr-2 h-4 w-4"/> Print Report</Button>
-                <Button onClick={handleDownloadPDF} disabled={isExporting} className="bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-white">
-                  {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>}
+                <Button variant="outline" onClick={() => window.print()} className="rounded-xl font-bold h-9 text-xs border-slate-300"><Printer className="mr-1.5 h-4 w-4"/> Print Report</Button>
+                <Button onClick={handleDownloadPDF} disabled={isExporting} className="bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-white h-9 text-xs">
+                  {isExporting ? <Loader2 className="animate-spin mr-1.5 h-4 w-4"/> : <Download className="mr-1.5 h-4 w-4"/>}
                   Export PDF
                 </Button>
               </div>
 
               {/* REPORT DOCUMENT CONTAINER */}
-              <div className="bg-white text-black p-8 border shadow-lg rounded-3xl font-sans max-w-4xl mx-auto" id="printable-variance-report">
-                {/* School Profile details */}
+              <div className="bg-white text-black p-8 border border-slate-200 shadow-lg rounded-3xl font-sans max-w-4xl mx-auto" id="printable-variance-report">
                 <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-6">
                   <div className="flex items-center gap-4">
                     {logoBase64 ? (
@@ -1557,9 +1494,9 @@ export default function BudgetPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest">Performance Report</h2>
+                    <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-right">Performance Report</h2>
                     <p className="text-sm font-bold text-slate-900 mt-1">{activeBudget.name}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Academic Year: {activeBudget.fiscalYear}</p>
+                    <p className="text-[10px] font-bold text-slate-450 uppercase tracking-tighter">Academic Year: {activeBudget.fiscalYear}</p>
                   </div>
                 </div>
 
@@ -1572,8 +1509,10 @@ export default function BudgetPage() {
                     </p>
                   </div>
                   <div className="text-right space-y-1">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Generated On:</p>
-                    <p className="text-sm font-bold text-slate-900">{format(new Date(), 'PPP p')}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Cost Center Filter:</p>
+                    <p className="text-sm font-bold text-slate-900 uppercase">
+                      {selectedCostCenter === 'all' ? 'All cost centers' : getCostCenters(schoolProfile).find(c => c.id === selectedCostCenter)?.name || selectedCostCenter}
+                    </p>
                   </div>
                 </div>
 
@@ -1588,7 +1527,7 @@ export default function BudgetPage() {
                     </tr>
                   </thead>
                   <tbody className="border-x border-b rounded-b-xl overflow-hidden font-bold">
-                    <tr className="border-b text-emerald-600">
+                    <tr className="border-b text-emerald-700">
                       <td className="p-3">Total Operational Revenue</td>
                       <td className="p-3 text-right font-mono">GH₵{budgetAnalysis.totalBudgetedRev.toFixed(2)}</td>
                       <td className="p-3 text-right font-mono">GH₵{budgetAnalysis.totalActualRev.toFixed(2)}</td>
@@ -1597,12 +1536,11 @@ export default function BudgetPage() {
                         GH₵{(budgetAnalysis.totalActualRev - budgetAnalysis.totalBudgetedRev).toFixed(2)}
                       </td>
                     </tr>
-                    <tr className="border-b text-rose-600">
+                    <tr className="border-b text-rose-650">
                       <td className="p-3">Total Operational Expenses</td>
                       <td className="p-3 text-right font-mono">GH₵{budgetAnalysis.totalBudgetedExp.toFixed(2)}</td>
                       <td className="p-3 text-right font-mono">GH₵{budgetAnalysis.totalActualExp.toFixed(2)}</td>
                       <td className="p-3 text-right font-mono">
-                        {/* Positive variance is good for expenses, but show direct numerical difference for transparency */}
                         GH₵{(budgetAnalysis.totalBudgetedExp - budgetAnalysis.totalActualExp).toFixed(2)}
                       </td>
                     </tr>
@@ -1610,7 +1548,7 @@ export default function BudgetPage() {
                       <td className="p-3 text-base uppercase">Net Operational Surplus / (Deficit)</td>
                       <td className="p-3 text-right font-mono text-base">GH₵{netBudgetedSurplus.toFixed(2)}</td>
                       <td className="p-3 text-right font-mono text-base">GH₵{netActualSurplus.toFixed(2)}</td>
-                      <td className={cn("p-3 text-right font-mono text-lg", netVariance >= 0 ? "text-green-700" : "text-red-700")}>
+                      <td className={cn("p-3 text-right font-mono text-lg", netVariance >= 0 ? "text-emerald-750" : "text-rose-750")}>
                         {netVariance >= 0 ? "+" : ""}GH₵{netVariance.toFixed(2)}
                       </td>
                     </tr>
@@ -1620,7 +1558,7 @@ export default function BudgetPage() {
                 {/* Subsections of Detailed Variance */}
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 border-b-2 pb-1">Detailed Revenue Breakdown</h3>
+                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 border-b pb-1">Detailed Revenue Breakdown</h3>
                     <Table className="text-xs">
                       <TableHeader>
                         <TableRow>
@@ -1638,12 +1576,12 @@ export default function BudgetPage() {
                           <TableRow key={item.id}>
                             <TableCell className="font-mono">{item.accountCode}</TableCell>
                             <TableCell className="font-bold">{item.accountName}</TableCell>
-                            <TableCell className="font-semibold text-slate-600">
+                            <TableCell className="font-semibold text-slate-500">
                               {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
                             </TableCell>
                             <TableCell className="text-right font-mono">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
                             <TableCell className="text-right font-mono">GH₵{item.actual.toFixed(2)}</TableCell>
-                            <TableCell className={cn("text-right font-mono font-bold", item.variance >= 0 ? "text-green-600" : "text-red-600")}>
+                            <TableCell className={cn("text-right font-mono font-bold", item.variance >= 0 ? "text-emerald-700" : "text-rose-700")}>
                               {item.variance >= 0 ? "+" : ""}GH₵{item.variance.toFixed(2)}
                             </TableCell>
                             <TableCell className="text-right font-bold">{item.percent.toFixed(0)}%</TableCell>
@@ -1654,7 +1592,7 @@ export default function BudgetPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 border-b-2 pb-1">Detailed Expense Breakdown</h3>
+                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 border-b pb-1">Detailed Expense Breakdown</h3>
                     <Table className="text-xs">
                       <TableHeader>
                         <TableRow>
@@ -1672,12 +1610,12 @@ export default function BudgetPage() {
                           <TableRow key={item.id}>
                             <TableCell className="font-mono">{item.accountCode}</TableCell>
                             <TableCell className="font-bold">{item.accountName}</TableCell>
-                            <TableCell className="font-semibold text-slate-600">
+                            <TableCell className="font-semibold text-slate-500">
                               {getCostCenters(schoolProfile).find(cc => cc.id === item.costCenter)?.name || item.costCenter || 'General'}
                             </TableCell>
                             <TableCell className="text-right font-mono">GH₵{item.budgetedAmount.toFixed(2)}</TableCell>
                             <TableCell className="text-right font-mono">GH₵{item.actual.toFixed(2)}</TableCell>
-                            <TableCell className={cn("text-right font-mono font-bold", item.variance >= 0 ? "text-green-600" : "text-red-600")}>
+                            <TableCell className={cn("text-right font-mono font-bold", item.variance >= 0 ? "text-emerald-700" : "text-rose-700")}>
                               {item.variance >= 0 ? "+" : ""}GH₵{item.variance.toFixed(2)}
                             </TableCell>
                             <TableCell className="text-right font-bold">{item.percent.toFixed(0)}%</TableCell>
@@ -1706,7 +1644,7 @@ export default function BudgetPage() {
 
             {/* TAB: AI VARIANCE ANALYSIS */}
             <TabsContent value="ai-analysis" className="space-y-4">
-              <Card className="rounded-3xl border border-slate-100 shadow-xl overflow-hidden bg-white">
+              <Card className="rounded-3xl border border-slate-200 shadow-md overflow-hidden bg-white">
                 <CardHeader className="bg-slate-50/50 border-b flex flex-col md:flex-row items-start md:items-center justify-between py-5 px-6 gap-4">
                   <div>
                     <CardTitle className="text-slate-900 font-black flex items-center gap-2 text-lg">
@@ -1717,18 +1655,30 @@ export default function BudgetPage() {
                       Automated analysis of actual spending vs budgeted targets using Genkit.
                     </CardDescription>
                   </div>
-                  {activeBudget.aiInsight && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleGenerateAIAnalysis}
-                      disabled={isGeneratingAI}
-                      className="border-indigo-200 text-indigo-650 hover:bg-indigo-50 font-bold rounded-xl shadow-sm flex items-center gap-1.5 h-10 px-4 shrink-0"
-                    >
-                      {isGeneratingAI ? <Loader2 className="h-4 w-4 animate-spin"/> : <RefreshCw className="h-4 w-4"/>}
-                      {isGeneratingAI ? 'Recalculating...' : 'Regenerate Audit'}
-                    </Button>
-                  )}
+                  <div className="flex gap-2">
+                    {activeBudget.aiInsight && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleCopyAIAnalysis}
+                          className="border-slate-350 text-slate-700 hover:bg-slate-50 font-bold rounded-xl h-10 px-4 flex items-center gap-1.5"
+                        >
+                          <Copy className="h-4 w-4"/> Copy Text
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleGenerateAIAnalysis}
+                          disabled={isGeneratingAI}
+                          className="border-indigo-200 text-indigo-650 hover:bg-indigo-50 font-bold rounded-xl shadow-sm flex items-center gap-1.5 h-10 px-4 shrink-0"
+                        >
+                          {isGeneratingAI ? <Loader2 className="h-4 w-4 animate-spin"/> : <RefreshCw className="h-4 w-4"/>}
+                          {isGeneratingAI ? 'Recalculating...' : 'Regenerate Audit'}
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent className="p-6">
                   {isGeneratingAI ? (

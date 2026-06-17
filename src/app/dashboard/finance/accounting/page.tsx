@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, Fragment } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
 import { collection, query, orderBy, where, doc, addDoc, serverTimestamp, setDoc, getDocs, writeBatch } from 'firebase/firestore';
 import { 
-  Loader2, Plus, Landmark, Save, Receipt, BookMarked, Printer, Eye, BookOpen, PlusCircle, Download, ShieldCheck
+  Loader2, Plus, Landmark, Save, Receipt, BookMarked, Printer, Eye, BookOpen, PlusCircle, Download, ShieldCheck, Search, ShieldAlert, ArrowUpRight, ArrowDownRight, Tag, Wallet, Sparkles
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -276,87 +276,113 @@ function JournalEntryForm({ accounts, schoolId, schoolProfile, onEntryAdded }: {
 // --- SUB-COMPONENT: VOUCHER DOCUMENT ---
 function VoucherDocument({ pv, schoolProfile }: { pv: any, schoolProfile: any }) {
     return (
-        <div className="bg-white text-black p-8 border shadow-sm rounded-lg font-sans max-w-3xl mx-auto" id="printable-voucher">
-            <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-6">
-                <div className="flex items-center gap-4">
-                    {schoolProfile?.logoUrl ? (
-                        <img src={schoolProfile.logoUrl} className="h-16 w-16 object-contain" alt="Logo" />
-                    ) : (
-                        <AppLogo className="h-16 w-16 text-indigo-600" />
-                    )}
-                    <div>
-                        <h1 className="text-2xl font-black uppercase tracking-tight">{schoolProfile?.name || 'SCHOOL NAME'}</h1>
-                        <p className="text-xs text-slate-500 font-medium">{schoolProfile?.address || 'ADDRESS'}</p>
+        <div className="bg-white text-black p-8 border shadow-sm rounded-lg font-sans max-w-3xl mx-auto relative overflow-hidden" id="printable-voucher">
+            {/* Watermark for visual authenticity */}
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none flex items-center justify-center select-none z-0">
+                <Landmark className="h-96 w-96 text-slate-900" />
+            </div>
+
+            <div className="relative z-10 space-y-6">
+                <div className="flex justify-between items-start border-b-4 border-slate-800 pb-6 mb-6">
+                    <div className="flex items-center gap-4">
+                        {schoolProfile?.logoUrl ? (
+                            <img src={schoolProfile.logoUrl} className="h-16 w-16 object-contain" alt="Logo" />
+                        ) : (
+                            <div className="h-16 w-16 bg-slate-100 rounded-xl flex items-center justify-center text-indigo-600 font-bold border border-slate-200">
+                                <Landmark className="h-8 w-8 text-indigo-600" />
+                            </div>
+                        )}
+                        <div>
+                            <h1 className="text-2xl font-black uppercase tracking-tight text-slate-900">{schoolProfile?.name || 'SCHOOL NAME'}</h1>
+                            <p className="text-xs text-slate-500 font-bold tracking-wide">{schoolProfile?.address || 'ADDRESS'}</p>
+                            {schoolProfile?.phone && <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Tel: {schoolProfile.phone}</p>}
+                        </div>
+                    </div>
+                    <div className="text-right">
+                        <span className="bg-slate-900 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider">Payment Voucher</span>
+                        <h2 className="text-xl font-extrabold text-slate-800 mt-2 font-mono">{pv.pvNumber}</h2>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Status: Processed</p>
                     </div>
                 </div>
-                <div className="text-right">
-                    <h2 className="text-3xl font-black text-slate-300 uppercase tracking-widest">Voucher</h2>
-                    <p className="text-sm font-bold text-slate-900 mt-1">{pv.pvNumber}</p>
-                </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-8 mb-8 text-sm">
-                <div className="space-y-1">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pay To:</p>
-                    <p className="text-lg font-bold text-slate-900">{pv.payee}</p>
+                <div className="grid grid-cols-2 gap-8 border-b pb-6 text-sm">
+                    <div className="space-y-1">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Payee / Claimant:</p>
+                        <p className="text-lg font-bold text-slate-900">{pv.payee}</p>
+                    </div>
+                    <div className="text-right space-y-1">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date Processed:</p>
+                        <p className="text-sm font-bold text-slate-900">
+                            {pv.createdAt?.toDate ? format(pv.createdAt.toDate(), 'PPP p') : 'Pending'}
+                        </p>
+                    </div>
                 </div>
-                <div className="text-right space-y-1">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date Processed:</p>
-                    <p className="text-sm font-bold text-slate-900">
-                        {pv.createdAt?.toDate ? format(pv.createdAt.toDate(), 'PPP p') : 'Pending'}
-                    </p>
-                </div>
-            </div>
 
-            <div className="space-y-4 mb-8">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Particulars / Description:</p>
-                    <p className="text-slate-800 font-medium">{pv.description}</p>
+                <div className="space-y-2">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Particulars / Payment Details:</p>
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-slate-800 font-medium text-sm leading-relaxed">
+                        {pv.description}
+                    </div>
                 </div>
-            </div>
 
-            <table className="w-full text-sm mb-8">
-                <thead className="bg-slate-900 text-white">
-                    <tr>
-                        <th className="text-left p-3 rounded-tl-xl">Financial Breakdown</th>
-                        <th className="text-right p-3 rounded-tr-xl">Amount (GH₵)</th>
-                    </tr>
-                </thead>
-                <tbody className="border-x border-b rounded-b-xl overflow-hidden">
-                    <tr className="border-b">
-                        <td className="p-3 font-medium">Gross Amount</td>
-                        <td className="p-3 text-right font-mono">{pv.grossAmount?.toFixed(2)}</td>
-                    </tr>
-                    <tr className="border-b text-emerald-600 font-medium">
-                        <td className="p-3">VAT Added</td>
-                        <td className="p-3 text-right font-mono">+{pv.vatAmount?.toFixed(2)}</td>
-                    </tr>
-                    <tr className="border-b text-rose-600 font-medium">
-                        <td className="p-3">Withholding Tax (WHT) Deducted</td>
-                        <td className="p-3 text-right font-mono">-{pv.whtAmount?.toFixed(2)}</td>
-                    </tr>
-                    <tr className="bg-indigo-50 font-black text-indigo-900">
-                        <td className="p-3 text-lg uppercase">Net Amount Payable</td>
-                        <td className="p-3 text-right text-2xl font-mono">GH₵{pv.netPayable?.toFixed(2)}</td>
-                    </tr>
-                </tbody>
-            </table>
+                <div className="space-y-2">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Financial Summary Breakdown:</p>
+                    <table className="w-full text-sm border-collapse border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <thead className="bg-slate-900 text-white font-bold text-xs uppercase tracking-wider">
+                            <tr>
+                                <th className="text-left p-3.5">Line Description</th>
+                                <th className="text-right p-3.5 w-[150px]">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="border-b bg-white">
+                                <td className="p-3.5 font-medium text-slate-700">Gross Expenditure Amount</td>
+                                <td className="p-3.5 text-right font-mono font-bold text-slate-800">GH₵{pv.grossAmount?.toFixed(2)}</td>
+                            </tr>
+                            <tr className="border-b bg-slate-50/50 text-emerald-600">
+                                <td className="p-3.5 font-medium flex items-center gap-1.5"><ArrowUpRight className="h-4 w-4" /> VAT Claimable / Added (Consolidated 20%)</td>
+                                <td className="p-3.5 text-right font-mono font-bold">+{pv.vatAmount?.toFixed(2)}</td>
+                            </tr>
+                            <tr className="border-b bg-white text-rose-600">
+                                <td className="p-3.5 font-medium flex items-center gap-1.5"><ArrowDownRight className="h-4 w-4" /> Withholding Tax (WHT) Deducted</td>
+                                <td className="p-3.5 text-right font-mono font-bold">-{pv.whtAmount?.toFixed(2)}</td>
+                            </tr>
+                            <tr className="bg-indigo-50 font-black text-indigo-900">
+                                <td className="p-4 text-sm uppercase tracking-wide">Net Amount Paid / Payable</td>
+                                <td className="p-4 text-right text-xl font-mono">GH₵{pv.netPayable?.toFixed(2)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-dashed">
-                <div className="text-center">
-                    <div className="border-b border-black h-8 mb-2"></div>
-                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">Accountant</p>
-                    <p className="text-[8px] font-bold text-slate-500">Prepared By: {pv.preparedByName}</p>
-                </div>
-                <div className="text-center">
-                    <div className="border-b border-black h-8 mb-2"></div>
-                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">Internal Auditor</p>
-                    <p className="text-[8px] font-bold text-slate-500">Vetted & Cleared</p>
-                </div>
-                <div className="text-center">
-                    <div className="border-b border-black h-8 mb-2"></div>
-                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">Director</p>
-                    <p className="text-[8px] font-bold text-slate-500">Authorized Official</p>
+                {/* Audit & Authorization Signatures Section */}
+                <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-dashed border-slate-300">
+                    <div className="text-center space-y-4">
+                        <div className="border-b border-slate-400 h-10 w-3/4 mx-auto relative flex items-end justify-center">
+                            {pv.preparedByName && <span className="text-[10px] text-slate-500 font-mono absolute -bottom-1 text-center truncate max-w-full">{pv.preparedByName}</span>}
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase text-slate-700 tracking-wider">Accountant</p>
+                            <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Prepared By</p>
+                        </div>
+                    </div>
+                    <div className="text-center space-y-4">
+                        <div className="border-b border-slate-400 h-10 w-3/4 mx-auto relative">
+                            {/* Visual stamp placeholder */}
+                            <div className="absolute right-0 bottom-1 border border-indigo-200/50 rounded text-[7px] text-indigo-400/40 uppercase font-black px-1 pointer-events-none select-none tracking-widest rotate-6">Vetted</div>
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase text-slate-700 tracking-wider">Internal Auditor</p>
+                            <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Cleared & Audited</p>
+                        </div>
+                    </div>
+                    <div className="text-center space-y-4">
+                        <div className="border-b border-slate-400 h-10 w-3/4 mx-auto"></div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase text-slate-700 tracking-wider">Director</p>
+                            <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Authorized Approval</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -577,6 +603,23 @@ function PaymentVoucherForm({
 }
 
 // --- MAIN PAGE ---
+const getTypeBadge = (type: string) => {
+    switch (type) {
+        case 'Asset':
+            return 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/50';
+        case 'Liability':
+            return 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/50';
+        case 'Equity':
+            return 'bg-violet-50 text-violet-700 border-violet-100 dark:bg-violet-950/20 dark:text-violet-400 dark:border-violet-900/50';
+        case 'Revenue':
+            return 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/50';
+        case 'Expense':
+            return 'bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-900/50';
+        default:
+            return 'bg-slate-50 text-slate-700 border-slate-100';
+    }
+};
+
 export default function AccountingPage() {
     const { role } = useRole();
     const firestore = useFirestore();
@@ -584,8 +627,12 @@ export default function AccountingPage() {
     const { toast } = useToast();
 
     const [isAddOpen, setIsAddOpen] = useState(false);
+    const [isPvOpen, setIsPvOpen] = useState(false);
     const [selectedPV, setSelectedPV] = useState<any>(null);
     const [isExporting, setIsExporting] = useState(false);
+    const [ledgerSearch, setLedgerSearch] = useState('');
+    const [pvSearch, setPvSearch] = useState('');
+    const [expandedJournalId, setExpandedJournalId] = useState<string | null>(null);
 
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: accounts, isLoading: accountsLoading, forceRefetch: forceRefetchAccounts } = useCollection<Account>(accountsQuery);
@@ -598,6 +645,43 @@ export default function AccountingPage() {
 
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
+
+    // --- ANALYTICS & FILTERING ---
+    const filteredJournals = useMemo(() => {
+      if (!journals) return [];
+      if (!ledgerSearch.trim()) return journals;
+      const queryStr = ledgerSearch.toLowerCase();
+      return journals.filter(j => 
+          j.description.toLowerCase().includes(queryStr) || 
+          j.reference?.toLowerCase().includes(queryStr) ||
+          j.lines?.some(l => l.accountName.toLowerCase().includes(queryStr))
+      );
+    }, [journals, ledgerSearch]);
+
+    const filteredVouchers = useMemo(() => {
+      if (!vouchers) return [];
+      if (!pvSearch.trim()) return vouchers;
+      const queryStr = pvSearch.toLowerCase();
+      return vouchers.filter(pv => 
+          pv.payee.toLowerCase().includes(queryStr) || 
+          pv.pvNumber.toLowerCase().includes(queryStr) ||
+          pv.description.toLowerCase().includes(queryStr)
+      );
+    }, [vouchers, pvSearch]);
+
+    const pvStats = useMemo(() => {
+      if (!vouchers) return { gross: 0, vat: 0, wht: 0, net: 0 };
+      let gross = 0, vat = 0, wht = 0, net = 0;
+      vouchers.forEach((v: any) => {
+          if (v.status !== 'Rejected') {
+              gross += Number(v.grossAmount) || 0;
+              vat += Number(v.vatAmount) || 0;
+              wht += Number(v.whtAmount) || 0;
+              net += Number(v.netPayable) || 0;
+          }
+      });
+      return { gross, vat, wht, net };
+    }, [vouchers]);
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
     
@@ -625,70 +709,142 @@ export default function AccountingPage() {
     const isLoading = isLoadingSchool || accountsLoading || jLoading || pvLoading;
 
     return (
-        <div className="space-y-6 p-6">
-            <div className="flex items-center gap-2 mb-4">
-                <Landmark className="h-8 w-8 text-indigo-700"/>
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Accounting & General Ledger</h1>
-                    <p className="text-muted-foreground">Manage chart of accounts and school expenditures.</p>
+        <div className="space-y-6 p-6 bg-slate-50/50 min-h-screen">
+            {/* Executive Glowing Hero Banner */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-900 via-indigo-900 to-slate-900 p-6 md:p-8 text-white shadow-xl border border-indigo-500/20">
+                {/* Decorative glow elements */}
+                <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
+                <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/90 text-xs font-semibold backdrop-blur-md border border-white/10">
+                            <Sparkles className="h-3.5 w-3.5 text-indigo-300 animate-pulse" />
+                            <span>Executive Financial Suite</span>
+                        </div>
+                        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+                            Accounting & General Ledger
+                        </h1>
+                        <p className="text-sm text-indigo-100 font-medium max-w-xl">
+                            Consolidated corporate ledger, Ghana Act 1151 compliance tracking, cost center reporting, and payment voucher audit authorization.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 md:gap-4 bg-black/15 backdrop-blur-lg rounded-2xl p-4 border border-white/5">
+                        <div className="text-center md:text-left px-2">
+                            <p className="text-[10px] uppercase text-indigo-300 font-bold tracking-wider">Total Accounts</p>
+                            <p className="text-2xl font-black font-mono text-white mt-1">{accounts?.length || 0}</p>
+                        </div>
+                        <div className="text-center md:text-left px-2 border-l border-white/10">
+                            <p className="text-[10px] uppercase text-indigo-300 font-bold tracking-wider">Ledger Status</p>
+                            <div className="flex items-center gap-1 mt-1 justify-center md:justify-start">
+                                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                                <span className="text-xs font-bold text-emerald-400">Audited</span>
+                            </div>
+                        </div>
+                        <div className="text-center md:text-left px-2 border-l border-white/10">
+                            <p className="text-[10px] uppercase text-indigo-300 font-bold tracking-wider">Cost Centers</p>
+                            <p className="text-2xl font-black font-mono text-white mt-1">{getCostCenters(schoolProfile).length}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <Tabs defaultValue="overview">
-                <TabsList className="w-full justify-start">
-                    <TabsTrigger value="overview">Chart of Accounts</TabsTrigger>
-                    <TabsTrigger value="journal">Journal Entry</TabsTrigger>
-                    <TabsTrigger value="ledger">General Ledger</TabsTrigger>
-                    <TabsTrigger value="pv">Payment Vouchers</TabsTrigger>
+            <Tabs defaultValue="overview" className="space-y-6">
+                <TabsList className="bg-slate-100 p-1.5 rounded-2xl inline-flex w-auto border border-slate-200/50">
+                    <TabsTrigger value="overview" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all">Chart of Accounts</TabsTrigger>
+                    <TabsTrigger value="journal" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all">Journal Entry</TabsTrigger>
+                    <TabsTrigger value="ledger" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all">General Ledger</TabsTrigger>
+                    <TabsTrigger value="pv" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all">Payment Vouchers</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="overview" className="mt-4">
+                {/* CHART OF ACCOUNTS */}
+                <TabsContent value="overview" className="mt-0">
                     {isLoading ? (
-                        <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>
+                        <div className="flex justify-center p-20"><Loader2 className="animate-spin text-indigo-600 h-8 w-8" /></div>
                     ) : (
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between">
+                        <Card className="border border-slate-100 shadow-lg rounded-2xl overflow-hidden bg-white">
+                            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 p-6 bg-slate-50/50">
                                 <div>
-                                    <CardTitle className="flex items-center gap-2"><BookMarked /> Chart of Accounts</CardTitle>
-                                    <CardDescription>Structure of the school's financial ledger.</CardDescription>
+                                    <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800">
+                                        <BookMarked className="text-indigo-600 h-5 w-5" /> Chart of Accounts
+                                    </CardTitle>
+                                    <CardDescription className="text-slate-500 font-medium">Structure and categories of the school's financial ledger.</CardDescription>
                                 </div>
                                 <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
                                     <DialogTrigger asChild>
-                                        <Button><PlusCircle className="mr-2 h-4 w-4" /> New Account</Button>
+                                        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">
+                                            <PlusCircle className="mr-2 h-4 w-4" /> New Account
+                                        </Button>
                                     </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader><DialogTitle>Create New Ledger Account</DialogTitle></DialogHeader>
-                                        {schoolId && accounts && <AccountForm setOpen={setIsAddOpen} onAccountAdded={forceRefetchAccounts} accounts={accounts} schoolId={schoolId} />}
+                                    <DialogContent className="max-w-md rounded-2xl">
+                                        <DialogHeader>
+                                            <DialogTitle className="text-lg font-bold">Create New Ledger Account</DialogTitle>
+                                        </DialogHeader>
+                                        {schoolId && accounts && (
+                                            <AccountForm 
+                                                setOpen={setIsAddOpen} 
+                                                onAccountAdded={forceRefetchAccounts} 
+                                                accounts={accounts} 
+                                                schoolId={schoolId} 
+                                            />
+                                        )}
                                     </DialogContent>
                                 </Dialog>
                             </CardHeader>
-                            <CardContent>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Code</TableHead>
-                                            <TableHead>Account Name</TableHead>
-                                            <TableHead>Type</TableHead>
-                                            <TableHead>Description</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {accounts?.sort((a,b) => a.code.localeCompare(b.code)).map(acc => (
-                                            <TableRow key={acc.id} className={cn(acc.isControlAccount && 'bg-muted/50 font-bold')}>
-                                                <TableCell>{acc.code}</TableCell>
-                                                <TableCell>{acc.name}</TableCell>
-                                                <TableCell>{acc.type}</TableCell>
-                                                <TableCell>{acc.description || '-'}</TableCell>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader className="bg-slate-50/80 text-slate-600 font-semibold">
+                                            <TableRow className="border-b border-slate-100">
+                                                <TableHead className="py-4 pl-6 font-bold w-[120px]">Code</TableHead>
+                                                <TableHead className="py-4 font-bold">Account Name</TableHead>
+                                                <TableHead className="py-4 font-bold">Type</TableHead>
+                                                <TableHead className="py-4 font-bold text-right pr-6 w-[160px]">Balance</TableHead>
+                                                <TableHead className="py-4 font-bold">Description</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {accounts?.sort((a,b) => a.code.localeCompare(b.code)).map(acc => (
+                                                <TableRow 
+                                                    key={acc.id} 
+                                                    className={cn(
+                                                        "transition-all border-b border-slate-100/80 hover:bg-slate-50/50",
+                                                        acc.isControlAccount ? 'bg-slate-50/30 font-bold text-slate-900' : 'text-slate-600'
+                                                    )}
+                                                >
+                                                    <TableCell className="font-mono font-bold py-4 pl-6">{acc.code}</TableCell>
+                                                    <TableCell className="py-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <span>{acc.name}</span>
+                                                            {acc.isControlAccount ? (
+                                                                <Badge className="bg-slate-200 text-slate-700 hover:bg-slate-200 border-none font-bold text-[9px] uppercase px-1.5 py-0.5">Control</Badge>
+                                                            ) : (
+                                                                <Badge className="bg-indigo-50 text-indigo-600 hover:bg-indigo-50 border-indigo-100 font-bold text-[9px] uppercase px-1.5 py-0.5">Postable</Badge>
+                                                            )}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="py-4">
+                                                        <Badge variant="outline" className={cn("font-bold text-[10px] uppercase py-0.5 px-2.5", getTypeBadge(acc.type))}>
+                                                            {acc.type}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="py-4 text-right pr-6 font-mono font-bold text-slate-800">
+                                                        GH₵{(acc.balance || 0).toFixed(2)}
+                                                    </TableCell>
+                                                    <TableCell className="py-4 text-slate-400 font-medium text-xs max-w-xs truncate">{acc.description || '-'}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             </CardContent>
                         </Card>
                     )}
                 </TabsContent>
 
-                <TabsContent value="journal" className="mt-4">
+                {/* RECORD JOURNAL */}
+                <TabsContent value="journal" className="mt-0">
                     <div className="max-w-3xl mx-auto">
                         {accounts && schoolId && (
                             <JournalEntryForm accounts={accounts} schoolId={schoolId} schoolProfile={schoolProfile} onEntryAdded={forceRefetchJournals} />
@@ -696,49 +852,203 @@ export default function AccountingPage() {
                     </div>
                 </TabsContent>
 
-                <TabsContent value="ledger" className="mt-4">
-                    <Card>
-                        <CardHeader><CardTitle>Journal History</CardTitle></CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Description</TableHead>
-                                        <TableHead className="text-right">Total Amount</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {journals?.map(j => (
-                                        <TableRow key={j.id}>
-                                            <TableCell>{j.date?.toDate ? format(j.date.toDate(), 'dd/MM/yyyy') : 'N/A'}</TableCell>
-                                            <TableCell>{j.description}</TableCell>
-                                            <TableCell className="text-right font-bold">GH₵{j.totalAmount.toFixed(2)}</TableCell>
+                {/* GENERAL LEDGER */}
+                <TabsContent value="ledger" className="mt-0">
+                    <Card className="border border-slate-100 shadow-lg rounded-2xl overflow-hidden bg-white">
+                        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 p-6 bg-slate-50/50">
+                            <div>
+                                <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800">
+                                    <BookOpen className="text-indigo-600 h-5 w-5" /> Journal History & Ledger Splits
+                                </CardTitle>
+                                <CardDescription className="text-slate-500 font-medium">Search and inspect specific journal transactions. Click any row to expand double-entry splits.</CardDescription>
+                            </div>
+                            <div className="relative w-full sm:w-72">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Input 
+                                    placeholder="Search ledger..." 
+                                    className="pl-9 bg-white border border-slate-200 h-10 rounded-xl"
+                                    value={ledgerSearch}
+                                    onChange={(e) => setLedgerSearch(e.target.value)}
+                                />
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader className="bg-slate-50 text-slate-600 font-semibold">
+                                        <TableRow className="border-b border-slate-100">
+                                            <TableHead className="py-4 pl-6 font-bold w-[120px]">Date</TableHead>
+                                            <TableHead className="py-4 font-bold">Transaction Details</TableHead>
+                                            <TableHead className="py-4 font-bold text-right pr-6 w-[160px]">Total Amount</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {!filteredJournals || filteredJournals.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={3} className="text-center py-20 text-slate-400">
+                                                    <BookOpen className="h-10 w-10 mx-auto mb-2 opacity-20" />
+                                                    <p className="font-bold uppercase tracking-widest text-[10px]">No ledger records found.</p>
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            filteredJournals.map(j => {
+                                                const isExpanded = expandedJournalId === j.id;
+                                                return (
+                                                    <Fragment key={j.id}>
+                                                        <TableRow 
+                                                            className="cursor-pointer hover:bg-slate-50/50 transition-colors border-b border-slate-100"
+                                                            onClick={() => setExpandedJournalId(isExpanded ? null : (j.id || null))}
+                                                        >
+                                                            <TableCell className="font-mono text-xs pl-6 py-4">
+                                                                {j.date?.toDate ? format(j.date.toDate(), 'dd/MM/yyyy') : 'N/A'}
+                                                            </TableCell>
+                                                            <TableCell className="py-4">
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-bold text-slate-800">{j.description}</span>
+                                                                    <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mt-0.5">Ref: {j.reference || 'MANUAL'}</span>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell className="text-right pr-6 font-mono font-black text-slate-800 py-4">
+                                                                GH₵{j.totalAmount.toFixed(2)}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        {isExpanded && (
+                                                            <TableRow className="bg-slate-50/40 hover:bg-slate-50/40">
+                                                                <TableCell colSpan={3} className="p-4 pl-6 border-b border-slate-100">
+                                                                    <div className="space-y-3 pl-4 border-l-2 border-indigo-600">
+                                                                        <div className="flex items-center gap-1.5">
+                                                                            <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
+                                                                            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Double-Entry Posting Splits</p>
+                                                                        </div>
+                                                                        <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+                                                                            <Table>
+                                                                                <TableHeader className="bg-slate-50 text-slate-600">
+                                                                                    <TableRow className="border-b border-slate-200">
+                                                                                        <TableHead className="py-2.5 font-bold text-xs">Account Name</TableHead>
+                                                                                        <TableHead className="py-2.5 font-bold text-xs text-right w-[150px]">Debit (Dr)</TableHead>
+                                                                                        <TableHead className="py-2.5 font-bold text-xs text-right w-[150px]">Credit (Cr)</TableHead>
+                                                                                        <TableHead className="py-2.5 font-bold text-xs text-center w-[120px]">Cost Center</TableHead>
+                                                                                    </TableRow>
+                                                                                </TableHeader>
+                                                                                <TableBody>
+                                                                                    {j.lines?.map((line, idx) => (
+                                                                                        <TableRow key={idx} className="hover:bg-slate-50/40 border-b border-slate-100 last:border-b-0">
+                                                                                            <TableCell className="py-2.5 font-semibold text-xs text-slate-700">{line.accountName}</TableCell>
+                                                                                            <TableCell className="py-2.5 text-right font-mono text-xs font-bold text-emerald-600">
+                                                                                                {line.debit > 0 ? `GH₵${line.debit.toFixed(2)}` : '-'}
+                                                                                            </TableCell>
+                                                                                            <TableCell className="py-2.5 text-right font-mono text-xs font-bold text-rose-600">
+                                                                                                {line.credit > 0 ? `GH₵${line.credit.toFixed(2)}` : '-'}
+                                                                                            </TableCell>
+                                                                                            <TableCell className="py-2.5 text-center">
+                                                                                                <Badge variant="outline" className="text-[9px] font-bold py-0.5 px-2 bg-slate-50 border-slate-200">
+                                                                                                    {line.costCenter || 'General'}
+                                                                                                </Badge>
+                                                                                            </TableCell>
+                                                                                        </TableRow>
+                                                                                    ))}
+                                                                                </TableBody>
+                                                                            </Table>
+                                                                        </div>
+                                                                    </div>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        )}
+                                                    </Fragment>
+                                                );
+                                            })
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
 
-                <TabsContent value="pv" className="mt-4">
+                {/* PAYMENT VOUCHERS */}
+                <TabsContent value="pv" className="mt-0">
                     <div className="space-y-6">
-                        <div className="flex justify-end">
-                            <Dialog>
+                        {/* Cumulative Expenditure Summary Stats */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            <Card className="border border-slate-100 shadow-sm rounded-2xl hover:shadow-md transition-all bg-white">
+                                <CardContent className="p-4 flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Gross Spend</p>
+                                        <p className="text-xl font-black font-mono text-slate-800">GH₵{pvStats.gross.toFixed(2)}</p>
+                                    </div>
+                                    <div className="p-2.5 rounded-xl bg-violet-50 text-violet-600">
+                                        <Wallet className="h-5 w-5" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border border-slate-100 shadow-sm rounded-2xl hover:shadow-md transition-all bg-white">
+                                <CardContent className="p-4 flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">VAT Added (Claimable)</p>
+                                        <p className="text-xl font-black font-mono text-emerald-600">GH₵{pvStats.vat.toFixed(2)}</p>
+                                    </div>
+                                    <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
+                                        <ArrowUpRight className="h-5 w-5" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border border-slate-100 shadow-sm rounded-2xl hover:shadow-md transition-all bg-white">
+                                <CardContent className="p-4 flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">WHT Withheld</p>
+                                        <p className="text-xl font-black font-mono text-rose-600">GH₵{pvStats.wht.toFixed(2)}</p>
+                                    </div>
+                                    <div className="p-2.5 rounded-xl bg-rose-50 text-rose-600">
+                                        <ArrowDownRight className="h-5 w-5" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border border-indigo-100/80 shadow-sm rounded-2xl hover:shadow-md transition-all bg-indigo-50/30">
+                                <CardContent className="p-4 flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-indigo-500">Net Cash Disbursed</p>
+                                        <p className="text-xl font-black font-mono text-indigo-700">GH₵{pvStats.net.toFixed(2)}</p>
+                                    </div>
+                                    <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-700">
+                                        <ShieldCheck className="h-5 w-5" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Search and Action Bar */}
+                        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                            <div className="relative w-full sm:w-80">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Input 
+                                    placeholder="Search by Payee, PV#, Details..." 
+                                    className="pl-9 h-11 bg-white rounded-xl border border-slate-200" 
+                                    value={pvSearch}
+                                    onChange={(e) => setPvSearch(e.target.value)}
+                                />
+                            </div>
+                            
+                            <Dialog open={isPvOpen} onOpenChange={setIsPvOpen}>
                                 <DialogTrigger asChild>
-                                    <Button className="bg-indigo-600 hover:bg-indigo-700 h-12 px-8 font-bold shadow-lg">
+                                    <Button className="w-full sm:w-auto bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-750 hover:to-indigo-750 text-white font-bold h-11 rounded-xl shadow-md border-0">
                                         <Plus className="mr-2 h-4 w-4" /> New Voucher
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6">
                                     <DialogHeader>
-                                        <DialogTitle>Create Payment Voucher</DialogTitle>
-                                        <DialogDescription>Statutory taxes and GL accounts are automatically calculated based on Ghana 2026 Act 1151.</DialogDescription>
+                                        <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                                            <Receipt className="text-indigo-600 h-5 w-5" /> Create Payment Voucher
+                                        </DialogTitle>
+                                        <DialogDescription className="text-slate-500 font-medium">
+                                            Process vendor invoice or internal claim under Ghana 2026 Act 1151 compliance schemas.
+                                        </DialogDescription>
                                     </DialogHeader>
                                     {schoolId && accounts && (
                                         <PaymentVoucherForm 
-                                            setOpen={(val) => {}} 
+                                            setOpen={setIsPvOpen} 
                                             accounts={accounts} 
                                             schoolId={schoolId} 
                                             schoolProfile={schoolProfile}
@@ -749,57 +1059,79 @@ export default function AccountingPage() {
                             </Dialog>
                         </div>
 
-                        <Card className="border-none shadow-xl bg-white rounded-3xl overflow-hidden">
+                        {/* Vouchers Table */}
+                        <Card className="border border-slate-100 shadow-lg bg-white rounded-2xl overflow-hidden">
                             <CardContent className="p-0">
-                                {!vouchers || vouchers.length === 0 ? (
-                                    <div className="text-center py-32 text-slate-400 bg-slate-50/50">
+                                {!filteredVouchers || filteredVouchers.length === 0 ? (
+                                    <div className="text-center py-24 text-slate-400 bg-slate-50/50">
                                         <Receipt className="h-12 w-12 mx-auto mb-4 opacity-20"/>
-                                        <p className="font-bold uppercase tracking-widest text-xs">No vouchers processed yet.</p>
+                                        <p className="font-bold uppercase tracking-widest text-xs">No vouchers matching search.</p>
                                     </div>
                                 ) : (
-                                    <Table>
-                                        <TableHeader className="bg-slate-50">
-                                            <TableRow>
-                                                <TableHead>PV Number</TableHead>
-                                                <TableHead>Date</TableHead>
-                                                <TableHead>Payee</TableHead>
-                                                <TableHead className="text-right">Net Payable</TableHead>
-                                                <TableHead className="text-center">Status</TableHead>
-                                                <TableHead className="text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {vouchers.map((pv: any) => (
-                                                <TableRow key={pv.id} className="hover:bg-slate-50 transition-colors">
-                                                    <TableCell className="font-mono font-bold text-xs">{pv.pvNumber}</TableCell>
-                                                    <TableCell className="text-xs text-slate-500">{pv.createdAt?.toDate ? format(pv.createdAt.toDate(), 'dd MMM yy') : 'Pending'}</TableCell>
-                                                    <TableCell><div className="flex flex-col"><span className="font-bold text-slate-800 text-sm">{pv.payee}</span><span className="text-[10px] text-slate-400 truncate max-w-[150px]">{pv.description}</span></div></TableCell>
-                                                    <TableCell className="text-right font-black text-indigo-700">GH₵{pv.netPayable?.toFixed(2)}</TableCell>
-                                                    <TableCell className="text-center"><Badge className="bg-indigo-50 text-indigo-700 border-indigo-100 uppercase text-[9px] font-black">{pv.status}</Badge></TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Dialog>
-                                                            <DialogTrigger asChild>
-                                                                <Button variant="ghost" size="sm" onClick={() => setSelectedPV(pv)}>
-                                                                    <Eye className="h-4 w-4 mr-1"/> View
-                                                                </Button>
-                                                            </DialogTrigger>
-                                                            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                                                                <DialogHeader><DialogTitle>Voucher Detail</DialogTitle></DialogHeader>
-                                                                <div className="p-4 bg-slate-100 rounded-xl overflow-hidden"><VoucherDocument pv={pv} schoolProfile={schoolProfile} /></div>
-                                                                <DialogFooter className="print:hidden">
-                                                                    <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                                                                    <Button onClick={() => handleDownloadPDF(pv)} disabled={isExporting} className="bg-indigo-600">
-                                                                        {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>}
-                                                                        Save PDF
-                                                                    </Button>
-                                                                </DialogFooter>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                    </TableCell>
+                                    <div className="overflow-x-auto">
+                                        <Table>
+                                            <TableHeader className="bg-slate-50 text-slate-600 font-semibold">
+                                                <TableRow className="border-b border-slate-100">
+                                                    <TableHead className="py-4 pl-6 font-bold w-[140px]">PV Number</TableHead>
+                                                    <TableHead className="py-4 font-bold">Date</TableHead>
+                                                    <TableHead className="py-4 font-bold">Payee / Claimant</TableHead>
+                                                    <TableHead className="py-4 font-bold text-right pr-6 w-[160px]">Net Payable</TableHead>
+                                                    <TableHead className="py-4 font-bold text-center w-[120px]">Status</TableHead>
+                                                    <TableHead className="py-4 font-bold text-right pr-6 w-[120px]">Actions</TableHead>
                                                 </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {filteredVouchers.map((pv: any) => (
+                                                    <TableRow key={pv.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100">
+                                                        <TableCell className="font-mono font-bold text-xs pl-6 py-4 text-slate-700">{pv.pvNumber}</TableCell>
+                                                        <TableCell className="text-xs text-slate-500 py-4">
+                                                            {pv.createdAt?.toDate ? format(pv.createdAt.toDate(), 'dd MMM yy') : 'Pending'}
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold text-slate-800 text-sm">{pv.payee}</span>
+                                                                <span className="text-[10px] text-slate-400 font-medium truncate max-w-[200px] mt-0.5">{pv.description}</span>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-right pr-6 font-mono font-black text-indigo-700 py-4">
+                                                            GH₵{pv.netPayable?.toFixed(2)}
+                                                        </TableCell>
+                                                        <TableCell className="text-center py-4">
+                                                            <Badge className="bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-50 uppercase text-[9px] font-black px-2 py-0.5 rounded-full">
+                                                                {pv.status}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="text-right pr-6 py-4">
+                                                            <Dialog>
+                                                                <DialogTrigger asChild>
+                                                                    <Button variant="ghost" size="sm" className="h-8 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 font-bold" onClick={() => setSelectedPV(pv)}>
+                                                                        <Eye className="h-4 w-4 mr-1"/> View
+                                                                    </Button>
+                                                                </DialogTrigger>
+                                                                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl p-6">
+                                                                    <DialogHeader>
+                                                                        <DialogTitle className="text-lg font-bold">Voucher Document Preview</DialogTitle>
+                                                                    </DialogHeader>
+                                                                    <div className="p-4 bg-slate-100/50 rounded-2xl border border-slate-200/60 overflow-hidden">
+                                                                        <VoucherDocument pv={pv} schoolProfile={schoolProfile} />
+                                                                    </div>
+                                                                    <DialogFooter className="print:hidden gap-2 sm:gap-0 mt-4">
+                                                                        <Button variant="outline" className="rounded-xl font-bold" onClick={() => window.print()}>
+                                                                            <Printer className="mr-2 h-4 w-4"/> Print
+                                                                        </Button>
+                                                                        <Button onClick={() => handleDownloadPDF(pv)} disabled={isExporting} className="bg-indigo-600 hover:bg-indigo-700 rounded-xl font-bold">
+                                                                            {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>}
+                                                                            Save PDF
+                                                                        </Button>
+                                                                    </DialogFooter>
+                                                                </DialogContent>
+                                                            </Dialog>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
                                 )}
                             </CardContent>
                         </Card>

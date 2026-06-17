@@ -42,7 +42,7 @@ import { AdmissionApplication, Class, Student, studentRegistrationSchema, Studen
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format, differenceInYears } from 'date-fns';
-import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2, AlertCircle, GraduationCap } from 'lucide-react';
 import { updateDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
@@ -378,85 +378,176 @@ function AdminApplicationDashboard() {
     };
 
 
-    if (loading) return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center p-12 text-slate-500 bg-slate-50 border border-dashed rounded-3xl min-h-[300px]">
+                <Loader2 className="animate-spin h-8 w-8 text-violet-600 mb-3" />
+                <p className="text-sm font-semibold tracking-wide uppercase">Loading Admission Applications...</p>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Incoming Applications</h2>
-            
-            {applications.length === 0 ? (
-                <Card><CardContent className="p-8 text-center text-gray-500">No pending applications found.</CardContent></Card>
-            ) : (
-                <div className="grid gap-4">
-                    {applications.map((app) => {
-                        const aiFlags = getAiFlags(app);
-                        return (
-                            <Card key={app.id} className="flex flex-row items-center justify-between p-4">
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="font-bold text-lg">{app.student.fullName}</h3>
-                                        {aiFlags.map((flag, i) => (
-                                            <Badge key={i} variant={flag.type === 'warning' ? 'destructive' : 'secondary'}>
-                                                <AlertCircle className="h-3 w-3 mr-1" /> {flag.text}
-                                            </Badge>
-                                        ))}
-                                    </div>
-                                    <p className="text-sm text-gray-500">Desired: {app.student.desiredGrade} | ID: {app.applicationId}</p>
-                                    <p className="text-xs text-gray-400">Parent: {app.parent1.name}</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
-                                        onClick={() => { setSelectedApp(app); setDecision('Approve'); }}>
-                                        <Check className="mr-2 h-4 w-4" /> Approve
-                                    </Button>
-                                    <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                                        onClick={() => { setSelectedApp(app); setDecision('Reject'); }}>
-                                        <X className="mr-2 h-4 w-4" /> Reject
-                                    </Button>
-                                </div>
-                            </Card>
-                        )
-                    })}
+        <div className="space-y-8">
+            {/* Executive Gradient Header */}
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-600 p-8 md:p-10 text-white shadow-xl shadow-violet-100/50 dark:shadow-none">
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-violet-100 backdrop-blur-md">
+                            <Sparkles className="h-3.5 w-3.5 text-violet-200" /> Admissions & Intake
+                        </span>
+                        <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Admissions Control Center</h1>
+                        <p className="mt-2 text-violet-100/80 max-w-xl text-sm md:text-base leading-relaxed">
+                            Process incoming student applications, utilize AI-powered placement recommendations, and manage class distribution settings.
+                        </p>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-4 shrink-0">
+                        <div className="rounded-2xl bg-white/10 px-5 py-4 backdrop-blur-md border border-white/10">
+                            <div className="text-xs text-violet-200 uppercase tracking-wider font-bold">Pending Review</div>
+                            <div className="text-2xl md:text-3xl font-black mt-1">{applications.length} Applications</div>
+                        </div>
+                        <div className="rounded-2xl bg-white/10 px-5 py-4 backdrop-blur-md border border-white/10">
+                            <div className="text-xs text-violet-200 uppercase tracking-wider font-bold">Active Classes</div>
+                            <div className="text-2xl md:text-3xl font-black mt-1">{availableClasses.length} Channels</div>
+                        </div>
+                    </div>
                 </div>
-            )}
+                {/* Visual Glows */}
+                <div className="absolute right-0 top-0 -mr-12 -mt-12 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+                <div className="absolute left-1/3 bottom-0 -mb-12 h-48 w-48 rounded-full bg-violet-400/20 blur-3xl pointer-events-none"></div>
+            </div>
+
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-slate-800">Incoming Applications</h2>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{applications.length} Records</span>
+                </div>
+                
+                {applications.length === 0 ? (
+                    <div className="py-16 text-center text-slate-400 border-2 border-dashed rounded-3xl bg-slate-50 flex flex-col items-center justify-center gap-3">
+                        <AlertCircle className="h-10 w-10 text-slate-300" />
+                        <div>
+                            <p className="font-semibold text-slate-700">No applications pending review</p>
+                            <p className="text-xs text-slate-400 mt-1">New submissions will show up here in real time.</p>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="grid gap-4">
+                        {applications.map((app) => {
+                            const aiFlags = getAiFlags(app);
+                            return (
+                                <div key={app.id} className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md hover:border-violet-200 transition-all duration-300">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div className="flex items-start gap-4">
+                                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 font-bold text-lg border border-violet-100/50">
+                                                {app.student.fullName?.charAt(0) || '?'}
+                                            </div>
+                                            <div>
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <h3 className="font-semibold text-slate-800 text-lg group-hover:text-violet-700 transition-colors">
+                                                        {app.student.fullName}
+                                                    </h3>
+                                                    {aiFlags.map((flag, i) => (
+                                                        <Badge key={i} variant={flag.type === 'warning' ? 'destructive' : 'secondary'} className={cn("text-xs font-semibold px-2 py-0.5", flag.type === 'warning' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100/50 border-rose-100' : 'bg-amber-50 text-amber-700 hover:bg-amber-100/50 border-amber-100')}>
+                                                            <AlertCircle className="h-3 w-3 mr-1 shrink-0" /> {flag.text}
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                                
+                                                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                                                    <span className="flex items-center gap-1.5">
+                                                        Desired: <Badge variant="outline" className="border-violet-100 bg-violet-50/50 text-violet-700 font-semibold px-2 py-0.5 rounded-md">{app.student.desiredGrade}</Badge>
+                                                    </span>
+                                                    <span className="text-slate-300">•</span>
+                                                    <span>App ID: <code className="font-mono text-slate-600 bg-slate-50 px-1 py-0.5 rounded border border-slate-100">{app.applicationId}</code></span>
+                                                    <span className="text-slate-300">•</span>
+                                                    <span>Parent: <strong className="text-slate-600 font-medium">{app.parent1.name}</strong></span>
+                                                    {app.submittedAt && (
+                                                        <>
+                                                            <span className="text-slate-300">•</span>
+                                                            <span>Submitted: {app.submittedAt.toDate ? format(app.submittedAt.toDate(), 'PP') : 'N/A'}</span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 md:self-center self-end">
+                                            <Button size="sm" variant="outline" className="h-9 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200 font-semibold rounded-xl transition-all"
+                                                onClick={() => { setSelectedApp(app); setDecision('Approve'); }}>
+                                                <Check className="mr-1.5 h-4 w-4 text-emerald-500" /> Approve
+                                            </Button>
+                                            <Button size="sm" variant="outline" className="h-9 text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200 font-semibold rounded-xl transition-all"
+                                                onClick={() => { setSelectedApp(app); setDecision('Reject'); }}>
+                                                <X className="mr-1.5 h-4 w-4 text-rose-500" /> Reject
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
+            </div>
 
             <Dialog open={!!selectedApp} onOpenChange={(open) => { if(!open) { setSelectedApp(null); setAiReasoning(null); } }}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md rounded-3xl">
                     <DialogHeader>
-                        <DialogTitle>{decision} Application</DialogTitle>
-                        <DialogDescription>
-                            Reviewing <strong>{selectedApp?.student?.fullName}</strong> (Grade: {selectedApp?.student?.desiredGrade})
+                        <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                            {decision === 'Approve' ? (
+                                <span className="flex items-center gap-2 text-emerald-600"><CheckCircle2 className="h-5 w-5" /> Approve Application</span>
+                            ) : (
+                                <span className="flex items-center gap-2 text-rose-600"><AlertCircle className="h-5 w-5" /> Reject Application</span>
+                            )}
+                        </DialogTitle>
+                        <DialogDescription className="text-slate-500 text-sm">
+                            Reviewing <strong>{selectedApp?.student?.fullName}</strong> for {selectedApp?.student?.desiredGrade}.
                         </DialogDescription>
                     </DialogHeader>
 
                     {decision === 'Approve' && (
-                        <div className="space-y-4 py-4">
-                            <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-xs font-bold text-indigo-700 flex items-center">
-                                        <Sparkles className="w-3 h-3 mr-1" /> Smart Placement Assistant
+                        <div className="space-y-5 py-3">
+                            {/* Premium AI Recommendation Panel */}
+                            <div className="relative overflow-hidden bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-fuchsia-500/10 p-5 rounded-2xl border border-violet-100/50">
+                                <div className="flex justify-between items-center mb-3">
+                                    <span className="text-xs font-bold text-violet-700 flex items-center gap-1.5 uppercase tracking-wider">
+                                        <Sparkles className="w-4 h-4 text-violet-600 animate-pulse" /> Smart Placement Assistant
                                     </span>
                                     {!aiReasoning && (
-                                        <Button variant="ghost" size="sm" className="h-6 text-xs text-indigo-600" onClick={handleAskAI} disabled={aiThinking}>
-                                            {aiThinking ? <Loader2 className="animate-spin w-3 h-3" /> : 'Suggest Placement (-1 Credit)'}
+                                        <Button 
+                                            variant="outline" 
+                                            size="sm" 
+                                            className="h-8 text-xs bg-white text-violet-700 border-violet-200 hover:bg-violet-50 hover:text-violet-800 font-semibold rounded-lg shadow-sm" 
+                                            onClick={handleAskAI} 
+                                            disabled={aiThinking}
+                                        >
+                                            {aiThinking ? <Loader2 className="animate-spin w-3 h-3 mr-1" /> : 'Suggest Placement (-1 Credit)'}
                                         </Button>
                                     )}
                                 </div>
+                                {aiThinking && (
+                                    <div className="flex items-center gap-2 py-2 text-violet-600 text-xs">
+                                        <Loader2 className="animate-spin h-3.5 w-3.5" />
+                                        <span>Analyzing age metrics and class capacities...</span>
+                                    </div>
+                                )}
                                 {aiReasoning && (
-                                    <p className="text-xs text-indigo-800 italic animate-in fade-in">
-                                        "{aiReasoning}"
-                                    </p>
+                                    <div className="animate-in fade-in slide-in-from-top-1 duration-300">
+                                        <p className="text-xs text-violet-900 leading-relaxed italic bg-white/60 p-3.5 rounded-xl border border-violet-100/50">
+                                            "{aiReasoning}"
+                                        </p>
+                                    </div>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Assign to Class</label>
+                                <Label className="text-slate-700 font-semibold text-sm">Assign to Class</Label>
                                 <Select value={assignedClass} onValueChange={setAssignedClass}>
-                                    <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                                    <SelectContent>
+                                    <SelectTrigger className="border-slate-200 rounded-xl focus:ring-violet-500"><SelectValue placeholder="Select a class" /></SelectTrigger>
+                                    <SelectContent className="rounded-xl">
                                         {availableClasses.map(cls => (
-                                            <SelectItem key={cls.id} value={cls.id}>
-                                                {cls.name} <span className="text-gray-400 text-xs">({cls.currentStudents}/{cls.capacity})</span>
+                                            <SelectItem key={cls.id} value={cls.id} className="rounded-lg">
+                                                {cls.name} <span className="text-slate-400 text-xs font-mono ml-2">({cls.currentStudents} / {cls.capacity} students)</span>
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -466,24 +557,25 @@ function AdminApplicationDashboard() {
                     )}
 
                     {decision === 'Reject' && (
-                        <div className="space-y-4 py-4">
+                        <div className="space-y-4 py-3">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Reason for Rejection</label>
+                                <Label className="text-slate-700 font-semibold text-sm">Reason for Rejection</Label>
                                 <Input 
-                                    placeholder="e.g. Class full, Age requirement not met" 
+                                    placeholder="e.g. Class capacity reached, Age criteria mismatch" 
                                     value={rejectionReason}
                                     onChange={(e) => setRejectionReason(e.target.value)}
+                                    className="border-slate-200 rounded-xl focus:ring-rose-500"
                                 />
                             </div>
                         </div>
                     )}
 
-                    <DialogFooter>
-                        <Button variant="ghost" onClick={() => setSelectedApp(null)} disabled={processing}>Cancel</Button>
+                    <DialogFooter className="gap-2">
+                        <Button variant="ghost" onClick={() => setSelectedApp(null)} disabled={processing} className="rounded-xl hover:bg-slate-100">Cancel</Button>
                         <Button 
                             onClick={handleProcessApplication} 
                             disabled={processing}
-                            className={decision === 'Approve' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
+                            className={cn("rounded-xl font-semibold shadow-md px-5", decision === 'Approve' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white')}
                         >
                             {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Confirm {decision}
@@ -517,70 +609,108 @@ function ParentDashboard({ schoolId }: { schoolId: string }) {
 
     if (showForm) {
         return (
-            <div className="space-y-4">
-                <Button variant="ghost" onClick={() => setShowForm(false)}>← Back to Dashboard</Button>
+            <div className="space-y-6">
+                <Button variant="ghost" onClick={() => setShowForm(false)} className="rounded-xl font-semibold hover:bg-slate-100">
+                    ← Back to Portal
+                </Button>
                 <ParentApplicationForm onSuccess={() => setShowForm(false)} schoolId={schoolId} />
             </div>
         )
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">My Applications</h2>
-                <Button onClick={() => setShowForm(true)}><UserPlus className="mr-2 h-4 w-4" /> New Application</Button>
+        <div className="space-y-8">
+            {/* Parent admissions Header */}
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-500 p-8 md:p-10 text-white shadow-xl shadow-fuchsia-100/50 dark:shadow-none">
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+                            <GraduationCap className="h-3.5 w-3.5 text-pink-200" /> Parent Portal
+                        </span>
+                        <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Admissions Portal</h1>
+                        <p className="mt-2 text-white/80 max-w-xl text-sm leading-relaxed">
+                            Apply for your child's enrollment, track the step-by-step progress of your application, and manage admissions details here.
+                        </p>
+                    </div>
+                    <Button 
+                        onClick={() => setShowForm(true)} 
+                        className="bg-white text-violet-700 hover:bg-violet-50 hover:text-violet-800 font-bold px-6 py-5 rounded-2xl shadow-lg hover:shadow-xl transition-all self-start md:self-center shrink-0 border border-violet-100"
+                    >
+                        <UserPlus className="mr-2 h-5 w-5 text-violet-600" /> New Application
+                    </Button>
+                </div>
+                {/* Decorative glows */}
+                <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
             </div>
-            
-            {loading && <Loader2 className="animate-spin mx-auto"/>}
 
-            {!loading && myApps.length === 0 ? (
-                <Card><CardContent className="p-8 text-center text-gray-500">You haven't submitted any applications yet.</CardContent></Card>
+            {loading ? (
+                <div className="flex flex-col items-center justify-center p-12 text-slate-500">
+                    <Loader2 className="animate-spin h-8 w-8 text-violet-600 mb-3" />
+                    <p className="text-sm font-semibold tracking-wider uppercase">Fetching your applications...</p>
+                </div>
+            ) : myApps.length === 0 ? (
+                <div className="py-16 text-center text-slate-400 border-2 border-dashed rounded-3xl bg-slate-50 flex flex-col items-center justify-center gap-4">
+                    <AlertCircle className="h-10 w-10 text-slate-300" />
+                    <div>
+                        <p className="font-semibold text-slate-700">No applications submitted yet</p>
+                        <p className="text-xs text-slate-400 mt-1">Click "New Application" above to begin enrollment.</p>
+                    </div>
+                </div>
             ) : (
-                <div className="space-y-4">
+                <div className="grid gap-6">
                     {myApps.map(app => (
-                        <Card key={app.id} className="overflow-hidden">
+                        <Card key={app.id} className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-300">
                             <CardHeader className="pb-4 border-b bg-slate-50/50">
-                                <div className="flex justify-between items-start">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <CardTitle className="text-lg">{app.student.fullName}</CardTitle>
-                                        <CardDescription>Application ID: {app.applicationId}</CardDescription>
+                                        <CardTitle className="text-lg font-bold text-slate-800">{app.student.fullName}</CardTitle>
+                                        <CardDescription className="text-xs font-mono mt-0.5 text-slate-500">Application ID: {app.applicationId}</CardDescription>
                                     </div>
-                                     <Badge className={
-                                        app.status === 'Admitted' ? 'bg-green-600' : 
-                                        app.status === 'Rejected' ? 'bg-red-600' : 'bg-blue-600'
-                                    }>
+                                    <Badge className={cn(
+                                        "w-fit font-bold rounded-lg px-2.5 py-1 text-xs",
+                                        app.status === 'Admitted' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-50' : 
+                                        app.status === 'Rejected' ? 'bg-rose-50 text-rose-700 border border-rose-100 hover:bg-rose-50' : 
+                                        'bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-50'
+                                    )}>
                                         {app.status}
                                     </Badge>
                                 </div>
                             </CardHeader>
                             
-                             <CardContent className="pt-6">
+                            <CardContent className="pt-6">
                                 <ApplicationTracker status={app.status} />
                                 
-                                <div className="mt-6 space-y-2">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-slate-500">Desired Grade:</span>
-                                        <span className="font-medium">{app.student.desiredGrade}</span>
+                                <div className="mt-6 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                    <div className="flex justify-between sm:justify-start sm:gap-6 py-1.5 border-b border-slate-50 sm:border-none">
+                                        <span className="text-slate-500 w-28">Desired Grade:</span>
+                                        <span className="font-semibold text-slate-800 bg-slate-50 px-2 py-0.5 rounded border border-slate-100 text-xs">{app.student.desiredGrade}</span>
                                     </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-slate-500">Submitted On:</span>
-                                        <span>{app.submittedAt?.toDate().toLocaleDateString()}</span>
+                                    <div className="flex justify-between sm:justify-start sm:gap-6 py-1.5 border-b border-slate-50 sm:border-none">
+                                        <span className="text-slate-500 w-28">Submitted On:</span>
+                                        <span className="text-slate-700 font-medium">{app.submittedAt?.toDate ? format(app.submittedAt.toDate(), 'PPP') : 'N/A'}</span>
                                     </div>
 
                                     {app.status === 'Admitted' && (
-                                        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-800 text-sm flex items-start gap-2">
-                                            <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
+                                        <div className="md:col-span-2 mt-4 p-4 bg-emerald-50 border border-emerald-150 rounded-xl text-emerald-800 text-sm flex items-start gap-3">
+                                            <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5 text-emerald-600" />
                                             <div>
-                                                <strong>Admission Offer Received!</strong><br/>
-                                                Assigned to class: {availableClasses?.find((c: any) => c.id === app.assignedClassId)?.name || app.assignedClassId}
+                                                <strong className="text-emerald-950 font-semibold">Admission Offer Received!</strong>
+                                                <p className="mt-1 text-emerald-800/90 text-xs">
+                                                    Your child has been assigned to class: <strong className="font-bold">{availableClasses?.find((c: any) => c.id === app.assignedClassId)?.name || app.assignedClassId}</strong>. Welcome to our school community!
+                                                </p>
                                             </div>
                                         </div>
                                     )}
-                                     {app.status === 'Rejected' && (
-                                        <Alert variant="destructive" className="mt-4">
-                                            <AlertTitle>Decision Details</AlertTitle>
-                                            <AlertDescription>{app.rejectionReason || 'The school has not provided a specific reason.'}</AlertDescription>
-                                        </Alert>
+                                    {app.status === 'Rejected' && (
+                                        <div className="md:col-span-2 mt-4 p-4 bg-rose-50 border border-rose-100 rounded-xl text-rose-800 text-sm flex items-start gap-3">
+                                            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600" />
+                                            <div>
+                                                <strong className="text-rose-950 font-semibold">Decision Details</strong>
+                                                <p className="mt-1 text-rose-800/90 text-xs">
+                                                    {app.rejectionReason || 'The school has not provided a specific reason.'}
+                                                </p>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                             </CardContent>

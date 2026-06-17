@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
 import { logAuditEvent } from '@/lib/audit';
 import { collection, query, orderBy, where, doc, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore';
 import { 
-  Loader2, Plus, Landmark, Save, History, TrendingUp, PlusCircle, Calendar, Banknote, Eye, Trash2, ShieldCheck, Scale, FileText, Settings, Coins, Calculator
+  Loader2, Plus, Landmark, Save, History, TrendingUp, PlusCircle, Calendar, Banknote, Eye, Trash2, ShieldCheck, Scale, FileText, Settings, Coins, Calculator, Sparkles, Search
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { z } from 'zod';
@@ -270,6 +271,21 @@ function AddAssetForm({ setOpen, schoolId, onSuccess }: { setOpen: (o: boolean) 
 }
 
 // --- MAIN PORTAL COMPONENT ---
+const getCategoryBadge = (category: string) => {
+  switch (category) {
+    case 'Land & Buildings':
+      return 'bg-blue-50 text-blue-700 border-blue-100';
+    case 'Motor Vehicles':
+      return 'bg-purple-50 text-purple-700 border-purple-100';
+    case 'Furniture & Fittings':
+      return 'bg-amber-50 text-amber-700 border-amber-100';
+    case 'IT & Equipment':
+      return 'bg-rose-50 text-rose-700 border-rose-100';
+    default:
+      return 'bg-slate-50 text-slate-700 border-slate-100';
+  }
+};
+
 export default function FixedAssetPage() {
   const { role, profile } = useRole();
   const firestore = useFirestore();
@@ -282,6 +298,7 @@ export default function FixedAssetPage() {
   const [isDepreciationOpen, setIsDepreciationOpen] = useState(false);
   const [isDisposalOpen, setIsDisposalOpen] = useState(false);
   const [disposalAsset, setDisposalAsset] = useState<any>(null);
+  const [assetSearch, setAssetSearch] = useState('');
 
   const [isSubmittingDep, setIsSubmittingDep] = useState(false);
   const [isSubmittingDisp, setIsSubmittingDisp] = useState(false);
@@ -341,6 +358,17 @@ export default function FixedAssetPage() {
     if (!assets) return [];
     return assets.filter(a => a.status === 'Active' && a.currentBookValue > a.salvageValue);
   }, [assets]);
+
+  const filteredAssets = useMemo(() => {
+    if (!assets) return [];
+    if (!assetSearch.trim()) return assets;
+    const queryStr = assetSearch.toLowerCase();
+    return assets.filter((a: any) => 
+      a.name.toLowerCase().includes(queryStr) ||
+      a.assetCode.toLowerCase().includes(queryStr) ||
+      a.category.toLowerCase().includes(queryStr)
+    );
+  }, [assets, assetSearch]);
 
   const previewDepreciation = useMemo(() => {
     return activeAssets.map(asset => {
@@ -539,46 +567,125 @@ export default function FixedAssetPage() {
   const revenueAccounts = accounts?.filter(a => a.type === 'Revenue' && !a.isControlAccount) || [];
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Landmark className="h-8 w-8 text-indigo-700" />
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">Fixed Asset Register</h1>
-            <p className="text-muted-foreground">Manage school assets, projected schedules, and ledger depreciation batches.</p>
+    <div className="space-y-6 p-6 bg-slate-50/50 min-h-screen">
+      {/* Executive Glowing Hero Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-900 via-indigo-900 to-slate-900 p-6 md:p-8 text-white shadow-xl border border-indigo-500/20">
+        {/* Decorative glow elements */}
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
+        <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/90 text-xs font-semibold backdrop-blur-md border border-white/10">
+              <Sparkles className="h-3.5 w-3.5 text-indigo-300 animate-pulse" />
+              <span>Asset Life-cycle Management</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+              Fixed Asset Register
+            </h1>
+            <p className="text-sm text-indigo-100 font-medium max-w-xl">
+              Track school capital assets, project future depreciation schedules, and post compliance depreciation batches directly to the General Ledger.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 md:gap-4 bg-black/15 backdrop-blur-lg rounded-2xl p-4 border border-white/5">
+            <div className="text-center md:text-left px-2">
+              <p className="text-[10px] uppercase text-indigo-300 font-bold tracking-wider">Active Assets</p>
+              <p className="text-2xl font-black font-mono text-white mt-1">{assets?.filter((a: any) => a.status === 'Active').length || 0}</p>
+            </div>
+            <div className="text-center md:text-left px-2 border-l border-white/10">
+              <p className="text-[10px] uppercase text-indigo-300 font-bold tracking-wider">Net Book Value</p>
+              <p className="text-2xl font-black font-mono text-emerald-400 mt-1">GH₵{summary.netBookValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid md:grid-cols-3 gap-6">
+        <Card className="border border-slate-100 shadow-lg rounded-2xl bg-white hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-xs uppercase font-bold text-slate-400">Total Fixed Assets Cost</p>
+              <h3 className="text-2xl font-black text-slate-800">GH₵{summary.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-slate-100 text-slate-600">
+              <Landmark className="h-6 w-6" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-slate-100 shadow-lg rounded-2xl bg-white hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-xs uppercase font-bold text-rose-400">Total Accumulated Depreciation</p>
+              <h3 className="text-2xl font-black text-rose-600">GH₵{summary.totalAccDep.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-rose-50 text-rose-600">
+              <TrendingUp className="h-6 w-6 rotate-180" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-indigo-100/80 shadow-lg rounded-2xl bg-indigo-50/20 hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-xs uppercase font-bold text-indigo-400 font-semibold">Net Book Value</p>
+              <h3 className="text-2xl font-black text-indigo-900">GH₵{summary.netBookValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-indigo-100 text-indigo-700">
+              <Scale className="h-6 w-6" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Search and Action Toolbar */}
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="relative w-full sm:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input 
+            placeholder="Search by name, code, category..." 
+            className="pl-9 h-11 bg-white rounded-xl border border-slate-200" 
+            value={assetSearch}
+            onChange={(e) => setAssetSearch(e.target.value)}
+          />
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           {/* Action to Run Depreciation */}
           <Dialog open={isDepreciationOpen} onOpenChange={setIsDepreciationOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={activeAssets.length === 0}>
+              <Button variant="outline" className="h-11 rounded-xl border-indigo-200 text-indigo-700 hover:bg-indigo-50 font-bold" disabled={activeAssets.length === 0}>
                 <Calculator className="h-4 w-4 mr-2" /> Run Depreciation Batch
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6">
               <DialogHeader>
-                <DialogTitle>Run Depreciation Batch</DialogTitle>
-                <DialogDescription>This will calculate and post depreciation logs and matching ledger entries for all active assets.</DialogDescription>
+                <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                  <Calculator className="text-indigo-600 h-5 w-5" /> Run Depreciation Batch
+                </DialogTitle>
+                <DialogDescription className="text-slate-500 font-medium">
+                  This will calculate and post depreciation logs and matching ledger entries for all active assets.
+                </DialogDescription>
               </DialogHeader>
 
               {activeAssets.length === 0 ? (
-                <p className="p-4 text-center text-sm text-slate-500">No active assets require depreciation at this time.</p>
+                <p className="p-4 text-center text-sm text-slate-500 font-semibold">No active assets require depreciation at this time.</p>
               ) : (
                 <Form {...depForm}>
                   <form onSubmit={depForm.handleSubmit(handleRunDepreciation)} className="space-y-6">
                     <div className="space-y-2">
-                      <Label>Depreciation Period</Label>
-                      <Input {...depForm.register('period')} placeholder="e.g. FY 2026, Q3 2026" />
+                      <Label className="font-bold text-xs uppercase tracking-wider text-slate-500">Depreciation Period</Label>
+                      <Input {...depForm.register('period')} placeholder="e.g. FY 2026, Q3 2026" className="h-11 rounded-xl" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField control={depForm.control} name="debitAccountId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Depreciation Expense Account (Debit)</FormLabel>
+                          <FormLabel className="font-bold text-xs uppercase tracking-wider text-slate-500">Depreciation Expense Account (Debit)</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Choose account..." /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger className="h-11 rounded-xl"><SelectValue placeholder="Choose account..." /></SelectTrigger></FormControl>
                             <SelectContent>{expenseAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
                           </Select>
                           <FormMessage />
@@ -586,9 +693,9 @@ export default function FixedAssetPage() {
                       )} />
                       <FormField control={depForm.control} name="creditAccountId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Accumulated Depreciation Account (Credit)</FormLabel>
+                          <FormLabel className="font-bold text-xs uppercase tracking-wider text-slate-500">Accumulated Depreciation Account (Credit)</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Choose account..." /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger className="h-11 rounded-xl"><SelectValue placeholder="Choose account..." /></SelectTrigger></FormControl>
                             <SelectContent>{assetAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
                           </Select>
                           <FormMessage />
@@ -596,24 +703,27 @@ export default function FixedAssetPage() {
                       )} />
                     </div>
 
-                    <div className="border border-indigo-100 rounded-xl overflow-hidden">
-                      <div className="bg-indigo-50/50 p-3 border-b border-indigo-100 font-bold text-xs uppercase text-indigo-700">Depreciation Preview ({previewDepreciation.length} Assets)</div>
-                      <div className="max-h-40 overflow-y-auto p-2 space-y-1 text-xs">
+                    <div className="border border-indigo-100 rounded-2xl overflow-hidden shadow-sm bg-white">
+                      <div className="bg-slate-50 p-3 border-b border-slate-100 font-black text-[10px] uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                        <span>Depreciation Preview ({previewDepreciation.length} Assets)</span>
+                      </div>
+                      <div className="max-h-40 overflow-y-auto p-3 space-y-2 text-xs">
                         {previewDepreciation.map(p => (
-                          <div key={p.id} className="flex justify-between p-1 hover:bg-slate-50">
-                            <span>{p.code} - {p.name}</span>
+                          <div key={p.id} className="flex justify-between items-center py-1 border-b border-slate-50 last:border-b-0">
+                            <span className="font-semibold text-slate-700">{p.code} - {p.name}</span>
                             <span className="font-mono font-bold text-rose-600">-GH₵{p.depAmount.toFixed(2)}</span>
                           </div>
                         ))}
                       </div>
-                      <div className="bg-indigo-50/80 p-3 border-t border-indigo-100 flex justify-between font-black text-indigo-900 text-sm">
+                      <div className="bg-indigo-50/50 p-4 border-t border-indigo-100 flex justify-between items-center font-black text-indigo-900 text-sm">
                         <span>Total Batch Depreciation Amount</span>
-                        <span className="font-mono text-base">GH₵{totalPreviewDepreciation.toFixed(2)}</span>
+                        <span className="font-mono text-lg">GH₵{totalPreviewDepreciation.toFixed(2)}</span>
                       </div>
                     </div>
 
                     <DialogFooter>
-                      <Button type="submit" disabled={isSubmittingDep} className="bg-indigo-600 hover:bg-indigo-700">
+                      <Button type="submit" disabled={isSubmittingDep} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 h-11 rounded-xl font-bold">
                         {isSubmittingDep ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                         Post Depreciation Batch
                       </Button>
@@ -627,14 +737,16 @@ export default function FixedAssetPage() {
           {/* Action to Add New Asset */}
           <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-indigo-600 hover:bg-indigo-700">
+              <Button className="h-11 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-750 hover:to-indigo-750 font-bold shadow-md border-0">
                 <Plus className="mr-2 h-4 w-4" /> Register New Asset
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-xl">
+            <DialogContent className="max-w-xl rounded-3xl p-6">
               <DialogHeader>
-                <DialogTitle>Register New Fixed Asset</DialogTitle>
-                <DialogDescription>Add a new tangible asset to the school register.</DialogDescription>
+                <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                  <Landmark className="text-indigo-600 h-5 w-5" /> Register New Fixed Asset
+                </DialogTitle>
+                <DialogDescription className="text-slate-500 font-medium">Add a new tangible asset to the school register.</DialogDescription>
               </DialogHeader>
               {schoolId && <AddAssetForm setOpen={setIsAddOpen} schoolId={schoolId} onSuccess={refetchAssets} />}
             </DialogContent>
@@ -642,182 +754,174 @@ export default function FixedAssetPage() {
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid md:grid-cols-3 gap-6">
-        <Card className="border-l-4 border-l-slate-400 shadow-sm bg-white">
-          <CardContent className="pt-6">
-            <p className="text-xs uppercase font-bold text-slate-400">Total Fixed Assets Cost</p>
-            <h3 className="text-2xl font-black text-slate-800 mt-1">GH₵{summary.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-rose-500 shadow-sm bg-white">
-          <CardContent className="pt-6">
-            <p className="text-xs uppercase font-bold text-rose-400">Total Accumulated Depreciation</p>
-            <h3 className="text-2xl font-black text-rose-800 mt-1">GH₵{summary.totalAccDep.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-indigo-600 shadow-sm bg-white">
-          <CardContent className="pt-6">
-            <p className="text-xs uppercase font-bold text-indigo-400">Net Book Value</p>
-            <h3 className="text-2xl font-black text-indigo-900 mt-1">GH₵{summary.netBookValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Main Tabs */}
-      <Tabs defaultValue="register">
-        <TabsList className="w-full justify-start border-b">
-          <TabsTrigger value="register">Asset Register</TabsTrigger>
-          <TabsTrigger value="schedules">Depreciation Schedules</TabsTrigger>
-          <TabsTrigger value="history">Depreciation Log History</TabsTrigger>
+      <Tabs defaultValue="register" className="space-y-6">
+        <TabsList className="bg-slate-100 p-1.5 rounded-2xl inline-flex w-auto border border-slate-200/50">
+          <TabsTrigger value="register" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all">Asset Register</TabsTrigger>
+          <TabsTrigger value="schedules" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all">Depreciation Schedules</TabsTrigger>
+          <TabsTrigger value="history" className="rounded-xl px-4 py-2 text-sm font-semibold transition-all">Depreciation Log History</TabsTrigger>
         </TabsList>
 
         {/* REGISTER TAB */}
-        <TabsContent value="register" className="mt-4">
-          <Card className="border-none shadow-md overflow-hidden bg-white">
+        <TabsContent value="register" className="mt-0">
+          <Card className="border border-slate-100 shadow-lg rounded-2xl overflow-hidden bg-white">
             <CardContent className="p-0">
               {isLoading ? (
-                <div className="flex justify-center p-20"><Loader2 className="animate-spin text-indigo-600" /></div>
-              ) : !assets || assets.length === 0 ? (
-                <div className="text-center py-24 text-slate-400">
+                <div className="flex justify-center p-20"><Loader2 className="animate-spin text-indigo-600 h-8 w-8" /></div>
+              ) : !filteredAssets || filteredAssets.length === 0 ? (
+                <div className="text-center py-24 text-slate-400 bg-slate-50/50">
                   <Landmark className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                  <p className="font-bold uppercase tracking-widest text-xs">No assets registered yet.</p>
+                  <p className="font-bold uppercase tracking-widest text-xs">No assets matching search.</p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader className="bg-slate-50">
-                    <TableRow>
-                      <TableHead>Code</TableHead>
-                      <TableHead>Asset Name</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead className="text-right">Original Cost</TableHead>
-                      <TableHead className="text-right">Accum. Depr.</TableHead>
-                      <TableHead className="text-right">Book Value</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {assets.map((asset: any) => (
-                      <TableRow key={asset.id} className="hover:bg-slate-50 transition-colors">
-                        <TableCell className="font-mono font-bold text-xs">{asset.assetCode}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span className="font-bold text-slate-800 text-sm">{asset.name}</span>
-                            <span className="text-[10px] text-slate-400">Purchased: {asset.purchaseDate?.toDate ? format(asset.purchaseDate.toDate(), 'dd MMM yyyy') : 'N/A'}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell><Badge variant="outline" className="text-xs">{asset.category}</Badge></TableCell>
-                        <TableCell className="text-right font-bold text-slate-600">GH₵{asset.purchaseCost?.toFixed(2)}</TableCell>
-                        <TableCell className="text-right font-medium text-rose-600">-GH₵{asset.accumulatedDepreciation?.toFixed(2)}</TableCell>
-                        <TableCell className="text-right font-black text-indigo-700">GH₵{asset.currentBookValue?.toFixed(2)}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge className={
-                            asset.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-700 border-slate-200'
-                          }>
-                            {asset.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right space-x-1">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="ghost" size="sm" onClick={() => setSelectedAsset(asset)}>
-                                <Eye className="h-4 w-4 mr-1" /> Plan
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-3xl">
-                              <DialogHeader>
-                                <DialogTitle>Depreciation Projection for {asset.name}</DialogTitle>
-                                <DialogDescription>Projected calculations for useful life of {asset.usefulLifeYears} years ({asset.depreciationMethod}).</DialogDescription>
-                              </DialogHeader>
-                              <div className="mt-4">
-                                <Table>
-                                  <TableHeader>
-                                    <TableRow>
-                                      <TableHead>Year</TableHead>
-                                      <TableHead className="text-right">Beginning Book Value</TableHead>
-                                      <TableHead className="text-right">Depreciation Expense</TableHead>
-                                      <TableHead className="text-right">Accumulated Depreciation</TableHead>
-                                      <TableHead className="text-right">Ending Book Value</TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    {calculateDepreciationSchedule(
-                                      asset.purchaseCost,
-                                      asset.salvageValue,
-                                      asset.usefulLifeYears,
-                                      asset.depreciationMethod,
-                                      asset.depreciationRate
-                                    ).map(row => (
-                                      <TableRow key={row.year} className={row.endingBookValue === asset.currentBookValue ? 'bg-indigo-50/50 font-bold' : ''}>
-                                        <TableCell>Year {row.year}</TableCell>
-                                        <TableCell className="text-right">GH₵{row.beginningBookValue.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right text-rose-600">-GH₵{row.depreciationExpense.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right text-slate-500">GH₵{row.accumulatedDepreciation.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right font-bold text-indigo-700">GH₵{row.endingBookValue.toFixed(2)}</TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-
-                          {asset.status === 'Active' && (
-                            <Button variant="ghost" size="sm" className="text-rose-600 hover:text-rose-800" onClick={() => { setDisposalAsset(asset); setIsDisposalOpen(true); }}>
-                              <Trash2 className="h-4 w-4 mr-1" /> Dispose
-                            </Button>
-                          )}
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader className="bg-slate-50 text-slate-600 font-semibold">
+                      <TableRow className="border-b border-slate-100">
+                        <TableHead className="py-4 pl-6 font-bold w-[120px]">Code</TableHead>
+                        <TableHead className="py-4 font-bold">Asset Name</TableHead>
+                        <TableHead className="py-4 font-bold">Category</TableHead>
+                        <TableHead className="py-4 font-bold text-right w-[150px]">Original Cost</TableHead>
+                        <TableHead className="py-4 font-bold text-right w-[150px]">Accum. Depr.</TableHead>
+                        <TableHead className="py-4 font-bold text-right w-[150px]">Book Value</TableHead>
+                        <TableHead className="py-4 font-bold text-center w-[120px]">Status</TableHead>
+                        <TableHead className="py-4 font-bold text-right pr-6 w-[160px]">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredAssets.map((asset: any) => (
+                        <TableRow key={asset.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-b-0">
+                          <TableCell className="font-mono font-bold text-xs pl-6 py-4">{asset.assetCode}</TableCell>
+                          <TableCell className="py-4">
+                            <div className="flex flex-col">
+                              <span className="font-bold text-slate-800 text-sm">{asset.name}</span>
+                              <span className="text-[10px] text-slate-400 font-medium mt-0.5">Purchased: {asset.purchaseDate?.toDate ? format(asset.purchaseDate.toDate(), 'dd MMM yyyy') : 'N/A'}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-4">
+                            <Badge variant="outline" className={cn("font-bold text-[10px] uppercase py-0.5 px-2.5", getCategoryBadge(asset.category))}>
+                              {asset.category}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right font-bold font-mono text-slate-600 py-4">GH₵{asset.purchaseCost?.toFixed(2)}</TableCell>
+                          <TableCell className="text-right font-bold font-mono text-rose-600 py-4">-GH₵{asset.accumulatedDepreciation?.toFixed(2)}</TableCell>
+                          <TableCell className="text-right font-black font-mono text-indigo-700 py-4">GH₵{asset.currentBookValue?.toFixed(2)}</TableCell>
+                          <TableCell className="text-center py-4">
+                            <Badge className={cn(
+                              "font-black text-[9px] uppercase px-2 py-0.5 rounded-full border",
+                              asset.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-700 border-slate-200'
+                            )}>
+                              {asset.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right pr-6 py-4 space-x-1">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 font-bold" onClick={() => setSelectedAsset(asset)}>
+                                  <Eye className="h-4 w-4 mr-1" /> Plan
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-3xl rounded-3xl p-6">
+                                <DialogHeader>
+                                  <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                                    <Calendar className="text-indigo-600 h-5 w-5" /> Depreciation Projection: {asset.name}
+                                  </DialogTitle>
+                                  <DialogDescription className="text-slate-500 font-medium">Projected calculations for useful life of {asset.usefulLifeYears} years ({asset.depreciationMethod}).</DialogDescription>
+                                </DialogHeader>
+                                <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+                                  <Table>
+                                    <TableHeader className="bg-slate-50 text-slate-600 font-semibold">
+                                      <TableRow className="border-b border-slate-200">
+                                        <TableHead className="py-3 font-bold text-xs pl-4">Year</TableHead>
+                                        <TableHead className="py-3 font-bold text-xs text-right">Beginning Book Value</TableHead>
+                                        <TableHead className="py-3 font-bold text-xs text-right">Depreciation Expense</TableHead>
+                                        <TableHead className="py-3 font-bold text-xs text-right">Accumulated Depreciation</TableHead>
+                                        <TableHead className="py-3 font-bold text-xs text-right pr-4">Ending Book Value</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {calculateDepreciationSchedule(
+                                        asset.purchaseCost,
+                                        asset.salvageValue,
+                                        asset.usefulLifeYears,
+                                        asset.depreciationMethod,
+                                        asset.depreciationRate
+                                      ).map(row => (
+                                        <TableRow key={row.year} className={cn("hover:bg-slate-50 border-b border-slate-100 last:border-b-0", Math.abs(row.endingBookValue - asset.currentBookValue) < 0.01 ? 'bg-indigo-50/40 font-bold' : '')}>
+                                          <TableCell className="py-2.5 font-semibold text-xs pl-4">Year {row.year}</TableCell>
+                                          <TableCell className="py-2.5 text-right font-mono text-xs">GH₵{row.beginningBookValue.toFixed(2)}</TableCell>
+                                          <TableCell className="py-2.5 text-right font-mono text-xs text-rose-600">-GH₵{row.depreciationExpense.toFixed(2)}</TableCell>
+                                          <TableCell className="py-2.5 text-right font-mono text-xs text-slate-500">GH₵{row.accumulatedDepreciation.toFixed(2)}</TableCell>
+                                          <TableCell className="py-2.5 text-right font-mono text-xs font-black text-indigo-700 pr-4">GH₵{row.endingBookValue.toFixed(2)}</TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+
+                            {asset.status === 'Active' && (
+                              <Button variant="ghost" size="sm" className="h-8 rounded-lg text-rose-600 hover:text-rose-700 hover:bg-rose-50 font-bold" onClick={() => { setDisposalAsset(asset); setIsDisposalOpen(true); }}>
+                                <Trash2 className="h-4 w-4 mr-1" /> Dispose
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* DEPRECIATION SCHEDULES TAB */}
-        <TabsContent value="schedules" className="mt-4">
-          <Card className="border-none shadow-md overflow-hidden bg-white">
-            <CardHeader>
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-indigo-900">Life-Cycle Depreciation Projections</CardTitle>
+        <TabsContent value="schedules" className="mt-0">
+          <Card className="border border-slate-100 shadow-lg rounded-2xl overflow-hidden bg-white">
+            <CardHeader className="border-b border-slate-100 bg-slate-50/50 p-6">
+              <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-800">
+                <Calendar className="text-indigo-600 h-5 w-5" /> Life-Cycle Depreciation Projections
+              </CardTitle>
+              <CardDescription className="text-slate-500 font-medium">Projected asset life-cycle depreciation grids for all active assets.</CardDescription>
             </CardHeader>
-            <CardContent>
-              {assets?.filter(a => a.status === 'Active').map(asset => {
+            <CardContent className="p-6 space-y-8">
+              {assets?.filter((a: any) => a.status === 'Active').map(asset => {
                 const rows = calculateDepreciationSchedule(asset.purchaseCost, asset.salvageValue, asset.usefulLifeYears, asset.depreciationMethod, asset.depreciationRate);
                 return (
-                  <div key={asset.id} className="mb-8 border-b pb-6 last:border-b-0 last:pb-0">
-                    <div className="flex justify-between items-center mb-3">
+                  <div key={asset.id} className="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-sm p-4 space-y-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                       <div>
-                        <h4 className="font-bold text-slate-800 text-base">{asset.name} ({asset.assetCode})</h4>
-                        <p className="text-xs text-muted-foreground">{asset.depreciationMethod} • Useful Life: {asset.usefulLifeYears} Years • Salvage: GH₵{asset.salvageValue}</p>
+                        <h4 className="font-extrabold text-slate-800 text-base">{asset.name} ({asset.assetCode})</h4>
+                        <p className="text-xs text-slate-400 font-medium mt-0.5">{asset.depreciationMethod} • Useful Life: {asset.usefulLifeYears} Years • Salvage: GH₵{asset.salvageValue}</p>
                       </div>
-                      <Badge variant="secondary" className="font-black text-indigo-700">Cost: GH₵{asset.purchaseCost}</Badge>
+                      <Badge className="font-black text-[10px] uppercase px-3 py-1 bg-indigo-50 border-indigo-100 text-indigo-700 hover:bg-indigo-50">Cost: GH₵{asset.purchaseCost}</Badge>
                     </div>
-                    <Table>
-                      <TableHeader className="bg-slate-50/50">
-                        <TableRow>
-                          <TableHead className="py-2">Year</TableHead>
-                          <TableHead className="py-2 text-right">Beginning Book Value</TableHead>
-                          <TableHead className="py-2 text-right">Depreciation Amount</TableHead>
-                          <TableHead className="py-2 text-right">Accumulated Depreciation</TableHead>
-                          <TableHead className="py-2 text-right">Net Book Value</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {rows.map(row => (
-                          <TableRow key={row.year} className="hover:bg-slate-50/30 text-xs">
-                            <TableCell className="py-2">Year {row.year}</TableCell>
-                            <TableCell className="py-2 text-right font-mono">GH₵{row.beginningBookValue.toFixed(2)}</TableCell>
-                            <TableCell className="py-2 text-right font-mono text-rose-600">-GH₵{row.depreciationExpense.toFixed(2)}</TableCell>
-                            <TableCell className="py-2 text-right font-mono text-slate-500">GH₵{row.accumulatedDepreciation.toFixed(2)}</TableCell>
-                            <TableCell className="py-2 text-right font-mono font-bold text-indigo-700">GH₵{row.endingBookValue.toFixed(2)}</TableCell>
+                    <div className="overflow-x-auto rounded-xl border border-slate-100 bg-slate-50/30">
+                      <Table>
+                        <TableHeader className="bg-slate-50 text-slate-600 font-semibold">
+                          <TableRow className="border-b border-slate-200/60">
+                            <TableHead className="py-2.5 font-bold text-xs pl-4">Year</TableHead>
+                            <TableHead className="py-2.5 font-bold text-xs text-right">Beginning Book Value</TableHead>
+                            <TableHead className="py-2.5 font-bold text-xs text-right">Depreciation Amount</TableHead>
+                            <TableHead className="py-2.5 font-bold text-xs text-right">Accumulated Depreciation</TableHead>
+                            <TableHead className="py-2.5 font-bold text-xs text-right pr-4">Net Book Value</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {rows.map(row => (
+                            <TableRow key={row.year} className="hover:bg-slate-50/40 border-b border-slate-100 last:border-b-0 text-xs">
+                              <TableCell className="py-2 pl-4 font-semibold text-slate-700">Year {row.year}</TableCell>
+                              <TableCell className="py-2 text-right font-mono">GH₵{row.beginningBookValue.toFixed(2)}</TableCell>
+                              <TableCell className="py-2 text-right font-mono text-rose-600 font-semibold">-GH₵{row.depreciationExpense.toFixed(2)}</TableCell>
+                              <TableCell className="py-2 text-right font-mono text-slate-400">GH₵{row.accumulatedDepreciation.toFixed(2)}</TableCell>
+                              <TableCell className="py-2 text-right font-mono font-black text-indigo-700 pr-4">GH₵{row.endingBookValue.toFixed(2)}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   </div>
                 );
               })}
@@ -826,39 +930,41 @@ export default function FixedAssetPage() {
         </TabsContent>
 
         {/* HISTORY TAB */}
-        <TabsContent value="history" className="mt-4">
-          <Card className="border-none shadow-md overflow-hidden bg-white">
+        <TabsContent value="history" className="mt-0">
+          <Card className="border border-slate-100 shadow-lg rounded-2xl overflow-hidden bg-white">
             <CardContent className="p-0">
               {!logs || logs.length === 0 ? (
-                <div className="text-center py-24 text-slate-400">
+                <div className="text-center py-24 text-slate-400 bg-slate-50/50">
                   <History className="h-12 w-12 mx-auto mb-4 opacity-20" />
                   <p className="font-bold uppercase tracking-widest text-xs">No depreciation batches run yet.</p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader className="bg-slate-50">
-                    <TableRow>
-                      <TableHead>Asset Code</TableHead>
-                      <TableHead>Asset Name</TableHead>
-                      <TableHead>Period Run</TableHead>
-                      <TableHead>Run Date</TableHead>
-                      <TableHead className="text-right">Depreciation Amount</TableHead>
-                      <TableHead className="text-right">Closing Book Value</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {logs.map((log: any) => (
-                      <TableRow key={log.id} className="hover:bg-slate-50">
-                        <TableCell className="font-mono text-xs">{log.assetCode}</TableCell>
-                        <TableCell className="font-bold text-slate-800 text-sm">{log.assetName}</TableCell>
-                        <TableCell><Badge variant="outline" className="bg-indigo-50/50 text-indigo-700 border-indigo-100">{log.period}</Badge></TableCell>
-                        <TableCell className="text-xs text-slate-500">{log.runDate?.toDate ? format(log.runDate.toDate(), 'dd MMM yyyy p') : 'Pending'}</TableCell>
-                        <TableCell className="text-right font-mono text-rose-600 font-bold">-GH₵{log.depreciationAmount?.toFixed(2)}</TableCell>
-                        <TableCell className="text-right font-mono text-indigo-700 font-bold">GH₵{log.bookValueAfter?.toFixed(2)}</TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader className="bg-slate-50 text-slate-600 font-semibold">
+                      <TableRow className="border-b border-slate-100">
+                        <TableHead className="py-4 pl-6 font-bold w-[120px]">Asset Code</TableHead>
+                        <TableHead className="py-4 font-bold">Asset Name</TableHead>
+                        <TableHead className="py-4 font-bold">Period Run</TableHead>
+                        <TableHead className="py-4 font-bold">Run Date</TableHead>
+                        <TableHead className="py-4 font-bold text-right w-[160px]">Depreciation Amount</TableHead>
+                        <TableHead className="py-4 font-bold text-right pr-6 w-[160px]">Closing Book Value</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {logs.map((log: any) => (
+                        <TableRow key={log.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-b-0">
+                          <TableCell className="font-mono font-bold text-xs pl-6 py-4">{log.assetCode}</TableCell>
+                          <TableCell className="font-bold text-slate-800 text-sm py-4">{log.assetName}</TableCell>
+                          <TableCell className="py-4"><Badge variant="outline" className="bg-indigo-50/50 text-indigo-700 border-indigo-100 hover:bg-indigo-50 font-bold text-[10px] uppercase py-0.5 px-2.5">{log.period}</Badge></TableCell>
+                          <TableCell className="text-xs text-slate-500 py-4">{log.runDate?.toDate ? format(log.runDate.toDate(), 'dd MMM yyyy p') : 'Pending'}</TableCell>
+                          <TableCell className="text-right font-mono text-rose-600 font-black py-4">-GH₵{log.depreciationAmount?.toFixed(2)}</TableCell>
+                          <TableCell className="text-right font-mono text-indigo-700 font-black pr-6 py-4">GH₵{log.bookValueAfter?.toFixed(2)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -867,10 +973,12 @@ export default function FixedAssetPage() {
 
       {/* DISPOSAL DIALOG */}
       <Dialog open={isDisposalOpen} onOpenChange={setIsDisposalOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-xl rounded-3xl p-6">
           <DialogHeader>
-            <DialogTitle>Dispose Fixed Asset</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+              <Trash2 className="text-rose-600 h-5 w-5" /> Dispose Fixed Asset
+            </DialogTitle>
+            <DialogDescription className="text-slate-500 font-medium">
               Mark <strong>{disposalAsset?.name} ({disposalAsset?.assetCode})</strong> as disposed. This will offset the asset accounts and compute gain/loss calculations.
             </DialogDescription>
           </DialogHeader>
@@ -878,27 +986,27 @@ export default function FixedAssetPage() {
           {disposalAsset && (
             <Form {...dispForm}>
               <form onSubmit={dispForm.handleSubmit(handleDisposeAsset)} className="space-y-4">
-                <div className="bg-slate-50 p-3 rounded-lg border text-sm space-y-1">
-                  <div className="flex justify-between"><span>Original Cost:</span><span className="font-mono font-bold">GH₵{disposalAsset.purchaseCost.toFixed(2)}</span></div>
-                  <div className="flex justify-between text-rose-600"><span>Accumulated Depreciation:</span><span className="font-mono">-GH₵{disposalAsset.accumulatedDepreciation.toFixed(2)}</span></div>
-                  <div className="flex justify-between border-t pt-2 font-black text-indigo-700"><span>Net Book Value:</span><span className="font-mono">GH₵{disposalAsset.currentBookValue.toFixed(2)}</span></div>
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-sm space-y-2">
+                  <div className="flex justify-between items-center"><span className="font-medium text-slate-500">Original Cost:</span><span className="font-mono font-bold text-slate-800">GH₵{disposalAsset.purchaseCost.toFixed(2)}</span></div>
+                  <div className="flex justify-between items-center text-rose-600"><span className="font-medium">Accumulated Depreciation:</span><span className="font-mono font-bold">-GH₵{disposalAsset.accumulatedDepreciation.toFixed(2)}</span></div>
+                  <div className="flex justify-between items-center border-t border-slate-200 pt-2 font-black text-indigo-700"><span>Net Book Value:</span><span className="font-mono text-lg">GH₵{disposalAsset.currentBookValue.toFixed(2)}</span></div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={dispForm.control} name="disposalDate" render={({ field }) => (
-                    <FormItem><FormLabel>Disposal Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel className="font-bold text-xs uppercase tracking-wider text-slate-500">Disposal Date</FormLabel><FormControl><Input type="date" {...field} className="h-11 rounded-xl" /></FormControl><FormMessage /></FormItem>
                   )} />
                   <FormField control={dispForm.control} name="proceeds" render={({ field }) => (
-                    <FormItem><FormLabel>Sale / Scrap Proceeds (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel className="font-bold text-xs uppercase tracking-wider text-slate-500">Sale / Scrap Proceeds (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} className="h-11 rounded-xl font-bold" /></FormControl><FormMessage /></FormItem>
                   )} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={dispForm.control} name="debitAccountId" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Cash/Bank Account (Debit)</FormLabel>
+                      <FormLabel className="font-bold text-xs uppercase tracking-wider text-slate-500">Cash/Bank Account (Debit)</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl><SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger></FormControl>
+                        <FormControl><SelectTrigger className="h-11 rounded-xl"><SelectValue placeholder="Select account..." /></SelectTrigger></FormControl>
                         <SelectContent>{assetAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
                       </Select>
                       <FormMessage />
@@ -906,9 +1014,9 @@ export default function FixedAssetPage() {
                   )} />
                   <FormField control={dispForm.control} name="gainLossAccountId" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Gain/Loss Account (Revenue/Expense)</FormLabel>
+                      <FormLabel className="font-bold text-xs uppercase tracking-wider text-slate-500">Gain/Loss Account (Revenue/Expense)</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl><SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger></FormControl>
+                        <FormControl><SelectTrigger className="h-11 rounded-xl"><SelectValue placeholder="Select account..." /></SelectTrigger></FormControl>
                         <SelectContent>
                           {revenueAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}
                           {expenseAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}
@@ -919,8 +1027,8 @@ export default function FixedAssetPage() {
                   )} />
                 </div>
 
-                <DialogFooter>
-                  <Button type="submit" variant="destructive" disabled={isSubmittingDisp} className="w-full">
+                <DialogFooter className="mt-4">
+                  <Button type="submit" variant="destructive" disabled={isSubmittingDisp} className="w-full h-12 rounded-xl font-bold">
                     {isSubmittingDisp ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Trash2 className="mr-2 h-4 w-4" />}
                     Confirm Disposal & Post Journal Log
                   </Button>

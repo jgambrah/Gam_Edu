@@ -23,13 +23,12 @@ export default function AcademicsPage() {
     if (role === 'Student') {
         return (
              <div className="p-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>My Classes</CardTitle>
-                        <CardDescription>
+                <Card className="border-t-4 border-t-red-500 shadow-xl rounded-[2rem] bg-red-50/50">
+                    <CardHeader className="text-center p-8">
+                        <CardTitle className="text-xl font-black uppercase tracking-tight text-red-650">Access Restricted</CardTitle>
+                        <CardDescription className="text-xs font-bold uppercase text-red-400 mt-1">
                             This management portal is for school staff. Your assignments, 
-                            quizzes, and learning materials can be found under the 
-                            "Assignments & Quizzes" or "Learning Materials" sections.
+                            quizzes, and learning materials can be found under the student portals.
                         </CardDescription>
                     </CardHeader>
                 </Card>

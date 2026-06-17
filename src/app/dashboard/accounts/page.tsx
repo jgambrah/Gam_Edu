@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -39,6 +39,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
 
 import { Student, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction, Route, FinancialRecord } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
@@ -872,6 +873,626 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     );
 }
 
+function TermlyTransportForm({ setOpen, classes, students, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: Class[], students: Student[], schoolId: string, onRecordsAdded: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Fetch Routes
+    const routesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: routes } = useCollection<Route>(routesQuery);
+
+    const termlyTransportSchema = z.object({
+      academicYear: z.string().min(1, "Academic Year is required"),
+      term: z.string().min(1, "Term is required"),
+      targetType: z.enum(['all', 'class', 'route']),
+      targetId: z.string().optional(),
+      dueDate: z.date({ required_error: "Due Date is required" }),
+      rateModel: z.enum(['route', 'flat']),
+      flatAmount: z.coerce.number().optional()
+    }).refine(data => data.targetType === 'all' || !!data.targetId, {
+      message: "Target Selection is required",
+      path: ["targetId"]
+    }).refine(data => data.rateModel === 'route' || (data.flatAmount !== undefined && data.flatAmount > 0), {
+      message: "Flat amount override must be greater than 0",
+      path: ["flatAmount"]
+    });
+
+    const form = useForm<z.infer<typeof termlyTransportSchema>>({ 
+      resolver: zodResolver(termlyTransportSchema), 
+      defaultValues: { 
+        academicYear: '2025/2026',
+        term: 'Term 1',
+        targetType: 'all',
+        targetId: '',
+        dueDate: new Date(),
+        rateModel: 'route',
+        flatAmount: 0
+      } 
+    });
+
+    const targetType = form.watch('targetType');
+    const rateModel = form.watch('rateModel');
+
+    async function onSubmit(values: z.infer<typeof termlyTransportSchema>) {
+      if (!firestore || !schoolId) return;
+      setIsSubmitting(true);
+      
+      let targets = students.filter(s => s.usesBusService === true && s.transportBillingModel === 'Termly');
+      if (values.targetType === 'class' && values.targetId) {
+        targets = targets.filter(s => s.classId === values.targetId);
+      } else if (values.targetType === 'route' && values.targetId) {
+        targets = targets.filter(s => s.routeId === values.targetId);
+      }
+
+      if (targets.length === 0) {
+        toast({
+          variant: 'destructive',
+          title: 'No Subscribers Found',
+          description: 'No active termly transport subscribers match your criteria.'
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      const sMap = new Map<string, number>();
+      if (values.rateModel === 'route') {
+        const routesSnap = await getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)));
+        routesSnap.docs.forEach(d => {
+          const data = d.data() as Route;
+          const rate = Number(data.termlyRate) || 0;
+          if (data.id) {
+            sMap.set(data.id, rate);
+          }
+          data.stops?.forEach(stop => {
+            stop.assignedStudentIds?.forEach(sid => {
+              sMap.set(sid + '_stop', rate);
+            });
+          });
+        });
+      }
+
+      try {
+        const batch = writeBatch(firestore);
+        let billedCount = 0;
+        let skippedCount = 0;
+
+        targets.forEach(student => {
+          let amount = 0;
+          if (values.rateModel === 'flat') {
+            amount = values.flatAmount || 0;
+          } else {
+            const routeRate = student.routeId ? sMap.get(student.routeId) : undefined;
+            const stopRate = sMap.get(student.uid + '_stop');
+            amount = routeRate !== undefined ? routeRate : (stopRate !== undefined ? stopRate : 0);
+          }
+
+          if (amount <= 0) {
+            skippedCount++;
+            return;
+          }
+
+          const safeYearStr = values.academicYear.replace(/[\/\s]/g, '-');
+          const safeTermStr = values.term.replace(/[\/\s]/g, '-');
+          const recordId = `transport-termly-${student.uid}-${safeYearStr}-${safeTermStr}`;
+          const recordRef = doc(firestore, 'financialRecords', recordId);
+
+          batch.set(recordRef, {
+            studentId: student.uid,
+            studentName: `${student.firstName} ${student.lastName}`,
+            classId: student.classId || '',
+            type: 'Transport Fee (Termly)',
+            description: `Transport Fee - ${values.academicYear} ${values.term} (Termly)`,
+            billedAmount: amount,
+            amountPaid: 0,
+            waiverAmount: 0,
+            status: 'Unpaid',
+            dueDate: Timestamp.fromDate(values.dueDate),
+            createdAt: serverTimestamp(),
+            academicYear: values.academicYear,
+            term: values.term,
+            schoolId: schoolId,
+          }, { merge: true });
+
+          billedCount++;
+        });
+
+        if (billedCount === 0) {
+          toast({
+            variant: 'destructive',
+            title: 'No Invoices Created',
+            description: `Skipped ${skippedCount} students because their transport rate is 0. Check routes rates.`
+          });
+          setIsSubmitting(false);
+          return;
+        }
+
+        await batch.commit();
+        toast({
+          title: 'Success',
+          description: `Billed ${billedCount} students successfully.${skippedCount > 0 ? ` (Skipped ${skippedCount} with 0 rates)` : ''}`
+        });
+        onRecordsAdded();
+        setOpen(false);
+      } catch (e: any) {
+        console.error(e);
+        toast({ variant: 'destructive', title: 'Error', description: e.message });
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+
+    return (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+                <FormField 
+                    control={form.control} 
+                    name="academicYear" 
+                    render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Academic Year</FormLabel>
+                          <FormControl><Input placeholder="e.g., 2025/2026" {...field} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                    )}
+                />
+                <FormField 
+                    control={form.control} 
+                    name="term" 
+                    render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Term</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                  {['Term 1', 'Term 2', 'Term 3'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                              </SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                    )}
+                />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <FormField 
+                    control={form.control} 
+                    name="targetType" 
+                    render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Billing Target</FormLabel>
+                          <Select onValueChange={(val) => { field.onChange(val); form.setValue('targetId', ''); }} value={field.value}>
+                              <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                  <SelectItem value="all">All Termly Subscribers</SelectItem>
+                                  <SelectItem value="class">Specific Class</SelectItem>
+                                  <SelectItem value="route">Specific Route</SelectItem>
+                              </SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                    )}
+                />
+                
+                {targetType !== 'all' && (
+                  <FormField 
+                      control={form.control} 
+                      name="targetId" 
+                      render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{targetType === 'class' ? 'Select Class' : 'Select Route'}</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger><SelectValue placeholder="Choose..." /></SelectTrigger></FormControl>
+                                <SelectContent>
+                                    {targetType === 'class' 
+                                      ? classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)
+                                      : (routes || []).map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)
+                                    }
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                      )}
+                  />
+                )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <FormField 
+                    control={form.control} 
+                    name="rateModel" 
+                    render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Rate Option</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                  <SelectItem value="route">Use Route Termly Rates</SelectItem>
+                                  <SelectItem value="flat">Flat Override Amount</SelectItem>
+                              </SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                    )}
+                />
+
+                {rateModel === 'flat' ? (
+                  <FormField 
+                      control={form.control} 
+                      name="flatAmount" 
+                      render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Flat Fee (GH₵)</FormLabel>
+                            <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                      )}
+                  />
+                ) : (
+                  <FormField 
+                      control={form.control} 
+                      name="dueDate" 
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col justify-end">
+                            <FormLabel className="mb-2">Invoice Due Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/>
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                      )}
+                  />
+                )}
+            </div>
+
+            {rateModel === 'flat' && (
+              <FormField 
+                  control={form.control} 
+                  name="dueDate" 
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                        <FormLabel>Invoice Due Date</FormLabel>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <FormControl>
+                                    <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/>
+                            </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                    </FormItem>
+                  )}
+              />
+            )}
+
+            <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-6 animate-spin"/> : null} 
+                Generate Termly Transport Invoices
+            </Button>
+        </form>
+      </Form>
+    );
+}
+
+function TermlyCanteenForm({ setOpen, classes, students, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: Class[], students: Student[], schoolId: string, onRecordsAdded: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const termlyCanteenSchema = z.object({
+      academicYear: z.string().min(1, "Academic Year is required"),
+      term: z.string().min(1, "Term is required"),
+      targetType: z.enum(['all', 'class']),
+      targetId: z.string().optional(),
+      dueDate: z.date({ required_error: "Due Date is required" }),
+      rateModel: z.enum(['settings', 'flat']),
+      flatAmount: z.coerce.number().optional()
+    }).refine(data => data.targetType === 'all' || !!data.targetId, {
+      message: "Target Selection is required",
+      path: ["targetId"]
+    }).refine(data => data.rateModel === 'settings' || (data.flatAmount !== undefined && data.flatAmount > 0), {
+      message: "Flat amount override must be greater than 0",
+      path: ["flatAmount"]
+    });
+
+    const form = useForm<z.infer<typeof termlyCanteenSchema>>({ 
+      resolver: zodResolver(termlyCanteenSchema), 
+      defaultValues: { 
+        academicYear: '2025/2026',
+        term: 'Term 1',
+        targetType: 'all',
+        targetId: '',
+        dueDate: new Date(),
+        rateModel: 'settings',
+        flatAmount: 0
+      } 
+    });
+
+    const targetType = form.watch('targetType');
+    const rateModel = form.watch('rateModel');
+
+    async function onSubmit(values: z.infer<typeof termlyCanteenSchema>) {
+      if (!firestore || !schoolId) return;
+      setIsSubmitting(true);
+
+      let targets = students.filter(s => s.canteenBillingMode === 'Termly');
+      if (values.targetType === 'class' && values.targetId) {
+        targets = targets.filter(s => s.classId === values.targetId);
+      }
+
+      if (targets.length === 0) {
+        toast({
+          variant: 'destructive',
+          title: 'No Subscribers Found',
+          description: 'No active termly canteen subscribers match your criteria.'
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      let canteenSettings: any = null;
+      if (values.rateModel === 'settings') {
+        const cSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+        if (cSnap.exists()) {
+          canteenSettings = cSnap.data();
+        }
+      }
+
+      try {
+        const batch = writeBatch(firestore);
+        let billedCount = 0;
+        let skippedCount = 0;
+
+        targets.forEach(student => {
+          let amount = 0;
+          if (values.rateModel === 'flat') {
+            amount = values.flatAmount || 0;
+          } else if (canteenSettings) {
+            const pricingModel = canteenSettings.pricingModel || 'Flat';
+            if (pricingModel === 'Flat') {
+              amount = Number(canteenSettings.termlyRate) || 0;
+            } else {
+              amount = Number(canteenSettings.classTermlyRates?.[student.classId]) || 0;
+            }
+          }
+
+          if (amount <= 0) {
+            skippedCount++;
+            return;
+          }
+
+          const safeYearStr = values.academicYear.replace(/[\/\s]/g, '-');
+          const safeTermStr = values.term.replace(/[\/\s]/g, '-');
+          const recordId = `canteen-termly-${student.uid}-${safeYearStr}-${safeTermStr}`;
+          const recordRef = doc(firestore, 'financialRecords', recordId);
+
+          batch.set(recordRef, {
+            studentId: student.uid,
+            studentName: `${student.firstName} ${student.lastName}`,
+            classId: student.classId || '',
+            type: 'Canteen Fee (Termly)',
+            description: `Canteen Fee - ${values.academicYear} ${values.term} (Termly)`,
+            billedAmount: amount,
+            amountPaid: 0,
+            waiverAmount: 0,
+            status: 'Unpaid',
+            dueDate: Timestamp.fromDate(values.dueDate),
+            createdAt: serverTimestamp(),
+            academicYear: values.academicYear,
+            term: values.term,
+            schoolId: schoolId,
+          }, { merge: true });
+
+          billedCount++;
+        });
+
+        if (billedCount === 0) {
+          toast({
+            variant: 'destructive',
+            title: 'No Invoices Created',
+            description: `Skipped ${skippedCount} students because their canteen rate is 0. Check settings.`
+          });
+          setIsSubmitting(false);
+          return;
+        }
+
+        await batch.commit();
+        toast({
+          title: 'Success',
+          description: `Billed ${billedCount} students successfully.${skippedCount > 0 ? ` (Skipped ${skippedCount} with 0 rates)` : ''}`
+        });
+        onRecordsAdded();
+        setOpen(false);
+      } catch (e: any) {
+        console.error(e);
+        toast({ variant: 'destructive', title: 'Error', description: e.message });
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+
+    return (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+                <FormField 
+                    control={form.control} 
+                    name="academicYear" 
+                    render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Academic Year</FormLabel>
+                          <FormControl><Input placeholder="e.g., 2025/2026" {...field} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                    )}
+                />
+                <FormField 
+                    control={form.control} 
+                    name="term" 
+                    render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Term</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                  {['Term 1', 'Term 2', 'Term 3'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                              </SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                    )}
+                />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <FormField 
+                    control={form.control} 
+                    name="targetType" 
+                    render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Billing Target</FormLabel>
+                          <Select onValueChange={(val) => { field.onChange(val); form.setValue('targetId', ''); }} value={field.value}>
+                              <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                  <SelectItem value="all">All Termly Subscribers</SelectItem>
+                                  <SelectItem value="class">Specific Class</SelectItem>
+                              </SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                    )}
+                />
+                
+                {targetType !== 'all' && (
+                  <FormField 
+                      control={form.control} 
+                      name="targetId" 
+                      render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Select Class</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger><SelectValue placeholder="Choose..." /></SelectTrigger></FormControl>
+                                <SelectContent>
+                                    {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                      )}
+                  />
+                )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <FormField 
+                    control={form.control} 
+                    name="rateModel" 
+                    render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Rate Option</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                              <SelectContent>
+                                  <SelectItem value="settings">Use Settings Termly Rates</SelectItem>
+                                  <SelectItem value="flat">Flat Override Amount</SelectItem>
+                              </SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                    )}
+                />
+
+                {rateModel === 'flat' ? (
+                  <FormField 
+                      control={form.control} 
+                      name="flatAmount" 
+                      render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Flat Fee (GH₵)</FormLabel>
+                            <FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                      )}
+                  />
+                ) : (
+                  <FormField 
+                      control={form.control} 
+                      name="dueDate" 
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col justify-end">
+                            <FormLabel className="mb-2">Invoice Due Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/>
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                      )}
+                  />
+                )}
+            </div>
+
+            {rateModel === 'flat' && (
+              <FormField 
+                  control={form.control} 
+                  name="dueDate" 
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                        <FormLabel>Invoice Due Date</FormLabel>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <FormControl>
+                                    <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/>
+                            </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                    </FormItem>
+                  )}
+              />
+            )}
+
+            <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-6 animate-spin"/> : null} 
+                Generate Termly Canteen Invoices
+            </Button>
+        </form>
+      </Form>
+    );
+}
+
 function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore(); 
     const { user } = useUser(); 
@@ -1202,6 +1823,7 @@ export default function AccountsPage() {
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null); 
   const [activeTab, setActiveTab] = useState('billing');
+  const [analyticsTab, setAnalyticsTab] = useState('summary');
   const [isProcessingReversal, setIsProcessingReversal] = useState<string | null>(null);
 
   const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -1270,6 +1892,97 @@ export default function AccountsPage() {
     };
   }, [records, students]);
 
+  // --- DEBT AGING CALCULATION ---
+  const debtAgingStats = useMemo(() => {
+    if (!records || !students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0 };
+    
+    const activeStudentIds = new Set(students.map(s => s.uid));
+    const today = startOfDay(new Date());
+
+    let current = 0; // Due date in the future or today
+    let age30 = 0;   // Overdue 1-30 days
+    let age60 = 0;   // Overdue 31-60 days
+    let age90 = 0;   // Overdue 61+ days
+
+    records.forEach(r => {
+      if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return;
+      
+      const billed = Number(r.billedAmount) || 0;
+      const paid = Number(r.amountPaid) || 0;
+      const waiver = Number(r.waiverAmount) || 0;
+      const balance = billed - paid - waiver;
+
+      if (balance <= 0.01) return;
+
+      const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
+      const diffTime = today.getTime() - startOfDay(dueDate).getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays <= 0) {
+        current += balance;
+      } else if (diffDays <= 30) {
+        age30 += balance;
+      } else if (diffDays <= 60) {
+        age60 += balance;
+      } else {
+        age90 += balance;
+      }
+    });
+
+    const total = current + age30 + age60 + age90;
+    return { current, age30, age60, age90, total };
+  }, [records, students]);
+
+  // --- CLASS COLLECTIONS PACE CALCULATION ---
+  const classCollectionsStats = useMemo(() => {
+    if (!records || !students || !classes) return [];
+
+    const activeStudentIds = new Set(students.map(s => s.uid));
+    const studentsByClass: Record<string, Student[]> = {};
+    students.forEach(s => {
+      if (!studentsByClass[s.classId]) studentsByClass[s.classId] = [];
+      studentsByClass[s.classId].push(s);
+    });
+
+    const recordsByStudent: Record<string, FinancialRecord[]> = {};
+    records.forEach(r => {
+      if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = [];
+      recordsByStudent[r.studentId].push(r);
+    });
+
+    return classes.map(c => {
+      const classStudents = studentsByClass[c.id] || [];
+      let totalBilled = 0;
+      let totalPaid = 0;
+      let totalWaivers = 0;
+
+      classStudents.forEach(s => {
+        const studentRecs = recordsByStudent[s.uid] || [];
+        studentRecs.forEach(r => {
+          if (r.status === 'Pending Reversal') return;
+          totalBilled += Number(r.billedAmount) || 0;
+          totalPaid += Number(r.amountPaid) || 0;
+          totalWaivers += Number(r.waiverAmount) || 0;
+        });
+      });
+
+      const netBilled = totalBilled - totalWaivers;
+      const outstanding = netBilled - totalPaid;
+      const rate = netBilled > 0 ? (totalPaid / netBilled) * 100 : 100;
+
+      return {
+        classId: c.id,
+        className: c.name,
+        studentCount: classStudents.length,
+        totalBilled,
+        totalPaid,
+        totalWaivers,
+        outstanding: outstanding > 0 ? outstanding : 0,
+        rate
+      };
+    }).sort((a, b) => b.rate - a.rate); // default sort by collection rate descending
+  }, [records, students, classes]);
+
   const studentFinancials = useMemo(() => {
     if (!records || !students) return [];
     
@@ -1335,42 +2048,241 @@ export default function AccountsPage() {
 
   return (
     <div className="space-y-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList>
-                <TabsTrigger value="billing">Student Billing</TabsTrigger>
-                <TabsTrigger value="approval">Reversal Requests <Badge className="ml-2">{pendingReversals.length}</Badge></TabsTrigger>
+        {/* PREMIUM gradient hero banner */}
+        <div className="bg-gradient-to-r from-teal-600 via-emerald-600 to-green-700 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
+            <div className="absolute right-0 top-0 translate-x-1/4 -translate-y-1/4 w-80 h-80 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute left-1/3 bottom-0 translate-y-1/2 w-60 h-60 bg-teal-500/20 rounded-full blur-xl pointer-events-none" />
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <div>
+                    <div className="flex items-center gap-2 mb-1.5">
+                        <Sparkles className="h-5 w-5 text-emerald-300 animate-pulse" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-emerald-200">Financial Model</span>
+                    </div>
+                    <h1 className="text-3xl font-extrabold tracking-tight">Student Accounts & Billing</h1>
+                    <p className="text-emerald-100 text-sm mt-1 max-w-xl">
+                        Manage student ledgers, record fees, apply waivers, process daily attendance charges, and execute batch termly invoices.
+                    </p>
+                </div>
+                {/* High Level Quick KPI Badge */}
+                <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 shadow-md">
+                    <div className="p-3 bg-emerald-500/30 rounded-lg text-emerald-100">
+                        <Wallet className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] text-emerald-200 font-bold uppercase tracking-wide">Overall Collection Rate</p>
+                        <p className="text-2xl font-extrabold tracking-tight text-white mt-0.5">
+                            {((dashboardStats.totalRevenue / (dashboardStats.totalRevenue + dashboardStats.totalOutstanding + 0.0001)) * 100).toFixed(1)}%
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="bg-slate-100/80 p-1 rounded-xl mb-4 border border-slate-200/50">
+                <TabsTrigger value="billing" className="rounded-lg font-semibold px-4">Student Billing</TabsTrigger>
+                <TabsTrigger value="approval" className="rounded-lg font-semibold px-4">
+                    Reversal Requests 
+                    <Badge className="ml-2 bg-red-500 text-white border-0 hover:bg-red-600">{pendingReversals.length}</Badge>
+                </TabsTrigger>
             </TabsList>
             <TabsContent value="billing" className="space-y-6">
-                <Card>
-                    <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
-                    <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-                        <Card className="border-l-4 border-l-red-500">
-                          <CardHeader className="p-4 pb-2">
-                            <CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Outstanding</CardTitle>
-                          </CardHeader>
-                          <CardContent className="p-4 pt-0">
-                            <div className="text-2xl font-bold text-red-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div>
-                          </CardContent>
-                        </Card>
-                        <Card className="border-l-4 border-l-green-500">
-                          <CardHeader className="p-4 pb-2">
-                            <CardTitle className="text-xs font-black text-muted-foreground uppercase">Total Revenue</CardTitle>
-                          </CardHeader>
-                          <CardContent className="p-4 pt-0">
-                            <div className="text-2xl font-bold text-green-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div>
-                          </CardContent>
-                        </Card>
-                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Tuition Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card>
-                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Canteen Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card>
-                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Transport Debt</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card>
-                        <Card><CardHeader className="p-4 pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Other Fees</CardTitle></CardHeader><CardContent className="p-4 pt-0"><div className="text-xl font-bold">GH₵{dashboardStats.otherDebt.toFixed(2)}</div></CardContent></Card>
-                    </CardContent>
-                </Card>
                 
-                <Card>
-                    <CardHeader>
+                {/* Advanced Analytics Tabs */}
+                <div className="bg-white border rounded-2xl p-4 shadow-sm">
+                    <Tabs value={analyticsTab} onValueChange={setAnalyticsTab} className="w-full">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-3 mb-4">
+                            <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Collections Advisory Desk</h3>
+                            <TabsList className="bg-slate-100 p-0.5 rounded-lg border">
+                                <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md">Financial Summary</TabsTrigger>
+                                <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md">Debt Aging</TabsTrigger>
+                                <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md">Class Pace</TabsTrigger>
+                            </TabsList>
+                        </div>
+                        
+                        <TabsContent value="summary" className="mt-0">
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                                <Card className="border-l-4 border-l-rose-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                    <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Outstanding</CardTitle>
+                                    <Wallet className="h-4 w-4 text-rose-500" />
+                                  </CardHeader>
+                                  <CardContent className="p-4 pt-1">
+                                    <div className="text-xl font-extrabold text-rose-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div>
+                                  </CardContent>
+                                </Card>
+                                <Card className="border-l-4 border-l-emerald-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                    <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Revenue</CardTitle>
+                                    <DollarSign className="h-4 w-4 text-emerald-500" />
+                                  </CardHeader>
+                                  <CardContent className="p-4 pt-1">
+                                    <div className="text-xl font-extrabold text-emerald-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div>
+                                  </CardContent>
+                                </Card>
+                                <Card className="border-l-4 border-l-blue-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                    <CardTitle className="text-[10px] font-medium text-muted-foreground">Tuition Debt</CardTitle>
+                                    <BookOpen className="h-4 w-4 text-blue-500" />
+                                  </CardHeader>
+                                  <CardContent className="p-4 pt-1">
+                                    <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div>
+                                  </CardContent>
+                                </Card>
+                                <Card className="border-l-4 border-l-orange-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                    <CardTitle className="text-[10px] font-medium text-muted-foreground">Canteen Debt</CardTitle>
+                                    <Utensils className="h-4 w-4 text-orange-500" />
+                                  </CardHeader>
+                                  <CardContent className="p-4 pt-1">
+                                    <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div>
+                                  </CardContent>
+                                </Card>
+                                <Card className="border-l-4 border-l-amber-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                    <CardTitle className="text-[10px] font-medium text-muted-foreground">Transport Debt</CardTitle>
+                                    <BusIcon className="h-4 w-4 text-amber-500" />
+                                  </CardHeader>
+                                  <CardContent className="p-4 pt-1">
+                                    <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div>
+                                  </CardContent>
+                                </Card>
+                                <Card className="border-l-4 border-l-slate-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                    <CardTitle className="text-[10px] font-medium text-muted-foreground">Other Fees</CardTitle>
+                                    <HandCoins className="h-4 w-4 text-slate-400" />
+                                  </CardHeader>
+                                  <CardContent className="p-4 pt-1">
+                                    <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.otherDebt.toFixed(2)}</div>
+                                  </CardContent>
+                                </Card>
+                            </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="aging" className="mt-0">
+                            <div className="space-y-4">
+                                <div className="h-5 flex rounded-lg overflow-hidden bg-slate-100 border shadow-inner">
+                                    {debtAgingStats.total > 0 ? (
+                                        <>
+                                            {debtAgingStats.current > 0 && (
+                                                <div 
+                                                    style={{ width: `${(debtAgingStats.current / debtAgingStats.total) * 100}%` }} 
+                                                    className="bg-emerald-500 transition-all duration-500 hover:opacity-90"
+                                                    title={`Current: GH₵ ${debtAgingStats.current.toFixed(2)}`}
+                                                />
+                                            )}
+                                            {debtAgingStats.age30 > 0 && (
+                                                <div 
+                                                    style={{ width: `${(debtAgingStats.age30 / debtAgingStats.total) * 100}%` }} 
+                                                    className="bg-amber-400 transition-all duration-500 hover:opacity-90"
+                                                    title={`1-30 Days Overdue: GH₵ ${debtAgingStats.age30.toFixed(2)}`}
+                                                />
+                                            )}
+                                            {debtAgingStats.age60 > 0 && (
+                                                <div 
+                                                    style={{ width: `${(debtAgingStats.age60 / debtAgingStats.total) * 100}%` }} 
+                                                    className="bg-orange-500 transition-all duration-500 hover:opacity-90"
+                                                    title={`31-60 Days Overdue: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
+                                                />
+                                            )}
+                                            {debtAgingStats.age90 > 0 && (
+                                                <div 
+                                                    style={{ width: `${(debtAgingStats.age90 / debtAgingStats.total) * 100}%` }} 
+                                                    className="bg-rose-600 transition-all duration-500 hover:opacity-90"
+                                                    title={`61+ Days Overdue: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
+                                                />
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className="w-full bg-slate-100 flex items-center justify-center text-xs text-muted-foreground italic">No Outstanding Debt</div>
+                                    )}
+                                </div>
+                                
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <Card className="p-3 border-l-4 border-l-emerald-500 bg-emerald-50/10 bg-slate-50/20">
+                                        <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Current (Not Overdue)</p>
+                                        <p className="text-lg font-bold text-slate-800 mt-1">GH₵{debtAgingStats.current.toFixed(2)}</p>
+                                        <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.current / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                    </Card>
+                                    <Card className="p-3 border-l-4 border-l-amber-400 bg-amber-50/10 bg-slate-50/20">
+                                        <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-amber-500" /> 1 - 30 Days Overdue</p>
+                                        <p className="text-lg font-bold text-amber-700 mt-1">GH₵{debtAgingStats.age30.toFixed(2)}</p>
+                                        <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age30 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                    </Card>
+                                    <Card className="p-3 border-l-4 border-l-orange-500 bg-orange-50/10 bg-slate-50/20">
+                                        <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-orange-500" /> 31 - 60 Days Overdue</p>
+                                        <p className="text-lg font-bold text-orange-700 mt-1">GH₵{debtAgingStats.age60.toFixed(2)}</p>
+                                        <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age60 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                    </Card>
+                                    <Card className="p-3 border-l-4 border-l-rose-600 bg-rose-50/10 bg-slate-50/20">
+                                        <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><AlertCircle className="h-3 w-3 text-rose-600" /> 61+ Days Overdue</p>
+                                        <p className="text-lg font-bold text-rose-700 mt-1">GH₵{debtAgingStats.age90.toFixed(2)}</p>
+                                        <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age90 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                    </Card>
+                                </div>
+                            </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="classPace" className="mt-0">
+                            {classCollectionsStats.length === 0 ? (
+                                <p className="text-center py-10 text-muted-foreground italic text-xs">No class data found.</p>
+                            ) : (
+                                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                    {classCollectionsStats.map(stat => {
+                                        const progressBarColor = stat.rate >= 80 ? 'bg-emerald-500' : stat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
+                                        const badgeColor = stat.rate >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : stat.rate >= 50 ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200';
+                                        
+                                        return (
+                                            <Card key={stat.classId} className="p-4 flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all duration-300 bg-slate-50/20">
+                                                <div>
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div>
+                                                            <h4 className="font-bold text-slate-800 text-sm">{stat.className}</h4>
+                                                            <p className="text-[10px] text-muted-foreground mt-0.5">{stat.studentCount} Students</p>
+                                                        </div>
+                                                        <Badge variant="outline" className={cn("font-bold text-xs px-2 py-0.5", badgeColor)}>
+                                                            {stat.rate.toFixed(1)}%
+                                                        </Badge>
+                                                    </div>
+                                                    <div className="space-y-1.5 mt-3">
+                                                        <div className="flex justify-between text-xs font-mono text-slate-600">
+                                                            <span>Billed:</span>
+                                                            <span>GH₵{(stat.totalBilled - stat.totalWaivers).toFixed(0)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between text-xs font-mono text-emerald-600">
+                                                            <span>Collected:</span>
+                                                            <span>GH₵{stat.totalPaid.toFixed(0)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between text-xs font-mono text-rose-600">
+                                                            <span>Owed:</span>
+                                                            <span>GH₵{stat.outstanding.toFixed(0)}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-4 pt-2 border-t">
+                                                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                        <div 
+                                                            className={cn("h-full transition-all duration-500", progressBarColor)}
+                                                            style={{ width: `${Math.min(stat.rate, 100)}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </TabsContent>
+                    </Tabs>
+                </div>
+                
+                <Card className="border border-slate-200/60 shadow-sm rounded-2xl overflow-hidden">
+                    <CardHeader className="bg-slate-50/50 border-b pb-4">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <CardTitle>Student Accounts</CardTitle>
+                            <div>
+                                <CardTitle className="text-lg font-bold text-slate-800">Student Accounts & Invoices</CardTitle>
+                                <CardDescription>Search for students to view ledgers, record custom bills, or register payments.</CardDescription>
+                            </div>
                             <div className="flex items-center gap-3 flex-wrap">
                                 <Button 
                                     variant="default" 
@@ -1429,7 +2341,7 @@ export default function AccountsPage() {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent className="space-y-6">
+                    <CardContent className="p-6 space-y-6">
                         {activeForm === 'single' && schoolId && (
                             <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
                                 <h3 className="font-bold mb-4 text-blue-900">Create Single Bill</h3>
@@ -1444,6 +2356,24 @@ export default function AccountsPage() {
                             </div>
                         )}
 
+                        {activeForm === 'termly-transport' && schoolId && (
+                            <div className="bg-amber-50/60 p-4 rounded-lg border border-amber-200 mb-4 animate-in slide-in-from-top-2">
+                                <h3 className="font-bold mb-4 text-amber-900 flex items-center gap-2">
+                                    <BusIcon className="h-5 w-5 text-amber-600" /> Batch Bill Termly Transport Fee
+                                </h3>
+                                <TermlyTransportForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
+                            </div>
+                        )}
+
+                        {activeForm === 'termly-canteen' && schoolId && (
+                            <div className="bg-green-50/60 p-4 rounded-lg border border-green-200 mb-4 animate-in slide-in-from-top-2">
+                                <h3 className="font-bold mb-4 text-green-900 flex items-center gap-2">
+                                    <Utensils className="h-5 w-5 text-green-600" /> Batch Bill Termly Canteen Fee
+                                </h3>
+                                <TermlyCanteenForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
+                            </div>
+                        )}
+
                         {activeForm === 'levy' && schoolId && (
                             <DailyChargeForm 
                                 setOpen={() => setActiveForm(null)} 
@@ -1454,7 +2384,11 @@ export default function AccountsPage() {
                             />
                         )}
                         
-                        <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="max-w-sm"/>
+                        <div className="flex items-center gap-2 relative max-w-sm">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="pl-8" placeholder="Search student by name or ID..." />
+                        </div>
+                        
                         {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
                             <div className="space-y-2">
                                 {filteredStudentsWithBills.length === 0 ? (
@@ -1462,13 +2396,13 @@ export default function AccountsPage() {
                                 ) : (
                                     <Accordion type="single" collapsible className="w-full">
                                         {filteredStudentsWithBills.map(({ student, balance, records }) => (
-                                            <AccordionItem value={student.uid} key={student.uid} className="border rounded-lg mb-2 px-4 bg-white">
+                                            <AccordionItem value={student.uid} key={student.uid} className="border rounded-lg mb-2 px-4 bg-white hover:border-slate-300 transition-colors">
                                                 <AccordionTrigger className="hover:no-underline py-4">
                                                     <div className='flex justify-between items-center w-full pr-4'>
                                                         <StudentDisplay student={student} variant="full" showAvatar />
                                                         <div className="text-right">
-                                                            <p className="text-xs uppercase font-bold text-muted-foreground">Balance</p>
-                                                            <p className={cn("font-bold text-xl", balance > 0.01 ? "text-red-600" : "text-green-600")}>
+                                                            <p className="text-[10px] uppercase font-bold text-muted-foreground">Balance</p>
+                                                            <p className={cn("font-bold text-lg", balance > 0.01 ? "text-red-600" : "text-green-600")}>
                                                                 GH₵{Math.abs(balance).toFixed(2)} {balance < -0.01 ? "(CR)" : ""}
                                                             </p>
                                                         </div>

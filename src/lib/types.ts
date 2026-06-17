@@ -926,6 +926,10 @@ export interface Till {
     rejectionReason?: string;
   };
   schoolId: string;
+  expectedBalance?: number;
+  actualCashCounted?: number;
+  discrepancy?: number;
+  discrepancyNote?: string;
 }
 
 export interface TillTransaction {
@@ -1057,6 +1061,8 @@ export interface PayrollRecord {
   deductions: { name: string; amount: number }[];
   ssnitNumber?: string;
   tinNumber?: string;
+  bankName?: string;
+  accountNumber?: string;
   statutory: {
     ssnitEmployee: number;
     ssnitEmployer: number;
@@ -1252,6 +1258,7 @@ export interface Budget {
     createdBy: string;
     updatedAt?: any;
     aiInsight?: string;
+    rejectionReason?: string;
 }
 
 export interface BudgetItem {

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRole } from '@/context/role-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Route, Stop, Student, Bus, Class } from '@/lib/types';
-import { User, Users, Bus as BusIcon, MapPin, Route as RouteIcon, Loader2, PlusCircle, Trash2, Edit } from 'lucide-react';
+import { User, Users, Bus as BusIcon, MapPin, Route as RouteIcon, Loader2, PlusCircle, Trash2, Edit, Calendar, ShieldAlert, Clock } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,12 +15,13 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { addDoc, collection, doc, updateDoc, writeBatch, query, where, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, query, where, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 // --- Student Assignment Dialog ---
 
@@ -119,80 +120,80 @@ function StudentAssignmentDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-4xl rounded-3xl border-0 shadow-2xl">
         <DialogHeader>
-            <DialogTitle>Assign Students to Route: {route.name}</DialogTitle>
-            <DialogDescription>Manage student assignments for this transport route.</DialogDescription>
+            <DialogTitle className="text-xl font-black uppercase text-slate-800 tracking-tight">Assign Students: {route.name}</DialogTitle>
+            <DialogDescription className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Manage student stop allocations for this route.</DialogDescription>
         </DialogHeader>
         <div className="grid md:grid-cols-2 gap-8 mt-4">
             <div>
-            <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-slate-800">New Assignment</h3>
-                <Badge variant="secondary">{availableStudents.length} Available</Badge>
-            </div>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onAssignSubmit)} className="space-y-4">
-                <FormField control={form.control} name="studentId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Select Unassigned Student</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Choose a student..." />
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {availableStudents.length === 0 ? (
-                                    <div className="p-4 text-center text-xs text-muted-foreground italic">
-                                        No unassigned active bus subscribers found.
-                                    </div>
-                                ) : (
-                                    availableStudents.map(s => (
-                                        <SelectItem key={s.uid} value={s.uid}>
-                                            {s.firstName} {s.lastName} ({s.classId || 'No Class'})
-                                        </SelectItem>
-                                    ))
-                                )}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="stopId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assign to Stop</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Choose a stop..." />
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {route.stops?.map(s => (
-                                    <SelectItem key={s.id} value={s.id}>
-                                        {s.order}. {s.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )} />
-                <Button type="submit" disabled={isSubmitting || availableStudents.length === 0} className="w-full h-12 text-lg bg-indigo-600">
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PlusCircle className="mr-2 h-4 w-4"/>}
-                    Assign Student
-                </Button>
-                </form>
-            </Form>
-            </div>
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-slate-800">Current Assignments</h3>
-                    <Badge variant="outline">{assignedInThisRoute.length} Assigned</Badge>
+                    <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400">New Assignment</h3>
+                    <Badge className="bg-slate-100 hover:bg-slate-100 text-slate-600 font-bold uppercase text-[9px]">{availableStudents.length} Available</Badge>
+                </div>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onAssignSubmit)} className="space-y-4">
+                    <FormField control={form.control} name="studentId" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-xs font-black uppercase text-slate-400">Select Unassigned Student</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger className="h-11 rounded-xl border-2">
+                                        <SelectValue placeholder="Choose a student..." />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {availableStudents.length === 0 ? (
+                                        <div className="p-4 text-center text-xs text-muted-foreground italic">
+                                            No unassigned active bus subscribers found.
+                                        </div>
+                                    ) : (
+                                        availableStudents.map(s => (
+                                            <SelectItem key={s.uid} value={s.uid}>
+                                                {s.firstName} {s.lastName} ({s.classId || 'No Class'})
+                                            </SelectItem>
+                                        ))
+                                    )}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={form.control} name="stopId" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-xs font-black uppercase text-slate-400">Assign to Stop</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger className="h-11 rounded-xl border-2">
+                                        <SelectValue placeholder="Choose a stop..." />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {route.stops?.map(s => (
+                                        <SelectItem key={s.id} value={s.id}>
+                                            {s.order}. {s.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <Button type="submit" disabled={isSubmitting || availableStudents.length === 0} className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 rounded-2xl font-black uppercase tracking-tight shadow-md">
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PlusCircle className="mr-2 h-4 w-4"/>}
+                        Assign Student
+                    </Button>
+                    </form>
+                </Form>
+            </div>
+            <div className="bg-slate-50/50 p-6 rounded-3xl border-2 border-slate-100">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400">Current Assignments</h3>
+                    <Badge className="bg-indigo-100 hover:bg-indigo-100 text-indigo-700 border-none font-bold uppercase text-[9px]">{assignedInThisRoute.length} Assigned</Badge>
                 </div>
                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
                     {assignedInThisRoute.map(({student, stop}) => (
-                        <div key={student?.uid} className="flex justify-between items-center p-3 bg-white border rounded-xl shadow-sm group">
+                        <div key={student?.uid} className="flex justify-between items-center p-3 bg-white border-2 border-slate-100 rounded-2xl shadow-sm group">
                             <div className="min-w-0">
                                 {student && <StudentDisplay student={student} variant="compact" />}
                                 <div className="flex items-center gap-1 text-[10px] text-indigo-600 font-bold uppercase mt-1">
@@ -200,14 +201,14 @@ function StudentAssignmentDialog({
                                     <span>{stop.name}</span>
                                 </div>
                             </div>
-                            <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => handleUnassign(student!.uid)}>
+                            <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl" onClick={() => handleUnassign(student!.uid)}>
                                 <Trash2 className="h-4 w-4"/>
                             </Button>
                         </div>
                     ))}
                     {assignedInThisRoute.length === 0 && (
-                        <div className="text-center py-12 text-slate-400 italic text-sm">
-                            No students assigned to this route yet.
+                        <div className="text-center py-12 text-slate-400 italic text-xs font-bold uppercase tracking-wider">
+                            No students assigned to this route.
                         </div>
                     )}
                 </div>
@@ -246,32 +247,52 @@ function BusManagementDialog({ open, onOpenChange, onBusChange, schoolId }: { op
     
     return (
          <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="rounded-3xl border-0 shadow-2xl sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Manage Buses</DialogTitle>
+                    <DialogTitle className="text-xl font-black uppercase text-slate-800 tracking-tight font-black uppercase">Manage Buses</DialogTitle>
+                    <DialogDescription className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Configure school transportation vehicles.</DialogDescription>
                 </DialogHeader>
                  <Form {...form}>
                     <form onSubmit={form.handleSubmit(onAddBus)} className="space-y-4">
                         <FormField control={form.control} name="name" render={({ field }) => (
-                            <FormItem><FormLabel>Bus Name/Number</FormLabel><FormControl><Input {...field} placeholder="e.g., Yellow Eagle" /></FormControl></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-xs font-black uppercase text-slate-400">Bus Name/Number</FormLabel>
+                                <FormControl><Input {...field} placeholder="e.g., Yellow Eagle" className="h-11 rounded-xl border-2" /></FormControl>
+                            </FormItem>
                         )} />
                         <FormField control={form.control} name="capacity" render={({ field }) => (
-                            <FormItem><FormLabel>Capacity</FormLabel><FormControl><Input type="number" {...field} /></FormControl></FormItem>
+                            <FormItem>
+                                <FormLabel className="text-xs font-black uppercase text-slate-400">Capacity</FormLabel>
+                                <FormControl><Input type="number" {...field} className="h-11 rounded-xl border-2" /></FormControl>
+                            </FormItem>
                         )} />
-                        <Button type="submit" disabled={isSubmitting}>Add Bus</Button>
+                        <Button type="submit" disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 rounded-2xl font-black uppercase tracking-tight shadow-md">
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Add Bus
+                        </Button>
                     </form>
                 </Form>
-                <div className="mt-4 border-t pt-4">
-                     <h4 className="font-semibold mb-2">Existing Buses</h4>
-                    {isLoading ? <Loader2 className="animate-spin h-4 w-4"/> : (
-                        <Table>
-                            <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Capacity</TableHead></TableRow></TableHeader>
-                            <TableBody>
-                                {buses?.map(bus => (
-                                    <TableRow key={bus.id}><TableCell>{bus.name}</TableCell><TableCell>{bus.capacity}</TableCell></TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                    <h4 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-2">Existing Buses</h4>
+                    {isLoading ? <div className="py-6 flex justify-center"><Loader2 className="animate-spin h-5 w-5 text-indigo-600"/></div> : (
+                        <div className="max-h-48 overflow-y-auto border border-slate-100 rounded-2xl">
+                            <Table>
+                                <TableHeader className="bg-slate-50/50">
+                                    <TableRow>
+                                        <TableHead className="font-bold uppercase text-[9px] tracking-wider">Name</TableHead>
+                                        <TableHead className="font-bold uppercase text-[9px] tracking-wider">Capacity</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {buses?.map(bus => (
+                                        <TableRow key={bus.id} className="hover:bg-slate-50/50 transition-colors">
+                                            <TableCell className="font-bold text-slate-700 uppercase">{bus.name}</TableCell>
+                                            <TableCell className="font-mono font-bold text-slate-500">{bus.capacity} seats</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
                     )}
                 </div>
             </DialogContent>
@@ -397,67 +418,125 @@ function RouteManagementDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border-0 shadow-2xl p-8">
                 <DialogHeader>
-                    <DialogTitle>{editingRoute ? 'Edit Route' : 'Create New Route'}</DialogTitle>
+                    <DialogTitle className="text-xl font-black uppercase text-slate-800 tracking-tight">{editingRoute ? 'Edit Route' : 'Create New Route'}</DialogTitle>
+                    <DialogDescription className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Configure stops, driver assignments, and fares.</DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <FormField control={form.control} name="name" render={({ field }) => (
-                                <FormItem className="md:col-span-1"><FormLabel>Route Name</FormLabel><FormControl><Input {...field} placeholder="e.g., North Route" /></FormControl><FormMessage /></FormItem>
+                                <FormItem className="md:col-span-1">
+                                    <FormLabel className="text-xs font-black uppercase text-slate-400">Route Name</FormLabel>
+                                    <FormControl><Input {...field} placeholder="e.g., North Route" className="h-11 rounded-xl border-2" /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
                             )}/>
                             <FormField control={form.control} name="dailyRate" render={({ field }) => (
-                                <FormItem><FormLabel>Daily Rate (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="15.00" /></FormControl><FormMessage /></FormItem>
+                                <FormItem>
+                                    <FormLabel className="text-xs font-black uppercase text-slate-400">Daily Rate (GH₵)</FormLabel>
+                                    <FormControl><Input type="number" step="0.01" {...field} placeholder="15.00" className="h-11 rounded-xl border-2 font-mono font-bold" /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
                             )}/>
                             <FormField control={form.control} name="termlyRate" render={({ field }) => (
-                                <FormItem><FormLabel>Termly Rate (GH₵)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="800.00" /></FormControl><FormMessage /></FormItem>
+                                <FormItem>
+                                    <FormLabel className="text-xs font-black uppercase text-slate-400">Termly Rate (GH₵)</FormLabel>
+                                    <FormControl><Input type="number" step="0.01" {...field} placeholder="800.00" className="h-11 rounded-xl border-2 font-mono font-bold" /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
                             )}/>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <FormField control={form.control} name="busId" render={({ field }) => (
-                                <FormItem><FormLabel>Assign Bus</FormLabel><Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Select a bus" /></SelectTrigger></FormControl>
-                                    <SelectContent>{buses?.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
-                                </Select><FormMessage /></FormItem>
+                                <FormItem>
+                                    <FormLabel className="text-xs font-black uppercase text-slate-400">Assign Bus</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl><SelectTrigger className="h-11 rounded-xl border-2"><SelectValue placeholder="Select a bus" /></SelectTrigger></FormControl>
+                                        <SelectContent>{buses?.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
                             )}/>
                             <FormField control={form.control} name="driverId" render={({ field }) => (
-                                <FormItem><FormLabel>Assign Driver</FormLabel><Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Select a driver" /></SelectTrigger></FormControl>
-                                    <SelectContent>{drivers?.map(d => <SelectItem key={d.uid} value={d.uid}>{d.firstName} {d.lastName}</SelectItem>)}</SelectContent>
-                                </Select><FormMessage /></FormItem>
+                                <FormItem>
+                                    <FormLabel className="text-xs font-black uppercase text-slate-400">Assign Driver</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl><SelectTrigger className="h-11 rounded-xl border-2"><SelectValue placeholder="Select a driver" /></SelectTrigger></FormControl>
+                                        <SelectContent>{drivers?.map(d => <SelectItem key={d.uid} value={d.uid}>{d.firstName} {d.lastName}</SelectItem>)}</SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
                             )}/>
                         </div>
                         <div>
-                            <h4 className="font-semibold mb-2">Stops</h4>
-                            <div className="space-y-4">
+                            <h4 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-3">Stops Builder</h4>
+                            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
                                 {fields.map((field, index) => (
-                                    <div key={field.id} className="flex gap-2 items-end p-2 border rounded-md bg-slate-50/50">
-                                        <FormField control={form.control} name={`stops.${index}.order`} render={({ field }) => (
-                                            <FormItem className="w-16"><FormLabel>Order</FormLabel><FormControl><Input type="number" {...field} /></FormControl></FormItem>
-                                        )}/>
-                                        <FormField control={form.control} name={`stops.${index}.name`} render={({ field }) => (
-                                            <FormItem className="flex-1"><FormLabel>Stop Name</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-                                        )}/>
-                                        <FormField control={form.control} name={`stops.${index}.address`} render={({ field }) => (
-                                            <FormItem className="flex-1"><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-                                        )}/>
-                                        <Button type="button" variant="ghost" size="icon" className="text-red-500 hover:text-red-700 h-10 w-10" onClick={() => remove(index)}><Trash2 className="h-4 w-4"/></Button>
+                                    <div key={field.id} className="flex gap-4 items-center p-4 border-2 border-slate-100 rounded-2xl bg-white shadow-sm relative group hover:border-slate-200 transition-all">
+                                        <div className="w-16">
+                                            <FormField control={form.control} name={`stops.${index}.order`} render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-[10px] font-black uppercase text-slate-400">Order</FormLabel>
+                                                    <FormControl><Input type="number" {...field} className="h-10 rounded-xl border-2 font-mono font-bold" /></FormControl>
+                                                </FormItem>
+                                            )}/>
+                                        </div>
+                                        <div className="flex-1">
+                                            <FormField control={form.control} name={`stops.${index}.name`} render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-[10px] font-black uppercase text-slate-400">Stop Name</FormLabel>
+                                                    <FormControl><Input {...field} placeholder="e.g. Junction" className="h-10 rounded-xl border-2" /></FormControl>
+                                                </FormItem>
+                                            )}/>
+                                        </div>
+                                        <div className="flex-1">
+                                            <FormField control={form.control} name={`stops.${index}.address`} render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-[10px] font-black uppercase text-slate-400">Address</FormLabel>
+                                                    <FormControl><Input {...field} placeholder="e.g. Ring Road" className="h-10 rounded-xl border-2" /></FormControl>
+                                                </FormItem>
+                                            )}/>
+                                        </div>
+                                        <div className="pt-5">
+                                            <Button type="button" variant="ghost" size="icon" className="text-red-400 hover:text-red-600 hover:bg-rose-50 rounded-xl h-10 w-10" onClick={() => remove(index)}>
+                                                <Trash2 className="h-4 w-4"/>
+                                            </Button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
-                            <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', address: '', order: fields.length + 1, assignedStudentIds: [] })} className="mt-4">
-                                <PlusCircle className="h-4 w-4 mr-2"/> Add Stop
+                            <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', address: '', order: fields.length + 1, assignedStudentIds: [] })} className="mt-4 border-2 border-dashed border-slate-200 hover:border-slate-300 rounded-xl h-10 px-4 font-black uppercase text-xs tracking-wider">
+                                <PlusCircle className="h-4 w-4 mr-2 text-indigo-600"/> Add Route Stop
                             </Button>
                         </div>
-                        <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
-                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                        <Button type="submit" disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 rounded-2xl font-black uppercase tracking-tight shadow-md">
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                             {editingRoute ? 'Save Route Changes' : 'Create Route'}
                         </Button>
                     </form>
                 </Form>
             </DialogContent>
         </Dialog>
+    );
+}
+
+// --- Stat Card Component ---
+function StatCard({ title, value, icon: Icon, gradientClass }: { title: string; value: string | number; icon: React.ElementType; gradientClass: string }) {
+    return (
+      <Card className="border-none shadow-md bg-white rounded-3xl overflow-hidden relative group hover:shadow-lg transition-all duration-300">
+        <div className={`absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b ${gradientClass}`} />
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
+          <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</CardTitle>
+          <div className="h-8 w-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:bg-slate-100 transition-colors">
+            <Icon className="h-4 w-4" />
+          </div>
+        </CardHeader>
+        <CardContent className="px-6 pb-6 pt-0">
+          <div className="text-3xl font-black text-slate-900 tracking-tight">{value}</div>
+        </CardContent>
+      </Card>
     );
 }
 
@@ -494,7 +573,6 @@ export default function TransportPage() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-
   const isLoading = isLoadingRoutes || isLoadingBuses || isLoadingStudents || isLoadingClasses || isLoadingSchool;
 
   const selectedRoute = useMemo(() => {
@@ -520,6 +598,28 @@ export default function TransportPage() {
     );
   }, [students]);
 
+  const totalRoutes = routes?.length || 0;
+  const totalBuses = buses?.length || 0;
+  const totalSubscribers = subscribedStudents.length;
+
+  const assignedStudentIds = useMemo(() => {
+    return routes?.flatMap((r: Route) => r.stops?.flatMap((stop: Stop) => stop.assignedStudentIds || []) || []) || [];
+  }, [routes]);
+
+  const waitingCount = useMemo(() => {
+    return subscribedStudents.filter(s => !assignedStudentIds.includes(s.uid)).length;
+  }, [subscribedStudents, assignedStudentIds]);
+
+  const totalAssigned = useMemo(() => {
+    if (!selectedRoute) return 0;
+    return selectedRoute.stops?.reduce((sum, stop) => sum + (stop.assignedStudentIds?.length || 0), 0) || 0;
+  }, [selectedRoute]);
+
+  const occupancyRate = useMemo(() => {
+    if (!selectedRoute || !assignedBus || !assignedBus.capacity) return 0;
+    return (totalAssigned / assignedBus.capacity) * 100;
+  }, [selectedRoute, assignedBus, totalAssigned]);
+
   const handleEditRoute = (route: Route) => {
       setEditingRoute(route);
       setRouteManagementOpen(true);
@@ -539,87 +639,171 @@ export default function TransportPage() {
 
   if (!canAccess) {
     return (
-      <Card>
-        <CardHeader><CardTitle>Access Denied</CardTitle></CardHeader>
-        <CardContent><p>This module is for transport and administrative staff only.</p></CardContent>
+      <Card className="rounded-[2.5rem] border-none shadow-xl bg-white p-8">
+        <CardHeader><CardTitle className="font-black text-rose-600 uppercase italic">Access Denied</CardTitle></CardHeader>
+        <CardContent><p className="font-bold text-slate-500 text-sm">This module is for transport and administrative staff only.</p></CardContent>
       </Card>
     );
   }
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <CardTitle className="flex items-center gap-2 text-2xl font-bold"><RouteIcon className="h-6 w-6 text-indigo-600"/> Transport Management</CardTitle>
-              <CardDescription>Manage bus routes, stops, and student assignments.</CardDescription>
+                <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2 italic uppercase">
+                    <BusIcon className="h-8 w-8 text-indigo-600 animate-pulse" /> Transport <span className="text-indigo-600">Hub</span>
+                </h1>
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Manage bus routes, stops, and student assignments</p>
             </div>
-            {canManage && (
+            
+            {canManage && schoolId && (
                 <div className="flex gap-2 flex-wrap">
-                    <Button onClick={() => setAssignmentDialogOpen(true)} disabled={!selectedRoute} className="bg-indigo-600">Assign Students</Button>
-                    <Button variant="outline" onClick={() => setBusManagementOpen(true)}>Manage Buses</Button>
-                    <Button variant="outline" onClick={() => { setEditingRoute(null); setRouteManagementOpen(true); }}>New Route</Button>
+                    <Button 
+                        onClick={() => setAssignmentDialogOpen(true)} 
+                        disabled={!selectedRoute} 
+                        className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100 h-12 px-6 rounded-2xl font-black uppercase tracking-tight"
+                    >
+                        Assign Students
+                    </Button>
+                    <Button 
+                        variant="outline" 
+                        onClick={() => setBusManagementOpen(true)}
+                        className="border-2 rounded-2xl h-12 font-black uppercase tracking-tight"
+                    >
+                        Manage Buses
+                    </Button>
+                    <Button 
+                        variant="outline" 
+                        onClick={() => { setEditingRoute(null); setRouteManagementOpen(true); }}
+                        className="border-2 rounded-2xl h-12 font-black uppercase tracking-tight bg-slate-900 text-white border-slate-900 hover:bg-slate-800 hover:text-white"
+                    >
+                        New Route
+                    </Button>
                 </div>
             )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="w-full md:w-1/3">
-            <Select onValueChange={setSelectedRouteId}>
-              <SelectTrigger><SelectValue placeholder="Select a route to view details..." /></SelectTrigger>
-              <SelectContent>{routes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {isLoading && selectedRouteId && <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600"/></div>}
+        {/* STATISTICS STRIP */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <StatCard title="Active Routes" value={totalRoutes} icon={RouteIcon} gradientClass="from-blue-500 to-indigo-500" />
+            <StatCard title="Buses Enrolled" value={totalBuses} icon={BusIcon} gradientClass="from-emerald-500 to-teal-500" />
+            <StatCard title="Total Subscribers" value={totalSubscribers} icon={Users} gradientClass="from-purple-500 to-indigo-500" />
+            <StatCard title="Waiting Assignment" value={waitingCount} icon={User} gradientClass="from-rose-500 to-red-500" />
+        </div>
+
+        <Card className="rounded-[2rem] border-none shadow-md bg-white overflow-hidden">
+            <CardContent className="p-6 flex flex-col md:flex-row items-center gap-4">
+                <div className="text-sm font-black uppercase tracking-wider text-slate-400">Select Bus Route:</div>
+                <div className="w-full md:w-80">
+                    <Select onValueChange={setSelectedRouteId}>
+                      <SelectTrigger className="h-11 bg-white border-2 rounded-xl"><SelectValue placeholder="Select a route to view details..." /></SelectTrigger>
+                      <SelectContent>
+                          {routes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                </div>
+            </CardContent>
+        </Card>
+
+      {isLoading && selectedRouteId && <div className="text-center p-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-indigo-600"/></div>}
 
       <div className="grid md:grid-cols-2 gap-6">
         {selectedRoute && !isLoading && (
             <div className="md:col-span-1 space-y-6 animate-in fade-in slide-in-from-left-4">
-                <Card>
-                <CardHeader className="bg-slate-50 border-b flex flex-row justify-between items-center py-3">
-                    <CardTitle className="flex items-center gap-2 text-lg"><BusIcon className="text-indigo-600 h-5 w-5"/> Bus & Driver</CardTitle>
+                <Card className="rounded-[2rem] border-none shadow-lg bg-white overflow-hidden">
+                <CardHeader className="bg-slate-50 border-b flex flex-row justify-between items-center py-4 px-6">
+                    <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-600">
+                        <BusIcon className="text-indigo-600 h-5 w-5"/> Bus & Driver Details
+                    </CardTitle>
                     <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => handleEditRoute(selectedRoute)}><Edit className="h-4 w-4 mr-1"/> Edit</Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleDeleteRoute(selectedRoute.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50"><Trash2 className="h-4 w-4"/></Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleEditRoute(selectedRoute)} className="rounded-xl h-8 font-bold"><Edit className="h-4 w-4 mr-1"/> Edit</Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDeleteRoute(selectedRoute.id)} className="rounded-xl h-8 text-rose-500 hover:text-rose-700 hover:bg-rose-50"><Trash2 className="h-4 w-4"/></Button>
                     </div>
                 </CardHeader>
-                <CardContent className="pt-6">
-                    <div className="space-y-2">
-                        <p className="flex justify-between border-b pb-2"><strong>Assigned Bus:</strong> <span>{assignedBus?.name || 'N/A'}</span></p>
-                        <p className="flex justify-between border-b pb-2"><strong>Capacity:</strong> <span>{assignedBus?.capacity || 'N/A'} seats</span></p>
-                        <div className="grid grid-cols-2 gap-4 border-b pb-2">
-                            <p><strong>Daily Rate:</strong> <span className="font-bold text-indigo-600">GH₵{selectedRoute.dailyRate?.toFixed(2) || '0.00'}</span></p>
-                            <p><strong>Termly Rate:</strong> <span className="font-bold text-emerald-600">GH₵{selectedRoute.termlyRate?.toFixed(2) || '0.00'}</span></p>
+                <CardContent className="p-6 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider font-semibold">Assigned Bus</p>
+                            <p className="font-bold text-slate-800">{assignedBus?.name || 'N/A'}</p>
                         </div>
-                        <p className="flex justify-between"><strong>Driver:</strong> <span>{assignedDriver?.firstName ? `${assignedDriver.firstName} ${assignedDriver.lastName}`: 'N/A'}</span></p>
+                        <div className="space-y-1">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider font-semibold">Bus Capacity</p>
+                            <p className="font-bold text-slate-800">{assignedBus?.capacity || 'N/A'} seats</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider font-semibold">Daily Rate</p>
+                            <p className="font-bold text-indigo-600">GH₵{selectedRoute.dailyRate?.toFixed(2) || '0.00'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider font-semibold">Termly Rate</p>
+                            <p className="font-bold text-emerald-600">GH₵{selectedRoute.termlyRate?.toFixed(2) || '0.00'}</p>
+                        </div>
+                    </div>
+                    <div className="border-t border-slate-100 pt-4 space-y-1">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider font-semibold">Route Driver</p>
+                        <p className="font-bold text-slate-800 flex items-center gap-1.5 font-bold text-slate-800">
+                            <User className="h-4 w-4 text-slate-400" />
+                            {assignedDriver?.firstName ? `${assignedDriver.firstName} ${assignedDriver.lastName}`: 'N/A'}
+                        </p>
+                    </div>
+
+                    <div className="border-t border-slate-100 pt-4">
+                        {assignedBus && (
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                    <span>Route Occupancy</span>
+                                    <span className={cn(
+                                        "font-mono font-bold", 
+                                        occupancyRate > 100 ? "text-rose-600 animate-pulse" : occupancyRate > 85 ? "text-orange-500" : "text-slate-600"
+                                    )}>
+                                        {totalAssigned} / {assignedBus.capacity} Seats ({occupancyRate.toFixed(0)}%)
+                                    </span>
+                                </div>
+                                <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden relative">
+                                    <div 
+                                        className={cn(
+                                            "h-full rounded-full transition-all duration-500", 
+                                            occupancyRate > 100 ? "bg-rose-500 animate-pulse" : occupancyRate > 85 ? "bg-amber-500" : "bg-indigo-600"
+                                        )}
+                                        style={{ width: `${Math.min(occupancyRate, 100)}%` }}
+                                    />
+                                </div>
+                                {occupancyRate > 100 && (
+                                    <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-100 rounded-2xl text-[10px] text-rose-700 font-bold uppercase tracking-wider animate-pulse mt-2">
+                                        <ShieldAlert className="h-4 w-4 shrink-0 text-rose-500" />
+                                        <span>Over-Capacity: Assigned count exceeds available seats!</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </CardContent>
                 </Card>
-                <Card>
-                <CardHeader className="bg-slate-50 border-b"><CardTitle className="flex items-center gap-2 text-lg"><MapPin className="text-indigo-600 h-5 w-5"/> Route Stops & Assignments</CardTitle></CardHeader>
-                <CardContent className="space-y-4 pt-6">
+
+                <Card className="rounded-[2rem] border-none shadow-lg bg-white overflow-hidden">
+                <CardHeader className="bg-slate-50 border-b py-4 px-6">
+                    <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-600">
+                        <MapPin className="text-indigo-600 h-5 w-5"/> Route Stops & Assignments
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 p-6">
                     {selectedRoute.stops?.sort((a: Stop, b: Stop) => a.order - b.order).map((stop: Stop) => (
-                    <div key={stop.id} className="p-4 border rounded-xl bg-white shadow-sm">
-                        <div className="flex justify-between items-start mb-3">
-                            <h4 className="font-bold text-slate-800">{stop.order}. {stop.name}</h4>
-                            <Badge variant="secondary">{stop.assignedStudentIds?.length || 0} Students</Badge>
+                    <div key={stop.id} className="p-4 border-2 border-slate-100 rounded-2xl bg-white shadow-sm hover:border-slate-200 transition-colors">
+                        <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-black text-slate-800 uppercase tracking-tight">{stop.order}. {stop.name}</h4>
+                            <Badge className="bg-slate-100 hover:bg-slate-100 text-slate-600 border-none font-bold uppercase text-[9px]">{stop.assignedStudentIds?.length || 0} Students</Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground mb-4">{stop.address}</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide mb-3">{stop.address}</p>
                         <div className="space-y-2 pl-4 border-l-2 border-indigo-100">
                             {stop.assignedStudentIds?.length > 0 ? (
                                 stop.assignedStudentIds.map((studentId: string) => {
                                     const student = students?.find(s => s.uid === studentId);
-                                    // Verify student exists and is ACTIVE
                                     if (student && (student.enrollmentStatus === 'Active' || !student.enrollmentStatus)) {
                                         return <div key={studentId} className="flex items-center gap-2 text-sm"><StudentDisplay student={student} variant="compact" /></div>;
                                     }
                                     return null;
                                 })
-                            ) : <p className="text-[10px] text-slate-400 italic">No students assigned to this stop.</p>}
+                            ) : <p className="text-[10px] text-slate-400 italic font-medium">No students assigned to this stop.</p>}
                         </div>
                     </div>
                     ))}
@@ -628,52 +812,61 @@ export default function TransportPage() {
             </div>
         )}
         
-        <Card className="md:col-span-1 border-t-4 border-t-indigo-500 shadow-sm h-fit">
-            <CardHeader className="bg-white">
-                <CardTitle className="flex items-center gap-2 text-lg"><Users className="text-indigo-600 h-5 w-5"/> Bus Service Subscribers</CardTitle>
-                <CardDescription>Found {subscribedStudents.length} active students enrolled in transport.</CardDescription>
+        <Card className="md:col-span-1 rounded-[2rem] border-none shadow-lg bg-white overflow-hidden h-fit">
+            <CardHeader className="bg-white p-6 pb-4 border-b border-slate-100">
+                <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-600">
+                    <Users className="text-indigo-600 h-5 w-5"/> Bus Service Subscribers
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">
+                    Found {subscribedStudents.length} active students enrolled in transport
+                </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
                 {isLoading ? (
-                     <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600"/></div>
+                     <div className="text-center p-20"><Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600"/></div>
                 ) : (
-                     <div className="rounded-md border overflow-hidden">
-                        <Table>
-                            <TableHeader className="bg-slate-50">
-                                <TableRow>
-                                    <TableHead>Student</TableHead>
-                                    <TableHead>Class</TableHead>
-                                    <TableHead>Status</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {subscribedStudents.map(student => {
-                                    const isAssigned = routes?.some((r: Route) => r.stops?.some((s: Stop) => s.assignedStudentIds?.includes(student.uid)));
-                                    return (
-                                        <TableRow key={student.uid}>
-                                            <TableCell><StudentDisplay student={student} variant="list" /></TableCell>
-                                            <TableCell className="text-xs">{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</TableCell>
-                                            <TableCell>
-                                                <div className="flex flex-col gap-1">
-                                                    {isAssigned ? (
-                                                        <Badge variant="default" className="bg-green-100 text-green-700 border-green-200">Assigned</Badge>
-                                                    ) : (
-                                                        <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 animate-pulse">Waiting</Badge>
-                                                    )}
-                                                    <span className="text-[9px] font-bold uppercase text-slate-400">{student.transportBillingModel || 'Daily'} Billing</span>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                                {subscribedStudents.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={3} className="text-center text-muted-foreground py-10 italic">No active students are currently subscribed to the bus service.</TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
+                     <Table>
+                         <TableHeader className="bg-slate-50/50 border-b">
+                             <TableRow>
+                                 <TableHead className="font-bold uppercase text-[10px] tracking-widest">Student</TableHead>
+                                 <TableHead className="font-bold uppercase text-[10px] tracking-widest">Class</TableHead>
+                                 <TableHead className="font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
+                             </TableRow>
+                         </TableHeader>
+                         <TableBody>
+                             {subscribedStudents.map(student => {
+                                 const isAssigned = routes?.some((r: Route) => r.stops?.some((s: Stop) => s.assignedStudentIds?.includes(student.uid)));
+                                 return (
+                                     <TableRow key={student.uid} className="hover:bg-slate-50/50 transition-colors">
+                                         <TableCell><StudentDisplay student={student} variant="list" /></TableCell>
+                                         <TableCell className="text-xs font-semibold text-slate-500">
+                                             {classes?.find(c => c.id === student.classId)?.name || 'N/A'}
+                                         </TableCell>
+                                         <TableCell>
+                                             <div className="flex flex-col gap-1">
+                                                 {isAssigned ? (
+                                                     <Badge className="bg-green-50 text-green-700 border-green-200 font-bold uppercase text-[9px] w-fit">Assigned</Badge>
+                                                 ) : (
+                                                     <Badge className="bg-orange-50 text-orange-700 border-orange-200 animate-pulse font-bold uppercase text-[9px] w-fit">Waiting</Badge>
+                                                 )}
+                                                 <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">
+                                                     {student.transportBillingModel || 'Daily'} Billing
+                                                 </span>
+                                             </div>
+                                         </TableCell>
+                                     </TableRow>
+                                 );
+                             })}
+                             {subscribedStudents.length === 0 && (
+                                 <TableRow>
+                                     <TableCell colSpan={3} className="text-center text-slate-400 py-16">
+                                         <Users className="h-16 w-16 mx-auto mb-4 opacity-10" />
+                                         <p className="font-bold text-xs uppercase tracking-widest">No active bus service subscribers</p>
+                                     </TableCell>
+                                 </TableRow>
+                             )}
+                         </TableBody>
+                     </Table>
                 )}
             </CardContent>
         </Card>
@@ -710,3 +903,4 @@ export default function TransportPage() {
     </div>
   );
 }
+

@@ -12,7 +12,7 @@ import {
     MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, 
     Loader2, ArrowLeft, CheckCheck, BookOpen, GraduationCap, Users, HeartHandshake, X,
     Paperclip, Mic, MicOff, Play, Pause, Smile, CornerUpLeft, Edit3, Trash2, Check, Download, Music,
-    FileText, Forward, Megaphone
+    FileText, Forward, Megaphone, Sparkles, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -964,6 +964,8 @@ export default function MessagesPage() {
     const [broadcastTotal, setBroadcastTotal] = useState(0);
     const [broadcastCurrent, setBroadcastCurrent] = useState(0);
     const [broadcastStatusText, setBroadcastStatusText] = useState('');
+    const [broadcastLogs, setBroadcastLogs] = useState<string[]>([]);
+    const [isBroadcastCompleted, setIsBroadcastCompleted] = useState(false);
 
     const chatsQuery = useMemoFirebase(() =>
         (firestore && user && schoolId) ? query(
@@ -1693,21 +1695,24 @@ export default function MessagesPage() {
     }, {});
 
     return (
-        <div className="h-[calc(100vh-80px)] flex gap-0 bg-slate-100 overflow-hidden rounded-2xl shadow-2xl border border-slate-200/50">
+        <div className="h-[calc(100vh-100px)] flex gap-0 bg-slate-50/80 backdrop-blur-md overflow-hidden rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] border border-slate-200/40">
 
             {/* ── SIDEBAR: CONVERSATION LIST ── */}
             <div className={cn(
-                "w-full md:w-[320px] lg:w-[360px] shrink-0 flex flex-col bg-white border-r border-slate-100",
+                "w-full md:w-[320px] lg:w-[360px] shrink-0 flex flex-col bg-white/95 backdrop-blur-md border-r border-slate-150/60",
                 selectedChatId && "hidden md:flex"
             )}>
                 {/* Sidebar Header */}
-                <div className="px-5 pt-5 pb-4 border-b border-slate-100">
+                <div className="px-6 pt-6 pb-4 border-b border-slate-150/60 bg-slate-50/20">
                     <div className="flex items-center justify-between mb-4">
                         <div>
-                            <h1 className="text-xl font-black text-slate-900 tracking-tight">Messages</h1>
-                            <p className="text-[11px] text-slate-400 font-medium mt-0.5">
-                                {chats?.length || 0} conversation{chats?.length !== 1 ? 's' : ''}
-                            </p>
+                            <h1 className="text-lg font-black text-slate-800 uppercase italic tracking-tight flex items-center gap-1.5">
+                                <MessageCircle className="h-5 w-5 text-indigo-600 animate-pulse" />
+                                Messages
+                            </h1>
+                            <span className="text-[9px] font-black tracking-widest text-slate-400 uppercase bg-slate-100 px-2.5 py-0.5 rounded-md mt-1.5 inline-block border border-slate-200/20">
+                                {chats?.length || 0} Conversation{chats?.length !== 1 ? 's' : ''}
+                            </span>
                         </div>
                         <div className="flex gap-2">
                             {isAuthorizedSender && (
@@ -1715,7 +1720,7 @@ export default function MessagesPage() {
                                     onClick={() => setIsBroadcastOpen(true)}
                                     disabled={!schoolId}
                                     title="Send Broadcast Message"
-                                    className="h-9 w-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                                    className="h-9 w-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50 border border-rose-100"
                                 >
                                     <Megaphone className="h-4 w-4" />
                                 </button>
@@ -1724,7 +1729,7 @@ export default function MessagesPage() {
                                 onClick={() => setIsNewGroupOpen(true)}
                                 disabled={!schoolId}
                                 title="Create Group Chat"
-                                className="h-9 w-9 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                                className="h-9 w-9 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50 border border-indigo-100"
                             >
                                 <Users className="h-4 w-4" />
                             </button>
@@ -1732,7 +1737,7 @@ export default function MessagesPage() {
                                 onClick={() => setIsNewChatOpen(true)}
                                 disabled={!schoolId}
                                 title="New Conversation"
-                                className="h-9 w-9 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center shadow-md shadow-indigo-200 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                                className="h-9 w-9 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-805 text-white flex items-center justify-center shadow-lg shadow-indigo-100 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 border-none"
                             >
                                 <Plus className="h-4 w-4" />
                             </button>
@@ -1740,12 +1745,12 @@ export default function MessagesPage() {
                     </div>
                     {/* Search */}
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input
                             placeholder="Search conversations..."
                             value={chatFilter}
                             onChange={e => setChatFilter(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2.5 bg-slate-50 rounded-xl text-sm border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 placeholder:text-slate-400 transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200/60 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-300 placeholder:text-slate-400 transition-all duration-300"
                         />
                     </div>
                 </div>
@@ -1780,7 +1785,7 @@ export default function MessagesPage() {
                             </button>
                         </div>
                     ) : (
-                        <div className="p-2 space-y-0.5">
+                        <div className="p-3 space-y-1">
                             {filteredChats?.map(chat => {
                                 const other = getOtherParticipant(chat);
                                 const isActive = selectedChatId === chat.id;
@@ -1796,21 +1801,21 @@ export default function MessagesPage() {
                                         key={chat.id}
                                         onClick={() => setSelectedChatId(chat.id)}
                                         className={cn(
-                                            "w-full flex items-center gap-3 px-3.5 py-4 rounded-2xl transition-all text-left relative group/item overflow-hidden",
+                                            "w-full flex items-center gap-3 px-4 py-4 rounded-[1.25rem] transition-all duration-300 text-left relative group/item overflow-hidden",
                                             isActive
-                                                ? "bg-indigo-50/70 border border-indigo-100/50 shadow-sm"
-                                                : "hover:bg-slate-50 border border-transparent hover:translate-x-1"
+                                                ? "bg-gradient-to-r from-indigo-50/60 to-violet-50/40 border border-indigo-100/60 shadow-sm"
+                                                : "hover:bg-slate-50/80 border border-transparent hover:translate-x-1"
                                         )}
                                     >
                                         {/* Left Accent indicator for active */}
                                         {isActive && (
-                                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-md" />
+                                            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-indigo-600 to-violet-600 rounded-r-md" />
                                         )}
 
                                         {/* Avatar */}
                                         <div className="relative shrink-0">
                                             <div className={cn(
-                                                "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-base bg-gradient-to-br shadow-sm overflow-hidden transition-transform group-hover/item:scale-105",
+                                                "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-base bg-gradient-to-br shadow-sm overflow-hidden transition-transform duration-300 group-hover/item:scale-105",
                                                 chat.isAnnouncementChannel ? "from-pink-500 via-rose-500 to-red-600" : gradient
                                             )}>
                                                 {chat.isAnnouncementChannel ? (
@@ -1828,7 +1833,7 @@ export default function MessagesPage() {
                                                 )}
                                             </div>
                                             {!isGroup && !chat.isAnnouncementChannel && (
-                                                <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-400 border-2 border-white" />
+                                                <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-sm" />
                                             )}
                                         </div>
 
@@ -1836,34 +1841,34 @@ export default function MessagesPage() {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-baseline justify-between gap-1">
                                                 <span className={cn(
-                                                    "font-semibold text-sm truncate",
-                                                    isActive ? "text-indigo-950 font-bold" : "text-slate-800"
+                                                    "font-bold text-xs truncate uppercase tracking-tight",
+                                                    isActive ? "text-indigo-950" : "text-slate-700"
                                                 )}>
                                                     {chatName}
                                                 </span>
-                                                <span className="text-[10px] text-slate-400 shrink-0 font-medium font-mono">
+                                                <span className="text-[9px] text-slate-400 shrink-0 font-bold uppercase tracking-wider">
                                                     {formatChatTime(chat.lastMessageTime)}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center justify-between gap-1 mt-0.5">
-                                                <p className={cn("text-xs truncate flex-1", unreadCount > 0 ? "text-slate-900 font-semibold" : "text-slate-400")}>
+                                            <div className="flex items-center justify-between gap-1 mt-1">
+                                                <p className={cn("text-xs truncate flex-1 font-medium", unreadCount > 0 ? "text-slate-900 font-bold" : "text-slate-400")}>
                                                     {chat.lastMessage}
                                                 </p>
                                                 <div className="flex items-center gap-1.5 shrink-0">
                                                     {unreadCount > 0 && (
-                                                        <span className="text-[10px] font-black h-5 min-w-[20px] px-1.5 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm shadow-rose-200 animate-pulse shrink-0">
+                                                        <span className="text-[9px] font-black h-4.5 min-w-[18px] px-1 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm shadow-rose-200 animate-pulse shrink-0">
                                                             {unreadCount}
                                                         </span>
                                                     )}
                                                     <span className={cn(
-                                                        "text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0",
+                                                        "text-[8px] font-black px-2 py-0.5 rounded-md border uppercase tracking-wider shrink-0",
                                                         chat.isAnnouncementChannel
-                                                            ? "bg-rose-100 text-rose-700 border-rose-200"
+                                                            ? "bg-rose-50 text-rose-700 border-rose-100"
                                                             : isGroup 
-                                                                ? "bg-indigo-100 text-indigo-700 border-indigo-200" 
-                                                                : getRoleColor(other.role)
+                                                                ? "bg-indigo-50 text-indigo-700 border-indigo-100" 
+                                                                : getRoleColor(other.role).replace('-100', '-50').replace('-200', '-100')
                                                     )}>
-                                                        {chat.isAnnouncementChannel ? "Announcements" : isGroup ? "Group" : other.role}
+                                                        {chat.isAnnouncementChannel ? "Broadcast" : isGroup ? "Group" : other.role}
                                                     </span>
                                                 </div>
                                             </div>
@@ -1878,7 +1883,7 @@ export default function MessagesPage() {
 
             {/* ── MAIN: CHAT WINDOW ── */}
             <div className={cn(
-                "flex-1 flex flex-col min-w-0",
+                "flex-1 flex flex-col min-w-0 bg-transparent",
                 !selectedChatId && "hidden md:flex"
             )}>
                 {selectedChatId && activeChat && otherMember ? (
@@ -1887,55 +1892,55 @@ export default function MessagesPage() {
                         <div 
                             onClick={() => activeChat.isGroup && setIsGroupDetailsOpen(true)}
                             className={cn(
-                                "h-[72px] px-5 flex items-center justify-between border-b border-slate-100/80 sticky top-0 backdrop-blur-md bg-white/75 z-20 shrink-0",
-                                activeChat.isGroup && "cursor-pointer hover:bg-white/90 transition-colors"
+                                "h-20 px-6 flex items-center justify-between border-b border-slate-150/60 sticky top-0 backdrop-blur-xl bg-white/80 z-20 shrink-0 shadow-sm",
+                                activeChat.isGroup && "cursor-pointer hover:bg-white/95 transition-colors"
                             )}
                         >
                             <div className="flex items-center gap-3">
                                 <button
-                                    className="md:hidden h-8 w-8 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors mr-1"
+                                    className="md:hidden h-8 w-8 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors mr-1 border border-slate-200"
                                     onClick={(e) => { e.stopPropagation(); setSelectedChatId(null); }}
                                 >
                                     <ArrowLeft className="h-4 w-4 text-slate-600" />
                                 </button>
                                 <div className={cn(
-                                    "h-10 w-10 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-br shadow-sm overflow-hidden shrink-0",
+                                    "h-11 w-11 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-br shadow-sm overflow-hidden shrink-0 border border-white",
                                     activeChat.isAnnouncementChannel ? "from-pink-500 via-rose-500 to-red-600" : getAvatarGradient(activeChat.isGroup ? (activeChat.groupName || 'Group') : otherMember.name)
                                 )}>
                                     {activeChat.isAnnouncementChannel ? (
                                         <Megaphone className="h-4.5 w-4.5 text-white" />
                                     ) : activeChat.isGroup ? (
                                         activeChat.groupAvatar ? (
-                                            <img src={activeChat.groupAvatar} className="h-10 w-10 object-cover" alt="" />
+                                            <img src={activeChat.groupAvatar} className="h-11 w-11 object-cover" alt="" />
                                         ) : (
                                             <Users className="h-4.5 w-4.5 text-white" />
                                         )
                                     ) : (
                                         otherMember.photoURL
-                                            ? <img src={otherMember.photoURL} className="h-10 w-10 object-cover" alt="" />
+                                            ? <img src={otherMember.photoURL} className="h-11 w-11 object-cover" alt="" />
                                             : otherMember.name.charAt(0)
                                     )}
                                 </div>
                                 <div className="min-w-0">
-                                    <h3 className="font-bold text-slate-900 text-sm leading-none truncate">
+                                    <h3 className="font-black text-slate-800 text-sm leading-tight uppercase italic tracking-tight">
                                         {activeChat.isGroup ? activeChat.groupName : otherMember.name}
                                     </h3>
                                     {isAnyoneTyping ? (
-                                        <p className="text-[11px] text-emerald-600 font-semibold mt-1 animate-pulse italic">
-                                            {typingUsers.join(', ')} {typingUsers.length > 1 ? 'are' : 'is'} typing...
+                                        <p className="text-[9px] text-emerald-600 font-black tracking-wider uppercase mt-1 animate-pulse italic">
+                                            {typingUsers.join(', ')} typing...
                                         </p>
                                     ) : activeChat.isAnnouncementChannel ? (
-                                        <p className="text-[10px] text-rose-500 font-bold mt-1 uppercase tracking-wider">
-                                            Official Channel · Read-Only for Recipients
+                                        <p className="text-[8px] text-rose-500 font-black mt-1 uppercase tracking-widest bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-md inline-block">
+                                            Broadcast Channel · Read-Only
                                         </p>
                                     ) : activeChat.isGroup ? (
-                                        <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">
+                                        <p className="text-[8px] text-indigo-600 font-black mt-1 uppercase tracking-widest bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md inline-block">
                                             {activeChat.participants.length} Members · View Info
                                         </p>
                                     ) : (
                                         <div className={cn(
-                                            "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border mt-1",
-                                            getRoleColor(otherMember.role)
+                                            "inline-flex items-center gap-1 text-[8px] font-black px-2 py-0.5 rounded-md border mt-1 uppercase tracking-wider",
+                                            getRoleColor(otherMember.role).replace('-100', '-50').replace('-200', '-100')
                                         )}>
                                             {getRoleIcon(otherMember.role)}
                                             {otherMember.role}
@@ -1946,19 +1951,19 @@ export default function MessagesPage() {
                             <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
                                 {!activeChat.isGroup && (
                                     <>
-                                        <button className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
-                                            <Phone className="h-4 w-4" />
+                                        <button className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+                                            <Phone className="h-4.5 w-4.5" />
                                         </button>
-                                        <button className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
-                                            <Video className="h-4 w-4" />
+                                        <button className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+                                            <Video className="h-4.5 w-4.5" />
                                         </button>
                                     </>
                                 )}
                                 <button 
                                     onClick={() => activeChat.isGroup ? setIsGroupDetailsOpen(true) : null}
-                                    className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                                    className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
                                 >
-                                    <MoreVertical className="h-4 w-4" />
+                                    <MoreVertical className="h-4.5 w-4.5" />
                                 </button>
                             </div>
                         </div>
@@ -1966,13 +1971,17 @@ export default function MessagesPage() {
                         {/* Messages Area */}
                         <div
                             ref={scrollRef}
-                            className="flex-1 overflow-y-auto px-5 py-4 space-y-1"
+                            className="flex-1 overflow-y-auto px-6 py-6 space-y-1 relative"
                             style={{
-                                backgroundImage: `radial-gradient(circle at 1px 1px, rgb(226 232 240 / 0.6) 1px, transparent 0)`,
-                                backgroundSize: '24px 24px',
-                                backgroundColor: '#f8fafc'
+                                backgroundImage: `radial-gradient(circle at 1px 1px, rgb(226 232 240 / 0.8) 1px, transparent 0)`,
+                                backgroundSize: '20px 20px',
+                                backgroundColor: '#fafbfc'
                             }}
                         >
+                            {/* Ambient gradient blur layers */}
+                            <div className="absolute top-[20%] left-[10%] w-[250px] h-[250px] rounded-full bg-indigo-200/10 blur-3xl pointer-events-none" />
+                            <div className="absolute bottom-[30%] right-[10%] w-[300px] h-[300px] rounded-full bg-violet-200/10 blur-3xl pointer-events-none" />
+
                             {msgsLoading ? (
                                 <div className="flex flex-col items-center justify-center h-full gap-3 opacity-40">
                                     <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
@@ -1980,7 +1989,7 @@ export default function MessagesPage() {
                                 </div>
                             ) : messages?.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-full gap-3">
-                                    <div className="h-16 w-16 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center">
+                                    <div className="h-16 w-16 rounded-2xl bg-white shadow-sm border border-slate-150 flex items-center justify-center">
                                         <MessageCircle className="h-7 w-7 text-slate-300" />
                                     </div>
                                     <p className="text-sm font-semibold text-slate-400">No messages yet</p>
@@ -1995,11 +2004,11 @@ export default function MessagesPage() {
                                     } catch { dateLabel = dateKey; }
 
                                     return (
-                                        <div key={dateKey}>
+                                        <div key={dateKey} className="relative z-10">
                                             {/* Date separator */}
                                             <div className="flex items-center gap-3 py-3">
                                                 <div className="flex-1 h-px bg-slate-200" />
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2.5 py-1 rounded-full">
+                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-100/85 backdrop-blur-md px-2.5 py-1 rounded-full border border-slate-200/40">
                                                     {dateLabel}
                                                 </span>
                                                 <div className="flex-1 h-px bg-slate-200" />
@@ -2012,7 +2021,7 @@ export default function MessagesPage() {
                                                     if (isSystem) {
                                                         return (
                                                             <div key={msg.id} className="flex justify-center my-2">
-                                                                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200/50 px-3 py-1 rounded-full uppercase tracking-wider text-center">
+                                                                <span className="text-[9px] font-black text-slate-400 bg-slate-100 border border-slate-200/50 px-3 py-1 rounded-full uppercase tracking-wider text-center">
                                                                     {msg.text}
                                                                 </span>
                                                             </div>
@@ -2066,15 +2075,15 @@ export default function MessagesPage() {
                                                             <div className="flex flex-col max-w-[65%] animate-in fade-in slide-in-from-bottom-2 duration-200 zoom-in-95">
                                                                 {/* Bubble */}
                                                                 <div className={cn(
-                                                                    "px-4 py-2.5 text-sm leading-relaxed shadow-sm",
+                                                                    "px-4 py-2.5 text-xs leading-relaxed shadow-sm font-semibold",
                                                                     isMe
-                                                                        ? "bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-100/30 border border-indigo-500/10 rounded-2xl rounded-br-sm"
-                                                                        : "bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-bl-sm",
+                                                                        ? "bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 text-white shadow-md shadow-indigo-100/20 border border-indigo-500/10 rounded-2xl rounded-br-sm"
+                                                                        : "bg-white/95 text-slate-800 border border-slate-150/70 shadow-[0_4px_12px_rgba(0,0,0,0.015)] rounded-2xl rounded-bl-sm",
                                                                     !isLastInGroup && isMe && "rounded-br-2xl rounded-tr-sm",
                                                                     !isLastInGroup && !isMe && "rounded-bl-2xl rounded-tl-sm",
                                                                 )}>
                                                                     {!isMe && activeChat.isGroup && isFirstInGroup && (
-                                                                        <p className="text-[10px] font-black text-indigo-600 mb-1 leading-none uppercase tracking-tight">
+                                                                        <p className="text-[9px] font-black text-indigo-600 mb-1 leading-none uppercase tracking-tight">
                                                                             {activeChat.participantDetails?.[msg.senderId]?.name || 'Member'}
                                                                         </p>
                                                                     )}
@@ -2082,10 +2091,10 @@ export default function MessagesPage() {
                                                                     {/* Quoted Message */}
                                                                     {msg.replyTo && !msg.isDeleted && (
                                                                         <div className={cn(
-                                                                            "border-l-4 rounded px-3 py-1.5 mb-2 text-xs flex flex-col gap-0.5 max-w-full truncate bg-black/10 backdrop-blur-sm",
+                                                                            "border-l-4 rounded px-3 py-1.5 mb-2 text-[11px] flex flex-col gap-0.5 max-w-full truncate bg-black/10 backdrop-blur-sm",
                                                                             isMe ? "border-indigo-300 text-indigo-100" : "border-indigo-600 text-slate-600"
                                                                         )}>
-                                                                            <span className="font-bold text-[10px] uppercase tracking-wider opacity-90">{msg.replyTo.senderName}</span>
+                                                                            <span className="font-bold text-[9px] uppercase tracking-wider opacity-90">{msg.replyTo.senderName}</span>
                                                                             <span className="opacity-80 truncate">{msg.replyTo.text}</span>
                                                                         </div>
                                                                     )}
@@ -2140,12 +2149,12 @@ export default function MessagesPage() {
                                                                                     <Download className="h-4 w-4" /> Download
                                                                                 </a>
                                                                             </div>
-                                                                            {msg.fileName && <p className="text-[11px] font-medium opacity-85 truncate max-w-[260px]">{msg.fileName}</p>}
+                                                                            {msg.fileName && <p className="text-[10px] font-bold opacity-85 truncate max-w-[260px]">{msg.fileName}</p>}
                                                                         </div>
                                                                     ) : msg.type === 'video' ? (
                                                                         <div className="space-y-1.5 py-0.5">
                                                                             <video src={msg.fileUrl} controls className="max-h-[200px] w-full rounded-lg border border-black/5 max-w-[260px]" />
-                                                                            {msg.fileName && <p className="text-[11px] font-medium opacity-85 truncate max-w-[260px]">{msg.fileName}</p>}
+                                                                            {msg.fileName && <p className="text-[10px] font-bold opacity-85 truncate max-w-[260px]">{msg.fileName}</p>}
                                                                         </div>
                                                                     ) : msg.type === 'audio' ? (
                                                                         <div className="py-0.5">
@@ -2186,10 +2195,10 @@ export default function MessagesPage() {
 
                                                                     {/* Message Metadata */}
                                                                     <div className={cn(
-                                                                        "text-[9px] mt-1.5 flex items-center gap-1.5",
+                                                                        "text-[8px] font-bold mt-1.5 flex items-center gap-1.5 uppercase",
                                                                         isMe ? "text-indigo-200 justify-end" : "text-slate-400"
                                                                     )}>
-                                                                        {msg.edited && !msg.isDeleted && <span className="font-medium italic opacity-75">edited</span>}
+                                                                        {msg.edited && !msg.isDeleted && <span className="font-bold italic opacity-75">edited</span>}
                                                                         {msg.createdAt
                                                                             ? format(msg.createdAt.toDate(), 'HH:mm')
                                                                             : <span className="italic text-[8px]">Sending...</span>
@@ -2246,7 +2255,7 @@ export default function MessagesPage() {
                                                                     {/* Reactions Tray */}
                                                                     <div className="flex items-center gap-0.5 pr-1.5 border-r border-slate-100">
                                                                         {EMOJI_LIST.map(emoji => {
-                                                                            const uids = msg.reactions?.[emoji] || [];
+                                                                            const uids = msg.reactions && msg.reactions[emoji] ? msg.reactions[emoji] : [];
                                                                             const hasReacted = uids.includes(user?.uid || '');
                                                                             return (
                                                                                 <button
@@ -2317,16 +2326,16 @@ export default function MessagesPage() {
                         </div>
 
                         {/* Message Input */}
-                        <div className="px-5 py-4 bg-white border-t border-slate-100 shrink-0 relative">
+                        <div className="px-6 py-4 bg-transparent shrink-0 relative z-20">
                             {activeChat.isAnnouncementChannel && !isAuthorizedSender ? (
-                                <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex items-center justify-center gap-2 text-slate-500 font-semibold text-sm shadow-inner animate-in fade-in duration-200">
-                                    <Megaphone className="h-4 w-4 text-indigo-500 animate-bounce" />
+                                <div className="bg-white/80 backdrop-blur-md border border-slate-100 rounded-3xl p-4.5 flex items-center justify-center gap-2.5 text-slate-400 font-bold text-xs uppercase tracking-wider shadow-[0_10px_30px_-5px_rgba(0,0,0,0.02)] mx-2 text-center">
+                                    <Megaphone className="h-4 w-4 text-indigo-500 animate-bounce shrink-0" />
                                     Only school administrators can post announcements to this channel.
                                 </div>
                             ) : (
-                                <>
+                                <div className="bg-white/95 backdrop-blur-md shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-150/70 rounded-[2rem] p-2 mx-2">
                                     {isEmojiPickerOpen && (
-                                        <div className="absolute bottom-[80px] left-5 bg-white/95 backdrop-blur-lg border border-slate-150 shadow-2xl rounded-2xl p-3 z-30 animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[320px]">
+                                        <div className="absolute bottom-[88px] left-8 bg-white/95 backdrop-blur-lg border border-slate-150 shadow-2xl rounded-2xl p-3 z-30 animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[320px]">
                                             <div className="flex justify-between items-center mb-2 pb-1 border-b border-slate-100">
                                                 <span className="text-[10px] font-black uppercase text-slate-400">Quick Emojis</span>
                                                 <button type="button" onClick={() => setIsEmojiPickerOpen(false)} className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full hover:bg-slate-100">
@@ -2352,9 +2361,9 @@ export default function MessagesPage() {
                                     )}
 
                                     {replyingToMessage && (
-                                        <div className="flex items-center justify-between bg-indigo-50/50 border-l-4 border-indigo-500 px-4 py-2.5 rounded-r-xl mb-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                                        <div className="flex items-center justify-between bg-indigo-50/50 border-l-4 border-indigo-500 px-4 py-2.5 rounded-xl mb-2.5 mx-2 animate-in fade-in slide-in-from-bottom-2 duration-200">
                                             <div className="min-w-0">
-                                                <p className="text-xs font-bold text-indigo-700">
+                                                <p className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider">
                                                     Replying to {replyingToMessage.senderId === user?.uid ? 'yourself' : (activeChat?.participantDetails?.[replyingToMessage.senderId]?.name || 'Member')}
                                                 </p>
                                                 <p className="text-xs text-slate-500 truncate mt-0.5">
@@ -2371,7 +2380,7 @@ export default function MessagesPage() {
                                     )}
 
                                     {isUploading && (
-                                        <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 mb-3">
+                                        <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 mb-2.5 mx-2">
                                             <Loader2 className="h-4 w-4 animate-spin text-indigo-600 shrink-0" />
                                             <div className="flex-1">
                                                 <div className="flex justify-between text-xs font-bold text-slate-600 mb-1">
@@ -2386,37 +2395,40 @@ export default function MessagesPage() {
                                     )}
 
                                     {isRecording ? (
-                                        <div className="flex items-center justify-between bg-red-50/40 border border-red-200 rounded-2xl px-4 py-3 animate-pulse">
-                                            <div className="flex items-center gap-2">
-                                                <div className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
-                                                <span className="text-xs font-semibold text-red-600">Recording Voice Note...</span>
-                                                <span className="text-xs font-mono bg-red-100 text-red-700 px-2 py-0.5 rounded">
+                                        <div className="flex items-center justify-between bg-rose-500/10 border border-rose-100 rounded-[2.5rem] px-5 py-2.5 w-full animate-in fade-in duration-300">
+                                            <div className="flex items-center gap-3">
+                                                <span className="relative flex h-2 w-2">
+                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-600"></span>
+                                                </span>
+                                                <span className="text-[10px] font-black uppercase tracking-wider text-rose-700">Recording Voice Note</span>
+                                                <span className="text-[10px] font-black font-mono bg-rose-600 text-white px-2.5 py-0.5 rounded-full shadow-sm shadow-rose-200">
                                                     {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1.5">
                                                 <button
                                                     type="button"
                                                     onClick={() => stopRecording(false)}
-                                                    className="h-9 w-9 rounded-xl hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
+                                                    className="h-8 w-8 rounded-full hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
                                                     title="Cancel recording"
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
+                                                    <Trash2 className="h-3.5 w-3.5" />
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => stopRecording(true)}
-                                                    className="h-9 w-9 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md shadow-red-200 transition-colors"
+                                                    className="h-8 w-8 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-lg shadow-rose-200 transition-all hover:scale-110 active:scale-95"
                                                     title="Send Voice Note"
                                                 >
-                                                    <Send className="h-4 w-4" />
+                                                    <Send className="h-3.5 w-3.5" />
                                                 </button>
                                             </div>
                                         </div>
                                     ) : (
                                         <form
                                             onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-                                            className="flex items-center gap-2.5"
+                                            className="flex items-center gap-1.5"
                                         >
                                             <div className="relative shrink-0">
                                                 <input
@@ -2428,10 +2440,10 @@ export default function MessagesPage() {
                                                 />
                                                 <label
                                                     htmlFor="chat-file-upload"
-                                                    className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                                                    className="h-9 w-9 rounded-full bg-slate-50 border border-slate-150 hover:bg-slate-100 hover:text-indigo-600 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
                                                     title="Attach file"
                                                 >
-                                                    <Paperclip className="h-4.5 w-4.5" />
+                                                    <Paperclip className="h-4 w-4" />
                                                 </label>
                                             </div>
 
@@ -2439,23 +2451,23 @@ export default function MessagesPage() {
                                                 type="button"
                                                 onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
                                                 className={cn(
-                                                    "h-12 w-12 rounded-2xl border flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0",
+                                                    "h-9 w-9 rounded-full border flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0",
                                                     isEmojiPickerOpen 
-                                                        ? "bg-indigo-50 border-indigo-200 text-indigo-600" 
-                                                        : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100"
+                                                        ? "bg-indigo-50 border-indigo-200 text-indigo-600 shadow-sm" 
+                                                        : "bg-slate-50 border-slate-155 text-slate-500 hover:bg-slate-100 hover:text-indigo-600"
                                                 )}
                                                 title="Emojis"
                                             >
-                                                <Smile className="h-4.5 w-4.5" />
+                                                <Smile className="h-4 w-4" />
                                             </button>
 
                                             <button
                                                 type="button"
                                                 onClick={startRecording}
-                                                className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0"
+                                                className="h-9 w-9 rounded-full bg-slate-50 border border-slate-155 hover:bg-slate-100 hover:text-rose-600 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0"
                                                 title="Record Voice Note"
                                             >
-                                                <Mic className="h-4.5 w-4.5" />
+                                                <Mic className="h-4 w-4" />
                                             </button>
 
                                             <div className="flex-1 relative">
@@ -2464,7 +2476,7 @@ export default function MessagesPage() {
                                                     value={newMessage}
                                                     onChange={e => setNewMessage(e.target.value)}
                                                     placeholder={activeChat.isGroup ? `Message ${activeChat.groupName}...` : `Message ${otherMember.name}...`}
-                                                    className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 placeholder:text-slate-400 transition-all"
+                                                    className="w-full px-4.5 py-2.5 bg-slate-50/50 border border-slate-150 focus:bg-white rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-400 placeholder:text-slate-400 transition-all font-semibold"
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' && !e.shiftKey) {
                                                             e.preventDefault();
@@ -2473,22 +2485,20 @@ export default function MessagesPage() {
                                                     }}
                                                 />
                                             </div>
+                                            
                                             <button
                                                 type="submit"
                                                 disabled={!newMessage.trim() || isSending}
-                                                className="h-12 w-12 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md shadow-indigo-200/50 transition-all hover:scale-105 active:scale-95 shrink-0"
+                                                className="h-9 w-9 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 disabled:from-slate-200 disabled:to-slate-200 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md shadow-indigo-200/50 transition-all hover:scale-105 active:scale-95 shrink-0"
                                             >
                                                 {isSending
-                                                    ? <Loader2 className="h-4 w-4 animate-spin" />
-                                                    : <Send className="h-4 w-4" />
+                                                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                                    : <Send className="h-3.5 w-3.5" />
                                                 }
                                             </button>
                                         </form>
                                     )}
-                                    <p className="text-[10px] text-slate-400 text-center mt-2 font-medium">
-                                        Press Enter to send · Shift+Enter for new line
-                                    </p>
-                                </>
+                                </div>
                             )}
                         </div>
                     </>
@@ -2578,7 +2588,7 @@ export default function MessagesPage() {
                     schoolId={schoolId}
                     currentUser={user}
                     role={role || 'Staff'}
-                    onStartBroadcast={async (recipients, text, fileUrl, fileName, fileSize, fileType) => {
+                    onStartBroadcast={async (recipients, subject, text, fileUrl, fileName, fileSize, fileType) => {
                         if (!firestore || !user || !schoolId || recipients.length === 0) return;
                         setIsBroadcastOpen(false);
                         setIsBroadcasting(true);
@@ -2586,6 +2596,7 @@ export default function MessagesPage() {
                         setBroadcastCurrent(0);
                         setBroadcastProgress(0);
                         setBroadcastStatusText("Querying active chats...");
+                        setBroadcastLogs(["[INFO] Initiating bulk broadcast transmission...", `[INFO] Targeting ${recipients.length} recipients.`]);
 
                         try {
                             // 1. Get all active 1-to-1 chats for current user to avoid loops querying firestore
@@ -2599,6 +2610,8 @@ export default function MessagesPage() {
                                 .map(d => ({ id: d.id, ...d.data() }))
                                 .filter((c: any) => !c.isGroup && !c.isAnnouncementChannel && c.participants?.length === 2);
 
+                            setBroadcastLogs(prev => [...prev, `[INFO] Cached active school chats.`]);
+
                             // 2. Loop through recipients and deliver individual messages
                             for (let i = 0; i < recipients.length; i++) {
                                 const recipient = recipients[i];
@@ -2609,66 +2622,83 @@ export default function MessagesPage() {
                                 setBroadcastStatusText(`Sending to ${recipient.firstName} ${recipient.lastName}...`);
 
                                 // Skip self just in case
-                                if (recipientId === user.uid) continue;
+                                if (recipientId === user.uid) {
+                                    setBroadcastLogs(prev => [...prev, `[SKIP] Cannot send message to yourself.`]);
+                                    continue;
+                                }
 
-                                let chatId = '';
-                                const existingChat = chatsList.find((c: any) => c.participants.includes(recipientId));
+                                try {
+                                    let chatId = '';
+                                    const existingChat = chatsList.find((c: any) => c.participants.includes(recipientId));
 
-                                if (existingChat) {
-                                    chatId = existingChat.id;
-                                } else {
-                                    // Create new chat
-                                    const recipientName = `${recipient.firstName || ''} ${recipient.lastName || ''}`.trim() || 'User';
-                                    const myName = user.displayName || user.email?.split('@')[0] || 'Admin';
-                                    const newChatRef = await addDoc(collection(firestore, 'direct_messages'), {
-                                        participants: [user.uid, recipientId],
-                                        participantDetails: {
-                                            [user.uid]: { name: myName, role: role || 'Staff', photoURL: user.photoURL || null },
-                                            [recipientId]: { name: recipientName, role: recipient.role || 'Member', photoURL: recipient.photoURL || null }
-                                        },
-                                        lastMessage: 'Broadcast message',
+                                    if (existingChat) {
+                                        chatId = existingChat.id;
+                                    } else {
+                                        // Create new chat
+                                        const recipientName = `${recipient.firstName || ''} ${recipient.lastName || ''}`.trim() || 'User';
+                                        const myName = user.displayName || user.email?.split('@')[0] || 'Admin';
+                                        const newChatRef = await addDoc(collection(firestore, 'direct_messages'), {
+                                            participants: [user.uid, recipientId],
+                                            participantDetails: {
+                                                [user.uid]: { name: myName, role: role || 'Staff', photoURL: user.photoURL || null },
+                                                [recipientId]: { name: recipientName, role: recipient.role || 'Member', photoURL: recipient.photoURL || null }
+                                            },
+                                            lastMessage: 'Broadcast message',
+                                            lastMessageTime: serverTimestamp(),
+                                            unreadCount: { [recipientId]: 0, [user.uid]: 0 },
+                                            schoolId
+                                        });
+                                        chatId = newChatRef.id;
+                                    }
+
+                                    // Construct the formatted message
+                                    const finalMsgText = text.trim() 
+                                        ? (subject.trim() ? `📢 **${subject.trim()}**\n\n${text.trim()}` : text.trim())
+                                        : (fileUrl ? '📄 Attachment' : 'Broadcast Message');
+
+                                    // Send the message
+                                    const messageData: any = {
+                                        text: finalMsgText,
+                                        senderId: user.uid,
+                                        createdAt: serverTimestamp(),
+                                        type: fileType || 'text',
+                                        status: 'sent'
+                                    };
+                                    if (fileUrl) {
+                                        messageData.fileUrl = fileUrl;
+                                        messageData.fileName = fileName;
+                                        messageData.fileSize = fileSize;
+                                    }
+
+                                    await addDoc(collection(firestore, `direct_messages/${chatId}/messages`), messageData);
+
+                                    // Update chat document metadata
+                                    const chatRef = doc(firestore, 'direct_messages', chatId);
+                                    
+                                    // Fetch current unread count for recipient or use 0
+                                    const currentUnread = (existingChat as any)?.unreadCount?.[recipientId] || 0;
+                                    
+                                    await updateDoc(chatRef, {
+                                        lastMessage: messageData.text,
                                         lastMessageTime: serverTimestamp(),
-                                        unreadCount: { [recipientId]: 0, [user.uid]: 0 },
-                                        schoolId
+                                        [`unreadCount.${recipientId}`]: currentUnread + 1
                                     });
-                                    chatId = newChatRef.id;
+
+                                    setBroadcastLogs(prev => [...prev, `[SUCCESS] Delivered to ${recipient.firstName} ${recipient.lastName}`]);
+                                } catch (err: any) {
+                                    setBroadcastLogs(prev => [...prev, `[ERROR] Failed for ${recipient.firstName}: ${err.message}`]);
                                 }
-
-                                // Send the message
-                                const messageData: any = {
-                                    text: text || (fileUrl ? '📄 Attachment' : 'Broadcast Message'),
-                                    senderId: user.uid,
-                                    createdAt: serverTimestamp(),
-                                    type: fileType || 'text',
-                                    status: 'sent'
-                                };
-                                if (fileUrl) {
-                                    messageData.fileUrl = fileUrl;
-                                    messageData.fileName = fileName;
-                                    messageData.fileSize = fileSize;
-                                }
-
-                                await addDoc(collection(firestore, `direct_messages/${chatId}/messages`), messageData);
-
-                                // Update chat document metadata
-                                const chatRef = doc(firestore, 'direct_messages', chatId);
-                                
-                                // Fetch current unread count for recipient or use 0
-                                const currentUnread = (existingChat as any)?.unreadCount?.[recipientId] || 0;
-                                
-                                await updateDoc(chatRef, {
-                                    lastMessage: messageData.text,
-                                    lastMessageTime: serverTimestamp(),
-                                    [`unreadCount.${recipientId}`]: currentUnread + 1
-                                });
                             }
 
                             toast({ title: 'Broadcast Sent', description: `Successfully broadcasted to ${recipients.length} recipients.` });
                         } catch (err: any) {
                             console.error("Broadcast transmission error:", err);
+                            setBroadcastLogs(prev => [...prev, `[FATAL] Transmission failed: ${err.message}`]);
                             toast({ variant: 'destructive', title: 'Broadcast Failed', description: err.message });
                         } finally {
-                            setIsBroadcasting(false);
+                            setIsBroadcastCompleted(true);
+                            setBroadcastStatusText("Broadcast complete.");
+                            setBroadcastLogs(prev => [...prev, "[INFO] Transmission sequence finished."]);
                         }
                     }}
                 />
@@ -2681,6 +2711,12 @@ export default function MessagesPage() {
                     current={broadcastCurrent}
                     progress={broadcastProgress}
                     statusText={broadcastStatusText}
+                    logs={broadcastLogs}
+                    isCompleted={isBroadcastCompleted}
+                    onClose={() => {
+                        setIsBroadcasting(false);
+                        setIsBroadcastCompleted(false);
+                    }}
                 />
             )}
         </div>
@@ -2856,6 +2892,33 @@ interface BroadcastRecipient {
     photoURL?: string;
 }
 
+const BROADCAST_TEMPLATES = [
+    {
+        title: "Weather Alert",
+        subject: "Urgent: Inclement Weather Advisory",
+        text: "Dear School Community, due to predicted inclement weather, school operations will be suspended tomorrow. Classes will resume online via the student portals. Please stay safe.",
+        badgeColor: "bg-amber-50 text-amber-700 border-amber-200"
+    },
+    {
+        title: "Exam Schedule",
+        subject: "Academic Update: Final Examinations Timetable",
+        text: "Dear Students and Parents, the official timetable for the upcoming End-of-Term Examinations has been published. Please review the schedules on the Academic Dashboard. Best of luck to all candidates.",
+        badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200"
+    },
+    {
+        title: "Fees Announcement",
+        subject: "Financial Notice: Term Fee Statements",
+        text: "Dear Parents, Term fee statements have been updated on the financial dashboard. We kindly request all payments be finalized by the due date. For receivables queries, contact our accountant office.",
+        badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200"
+    },
+    {
+        title: "General Notice",
+        subject: "School Update: General Announcement",
+        text: "Dear School Community, we would like to share general updates regarding our upcoming events and administrative changes. Please check the attachment and calendar for details.",
+        badgeColor: "bg-rose-50 text-rose-700 border-rose-200"
+    }
+];
+
 function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBroadcast }: {
     open: boolean;
     setOpen: (o: boolean) => void;
@@ -2864,6 +2927,7 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
     role: string;
     onStartBroadcast: (
         recipients: BroadcastRecipient[],
+        subject: string,
         text: string,
         fileUrl?: string,
         fileName?: string,
@@ -2875,45 +2939,83 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
     const { toast } = useToast();
 
     const [targetType, setTargetType] = useState<'students' | 'staff' | 'parents' | 'custom'>('students');
+    const [broadcastSubject, setBroadcastSubject] = useState('');
     const [broadcastText, setBroadcastText] = useState('');
+    
+    // Custom selection states
+    const [customSearchRole, setCustomSearchRole] = useState<'students' | 'staff' | 'parents'>('students');
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState<BroadcastRecipient[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [selectedRecipients, setSelectedRecipients] = useState<BroadcastRecipient[]>([]);
+
+    // Estimates counts
+    const [estimateCounts, setEstimateCounts] = useState<Record<string, number>>({
+        students: 0,
+        staff: 0,
+        parents: 0
+    });
+    const [isLoadingEstimates, setIsLoadingEstimates] = useState(false);
+
+    // AI Polishing states
+    const [isPolishing, setIsPolishing] = useState(false);
 
     // File selection
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploadingFile, setIsUploadingFile] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
 
+    // Load estimates on open
+    const fetchCounts = async () => {
+        if (!firestore || !schoolId) return;
+        setIsLoadingEstimates(true);
+        try {
+            const studentsSnap = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
+            const staffSnap = await getDocs(query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)));
+            const parentsSnap = await getDocs(query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)));
+            
+            setEstimateCounts({
+                students: studentsSnap.docs.filter(d => d.id !== currentUser?.uid).length,
+                staff: staffSnap.docs.filter(d => d.id !== currentUser?.uid).length,
+                parents: parentsSnap.docs.filter(d => d.id !== currentUser?.uid).length
+            });
+        } catch (err) {
+            console.error("Failed to estimate recipient counts:", err);
+        } finally {
+            setIsLoadingEstimates(false);
+        }
+    };
+
     // Reset state on open
     useEffect(() => {
         if (open) {
             setTargetType('students');
+            setBroadcastSubject('');
             setBroadcastText('');
+            setCustomSearchRole('students');
             setSearchTerm('');
             setSearchResults([]);
             setSelectedRecipients([]);
             setSelectedFile(null);
             setIsUploadingFile(false);
             setUploadProgress(0);
+            fetchCounts();
         }
-    }, [open]);
+    }, [open, firestore, schoolId]);
 
     const handleSearch = async () => {
         if (!firestore || !schoolId) return;
         setIsSearching(true);
         try {
-            const searchCollection = targetType === 'custom' ? 'students' : targetType;
-            const q = query(collection(firestore, searchCollection), where('schoolId', '==', schoolId), limit(50));
+            const q = query(collection(firestore, customSearchRole), where('schoolId', '==', schoolId), limit(50));
             const snap = await getDocs(q);
             const users = snap.docs.map(d => {
                 const data = d.data();
                 let effectiveRole = data.role;
                 if (!effectiveRole) {
-                    if (searchCollection === 'students') effectiveRole = 'Student';
-                    if (searchCollection === 'parents') effectiveRole = 'Parent';
-                    if (searchCollection === 'staff') effectiveRole = 'Staff';
+                    if (customSearchRole === 'students') effectiveRole = 'Student';
+                    if (customSearchRole === 'parents') effectiveRole = 'Parent';
+                    if (customSearchRole === 'staff') effectiveRole = 'Staff';
                 }
                 return {
                     ...data,
@@ -2925,7 +3027,7 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
             const filtered = users.filter(u =>
                 ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase())
             );
-            setSearchResults(filtered);
+            setSearchResults(filtered.filter(u => u.uid !== currentUser?.uid));
         } catch (e) {
             console.error("Search broadcast error:", e);
         } finally {
@@ -2949,6 +3051,35 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
         if (file) {
             setSelectedFile(file);
         }
+    };
+
+    const handleAIPolish = (tone: 'professional' | 'urgent' | 'empathetic') => {
+        if (!broadcastText.trim()) {
+            toast({ title: 'AI Assistant', description: 'Please type some text first to polish.' });
+            return;
+        }
+        setIsPolishing(true);
+        setTimeout(() => {
+            let polished = broadcastText;
+            // Clean standard prefix if already polished
+            let cleanedText = broadcastText.replace(/^Dear School Community,\n\nWe would like to formally announce: /, '');
+            cleanedText = cleanedText.replace(/\n\nThank you for your continued cooperation\.\n\nWarm regards,\nSchool Administration$/, '');
+            cleanedText = cleanedText.replace(/^🚨 URGENT NOTICE:\n\n/, '');
+            cleanedText = cleanedText.replace(/\n\nAction Required: Please read the details above immediately and reply if necessary\.$/, '');
+            cleanedText = cleanedText.replace(/^Dear Families,\n\nWe understand the importance of clear communication in our school community\. We want to share that: /, '');
+            cleanedText = cleanedText.replace(/\n\nWe appreciate your support and are here to help if you have any questions\.\n\nBest wishes\.$/, '');
+
+            if (tone === 'professional') {
+                polished = `Dear School Community,\n\nWe would like to formally announce: ${cleanedText}\n\nThank you for your continued cooperation.\n\nWarm regards,\nSchool Administration`;
+            } else if (tone === 'urgent') {
+                polished = `🚨 URGENT NOTICE:\n\n${cleanedText}\n\nAction Required: Please read the details above immediately and reply if necessary.`;
+            } else if (tone === 'empathetic') {
+                polished = `Dear Families,\n\nWe understand the importance of clear communication in our school community. We want to share that: ${cleanedText}\n\nWe appreciate your support and are here to help if you have any questions.\n\nBest wishes.`;
+            }
+            setBroadcastText(polished);
+            setIsPolishing(false);
+            toast({ title: 'AI Tone Polish Applied', description: `Polished message to an ${tone} tone.` });
+        }, 600);
     };
 
     const handleSend = async () => {
@@ -3039,6 +3170,7 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
 
         await onStartBroadcast(
             recipientsList,
+            broadcastSubject.trim(),
             broadcastText.trim(),
             fileUrl || undefined,
             selectedFile?.name || undefined,
@@ -3047,144 +3179,343 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
         );
     };
 
+    const activeRecipientsCount = targetType === 'custom' 
+        ? selectedRecipients.length 
+        : (estimateCounts[targetType] || 0);
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-2xl border-0 shadow-2xl">
-                <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-6 text-white">
-                    <DialogTitle className="text-xl font-bold flex items-center gap-2">
-                        <Megaphone className="h-5 w-5 animate-pulse" />
-                        Send Bulk Broadcast
+            <DialogContent className="sm:max-w-[840px] p-0 overflow-hidden rounded-[2rem] border-0 shadow-2xl bg-white font-sans">
+                {/* Header Banner */}
+                <div className="bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 p-6 text-white relative overflow-hidden border-b border-rose-100/10">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.08),_rgba(255,255,255,0))] pointer-events-none" />
+                    <DialogTitle className="text-xl font-black uppercase italic tracking-tight flex items-center gap-2">
+                        <Megaphone className="h-5 w-5 animate-pulse shrink-0" />
+                        Send Bulk Broadcast Notice
                     </DialogTitle>
-                    <p className="text-rose-100 text-xs mt-1">
-                        Delivers a direct 1-to-1 inbox message to multiple recipients at once.
+                    <p className="text-rose-100 text-xs font-semibold mt-1 max-w-xl">
+                        Delivers individual 1-to-1 inbox messages directly to the selected target group. Recipients will see it as a direct message.
                     </p>
                 </div>
 
-                <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-400">Target Recipients</label>
-                        <Select value={targetType} onValueChange={(val: any) => setTargetType(val)}>
-                            <SelectTrigger className="w-full h-11 rounded-xl border-2 bg-slate-50 font-semibold text-slate-700">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="students">All Students</SelectItem>
-                                <SelectItem value="staff">All Staff & Teachers</SelectItem>
-                                <SelectItem value="parents">All Parents</SelectItem>
-                                <SelectItem value="custom">Custom Selection</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                <div className="flex flex-col md:flex-row h-[560px] bg-white divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                    {/* LEFT PANEL: Target Selection */}
+                    <div className="w-full md:w-[340px] shrink-0 bg-slate-50/50 p-6 flex flex-col overflow-y-auto">
+                        <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-3.5 block">Select Target Segment</label>
+                        
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                            {/* All Students */}
+                            <button
+                                type="button"
+                                onClick={() => setTargetType('students')}
+                                className={cn(
+                                    "p-3 rounded-2xl border flex flex-col text-left justify-between h-[88px] transition-all hover:scale-102 active:scale-98",
+                                    targetType === 'students'
+                                        ? "bg-gradient-to-br from-indigo-500 to-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-100/35"
+                                        : "bg-white border-slate-200/60 text-slate-700 hover:bg-slate-50"
+                                )}
+                            >
+                                <GraduationCap className={cn("h-5 w-5", targetType === 'students' ? "text-white" : "text-indigo-500")} />
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-wide opacity-80">Students</p>
+                                    <p className="text-xs font-bold leading-none mt-0.5">
+                                        {isLoadingEstimates ? '...' : `${estimateCounts.students} active`}
+                                    </p>
+                                </div>
+                            </button>
 
-                    {targetType === 'custom' && (
-                        <div className="space-y-3 p-3 bg-slate-50 border rounded-xl animate-in fade-in duration-200">
-                            {selectedRecipients.length > 0 && (
-                                <div className="flex flex-wrap gap-1.5 p-2 bg-white rounded-lg border border-dashed">
-                                    {selectedRecipients.map(r => (
-                                        <Badge key={r.uid} variant="secondary" className="pl-1.5 pr-1 py-1 rounded-md bg-rose-50 text-rose-700 border-rose-200 flex items-center gap-1">
-                                            <span className="text-xs">{r.firstName} {r.lastName}</span>
-                                            <button onClick={() => toggleRecipient(r)} className="text-rose-400 hover:text-rose-600">
-                                                <X className="h-3 w-3" />
-                                            </button>
-                                        </Badge>
+                            {/* All Staff */}
+                            <button
+                                type="button"
+                                onClick={() => setTargetType('staff')}
+                                className={cn(
+                                    "p-3 rounded-2xl border flex flex-col text-left justify-between h-[88px] transition-all hover:scale-102 active:scale-98",
+                                    targetType === 'staff'
+                                        ? "bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-500 text-white shadow-md shadow-emerald-100/35"
+                                        : "bg-white border-slate-200/60 text-slate-700 hover:bg-slate-50"
+                                )}
+                            >
+                                <BookOpen className={cn("h-5 w-5", targetType === 'staff' ? "text-white" : "text-emerald-500")} />
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-wide opacity-80">Staff & Teachers</p>
+                                    <p className="text-xs font-bold leading-none mt-0.5">
+                                        {isLoadingEstimates ? '...' : `${estimateCounts.staff} active`}
+                                    </p>
+                                </div>
+                            </button>
+
+                            {/* All Parents */}
+                            <button
+                                type="button"
+                                onClick={() => setTargetType('parents')}
+                                className={cn(
+                                    "p-3 rounded-2xl border flex flex-col text-left justify-between h-[88px] transition-all hover:scale-102 active:scale-98",
+                                    targetType === 'parents'
+                                        ? "bg-gradient-to-br from-amber-500 to-orange-600 border-amber-500 text-white shadow-md shadow-amber-100/35"
+                                        : "bg-white border-slate-200/60 text-slate-700 hover:bg-slate-50"
+                                )}
+                            >
+                                <HeartHandshake className={cn("h-5 w-5", targetType === 'parents' ? "text-white" : "text-amber-500")} />
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-wide opacity-80">Parents</p>
+                                    <p className="text-xs font-bold leading-none mt-0.5">
+                                        {isLoadingEstimates ? '...' : `${estimateCounts.parents} active`}
+                                    </p>
+                                </div>
+                            </button>
+
+                            {/* Custom Selection */}
+                            <button
+                                type="button"
+                                onClick={() => setTargetType('custom')}
+                                className={cn(
+                                    "p-3 rounded-2xl border flex flex-col text-left justify-between h-[88px] transition-all hover:scale-102 active:scale-98",
+                                    targetType === 'custom'
+                                        ? "bg-gradient-to-br from-rose-500 to-pink-600 border-rose-500 text-white shadow-md shadow-rose-100/35"
+                                        : "bg-white border-slate-200/60 text-slate-700 hover:bg-slate-50"
+                                )}
+                            >
+                                <Users className={cn("h-5 w-5", targetType === 'custom' ? "text-white" : "text-rose-500")} />
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-wide opacity-80">Custom</p>
+                                    <p className="text-xs font-bold leading-none mt-0.5">
+                                        {selectedRecipients.length} selected
+                                    </p>
+                                </div>
+                            </button>
+                        </div>
+
+                        {/* CUSTOM SELECTION MODULE */}
+                        {targetType === 'custom' && (
+                            <div className="flex-1 flex flex-col min-h-0 bg-white border border-slate-150/80 rounded-2xl p-4.5 space-y-3.5 animate-in fade-in duration-200 shadow-sm">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Custom Recipient Selector</span>
+                                
+                                {/* Inner subtabs */}
+                                <div className="grid grid-cols-3 gap-1 bg-slate-50 p-0.5 rounded-lg border border-slate-100 animate-in fade-in duration-200">
+                                    {(['students', 'staff', 'parents'] as const).map(roleKey => (
+                                        <button
+                                            key={roleKey}
+                                            type="button"
+                                            onClick={() => { setCustomSearchRole(roleKey); setSearchResults([]); }}
+                                            className={cn(
+                                                "py-1.5 text-[9px] font-black uppercase tracking-wider rounded-md transition-all text-center border border-transparent",
+                                                customSearchRole === roleKey
+                                                    ? "bg-white text-rose-600 shadow-sm border-slate-200/50 font-black"
+                                                    : "text-slate-500 hover:text-slate-800"
+                                            )}
+                                        >
+                                            {roleKey === 'staff' ? 'Staff' : roleKey}
+                                        </button>
                                     ))}
                                 </div>
-                            )}
-                            <div className="flex items-center gap-1.5 bg-white p-1 rounded-lg border">
-                                <Input
-                                    placeholder="Search student/parent/staff name..."
-                                    value={searchTerm}
-                                    onChange={e => setSearchTerm(e.target.value)}
-                                    onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                                    className="border-0 bg-transparent focus-visible:ring-0 text-xs placeholder:text-slate-400 flex-1 h-8"
-                                />
-                                <Button size="sm" onClick={handleSearch} disabled={isSearching} className="bg-rose-500 hover:bg-rose-600 text-white rounded-md h-8 px-2.5">
-                                    {isSearching ? <Loader2 className="h-3 w-3 animate-spin"/> : <Search className="h-3 w-3"/>}
-                                </Button>
-                            </div>
-                            {searchResults.length > 0 && (
-                                <div className="divide-y divide-slate-100 max-h-[120px] overflow-y-auto bg-white rounded-lg border">
-                                    {searchResults.map(user => {
-                                        const isSelected = selectedRecipients.some(r => r.uid === user.uid);
-                                        return (
-                                            <div key={user.uid} className="flex items-center justify-between p-2 hover:bg-slate-50">
-                                                <span className="text-xs font-semibold text-slate-700">{user.firstName} {user.lastName} ({user.role})</span>
-                                                <Button size="sm" onClick={() => toggleRecipient(user)} className={cn("h-6 px-2 text-[10px] rounded-md text-white", isSelected ? "bg-red-500" : "bg-emerald-600")}>
-                                                    {isSelected ? 'Remove' : 'Add'}
-                                                </Button>
-                                            </div>
-                                        );
-                                    })}
+
+                                {/* Search box */}
+                                <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-150/60 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-500/10 transition-all">
+                                    <Input
+                                        placeholder={`Search ${customSearchRole}...`}
+                                        value={searchTerm}
+                                        onChange={e => setSearchTerm(e.target.value)}
+                                        onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                                        className="border-0 bg-transparent focus-visible:ring-0 text-xs placeholder:text-slate-400 p-0 h-6"
+                                    />
+                                    <button onClick={handleSearch} disabled={isSearching} className="h-6 w-6 rounded-lg bg-rose-500 text-white flex items-center justify-center hover:bg-rose-600 transition-transform active:scale-90 shrink-0">
+                                        {isSearching ? <Loader2 className="h-3 w-3 animate-spin"/> : <Search className="h-3 w-3"/>}
+                                    </button>
                                 </div>
-                            )}
-                        </div>
-                    )}
 
-                    <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase text-slate-400">Broadcast Message</label>
-                        <textarea
-                            placeholder="Write your broadcast message here..."
-                            value={broadcastText}
-                            onChange={e => setBroadcastText(e.target.value)}
-                            className="w-full min-h-[100px] p-3 rounded-xl border-2 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-300 transition-all resize-y"
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-400">Attach Media / Document (Optional)</label>
-                        {selectedFile ? (
-                            <div className="flex items-center justify-between bg-rose-50/50 border border-rose-100 rounded-xl p-3 animate-in fade-in duration-200">
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                    <FileText className="h-5 w-5 text-rose-500 shrink-0" />
-                                    <div className="min-w-0">
-                                        <p className="text-xs font-bold text-slate-800 truncate">{selectedFile.name}</p>
-                                        <p className="text-[10px] text-slate-400">{(selectedFile.size / 1024).toFixed(0)} KB</p>
+                                {/* Selected badge list */}
+                                {selectedRecipients.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 p-1.5 bg-slate-50/50 border border-slate-100 rounded-lg max-h-[88px] overflow-y-auto shrink-0 animate-in fade-in">
+                                        {selectedRecipients.map(r => (
+                                            <Badge key={r.uid} variant="secondary" className="pl-1.5 pr-1 py-0.5 rounded-md bg-rose-50 border-rose-100 text-rose-700 font-bold text-[9px] flex items-center gap-1">
+                                                <span>{r.firstName} {r.lastName.charAt(0)}.</span>
+                                                <button onClick={() => toggleRecipient(r)} className="text-rose-400 hover:text-rose-600 shrink-0">
+                                                    <X className="h-2.5 w-2.5" />
+                                                </button>
+                                            </Badge>
+                                        ))}
                                     </div>
-                                </div>
-                                <button onClick={() => setSelectedFile(null)} className="h-6 w-6 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
-                                    <X className="h-3.5 w-3.5" />
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="flex items-center justify-center border-2 border-dashed rounded-xl p-4 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors relative cursor-pointer">
-                                <input
-                                    type="file"
-                                    onChange={handleFileChange}
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                />
-                                <div className="text-center space-y-1 text-slate-400">
-                                    <Paperclip className="h-5 w-5 mx-auto" />
-                                    <p className="text-xs font-semibold">Click to select attachment</p>
-                                    <p className="text-[10px]">Images, Videos, PDFs, ZIPs up to 50MB</p>
+                                )}
+
+                                {/* Search result list */}
+                                <div className="flex-1 overflow-y-auto border border-slate-100 rounded-xl divide-y divide-slate-50 bg-white">
+                                    {searchResults.length === 0 ? (
+                                        <div className="h-full flex flex-col items-center justify-center p-4 text-center text-slate-350 gap-1.5">
+                                            <Search className="h-5 w-5 opacity-40 text-slate-400" />
+                                            <p className="text-[10px] font-bold text-slate-400">Search results will list here</p>
+                                        </div>
+                                    ) : (
+                                        searchResults.map(user => {
+                                            const isSelected = selectedRecipients.some(r => r.uid === user.uid);
+                                            return (
+                                                <div key={user.uid} className="flex items-center justify-between p-2 hover:bg-slate-50 transition-colors">
+                                                    <div className="min-w-0 pr-2">
+                                                        <p className="text-xs font-bold text-slate-700 truncate leading-tight">{user.firstName} {user.lastName}</p>
+                                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mt-0.5">{user.role}</p>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => toggleRecipient(user)}
+                                                        className={cn(
+                                                            "h-6 px-2.5 text-[9px] font-black uppercase tracking-wider rounded-lg text-white transition-all hover:scale-105 active:scale-95",
+                                                            isSelected ? "bg-rose-500 hover:bg-rose-600 shadow-md shadow-rose-100" : "bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-100"
+                                                        )}
+                                                    >
+                                                        {isSelected ? 'Remove' : 'Add'}
+                                                    </button>
+                                                </div>
+                                            );
+                                        })
+                                    )}
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    {isUploadingFile && (
-                        <div className="bg-slate-50 border rounded-xl p-3.5 flex items-center gap-3">
-                            <Loader2 className="h-5 w-5 animate-spin text-rose-500 shrink-0" />
-                            <div className="flex-1">
-                                <div className="flex justify-between text-xs font-bold text-slate-600 mb-1">
-                                    <span>Uploading attachment...</span>
-                                    <span>{uploadProgress}%</span>
-                                </div>
-                                <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                    <div className="h-full bg-rose-500 transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
-                                </div>
+                    {/* RIGHT PANEL: Content Composer */}
+                    <div className="flex-1 flex flex-col p-6 space-y-4 overflow-y-auto">
+                        {/* Title Subject */}
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Notice Title / Subject (Optional)</label>
+                            <Input
+                                placeholder="e.g. Inclement Weather Closure Announcement..."
+                                value={broadcastSubject}
+                                onChange={e => setBroadcastSubject(e.target.value)}
+                                className="h-10 rounded-xl border-slate-200 text-xs font-semibold focus-visible:ring-rose-500/25 focus-visible:ring-2 focus-visible:border-rose-400"
+                            />
+                        </div>
+
+                        {/* Templates */}
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Quick Templates</label>
+                            <div className="flex flex-wrap gap-1.5">
+                                {BROADCAST_TEMPLATES.map(tpl => (
+                                    <button
+                                        key={tpl.title}
+                                        type="button"
+                                        onClick={() => {
+                                            setBroadcastSubject(tpl.subject);
+                                            setBroadcastText(tpl.text);
+                                        }}
+                                        className={cn(
+                                            "px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95",
+                                            tpl.badgeColor
+                                        )}
+                                    >
+                                        {tpl.title}
+                                    </button>
+                                ))}
                             </div>
                         </div>
-                    )}
+
+                        {/* Message Body */}
+                        <div className="space-y-1.5 flex-1 flex flex-col min-h-[140px]">
+                            <div className="flex justify-between items-center">
+                                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Message Content</label>
+                                
+                                {/* AI Polishing Chips */}
+                                <div className="flex items-center gap-1">
+                                    <span className="text-[9px] font-black text-rose-500 flex items-center gap-0.5 uppercase tracking-wider mr-1">
+                                        <Sparkles className="h-3 w-3 animate-pulse" />
+                                        AI Refiner:
+                                    </span>
+                                    {isPolishing ? (
+                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Polishing...</span>
+                                    ) : (
+                                        (['professional', 'urgent', 'empathetic'] as const).map(tone => (
+                                            <button
+                                                key={tone}
+                                                type="button"
+                                                onClick={() => handleAIPolish(tone)}
+                                                className="px-2 py-0.5 text-[8px] font-bold border border-slate-200/80 hover:border-indigo-300 hover:text-indigo-600 bg-white rounded-md text-slate-500 capitalize transition-all hover:scale-102"
+                                            >
+                                                {tone}
+                                            </button>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                            <textarea
+                                placeholder="Type your announcement contents here..."
+                                value={broadcastText}
+                                onChange={e => setBroadcastText(e.target.value)}
+                                className="w-full flex-1 p-3.5 rounded-xl border border-slate-200 bg-slate-50/30 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500/15 focus:border-rose-400 focus:bg-white transition-all resize-none leading-relaxed"
+                            />
+                        </div>
+
+                        {/* Attachment */}
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Media Attachment (Optional)</label>
+                            {selectedFile ? (
+                                <div className="flex items-center justify-between bg-rose-50/30 border border-rose-100 rounded-xl p-3 animate-in fade-in duration-200">
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                        <div className="h-8 w-8 rounded-lg bg-rose-50 flex items-center justify-center text-rose-500 shrink-0">
+                                            <FileText className="h-4.5 w-4.5" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-bold text-slate-800 truncate leading-tight">{selectedFile.name}</p>
+                                            <p className="text-[9px] font-bold text-slate-400">{(selectedFile.size / 1024).toFixed(0)} KB</p>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => setSelectedFile(null)} className="h-7 w-7 rounded-full hover:bg-slate-200/50 flex items-center justify-center text-slate-400 hover:text-slate-650 transition-colors">
+                                        <X className="h-3.5 w-3.5" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-3.5 bg-slate-50/20 hover:bg-slate-50 hover:border-slate-350 transition-all relative cursor-pointer">
+                                    <input
+                                        type="file"
+                                        onChange={handleFileChange}
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                    />
+                                    <div className="text-center space-y-0.5 text-slate-400">
+                                        <Paperclip className="h-4.5 w-4.5 mx-auto text-slate-450 hover:scale-110 duration-200" />
+                                        <p className="text-[10px] font-bold text-slate-500">Drag/Select Attachment</p>
+                                        <p className="text-[8px] text-slate-400">Images, Videos, PDFs, docs up to 50MB</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* File Uploading Progress Indicator */}
+                        {isUploadingFile && (
+                            <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 flex items-center gap-3 animate-in fade-in duration-200">
+                                <Loader2 className="h-4 w-4 animate-spin text-rose-500 shrink-0" />
+                                <div className="flex-1">
+                                    <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase mb-1">
+                                        <span>Uploading attachment...</span>
+                                        <span>{uploadProgress}%</span>
+                                    </div>
+                                    <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                        <div className="h-full bg-rose-500 transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div className="bg-slate-50 px-6 py-4 flex justify-end gap-3 border-t">
-                    <Button variant="outline" onClick={() => setOpen(false)} disabled={isUploadingFile} className="rounded-xl">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleSend} disabled={isUploadingFile || (!broadcastText.trim() && !selectedFile)}
-                        className="bg-rose-500 hover:bg-rose-600 text-white rounded-xl px-5 font-bold flex items-center gap-1.5">
-                        <Send className="h-4 w-4" /> Send Broadcast
-                    </Button>
+                {/* Footer Controls */}
+                <div className="bg-slate-50 px-6 py-4 flex items-center justify-between border-t border-slate-100 shrink-0">
+                    <span className="text-[10px] font-black uppercase text-slate-400">
+                        {activeRecipientsCount > 0 
+                            ? `📢 Sending to ${activeRecipientsCount} recipient${activeRecipientsCount !== 1 ? 's' : ''}`
+                            : 'No target selected'
+                        }
+                    </span>
+                    
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={() => setOpen(false)} disabled={isUploadingFile} className="rounded-xl h-10 px-4 text-xs font-bold border-slate-200 text-slate-500 hover:bg-slate-100">
+                            Cancel
+                        </Button>
+                        <Button 
+                            onClick={handleSend} 
+                            disabled={isUploadingFile || (!broadcastText.trim() && !selectedFile) || activeRecipientsCount === 0}
+                            className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white rounded-xl h-10 px-5 font-bold text-xs uppercase tracking-wider shadow-md shadow-rose-100 hover:scale-103 active:scale-97 transition-all flex items-center gap-1.5 border-none"
+                        >
+                            <Send className="h-3.5 w-3.5" /> Send Broadcast
+                        </Button>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>
@@ -3192,42 +3523,121 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
 }
 
 // --- BROADCASTING PROGRESS DIALOG ---
-function BroadcastingProgressDialog({ open, total, current, progress, statusText }: {
+function BroadcastingProgressDialog({ open, total, current, progress, statusText, logs, isCompleted, onClose }: {
     open: boolean;
     total: number;
     current: number;
     progress: number;
     statusText: string;
+    logs: string[];
+    isCompleted: boolean;
+    onClose: () => void;
 }) {
+    const logEndRef = useRef<HTMLDivElement | null>(null);
+
+    // Auto scroll the logs feed
+    useEffect(() => {
+        if (logEndRef.current) {
+            logEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [logs]);
+
+    // SVG Circular Progress Constants
+    const radius = 36;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (progress / 100) * circumference;
+
     return (
         <Dialog open={open} onOpenChange={() => {}}>
-            <DialogContent className="sm:max-w-[400px] p-6 rounded-2xl border-0 shadow-2xl text-center space-y-4 font-sans">
-                <div className="h-12 w-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto animate-bounce">
-                    <Megaphone className="h-6 w-6" />
+            <DialogContent className="sm:max-w-[460px] p-6 rounded-3xl border-0 shadow-2xl bg-slate-950 text-white text-center font-sans">
+                
+                {/* SVG circular progress ring */}
+                <div className="relative h-28 w-28 mx-auto flex items-center justify-center mt-3">
+                    <svg className="h-full w-full rotate-270 transform">
+                        <circle
+                            cx="56"
+                            cy="56"
+                            r={radius}
+                            stroke="currentColor"
+                            strokeWidth="6"
+                            className="text-slate-800"
+                            fill="transparent"
+                        />
+                        <circle
+                            cx="56"
+                            cy="56"
+                            r={radius}
+                            stroke="url(#progress-gradient)"
+                            strokeWidth="6"
+                            className="transition-all duration-300"
+                            fill="transparent"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={strokeDashoffset}
+                            strokeLinecap="round"
+                        />
+                        <defs>
+                            <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#f43f5e" />
+                                <stop offset="100%" stopColor="#ec4899" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    
+                    <div className="absolute flex flex-col items-center justify-center">
+                        {isCompleted ? (
+                            <CheckCircle2 className="h-8 w-8 text-emerald-400 animate-in zoom-in-50 duration-300" />
+                        ) : (
+                            <span className="text-lg font-black text-white font-mono leading-none">{progress}%</span>
+                        )}
+                    </div>
                 </div>
-                <div className="space-y-1.5">
-                    <DialogTitle className="text-slate-800 text-base font-black">Sending Broadcast Message</DialogTitle>
-                    <p className="text-slate-400 text-xs font-medium uppercase tracking-wider font-mono">
+
+                <div className="space-y-1.5 mt-2">
+                    <DialogTitle className="text-white text-base font-black uppercase tracking-tight">
+                        {isCompleted ? 'Transmission Completed' : 'Sending Broadcast Notice'}
+                    </DialogTitle>
+                    <p className="text-slate-450 text-[10px] font-black uppercase tracking-widest font-mono">
                         Recipient {current} of {total}
                     </p>
                 </div>
 
-                <div className="space-y-2">
-                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div 
-                            className="h-full bg-gradient-to-r from-rose-500 to-pink-500 transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-                    <div className="flex justify-between text-[10px] font-bold text-slate-500 font-mono">
-                        <span>{progress}% Completed</span>
-                        <span>{current}/{total}</span>
-                    </div>
+                {/* Real-time Logger Console */}
+                <div className="bg-black/60 border border-slate-900 rounded-2xl p-4 h-[150px] overflow-y-auto text-left font-mono text-[9px] leading-relaxed text-slate-300 space-y-1 shadow-inner select-none mt-2">
+                    {logs.map((log, index) => {
+                        const isError = log.includes('[ERROR]') || log.includes('[FATAL]');
+                        const isSuccess = log.includes('[SUCCESS]');
+                        const isSkip = log.includes('[SKIP]');
+                        return (
+                            <div key={index} className={cn(
+                                "flex items-start gap-1.5",
+                                isError ? "text-rose-400" : isSuccess ? "text-emerald-400" : isSkip ? "text-amber-400" : "text-slate-400"
+                            )}>
+                                <span className="opacity-70">[{index + 1}]</span>
+                                <span className="break-all">{log}</span>
+                            </div>
+                        );
+                    })}
+                    <div ref={logEndRef} />
                 </div>
 
-                <p className="text-xs text-slate-400 font-medium italic animate-pulse">
+                <p className={cn(
+                    "text-xs font-bold italic mt-3 animate-pulse uppercase tracking-wider leading-none",
+                    isCompleted ? "text-emerald-400" : "text-slate-400"
+                )}>
                     {statusText}
                 </p>
+
+                {/* Bottom Trigger button on complete */}
+                {isCompleted && (
+                    <div className="pt-2">
+                        <Button 
+                            onClick={onClose}
+                            className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-black text-xs uppercase tracking-widest rounded-xl py-3 shadow-md shadow-rose-950/20 active:scale-97 hover:scale-102 transition-all duration-200 border-none h-11"
+                        >
+                            Dismiss Dashboard
+                        </Button>
+                    </div>
+                )}
             </DialogContent>
         </Dialog>
     );

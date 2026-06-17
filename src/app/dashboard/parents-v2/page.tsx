@@ -259,114 +259,158 @@ export default function ParentsPage() {
       return list;
   }, [students, studentSearch, showOnlyUnlinked, editingParent, selectedStudentIds]);
 
-  const overallLoading = isLoadingSchoolId || isLoadingData;
-
-  return (
-    <div className="space-y-6 p-6">
-      <Card className="border-t-4 border-t-pink-500 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                    <HeartHandshake className="h-6 w-6 text-pink-500"/> Parent Management
-                </CardTitle>
-                <CardDescription>
-                    {adminSchoolId ? `Total Parents: ${parents.length}` : "Loading School Data..."}
-                </CardDescription>
-            </div>
-            <div className="flex gap-2">
-                <Button variant="outline" onClick={loadData} disabled={overallLoading || !adminSchoolId}>
-                    <RefreshCw className={`h-4 w-4 mr-2 ${overallLoading ? 'animate-spin' : ''}`}/> Refresh
-                </Button>
-                {canManage && (
-                    <Button onClick={() => setIsAddOpen(true)} className="bg-pink-500 hover:bg-pink-600" disabled={!adminSchoolId}>
-                        <UserPlus className="h-4 w-4 mr-2"/> Add Parent
-                    </Button>
-                )}
-            </div>
-        </CardHeader>
-        
-        <CardContent className="space-y-4">
-            <StudentSearchInput 
-              value={searchTerm} 
-              onChange={setSearchTerm} 
-              className="max-w-sm"
-              placeholder="Search parents by name or email..."
-            />
-
-            {overallLoading ? (
-                <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-pink-500"/></div>
-            ) : filteredParents.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                    {adminSchoolId ? "No parents found for this school." : "Loading..."}
-                </div>
-            ) : (
-                <div className="rounded-md border overflow-hidden">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Linked Students</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredParents.map((p) => (
-                                <TableRow key={p.id} className="hover:bg-slate-50/50 transition-colors">
-                                    <TableCell className="font-medium">{p.firstName} {p.lastName}</TableCell>
-                                    <TableCell className="text-slate-500">{p.email}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="secondary" className="font-bold">
-                                            {p.studentIds?.length || 0} Students
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-1">
-                                            {canManage && (
-                                                <>
-                                                    <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(p)} title="Reset Password">
-                                                        <KeyRound className="h-4 w-4 text-orange-500"/>
-                                                    </Button>
-                                                    <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                                                        <Edit className="h-4 w-4"/>
-                                                    </Button>
-                                                    
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                                                                <Trash2 className="h-4 w-4"/>
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>Remove Parent Profile?</AlertDialogTitle>
-                                                                <AlertDialogDescription>
-                                                                    Are you sure you want to delete the profile for <strong>{p.firstName} {p.lastName}</strong>? This will unlink all associated students.
-                                                                </AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction onClick={() => handleDelete(p.id)} className="bg-red-600 hover:bg-red-700">Delete Profile</AlertDialogAction>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
-                                                </>
-                                            )}
-                                            {isSecretary && (
-                                                <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)} className="text-indigo-600">
-                                                    <Search className="h-4 w-4 mr-2" /> View Details
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
+  const overallLoading = isLoadingSchoolId || isLoadingData;  return (
+    <div className="space-y-8 p-6">
+      {/* Premium Rose/Pink Gradient Header */}
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-rose-500 via-pink-500 to-fuchsia-600 p-8 md:p-10 text-white shadow-xl shadow-pink-100/50 dark:shadow-none">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+              <Users className="h-3.5 w-3.5 text-pink-200" /> Family Relations
+            </span>
+            <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Parent Profiles</h1>
+            <p className="mt-2 text-pink-100/90 max-w-xl text-sm leading-relaxed">
+              Manage school-parent relationships, configure student assignments, and maintain directory profiles.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <Button variant="outline" onClick={loadData} disabled={overallLoading || !adminSchoolId} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
+              <RefreshCw className={cn("h-4 w-4 mr-2", overallLoading && "animate-spin")}/> Refresh
+            </Button>
+            {canManage && (
+              <Button onClick={() => setIsAddOpen(true)} className="bg-white text-pink-700 hover:bg-pink-50 hover:text-pink-850 font-bold px-5 h-11 rounded-xl shadow-lg border border-pink-100" disabled={!adminSchoolId}>
+                <UserPlus className="h-4.5 w-4.5 mr-2"/> Add Parent Profile
+              </Button>
             )}
+          </div>
+        </div>
+
+        {/* Dynamic Metric Badges */}
+        {adminSchoolId && (
+          <div className="relative z-10 mt-8 flex flex-wrap gap-4 border-t border-white/10 pt-6">
+            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
+              <span className="text-[10px] text-pink-200 uppercase tracking-widest font-black">Linked Guardians</span>
+              <div className="text-xl font-bold mt-0.5">{parents.length} Accounts</div>
+            </div>
+            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
+              <span className="text-[10px] text-pink-200 uppercase tracking-widest font-black">Associated Children</span>
+              <div className="text-xl font-bold mt-0.5">{students.filter(s => s.parentId).length} Students Linked</div>
+            </div>
+          </div>
+        )}
+
+        {/* Decorative glows */}
+        <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+      </div>
+      
+      {/* Main Card */}
+      <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden bg-white">
+        <CardContent className="p-6 space-y-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="relative max-w-sm flex-grow">
+              <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+              <StudentSearchInput 
+                value={searchTerm} 
+                onChange={setSearchTerm} 
+                className="pl-10 h-10 border-slate-200 focus-visible:ring-pink-500 rounded-xl"
+                placeholder="Search parents by name or email..."
+              />
+            </div>
+            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">{filteredParents.length} Records</span>
+          </div>
+
+          {overallLoading ? (
+            <div className="py-16 flex flex-col items-center justify-center text-slate-400 bg-slate-50 border border-dashed rounded-2xl">
+              <Loader2 className="h-8 w-8 animate-spin text-pink-500 mb-2"/>
+              <p className="text-xs uppercase font-bold tracking-wider">Loading Directory...</p>
+            </div>
+          ) : filteredParents.length === 0 ? (
+            <div className="py-16 text-center text-slate-400 border border-dashed rounded-2xl bg-slate-50 flex flex-col items-center gap-3">
+              <Search className="h-8 w-8 text-slate-300" />
+              <div>
+                <p className="font-semibold text-slate-700">No parent profiles found</p>
+                <p className="text-xs text-slate-400 mt-1">Try modifying your search or add a new parent.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-slate-100 overflow-hidden">
+              <Table>
+                <TableHeader className="bg-slate-50/50">
+                  <TableRow>
+                    <TableHead className="font-bold text-slate-700 h-12">Parent Guardian</TableHead>
+                    <TableHead className="font-bold text-slate-700 h-12">Email Address</TableHead>
+                    <TableHead className="font-bold text-slate-700 h-12">Linked Students</TableHead>
+                    <TableHead className="text-right font-bold text-slate-700 h-12 px-6">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredParents.map((p) => (
+                    <TableRow key={p.id} className="hover:bg-slate-50/30 transition-colors group">
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-pink-600 font-bold border border-pink-100/50 text-sm group-hover:scale-105 transition-transform">
+                            {p.firstName?.charAt(0) || '?'}{p.lastName?.charAt(0) || ''}
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-800">{p.firstName} {p.lastName}</div>
+                            {p.phone && <div className="text-[10px] text-slate-400 font-medium">{p.phone}</div>}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4 text-slate-600 text-sm font-medium">{p.email}</TableCell>
+                      <TableCell className="py-4">
+                        <Badge variant="secondary" className="font-bold text-xs bg-slate-100 text-slate-700 border border-slate-200/50 rounded-md px-2 py-0.5">
+                          {p.studentIds?.length || 0} Students
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right py-4 px-6">
+                        <div className="flex justify-end gap-1.5">
+                          {canManage && (
+                            <>
+                              <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(p)} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
+                                <KeyRound className="h-4.5 w-4.5 text-amber-500"/>
+                              </Button>
+                              <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)} className="h-8.5 w-8.5 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg">
+                                <Edit className="h-4.5 w-4.5"/>
+                              </Button>
+                              
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-8.5 w-8.5 p-0 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg">
+                                    <Trash2 className="h-4.5 w-4.5"/>
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent className="rounded-3xl">
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle className="text-lg font-bold text-slate-800">Remove Parent Profile?</AlertDialogTitle>
+                                    <AlertDialogDescription className="text-slate-500 text-sm">
+                                      Are you sure you want to delete the profile for <strong>{p.firstName} {p.lastName}</strong>? This will unlink all associated students.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter className="gap-2">
+                                    <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(p.id)} className="bg-rose-600 hover:bg-rose-700 rounded-xl font-bold">Delete Profile</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </>
+                          )}
+                          {isSecretary && (
+                            <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)} className="text-indigo-600 hover:bg-indigo-50 rounded-lg">
+                              <Search className="h-4 w-4 mr-2" /> View Details
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
+
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>

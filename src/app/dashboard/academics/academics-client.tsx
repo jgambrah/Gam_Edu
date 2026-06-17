@@ -123,79 +123,87 @@ function ClassDetailView({
     }, [teachers, selectedClass.teacherId, currentUserProfile]);
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
+        <div className="space-y-8 animate-in fade-in duration-300">
             <div className="flex items-center justify-between">
-                <Button variant="ghost" onClick={onBack} className="gap-2 pl-0 hover:bg-transparent hover:text-indigo-600">
+                <Button variant="ghost" onClick={onBack} className="gap-2 pl-0 hover:bg-transparent hover:text-indigo-600 font-bold text-xs uppercase tracking-wider text-slate-500">
                     <ArrowLeft className="h-4 w-4" /> Back to Classes
                 </Button>
-                <div className="flex gap-2">
-                    <Badge variant="outline" className="bg-white px-3 py-1 border-2 flex items-center gap-2">
-                        <Users className="h-3 w-3" /> {stats.total} / {selectedClass.capacity || 0}
-                    </Badge>
-                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-100 flex items-center gap-1">
-                        <Mars className="h-3 w-3" /> {stats.males} Boys
-                    </Badge>
-                    <Badge variant="secondary" className="bg-pink-50 text-pink-700 border-pink-100 flex items-center gap-1">
-                        <Venus className="h-3 w-3" /> {stats.females} Girls
-                    </Badge>
+            </div>
+
+            {/* Premium Header Banner */}
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-750 via-indigo-600 to-teal-500 p-8 md:p-10 text-white shadow-2xl border border-indigo-400/20">
+                <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+                <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-teal-400/10 blur-2xl" />
+                
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-indigo-100 backdrop-blur-md">
+                            <GraduationCap className="h-3 w-3" /> Class Profile
+                        </span>
+                        <h1 className="text-3xl md:text-4xl font-black tracking-tight italic uppercase leading-none">
+                            {selectedClass.name}
+                        </h1>
+                        <div className="flex flex-wrap gap-4 mt-2 text-xs font-bold text-indigo-100 uppercase">
+                            <span className="flex items-center gap-1.5"><User className="h-3 w-3 text-teal-300" /> Form Tutor: {teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unassigned'}</span>
+                            <span className="h-3 w-px bg-indigo-450/40"></span>
+                            <span className="flex items-center gap-1.5"><Badge variant="outline" className="text-[10px] border-white/20 text-white font-black uppercase bg-white/5">{selectedClass.teachingModel || 'Subject Teacher'}</Badge></span>
+                        </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 shrink-0">
+                        <Badge variant="outline" className="bg-white/10 text-white border-white/15 px-3 py-1.5 rounded-xl flex items-center gap-2 font-black text-xs">
+                            <Users className="h-3.5 w-3.5 text-teal-300" /> {stats.total} / {selectedClass.capacity || 0} Capacity
+                        </Badge>
+                        <Badge variant="outline" className="bg-blue-500/10 text-blue-100 border-blue-400/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-bold text-xs">
+                            <Mars className="h-3.5 w-3.5 text-blue-300" /> {stats.males} Boys
+                        </Badge>
+                        <Badge variant="outline" className="bg-pink-500/10 text-pink-100 border-pink-400/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-bold text-xs">
+                            <Venus className="h-3.5 w-3.5 text-pink-300" /> {stats.females} Girls
+                        </Badge>
+                    </div>
                 </div>
             </div>
 
-            <Card className="border-t-4 border-t-indigo-600 shadow-sm">
-                <CardHeader>
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
-                            <CardTitle className="text-3xl font-black text-slate-900 tracking-tight">{selectedClass.name}</CardTitle>
-                            <div className="flex flex-wrap gap-4 mt-2">
-                                <CardDescription className="flex items-center gap-2">
-                                    <User className="h-3 w-3" /> Form Teacher: {teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unassigned'}
-                                </CardDescription>
-                                <CardDescription className="flex items-center gap-2">
-                                    <Badge variant="outline" className="text-[10px] font-black uppercase">{selectedClass.teachingModel || 'Subject Teacher'}</Badge>
-                                </CardDescription>
-                            </div>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent className="p-0 border-t">
+            <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
+                <CardContent className="p-0">
                     <Tabs defaultValue="roster" className="w-full">
-                        <div className="px-6 bg-slate-50/50 border-b">
-                            <TabsList className="bg-transparent h-12 p-0 gap-6">
-                                <TabsTrigger value="roster" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none bg-transparent font-bold">
-                                    <Users className="h-4 w-4 mr-2" /> Student Roster
+                        <div className="px-8 bg-slate-900 border-b border-slate-800">
+                            <TabsList className="bg-transparent h-14 p-0 gap-8">
+                                <TabsTrigger value="roster" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-500 data-[state=active]:text-white text-slate-400 rounded-none shadow-none bg-transparent font-bold h-full">
+                                    <Users className="h-4 w-4 mr-2 text-indigo-400" /> Student Roster
                                 </TabsTrigger>
-                                <TabsTrigger value="attendance" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none bg-transparent font-bold">
-                                    <CalendarCheck className="h-4 w-4 mr-2" /> Daily Attendance
+                                <TabsTrigger value="attendance" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-500 data-[state=active]:text-white text-slate-400 rounded-none shadow-none bg-transparent font-bold h-full">
+                                    <CalendarCheck className="h-4 w-4 mr-2 text-indigo-400" /> Daily Attendance
                                 </TabsTrigger>
-                                <TabsTrigger value="timetable" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none bg-transparent font-bold">
-                                    <Clock className="h-4 w-4 mr-2" /> Timetable
+                                <TabsTrigger value="timetable" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-500 data-[state=active]:text-white text-slate-400 rounded-none shadow-none bg-transparent font-bold h-full">
+                                    <Clock className="h-4 w-4 mr-2 text-indigo-400" /> Timetable
                                 </TabsTrigger>
                             </TabsList>
                         </div>
 
-                        <TabsContent value="roster" className="p-6 m-0">
-                            <div className="rounded-xl border bg-white overflow-hidden">
+                        <TabsContent value="roster" className="p-8 m-0 bg-slate-50/20">
+                            <div className="rounded-[2rem] border bg-white overflow-hidden shadow-sm">
                                 <Table>
-                                    <TableHeader className="bg-slate-50">
+                                    <TableHeader className="bg-slate-50/50 border-b">
                                         <TableRow>
-                                            <TableHead>Student</TableHead>
-                                            <TableHead>Gender</TableHead>
-                                            <TableHead>Email</TableHead>
-                                            <TableHead className="text-right">Action</TableHead>
+                                            <TableHead className="pl-8 font-black text-[10px] uppercase text-slate-400 tracking-wider">Student</TableHead>
+                                            <TableHead className="font-black text-[10px] uppercase text-slate-400 tracking-wider">Gender</TableHead>
+                                            <TableHead className="font-black text-[10px] uppercase text-slate-400 tracking-wider">Email</TableHead>
+                                            <TableHead className="pr-8 text-right font-black text-[10px] uppercase text-slate-400 tracking-wider">Action</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {classStudents.map(student => (
-                                            <TableRow key={student.uid}>
-                                                <TableCell><StudentDisplay student={student} variant="list" showAvatar /></TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline" className={cn("text-[10px] font-bold uppercase", student.gender === 'Male' ? "text-blue-600" : "text-pink-600")}>
+                                            <TableRow key={student.uid} className="hover:bg-indigo-50/10 transition-colors">
+                                                <TableCell className="pl-8 py-4"><StudentDisplay student={student} variant="list" showAvatar /></TableCell>
+                                                <TableCell className="py-4">
+                                                    <Badge variant="outline" className={cn("text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full", student.gender === 'Male' ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-pink-50 text-pink-700 border-pink-200")}>
                                                         {student.gender || 'N/A'}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell className="text-slate-500 text-xs">{student.email}</TableCell>
-                                                <TableCell className="text-right">
-                                                    <Button variant="ghost" size="sm" asChild>
+                                                <TableCell className="text-slate-500 font-semibold text-sm py-4">{student.email || 'N/A'}</TableCell>
+                                                <TableCell className="pr-8 text-right py-4">
+                                                    <Button variant="outline" size="sm" className="h-8 rounded-xl border-slate-200 font-bold text-xs uppercase text-slate-600" asChild>
                                                         <a href={`/dashboard/students-v3?search=${student.firstName}`}>View Profile</a>
                                                     </Button>
                                                 </TableCell>
@@ -203,7 +211,7 @@ function ClassDetailView({
                                         ))}
                                         {classStudents.length === 0 && (
                                             <TableRow>
-                                                <TableCell colSpan={4} className="text-center py-12 text-muted-foreground italic">No active students assigned to this class.</TableCell>
+                                                <TableCell colSpan={4} className="text-center py-16 text-slate-400 font-bold uppercase text-xs tracking-wider">No active students assigned to this class.</TableCell>
                                             </TableRow>
                                         )}
                                     </TableBody>
@@ -211,11 +219,11 @@ function ClassDetailView({
                             </div>
                         </TabsContent>
 
-                        <TabsContent value="attendance" className="p-6 m-0">
+                        <TabsContent value="attendance" className="p-8 m-0 bg-slate-50/20">
                             <DailyAttendanceSheet classId={selectedClass.id} />
                         </TabsContent>
 
-                        <TabsContent value="timetable" className="p-6 m-0">
+                        <TabsContent value="timetable" className="p-8 m-0 bg-slate-50/20">
                             <TimetableDisplay 
                                 timetable={classTimetable}
                                 subjects={subjects}
@@ -411,41 +419,50 @@ export default function AcademicsPageContent() {
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="border-t-4 border-t-indigo-600 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-2xl font-black text-slate-900 tracking-tight">Class Management</CardTitle>
-            <CardDescription>
+    <div className="space-y-8">
+      {/* Premium Gradient Banner */}
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-755 via-indigo-600 to-teal-500 p-8 md:p-12 text-white shadow-2xl border border-indigo-400/20">
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-teal-400/10 blur-2xl" />
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-indigo-100 backdrop-blur-md">
+              <GraduationCap className="h-3 w-3" /> Academic Infrastructure
+            </span>
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight italic uppercase leading-none">
+              Class <span className="text-teal-200">Management</span>
+            </h1>
+            <p className="max-w-md text-sm font-medium text-indigo-50">
               {role === 'Teacher' ? 'Showing classes assigned to you.' : 'View, create, and manage academic classes for your school.'}
-            </CardDescription>
+            </p>
           </div>
+          
           {canManageClasses && schoolId && (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-indigo-600 hover:bg-indigo-700" onClick={handleCreateClick}>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Create Class
+                <Button className="h-12 rounded-2xl bg-white text-indigo-700 hover:bg-indigo-50 font-black uppercase tracking-wider shadow-lg transition-all hover:scale-102 active:scale-98 border-none" onClick={handleCreateClick}>
+                  <PlusCircle className="mr-2 h-4 w-4 text-indigo-600" /> Create Class
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+              <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto rounded-[2.5rem] border-slate-900 border-2">
                 <DialogHeader>
-                  <DialogTitle>{editingClass ? 'Edit Class' : 'Create a New Class'}</DialogTitle>
-                  <DialogDescription>
-                    Fill out the form below to {editingClass ? 'modify the' : 'add a new'} class.
+                  <DialogTitle className="text-xl font-black uppercase italic text-slate-800">{editingClass ? 'Edit Class' : 'Create Class'}</DialogTitle>
+                  <DialogDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">
+                    Configure details for the class cohort.
                   </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
                         <FormField control={form.control} name="name" render={({ field }) => (
-                            <FormItem><FormLabel>Class Name</FormLabel><FormControl><Input placeholder="e.g. BS 3" {...field}/></FormControl><FormMessage/></FormItem>
+                            <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class Name</FormLabel><FormControl><Input placeholder="e.g. BS 3" {...field} className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 font-medium transition-colors" /></FormControl><FormMessage/></FormItem>
                         )}/>
                         
                         <div className="grid grid-cols-2 gap-4">
                             <FormField control={form.control} name="teachingModel" render={({ field }) => (
-                                <FormItem><FormLabel>Teaching Model</FormLabel>
+                                <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Teaching Model</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder="Model"/></SelectTrigger></FormControl>
+                                        <FormControl><SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50"><SelectValue placeholder="Model"/></SelectTrigger></FormControl>
                                         <SelectContent>
                                             <SelectItem value="ClassTeacher">Class Teacher (Nursery-BS3)</SelectItem>
                                             <SelectItem value="SubjectTeacher">Subject Teacher (BS4+)</SelectItem>
@@ -454,9 +471,9 @@ export default function AcademicsPageContent() {
                                 </FormItem>
                             )}/>
                             <FormField control={form.control} name="homeRoomId" render={({ field }) => (
-                                <FormItem><FormLabel>Primary Room</FormLabel>
+                                <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Primary Room</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder="Select Room..."/></SelectTrigger></FormControl>
+                                        <FormControl><SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50"><SelectValue placeholder="Select Room..."/></SelectTrigger></FormControl>
                                         <SelectContent>
                                             {rooms?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
                                         </SelectContent>
@@ -466,9 +483,9 @@ export default function AcademicsPageContent() {
                         </div>
 
                         <FormField control={form.control} name="teacherId" render={({ field }) => (
-                            <FormItem><FormLabel>Primary Teacher (Form Tutor)</FormLabel>
+                            <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Primary Teacher (Form Tutor)</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Select teacher..."/></SelectTrigger></FormControl>
+                                    <FormControl><SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50"><SelectValue placeholder="Select teacher..."/></SelectTrigger></FormControl>
                                     <SelectContent>
                                         <SelectItem value="unassigned">None (Unassigned)</SelectItem>
                                         {teachers?.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}
@@ -478,7 +495,7 @@ export default function AcademicsPageContent() {
                             </FormItem>
                         )}/>
                         <FormField control={form.control} name="capacity" render={({ field }) => (
-                            <FormItem><FormLabel>Target Capacity</FormLabel><FormControl><Input type="number" {...field}/></FormControl><FormMessage/></FormItem>
+                            <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Target Capacity</FormLabel><FormControl><Input type="number" {...field} className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 font-bold transition-colors" /></FormControl><FormMessage/></FormItem>
                         )}/>
 
                         <div className="flex items-center space-x-2 py-2">
@@ -496,6 +513,7 @@ export default function AcademicsPageContent() {
                                         form.setValue('examWeight', undefined);
                                     }
                                 }}
+                                className="h-5 w-5 rounded-md border-2"
                             />
                             <label htmlFor="custom-weights-toggle" className="text-sm font-semibold text-slate-700 cursor-pointer select-none">
                                 Override School Assessment Weights
@@ -503,10 +521,10 @@ export default function AcademicsPageContent() {
                         </div>
 
                         {hasCustomWeights && (
-                            <div className="grid grid-cols-2 gap-4 border p-3 rounded-lg bg-slate-50 animate-in fade-in duration-200">
+                            <div className="grid grid-cols-2 gap-4 border-2 p-4 rounded-2xl bg-slate-50 animate-in fade-in duration-200">
                                 <FormField control={form.control} name="caWeight" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-xs uppercase font-black tracking-wider text-slate-500">CA Weight (%)</FormLabel>
+                                    <FormItem className="space-y-1">
+                                        <FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">CA Weight (%)</FormLabel>
                                         <FormControl>
                                             <Input 
                                                 type="number" 
@@ -519,14 +537,15 @@ export default function AcademicsPageContent() {
                                                     form.setValue('caWeight', val);
                                                     form.setValue('examWeight', 100 - val);
                                                 }}
+                                                className="h-11 border-2 rounded-xl bg-white font-bold text-center"
                                             />
                                         </FormControl>
                                         <FormMessage/>
                                     </FormItem>
                                 )}/>
                                 <FormField control={form.control} name="examWeight" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-xs uppercase font-black tracking-wider text-slate-500">Exam Weight (%)</FormLabel>
+                                    <FormItem className="space-y-1">
+                                        <FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Exam Weight (%)</FormLabel>
                                         <FormControl>
                                             <Input 
                                                 type="number" 
@@ -539,6 +558,7 @@ export default function AcademicsPageContent() {
                                                     form.setValue('examWeight', val);
                                                     form.setValue('caWeight', 100 - val);
                                                 }}
+                                                className="h-11 border-2 rounded-xl bg-white font-bold text-center"
                                             />
                                         </FormControl>
                                         <FormMessage/>
@@ -547,7 +567,7 @@ export default function AcademicsPageContent() {
                             </div>
                         )}
 
-                        <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>
+                        <Button type="submit" className="w-full h-12 text-sm font-black uppercase tracking-wider bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-lg shadow-indigo-100 transition-all duration-200" disabled={isSubmitting}>
                             {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : (editingClass ? "Save Changes" : "Create Class")}
                         </Button>
                     </form>
@@ -555,12 +575,25 @@ export default function AcademicsPageContent() {
               </DialogContent>
             </Dialog>
           )}
+        </div>
+      </div>
+
+      <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
+        <CardHeader className="bg-slate-900 text-white pb-6 pt-8 px-8">
+          <CardTitle className="text-xl font-black uppercase tracking-tight">School Classes</CardTitle>
+          <CardDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">
+            Active school classrooms and capacity registers
+          </CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="p-8 bg-slate-50/20">
           {isLoading ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {[...Array(3)].map((_, i) => (
-                <Card key={`skeleton-${i}`}><CardHeader><Skeleton className="h-6 w-3/4" /></CardHeader><CardContent><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full mt-2" /></CardContent></Card>
+                <Card key={`skeleton-${i}`} className="rounded-3xl border-none shadow-md p-6 space-y-4">
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </Card>
               ))}
             </div>
           ) : classes && classes.length > 0 ? (
@@ -577,79 +610,93 @@ export default function AcademicsPageContent() {
                 return (
                   <Card 
                       key={c.id} 
-                      className="cursor-pointer hover:border-indigo-500 hover:ring-2 hover:ring-indigo-100 transition-all h-full group"
+                      className="cursor-pointer border-none shadow-xl bg-white rounded-3xl overflow-hidden group hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
                       onClick={() => setSelectedClassId(c.id)}
                   >
-                    <CardHeader className="relative">
-                      <div className="flex justify-between items-start">
-                          <CardTitle className="text-xl font-bold text-slate-800">{c.name}</CardTitle>
-                          <div className="flex items-center gap-1">
-                              {canManageClasses && (
-                                  <>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-600" onClick={(e) => handleEditClick(e, c)}>
-                                        <Edit className="h-4 w-4"/>
-                                    </Button>
-                                    
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={(e) => e.stopPropagation()}>
-                                                <Trash2 className="h-4 w-4"/>
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Delete Class: {c.name}?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Are you sure you want to permanently delete this class? This will not delete students but they will lose their class assignment.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleDeleteClass(c.id)} className="bg-red-600 hover:bg-red-700">Delete Class</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                  </>
-                              )}
-                              <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-500 transition-transform group-hover:translate-x-1" />
-                          </div>
-                      </div>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        <Badge variant="outline" className="text-[9px] uppercase font-bold text-slate-400">
-                            {c.teachingModel === 'ClassTeacher' ? 'Class Teacher Model' : 'Subject Teacher Model'}
-                        </Badge>
-                        {(c.caWeight !== undefined && c.caWeight !== null && c.examWeight !== undefined && c.examWeight !== null) && (
-                          <Badge variant="secondary" className="text-[9px] font-bold bg-indigo-50 text-indigo-700">
-                              {c.caWeight}/{c.examWeight} Split
+                    <div>
+                      <CardHeader className="relative pb-4 pt-6 px-6">
+                        <div className="flex justify-between items-start">
+                            <CardTitle className="text-xl font-black text-slate-800 uppercase tracking-tight leading-tight">{c.name}</CardTitle>
+                            <div className="flex items-center gap-1 relative z-10">
+                                {canManageClasses && (
+                                    <>
+                                      <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-650 hover:bg-indigo-50/50 rounded-lg" onClick={(e) => handleEditClick(e, c)}>
+                                          <Edit className="h-4 w-4"/>
+                                      </Button>
+                                      
+                                      <AlertDialog>
+                                          <AlertDialogTrigger asChild>
+                                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-650 hover:bg-red-50/50 rounded-lg" onClick={(e) => e.stopPropagation()}>
+                                                  <Trash2 className="h-4 w-4"/>
+                                              </Button>
+                                          </AlertDialogTrigger>
+                                          <AlertDialogContent className="rounded-[2.5rem] border-2 border-slate-900">
+                                              <AlertDialogHeader>
+                                                  <AlertDialogTitle className="text-lg font-black uppercase italic text-slate-800">Delete Class: {c.name}?</AlertDialogTitle>
+                                                  <AlertDialogDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">
+                                                      Are you sure you want to permanently delete this class? This will not delete students but they will lose their class assignment.
+                                                  </AlertDialogDescription>
+                                              </AlertDialogHeader>
+                                              <AlertDialogFooter>
+                                                  <AlertDialogCancel className="rounded-xl font-bold uppercase text-xs tracking-wider">Cancel</AlertDialogCancel>
+                                                  <AlertDialogAction onClick={() => handleDeleteClass(c.id)} className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold uppercase text-xs tracking-wider">Delete Class</AlertDialogAction>
+                                              </AlertDialogFooter>
+                                          </AlertDialogContent>
+                                      </AlertDialog>
+                                    </>
+                                )}
+                                <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-indigo-550 transition-transform group-hover:translate-x-1" />
+                            </div>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          <Badge variant="outline" className="text-[9px] uppercase font-black tracking-wide text-slate-450 bg-slate-50 border-slate-200">
+                              {c.teachingModel === 'ClassTeacher' ? 'Class Teacher' : 'Subject Teacher'}
                           </Badge>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600"><Users className="h-4 w-4"/></div>
-                          <span className="font-medium text-slate-700">{classStudents.length} / {c.capacity || 0} Enrolled</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-emerald-50 rounded-lg text-emerald-600"><User className="h-4 w-4"/></div>
-                          <span className="font-medium text-slate-700">Teacher: {classTeacher ? `${classTeacher.firstName} ${classTeacher.lastName}` : 'Not Assigned'}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-blue-50 rounded-lg text-blue-600"><Home className="h-4 w-4"/></div>
-                          <span className="font-medium text-slate-700">Homeroom: {rooms?.find(r => r.id === c.homeRoomId)?.name || 'Not Set'}</span>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="bg-slate-50/50 border-t py-3 text-xs font-bold text-indigo-600 uppercase tracking-widest">
-                        View Dashboard
+                          {(c.caWeight !== undefined && c.caWeight !== null && c.examWeight !== undefined && c.examWeight !== null) && (
+                            <Badge className="text-[9px] font-black tracking-wide bg-indigo-50 text-indigo-700 border-indigo-100 uppercase">
+                                {c.caWeight}/{c.examWeight} Split
+                            </Badge>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4 text-sm text-slate-500 px-6 pb-6">
+                        {/* Roster capacity progress bar */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wide">
+                            <span>Capacity</span>
+                            <span className="font-black text-slate-800">{classStudents.length} / {c.capacity || 30}</span>
+                          </div>
+                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-indigo-500 to-indigo-650 transition-all"
+                              style={{ width: `${Math.min(100, (classStudents.length / (c.capacity || 30)) * 100)}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2.5 pt-1">
+                          <div className="flex items-center gap-2.5">
+                              <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600 shrink-0"><User className="h-4 w-4"/></div>
+                              <span className="font-bold text-slate-700 text-xs">Tutor: <span className="font-semibold text-slate-500">{classTeacher ? `${classTeacher.firstName} ${classTeacher.lastName}` : 'Not Assigned'}</span></span>
+                          </div>
+                          <div className="flex items-center gap-2.5">
+                              <div className="p-1.5 bg-blue-50 rounded-lg text-blue-600 shrink-0"><Home className="h-4 w-4"/></div>
+                              <span className="font-bold text-slate-700 text-xs">Room: <span className="font-semibold text-slate-500">{rooms?.find(r => r.id === c.homeRoomId)?.name || 'Not Set'}</span></span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </div>
+                    <CardFooter className="bg-slate-50 border-t py-3.5 px-6 text-[10px] font-black text-indigo-650 uppercase tracking-wider transition-colors group-hover:bg-indigo-50/20">
+                        View Class Workspace
                     </CardFooter>
                   </Card>
                 );
               })}
             </div>
           ) : (
-            <div className="text-center py-20 bg-slate-50 rounded-2xl border-2 border-dashed">
-              <p className="text-lg font-medium text-slate-600">No classes found.</p>
-              {canManageClasses && <p className="text-sm text-slate-400">Click "Create Class" to add your first classroom.</p>}
+            <div className="text-center py-20 bg-white rounded-[2.5rem] border-4 border-dashed">
+              <p className="text-sm font-bold text-slate-450 uppercase tracking-widest">No classes found.</p>
+              {canManageClasses && <p className="text-xs font-semibold text-slate-400 mt-1 uppercase">Click "Create Class" to add your first classroom.</p>}
             </div>
           )}
         </CardContent>

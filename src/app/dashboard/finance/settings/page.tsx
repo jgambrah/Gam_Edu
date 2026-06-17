@@ -15,12 +15,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useFirestore, useMemoFirebase, useDoc, useCollection, useUser } from '@/firebase';
 import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
 import { logAuditEvent } from '@/lib/audit';
-import { Loader2, Utensils, Bus, RefreshCw, ListChecks, CalendarRange, Settings, Search, Save } from 'lucide-react';
+import { Loader2, Utensils, Bus, RefreshCw, ListChecks, CalendarRange, Settings, Search, Save, AlertTriangle, XCircle, ShieldAlert, Info } from 'lucide-react';
 import { useRole } from '@/context/role-context';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
@@ -60,7 +61,7 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
     const { data: classes } = useCollection<Class>(classesQuery);
 
     const settingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen') : null, [firestore, schoolId]);
-    const { data: canteenSettings, isLoading: isLoadingSettings } = useDoc(settingsRef);
+    const { data: canteenSettings } = useDoc<any>(settingsRef);
 
     const form = useForm<z.infer<typeof canteenRateSchema>>({
         resolver: zodResolver(canteenRateSchema),
@@ -93,7 +94,6 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
         console.log("--- SAVING CANTEEN SETTINGS ---", values);
         setIsSaving(true);
         
-        // Normalize all numeric fields to Number type
         const data: any = {
             pricingModel: values.pricingModel,
             dailyRate: Number(values.dailyRate) || 0,
@@ -155,29 +155,34 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
     };
 
     return (
-        <Card className="border-t-4 border-t-orange-500 shadow-sm">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl"><Utensils className="text-orange-500"/> Canteen Billing Logic</CardTitle>
-                <CardDescription>Configure how students are billed for meals (Daily vs Termly).</CardDescription>
+        <Card className="border border-slate-200 shadow-lg rounded-3xl overflow-hidden bg-white">
+            <CardHeader className="bg-slate-50/50 border-b p-6 flex flex-row items-center gap-4">
+                <div className="bg-orange-500/10 text-orange-600 rounded-2xl p-3 shadow-inner shrink-0">
+                    <Utensils className="h-6 w-6"/>
+                </div>
+                <div>
+                    <CardTitle className="text-slate-900 font-black tracking-tight text-lg">Canteen Billing Logic</CardTitle>
+                    <CardDescription className="font-semibold text-slate-500 text-xs mt-0.5">Configure how students are billed for meals (Daily vs Termly).</CardDescription>
+                </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSave, onFormError)} className="space-y-6">
                         <FormField
                             control={form.control}
                             name="pricingModel"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Pricing Model</FormLabel>
+                                <FormItem className="space-y-1.5">
+                                    <FormLabel className="font-bold text-slate-700 text-xs">Pricing Model Scheme</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger className="bg-white border-2">
+                                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl font-semibold shadow-sm h-11 focus:ring-2 focus:ring-orange-500">
                                                 <SelectValue placeholder="Select model" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="Flat">Flat Rate (Same for everyone)</SelectItem>
-                                            <SelectItem value="Class-Based">Class-Based Rate (Custom by Grade)</SelectItem>
+                                            <SelectItem value="Flat" className="font-semibold">Flat Rate (Universal default fee)</SelectItem>
+                                            <SelectItem value="Class-Based" className="font-semibold">Class-Based Custom (Custom rates by Grade level)</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -185,15 +190,18 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                             )}
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="dailyRate"
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{"Daily Fee (Flat) (GH₵)"}</FormLabel>
+                                    <FormItem className="space-y-1.5">
+                                        <FormLabel className="font-bold text-slate-700 text-xs">{"Default Daily Canteen Fee (GH₵)"}</FormLabel>
                                         <FormControl>
-                                            <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-3 text-slate-400 font-bold text-xs">GH₵</span>
+                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-11 pl-11 border border-slate-200 rounded-xl font-bold shadow-sm focus-visible:ring-orange-500" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -203,10 +211,13 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                                 control={form.control}
                                 name="termlyRate"
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{"Termly Fee (Flat) (GH₵)"}</FormLabel>
+                                    <FormItem className="space-y-1.5">
+                                        <FormLabel className="font-bold text-slate-700 text-xs">{"Default Termly Canteen Fee (GH₵)"}</FormLabel>
                                         <FormControl>
-                                            <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-12 border-2" />
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-3 text-slate-400 font-bold text-xs">GH₵</span>
+                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="h-11 pl-11 border border-slate-200 rounded-xl font-bold shadow-sm focus-visible:ring-orange-500" />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -215,50 +226,59 @@ function CanteenSettings({ schoolId }: { schoolId: string }) {
                         </div>
 
                         {pricingModel === 'Class-Based' && (
-                            <div className="space-y-4 border rounded-xl p-4 bg-slate-50 animate-in fade-in slide-in-from-top-2">
-                                <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                    <ListChecks className="h-4 w-4"/> Define Class Rates
-                                </h4>
-                                <div className="space-y-6">
+                            <div className="space-y-4 border border-slate-100 rounded-2xl p-4 bg-slate-50/60 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className="flex items-center justify-between border-b pb-2">
+                                    <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                        <ListChecks className="h-4 w-4 text-orange-500"/> Custom Class Rates
+                                    </h4>
+                                    <Badge className="bg-orange-100 text-orange-700 border-none font-bold text-[9px]">Class Rates Active</Badge>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-1">
                                     {classes?.map((c) => (
-                                        <div key={c.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 border rounded-lg bg-white shadow-sm">
-                                            <div className="md:col-span-2 text-xs font-black text-indigo-600 uppercase tracking-widest">{c.name}</div>
-                                            <FormField
-                                                control={form.control}
-                                                name={`classRates.${c.id}`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-[10px] font-bold text-slate-500 uppercase">{"Daily Rate (GH₵)"}</FormLabel>
-                                                        <FormControl>
-                                                            <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="bg-white" placeholder="0.00" />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name={`classTermlyRates.${c.id}`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-[10px] font-bold text-slate-500 uppercase">{"Termly Rate (GH₵)"}</FormLabel>
-                                                        <FormControl>
-                                                            <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="bg-white" placeholder="0.00" />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
+                                        <div key={c.id} className="group p-4 border border-slate-200 hover:border-orange-500/30 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all duration-300 flex flex-col gap-3">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs font-black text-slate-900 tracking-tight">{c.name}</span>
+                                                <Badge variant="outline" className="font-bold bg-slate-50 text-slate-500 border-slate-200 text-[8px] uppercase">Grade Billing</Badge>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`classRates.${c.id}`}
+                                                    render={({ field }) => (
+                                                        <FormItem className="space-y-1">
+                                                            <FormLabel className="text-[9px] font-bold text-slate-500 uppercase">Daily (GH₵)</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="bg-white rounded-lg h-9 text-xs font-semibold px-2" placeholder="0.00" />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`classTermlyRates.${c.id}`}
+                                                    render={({ field }) => (
+                                                        <FormItem className="space-y-1">
+                                                            <FormLabel className="text-[9px] font-bold text-slate-500 uppercase">Termly (GH₵)</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="number" step="0.01" {...field} value={field.value ?? 0} className="bg-white rounded-lg h-9 text-xs font-semibold px-2" placeholder="0.00" />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
                                         </div>
                                     ))}
                                     {(!classes || classes.length === 0) && (
-                                        <div className="text-center py-4 text-xs text-muted-foreground italic">No classes found to configure.</div>
+                                        <div className="text-center py-6 text-xs text-slate-400 font-semibold italic col-span-2">No classes found to configure.</div>
                                     )}
                                 </div>
                             </div>
                         )}
 
-                        <Button type="submit" disabled={isSaving} className="w-full h-12 text-lg font-bold bg-orange-600 hover:bg-orange-700 transition-all active:scale-95">
+                        <Button type="submit" disabled={isSaving} className="w-full h-12 text-sm font-bold bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-650 hover:to-amber-700 text-white rounded-xl shadow-md transition-all active:scale-[0.98]">
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                             Update Canteen Logic
                         </Button>
@@ -328,30 +348,38 @@ function TransportSettings({ schoolId }: { schoolId: string }) {
     };
 
     return (
-        <Card className="border-t-4 border-t-indigo-500 shadow-sm">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Bus className="text-indigo-500"/> Transport Settings</CardTitle>
-                <CardDescription>Set the default daily fee for bus usage. Specific route rates will override this.</CardDescription>
+        <Card className="border border-slate-200 shadow-lg rounded-3xl overflow-hidden bg-white">
+            <CardHeader className="bg-slate-50/50 border-b p-6 flex flex-row items-center gap-4">
+                <div className="bg-indigo-500/10 text-indigo-600 rounded-2xl p-3 shadow-inner shrink-0">
+                    <Bus className="h-6 w-6"/>
+                </div>
+                <div>
+                    <CardTitle className="text-slate-900 font-black tracking-tight text-lg">Transport Settings</CardTitle>
+                    <CardDescription className="font-semibold text-slate-500 text-xs mt-0.5">Set the default daily fee for bus usage. Specific route rates will override this.</CardDescription>
+                </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSave)} className="flex items-end gap-4">
+                    <form onSubmit={form.handleSubmit(handleSave)} className="flex flex-col sm:flex-row items-stretch sm:items-end gap-4">
                         <FormField
                             control={form.control}
                             name="dailyRate"
                             render={({ field }) => (
-                                <FormItem className="flex-grow">
-                                    <FormLabel>{"Default Daily Transport Fee (GH₵)"}</FormLabel>
+                                <FormItem className="flex-grow space-y-1.5">
+                                    <FormLabel className="font-bold text-slate-700 text-xs">Default Daily Transport Fee (GH₵)</FormLabel>
                                     <FormControl>
-                                        <Input type="number" step="0.01" placeholder="e.g., 10.00" {...field} value={field.value ?? 0} disabled={isLoading} className="h-12 border-2" />
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-3.5 text-slate-400 font-bold text-xs">GH₵</span>
+                                            <Input type="number" step="0.01" placeholder="e.g., 10.00" {...field} value={field.value ?? 0} disabled={isLoading} className="h-12 pl-11 border border-slate-200 rounded-xl font-bold shadow-sm focus-visible:ring-indigo-500" />
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={isSaving} className="h-12 font-bold bg-indigo-600 hover:bg-indigo-700">
+                        <Button type="submit" disabled={isSaving} className="h-12 px-6 font-bold bg-indigo-600 hover:bg-indigo-750 text-white rounded-xl shadow-md transition-all active:scale-[0.98] shrink-0">
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                            Save Rate
+                            Save Default Rate
                         </Button>
                     </form>
                 </Form>
@@ -379,6 +407,8 @@ function BudgetPolicySettings({ schoolId }: { schoolId: string }) {
         resolver: zodResolver(budgetSettingsSchema),
         defaultValues: { policy: 'warning' }
     });
+
+    const activePolicy = form.watch('policy');
 
     useEffect(() => {
         if (settings && settings.policy) {
@@ -412,39 +442,76 @@ function BudgetPolicySettings({ schoolId }: { schoolId: string }) {
     };
 
     return (
-        <Card className="border-t-4 border-t-amber-500 shadow-sm flex flex-col justify-between">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl"><ListChecks className="text-amber-500"/> Budget Control Policy</CardTitle>
-                <CardDescription>Determine how the system handles payment vouchers that exceed the allocated budget.</CardDescription>
+        <Card className="border border-slate-200 shadow-lg rounded-3xl overflow-hidden bg-white flex flex-col justify-between">
+            <CardHeader className="bg-slate-50/50 border-b p-6 flex flex-row items-center gap-4">
+                <div className="bg-amber-500/10 text-amber-600 rounded-2xl p-3 shadow-inner shrink-0">
+                    <ListChecks className="h-6 w-6"/>
+                </div>
+                <div>
+                    <CardTitle className="text-slate-900 font-black tracking-tight text-lg">Budget Control Policy</CardTitle>
+                    <CardDescription className="font-semibold text-slate-500 text-xs mt-0.5">Determine how the system handles payment vouchers that exceed the allocated budget.</CardDescription>
+                </div>
             </CardHeader>
-            <CardContent className="flex-grow">
+            <CardContent className="p-6 space-y-5 flex-grow flex flex-col justify-between">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSave)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(handleSave)} className="space-y-4 flex-grow flex flex-col justify-between">
                         <FormField
                             control={form.control}
                             name="policy"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Exceeded Budget Action</FormLabel>
+                                <FormItem className="space-y-1.5">
+                                    <FormLabel className="font-bold text-slate-700 text-xs">Exceeded Budget Action Policy</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger className="bg-white border-2">
+                                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl font-semibold shadow-sm h-11 focus:ring-2 focus:ring-amber-500">
                                                 <SelectValue placeholder="Select policy..." />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="warning">Soft Warning (Notify but allow payment)</SelectItem>
-                                            <SelectItem value="block">Hard Block (Completely stop transaction)</SelectItem>
-                                            <SelectItem value="override">Director Override (Hold voucher for approval)</SelectItem>
+                                            <SelectItem value="warning" className="font-semibold">Soft Warning (Notify but allow payments)</SelectItem>
+                                            <SelectItem value="block" className="font-semibold">Hard Block (Completely stop transaction)</SelectItem>
+                                            <SelectItem value="override" className="font-semibold">Director Override (Hold voucher for approval)</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={isSaving || isLoading} className="w-full h-12 font-bold bg-amber-600 hover:bg-amber-700 mt-4 text-white">
+
+                        {/* Interactive dynamic preview panels */}
+                        <div className="min-h-[70px]">
+                            {activePolicy === 'warning' && (
+                               <div className="bg-amber-50/80 border border-amber-200/50 rounded-2xl p-3.5 flex items-start gap-3 text-xs text-amber-900 animate-in fade-in duration-300">
+                                  <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5 animate-pulse" />
+                                  <div className="space-y-0.5">
+                                     <span className="font-extrabold block text-slate-900">Soft Warning Policy Active</span>
+                                     <span className="font-semibold text-slate-500 leading-relaxed block">The system will alert staff about budget overruns during voucher creation, but will not prevent them from submitting and processing the transaction.</span>
+                                  </div>
+                               </div>
+                            )}
+                            {activePolicy === 'block' && (
+                               <div className="bg-rose-50/80 border border-rose-200/50 rounded-2xl p-3.5 flex items-start gap-3 text-xs text-rose-900 animate-in fade-in duration-300">
+                                  <XCircle className="h-5 w-5 text-rose-500 shrink-0 mt-0.5 animate-pulse" />
+                                  <div className="space-y-0.5">
+                                     <span className="font-extrabold block text-slate-900">Hard Block Policy Active</span>
+                                     <span className="font-semibold text-slate-500 leading-relaxed block">Any payment voucher exceeding its allocated general ledger account budget is completely blocked. Transactions cannot be saved or submitted.</span>
+                                  </div>
+                               </div>
+                            )}
+                            {activePolicy === 'override' && (
+                               <div className="bg-indigo-50/80 border border-indigo-200/50 rounded-2xl p-3.5 flex items-start gap-3 text-xs text-indigo-900 animate-in fade-in duration-300">
+                                  <ShieldAlert className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5 animate-pulse" />
+                                  <div className="space-y-0.5">
+                                     <span className="font-extrabold block text-slate-900">Director Override Required</span>
+                                     <span className="font-semibold text-slate-500 leading-relaxed block">Vouchers exceeding budget limits are automatically put on administrative hold. They will require explicit digital approval and commentary by the Director to resolve.</span>
+                                  </div>
+                               </div>
+                            )}
+                        </div>
+
+                        <Button type="submit" disabled={isSaving || isLoading} className="w-full h-12 font-bold bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white rounded-xl shadow-md transition-all active:scale-[0.98]">
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                            Save Policy Setting
+                            Save Control Policy
                         </Button>
                     </form>
                 </Form>
@@ -465,8 +532,6 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
         to: new Date(),
     });
     
-    const form = useForm();
-
     const handleReprocess = async () => {
         if (!firestore || !dateRange?.from || !schoolId) {
             toast({ variant: 'destructive', title: 'Error', description: 'Please select a valid date range.' });
@@ -612,22 +677,42 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
     };
     
     return (
-        <Card className="border-t-4 border-t-slate-800 shadow-sm">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><RefreshCw/> Retrospective Billing</CardTitle>
-                <CardDescription>Recalculate and apply fees for a past date range based on attendance.</CardDescription>
+        <Card className="border border-slate-200 shadow-lg rounded-3xl overflow-hidden bg-white">
+            <CardHeader className="bg-slate-50/50 border-b p-6 flex flex-row items-center gap-4">
+                <div className="bg-slate-750/10 text-slate-800 rounded-2xl p-3 shadow-inner shrink-0">
+                    <RefreshCw className="h-6 w-6"/>
+                </div>
+                <div>
+                    <CardTitle className="text-slate-900 font-black tracking-tight text-lg">Retrospective Billing Operations</CardTitle>
+                    <CardDescription className="font-semibold text-slate-500 text-xs mt-0.5">Recalculate and apply fees for a past date range based on actual student attendance logs.</CardDescription>
+                </div>
             </CardHeader>
-            <CardContent>
-                <div className="flex flex-col md:flex-row items-end gap-4">
-                    <div className="flex-1 w-full space-y-2">
-                        <Label>Date Range</Label>
+            <CardContent className="p-6 space-y-6">
+                <div className="bg-slate-50 p-4 border border-slate-100 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs font-semibold text-slate-650">
+                    <div className="flex items-start gap-2.5">
+                        <Info className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
+                        <div>
+                            <span className="font-black text-slate-800 block mb-1">Billing Reconciliation Audit Steps</span>
+                            <span className="leading-relaxed">This tool will check attendance logs for the specified period. Students with marked attendance who are set to "Daily" billing mode will have their canteen and transport charges generated or reconciled.</span>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 w-full md:w-auto text-[10px] uppercase font-black tracking-wider text-center pt-2 md:pt-0">
+                        <div className="bg-white border p-2 rounded-xl text-slate-700 shadow-sm"><span className="text-indigo-600 block text-xs mb-0.5">1</span> Select Dates</div>
+                        <div className="bg-white border p-2 rounded-xl text-slate-700 shadow-sm"><span className="text-indigo-600 block text-xs mb-0.5">2</span> Scan Present</div>
+                        <div className="bg-white border p-2 rounded-xl text-slate-700 shadow-sm"><span className="text-indigo-600 block text-xs mb-0.5">3</span> Apply Fees</div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-stretch md:items-end gap-4">
+                    <div className="flex-1 w-full space-y-1.5">
+                        <Label className="font-bold text-slate-700 text-xs">Target Re-billing Date Range</Label>
                         <Popover>
                             <PopoverTrigger asChild>
                             <Button
                                 variant={"outline"}
-                                className={cn("w-full justify-start text-left font-normal h-12 border-2 bg-white", !dateRange && "text-muted-foreground")}
+                                className={cn("w-full justify-start text-left font-semibold h-12 border border-slate-200 bg-white rounded-xl shadow-sm focus-visible:ring-indigo-500", !dateRange && "text-muted-foreground")}
                             >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                <CalendarIcon className="mr-2 h-4 w-4 text-indigo-500" />
                                 {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date range</span>)}
                             </Button>
                             </PopoverTrigger>
@@ -636,9 +721,9 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                             </PopoverContent>
                         </Popover>
                     </div>
-                    <Button type="button" onClick={handleReprocess} disabled={isProcessing} className="h-12 px-10 font-bold bg-slate-900 w-full md:w-auto">
-                        {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <RefreshCw className="mr-2 h-4 w-4"/>}
-                        Run Audit
+                    <Button type="button" onClick={handleReprocess} disabled={isProcessing} className="h-12 px-10 font-bold bg-gradient-to-r from-slate-900 to-indigo-950 hover:from-slate-800 hover:to-indigo-900 text-white rounded-xl shadow-lg transition-all active:scale-[0.98] w-full md:w-auto flex items-center justify-center gap-1.5">
+                        {isProcessing ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin"/> : <RefreshCw className="mr-1.5 h-4 w-4"/>}
+                        Run Retrospective Audit
                     </Button>
                 </div>
             </CardContent>
@@ -649,17 +734,28 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
 export default function FinancialSettingsPage() {
   const { role } = useRole();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+  const firestore = useFirestore();
+
+  // Fetch rate configuration documents to show live indicators in the premium banner
+  const canteenRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen') : null, [firestore, schoolId]);
+  const { data: canteenSettings } = useDoc<any>(canteenRef);
+
+  const budgetRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId, 'rates', 'budget') : null, [firestore, schoolId]);
+  const { data: budgetSettings } = useDoc<any>(budgetRef);
+
+  const transportRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId, 'rates', 'transport') : null, [firestore, schoolId]);
+  const { data: transportSettings } = useDoc<any>(transportRef);
   
   if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
     return (
         <div className="p-8 flex justify-center">
-            <Card className="max-w-md w-full border-red-100 bg-red-50/50">
-                <CardHeader className="text-center">
-                    <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4 text-red-600">
-                        <Settings size={32} />
+            <Card className="max-w-md w-full border border-red-150 bg-red-50/30 rounded-3xl p-6 text-center">
+                <CardHeader>
+                    <div className="bg-red-100/80 text-red-650 p-4 rounded-full w-fit mx-auto mb-4 shadow-inner">
+                        <Settings size={36} className="animate-spin-slow" />
                     </div>
-                    <CardTitle>Access Restricted</CardTitle>
-                    <CardDescription>Only Accountants and Administrators can access financial configurations.</CardDescription>
+                    <CardTitle className="font-black text-slate-900">Access Restricted</CardTitle>
+                    <CardDescription className="font-semibold text-slate-500 mt-1">Only Accountants and Administrators can access financial configurations.</CardDescription>
                 </CardHeader>
             </Card>
         </div>
@@ -667,20 +763,51 @@ export default function FinancialSettingsPage() {
   }
 
   if (isLoadingSchool) {
-      return <div className="flex justify-center p-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
+      return <div className="flex justify-center p-20"><Loader2 className="h-10 w-10 animate-spin text-indigo-650" /></div>;
   }
 
   if (!schoolId) {
-       return <Card className="m-6"><CardHeader><CardTitle>School Not Found</CardTitle></CardHeader></Card>;
+       return <Card className="m-6 rounded-3xl border border-slate-200 bg-slate-50/50"><CardHeader><CardTitle className="font-black">School Settings Context Not Found</CardTitle></CardHeader></Card>;
   }
 
   return (
-    <div className="space-y-8 p-6 max-w-6xl mx-auto">
-        <div className="flex flex-col gap-1 mb-4">
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2">
-                <Settings className="text-indigo-600 h-8 w-8"/> Financial Logic Center
-            </h1>
-            <p className="text-muted-foreground font-medium italic">Configure automated billing models and auditing tools.</p>
+    <div className="space-y-8 p-6 max-w-6xl mx-auto flex flex-col h-full">
+        {/* Premium Executive Settings Banner */}
+        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 shadow-xl border border-indigo-950/40">
+          <div className="absolute right-0 top-0 opacity-5 pointer-events-none transform translate-x-10 -translate-y-10">
+            <Settings className="w-80 h-80" />
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Badge className="bg-indigo-500 text-white font-extrabold px-2 py-0.5 text-[10px] uppercase tracking-wider">SYSTEM CONFIG & POLICIES</Badge>
+                <Badge className="bg-white/10 text-indigo-200 border border-white/10 font-bold px-2 py-0.5 text-[10px] uppercase">OPERATIONAL LOGIC</Badge>
+              </div>
+              <h1 className="text-3xl font-black tracking-tight">Financial Logic Center</h1>
+              <p className="text-indigo-100/70 text-sm max-w-md">Configure automated billing rates, class-based pricing models, budget overrun action thresholds, and run retrospective billing audits.</p>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-4 shrink-0 bg-white/5 border border-white/10 rounded-2xl p-4">
+               <div className="text-xs space-y-1">
+                  <span className="text-indigo-200/60 block uppercase font-extrabold tracking-wider text-[9px]">Active Pricing Model</span>
+                  <Badge variant="secondary" className="bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20 uppercase font-black text-[9px] px-2 py-0.5 block w-fit">
+                     {canteenSettings?.pricingModel === 'Class-Based' ? 'Custom Class Rates' : 'Flat Daily Fees'}
+                  </Badge>
+               </div>
+               <div className="h-8 w-px bg-white/10 hidden sm:block"></div>
+               <div className="text-xs space-y-1">
+                  <span className="text-indigo-200/60 block uppercase font-extrabold tracking-wider text-[9px]">Budget Policy</span>
+                  <Badge variant="secondary" className="bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/20 uppercase font-black text-[9px] px-2 py-0.5 block w-fit">
+                     {budgetSettings?.policy || 'Warning Only'}
+                  </Badge>
+               </div>
+               <div className="h-8 w-px bg-white/10 hidden sm:block"></div>
+               <div className="text-xs space-y-1">
+                  <span className="text-indigo-200/60 block uppercase font-extrabold tracking-wider text-[9px]">Default Bus Fee</span>
+                  <span className="font-extrabold block text-xs text-indigo-100">GH₵{Number(transportSettings?.dailyRate || 0).toFixed(2)}</span>
+               </div>
+            </div>
+          </div>
         </div>
         
         <div className="grid lg:grid-cols-2 gap-6">
@@ -692,6 +819,12 @@ export default function FinancialSettingsPage() {
         </div>
         
         <div className="space-y-6">
+            <div className="flex flex-col gap-1.5 pt-4">
+                <h2 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <RefreshCw className="text-indigo-600 h-5 w-5"/> Billing Reconciliation & Audits
+                </h2>
+                <p className="text-xs text-muted-foreground font-semibold">Manually adjust student statements and reprocess retrospective attendance-based fee logs.</p>
+            </div>
             <ManualBillingReconciliation schoolId={schoolId} />
             <RetrospectiveBilling schoolId={schoolId} />
         </div>

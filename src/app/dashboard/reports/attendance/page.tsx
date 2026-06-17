@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
+import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
 import { collection, query, where, getDocs, writeBatch, doc, Timestamp } from 'firebase/firestore'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -255,6 +255,9 @@ export default function AttendanceReportsPage() {
     }, [firestore, schoolId, isRoleLoading, canAccess]);
     const { data: students, isLoading: isLoadingStudents } = useCollection(studentsQuery);
 
+    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
+
     const { filteredData, summaryStats, trendData, pieData } = useMemo(() => {
         if (!rawAttendance || !students || !classes || !dateRange?.from) {
             return { filteredData: [], summaryStats: null, trendData: [], pieData: [] };
@@ -267,6 +270,7 @@ export default function AttendanceReportsPage() {
 
         const filtered = rawAttendance
             .filter(record => {
+                if (!record.date) return false;
                 const recordDate = record.date?.toDate ? record.date.toDate() : new Date(record.date);
                 if (recordDate < fromDate || recordDate > toDate) return false;
                 if (selectedClassId !== 'all' && record.classId !== selectedClassId) return false;
@@ -355,15 +359,33 @@ export default function AttendanceReportsPage() {
     return (
         <div className="space-y-6 p-6">
 
-            {/* HEADER */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
-                <div>
-                    <h1 className="text-3xl font-bold flex items-center gap-2">
-                        <BarChartIcon className="text-indigo-600"/> Attendance Insights
-                    </h1>
-                    <p className="text-muted-foreground">Monitor participation trends and student consistency.</p>
+            {/* PRINT COMPATIBLE LETTERHEAD */}
+            <div className="hidden print:flex flex-col items-center border-b border-slate-300 pb-4 mb-6 text-center">
+                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{schoolProfile?.schoolName || 'ATTENDANCE INSIGHTS'}</h1>
+                <p className="text-xs text-slate-500 mt-1">
+                    {schoolProfile?.address || ''} 
+                    {schoolProfile?.phone ? ` | Tel: ${schoolProfile.phone}` : ''} 
+                    {schoolProfile?.email ? ` | Email: ${schoolProfile.email}` : ''}
+                </p>
+                <div className="mt-4 border-t pt-4 w-full flex justify-between text-xs font-semibold text-slate-600">
+                    <span>REPORT: STUDENT PARTICIPATION & ATTENDANCE SUMMARY</span>
+                    <span>PERIOD: {dateRange?.from ? format(dateRange.from, "PPP") : 'N/A'} - {dateRange?.to ? format(dateRange.to, "PPP") : 'N/A'}</span>
+                    <span>CLASS: {selectedClassId === 'all' ? 'ALL CLASSES' : classes?.find((c: any) => c.id === selectedClassId)?.name || 'N/A'}</span>
                 </div>
-                <div className="flex items-center gap-2">
+            </div>
+
+            {/* HEADER */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 print:hidden bg-gradient-to-r from-teal-600 via-emerald-600 to-cyan-600 p-6 rounded-2xl text-white shadow-xl">
+                <div className="space-y-1">
+                    <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-2">
+                        <BarChartIcon className="h-8 w-8 text-emerald-200 animate-pulse" /> 
+                        Attendance Insights Portal
+                    </h1>
+                    <p className="text-emerald-100 text-sm font-medium">
+                        Monitor student participation rates, consistency indicators, and daily attendance distributions.
+                    </p>
+                </div>
+                <div className="flex gap-2 self-stretch md:self-auto justify-end items-center">
                     {isAdmin && schoolId && (
                         <AttendanceManagerDialog 
                             classes={classes || []} 
@@ -371,15 +393,15 @@ export default function AttendanceReportsPage() {
                             onRefresh={forceRefetch}
                         />
                     )}
-                    <Button onClick={() => window.print()} variant="outline">
-                        <Printer className="mr-2 h-4 w-4"/> Print Report
+                    <Button onClick={() => window.print()} className="bg-white text-slate-800 hover:bg-slate-50 shadow-md border-0">
+                        <Printer className="mr-2 h-4 w-4"/>Print Record
                     </Button>
                 </div>
             </div>
 
             {/* FILTERS */}
-            <Card className="print:hidden shadow-sm">
-                <CardHeader className="pb-3 bg-slate-50/50">
+            <Card className="print:hidden shadow-sm border border-slate-200/80">
+                <CardHeader className="pb-3 bg-slate-50/50 border-b">
                     <div className="flex items-center gap-2">
                         <Settings2 className="h-4 w-4 text-slate-400"/>
                         <p className="text-xs font-bold uppercase text-slate-500 tracking-widest">Filter Parameters</p>
@@ -435,52 +457,52 @@ export default function AttendanceReportsPage() {
             {summaryStats && (
                 <>
                     {/* SUMMARY STAT CARDS */}
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card className="border-l-4 border-l-indigo-500 shadow-sm overflow-hidden group">
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                        <Card className="border border-slate-200/80 bg-gradient-to-br from-emerald-50 to-emerald-100/30 shadow-sm overflow-hidden group">
                             <CardContent className="pt-6 relative">
-                                <TrendingUp className="absolute -right-2 -bottom-2 h-16 w-16 text-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <TrendingUp className="absolute -right-2 -bottom-2 h-16 w-16 text-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <div className="flex items-center justify-between relative z-10">
                                     <div>
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-tighter">Attendance Rate</p>
-                                        <p className="text-3xl font-black text-indigo-600">{summaryStats.rate}%</p>
+                                        <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Attendance Rate</p>
+                                        <p className="text-3xl font-black text-emerald-700">{summaryStats.rate}%</p>
                                     </div>
-                                    <TrendingUp className="h-8 w-8 text-indigo-100" />
+                                    <TrendingUp className="h-8 w-8 text-emerald-300" />
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="border-l-4 border-l-red-500 shadow-sm overflow-hidden group">
+                        <Card className="border border-slate-200/80 bg-gradient-to-br from-rose-50 to-rose-100/30 shadow-sm overflow-hidden group">
                             <CardContent className="pt-6 relative">
-                                <AlertCircle className="absolute -right-2 -bottom-2 h-16 w-16 text-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <AlertCircle className="absolute -right-2 -bottom-2 h-16 w-16 text-rose-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <div className="flex items-center justify-between relative z-10">
                                     <div>
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-tighter">Total Absences</p>
-                                        <p className="text-3xl font-black text-red-600">{summaryStats.absent}</p>
+                                        <p className="text-xs font-bold text-rose-600 uppercase tracking-wider">Total Absences</p>
+                                        <p className="text-3xl font-black text-rose-700">{summaryStats.absent}</p>
                                     </div>
-                                    <AlertCircle className="h-8 w-8 text-red-100" />
+                                    <AlertCircle className="h-8 w-8 text-rose-300" />
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="border-l-4 border-l-yellow-500 shadow-sm overflow-hidden group">
+                        <Card className="border border-slate-200/80 bg-gradient-to-br from-amber-50 to-amber-100/30 shadow-sm overflow-hidden group">
                             <CardContent className="pt-6 relative">
-                                <Clock className="absolute -right-2 -bottom-2 h-16 w-16 text-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <Clock className="absolute -right-2 -bottom-2 h-16 w-16 text-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <div className="flex items-center justify-between relative z-10">
                                     <div>
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-tighter">Late Arrivals</p>
-                                        <p className="text-3xl font-black text-yellow-600">{summaryStats.late}</p>
+                                        <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">Late Arrivals</p>
+                                        <p className="text-3xl font-black text-amber-700">{summaryStats.late}</p>
                                     </div>
-                                    <Clock className="h-8 w-8 text-yellow-100" />
+                                    <Clock className="h-8 w-8 text-amber-300" />
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="border-l-4 border-l-blue-500 shadow-sm overflow-hidden group">
+                        <Card className="border border-slate-200/80 bg-gradient-to-br from-indigo-50 to-indigo-100/30 shadow-sm overflow-hidden group">
                             <CardContent className="pt-6 relative">
-                                <Users className="absolute -right-2 -bottom-2 h-16 w-16 text-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <Users className="absolute -right-2 -bottom-2 h-16 w-16 text-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <div className="flex items-center justify-between relative z-10">
                                     <div>
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-tighter">Total Records</p>
-                                        <p className="text-3xl font-black text-blue-600">{summaryStats.total}</p>
+                                        <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Total Records</p>
+                                        <p className="text-3xl font-black text-indigo-700">{summaryStats.total}</p>
                                     </div>
-                                    <Users className="h-8 w-8 text-blue-100" />
+                                    <Users className="h-8 w-8 text-indigo-300" />
                                 </div>
                             </CardContent>
                         </Card>

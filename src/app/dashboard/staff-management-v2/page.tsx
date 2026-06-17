@@ -241,96 +241,145 @@ export default function StaffManagementPage() {
 
   // ── render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6 p-6">
-      <Card className="border-t-4 border-t-purple-500 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between">
+    <div className="space-y-8 p-6">
+      {/* Premium Indigo/Purple Gradient Header */}
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 p-8 md:p-10 text-white shadow-xl shadow-indigo-150/50 dark:shadow-none">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <UserCog className="h-6 w-6 text-purple-500" /> Staff Management
-            </CardTitle>
-            <CardDescription>
-              {adminSchoolId
-                ? `Total Staff: ${staff.length} · Public Profiles: ${staff.filter(s => s.showOnWebsite).length}`
-                : 'Loading school data…'}
-            </CardDescription>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+              <UserCog className="h-3.5 w-3.5 text-purple-200" /> Administration
+            </span>
+            <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Staff Management</h1>
+            <p className="mt-2 text-indigo-100/90 max-w-xl text-sm leading-relaxed">
+              Manage accounts and system access configurations for administrative, academic, and operations team members.
+            </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={loadData} disabled={overallLoading || !adminSchoolId}>
+          <div className="flex flex-wrap items-center gap-3 self-start md:self-center shrink-0">
+            <Button 
+              variant="outline" 
+              onClick={loadData} 
+              disabled={overallLoading || !adminSchoolId}
+              className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11"
+            >
               <RefreshCw className={cn('h-4 w-4 mr-2', overallLoading && 'animate-spin')} /> Refresh
             </Button>
-            <Button onClick={() => setIsAddOpen(true)} className="bg-purple-600 hover:bg-purple-700" disabled={!adminSchoolId}>
-              <UserPlus className="h-4 w-4 mr-2" /> Add Staff
+            <Button 
+              onClick={() => setIsAddOpen(true)} 
+              className="bg-white text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800 font-bold px-5 h-11 rounded-xl shadow-lg border border-indigo-100" 
+              disabled={!adminSchoolId}
+            >
+              <UserPlus className="h-4.5 w-4.5 mr-2" /> Add Staff Account
             </Button>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="space-y-4">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name or email…"
-              className="pl-8"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
+        {/* Dynamic Metric Badges */}
+        {adminSchoolId && (
+          <div className="relative z-10 mt-8 flex flex-wrap gap-4 border-t border-white/10 pt-6">
+            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
+              <span className="text-[10px] text-indigo-200 uppercase tracking-widest font-black">Total Personnel</span>
+              <div className="text-xl font-bold mt-0.5">{staff.length} Active</div>
+            </div>
+            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
+              <span className="text-[10px] text-indigo-200 uppercase tracking-widest font-black">Public Directory</span>
+              <div className="text-xl font-bold mt-0.5">{staff.filter(s => s.showOnWebsite).length} Listed</div>
+            </div>
+          </div>
+        )}
+        
+        {/* Glowing Accents */}
+        <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+      </div>
+
+      {/* Main Table Content container */}
+      <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden bg-white">
+        <CardContent className="p-6 space-y-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="relative max-w-sm flex-grow">
+              <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search staff by name or email…"
+                className="pl-10 h-10 border-slate-200 rounded-xl focus-visible:ring-indigo-500"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">{filteredStaff.length} Records</span>
           </div>
 
           {overallLoading ? (
-            <div className="py-10 flex justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+            <div className="py-16 flex flex-col items-center justify-center text-slate-400 bg-slate-50 border border-dashed rounded-2xl">
+              <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mb-2" />
+              <p className="text-xs uppercase font-bold tracking-wider">Loading Personnel Directory...</p>
             </div>
           ) : filteredStaff.length === 0 ? (
-            <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-              {adminSchoolId ? 'No staff found matching your search.' : 'Loading…'}
+            <div className="py-16 text-center text-slate-400 border border-dashed rounded-2xl bg-slate-50 flex flex-col items-center gap-3">
+              <Search className="h-8 w-8 text-slate-300" />
+              <div>
+                <p className="font-semibold text-slate-700">No personnel records found</p>
+                <p className="text-xs mt-1 text-slate-400">Try adjusting your search criteria or add a new team member.</p>
+              </div>
             </div>
           ) : (
-            <div className="rounded-md border overflow-hidden">
+            <div className="rounded-2xl border border-slate-100 overflow-hidden">
               <Table>
-                <TableHeader className="bg-slate-50">
+                <TableHeader className="bg-slate-50/50">
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Role & Expertise</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="font-bold text-slate-700 h-12">Name & ID</TableHead>
+                    <TableHead className="font-bold text-slate-700 h-12">System Role</TableHead>
+                    <TableHead className="font-bold text-slate-700 h-12">Expertise / Classes</TableHead>
+                    <TableHead className="font-bold text-slate-700 h-12">Email</TableHead>
+                    <TableHead className="text-right font-bold text-slate-700 h-12 px-6">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredStaff.map(member => {
                       const mySubjects = subjects?.filter(s => s.teacherIds?.includes(member.uid || member.id)) || [];
                       return (
-                        <TableRow key={member.id} className="hover:bg-slate-50/50 transition-colors">
-                            <TableCell>
-                                <div className="font-semibold text-slate-900">{member.firstName} {member.lastName}</div>
-                                <div className="text-[10px] text-slate-400 font-bold uppercase">{member.id.slice(0,8)}</div>
-                            </TableCell>
-                            <TableCell>
-                                <div className="flex flex-col gap-1.5">
-                                    <Badge variant="secondary" className="font-bold w-fit">{member.role}</Badge>
-                                    {member.role === 'Teacher' && (
-                                        <div className="flex flex-wrap gap-1">
-                                            {mySubjects.length > 0 ? mySubjects.map(s => (
-                                                <Badge key={s.id} variant="outline" className="text-[8px] bg-emerald-50 text-emerald-700 border-emerald-100 font-black uppercase tracking-widest px-1.5">
-                                                    {s.name}
-                                                </Badge>
-                                            )) : (
-                                                <span className="text-[9px] text-orange-400 italic">No subjects assigned</span>
-                                            )}
-                                        </div>
-                                    )}
+                        <TableRow key={member.id} className="hover:bg-slate-50/40 transition-colors group">
+                            <TableCell className="py-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 font-bold border border-indigo-100/50 text-sm group-hover:scale-105 transition-transform">
+                                        {member.firstName?.charAt(0) || '?'}{member.lastName?.charAt(0) || ''}
+                                    </div>
+                                    <div>
+                                        <div className="font-bold text-slate-800">{member.firstName} {member.lastName}</div>
+                                        <div className="text-[10px] text-slate-400 font-mono tracking-wider">UID: {member.id.slice(0, 8).toUpperCase()}</div>
+                                    </div>
                                 </div>
                             </TableCell>
-                            <TableCell className="text-slate-500 text-sm">{member.email}</TableCell>
-                            <TableCell className="text-right">
-                                <div className="flex justify-end gap-1">
-                                <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(member)} title="Reset Password">
-                                    <KeyRound className="h-4 w-4 text-orange-500"/>
-                                </Button>
-                                <Button variant="ghost" size="sm" onClick={() => setEditingStaff(member)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                                    <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button variant="ghost" size="sm" onClick={() => handleDelete(member.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
+                            <TableCell className="py-4">
+                                <Badge variant="secondary" className="font-bold text-xs bg-slate-100 text-slate-700 hover:bg-slate-100 rounded-md border border-slate-200/50 px-2 py-0.5">
+                                    {member.role}
+                                </Badge>
+                            </TableCell>
+                            <TableCell className="py-4">
+                                {member.role === 'Teacher' ? (
+                                    <div className="flex flex-wrap gap-1 max-w-[240px]">
+                                        {mySubjects.length > 0 ? mySubjects.map(s => (
+                                            <Badge key={s.id} variant="outline" className="text-[9px] bg-emerald-50 text-emerald-700 border-emerald-100 font-black uppercase tracking-widest px-2 py-0.5 rounded">
+                                                {s.name}
+                                            </Badge>
+                                        )) : (
+                                            <span className="text-xs text-amber-500 font-medium italic">Unassigned</span>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <span className="text-xs text-slate-400 italic">N/A</span>
+                                )}
+                            </TableCell>
+                            <TableCell className="py-4 text-slate-600 text-sm font-medium">{member.email}</TableCell>
+                            <TableCell className="text-right py-4 px-6">
+                                <div className="flex justify-end gap-1.5">
+                                    <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(member)} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
+                                        <KeyRound className="h-4.5 w-4.5 text-amber-500"/>
+                                    </Button>
+                                    <Button variant="ghost" size="sm" onClick={() => setEditingStaff(member)} className="h-8.5 w-8.5 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg">
+                                        <Edit className="h-4.5 w-4.5" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" onClick={() => handleDelete(member.id)} className="h-8.5 w-8.5 p-0 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg">
+                                        <Trash2 className="h-4.5 w-4.5" />
+                                    </Button>
                                 </div>
                             </TableCell>
                         </TableRow>

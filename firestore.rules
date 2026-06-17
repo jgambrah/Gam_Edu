@@ -426,7 +426,7 @@ service cloud.firestore {
 
     match /payrollSettings/{settingsId} {
       allow read, list: if isFinanceStaff();
-      allow write: if isAdmin();
+      allow write: if isAdmin() || isFinanceStaff();
     }
 
     match /payroll_settings/{docId} {

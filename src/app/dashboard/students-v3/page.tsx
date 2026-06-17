@@ -373,41 +373,67 @@ export default function StudentsV3Page() {
   const overallLoading = isLoadingSchool || isLoading;
 
   return (
-    <div className="space-y-6 p-6">
-      <Card className="border-t-4 border-t-green-600 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                    <GraduationCap className="h-6 w-6 text-green-600"/> Students
-                </CardTitle>
-                <CardDescription>
-                    {adminSchoolId ? `Found: ${students.length} | Showing: ${filteredStudents.length}` : "Loading School Data..."}
-                </CardDescription>
+    <div className="space-y-8 p-6">
+      {/* Executive Emerald/Green Gradient Header */}
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600 p-8 md:p-10 text-white shadow-xl shadow-emerald-100/50 dark:shadow-none">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+              <GraduationCap className="h-3.5 w-3.5 text-emerald-200" /> Academic Registry
+            </span>
+            <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Student Directory</h1>
+            <p className="mt-2 text-emerald-100/90 max-w-xl text-sm leading-relaxed">
+              Maintain the central student database, classes distribution tracking, parent relationship configurations, and service billing flags.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <Button variant="outline" onClick={loadData} disabled={overallLoading} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
+              <RefreshCw className={cn("h-4 w-4 mr-2", overallLoading && "animate-spin")}/> Refresh
+            </Button>
+            {canManage && (
+              <Button onClick={() => setIsAddOpen(true)} className="bg-white text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 font-bold px-5 h-11 rounded-xl shadow-lg border border-emerald-100" disabled={!adminSchoolId}>
+                <UserPlus className="h-4.5 w-4.5 mr-2"/> Enroll Student
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Dynamic Metric Badges */}
+        {adminSchoolId && (
+          <div className="relative z-10 mt-8 flex flex-wrap gap-4 border-t border-white/10 pt-6">
+            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
+              <span className="text-[10px] text-emerald-200 uppercase tracking-widest font-black">Registered Students</span>
+              <div className="text-xl font-bold mt-0.5">{students.length} Total</div>
             </div>
-            <div className="flex gap-2">
-                <Button variant="outline" onClick={loadData} disabled={overallLoading}>
-                    <RefreshCw className={cn("h-4 w-4 mr-2", overallLoading && "animate-spin")}/> Refresh
-                </Button>
-                {canManage && (
-                    <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700" disabled={!adminSchoolId}>
-                        <UserPlus className="h-4 w-4 mr-2"/> Add Student
-                    </Button>
-                )}
+            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
+              <span className="text-[10px] text-emerald-200 uppercase tracking-widest font-black">Active Cohorts</span>
+              <div className="text-xl font-bold mt-0.5">{students.filter(s => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length} Enrolled</div>
             </div>
-        </CardHeader>
-        
-        <CardContent className="space-y-4">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
+              <span className="text-[10px] text-emerald-200 uppercase tracking-widest font-black">Pending Placement</span>
+              <div className="text-xl font-bold mt-0.5 text-amber-200">{students.filter(s => !s.classId).length} Needs Class</div>
+            </div>
+          </div>
+        )}
+
+        {/* Decorative glows */}
+        <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+      </div>
+      
+      {/* Main card */}
+      <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden bg-white">
+        <CardContent className="p-6 space-y-6">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                 <StudentSearchInput 
                   value={searchTerm} 
                   onChange={setSearchTerm} 
-                  className="flex-grow"
+                  className="flex-grow w-full md:max-w-md border-slate-200 focus:ring-emerald-500 rounded-xl"
                 />
                 
-                <div className="flex gap-2 w-full md:w-auto">
+                <div className="flex flex-wrap gap-2 w-full md:w-auto items-center justify-end">
                     <Select value={classFilter} onValueChange={setClassFilter}>
-                        <SelectTrigger className="w-full md:w-[200px] border-2"><SelectValue placeholder="All Classes" /></SelectTrigger>
-                        <SelectContent>
+                        <SelectTrigger className="w-full md:w-[180px] h-10 border-slate-200 rounded-xl"><SelectValue placeholder="All Classes" /></SelectTrigger>
+                        <SelectContent className="rounded-xl">
                             <SelectItem value="all">All Classes</SelectItem>
                             <SelectItem value="unassigned" className="text-orange-600 font-bold">Unassigned</SelectItem>
                             {classes.map(c => (
@@ -417,8 +443,8 @@ export default function StudentsV3Page() {
                     </Select>
 
                     <Select value={statusFilter} onValueChange={(v: any) => setStatusFilter(v)}>
-                        <SelectTrigger className="w-full md:w-[160px] border-2"><SelectValue placeholder="Status" /></SelectTrigger>
-                        <SelectContent>
+                        <SelectTrigger className="w-full md:w-[150px] h-10 border-slate-200 rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
+                        <SelectContent className="rounded-xl">
                             <SelectItem value="Active">Active Only</SelectItem>
                             <SelectItem value="Inactive">Archived Only</SelectItem>
                             <SelectItem value="All">Show All</SelectItem>
@@ -428,26 +454,29 @@ export default function StudentsV3Page() {
             </div>
 
             {overallLoading ? (
-                <div className="py-12 flex flex-col items-center gap-3 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
-                    <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
-                    <p>{statusMsg}</p>
+                <div className="py-16 flex flex-col items-center gap-3 text-slate-400 bg-slate-50 border border-dashed rounded-2xl">
+                    <Loader2 className="h-8 w-8 animate-spin text-emerald-600"/>
+                    <p className="text-xs uppercase font-bold tracking-wider">{statusMsg}</p>
                 </div>
             ) : filteredStudents.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
+                <div className="py-16 text-center text-slate-400 border border-dashed rounded-2xl bg-slate-50 flex flex-col items-center gap-3">
                     <WifiOff className="h-10 w-10 text-slate-300" />
-                    <p className="font-medium">No students found.</p>
+                    <div>
+                        <p className="font-semibold text-slate-700">No students found</p>
+                        <p className="text-xs text-slate-400 mt-1">Try modifying your filter options or add a student.</p>
+                    </div>
                 </div>
             ) : (
-                <div className="rounded-md border overflow-hidden">
+                <div className="rounded-2xl border border-slate-100 overflow-hidden">
                     <Table>
-                        <TableHeader>
-                            <TableRow className="bg-slate-50">
-                                <TableHead>Student</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Student ID</TableHead>
-                                <TableHead>Class</TableHead>
-                                <TableHead>Services</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                        <TableHeader className="bg-slate-50/50">
+                            <TableRow>
+                                <TableHead className="font-bold text-slate-700 h-12">Student Profile</TableHead>
+                                <TableHead className="font-bold text-slate-700 h-12">Enrollment Status</TableHead>
+                                <TableHead className="font-bold text-slate-700 h-12">Student ID</TableHead>
+                                <TableHead className="font-bold text-slate-700 h-12">Assigned Class</TableHead>
+                                <TableHead className="font-bold text-slate-700 h-12">Subscribed Services</TableHead>
+                                <TableHead className="text-right font-bold text-slate-700 h-12 px-6">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -455,57 +484,70 @@ export default function StudentsV3Page() {
                                 const currentStatus = s.enrollmentStatus || 'Active';
                                 const isInactive = currentStatus === 'Inactive';
                                 return (
-                                    <TableRow key={s.id} className={cn(isInactive && "bg-slate-50/80 grayscale opacity-70")}>
-                                        <TableCell>
+                                    <TableRow key={s.id} className={cn("hover:bg-slate-50/30 transition-colors group", isInactive && "bg-slate-50/50 grayscale opacity-70")}>
+                                        <TableCell className="py-4">
                                             <StudentDisplay student={s} variant="list" showAvatar />
                                         </TableCell>
-                                        <TableCell>
-                                            <Badge variant={isInactive ? "secondary" : "default"} className={cn(isInactive ? "bg-slate-200 text-slate-600" : "bg-green-100 text-green-700")}>
+                                        <TableCell className="py-4">
+                                            <Badge variant={isInactive ? "secondary" : "default"} className={cn("font-bold text-xs rounded-md px-2 py-0.5", isInactive ? "bg-slate-100 text-slate-600 border border-slate-200" : "bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border border-emerald-100")}>
                                                 {currentStatus}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="font-mono text-xs">
+                                        <TableCell className="font-mono text-xs py-4 text-slate-600 font-medium">
                                             {formatStudentId(s)}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="py-4">
                                             {s.classId ? (
-                                                <Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge>
+                                                <Badge variant="secondary" className="font-semibold bg-slate-100 text-slate-700 border border-slate-200/50 rounded">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge>
                                             ) : (
-                                                <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 font-bold italic">Needs Class</Badge>
+                                                <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-200 bg-amber-50 font-black tracking-wider uppercase">Unplaced</Badge>
                                             )}
                                         </TableCell>
-                                        <TableCell>
-                                            <div className="flex gap-2">
-                                                {s.canteenBillingMode !== 'None' && <span title={`Canteen: ${s.canteenBillingMode}`}><Utensils className="h-4 w-4 text-orange-500"/></span>}
-                                                {s.usesBusService && <span title={`Bus Subscriber (${s.transportBillingModel})`}><Bus className="h-4 w-4 text-blue-500" /></span>}
+                                        <TableCell className="py-4">
+                                            <div className="flex gap-2.5">
+                                                {s.canteenBillingMode !== 'None' ? (
+                                                    <span title={`Canteen: ${s.canteenBillingMode}`} className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-600 border border-amber-100">
+                                                        <Utensils className="h-3.5 w-3.5"/>
+                                                    </span>
+                                                ) : null}
+                                                {s.usesBusService ? (
+                                                    <span title={`Bus Service: ${s.transportBillingModel}`} className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
+                                                        <Bus className="h-3.5 w-3.5" />
+                                                    </span>
+                                                ) : null}
+                                                {s.canteenBillingMode === 'None' && !s.usesBusService && (
+                                                    <span className="text-xs text-slate-400 font-medium italic">None</span>
+                                                )}
                                             </div>
                                         </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-1">
+                                        <TableCell className="text-right py-4 px-6">
+                                            <div className="flex justify-end gap-1.5">
                                                 {canManage && (
                                                     <>
-                                                        <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(s)} title="Reset Password">
-                                                            <KeyRound className="h-4 w-4 text-orange-500"/>
+                                                        <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(s)} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
+                                                            <KeyRound className="h-4.5 w-4.5 text-amber-500"/>
                                                         </Button>
-                                                        <Button variant="outline" size="sm" onClick={() => toast({ title: "Opening direct SMS...", description: "Feature being integrated." })} title="Send Bill Reminder">
-                                                            <MessageSquare className="h-4 w-4" />
+                                                        <Button variant="ghost" size="sm" onClick={() => toast({ title: "Opening direct SMS...", description: "Feature being integrated." })} title="Send Bill Reminder" className="h-8.5 w-8.5 p-0 hover:bg-slate-100 rounded-lg">
+                                                            <MessageSquare className="h-4.5 w-4.5 text-slate-500" />
                                                         </Button>
-                                                        <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                                        <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)} className="h-8.5 w-8.5 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg">
+                                                            <Edit className="h-4.5 w-4.5"/>
+                                                        </Button>
                                                         
                                                         <Button 
                                                             variant="ghost" 
                                                             size="sm" 
                                                             type="button"
                                                             onClick={() => triggerArchive(s.id, s.enrollmentStatus)}
-                                                            className={cn(isInactive ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" : "text-slate-400 hover:text-red-600 hover:bg-red-50")}
+                                                            className={cn("h-8.5 w-8.5 p-0 rounded-lg", isInactive ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" : "text-slate-400 hover:text-rose-600 hover:bg-rose-50")}
                                                             title={isInactive ? "Restore Student" : "Archive Student"}
                                                         >
-                                                            {isInactive ? <RotateCcw className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+                                                            {isInactive ? <RotateCcw className="h-4.5 w-4.5" /> : <Archive className="h-4.5 w-4.5" />}
                                                         </Button>
                                                     </>
                                                 )}
                                                 {isSecretary && (
-                                                    <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)} className="text-indigo-600">
+                                                    <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)} className="text-indigo-600 hover:bg-indigo-50">
                                                         <Search className="h-4 w-4 mr-2" /> View Details
                                                     </Button>
                                                 )}

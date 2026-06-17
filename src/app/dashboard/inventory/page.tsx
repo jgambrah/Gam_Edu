@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, deleteDoc, writeBatch, serverTimestamp, deleteField } from 'firebase/firestore';
 import { 
   Boxes, PlusCircle, Search, Loader2, Edit, Trash2, 
   History, ArrowUpRight, ArrowDownLeft, Package, 
@@ -38,13 +38,15 @@ import {
 import { InventoryItemForm } from './inventory-item-form';
 import { CheckoutForm } from './checkout-form';
 import { TransactionHistoryDialog } from './transaction-history-dialog';
-import { SaleDialog } from './sale-dialog'; // Using sale dialog for "Usage/Restock" simulation
+import { RestockDialog } from './restock-dialog';
+import { AdjustmentDialog } from './adjustment-dialog';
 import type { InventoryItem, Staff, Class } from '@/lib/types';
 
 export default function InventoryPage() {
   const firestore = useFirestore();
   const { role } = useRole();
   const { toast } = useToast();
+  const { user } = useUser();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   // State
@@ -54,6 +56,7 @@ export default function InventoryPage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isRestockOpen, setIsRestockOpen] = useState(false);
+  const [isAdjustmentOpen, setIsAdjustmentOpen] = useState(false);
 
   const canManage = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
@@ -63,11 +66,111 @@ export default function InventoryPage() {
   [firestore, schoolId]);
   const { data: inventory, isLoading: isLoadingInventory, forceRefetch } = useCollection<InventoryItem>(inventoryQuery);
 
-  // 2. Fetch Staff (For Checkout mapping)
+  // 2. Fetch Staff (For Checkout mapping and Audit logs resolution)
   const staffQuery = useMemoFirebase(() => 
-    (firestore && schoolId && canManage) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, 
-  [firestore, schoolId, canManage]);
+    (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, 
+  [firestore, schoolId]);
   const { data: staffList } = useCollection<Staff>(staffQuery);
+
+  const handleCheckIn = async (item: InventoryItem) => {
+    if (!firestore || !user || !schoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Database context or user missing." });
+      return;
+    }
+
+    try {
+      const batch = writeBatch(firestore);
+      const itemRef = doc(firestore, 'inventory', item.id);
+      
+      batch.update(itemRef, {
+        status: 'Available',
+        currentHolderId: deleteField(),
+        currentHolderName: deleteField()
+      });
+
+      const invTransactionRef = doc(collection(firestore, `inventory/${item.id}/transactions`));
+      batch.set(invTransactionRef, {
+        itemId: item.id,
+        transactionType: 'Check-In',
+        staffId: user.uid,
+        timestamp: serverTimestamp(),
+        notes: `Returned to inventory.`,
+        schoolId,
+      });
+
+      await batch.commit();
+      toast({ title: "Asset Checked In", description: `${item.name} is now available.` });
+      forceRefetch();
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: "Check-In Failed", description: error.message });
+    }
+  };
+
+  const handleSendToMaintenance = async (item: InventoryItem) => {
+    if (!firestore || !user || !schoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Database context or user missing." });
+      return;
+    }
+
+    try {
+      const batch = writeBatch(firestore);
+      const itemRef = doc(firestore, 'inventory', item.id);
+      
+      batch.update(itemRef, {
+        status: 'Under Maintenance',
+        currentHolderId: deleteField(),
+        currentHolderName: deleteField()
+      });
+
+      const invTransactionRef = doc(collection(firestore, `inventory/${item.id}/transactions`));
+      batch.set(invTransactionRef, {
+        itemId: item.id,
+        transactionType: 'Adjustment',
+        staffId: user.uid,
+        timestamp: serverTimestamp(),
+        notes: `Sent to maintenance.`,
+        schoolId,
+      });
+
+      await batch.commit();
+      toast({ title: "Asset Sent to Maintenance", description: `${item.name} is now under maintenance.` });
+      forceRefetch();
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: "Action Failed", description: error.message });
+    }
+  };
+
+  const handleMarkRepaired = async (item: InventoryItem) => {
+    if (!firestore || !user || !schoolId) {
+      toast({ variant: "destructive", title: "Error", description: "Database context or user missing." });
+      return;
+    }
+
+    try {
+      const batch = writeBatch(firestore);
+      const itemRef = doc(firestore, 'inventory', item.id);
+      
+      batch.update(itemRef, {
+        status: 'Available'
+      });
+
+      const invTransactionRef = doc(collection(firestore, `inventory/${item.id}/transactions`));
+      batch.set(invTransactionRef, {
+        itemId: item.id,
+        transactionType: 'Adjustment',
+        staffId: user.uid,
+        timestamp: serverTimestamp(),
+        notes: `Marked as repaired and returned to stock.`,
+        schoolId,
+      });
+
+      await batch.commit();
+      toast({ title: "Asset Repaired", description: `${item.name} is now available.` });
+      forceRefetch();
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: "Action Failed", description: error.message });
+    }
+  };
 
   // Filter Logic
   const filteredInventory = useMemo(() => {
@@ -248,12 +351,46 @@ export default function InventoryPage() {
                                                 <DropdownMenuLabel className="text-[10px] uppercase font-black tracking-widest text-slate-400">Inventory Tools</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
                                                 
-                                                <DropdownMenuItem onClick={() => { setSelectedItem(item); setIsCheckoutOpen(true); }} className="cursor-pointer font-bold gap-2">
-                                                    <ArrowRight className="h-4 w-4 text-blue-600" /> {item.status === 'In Use' ? 'Update Holder' : 'Check Out'}
-                                                </DropdownMenuItem>
+                                                {/* Status-specific actions */}
+                                                {item.status === 'Available' && (
+                                                    <>
+                                                        <DropdownMenuItem onClick={() => { setSelectedItem(item); setIsCheckoutOpen(true); }} className="cursor-pointer font-bold gap-2">
+                                                            <ArrowRight className="h-4 w-4 text-blue-600" /> Check Out
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleSendToMaintenance(item)} className="cursor-pointer font-bold gap-2">
+                                                            <AlertTriangle className="h-4 w-4 text-amber-600" /> Send to Maintenance
+                                                        </DropdownMenuItem>
+                                                    </>
+                                                )}
+
+                                                {item.status === 'In Use' && (
+                                                    <>
+                                                        <DropdownMenuItem onClick={() => { setSelectedItem(item); setIsCheckoutOpen(true); }} className="cursor-pointer font-bold gap-2">
+                                                            <ArrowRight className="h-4 w-4 text-blue-600" /> Update Holder
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleCheckIn(item)} className="cursor-pointer font-bold gap-2">
+                                                            <CheckCircle2 className="h-4 w-4 text-green-600" /> Check In (Return)
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleSendToMaintenance(item)} className="cursor-pointer font-bold gap-2">
+                                                            <AlertTriangle className="h-4 w-4 text-amber-600" /> Send to Maintenance
+                                                        </DropdownMenuItem>
+                                                    </>
+                                                )}
+
+                                                {item.status === 'Under Maintenance' && (
+                                                    <DropdownMenuItem onClick={() => handleMarkRepaired(item)} className="cursor-pointer font-bold gap-2">
+                                                        <CheckCircle2 className="h-4 w-4 text-green-600" /> Mark as Repaired
+                                                    </DropdownMenuItem>
+                                                )}
                                                 
+                                                <DropdownMenuSeparator />
+
                                                 <DropdownMenuItem onClick={() => { setSelectedItem(item); setIsRestockOpen(true); }} className="cursor-pointer font-bold gap-2">
                                                     <PlusCircle className="h-4 w-4 text-emerald-600" /> Restock Items
+                                                </DropdownMenuItem>
+
+                                                <DropdownMenuItem onClick={() => { setSelectedItem(item); setIsAdjustmentOpen(true); }} className="cursor-pointer font-bold gap-2">
+                                                    <AlertTriangle className="h-4 w-4 text-orange-500" /> Stock Adjustment
                                                 </DropdownMenuItem>
 
                                                 <DropdownMenuItem onClick={() => { setSelectedItem(item); setIsHistoryOpen(true); }} className="cursor-pointer font-bold gap-2">
@@ -318,13 +455,21 @@ export default function InventoryPage() {
                     item={selectedItem} 
                     open={isHistoryOpen} 
                     setOpen={() => setIsHistoryOpen(false)} 
+                    staffList={staffList || []}
                 />
 
-                <SaleDialog 
+                <RestockDialog 
                     item={selectedItem} 
                     open={isRestockOpen} 
                     onOpenChange={setIsRestockOpen} 
-                    onSaleComplete={forceRefetch} 
+                    onRestockComplete={forceRefetch} 
+                />
+
+                <AdjustmentDialog 
+                    item={selectedItem} 
+                    open={isAdjustmentOpen} 
+                    onOpenChange={setIsAdjustmentOpen} 
+                    onAdjustmentComplete={forceRefetch} 
                 />
             </>
         )}

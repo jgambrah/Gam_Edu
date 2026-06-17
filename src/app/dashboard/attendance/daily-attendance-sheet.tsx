@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarIcon, Loader2, Utensils, Bus, Check, Search } from 'lucide-react'; 
+import { CalendarIcon, Loader2, Utensils, Bus, Check, Search, Clock, X, FileText, AlertCircle, Sparkles } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -260,57 +260,85 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         }
     }
 
+    const records = form.watch("records") || [];
+    
+    const billingBusCount = records.filter((r) => {
+        const student = students.find(s => s.uid === r.studentId);
+        const transportMode = (student as any)?.transportBillingModel || 'Daily';
+        return (r.status === 'Present' || r.status === 'Late') && student?.usesBusService && transportMode === 'Daily';
+    }).length;
+
+    const billingCanteenCount = records.filter((r) => {
+        const student = students.find(s => s.uid === r.studentId);
+        const canteenMode = (student as any)?.canteenBillingMode || 'Daily';
+        return (r.status === 'Present' || r.status === 'Late') && (student?.usesCanteen !== false) && canteenMode === 'Daily';
+    }).length;
+
     return (
         <Card className="border-none shadow-none bg-transparent h-full flex flex-col relative">
             <CardHeader className="px-0 flex-shrink-0">
-                <CardTitle>Daily Attendance & Billing</CardTitle>
-                <CardDescription>
-                    Only active students are listed. Marking 'Present' or 'Late' automatically generates bills for active subscribers.
+                <CardTitle className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-teal-600 animate-pulse" />
+                    Daily Attendance Cockpit
+                </CardTitle>
+                <CardDescription className="text-slate-500">
+                    Only active students are listed. Marking 'Present' or 'Late' automatically schedules charges for active subscribers.
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-0 flex-1 flex flex-col pb-0">
-                <div className="flex flex-col md:flex-row gap-4 mb-6 flex-shrink-0">
+                <div className="flex flex-col md:flex-row gap-4 mb-6 flex-shrink-0 bg-white/60 backdrop-blur-sm p-4 rounded-2xl border border-slate-100 shadow-sm">
                     {!propClassId && (
                         <div className="flex-1">
-                            <Label>Class</Label>
+                            <Label className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5 block">Select Class</Label>
                             <Select onValueChange={setSelectedClassId} value={selectedClassId} disabled={isLoadingClasses}>
-                                <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                                <SelectTrigger className="bg-white border-slate-200/80 rounded-xl h-11 focus:ring-teal-500">
+                                    <SelectValue placeholder="Select a class" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-slate-150">
+                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
                             </Select>
                         </div>
                     )}
                     <div className="flex-1">
-                        <Label>Date</Label>
+                        <Label className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5 block">Select Roster Date</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !selectedDate && 'text-muted-foreground')}>
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                <Button variant={'outline'} className={cn('w-full h-11 justify-start text-left font-normal bg-white border-slate-200/80 rounded-xl hover:bg-slate-50 transition-all', !selectedDate && 'text-muted-foreground')}>
+                                    <CalendarIcon className="mr-2 h-4 w-4 text-teal-600" />
                                     {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
+                            <PopoverContent className="w-auto p-0 border border-slate-150 rounded-2xl shadow-lg">
+                                <Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus className="rounded-2xl" />
+                            </PopoverContent>
                         </Popover>
                     </div>
                 </div>
 
                 {studentsLoaded && (
-                    <div className="relative w-full md:max-w-sm mb-4 flex-shrink-0">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <div className="relative w-full md:max-w-sm mb-6 flex-shrink-0">
+                        <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                         <Input 
-                            placeholder="Search student name..." 
-                            className="pl-9 bg-white" 
+                            placeholder="Filter student roster by name..." 
+                            className="pl-10 pr-4 bg-white border-slate-200/80 rounded-xl h-11 shadow-sm focus-visible:ring-teal-500" 
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
                     </div>
                 )}
 
-                {isLoading && !studentsLoaded && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>}
+                {isLoading && !studentsLoaded && (
+                    <div className="flex flex-col items-center justify-center p-12 text-slate-400 gap-3">
+                        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+                        <span className="text-sm font-medium animate-pulse text-slate-500">Retrieving student roster...</span>
+                    </div>
+                )}
 
                 {studentsLoaded && (
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 relative">
-                            <div className="space-y-3 overflow-y-auto flex-1 pb-4" style={{ maxHeight: 'calc(100vh - 280px)' }}>
+                            <div className="space-y-4 overflow-y-auto flex-1 pb-4 pr-1" style={{ maxHeight: 'calc(100vh - 280px)' }}>
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
                                     const currentStatus = form.watch(`records.${index}.status`);
@@ -326,7 +354,12 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                     if (!isVisible) return null;
 
                                     return (
-                                    <Card key={field.id} className={`p-4 transition-colors border shadow-sm ${currentStatus === 'Absent' ? 'bg-red-50/50 border-red-100' : 'bg-white'}`}>
+                                    <Card key={field.id} className={cn(
+                                        "p-4 transition-all duration-300 border shadow-sm rounded-2xl hover:shadow-md hover:border-slate-300/60",
+                                        currentStatus === 'Absent' ? 'bg-rose-50/20 border-rose-100' : 
+                                        currentStatus === 'Present' ? 'bg-emerald-50/10 border-emerald-100/60' : 
+                                        currentStatus === 'Late' ? 'bg-amber-50/15 border-amber-100/60' : 'bg-white'
+                                    )}>
                                         <input type="hidden" {...form.register(`records.${index}.id`)} />
                                         <input type="hidden" {...form.register(`records.${index}.studentId`)} defaultValue={field.studentId} />
                                         <input type="hidden" {...form.register(`records.${index}.classId`)} defaultValue={field.classId} />
@@ -334,19 +367,21 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center">
                                             <div className="lg:col-span-1">
                                                 {student && <StudentDisplay student={student} variant="list" />}
-                                                <div className="flex flex-wrap gap-1 mt-2">
+                                                <div className="flex flex-wrap gap-1.5 mt-2.5">
                                                     {willBillCanteen && (
-                                                        <Badge variant="outline" className="bg-orange-50 text-orange-700 text-[10px] border-orange-200">
-                                                            <Utensils className="h-3 w-3 mr-1"/> Bill Canteen
+                                                        <Badge variant="outline" className="bg-orange-50 text-orange-700 text-[10px] font-bold border-orange-200 rounded-lg flex items-center py-0.5 px-2">
+                                                            <Utensils className="h-3 w-3 mr-1 text-orange-600"/> Bill Canteen
                                                         </Badge>
                                                     )}
                                                     {willBillBus && (
-                                                        <Badge variant="outline" className="bg-blue-50 text-blue-700 text-[10px] border-blue-200">
-                                                            <Bus className="h-3 w-3 mr-1"/> Bill Bus
+                                                        <Badge variant="outline" className="bg-blue-50 text-blue-700 text-[10px] font-bold border-blue-200 rounded-lg flex items-center py-0.5 px-2">
+                                                            <Bus className="h-3 w-3 mr-1 text-blue-600"/> Bill Bus
                                                         </Badge>
                                                     )}
                                                     {currentStatus === 'Absent' && (
-                                                        <span className="text-[10px] text-red-500 font-bold uppercase tracking-wider">No charges</span>
+                                                        <Badge variant="secondary" className="bg-rose-50 text-rose-600 text-[10px] font-extrabold border border-rose-100 rounded-lg py-0.5 px-2 uppercase tracking-wide">
+                                                            No charges
+                                                        </Badge>
                                                     )}
                                                 </div>
                                             </div>
@@ -356,26 +391,72 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                 control={form.control}
                                                 name={`records.${index}.status`}
                                                 render={({ field: formField }) => (
-                                                    <FormItem className="space-y-0"><FormControl>
-                                                        <RadioGroup 
-                                                            onValueChange={formField.onChange} 
-                                                            defaultValue={formField.value} 
-                                                            className="flex flex-wrap gap-2"
-                                                        >
-                                                            <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Present' ? 'border-green-500 bg-green-50' : 'bg-white border-slate-200'}`}>
-                                                                <RadioGroupItem value="Present" id={`p-${index}`}/><Label htmlFor={`p-${index}`} className="cursor-pointer font-bold text-green-700">Present</Label>
-                                                            </div>
-                                                            <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Late' ? 'border-orange-500 bg-orange-50' : 'bg-white border-slate-200'}`}>
-                                                                <RadioGroupItem value="Late" id={`l-${index}`}/><Label htmlFor={`l-${index}`} className="cursor-pointer font-bold text-orange-600">Late</Label>
-                                                            </div>
-                                                            <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Absent' ? 'border-red-500 bg-red-50' : 'bg-white border-slate-200'}`}>
-                                                                <RadioGroupItem value="Absent" id={`a-${index}`}/><Label htmlFor={`a-${index}`} className="cursor-pointer font-bold text-red-600">Absent</Label>
-                                                            </div>
-                                                            <div className={`flex items-center space-x-2 border-2 px-3 py-2 rounded-xl cursor-pointer ${formField.value === 'Excused' ? 'border-slate-500 bg-slate-100' : 'bg-white border-slate-200'}`}>
-                                                                <RadioGroupItem value="Excused" id={`e-${index}`}/><Label htmlFor={`e-${index}`} className="cursor-pointer font-bold text-slate-500">Excused</Label>
-                                                            </div>
-                                                        </RadioGroup>
-                                                    </FormControl></FormItem>
+                                                    <FormItem className="space-y-0">
+                                                        <FormControl>
+                                                            <RadioGroup 
+                                                                onValueChange={formField.onChange} 
+                                                                defaultValue={formField.value} 
+                                                                value={formField.value}
+                                                                className="flex flex-wrap gap-2.5"
+                                                            >
+                                                                <div 
+                                                                    onClick={() => formField.onChange('Present')}
+                                                                    className={cn(
+                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-200 select-none shadow-sm",
+                                                                        formField.value === 'Present' 
+                                                                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold ring-2 ring-emerald-500/20 shadow-emerald-100' 
+                                                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                                    )}
+                                                                >
+                                                                    <RadioGroupItem value="Present" id={`p-${index}`} className="sr-only" />
+                                                                    <Check className={cn("h-3.5 w-3.5 mr-1 transition-all duration-200", formField.value === 'Present' ? "scale-100 opacity-100" : "scale-0 opacity-0 w-0 mr-0")} />
+                                                                    <span className="text-xs">Present</span>
+                                                                </div>
+                                                                
+                                                                <div 
+                                                                    onClick={() => formField.onChange('Late')}
+                                                                    className={cn(
+                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-200 select-none shadow-sm",
+                                                                        formField.value === 'Late' 
+                                                                            ? 'border-amber-500 bg-amber-50 text-amber-700 font-bold ring-2 ring-amber-500/20 shadow-amber-100' 
+                                                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                                    )}
+                                                                >
+                                                                    <RadioGroupItem value="Late" id={`l-${index}`} className="sr-only" />
+                                                                    <Clock className={cn("h-3.5 w-3.5 mr-1 transition-all duration-200", formField.value === 'Late' ? "scale-100 opacity-100" : "scale-0 opacity-0 w-0 mr-0")} />
+                                                                    <span className="text-xs">Late</span>
+                                                                </div>
+
+                                                                <div 
+                                                                    onClick={() => formField.onChange('Absent')}
+                                                                    className={cn(
+                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-200 select-none shadow-sm",
+                                                                        formField.value === 'Absent' 
+                                                                            ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-500/20 shadow-rose-100' 
+                                                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                                    )}
+                                                                >
+                                                                    <RadioGroupItem value="Absent" id={`a-${index}`} className="sr-only" />
+                                                                    <X className={cn("h-3.5 w-3.5 mr-1 transition-all duration-200", formField.value === 'Absent' ? "scale-100 opacity-100" : "scale-0 opacity-0 w-0 mr-0")} />
+                                                                    <span className="text-xs">Absent</span>
+                                                                </div>
+
+                                                                <div 
+                                                                    onClick={() => formField.onChange('Excused')}
+                                                                    className={cn(
+                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-200 select-none shadow-sm",
+                                                                        formField.value === 'Excused' 
+                                                                            ? 'border-slate-500 bg-slate-100 text-slate-700 font-bold ring-2 ring-slate-400/20 shadow-slate-100' 
+                                                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                                    )}
+                                                                >
+                                                                    <RadioGroupItem value="Excused" id={`e-${index}`} className="sr-only" />
+                                                                    <FileText className={cn("h-3.5 w-3.5 mr-1 transition-all duration-200", formField.value === 'Excused' ? "scale-100 opacity-100" : "scale-0 opacity-0 w-0 mr-0")} />
+                                                                    <span className="text-xs">Excused</span>
+                                                                </div>
+                                                            </RadioGroup>
+                                                        </FormControl>
+                                                    </FormItem>
                                                 )}
                                             />
                                             </div>
@@ -385,38 +466,76 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                 control={form.control}
                                                 name={`records.${index}.notes`}
                                                 render={({ field: formField }) => (
-                                                    <FormItem className="space-y-0"><FormControl><Input placeholder="Optional notes..." {...formField} className="bg-white border-slate-200" /></FormControl></FormItem>
+                                                    <FormItem className="space-y-0">
+                                                        <FormControl>
+                                                            <Input 
+                                                                placeholder="Add optional notes..." 
+                                                                {...formField} 
+                                                                className="bg-white border-slate-200 rounded-xl h-10 shadow-inner focus-visible:ring-teal-500 text-xs" 
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
                                                 )}
                                             />
                                             </div>
                                         </div>
                                     </Card>
-                                );
+                                    );
                                 })}
-                                {fields.length > 0 && <div className="h-28" />}
+                                {fields.length > 0 && <div className="h-32" />}
                             </div>
                         </form>
                     </Form>
                 )}
 
                 {studentsLoaded && fields.length > 0 && (
-                    <div className="fixed bottom-0 left-0 right-0 z-[9999] px-6 pb-6 pt-3 bg-white border-t shadow-[0_-4px_12px_rgba(0,0,0,0.12)]">
-                        <div className="max-w-4xl mx-auto">
-                            {billingProgress && (
-                                <div className="text-sm text-indigo-600 font-bold text-center mb-2 animate-pulse">
-                                    {billingProgress}
+                    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[50] w-[calc(100%-2rem)] max-w-4xl px-6 py-4 bg-slate-900/95 backdrop-blur-md border border-slate-800 rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.4)] flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
+                        <div className="flex flex-wrap items-center gap-3 text-[11px]">
+                            <div className="flex items-center gap-1.5 text-slate-300 bg-slate-800/85 px-3 py-1.5 rounded-lg border border-slate-700/50">
+                                <span className="font-semibold text-slate-400">Total Students:</span>
+                                <span className="text-white font-bold">{records.length}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-950/45 px-3 py-1.5 rounded-lg border border-emerald-800/30">
+                                <span className="font-semibold text-emerald-300">Present/Late:</span>
+                                <span className="font-bold">{records.filter(r => r.status === 'Present' || r.status === 'Late').length}</span>
+                            </div>
+                            {billingCanteenCount > 0 && (
+                                <div className="flex items-center gap-1.5 text-orange-400 bg-orange-950/45 px-3 py-1.5 rounded-lg border border-orange-800/30">
+                                    <Utensils className="h-3 w-3 text-orange-400" />
+                                    <span className="font-semibold text-orange-300">Canteen Bills:</span>
+                                    <span className="font-bold">{billingCanteenCount}</span>
                                 </div>
+                            )}
+                            {billingBusCount > 0 && (
+                                <div className="flex items-center gap-1.5 text-sky-400 bg-sky-950/45 px-3 py-1.5 rounded-lg border border-sky-800/30">
+                                    <Bus className="h-3 w-3 text-sky-400" />
+                                    <span className="font-semibold text-sky-300">Bus Bills:</span>
+                                    <span className="font-bold">{billingBusCount}</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-3.5 w-full md:w-auto shrink-0 justify-end">
+                            {billingProgress && (
+                                <span className="text-xs text-indigo-300 font-semibold animate-pulse max-w-[200px] truncate">
+                                    {billingProgress}
+                                </span>
                             )}
                             <Button
                                 onClick={form.handleSubmit(onSubmit)}
-                                className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-md"
+                                className="w-full md:w-auto h-11 px-6 font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-lg shadow-teal-950/20 transition-all duration-200 hover:shadow-teal-500/20 active:scale-[0.98]"
                                 disabled={isLoading}
                             >
-                                {isLoading
-                                    ? <Loader2 className="mr-2 h-4 w-6 animate-spin"/>
-                                    : <Check className="mr-2 h-4 w-6"/>
-                                }
-                                Confirm Attendance & Notify Parents
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                                        Saving...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Check className="mr-2 h-4 w-4"/>
+                                        Save & Process Attendance
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </div>
