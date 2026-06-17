@@ -879,6 +879,39 @@ function AudioMessagePlayer({ url }: { url: string }) {
     );
 }
 
+// --- AUDIO PLAYING helper ---
+function playNotificationSound() {
+    if (typeof window === 'undefined') return;
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    try {
+        const audioCtx = new AudioContextClass();
+        const playTone = (freq: number, start: number, duration: number) => {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, start);
+            
+            gainNode.gain.setValueAtTime(0, start);
+            gainNode.gain.linearRampToValueAtTime(0.2, start + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, start + duration);
+            
+            osc.start(start);
+            osc.stop(start + duration);
+        };
+        
+        const now = audioCtx.currentTime;
+        playTone(830.61, now, 0.15); // G#5
+        playTone(1046.50, now + 0.08, 0.25); // C6
+    } catch (e) {
+        console.error("Failed to play notification sound:", e);
+    }
+}
+
 // --- MAIN PAGE ---
 export default function MessagesPage() {
     const { user } = useUser();
@@ -954,6 +987,82 @@ export default function MessagesPage() {
             setTimeout(() => inputRef.current?.focus(), 100);
         }
     }, [selectedChatId]);
+
+    const prevChatsRef = useRef<ChatMetadata[] | null>(null);
+
+    // Calculate total unread messages count
+    const totalUnreadCount = useMemo(() => {
+        if (!chats || !user) return 0;
+        return chats.reduce((acc, chat) => {
+            return acc + (chat.unreadCount?.[user.uid] || 0);
+        }, 0);
+    }, [chats, user]);
+
+    // Request Notification permission on mount
+    useEffect(() => {
+        if (typeof window !== 'undefined' && 'Notification' in window) {
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+    }, []);
+
+    // Tab title updater
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+        const originalTitle = "Messages | GAM Edu";
+        if (totalUnreadCount > 0) {
+            document.title = `(${totalUnreadCount}) New Messages | GAM Edu`;
+        } else {
+            document.title = originalTitle;
+        }
+        return () => {
+            document.title = originalTitle;
+        };
+    }, [totalUnreadCount]);
+
+    // Real-time notification trigger when chats update
+    useEffect(() => {
+        if (!chats || !user) return;
+
+        if (!prevChatsRef.current) {
+            prevChatsRef.current = chats;
+            return;
+        }
+
+        chats.forEach(chat => {
+            const prevChat = prevChatsRef.current?.find(c => c.id === chat.id);
+            if (chat.lastMessageTime && (!prevChat || !prevChat.lastMessageTime || chat.lastMessageTime.seconds > prevChat.lastMessageTime.seconds)) {
+                const myUnread = chat.unreadCount?.[user.uid] || 0;
+                const prevUnread = prevChat?.unreadCount?.[user.uid] || 0;
+
+                const isNewIncomingMessage = myUnread > prevUnread || (selectedChatId === chat.id && document.hidden && chat.lastMessage !== prevChat?.lastMessage);
+
+                if (isNewIncomingMessage) {
+                    playNotificationSound();
+
+                    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+                        const otherDetails = Object.values(chat.participantDetails || {}).find(p => p.name !== user.displayName);
+                        const senderName = chat.isGroup ? (chat.groupName || 'Group') : (otherDetails?.name || 'Someone');
+                        
+                        const notification = new Notification(senderName, {
+                            body: chat.lastMessage,
+                            icon: chat.isGroup ? chat.groupAvatar : (otherDetails?.photoURL || '/favicon.ico'),
+                            tag: chat.id
+                        });
+
+                        notification.onclick = () => {
+                            window.focus();
+                            setSelectedChatId(chat.id);
+                            notification.close();
+                        };
+                    }
+                }
+            }
+        });
+
+        prevChatsRef.current = chats;
+    }, [chats, user, selectedChatId]);
 
     const handleCreateGroup = async (name: string, description: string, members: SearchUser[]) => {
         if (!user || !firestore || !schoolId) return;
