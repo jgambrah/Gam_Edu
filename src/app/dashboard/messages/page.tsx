@@ -12,7 +12,7 @@ import {
     MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, 
     Loader2, ArrowLeft, CheckCheck, BookOpen, GraduationCap, Users, HeartHandshake, X,
     Paperclip, Mic, MicOff, Play, Pause, Smile, CornerUpLeft, Edit3, Trash2, Check, Download, Music,
-    FileText
+    FileText, Forward
 } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -61,6 +61,7 @@ interface Message {
         senderName: string;
     };
     status?: 'sent' | 'delivered' | 'read';
+    deletedFor?: string[];
 }
 interface SearchUser {
     uid: string;
@@ -900,6 +901,13 @@ export default function MessagesPage() {
     const [editText, setEditText] = useState('');
     const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
 
+    // Forwarding, Self Deletions, Input Emoji Picker
+    const [forwardingMessage, setForwardingMessage] = useState<Message | null>(null);
+    const [isForwardOpen, setIsForwardOpen] = useState(false);
+    const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+    const [deletingMessage, setDeletingMessage] = useState<Message | null>(null);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+
     // Media & File sharing
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -1202,15 +1210,66 @@ export default function MessagesPage() {
         }
     };
 
-    const handleDeleteMessage = async (messageId: string) => {
+    const handleDeleteMessageEveryone = async (messageId: string) => {
         if (!selectedChatId || !firestore) return;
         try {
             await updateDoc(doc(firestore, `direct_messages/${selectedChatId}/messages`, messageId), {
                 isDeleted: true,
                 text: 'This message was deleted'
             });
+            toast({ title: 'Deleted', description: 'Message deleted for everyone.' });
         } catch (e: any) {
             toast({ variant: 'destructive', title: 'Delete Failed', description: e.message });
+        }
+    };
+
+    const handleDeleteMessageForMe = async (messageId: string) => {
+        if (!selectedChatId || !firestore || !user) return;
+        try {
+            await updateDoc(doc(firestore, `direct_messages/${selectedChatId}/messages`, messageId), {
+                deletedFor: arrayUnion(user.uid)
+            });
+            toast({ title: 'Deleted', description: 'Message deleted for you.' });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Delete Failed', description: e.message });
+        }
+    };
+
+    const handleForwardMessage = async (msg: Message, targetChatId: string) => {
+        if (!firestore || !user) return;
+        try {
+            const messageData: any = {
+                text: msg.text || '',
+                senderId: user.uid,
+                createdAt: serverTimestamp(),
+                status: 'sent'
+            };
+            if (msg.type) messageData.type = msg.type;
+            if (msg.fileUrl) messageData.fileUrl = msg.fileUrl;
+            if (msg.fileName) messageData.fileName = msg.fileName;
+            if (msg.fileSize) messageData.fileSize = msg.fileSize;
+
+            await addDoc(collection(firestore, `direct_messages/${targetChatId}/messages`), messageData);
+
+            const chatRef = doc(firestore, 'direct_messages', targetChatId);
+            const targetChat = chats?.find(c => c.id === targetChatId);
+            const otherParticipants = targetChat?.participants.filter(id => id !== user.uid) || [];
+            
+            const unreadUpdates: Record<string, any> = {};
+            otherParticipants.forEach(id => {
+                const currentUnread = targetChat?.unreadCount?.[id] || 0;
+                unreadUpdates[`unreadCount.${id}`] = currentUnread + 1;
+            });
+
+            await updateDoc(chatRef, {
+                lastMessage: msg.type && msg.type !== 'text' ? `Forwarded ${msg.type === 'image' ? 'Photo 📷' : msg.type === 'video' ? 'Video 🎥' : msg.type === 'audio' ? 'Voice note 🎤' : 'Document 📄'}` : msg.text,
+                lastMessageTime: serverTimestamp(),
+                ...unreadUpdates
+            });
+
+            toast({ title: 'Forwarded', description: 'Message forwarded successfully.' });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Forward Failed', description: e.message });
         }
     };
 
@@ -1420,8 +1479,13 @@ export default function MessagesPage() {
     }, [activeChat, user]);
     const isAnyoneTyping = typingUsers.length > 0;
 
+    const visibleMessages = useMemo(() => {
+        if (!messages || !user) return [];
+        return messages.filter(msg => !msg.deletedFor?.includes(user.uid));
+    }, [messages, user]);
+
     // Group messages by date for date separators
-    const groupedMessages = messages?.reduce((groups: Record<string, Message[]>, msg) => {
+    const groupedMessages = visibleMessages.reduce((groups: Record<string, Message[]>, msg) => {
         try {
             const date = msg.createdAt?.toDate ? msg.createdAt.toDate() : new Date();
             const key = format(date, 'yyyy-MM-dd');
@@ -1976,27 +2040,38 @@ export default function MessagesPage() {
                                                                         >
                                                                             <CornerUpLeft className="h-3.5 w-3.5" />
                                                                         </button>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                setForwardingMessage(msg);
+                                                                                setIsForwardOpen(true);
+                                                                            }}
+                                                                            className="h-6 w-6 rounded-full flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
+                                                                            title="Forward"
+                                                                        >
+                                                                            <Forward className="h-3.5 w-3.5" />
+                                                                        </button>
                                                                         {isMe && (
-                                                                            <>
-                                                                                <button
-                                                                                    onClick={() => {
-                                                                                        setEditingMessageId(msg.id);
-                                                                                        setEditText(msg.text);
-                                                                                    }}
-                                                                                    className="h-6 w-6 rounded-full flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-slate-100 transition-colors"
-                                                                                    title="Edit"
-                                                                                >
-                                                                                    <Edit3 className="h-3.5 w-3.5" />
-                                                                                </button>
-                                                                                <button
-                                                                                    onClick={() => handleDeleteMessage(msg.id)}
-                                                                                    className="h-6 w-6 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-slate-100 transition-colors"
-                                                                                    title="Delete"
-                                                                                >
-                                                                                    <Trash2 className="h-3.5 w-3.5" />
-                                                                                </button>
-                                                                            </>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setEditingMessageId(msg.id);
+                                                                                    setEditText(msg.text);
+                                                                                }}
+                                                                                className="h-6 w-6 rounded-full flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-slate-100 transition-colors"
+                                                                                title="Edit"
+                                                                            >
+                                                                                <Edit3 className="h-3.5 w-3.5" />
+                                                                            </button>
                                                                         )}
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                setDeletingMessage(msg);
+                                                                                setIsDeleteConfirmOpen(true);
+                                                                            }}
+                                                                            className="h-6 w-6 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-slate-100 transition-colors"
+                                                                            title="Delete"
+                                                                        >
+                                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                                        </button>
                                                                     </div>
                                                                 </div>
                                                             )}
@@ -2011,7 +2086,33 @@ export default function MessagesPage() {
                         </div>
 
                         {/* Message Input */}
-                        <div className="px-5 py-4 bg-white border-t border-slate-100 shrink-0">
+                        <div className="px-5 py-4 bg-white border-t border-slate-100 shrink-0 relative">
+                            {isEmojiPickerOpen && (
+                                <div className="absolute bottom-[80px] left-5 bg-white border border-slate-150 shadow-2xl rounded-2xl p-3 z-30 animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[320px]">
+                                    <div className="flex justify-between items-center mb-2 pb-1 border-b border-slate-100">
+                                        <span className="text-[10px] font-black uppercase text-slate-400">Quick Emojis</span>
+                                        <button type="button" onClick={() => setIsEmojiPickerOpen(false)} className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full hover:bg-slate-100">
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                    <div className="grid grid-cols-6 gap-2">
+                                        {['😀', '😂', '😍', '👍', '❤️', '🎉', '🔥', '🙏', '👏', '💡', '✨', '🚀', '😭', '😎', '🤔', '👀', '💯', '✔️'].map(emoji => (
+                                            <button
+                                                key={emoji}
+                                                type="button"
+                                                onClick={() => {
+                                                    setNewMessage(prev => prev + emoji);
+                                                    if (inputRef.current) inputRef.current.focus();
+                                                }}
+                                                className="h-10 w-10 flex items-center justify-center text-xl hover:bg-slate-50 rounded-xl active:scale-90 transition-transform"
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {replyingToMessage && (
                                 <div className="flex items-center justify-between bg-indigo-50/50 border-l-4 border-indigo-500 px-4 py-2.5 rounded-r-xl mb-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
                                     <div className="min-w-0">
@@ -2095,6 +2196,20 @@ export default function MessagesPage() {
                                             <Paperclip className="h-4.5 w-4.5" />
                                         </label>
                                     </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
+                                        className={cn(
+                                            "h-12 w-12 rounded-2xl border flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0",
+                                            isEmojiPickerOpen 
+                                                ? "bg-indigo-50 border-indigo-200 text-indigo-600" 
+                                                : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100"
+                                        )}
+                                        title="Emojis"
+                                    >
+                                        <Smile className="h-4.5 w-4.5" />
+                                    </button>
 
                                     <button
                                         type="button"
@@ -2192,6 +2307,184 @@ export default function MessagesPage() {
                     onLeaveGroup={handleLeaveGroup}
                 />
             )}
+
+            <ForwardMessageDialog
+                open={isForwardOpen}
+                setOpen={setIsForwardOpen}
+                chats={chats}
+                forwardingMessage={forwardingMessage}
+                onForward={handleForwardMessage}
+                user={user}
+            />
+
+            <DeleteConfirmDialog
+                open={isDeleteConfirmOpen}
+                setOpen={setIsDeleteConfirmOpen}
+                deletingMessage={deletingMessage}
+                onDeleteForMe={handleDeleteMessageForMe}
+                onDeleteForEveryone={handleDeleteMessageEveryone}
+                user={user}
+            />
         </div>
+    );
+}
+
+// --- FORWARD MESSAGE DIALOG ---
+function ForwardMessageDialog({ open, setOpen, chats, forwardingMessage, onForward, user }: {
+    open: boolean;
+    setOpen: (o: boolean) => void;
+    chats: ChatMetadata[] | null | undefined;
+    forwardingMessage: Message | null;
+    onForward: (msg: Message, targetChatId: string) => Promise<void>;
+    user: any;
+}) {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    if (!forwardingMessage) return null;
+
+    const filteredChats = chats?.filter(chat => {
+        if (chat.isGroup) {
+            return chat.groupName?.toLowerCase().includes(searchTerm.toLowerCase());
+        } else {
+            const other = chat.participantDetails && Object.entries(chat.participantDetails)
+                .find(([uid]) => uid !== user?.uid)?.[1];
+            return other?.name.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+    });
+
+    const handleSelectChat = async (chatId: string) => {
+        await onForward(forwardingMessage, chatId);
+        setOpen(false);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden rounded-2xl border-0 shadow-2xl">
+                <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-5 text-white">
+                    <DialogTitle className="text-lg font-bold tracking-tight">Forward Message</DialogTitle>
+                    <p className="text-indigo-200 text-xs mt-1">Select a conversation to forward this message to</p>
+                </div>
+                <div className="px-4 pt-4">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                        <Input
+                            placeholder="Search chats..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-9 h-10 bg-slate-50 border-2 rounded-xl focus-visible:ring-indigo-500 text-sm"
+                        />
+                    </div>
+                </div>
+                <div className="p-4 max-h-[300px] overflow-y-auto space-y-1">
+                    {filteredChats && filteredChats.length > 0 ? (
+                        filteredChats.map(chat => {
+                            const isGroup = chat.isGroup;
+                            let chatName = 'Chat';
+                            let chatAvatar = '';
+                            if (isGroup) {
+                                chatName = chat.groupName || 'Unnamed Group';
+                                chatAvatar = chat.groupAvatar || '';
+                            } else {
+                                const other = chat.participantDetails && Object.entries(chat.participantDetails)
+                                    .find(([uid]) => uid !== user?.uid)?.[1];
+                                chatName = other?.name || 'User';
+                                chatAvatar = other?.photoURL || '';
+                            }
+
+                            return (
+                                <button
+                                    key={chat.id}
+                                    onClick={() => handleSelectChat(chat.id)}
+                                    className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-left border border-transparent hover:border-slate-100"
+                                >
+                                    <div className={cn(
+                                        "h-9 w-9 rounded-full flex items-center justify-center text-white font-bold text-sm bg-gradient-to-br shadow-sm overflow-hidden shrink-0",
+                                        getAvatarGradient(chatName)
+                                    )}>
+                                        {chatAvatar ? (
+                                            <img src={chatAvatar} className="h-9 w-9 object-cover" alt="" />
+                                        ) : (
+                                            chatName.charAt(0)
+                                        )}
+                                    </div>
+                                    <span className="font-semibold text-sm text-slate-800 truncate">{chatName}</span>
+                                </button>
+                            );
+                        })
+                    ) : (
+                        <p className="text-center text-xs text-slate-400 py-8">No chats found</p>
+                    )}
+                </div>
+                <div className="bg-slate-50 px-4 py-3 flex justify-end border-t border-slate-100">
+                    <Button variant="outline" onClick={() => setOpen(false)} className="rounded-xl h-9 text-xs">
+                        Cancel
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- DELETE CONFIRM DIALOG ---
+function DeleteConfirmDialog({ open, setOpen, deletingMessage, onDeleteForMe, onDeleteForEveryone, user }: {
+    open: boolean;
+    setOpen: (o: boolean) => void;
+    deletingMessage: Message | null;
+    onDeleteForMe: (messageId: string) => Promise<void>;
+    onDeleteForEveryone: (messageId: string) => Promise<void>;
+    user: any;
+}) {
+    if (!deletingMessage) return null;
+
+    const isMyMessage = deletingMessage.senderId === user?.uid;
+
+    const handleDeleteForMe = async () => {
+        await onDeleteForMe(deletingMessage.id);
+        setOpen(false);
+    };
+
+    const handleDeleteForEveryone = async () => {
+        await onDeleteForEveryone(deletingMessage.id);
+        setOpen(false);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[360px] p-5 rounded-2xl border-0 shadow-2xl">
+                <DialogHeader>
+                    <DialogTitle className="text-slate-800 text-base font-bold">Delete message?</DialogTitle>
+                </DialogHeader>
+                <p className="text-xs text-slate-500 leading-relaxed mt-2">
+                    {isMyMessage 
+                        ? 'Would you like to delete this message for yourself, or delete it for everyone in the conversation?'
+                        : 'Are you sure you want to delete this message for yourself? Other participants will still be able to see it.'
+                    }
+                </p>
+                <div className="flex flex-col gap-2 mt-4">
+                    {isMyMessage && (
+                        <Button
+                            onClick={handleDeleteForEveryone}
+                            className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold h-10 shadow-sm"
+                        >
+                            Delete for Everyone
+                        </Button>
+                    )}
+                    <Button
+                        onClick={handleDeleteForMe}
+                        variant="outline"
+                        className="w-full text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold h-10 border border-slate-200"
+                    >
+                        Delete for Me
+                    </Button>
+                    <Button
+                        onClick={() => setOpen(false)}
+                        variant="ghost"
+                        className="w-full text-slate-500 hover:bg-slate-50 rounded-xl text-xs font-bold h-10"
+                    >
+                        Cancel
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
