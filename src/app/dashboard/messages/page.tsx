@@ -5,14 +5,14 @@ import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '
 import { useRole } from '@/context/role-context';
 import { 
     collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, 
-    limit, getDocs, arrayUnion, arrayRemove, deleteDoc 
+    limit, getDocs, arrayUnion, arrayRemove, deleteDoc, increment 
 } from 'firebase/firestore'; 
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { 
     MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, 
     Loader2, ArrowLeft, CheckCheck, BookOpen, GraduationCap, Users, HeartHandshake, X,
     Paperclip, Mic, MicOff, Play, Pause, Smile, CornerUpLeft, Edit3, Trash2, Check, Download, Music,
-    FileText, Forward
+    FileText, Forward, Megaphone
 } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -42,6 +42,7 @@ interface ChatMetadata {
     groupCreatedBy?: string;
     groupAvatar?: string;
     typingState?: Record<string, boolean>;
+    isAnnouncementChannel?: boolean;
 }
 interface Message {
     id: string;
@@ -775,9 +776,13 @@ function GroupDetailsDialog({ open, setOpen, chat, currentUser, onUpdateGroup, o
                 </div>
 
                 <div className="bg-slate-50 px-6 py-4 flex justify-between border-t items-center">
-                    <button onClick={handleLeave} className="text-xs font-black text-red-500 hover:text-red-700 flex items-center gap-1.5 uppercase tracking-tight bg-red-50 px-3.5 py-2 rounded-xl border border-red-100 hover:bg-red-100/40 transition-colors">
-                        Leave Group
-                    </button>
+                    {!chat.isAnnouncementChannel ? (
+                        <button onClick={handleLeave} className="text-xs font-black text-red-500 hover:text-red-700 flex items-center gap-1.5 uppercase tracking-tight bg-red-50 px-3.5 py-2 rounded-xl border border-red-100 hover:bg-red-100/40 transition-colors">
+                            Leave Group
+                        </button>
+                    ) : (
+                        <div />
+                    )}
                     <Button variant="outline" onClick={() => setOpen(false)} className="rounded-xl">
                         Close
                     </Button>
@@ -952,6 +957,14 @@ export default function MessagesPage() {
     const audioChunksRef = useRef<Blob[]>([]);
     const recordingIntervalRef = useRef<any>(null);
 
+    // Broadcast states
+    const [isBroadcastOpen, setIsBroadcastOpen] = useState(false);
+    const [isBroadcasting, setIsBroadcasting] = useState(false);
+    const [broadcastProgress, setBroadcastProgress] = useState(0);
+    const [broadcastTotal, setBroadcastTotal] = useState(0);
+    const [broadcastCurrent, setBroadcastCurrent] = useState(0);
+    const [broadcastStatusText, setBroadcastStatusText] = useState('');
+
     const chatsQuery = useMemoFirebase(() =>
         (firestore && user && schoolId) ? query(
             collection(firestore, 'direct_messages'),
@@ -997,6 +1010,77 @@ export default function MessagesPage() {
             return acc + (chat.unreadCount?.[user.uid] || 0);
         }, 0);
     }, [chats, user]);
+
+    const isAuthorizedSender = useMemo(() => {
+        return ['Administrator', 'Director', 'Teacher', 'Accountant', 'Librarian'].includes(role || '');
+    }, [role]);
+
+    // Announcements Channel Auto-init and Auto-join
+    useEffect(() => {
+        if (!firestore || !schoolId || !user || chatsLoading) return;
+
+        const announcementChat = chats?.find(c => c.isAnnouncementChannel === true);
+
+        if (!announcementChat) {
+            if (isAuthorizedSender) {
+                const myName = user.displayName || user.email?.split('@')[0] || 'Admin';
+                const createAnnouncements = async () => {
+                    try {
+                        const docRef = await addDoc(collection(firestore, 'direct_messages'), {
+                            participants: [user.uid],
+                            participantDetails: {
+                                [user.uid]: {
+                                    name: myName,
+                                    role: role || 'Staff',
+                                    photoURL: user.photoURL || null
+                                }
+                            },
+                            isAnnouncementChannel: true,
+                            isGroup: true,
+                            groupName: "School Announcements",
+                            groupDescription: "Official announcements and updates from the school administration",
+                            groupCreatedBy: user.uid,
+                            lastMessage: "Announcement channel initialized",
+                            lastMessageTime: serverTimestamp(),
+                            unreadCount: { [user.uid]: 0 },
+                            schoolId
+                        });
+
+                        await addDoc(collection(firestore, `direct_messages/${docRef.id}/messages`), {
+                            text: "Welcome to the School Announcements channel! Only administrators can post here.",
+                            senderId: 'system',
+                            createdAt: serverTimestamp()
+                        });
+                    } catch (e) {
+                        console.error("Failed to create Announcements channel:", e);
+                    }
+                };
+                createAnnouncements();
+            }
+        } else {
+            // Channel exists, check if user is in participants list
+            if (!announcementChat.participants.includes(user.uid)) {
+                const myName = user.displayName || user.email?.split('@')[0] || 'User';
+                const joinAnnouncements = async () => {
+                    try {
+                        const chatRef = doc(firestore, 'direct_messages', announcementChat.id);
+                        await updateDoc(chatRef, {
+                            participants: arrayUnion(user.uid),
+                            [`participantDetails.${user.uid}`]: {
+                                name: myName,
+                                role: role || 'Member',
+                                photoURL: user.photoURL || null
+                            },
+                            [`unreadCount.${user.uid}`]: 0
+                        });
+                    } catch (e) {
+                        console.error("Failed to join Announcements channel:", e);
+                    }
+                };
+                joinAnnouncements();
+            }
+        }
+    }, [firestore, schoolId, user, chats, chatsLoading, isAuthorizedSender, role]);
 
     // Request Notification permission on mount
     useEffect(() => {
@@ -1626,6 +1710,16 @@ export default function MessagesPage() {
                             </p>
                         </div>
                         <div className="flex gap-2">
+                            {isAuthorizedSender && (
+                                <button
+                                    onClick={() => setIsBroadcastOpen(true)}
+                                    disabled={!schoolId}
+                                    title="Send Broadcast Message"
+                                    className="h-9 w-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                                >
+                                    <Megaphone className="h-4 w-4" />
+                                </button>
+                            )}
                             <button
                                 onClick={() => setIsNewGroupOpen(true)}
                                 disabled={!schoolId}
@@ -1717,9 +1811,11 @@ export default function MessagesPage() {
                                         <div className="relative shrink-0">
                                             <div className={cn(
                                                 "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-base bg-gradient-to-br shadow-sm overflow-hidden transition-transform group-hover/item:scale-105",
-                                                gradient
+                                                chat.isAnnouncementChannel ? "from-pink-500 via-rose-500 to-red-600" : gradient
                                             )}>
-                                                {isGroup ? (
+                                                {chat.isAnnouncementChannel ? (
+                                                    <Megaphone className="h-5 w-5 text-white animate-pulse" />
+                                                ) : isGroup ? (
                                                     chat.groupAvatar ? (
                                                         <img src={chat.groupAvatar} className="h-12 w-12 object-cover" alt="" />
                                                     ) : (
@@ -1731,7 +1827,7 @@ export default function MessagesPage() {
                                                         : other.name.charAt(0)
                                                 )}
                                             </div>
-                                            {!isGroup && (
+                                            {!isGroup && !chat.isAnnouncementChannel && (
                                                 <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-400 border-2 border-white" />
                                             )}
                                         </div>
@@ -1761,9 +1857,13 @@ export default function MessagesPage() {
                                                     )}
                                                     <span className={cn(
                                                         "text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0",
-                                                        isGroup ? "bg-indigo-100 text-indigo-700 border-indigo-200" : getRoleColor(other.role)
+                                                        chat.isAnnouncementChannel
+                                                            ? "bg-rose-100 text-rose-700 border-rose-200"
+                                                            : isGroup 
+                                                                ? "bg-indigo-100 text-indigo-700 border-indigo-200" 
+                                                                : getRoleColor(other.role)
                                                     )}>
-                                                        {isGroup ? "Group" : other.role}
+                                                        {chat.isAnnouncementChannel ? "Announcements" : isGroup ? "Group" : other.role}
                                                     </span>
                                                 </div>
                                             </div>
@@ -1800,9 +1900,11 @@ export default function MessagesPage() {
                                 </button>
                                 <div className={cn(
                                     "h-10 w-10 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-br shadow-sm overflow-hidden shrink-0",
-                                    getAvatarGradient(activeChat.isGroup ? (activeChat.groupName || 'Group') : otherMember.name)
+                                    activeChat.isAnnouncementChannel ? "from-pink-500 via-rose-500 to-red-600" : getAvatarGradient(activeChat.isGroup ? (activeChat.groupName || 'Group') : otherMember.name)
                                 )}>
-                                    {activeChat.isGroup ? (
+                                    {activeChat.isAnnouncementChannel ? (
+                                        <Megaphone className="h-4.5 w-4.5 text-white" />
+                                    ) : activeChat.isGroup ? (
                                         activeChat.groupAvatar ? (
                                             <img src={activeChat.groupAvatar} className="h-10 w-10 object-cover" alt="" />
                                         ) : (
@@ -1821,6 +1923,10 @@ export default function MessagesPage() {
                                     {isAnyoneTyping ? (
                                         <p className="text-[11px] text-emerald-600 font-semibold mt-1 animate-pulse italic">
                                             {typingUsers.join(', ')} {typingUsers.length > 1 ? 'are' : 'is'} typing...
+                                        </p>
+                                    ) : activeChat.isAnnouncementChannel ? (
+                                        <p className="text-[10px] text-rose-500 font-bold mt-1 uppercase tracking-wider">
+                                            Official Channel · Read-Only for Recipients
                                         </p>
                                     ) : activeChat.isGroup ? (
                                         <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">
@@ -2212,169 +2318,178 @@ export default function MessagesPage() {
 
                         {/* Message Input */}
                         <div className="px-5 py-4 bg-white border-t border-slate-100 shrink-0 relative">
-                            {isEmojiPickerOpen && (
-                                <div className="absolute bottom-[80px] left-5 bg-white/95 backdrop-blur-lg border border-slate-150 shadow-2xl rounded-2xl p-3 z-30 animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[320px]">
-                                    <div className="flex justify-between items-center mb-2 pb-1 border-b border-slate-100">
-                                        <span className="text-[10px] font-black uppercase text-slate-400">Quick Emojis</span>
-                                        <button type="button" onClick={() => setIsEmojiPickerOpen(false)} className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full hover:bg-slate-100">
-                                            <X className="h-3 w-3" />
-                                        </button>
-                                    </div>
-                                    <div className="grid grid-cols-6 gap-2">
-                                        {['😀', '😂', '😍', '👍', '❤️', '🎉', '🔥', '🙏', '👏', '💡', '✨', '🚀', '😭', '😎', '🤔', '👀', '💯', '✔️'].map(emoji => (
-                                            <button
-                                                key={emoji}
-                                                type="button"
-                                                onClick={() => {
-                                                    setNewMessage(prev => prev + emoji);
-                                                    if (inputRef.current) inputRef.current.focus();
-                                                }}
-                                                className="h-10 w-10 flex items-center justify-center text-xl hover:bg-slate-50 rounded-xl active:scale-90 transition-transform"
-                                            >
-                                                {emoji}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {replyingToMessage && (
-                                <div className="flex items-center justify-between bg-indigo-50/50 border-l-4 border-indigo-500 px-4 py-2.5 rounded-r-xl mb-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
-                                    <div className="min-w-0">
-                                        <p className="text-xs font-bold text-indigo-700">
-                                            Replying to {replyingToMessage.senderId === user?.uid ? 'yourself' : (activeChat?.participantDetails?.[replyingToMessage.senderId]?.name || 'Member')}
-                                        </p>
-                                        <p className="text-xs text-slate-500 truncate mt-0.5">
-                                            {replyingToMessage.isDeleted ? 'This message was deleted' : replyingToMessage.text}
-                                        </p>
-                                    </div>
-                                    <button 
-                                        onClick={() => setReplyingToMessage(null)} 
-                                        className="h-6 w-6 rounded-full flex items-center justify-center hover:bg-slate-200/50 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
-                                    >
-                                        <X className="h-3.5 w-3.5" />
-                                    </button>
-                                </div>
-                            )}
-
-                            {isUploading && (
-                                <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 mb-3">
-                                    <Loader2 className="h-4 w-4 animate-spin text-indigo-600 shrink-0" />
-                                    <div className="flex-1">
-                                        <div className="flex justify-between text-xs font-bold text-slate-600 mb-1">
-                                            <span>Uploading file...</span>
-                                            <span>{uploadProgress}%</span>
-                                        </div>
-                                        <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                            <div className="h-full bg-indigo-600 transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {isRecording ? (
-                                <div className="flex items-center justify-between bg-red-50/40 border border-red-200 rounded-2xl px-4 py-3 animate-pulse">
-                                    <div className="flex items-center gap-2">
-                                        <div className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
-                                        <span className="text-xs font-semibold text-red-600">Recording Voice Note...</span>
-                                        <span className="text-xs font-mono bg-red-100 text-red-700 px-2 py-0.5 rounded">
-                                            {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => stopRecording(false)}
-                                            className="h-9 w-9 rounded-xl hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
-                                            title="Cancel recording"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => stopRecording(true)}
-                                            className="h-9 w-9 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md shadow-red-200 transition-colors"
-                                            title="Send Voice Note"
-                                        >
-                                            <Send className="h-4 w-4" />
-                                        </button>
-                                    </div>
+                            {activeChat.isAnnouncementChannel && !isAuthorizedSender ? (
+                                <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex items-center justify-center gap-2 text-slate-500 font-semibold text-sm shadow-inner animate-in fade-in duration-200">
+                                    <Megaphone className="h-4 w-4 text-indigo-500 animate-bounce" />
+                                    Only school administrators can post announcements to this channel.
                                 </div>
                             ) : (
-                                <form
-                                    onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-                                    className="flex items-center gap-2.5"
-                                >
-                                    <div className="relative shrink-0">
-                                        <input
-                                            type="file"
-                                            id="chat-file-upload"
-                                            onChange={handleUploadAttachment}
-                                            className="hidden"
-                                            accept="image/*,video/*,application/pdf,text/*,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar"
-                                        />
-                                        <label
-                                            htmlFor="chat-file-upload"
-                                            className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                                            title="Attach file"
+                                <>
+                                    {isEmojiPickerOpen && (
+                                        <div className="absolute bottom-[80px] left-5 bg-white/95 backdrop-blur-lg border border-slate-150 shadow-2xl rounded-2xl p-3 z-30 animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[320px]">
+                                            <div className="flex justify-between items-center mb-2 pb-1 border-b border-slate-100">
+                                                <span className="text-[10px] font-black uppercase text-slate-400">Quick Emojis</span>
+                                                <button type="button" onClick={() => setIsEmojiPickerOpen(false)} className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full hover:bg-slate-100">
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </div>
+                                            <div className="grid grid-cols-6 gap-2">
+                                                {['😀', '😂', '😍', '👍', '❤️', '🎉', '🔥', '🙏', '👏', '💡', '✨', '🚀', '😭', '😎', '🤔', '👀', '💯', '✔️'].map(emoji => (
+                                                    <button
+                                                        key={emoji}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setNewMessage(prev => prev + emoji);
+                                                            if (inputRef.current) inputRef.current.focus();
+                                                        }}
+                                                        className="h-10 w-10 flex items-center justify-center text-xl hover:bg-slate-50 rounded-xl active:scale-90 transition-transform"
+                                                    >
+                                                        {emoji}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {replyingToMessage && (
+                                        <div className="flex items-center justify-between bg-indigo-50/50 border-l-4 border-indigo-500 px-4 py-2.5 rounded-r-xl mb-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                                            <div className="min-w-0">
+                                                <p className="text-xs font-bold text-indigo-700">
+                                                    Replying to {replyingToMessage.senderId === user?.uid ? 'yourself' : (activeChat?.participantDetails?.[replyingToMessage.senderId]?.name || 'Member')}
+                                                </p>
+                                                <p className="text-xs text-slate-500 truncate mt-0.5">
+                                                    {replyingToMessage.isDeleted ? 'This message was deleted' : replyingToMessage.text}
+                                                </p>
+                                            </div>
+                                            <button 
+                                                onClick={() => setReplyingToMessage(null)} 
+                                                className="h-6 w-6 rounded-full flex items-center justify-center hover:bg-slate-200/50 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+                                            >
+                                                <X className="h-3.5 w-3.5" />
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {isUploading && (
+                                        <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 mb-3">
+                                            <Loader2 className="h-4 w-4 animate-spin text-indigo-600 shrink-0" />
+                                            <div className="flex-1">
+                                                <div className="flex justify-between text-xs font-bold text-slate-600 mb-1">
+                                                    <span>Uploading file...</span>
+                                                    <span>{uploadProgress}%</span>
+                                                </div>
+                                                <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                                    <div className="h-full bg-indigo-600 transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {isRecording ? (
+                                        <div className="flex items-center justify-between bg-red-50/40 border border-red-200 rounded-2xl px-4 py-3 animate-pulse">
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                                                <span className="text-xs font-semibold text-red-600">Recording Voice Note...</span>
+                                                <span className="text-xs font-mono bg-red-100 text-red-700 px-2 py-0.5 rounded">
+                                                    {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => stopRecording(false)}
+                                                    className="h-9 w-9 rounded-xl hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
+                                                    title="Cancel recording"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => stopRecording(true)}
+                                                    className="h-9 w-9 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md shadow-red-200 transition-colors"
+                                                    title="Send Voice Note"
+                                                >
+                                                    <Send className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <form
+                                            onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
+                                            className="flex items-center gap-2.5"
                                         >
-                                            <Paperclip className="h-4.5 w-4.5" />
-                                        </label>
-                                    </div>
+                                            <div className="relative shrink-0">
+                                                <input
+                                                    type="file"
+                                                    id="chat-file-upload"
+                                                    onChange={handleUploadAttachment}
+                                                    className="hidden"
+                                                    accept="image/*,video/*,application/pdf,text/*,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar"
+                                                />
+                                                <label
+                                                    htmlFor="chat-file-upload"
+                                                    className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                                                    title="Attach file"
+                                                >
+                                                    <Paperclip className="h-4.5 w-4.5" />
+                                                </label>
+                                            </div>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
-                                        className={cn(
-                                            "h-12 w-12 rounded-2xl border flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0",
-                                            isEmojiPickerOpen 
-                                                ? "bg-indigo-50 border-indigo-200 text-indigo-600" 
-                                                : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100"
-                                        )}
-                                        title="Emojis"
-                                    >
-                                        <Smile className="h-4.5 w-4.5" />
-                                    </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
+                                                className={cn(
+                                                    "h-12 w-12 rounded-2xl border flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0",
+                                                    isEmojiPickerOpen 
+                                                        ? "bg-indigo-50 border-indigo-200 text-indigo-600" 
+                                                        : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100"
+                                                )}
+                                                title="Emojis"
+                                            >
+                                                <Smile className="h-4.5 w-4.5" />
+                                            </button>
 
-                                    <button
-                                        type="button"
-                                        onClick={startRecording}
-                                        className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0"
-                                        title="Record Voice Note"
-                                    >
-                                        <Mic className="h-4.5 w-4.5" />
-                                    </button>
+                                            <button
+                                                type="button"
+                                                onClick={startRecording}
+                                                className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0"
+                                                title="Record Voice Note"
+                                            >
+                                                <Mic className="h-4.5 w-4.5" />
+                                            </button>
 
-                                    <div className="flex-1 relative">
-                                        <input
-                                            ref={inputRef}
-                                            value={newMessage}
-                                            onChange={e => setNewMessage(e.target.value)}
-                                            placeholder={activeChat.isGroup ? `Message ${activeChat.groupName}...` : `Message ${otherMember.name}...`}
-                                            className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 placeholder:text-slate-400 transition-all"
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' && !e.shiftKey) {
-                                                    e.preventDefault();
-                                                    handleSendMessage();
+                                            <div className="flex-1 relative">
+                                                <input
+                                                    ref={inputRef}
+                                                    value={newMessage}
+                                                    onChange={e => setNewMessage(e.target.value)}
+                                                    placeholder={activeChat.isGroup ? `Message ${activeChat.groupName}...` : `Message ${otherMember.name}...`}
+                                                    className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 placeholder:text-slate-400 transition-all"
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                                            e.preventDefault();
+                                                            handleSendMessage();
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                disabled={!newMessage.trim() || isSending}
+                                                className="h-12 w-12 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md shadow-indigo-200/50 transition-all hover:scale-105 active:scale-95 shrink-0"
+                                            >
+                                                {isSending
+                                                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                                                    : <Send className="h-4 w-4" />
                                                 }
-                                            }}
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        disabled={!newMessage.trim() || isSending}
-                                        className="h-12 w-12 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md shadow-indigo-200/50 transition-all hover:scale-105 active:scale-95 shrink-0"
-                                    >
-                                        {isSending
-                                            ? <Loader2 className="h-4 w-4 animate-spin" />
-                                            : <Send className="h-4 w-4" />
-                                        }
-                                    </button>
-                                </form>
+                                            </button>
+                                        </form>
+                                    )}
+                                    <p className="text-[10px] text-slate-400 text-center mt-2 font-medium">
+                                        Press Enter to send · Shift+Enter for new line
+                                    </p>
+                                </>
                             )}
-                            <p className="text-[10px] text-slate-400 text-center mt-2 font-medium">
-                                Press Enter to send · Shift+Enter for new line
-                            </p>
                         </div>
                     </>
                 ) : (
@@ -2455,6 +2570,119 @@ export default function MessagesPage() {
                 onDeleteForEveryone={handleDeleteMessageEveryone}
                 user={user}
             />
+
+            {schoolId && (
+                <BroadcastDialog
+                    open={isBroadcastOpen}
+                    setOpen={setIsBroadcastOpen}
+                    schoolId={schoolId}
+                    currentUser={user}
+                    role={role || 'Staff'}
+                    onStartBroadcast={async (recipients, text, fileUrl, fileName, fileSize, fileType) => {
+                        if (!firestore || !user || !schoolId || recipients.length === 0) return;
+                        setIsBroadcastOpen(false);
+                        setIsBroadcasting(true);
+                        setBroadcastTotal(recipients.length);
+                        setBroadcastCurrent(0);
+                        setBroadcastProgress(0);
+                        setBroadcastStatusText("Querying active chats...");
+
+                        try {
+                            // 1. Get all active 1-to-1 chats for current user to avoid loops querying firestore
+                            const q = query(
+                                collection(firestore, 'direct_messages'),
+                                where('schoolId', '==', schoolId),
+                                where('participants', 'array-contains', user.uid)
+                            );
+                            const snap = await getDocs(q);
+                            const chatsList = snap.docs
+                                .map(d => ({ id: d.id, ...d.data() }))
+                                .filter((c: any) => !c.isGroup && !c.isAnnouncementChannel && c.participants?.length === 2);
+
+                            // 2. Loop through recipients and deliver individual messages
+                            for (let i = 0; i < recipients.length; i++) {
+                                const recipient = recipients[i];
+                                const recipientId = recipient.uid;
+                                
+                                setBroadcastCurrent(i + 1);
+                                setBroadcastProgress(Math.round(((i + 1) / recipients.length) * 100));
+                                setBroadcastStatusText(`Sending to ${recipient.firstName} ${recipient.lastName}...`);
+
+                                // Skip self just in case
+                                if (recipientId === user.uid) continue;
+
+                                let chatId = '';
+                                const existingChat = chatsList.find((c: any) => c.participants.includes(recipientId));
+
+                                if (existingChat) {
+                                    chatId = existingChat.id;
+                                } else {
+                                    // Create new chat
+                                    const recipientName = `${recipient.firstName || ''} ${recipient.lastName || ''}`.trim() || 'User';
+                                    const myName = user.displayName || user.email?.split('@')[0] || 'Admin';
+                                    const newChatRef = await addDoc(collection(firestore, 'direct_messages'), {
+                                        participants: [user.uid, recipientId],
+                                        participantDetails: {
+                                            [user.uid]: { name: myName, role: role || 'Staff', photoURL: user.photoURL || null },
+                                            [recipientId]: { name: recipientName, role: recipient.role || 'Member', photoURL: recipient.photoURL || null }
+                                        },
+                                        lastMessage: 'Broadcast message',
+                                        lastMessageTime: serverTimestamp(),
+                                        unreadCount: { [recipientId]: 0, [user.uid]: 0 },
+                                        schoolId
+                                    });
+                                    chatId = newChatRef.id;
+                                }
+
+                                // Send the message
+                                const messageData: any = {
+                                    text: text || (fileUrl ? '📄 Attachment' : 'Broadcast Message'),
+                                    senderId: user.uid,
+                                    createdAt: serverTimestamp(),
+                                    type: fileType || 'text',
+                                    status: 'sent'
+                                };
+                                if (fileUrl) {
+                                    messageData.fileUrl = fileUrl;
+                                    messageData.fileName = fileName;
+                                    messageData.fileSize = fileSize;
+                                }
+
+                                await addDoc(collection(firestore, `direct_messages/${chatId}/messages`), messageData);
+
+                                // Update chat document metadata
+                                const chatRef = doc(firestore, 'direct_messages', chatId);
+                                
+                                // Fetch current unread count for recipient or use 0
+                                const currentUnread = (existingChat as any)?.unreadCount?.[recipientId] || 0;
+                                
+                                await updateDoc(chatRef, {
+                                    lastMessage: messageData.text,
+                                    lastMessageTime: serverTimestamp(),
+                                    [`unreadCount.${recipientId}`]: currentUnread + 1
+                                });
+                            }
+
+                            toast({ title: 'Broadcast Sent', description: `Successfully broadcasted to ${recipients.length} recipients.` });
+                        } catch (err: any) {
+                            console.error("Broadcast transmission error:", err);
+                            toast({ variant: 'destructive', title: 'Broadcast Failed', description: err.message });
+                        } finally {
+                            setIsBroadcasting(false);
+                        }
+                    }}
+                />
+            )}
+
+            {isBroadcasting && (
+                <BroadcastingProgressDialog
+                    open={isBroadcasting}
+                    total={broadcastTotal}
+                    current={broadcastCurrent}
+                    progress={broadcastProgress}
+                    statusText={broadcastStatusText}
+                />
+            )}
         </div>
     );
 }
@@ -2614,6 +2842,392 @@ function DeleteConfirmDialog({ open, setOpen, deletingMessage, onDeleteForMe, on
                         Cancel
                     </Button>
                 </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- BROADCAST DIALOG ---
+interface BroadcastRecipient {
+    uid: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    photoURL?: string;
+}
+
+function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBroadcast }: {
+    open: boolean;
+    setOpen: (o: boolean) => void;
+    schoolId: string;
+    currentUser: any;
+    role: string;
+    onStartBroadcast: (
+        recipients: BroadcastRecipient[],
+        text: string,
+        fileUrl?: string,
+        fileName?: string,
+        fileSize?: number,
+        fileType?: 'image' | 'video' | 'file'
+    ) => Promise<void>;
+}) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+
+    const [targetType, setTargetType] = useState<'students' | 'staff' | 'parents' | 'custom'>('students');
+    const [broadcastText, setBroadcastText] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState<BroadcastRecipient[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [selectedRecipients, setSelectedRecipients] = useState<BroadcastRecipient[]>([]);
+
+    // File selection
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isUploadingFile, setIsUploadingFile] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+
+    // Reset state on open
+    useEffect(() => {
+        if (open) {
+            setTargetType('students');
+            setBroadcastText('');
+            setSearchTerm('');
+            setSearchResults([]);
+            setSelectedRecipients([]);
+            setSelectedFile(null);
+            setIsUploadingFile(false);
+            setUploadProgress(0);
+        }
+    }, [open]);
+
+    const handleSearch = async () => {
+        if (!firestore || !schoolId) return;
+        setIsSearching(true);
+        try {
+            const searchCollection = targetType === 'custom' ? 'students' : targetType;
+            const q = query(collection(firestore, searchCollection), where('schoolId', '==', schoolId), limit(50));
+            const snap = await getDocs(q);
+            const users = snap.docs.map(d => {
+                const data = d.data();
+                let effectiveRole = data.role;
+                if (!effectiveRole) {
+                    if (searchCollection === 'students') effectiveRole = 'Student';
+                    if (searchCollection === 'parents') effectiveRole = 'Parent';
+                    if (searchCollection === 'staff') effectiveRole = 'Staff';
+                }
+                return {
+                    ...data,
+                    uid: d.id,
+                    role: effectiveRole || 'Member'
+                };
+            }) as BroadcastRecipient[];
+
+            const filtered = users.filter(u =>
+                ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setSearchResults(filtered);
+        } catch (e) {
+            console.error("Search broadcast error:", e);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    const toggleRecipient = (recipient: BroadcastRecipient) => {
+        setSelectedRecipients(prev => {
+            const exists = prev.find(r => r.uid === recipient.uid);
+            if (exists) {
+                return prev.filter(r => r.uid !== recipient.uid);
+            } else {
+                return [...prev, recipient];
+            }
+        });
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+        }
+    };
+
+    const handleSend = async () => {
+        if (!broadcastText.trim() && !selectedFile) {
+            toast({ variant: 'destructive', title: 'Empty Message', description: 'Please enter a message or select a file.' });
+            return;
+        }
+
+        let recipientsList: BroadcastRecipient[] = [];
+
+        if (targetType === 'custom') {
+            recipientsList = selectedRecipients;
+            if (recipientsList.length === 0) {
+                toast({ variant: 'destructive', title: 'No Recipients Selected', description: 'Please select at least one recipient.' });
+                return;
+            }
+        } else {
+            setIsUploadingFile(true);
+            try {
+                const q = query(collection(firestore!, targetType), where('schoolId', '==', schoolId));
+                const snap = await getDocs(q);
+                recipientsList = snap.docs.map(d => {
+                    const data = d.data();
+                    let rRole = data.role;
+                    if (!rRole) {
+                        if (targetType === 'students') rRole = 'Student';
+                        if (targetType === 'parents') rRole = 'Parent';
+                        if (targetType === 'staff') rRole = 'Staff';
+                    }
+                    return {
+                        uid: d.id,
+                        firstName: data.firstName || '',
+                        lastName: data.lastName || '',
+                        role: rRole || 'Member',
+                        photoURL: data.photoURL || undefined
+                    };
+                }).filter(u => u.uid !== currentUser?.uid);
+            } catch (err: any) {
+                toast({ variant: 'destructive', title: 'Target Query Failed', description: err.message });
+                setIsUploadingFile(false);
+                return;
+            }
+            setIsUploadingFile(false);
+        }
+
+        if (recipientsList.length === 0) {
+            toast({ variant: 'destructive', title: 'Target list empty', description: 'No recipients found for this selection.' });
+            return;
+        }
+
+        let fileUrl = '';
+        let fileType: 'image' | 'video' | 'file' | undefined = undefined;
+
+        if (selectedFile) {
+            setIsUploadingFile(true);
+            setUploadProgress(0);
+            try {
+                const storage = getStorage();
+                const path = `schools/${schoolId}/broadcasts/${Date.now()}_${selectedFile.name}`;
+                const fileRef = ref(storage, path);
+                
+                if (selectedFile.type.startsWith('image/')) fileType = 'image';
+                else if (selectedFile.type.startsWith('video/')) fileType = 'video';
+                else fileType = 'file';
+
+                const uploadTask = uploadBytesResumable(fileRef, selectedFile);
+                
+                await new Promise<void>((resolve, reject) => {
+                    uploadTask.on('state_changed',
+                        (snapshot) => {
+                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            setUploadProgress(Math.round(progress));
+                        },
+                        (error) => reject(error),
+                        async () => {
+                            fileUrl = await getDownloadURL(uploadTask.snapshot.ref);
+                            resolve();
+                        }
+                    );
+                });
+            } catch (err: any) {
+                toast({ variant: 'destructive', title: 'File upload failed', description: err.message });
+                setIsUploadingFile(false);
+                return;
+            }
+            setIsUploadingFile(false);
+        }
+
+        await onStartBroadcast(
+            recipientsList,
+            broadcastText.trim(),
+            fileUrl || undefined,
+            selectedFile?.name || undefined,
+            selectedFile?.size || undefined,
+            fileType
+        );
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-2xl border-0 shadow-2xl">
+                <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-6 text-white">
+                    <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                        <Megaphone className="h-5 w-5 animate-pulse" />
+                        Send Bulk Broadcast
+                    </DialogTitle>
+                    <p className="text-rose-100 text-xs mt-1">
+                        Delivers a direct 1-to-1 inbox message to multiple recipients at once.
+                    </p>
+                </div>
+
+                <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-slate-400">Target Recipients</label>
+                        <Select value={targetType} onValueChange={(val: any) => setTargetType(val)}>
+                            <SelectTrigger className="w-full h-11 rounded-xl border-2 bg-slate-50 font-semibold text-slate-700">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="students">All Students</SelectItem>
+                                <SelectItem value="staff">All Staff & Teachers</SelectItem>
+                                <SelectItem value="parents">All Parents</SelectItem>
+                                <SelectItem value="custom">Custom Selection</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {targetType === 'custom' && (
+                        <div className="space-y-3 p-3 bg-slate-50 border rounded-xl animate-in fade-in duration-200">
+                            {selectedRecipients.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5 p-2 bg-white rounded-lg border border-dashed">
+                                    {selectedRecipients.map(r => (
+                                        <Badge key={r.uid} variant="secondary" className="pl-1.5 pr-1 py-1 rounded-md bg-rose-50 text-rose-700 border-rose-200 flex items-center gap-1">
+                                            <span className="text-xs">{r.firstName} {r.lastName}</span>
+                                            <button onClick={() => toggleRecipient(r)} className="text-rose-400 hover:text-rose-600">
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="flex items-center gap-1.5 bg-white p-1 rounded-lg border">
+                                <Input
+                                    placeholder="Search student/parent/staff name..."
+                                    value={searchTerm}
+                                    onChange={e => setSearchTerm(e.target.value)}
+                                    onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                                    className="border-0 bg-transparent focus-visible:ring-0 text-xs placeholder:text-slate-400 flex-1 h-8"
+                                />
+                                <Button size="sm" onClick={handleSearch} disabled={isSearching} className="bg-rose-500 hover:bg-rose-600 text-white rounded-md h-8 px-2.5">
+                                    {isSearching ? <Loader2 className="h-3 w-3 animate-spin"/> : <Search className="h-3 w-3"/>}
+                                </Button>
+                            </div>
+                            {searchResults.length > 0 && (
+                                <div className="divide-y divide-slate-100 max-h-[120px] overflow-y-auto bg-white rounded-lg border">
+                                    {searchResults.map(user => {
+                                        const isSelected = selectedRecipients.some(r => r.uid === user.uid);
+                                        return (
+                                            <div key={user.uid} className="flex items-center justify-between p-2 hover:bg-slate-50">
+                                                <span className="text-xs font-semibold text-slate-700">{user.firstName} {user.lastName} ({user.role})</span>
+                                                <Button size="sm" onClick={() => toggleRecipient(user)} className={cn("h-6 px-2 text-[10px] rounded-md text-white", isSelected ? "bg-red-500" : "bg-emerald-600")}>
+                                                    {isSelected ? 'Remove' : 'Add'}
+                                                </Button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase text-slate-400">Broadcast Message</label>
+                        <textarea
+                            placeholder="Write your broadcast message here..."
+                            value={broadcastText}
+                            onChange={e => setBroadcastText(e.target.value)}
+                            className="w-full min-h-[100px] p-3 rounded-xl border-2 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-300 transition-all resize-y"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-slate-400">Attach Media / Document (Optional)</label>
+                        {selectedFile ? (
+                            <div className="flex items-center justify-between bg-rose-50/50 border border-rose-100 rounded-xl p-3 animate-in fade-in duration-200">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                    <FileText className="h-5 w-5 text-rose-500 shrink-0" />
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-bold text-slate-800 truncate">{selectedFile.name}</p>
+                                        <p className="text-[10px] text-slate-400">{(selectedFile.size / 1024).toFixed(0)} KB</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setSelectedFile(null)} className="h-6 w-6 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+                                    <X className="h-3.5 w-3.5" />
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center border-2 border-dashed rounded-xl p-4 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors relative cursor-pointer">
+                                <input
+                                    type="file"
+                                    onChange={handleFileChange}
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                />
+                                <div className="text-center space-y-1 text-slate-400">
+                                    <Paperclip className="h-5 w-5 mx-auto" />
+                                    <p className="text-xs font-semibold">Click to select attachment</p>
+                                    <p className="text-[10px]">Images, Videos, PDFs, ZIPs up to 50MB</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {isUploadingFile && (
+                        <div className="bg-slate-50 border rounded-xl p-3.5 flex items-center gap-3">
+                            <Loader2 className="h-5 w-5 animate-spin text-rose-500 shrink-0" />
+                            <div className="flex-1">
+                                <div className="flex justify-between text-xs font-bold text-slate-600 mb-1">
+                                    <span>Uploading attachment...</span>
+                                    <span>{uploadProgress}%</span>
+                                </div>
+                                <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                    <div className="h-full bg-rose-500 transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="bg-slate-50 px-6 py-4 flex justify-end gap-3 border-t">
+                    <Button variant="outline" onClick={() => setOpen(false)} disabled={isUploadingFile} className="rounded-xl">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSend} disabled={isUploadingFile || (!broadcastText.trim() && !selectedFile)}
+                        className="bg-rose-500 hover:bg-rose-600 text-white rounded-xl px-5 font-bold flex items-center gap-1.5">
+                        <Send className="h-4 w-4" /> Send Broadcast
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- BROADCASTING PROGRESS DIALOG ---
+function BroadcastingProgressDialog({ open, total, current, progress, statusText }: {
+    open: boolean;
+    total: number;
+    current: number;
+    progress: number;
+    statusText: string;
+}) {
+    return (
+        <Dialog open={open} onOpenChange={() => {}}>
+            <DialogContent className="sm:max-w-[400px] p-6 rounded-2xl border-0 shadow-2xl text-center space-y-4 font-sans">
+                <div className="h-12 w-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto animate-bounce">
+                    <Megaphone className="h-6 w-6" />
+                </div>
+                <div className="space-y-1.5">
+                    <DialogTitle className="text-slate-800 text-base font-black">Sending Broadcast Message</DialogTitle>
+                    <p className="text-slate-400 text-xs font-medium uppercase tracking-wider font-mono">
+                        Recipient {current} of {total}
+                    </p>
+                </div>
+
+                <div className="space-y-2">
+                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div 
+                            className="h-full bg-gradient-to-r from-rose-500 to-pink-500 transition-all duration-300"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
+                    <div className="flex justify-between text-[10px] font-bold text-slate-500 font-mono">
+                        <span>{progress}% Completed</span>
+                        <span>{current}/{total}</span>
+                    </div>
+                </div>
+
+                <p className="text-xs text-slate-400 font-medium italic animate-pulse">
+                    {statusText}
+                </p>
             </DialogContent>
         </Dialog>
     );
