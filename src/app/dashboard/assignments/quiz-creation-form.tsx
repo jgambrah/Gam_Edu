@@ -93,22 +93,22 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
   }
 
   return (
-    <div className="p-4 border rounded-lg mt-4 bg-accent/20">
+    <div className="space-y-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="flex items-center gap-2">
-            <Wand2 className="h-6 w-6 text-accent-foreground" />
-            <h3 className="text-lg font-semibold">Create AI-Powered Quiz</h3>
-          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FormField
               control={form.control}
               name="topic"
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Quiz Topic</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">Quiz Topic / Theme</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., The Solar System, World War II" {...field} />
+                    <Input 
+                      placeholder="e.g., The Solar System, World War II, Photosynthesis" 
+                      className="rounded-xl border-slate-200 bg-white hover:bg-slate-50/50 focus:ring-2 focus:ring-purple-500/10 focus:border-purple-500 transition-all h-11 text-xs font-medium"
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -119,9 +119,15 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
               name="numQuestions"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel># of Questions</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">No. of Questions</FormLabel>
                   <FormControl>
-                    <Input type="number" min={1} max={10} {...field} />
+                    <Input 
+                      type="number" 
+                      min={1} 
+                      max={10} 
+                      className="rounded-xl border-slate-200 bg-white hover:bg-slate-50/50 focus:ring-2 focus:ring-purple-500/10 focus:border-purple-500 transition-all h-11 text-xs font-medium"
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -133,16 +139,16 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
             name="classId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Class</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">Assign to Class</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-xl border-slate-200 bg-white hover:bg-slate-50/50 focus:ring-2 focus:ring-purple-500/10 focus:border-purple-500 transition-all h-11 text-xs font-medium">
                       <SelectValue placeholder="Select a class to assign the quiz" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                     {classes?.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
+                      <SelectItem key={c.id} value={c.id} className="text-xs font-medium focus:bg-purple-50 focus:text-purple-950 rounded-lg m-1">
                         {c.name}
                       </SelectItem>
                     ))}
@@ -153,13 +159,16 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
             )}
           />
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-650 to-purple-650 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-xs tracking-wide shadow-lg shadow-purple-100 transition-all active:scale-[0.98]"
+          >
             {isSubmitting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin text-white" /> Generating AI Assessment...</>
             ) : (
-              <Wand2 className="mr-2 h-4 w-4" />
+              <><Wand2 className="mr-2 h-4 w-4 text-white" /> Generate & Dispatch Quiz</>
             )}
-            Generate & Create Quiz
           </Button>
         </form>
       </Form>

@@ -232,4 +232,57 @@ export async function generateSchoolExecutiveBriefingAction(
   }
 }
 
+/**
+ * Server action to generate lesson plan reviews and enhancements.
+ */
+export async function generateLessonEnhancementsAction(
+  schoolId: string,
+  topic: string,
+  objectives: string,
+  activities: string,
+  materials: string
+) {
+  if (!schoolId) return { success: false, error: "School ID missing" };
+
+  // 1. Check Credits (Cost: 2 credits per analysis)
+  const creditRes = await checkAndSpendCredits(schoolId, 2);
+  if (!creditRes.success) return { success: false, error: "Not enough AI credits to run lesson review." };
+
+  try {
+    const prompt = `
+      You are an expert teacher mentor and pedagogical strategist. Enhance the following lesson plan:
+      
+      Topic: ${topic}
+      Objectives: ${objectives}
+      Activities: ${activities}
+      Materials: ${materials}
+      
+      Provide additional pedagogical enhancements in 3 distinct parts:
+      1. Differentiation Strategies: How to adapt this lesson for learners who need extra support, and how to extend it for gifted/advanced students.
+      2. Common Misconceptions: 2-3 common student misunderstandings related to this topic and how the teacher can address them.
+      3. Quick Assessment Questions: 3 simple questions (multiple choice or short answer) to check for understanding at the end of the lesson.
+      
+      Format with clear headings, bold text, and bullet points. Keep it practical, directly usable, and professional.
+    `;
+
+    // 2. Call AI using Genkit 1.x syntax
+    const response = await ai.generate({
+      model: 'googleai/gemini-3-flash-preview',
+      prompt: prompt,
+      config: { temperature: 0.5 }
+    });
+
+    const text = response.text;
+    if (!text) {
+      throw new Error("AI Service returned an empty response.");
+    }
+
+    return { success: true, text: text.trim() };
+  } catch (e: any) {
+    console.error("AI Lesson Review Error:", e);
+    return { success: false, error: `AI Error: ${e.message || "Could not generate lesson enhancements."}` };
+  }
+}
+
+
 

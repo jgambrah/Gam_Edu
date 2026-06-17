@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,8 +26,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { useUser, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { lessonPlanSchema } from '@/lib/types';
+import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { lessonPlanSchema, LessonPlan } from '@/lib/types';
 import { CalendarIcon, Loader2, Wand2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -42,9 +41,11 @@ type ClassData = { id: string; name: string };
 type LessonPlanFormProps = {
   setOpen: (open: boolean) => void;
   classes: ClassData[];
+  planId?: string;
+  initialData?: LessonPlan;
 };
 
-export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
+export function LessonPlanForm({ setOpen, classes, planId, initialData }: LessonPlanFormProps) {
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
@@ -52,14 +53,25 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Helper to safely parse Firestore Timestamp or date formats
+  const toDateSafe = (d: any): Date | undefined => {
+    if (!d) return undefined;
+    if (typeof d.toDate === 'function') return d.toDate();
+    if (d instanceof Date) return d;
+    if (d.seconds) return new Date(d.seconds * 1000);
+    return new Date(d);
+  };
+
   const form = useForm<z.infer<typeof lessonPlanSchema>>({
     resolver: zodResolver(lessonPlanSchema),
     defaultValues: {
-      topic: '',
-      objectives: '',
-      activities: '',
-      materials: '',
-      notes: '',
+      classId: initialData?.classId || '',
+      date: initialData?.date ? (toDateSafe(initialData.date) || new Date()) : undefined,
+      topic: initialData?.topic || '',
+      objectives: initialData?.objectives || '',
+      activities: initialData?.activities || '',
+      materials: initialData?.materials || '',
+      notes: initialData?.notes || '',
     },
   });
 
@@ -67,10 +79,10 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
 
   const handleAskAI = async () => {
     if (!topicValue) {
-        toast({ variant: 'destructive', title: 'Topic Required', description: 'Please enter a topic before using the AI assistant.' });
-        return;
+      toast({ variant: 'destructive', title: 'Topic Required', description: 'Please enter a topic before using the AI assistant.' });
+      return;
     }
-     if (!schoolId) {
+    if (!schoolId) {
       toast({ variant: 'destructive', title: 'Error', description: 'School ID not found.' });
       return;
     }
@@ -86,20 +98,20 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
     setIsGenerating(true);
     toast({ title: 'AI is thinking...', description: 'Generating lesson ideas for your topic.' });
     try {
-        const result = await generateLessonIdeasAction(topicValue);
-        if (result.success && result.data) {
-          form.setValue('objectives', result.data.objectives, { shouldValidate: true });
-          form.setValue('activities', result.data.activities, { shouldValidate: true });
-          form.setValue('materials', result.data.materials, { shouldValidate: true });
-          toast({ title: 'Success!', description: 'AI has populated the lesson plan fields.' });
-        } else {
-            throw new Error(result.error || 'Unknown AI error');
-        }
+      const result = await generateLessonIdeasAction(topicValue);
+      if (result.success && result.data) {
+        form.setValue('objectives', result.data.objectives, { shouldValidate: true });
+        form.setValue('activities', result.data.activities, { shouldValidate: true });
+        form.setValue('materials', result.data.materials, { shouldValidate: true });
+        toast({ title: 'Success!', description: 'AI has populated the lesson plan fields.' });
+      } else {
+        throw new Error(result.error || 'Unknown AI error');
+      }
     } catch (error: any) {
-        console.error("AI Error:", error);
-        toast({ variant: 'destructive', title: 'AI Error', description: error.message || 'Could not generate lesson ideas.' });
+      console.error("AI Error:", error);
+      toast({ variant: 'destructive', title: 'AI Error', description: error.message || 'Could not generate lesson ideas.' });
     } finally {
-        setIsGenerating(false);
+      setIsGenerating(false);
     }
   };
 
@@ -110,22 +122,36 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
     
     setIsSubmitting(true);
     try {
-      await addDoc(collection(firestore, 'lesson-plans'), {
-        ...values,
-        teacherId: user.uid,
-        schoolId: schoolId,
-        createdAt: new Date(),
-        date: values.date,
-      });
-      
-      toast({
-        title: 'Lesson Plan Saved',
-        description: `Your plan for "${values.topic}" has been saved.`,
-      });
+      if (planId) {
+        // Edit Mode
+        const docRef = doc(firestore, 'lesson-plans', planId);
+        await updateDoc(docRef, {
+          ...values,
+          date: values.date,
+          updatedAt: new Date(),
+        });
+        toast({
+          title: 'Lesson Plan Updated',
+          description: `Your plan for "${values.topic}" has been updated.`,
+        });
+      } else {
+        // Create Mode
+        await addDoc(collection(firestore, 'lesson-plans'), {
+          ...values,
+          teacherId: user.uid,
+          schoolId: schoolId,
+          createdAt: new Date(),
+          date: values.date,
+        });
+        toast({
+          title: 'Lesson Plan Saved',
+          description: `Your plan for "${values.topic}" has been saved.`,
+        });
+      }
       form.reset();
       setOpen(false);
     } catch (error) {
-      console.error('Error creating lesson plan:', error);
+      console.error('Error saving lesson plan:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -138,25 +164,25 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <ScrollArea className="h-96 w-full pr-4">
-          <div className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <ScrollArea className="h-[450px] w-full pr-4">
+          <div className="space-y-5 py-2">
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="classId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Class</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Class</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg transition-all">
                           <SelectValue placeholder="Select a class" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {classes?.map((c) => (
-                          <SelectItem key={c.id} value={c.id}>
+                          <SelectItem key={c.id} value={c.id} className="cursor-pointer">
                             {c.name}
                           </SelectItem>
                         ))}
@@ -171,19 +197,19 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
                 name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Lesson Date</FormLabel>
+                    <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Lesson Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
                             variant={'outline'}
                             className={cn(
-                              'pl-3 text-left font-normal',
+                              'pl-3 text-left font-normal border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg transition-all',
                               !field.value && 'text-muted-foreground'
                             )}
                           >
                             {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50 text-slate-500" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -196,72 +222,104 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
                 )}
               />
             </div>
+
             <FormField
               control={form.control}
               name="topic"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex justify-between items-center">
-                    <FormLabel>Lesson Topic</FormLabel>
-                    <Button type="button" variant="outline" size="sm" onClick={handleAskAI} disabled={isGenerating || !topicValue}>
-                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4" />}
-                        Ask AI (-3 Credits)
+                  <div className="flex justify-between items-center mb-1">
+                    <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Lesson Topic</FormLabel>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleAskAI} 
+                      disabled={isGenerating || !topicValue}
+                      className="bg-violet-50 hover:bg-violet-100 border-violet-200 text-violet-700 dark:bg-violet-950/30 dark:border-violet-800/50 dark:text-violet-400 font-semibold text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all shadow-sm active:scale-95"
+                    >
+                      {isGenerating ? <Loader2 className="h-3.5 w-3.5 animate-spin text-violet-600"/> : <Wand2 className="h-3.5 w-3.5 text-violet-600" />}
+                      Ask AI (-3 Credits)
                     </Button>
                   </div>
                   <FormControl>
-                    <Input placeholder="e.g., Introduction to Photosynthesis" {...field} />
+                    <Input 
+                      placeholder="e.g., Introduction to Photosynthesis" 
+                      {...field} 
+                      className="border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg transition-all"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="objectives"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Learning Objectives</FormLabel>
+                  <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Learning Objectives</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="What will students be able to do by the end of the lesson?" {...field} />
+                    <Textarea 
+                      placeholder="What will students be able to do by the end of the lesson? (Start with action verbs)" 
+                      {...field} 
+                      className="min-h-24 border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg transition-all"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="activities"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Activities & Tasks</FormLabel>
+                  <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Activities & Tasks</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Describe the planned activities, discussions, and assignments." {...field} />
+                    <Textarea 
+                      placeholder="Describe the planned activities, discussions, and assignments." 
+                      {...field} 
+                      className="min-h-24 border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg transition-all"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="materials"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Materials & Resources</FormLabel>
+                  <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Materials & Resources</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="List all textbooks, worksheets, videos, links, etc." {...field} />
+                    <Textarea 
+                      placeholder="List all textbooks, worksheets, videos, links, etc." 
+                      {...field} 
+                      className="min-h-24 border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg transition-all"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Private Notes (Optional)</FormLabel>
+                  <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Private Notes (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Notes on differentiation, reminders, or reflections for yourself." {...field} />
+                    <Textarea 
+                      placeholder="Notes on differentiation, reminders, or reflections for yourself." 
+                      {...field} 
+                      className="min-h-20 border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg transition-all"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -269,9 +327,16 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
             />
           </div>
         </ScrollArea>
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Lesson Plan
+        <Button 
+          type="submit" 
+          disabled={isSubmitting} 
+          className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold py-2.5 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+        >
+          {isSubmitting ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            planId ? "Update Lesson Plan" : "Save Lesson Plan"
+          )}
         </Button>
       </form>
     </Form>

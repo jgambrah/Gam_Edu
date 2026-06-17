@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, Calculator, CalendarIcon } from 'lucide-react';
@@ -29,7 +28,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
-// --- SCHEMA (Updated with required fields) ---
+// --- SCHEMA ---
 const assessmentSchema = z.object({
   subjectId: z.string().min(1, "Subject is required"),
   assessmentType: z.enum([
@@ -54,7 +53,12 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
 
   // Fetch Students & Subjects
   const studentsQuery = useMemoFirebase(() => 
-    (firestore && classId && schoolId) ? query(collection(firestore, 'students'), where('classId', '==', classId), where('schoolId', '==', schoolId)) : null,
+    (firestore && classId && schoolId) ? query(
+      collection(firestore, 'students'), 
+      where('classId', '==', classId), 
+      where('schoolId', '==', schoolId),
+      where('enrollmentStatus', '==', 'Active')
+    ) : null,
   [firestore, classId, schoolId]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
@@ -73,7 +77,7 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
   const currentMax = form.watch('maxScore');
 
   const handleScoreChange = (studentId: string, value: string) => {
-    if (Number(value) > currentMax) return; 
+    if (value !== '' && Number(value) > currentMax) return; 
     setScores(prev => ({ ...prev, [studentId]: value }));
   };
 
@@ -85,7 +89,7 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
     
     const validScores = Object.entries(scores).filter(([_, score]) => score !== '' && !isNaN(Number(score)));
     if (validScores.length === 0) {
-      toast({ variant: 'destructive', title: "No Scores", description: "Please enter scores for at least one student." });
+      toast({ variant: 'destructive', title: "No Scores Entered", description: "Please enter scores for at least one student." });
       return;
     }
 
@@ -109,15 +113,15 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
           classId: classId,
           createdAt: serverTimestamp(),
           gradedAt: serverTimestamp(),
-          schoolId: schoolId, // SAAS: Stamp with schoolId
+          schoolId: schoolId,
         });
       });
 
       await batch.commit();
-      toast({ title: "Success", description: `Saved ${validScores.length} grades successfully.` });
+      toast({ title: "Scores Logged", description: `Saved ${validScores.length} grades successfully.` });
       setScores({}); 
       form.reset({ maxScore: 100, assessmentName: '', assessmentDate: new Date() });
-      onSuccess(); // Trigger refetch in parent
+      onSuccess(); 
     } catch (e: any) {
       console.error(e);
       toast({ variant: 'destructive', title: "Error", description: e.message });
@@ -127,125 +131,162 @@ export function AssessmentFeedbackForm({ classId, classes, academicYear, term, o
   };
 
   return (
-    <Card className="border-l-4 border-l-blue-600 shadow-md">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5 text-blue-600"/> Enter Class Grades for {academicYear} - {term}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-         <Form {...form}>
-         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            
-            <div className="space-y-4 p-4 bg-slate-50 rounded-lg border">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="assessmentName" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Assessment Name/Topic *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., End of Term Exam" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="assessmentDate" render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Assessment Date *</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button variant={'outline'} className={cn('pl-3 text-left font-normal bg-white',!field.value && 'text-muted-foreground')}>
-                                {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField control={form.control} name="subjectId" render={({ field }) => (
-                        <FormItem><FormLabel>Subject *</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl><SelectTrigger className="bg-white border-slate-300"><SelectValue placeholder="Select Subject" /></SelectTrigger></FormControl>
-                                <SelectContent>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                            </Select><FormMessage/>
-                        </FormItem>
-                    )}/>
-                    <FormField control={form.control} name="assessmentType" render={({ field }) => (
-                        <FormItem><FormLabel>Category *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger className="bg-white border-slate-300"><SelectValue placeholder="Type" /></SelectTrigger></FormControl>
-                            <SelectContent>
-                                <SelectItem value="Class Exercise (CA)">Class Exercise (CA)</SelectItem>
-                                <SelectItem value="Homework (CA)">Homework (CA)</SelectItem>
-                                <SelectItem value="Project (CA)">Project (CA)</SelectItem>
-                                <SelectItem value="Mid-Term (CA)">Mid-Term (CA)</SelectItem>
-                                <Separator />
-                                <SelectItem value="End of Term Exam (Exam)">End of Term Exam (50%)</SelectItem>
-                            </SelectContent>
-                        </Select><FormMessage/>
-                        </FormItem>
-                    )}/>
-                    <FormField control={form.control} name="maxScore" render={({ field }) => (
-                        <FormItem><FormLabel>Max Possible Score *</FormLabel>
-                        <FormControl><Input type="number" {...field} className="bg-white border-slate-300 font-bold" /></FormControl><FormMessage/></FormItem>
-                    )}/>
-                </div>
+    <div className="space-y-5">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          
+          <div className="space-y-4 p-4 bg-slate-50 dark:bg-slate-900 border rounded-xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField control={form.control} name="assessmentName" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Assessment Name/Topic *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Fraction Homework 1" {...field} className="bg-white dark:bg-slate-950 border-slate-200 focus:border-violet-500 rounded-lg h-9" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="assessmentDate" render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Assessment Date *</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={'outline'} className={cn('pl-3 text-left font-normal bg-white dark:bg-slate-950 border-slate-200 focus:border-violet-500 rounded-lg h-9',!field.value && 'text-muted-foreground')}>
+                          {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50 text-slate-500" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )} />
             </div>
 
-            <div className="border rounded-md max-h-[500px] overflow-y-auto">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="bg-slate-100">
-                            <TableHead>Student Name</TableHead>
-                            <TableHead className="w-[200px]">Score (Out of {currentMax})</TableHead>
-                            <TableHead className="w-[150px] text-right">Weighted Value</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {loadingStudents ? (
-                            <TableRow><TableCell colSpan={3} className="text-center"><Loader2 className="animate-spin h-6 w-6 mx-auto"/></TableCell></TableRow>
-                        ) : students?.map(student => {
-                            const raw = parseFloat(scores[student.uid] || '0');
-                            const percentage = (raw / currentMax) * 100;
-                            
-                            return (
-                            <TableRow key={student.uid}>
-                                <TableCell className="font-medium">{student.firstName} {student.lastName}</TableCell>
-                                <TableCell>
-                                    <div className="relative">
-                                        <Input 
-                                            type="number" 
-                                            value={scores[student.uid] || ''}
-                                            onChange={(e) => handleScoreChange(student.uid, e.target.value)}
-                                            className="pr-12 font-mono"
-                                        />
-                                        <span className="absolute right-3 top-2.5 text-xs text-muted-foreground">/ {currentMax}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-right text-muted-foreground font-mono text-xs">
-                                    {raw > 0 ? `${percentage.toFixed(1)}%` : '-'}
-                                </TableCell>
-                            </TableRow>
-                        )})}
-                    </TableBody>
-                </Table>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField control={form.control} name="subjectId" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Subject *</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="bg-white dark:bg-slate-955 border-slate-200 focus:border-violet-500 rounded-lg h-9">
+                        <SelectValue placeholder="Select Subject" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {subjects?.map(s => <SelectItem key={s.id} value={s.id} className="cursor-pointer">{s.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage/>
+                </FormItem>
+              )}/>
+              <FormField control={form.control} name="assessmentType" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Category *</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="bg-white dark:bg-slate-955 border-slate-200 focus:border-violet-500 rounded-lg h-9">
+                        <SelectValue placeholder="Type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Class Exercise (CA)">Class Exercise (CA)</SelectItem>
+                      <SelectItem value="Homework (CA)">Homework (CA)</SelectItem>
+                      <SelectItem value="Project (CA)">Project (CA)</SelectItem>
+                      <SelectItem value="Mid-Term (CA)">Mid-Term (CA)</SelectItem>
+                      <Separator />
+                      <SelectItem value="End of Term Exam (Exam)">End of Term Exam (Exam)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage/>
+                </FormItem>
+              )}/>
+              <FormField control={form.control} name="maxScore" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-slate-700 font-semibold dark:text-slate-300">Max Possible Score *</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} className="bg-white dark:bg-slate-955 border-slate-200 focus:border-violet-500 rounded-lg h-9 font-bold font-mono" />
+                  </FormControl>
+                  <FormMessage/>
+                </FormItem>
+              )}/>
             </div>
+          </div>
 
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg font-bold" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <Save className="mr-2 h-5 w-5"/>}
-                Save Grades
-            </Button>
+          <div className="border rounded-2xl overflow-hidden max-h-[300px] overflow-y-auto shadow-inner bg-white dark:bg-slate-950">
+            <Table>
+              <TableHeader className="bg-slate-50 dark:bg-slate-900 border-b">
+                <TableRow>
+                  <TableHead className="font-extrabold text-xs">Student Name</TableHead>
+                  <TableHead className="w-[180px] font-extrabold text-xs">Score (Out of {currentMax})</TableHead>
+                  <TableHead className="w-[120px] text-right font-extrabold text-xs">Weighted</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loadingStudents ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center py-6">
+                      <Loader2 className="animate-spin h-5 w-5 mx-auto text-purple-600"/>
+                    </TableCell>
+                  </TableRow>
+                ) : !students || students.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center py-6 text-slate-400 italic text-xs">
+                      No active students found in this class.
+                    </TableCell>
+                  </TableRow>
+                ) : students.map(student => {
+                  const raw = parseFloat(scores[student.uid] || '0');
+                  const percentage = currentMax > 0 ? (raw / currentMax) * 100 : 0;
+                  
+                  return (
+                    <TableRow key={student.uid} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/10">
+                      <TableCell className="font-semibold text-xs text-slate-800 dark:text-slate-200">
+                        {student.firstName} {student.lastName}
+                      </TableCell>
+                      <TableCell>
+                        <div className="relative">
+                          <Input 
+                            type="number" 
+                            min="0"
+                            max={currentMax}
+                            value={scores[student.uid] || ''}
+                            onChange={(e) => handleScoreChange(student.uid, e.target.value)}
+                            className="pr-12 font-bold font-mono h-8 text-xs border-slate-200 rounded-lg"
+                          />
+                          <span className="absolute right-2.5 top-2 text-[9px] text-slate-400 font-bold uppercase">/ {currentMax}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right text-slate-400 font-mono text-xs font-bold">
+                        {raw > 0 ? `${percentage.toFixed(1)}%` : '-'}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
 
-         </form>
-         </Form>
-      </CardContent>
-    </Card>
+          <Button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-2.5 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+          >
+            {isSubmitting ? (
+              <Loader2 className="h-5 w-5 animate-spin"/>
+            ) : (
+              <>
+                <Save className="h-4.5 w-4.5"/> Save Class Grades
+              </>
+            )}
+          </Button>
+
+        </form>
+      </Form>
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft, History } from 'lucide-react';
+import { Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft, History, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +28,9 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { generateClassInsightsAction } from '@/app/actions/insights-ai';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import CreditBalance from '@/components/CreditBalance';
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
@@ -57,6 +60,11 @@ export default function GradebookPage() {
     const [remarks, setRemarks] = useState<Record<string, string>>({}); 
     const [isSaving, setIsSaving] = useState(false);
 
+    // AI Insights State
+    const [isInsightsOpen, setIsInsightsOpen] = useState(false);
+    const [insightsText, setInsightsText] = useState<string | null>(null);
+    const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
+
     // Data Fetching
     const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: classes } = useCollection<any>(classesQuery);
@@ -76,7 +84,7 @@ export default function GradebookPage() {
     [firestore, schoolId, classId]);
     const { data: students, isLoading: loadingStudents } = useCollection<any>(studentsQuery);
 
-    // 1. Fetch Existing Assessments for Batch Management
+    // Fetch Existing Assessments for Batch Management
     const assessmentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !classId || !subjectId) return null;
         return query(
@@ -91,7 +99,7 @@ export default function GradebookPage() {
 
     const { data: rawAssessments, isLoading: loadingAssessments, forceRefetch: refetchAssessments } = useCollection<any>(assessmentsQuery);
 
-    // 2. Group assessments by type
+    // Group assessments by type
     const groupedAssessments = useMemo(() => {
         if (!rawAssessments) return {};
         const groups: Record<string, any[]> = {};
@@ -104,12 +112,18 @@ export default function GradebookPage() {
 
     const handleScoreChange = (studentId: string, val: string) => {
         const num = val === '' ? '' : Number(val);
-        if (typeof num === 'number' && num > maxScore) return; 
         setScores(prev => ({ ...prev, [studentId]: num }));
     };
 
     const handleSaveBatch = async () => {
         if (!firestore || !user || !schoolId || !classId || !subjectId) return;
+
+        // Validation for values exceeding max score
+        const invalidEntry = Object.entries(scores).find(([_, score]) => score !== '' && Number(score) > maxScore);
+        if (invalidEntry) {
+            toast({ variant: 'destructive', title: "Validation Error", description: "One or more student scores exceed the set Max Score." });
+            return;
+        }
 
         setIsSaving(true);
         try {
@@ -152,7 +166,7 @@ export default function GradebookPage() {
 
             await batch.commit();
             
-            toast({ title: "Success", description: `Saved ${count} scores successfully.` });
+            toast({ title: "Scores Saved Successfully! 🎉", description: `Recorded marks for ${count} students.` });
             
             notifyParents(
                 updatedStudentIds,
@@ -187,14 +201,46 @@ export default function GradebookPage() {
             });
 
             await batch.commit();
-            toast({ title: "Deleted", description: `Removed ${docsToDelete.length} scores for ${typeToDelete}.` });
+            toast({ title: "Batch Removed 🗑️", description: `Successfully deleted ${docsToDelete.length} records for ${typeToDelete}.` });
             if (refetchAssessments) refetchAssessments();
 
         } catch (error: any) {
             console.error(error);
-            toast({ variant: 'destructive', title: "Error", description: "Failed to delete scores." });
+            toast({ variant: 'destructive', title: "Deletion Failed", description: "Failed to erase batch records." });
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleGenerateClassInsights = async () => {
+        if (!schoolId || !classId || !subjectId) return;
+        setIsGeneratingInsights(true);
+        setInsightsText(null);
+        setIsInsightsOpen(true);
+
+        try {
+            const className = classes?.find((c: any) => c.id === classId)?.name || 'Class';
+            const subjectName = subjects?.find((s: any) => s.id === subjectId)?.name || 'Subject';
+            
+            const scoresData = students?.map((s: any) => ({
+                studentName: `${s.firstName} ${s.lastName}`,
+                score: scores[s.uid] ?? ''
+            })) || [];
+
+            const res = await generateClassInsightsAction(schoolId, className, subjectName, scoresData, maxScore);
+            
+            if (res.success && res.text) {
+                setInsightsText(res.text);
+            } else {
+                toast({ variant: 'destructive', title: "AI Service Error", description: res.error });
+                setIsInsightsOpen(false);
+            }
+        } catch (e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Error", description: e.message || "Failed to analyze scores." });
+            setIsInsightsOpen(false);
+        } finally {
+            setIsGeneratingInsights(false);
         }
     };
 
@@ -202,27 +248,49 @@ export default function GradebookPage() {
 
     return (
         <div className="p-6 space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold flex items-center gap-2">
-                        <FileSpreadsheet className="text-blue-600" /> Batch Entry & Management
-                    </h1>
-                    <p className="text-muted-foreground">Batch enter continuous assessments and manage past records.</p>
+            {/* Premium Gradient Header Banner */}
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 p-8 md:p-12 shadow-2xl border border-white/10 group">
+                <div className="absolute right-[-40px] bottom-[-40px] opacity-10 text-white transition-transform duration-700 group-hover:scale-110 pointer-events-none">
+                    <FileSpreadsheet className="h-60 w-60" />
                 </div>
-                <Button asChild variant="ghost">
-                    <Link href="/dashboard/report-cards"><ArrowLeft className="mr-2 h-4 w-4"/> Back to Reports</Link>
-                </Button>
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <div className="flex items-center gap-2 mb-3">
+                            <Button asChild variant="outline" className="border-indigo-800 text-indigo-200 bg-indigo-950/40 hover:bg-indigo-900/40 hover:text-white rounded-xl h-9 px-3">
+                                <Link href="/dashboard/report-cards">
+                                    <ArrowLeft className="mr-2 h-4 w-4"/> Back to Reports
+                                </Link>
+                            </Button>
+                            <Badge className="bg-indigo-800 text-indigo-150 uppercase tracking-widest font-black text-[9px] py-1 px-2.5 rounded-full border border-indigo-700/50">
+                                Batch Mode
+                            </Badge>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-2">
+                            Batch Entry & Management
+                        </h1>
+                        <p className="text-indigo-200 text-lg max-w-xl font-light">
+                            Batch enter continuous assessments and manage past classroom records in one visual panel.
+                        </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                        {role !== 'Student' && role !== 'Parent' && (
+                            <CreditBalance />
+                        )}
+                    </div>
+                </div>
             </div>
 
-            <Card className="border-t-4 border-t-blue-600 shadow-sm">
-                <CardHeader>
-                    <CardTitle>Assessment Details</CardTitle>
+            {/* Assessment Details Filter Form */}
+            <Card className="border border-slate-100 shadow-md rounded-[2.2rem] overflow-hidden bg-white">
+                <CardHeader className="border-b border-slate-50 bg-slate-50/20 p-6">
+                    <CardTitle className="text-lg font-black text-slate-800">Roster Filters</CardTitle>
+                    <CardDescription className="text-slate-400">Specify details to retrieve the correct grading roster.</CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 p-6 bg-white">
                     <div className="space-y-2">
-                        <Label>Academic Year</Label>
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Academic Year</Label>
                         <Select value={academicYear} onValueChange={setAcademicYear}>
-                            <SelectTrigger className="bg-white border-2">
+                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -233,9 +301,9 @@ export default function GradebookPage() {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Term</Label>
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Term</Label>
                         <Select value={term} onValueChange={setTerm}>
-                            <SelectTrigger className="bg-white border-2">
+                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -246,60 +314,185 @@ export default function GradebookPage() {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Class</Label>
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Class</Label>
                         <Select value={classId} onValueChange={setClassId}>
-                            <SelectTrigger className="bg-white border-2"><SelectValue placeholder="Select Class"/></SelectTrigger>
+                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
+                                <SelectValue placeholder="Select Class" />
+                            </SelectTrigger>
                             <SelectContent>
-                                {classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                {classes?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Subject</Label>
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Subject</Label>
                         <Select value={subjectId} onValueChange={setSubjectId}>
-                            <SelectTrigger className="bg-white border-2"><SelectValue placeholder="Select Subject"/></SelectTrigger>
+                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
+                                <SelectValue placeholder="Select Subject" />
+                            </SelectTrigger>
                             <SelectContent>
-                                {subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                {subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Type</Label>
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Assessment Type</Label>
                         <Select value={assessmentType} onValueChange={setAssessmentType}>
-                            <SelectTrigger className="bg-white border-2"><SelectValue/></SelectTrigger>
+                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
+                                <SelectValue />
+                            </SelectTrigger>
                             <SelectContent>
                                 {ASSESSMENT_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Max Score</Label>
-                        <Input type="number" value={maxScore} onChange={e => setMaxScore(Number(e.target.value))} className="bg-white border-2" />
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Max Score</Label>
+                        <Input 
+                            type="number" 
+                            value={maxScore} 
+                            onChange={e => setMaxScore(Number(e.target.value))} 
+                            className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm font-semibold" 
+                        />
                     </div>
                 </CardContent>
             </Card>
 
             {classId && subjectId ? (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    {/* Score Roster Card */}
+                    <Card className="shadow-lg border border-slate-100 rounded-[2.2rem] overflow-hidden bg-white">
+                        <CardHeader className="flex flex-row items-center justify-between border-b border-slate-50 bg-slate-50/10 p-6 flex-wrap gap-4">
+                            <div>
+                                <CardTitle className="text-lg font-black text-slate-800">Score Entry Roster</CardTitle>
+                                <CardDescription className="text-slate-400">Input marks for current students. Unfilled lines will be skipped.</CardDescription>
+                            </div>
+                            <div className="flex gap-2">
+                                <Button 
+                                    variant="outline" 
+                                    className="border-purple-200 text-purple-755 bg-purple-50 hover:bg-purple-100/70 rounded-xl font-bold text-xs"
+                                    onClick={handleGenerateClassInsights}
+                                    disabled={isSaving || isGeneratingInsights}
+                                >
+                                    <Sparkles className="mr-2 h-4 w-4 text-purple-650" /> AI Insights (5 credits)
+                                </Button>
+                                <Button 
+                                    onClick={handleSaveBatch} 
+                                    disabled={isSaving || isGlobalLoading} 
+                                    className="bg-indigo-650 hover:bg-indigo-750 font-bold rounded-xl text-white shadow transition-all h-10 px-6 text-sm"
+                                >
+                                    {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
+                                    {isGlobalLoading ? 'Authenticating...' : 'Save All Scores'}
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="pt-6 px-6">
+                            {loadingStudents ? (
+                                <div className="p-16 flex flex-col items-center justify-center text-slate-400 gap-3">
+                                    <Loader2 className="animate-spin h-10 w-10 text-indigo-600"/>
+                                    <p className="font-semibold text-sm">Loading roster...</p>
+                                </div>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-slate-50/70 hover:bg-slate-50/70 border-b border-slate-150">
+                                            <TableHead className="font-bold text-slate-700">Student Name</TableHead>
+                                            <TableHead className="w-[120px] sm:w-[180px] min-w-[120px] font-bold text-slate-700">Score (/{maxScore})</TableHead>
+                                            <TableHead className="font-bold text-slate-700">Teacher Remark (Optional)</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {students?.length === 0 && (
+                                            <TableRow>
+                                                <TableCell colSpan={3} className="text-center py-10 italic text-slate-400">
+                                                    No active students enrolled in this class.
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                        {students?.map((s: any) => {
+                                            const currentScore = scores[s.uid];
+                                            const isOverLimit = currentScore !== undefined && currentScore !== '' && Number(currentScore) > maxScore;
+                                            
+                                            // Extract initials
+                                            const initials = `${s.firstName?.[0] || ''}${s.lastName?.[0] || ''}`.toUpperCase();
+
+                                            return (
+                                                <TableRow key={s.uid} className="hover:bg-slate-50/30 transition-colors border-b border-slate-100">
+                                                    <TableCell className="font-semibold text-slate-800">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 text-xs font-black border border-indigo-100 shadow-sm">
+                                                                {initials}
+                                                            </div>
+                                                            <span>{s.firstName} {s.lastName}</span>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="min-w-[120px]">
+                                                        <div className="relative">
+                                                            <Input 
+                                                                type="number" 
+                                                                min="0" 
+                                                                max={maxScore}
+                                                                value={scores[s.uid] ?? ''} 
+                                                                onChange={e => handleScoreChange(s.uid, e.target.value)}
+                                                                className={`font-black w-28 sm:w-full text-center h-10 rounded-xl pr-10 focus-visible:ring-indigo-500 shadow-sm ${
+                                                                    isOverLimit ? 'border-rose-500 ring-rose-500 text-rose-600 focus-visible:ring-rose-500' : 'border-slate-200'
+                                                                }`}
+                                                            />
+                                                            <span className={`absolute right-3 top-2.5 text-[9px] uppercase font-black tracking-widest pointer-events-none ${
+                                                                isOverLimit ? 'text-rose-500' : 'text-slate-400'
+                                                            }`}>
+                                                                PTS
+                                                            </span>
+                                                        </div>
+                                                        {isOverLimit && (
+                                                            <p className="text-[10px] text-rose-600 font-bold mt-1 ml-1 flex items-center gap-1">
+                                                                <AlertCircle className="h-3 w-3" /> Exceeds max {maxScore}
+                                                            </p>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Input 
+                                                            type="text" 
+                                                            placeholder="e.g. Solid understanding, excellent work"
+                                                            value={remarks[s.uid] ?? ''} 
+                                                            onChange={e => setRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
+                                                            className="rounded-xl border border-slate-200 focus-visible:ring-indigo-500 h-10 shadow-sm text-sm text-slate-700"
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Existing Batches Records */}
                     {Object.keys(groupedAssessments).length > 0 && (
-                        <Card className="border-t-4 border-t-orange-400 shadow-md">
-                            <CardHeader className="bg-orange-50/50">
-                                <CardTitle className="text-orange-800 flex items-center gap-2">
-                                    <History className="h-5 w-5"/> Existing Entries for this Class
+                        <Card className="border border-orange-100 shadow-md rounded-[2.2rem] overflow-hidden bg-white">
+                            <CardHeader className="bg-orange-50/20 border-b border-orange-50/60 p-6">
+                                <CardTitle className="text-orange-900 flex items-center gap-2 font-black text-lg">
+                                    <History className="h-5 w-5 text-orange-650"/> Existing Batches for Context
                                 </CardTitle>
-                                <CardDescription>View already recorded scores. If a mistake was made, delete the batch below.</CardDescription>
+                                <CardDescription className="text-orange-950/40">These assessment scores have already been recorded. Use the delete button to clear records if needed.</CardDescription>
                             </CardHeader>
-                            <CardContent className="pt-6">
-                                {loadingAssessments ? <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-orange-500"/></div> : (
+                            <CardContent className="p-6">
+                                {loadingAssessments ? (
+                                    <div className="p-12 flex justify-center text-orange-500"><Loader2 className="animate-spin h-8 w-8"/></div>
+                                ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {Object.entries(groupedAssessments).map(([type, records]) => (
-                                            <div key={type} className="flex flex-col justify-between p-4 bg-white rounded-2xl border border-orange-100 shadow-sm group hover:border-orange-300 transition-colors">
+                                            <div key={type} className="flex flex-col justify-between p-5 bg-orange-50/50 rounded-2xl border border-orange-100 shadow-sm group hover:border-orange-200 transition-colors">
                                                 <div className="mb-4">
-                                                    <Badge variant="outline" className="bg-orange-50 border-orange-200 text-orange-700 font-black mb-2 uppercase text-[10px]">
+                                                    <Badge variant="outline" className="bg-white border-orange-200 text-orange-800 font-black mb-2.5 uppercase text-[9px] tracking-wider py-0.5 px-2">
                                                         {type}
                                                     </Badge>
                                                     <p className="text-sm font-bold text-slate-800">
                                                         {records.length} students graded.
+                                                    </p>
+                                                    <p className="text-[10px] text-slate-400 font-semibold mt-1">
+                                                        Recorded by: {records[0]?.teacherId === user?.uid ? "You (Class Teacher)" : "Teaching Staff"}
                                                     </p>
                                                 </div>
                                                 <AlertDialog>
@@ -308,21 +501,21 @@ export default function GradebookPage() {
                                                             variant="destructive" 
                                                             size="sm" 
                                                             disabled={isSaving}
-                                                            className="w-full rounded-xl"
+                                                            className="w-full rounded-xl font-bold bg-rose-500 hover:bg-rose-600 transition-colors shadow-sm text-xs h-9"
                                                         >
                                                             <Trash2 className="h-4 w-4 mr-2" /> Delete Batch
                                                         </Button>
                                                     </AlertDialogTrigger>
-                                                    <AlertDialogContent>
+                                                    <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-6">
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>Permanently Delete Batch?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                This will erase all {records.length} scores for <strong>{type}</strong>. This action is irreversible.
+                                                            <AlertDialogTitle className="font-black text-slate-800">Permanently Delete Batch?</AlertDialogTitle>
+                                                            <AlertDialogDescription className="text-slate-400 text-sm">
+                                                                This will erase all {records.length} recorded student marks for category <strong>{type}</strong>. This operational action is irreversible.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => handleDeleteBatch(type)} className="bg-red-600 hover:bg-red-700">
+                                                        <AlertDialogFooter className="gap-2 mt-4">
+                                                            <AlertDialogCancel className="rounded-xl border border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={() => handleDeleteBatch(type)} className="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl">
                                                                 Confirm Delete
                                                             </AlertDialogAction>
                                                         </AlertDialogFooter>
@@ -335,76 +528,48 @@ export default function GradebookPage() {
                             </CardContent>
                         </Card>
                     )}
-
-                    <Card className="shadow-lg border-2 border-indigo-50">
-                        <CardHeader className="flex flex-row items-center justify-between border-b bg-slate-50/50">
-                            <div>
-                                <CardTitle>Score Entry Roster</CardTitle>
-                                <CardDescription>Enter new marks for the selected class and subject.</CardDescription>
-                            </div>
-                            <Button 
-                                onClick={handleSaveBatch} 
-                                disabled={isSaving || isGlobalLoading} 
-                                className="bg-blue-600 hover:bg-blue-700 h-12 px-8 font-bold"
-                            >
-                                {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
-                                {isGlobalLoading ? 'Checking Auth...' : 'Save All Scores'}
-                            </Button>
-                        </CardHeader>
-                        <CardContent className="pt-6">
-                            {loadingStudents ? <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-blue-600"/></div> : (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Student Name</TableHead>
-                                            <TableHead className="w-[100px] sm:w-[150px] min-w-[100px]">Score (/{maxScore})</TableHead>
-                                            <TableHead>Teacher Remark (Optional)</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {students?.length === 0 && <TableRow><TableCell colSpan={3} className="text-center py-10 text-muted-foreground italic">No active students found in this class.</TableCell></TableRow>}
-                                        {students?.map((s:any) => (
-                                            <TableRow key={s.uid}>
-                                                <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
-                                                <TableCell className="min-w-[100px]">
-                                                    <div className="relative">
-                                                        <Input 
-                                                            type="number" 
-                                                            min="0" max={maxScore}
-                                                            value={scores[s.uid] ?? ''} 
-                                                            onChange={e => handleScoreChange(s.uid, e.target.value)}
-                                                            className={`font-bold w-24 sm:w-full pr-3 sm:pr-10 ${Number(scores[s.uid]) > maxScore ? 'border-red-500 text-red-500' : ''}`}
-                                                        />
-                                                        <span className="hidden sm:inline absolute right-3 top-2 text-[10px] text-muted-foreground uppercase font-bold">PTS</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Input 
-                                                        type="text" 
-                                                        placeholder="e.g. Excellent progress"
-                                                        value={remarks[s.uid] ?? ''} 
-                                                        onChange={e => setRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
-                                                    />
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            )}
-                        </CardContent>
-                    </Card>
                 </div>
             ) : (
-                <div className="p-20 text-center text-muted-foreground border-4 border-dashed rounded-[2.5rem] bg-slate-50 flex flex-col items-center gap-4">
-                    <div className="bg-white p-4 rounded-full shadow-sm">
-                        <FileSpreadsheet className="h-12 w-12 text-slate-300" />
+                <div className="p-20 text-center text-slate-400 border-4 border-dashed rounded-[2.5rem] bg-slate-50/50 flex flex-col items-center justify-center gap-4 border-slate-200">
+                    <div className="bg-white p-5 rounded-full shadow-md">
+                        <FileSpreadsheet className="h-12 w-12 text-slate-350 animate-pulse" />
                     </div>
                     <div>
-                        <p className="text-lg font-bold text-slate-600">Gradebook Ready</p>
-                        <p className="text-sm">Please select a Class and Subject to load the student roster and existing records.</p>
+                        <p className="text-lg font-black text-slate-700">Gradebook Ready</p>
+                        <p className="text-sm text-slate-400 mt-1 max-w-sm">Please select a Class and Subject above to populate the student roster and records ledger.</p>
                     </div>
                 </div>
             )}
+
+            {/* AI Smart Insights Dialog */}
+            <Dialog open={isInsightsOpen} onOpenChange={setIsInsightsOpen}>
+                <DialogContent className="sm:max-w-[650px] max-h-[85vh] flex flex-col rounded-[2rem] border-0 shadow-2xl p-6 overflow-hidden">
+                    <DialogHeader className="border-b border-slate-100 pb-4">
+                        <DialogTitle className="flex items-center gap-2 text-purple-700 font-black text-xl">
+                            <Sparkles className="h-5 w-5 animate-pulse text-purple-650" /> Class Assessment Insights
+                        </DialogTitle>
+                        <DialogDescription className="text-slate-400 text-sm">
+                            AI analysis based on the current scores entered in the roster.
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    <div className="flex-1 overflow-y-auto pr-2 mt-4 space-y-4">
+                        {isGeneratingInsights ? (
+                            <div className="flex flex-col items-center justify-center py-16 space-y-4">
+                                <Loader2 className="h-12 w-12 animate-spin text-purple-500" />
+                                <p className="text-purple-750 font-bold">Analyzing current scores...</p>
+                                <p className="text-xs text-slate-400 font-semibold">Running models. Deducting 5 AI credits.</p>
+                            </div>
+                        ) : (
+                            <div className="prose prose-sm prose-purple max-w-none">
+                                <div className="whitespace-pre-wrap text-slate-750 leading-relaxed font-normal bg-slate-50/50 p-5 rounded-2xl border border-slate-100/60 shadow-inner">
+                                    {insightsText}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

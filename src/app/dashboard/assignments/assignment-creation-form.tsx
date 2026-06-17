@@ -104,122 +104,137 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
   }
 
   return (
-    <div className="p-4 border rounded-lg">
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="space-y-4">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
-            control={form.control}
-            name="classId"
-            render={({ field }) => (
+              control={form.control}
+              name="classId"
+              render={({ field }) => (
                 <FormItem>
-                <FormLabel>Class</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">Target Class</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                    <SelectTrigger>
+                      <SelectTrigger className="rounded-xl border-slate-200 bg-white hover:bg-slate-50/50 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all h-11 text-xs font-medium">
                         <SelectValue placeholder="Select a class" />
-                    </SelectTrigger>
+                      </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                    {classes?.map((c: any) => (
-                        <SelectItem key={c.id} value={c.id}>
-                        {c.name}
+                    <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                      {classes?.map((c: any) => (
+                        <SelectItem key={c.id} value={c.id} className="text-xs font-medium focus:bg-indigo-50 focus:text-indigo-950 rounded-lg m-1">
+                          {c.name}
                         </SelectItem>
-                    ))}
+                      ))}
                     </SelectContent>
-                </Select>
-                <FormMessage />
+                  </Select>
+                  <FormMessage />
                 </FormItem>
-            )}
+              )}
             />
             <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
+              control={form.control}
+              name="title"
+              render={({ field }) => (
                 <FormItem>
-                <FormLabel>Title</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">Assignment Title</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="e.g., Algebra Worksheet, Term Essay" 
+                      className="rounded-xl border-slate-200 bg-white hover:bg-slate-50/50 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all h-11 text-xs font-medium"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">Description / Instructions</FormLabel>
                 <FormControl>
-                    <Input placeholder="e.g., Algebra Worksheet" {...field} />
+                  <Textarea 
+                    placeholder="Provide detailed instructions, references, or submission expectations for the students." 
+                    className="rounded-xl border-slate-200 bg-white hover:bg-slate-50/50 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all min-h-[120px] text-xs font-medium"
+                    {...field} 
+                  />
                 </FormControl>
                 <FormMessage />
-                </FormItem>
+              </FormItem>
             )}
-            />
-        </div>
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description / Instructions</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Provide detailed instructions for the assignment." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
-                control={form.control}
-                name="dueDate"
-                render={({ field }) => (
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
                 <FormItem className="flex flex-col">
-                    <FormLabel>Due Date</FormLabel>
-                    <Popover>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Due Date</FormLabel>
+                  <Popover>
                     <PopoverTrigger asChild>
-                        <FormControl>
+                      <FormControl>
                         <Button
-                            variant={'outline'}
-                            className={cn(
-                            'pl-3 text-left font-normal',
+                          variant={'outline'}
+                          className={cn(
+                            'pl-3 text-left font-medium rounded-xl border-slate-200 bg-white hover:bg-slate-50/50 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all h-11 text-xs w-full',
                             !field.value && 'text-muted-foreground'
-                            )}
+                          )}
                         >
-                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          {field.value ? format(field.value, 'PPP') : <span>Pick a due date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
-                        </FormControl>
+                      </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                    <PopoverContent className="w-auto p-0 rounded-2xl shadow-2xl border border-slate-100" align="start">
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus className="rounded-2xl" />
                     </PopoverContent>
-                    </Popover>
-                    <FormMessage />
+                  </Popover>
+                  <FormMessage />
                 </FormItem>
-                )}
+              )}
             />
             <FormField
-                control={form.control}
-                name="gradingType"
-                render={({ field }) => (
+              control={form.control}
+              name="gradingType"
+              render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Grading Method</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">Grading Method</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                        <SelectTrigger>
+                      <SelectTrigger className="rounded-xl border-slate-200 bg-white hover:bg-slate-50/50 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all h-11 text-xs font-medium">
                         <SelectValue placeholder="Select a grading method" />
-                        </SelectTrigger>
+                      </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                        <SelectItem value="points">Points</SelectItem>
-                        <SelectItem value="letter">Letter Grade</SelectItem>
-                        <SelectItem value="pass_fail">Pass/Fail</SelectItem>
-                        <SelectItem value="standards">Standards-based</SelectItem>
+                    <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                      <SelectItem value="points" className="text-xs font-medium focus:bg-indigo-50 focus:text-indigo-950 rounded-lg m-1">Points (e.g., 100)</SelectItem>
+                      <SelectItem value="letter" className="text-xs font-medium focus:bg-indigo-50 focus:text-indigo-950 rounded-lg m-1">Letter Grade (A, B, C...)</SelectItem>
+                      <SelectItem value="pass_fail" className="text-xs font-medium focus:bg-indigo-50 focus:text-indigo-950 rounded-lg m-1">Pass / Fail</SelectItem>
+                      <SelectItem value="standards" className="text-xs font-medium focus:bg-indigo-50 focus:text-indigo-950 rounded-lg m-1">Standards-based</SelectItem>
                     </SelectContent>
-                    </Select>
-                    <FormMessage />
+                  </Select>
+                  <FormMessage />
                 </FormItem>
-                )}
+              )}
             />
-        </div>
+          </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Create Assignment
-        </Button>
-      </form>
-    </Form>
+          <Button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className="w-full h-11 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs tracking-wide shadow-lg shadow-indigo-100 transition-all active:scale-[0.98]"
+          >
+            {isSubmitting ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin text-white" /> Dispatching Assignment...</>
+            ) : (
+              'Create & Dispatch Assignment'
+            )}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }
