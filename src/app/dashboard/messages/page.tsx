@@ -3,10 +3,16 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, limit, getDocs } from 'firebase/firestore'; 
 import { 
-  MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, 
-  Loader2, ArrowLeft, CheckCheck, BookOpen, GraduationCap, Users, HeartHandshake, X
+    collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, 
+    limit, getDocs, arrayUnion, arrayRemove, deleteDoc 
+} from 'firebase/firestore'; 
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { 
+    MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, 
+    Loader2, ArrowLeft, CheckCheck, BookOpen, GraduationCap, Users, HeartHandshake, X,
+    Paperclip, Mic, MicOff, Play, Pause, Smile, CornerUpLeft, Edit3, Trash2, Check, Download, Music,
+    FileText
 } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -35,12 +41,26 @@ interface ChatMetadata {
     groupDescription?: string;
     groupCreatedBy?: string;
     groupAvatar?: string;
+    typingState?: Record<string, boolean>;
 }
 interface Message {
     id: string;
     senderId: string;
     text: string;
     createdAt: any;
+    type?: 'text' | 'image' | 'video' | 'file' | 'audio';
+    fileUrl?: string;
+    fileName?: string;
+    fileSize?: number;
+    reactions?: Record<string, string[]>; // emoji -> user uids
+    edited?: boolean;
+    isDeleted?: boolean;
+    replyTo?: {
+        messageId: string;
+        text: string;
+        senderName: string;
+    };
+    status?: 'sent' | 'delivered' | 'read';
 }
 interface SearchUser {
     uid: string;
@@ -91,6 +111,8 @@ function getAvatarGradient(name: string): string {
     const index = (name.charCodeAt(0) || 0) % gradients.length;
     return gradients[index];
 }
+
+const EMOJI_LIST = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 
 // --- NEW CHAT DIALOG ---
 function NewChatDialog({ open, setOpen, onStartChat, schoolId }: {
@@ -764,6 +786,98 @@ function GroupDetailsDialog({ open, setOpen, chat, currentUser, onUpdateGroup, o
     );
 }
 
+// --- AUDIO PLAYER ---
+function AudioMessagePlayer({ url }: { url: string }) {
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const [playbackRate, setPlaybackRate] = useState(1);
+
+    useEffect(() => {
+        const audio = new Audio(url);
+        audioRef.current = audio;
+
+        const onTimeUpdate = () => setCurrentTime(audio.currentTime);
+        const onLoadedMetadata = () => setDuration(audio.duration || 0);
+        const onEnded = () => setIsPlaying(false);
+
+        audio.addEventListener('timeupdate', onTimeUpdate);
+        audio.addEventListener('loadedmetadata', onLoadedMetadata);
+        audio.addEventListener('ended', onEnded);
+
+        return () => {
+            audio.pause();
+            audio.removeEventListener('timeupdate', onTimeUpdate);
+            audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+            audio.removeEventListener('ended', onEnded);
+        };
+    }, [url]);
+
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.playbackRate = playbackRate;
+        }
+    }, [playbackRate]);
+
+    const togglePlay = () => {
+        if (!audioRef.current) return;
+        if (isPlaying) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+        } else {
+            audioRef.current.play().catch(e => console.error("Audio play error", e));
+            setIsPlaying(true);
+        }
+    };
+
+    const handleSpeedChange = () => {
+        const rates = [1, 1.5, 2];
+        const nextIndex = (rates.indexOf(playbackRate) + 1) % rates.length;
+        setPlaybackRate(rates[nextIndex]);
+    };
+
+    const formatTime = (time: number) => {
+        if (isNaN(time)) return '0:00';
+        const mins = Math.floor(time / 60);
+        const secs = Math.floor(time % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    };
+
+    return (
+        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200/50 max-w-[280px] text-slate-800 shadow-sm animate-in fade-in duration-150">
+            <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={togglePlay}
+                className="h-8 w-8 rounded-full bg-white hover:bg-slate-100 text-indigo-600 flex items-center justify-center p-0 shadow border border-slate-100 shrink-0"
+            >
+                {isPlaying ? <Pause className="h-3.5 w-3.5 fill-indigo-600 text-indigo-600" /> : <Play className="h-3.5 w-3.5 fill-indigo-600 text-indigo-600 ml-0.5" />}
+            </Button>
+            <div className="flex-1 min-w-0">
+                <div className="h-1 bg-slate-200 rounded-full overflow-hidden">
+                    <div 
+                        className="h-full bg-indigo-600 transition-all duration-100" 
+                        style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                    />
+                </div>
+                <div className="flex justify-between text-[9px] text-slate-500 mt-1 font-mono">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
+                </div>
+            </div>
+            <button
+                type="button"
+                onClick={handleSpeedChange}
+                className="text-[10px] font-black bg-white border border-slate-200 hover:bg-slate-50 px-1.5 py-0.5 rounded-lg text-slate-600 shrink-0 font-mono shadow-sm"
+            >
+                {playbackRate}x
+            </button>
+        </div>
+    );
+}
+
 // --- MAIN PAGE ---
 export default function MessagesPage() {
     const { user } = useUser();
@@ -779,6 +893,23 @@ export default function MessagesPage() {
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
     const [chatFilter, setChatFilter] = useState('');
+
+    // Replying, Editing, Reactions
+    const [replyingToMessage, setReplyingToMessage] = useState<Message | null>(null);
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+    const [editText, setEditText] = useState('');
+    const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
+
+    // Media & File sharing
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+
+    // Audio recording
+    const [isRecording, setIsRecording] = useState(false);
+    const [recordingTime, setRecordingTime] = useState(0);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+    const recordingIntervalRef = useRef<any>(null);
 
     const chatsQuery = useMemoFirebase(() =>
         (firestore && user && schoolId) ? query(
@@ -908,22 +1039,334 @@ export default function MessagesPage() {
         }
     };
 
+    // Typing state management
+    useEffect(() => {
+        if (!selectedChatId || !user || !firestore) return;
+        const chatRef = doc(firestore, 'direct_messages', selectedChatId);
+        
+        if (newMessage.trim().length > 0) {
+            updateDoc(chatRef, {
+                [`typingState.${user.uid}`]: true
+            }).catch(e => console.error(e));
+        } else {
+            updateDoc(chatRef, {
+                [`typingState.${user.uid}`]: false
+            }).catch(e => console.error(e));
+        }
+
+        const timer = setTimeout(() => {
+            if (newMessage.trim().length > 0) {
+                updateDoc(chatRef, {
+                    [`typingState.${user.uid}`]: false
+                }).catch(e => console.error(e));
+            }
+        }, 3000);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [newMessage, selectedChatId, user, firestore]);
+
+    // Read receipts management
+    useEffect(() => {
+        if (!selectedChatId || !user || !firestore || !messages || messages.length === 0) return;
+
+        // Reset unread count for me
+        const chatRef = doc(firestore, 'direct_messages', selectedChatId);
+        updateDoc(chatRef, {
+            [`unreadCount.${user.uid}`]: 0
+        }).catch(e => console.error(e));
+
+        // Mark incoming messages as read
+        const unreadMsgs = messages.filter(msg => msg.senderId !== user.uid && msg.status !== 'read');
+        if (unreadMsgs.length > 0) {
+            unreadMsgs.forEach(msg => {
+                updateDoc(doc(firestore, `direct_messages/${selectedChatId}/messages`, msg.id), {
+                    status: 'read'
+                }).catch(e => console.error(e));
+            });
+        }
+    }, [selectedChatId, messages, user, firestore]);
+
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !selectedChatId || !user || isSending) return;
         const text = newMessage;
         setNewMessage('');
         setIsSending(true);
         try {
-            await addDoc(collection(firestore!, `direct_messages/${selectedChatId}/messages`), {
-                text, senderId: user.uid, createdAt: serverTimestamp()
+            const messageData: any = {
+                text,
+                senderId: user.uid,
+                createdAt: serverTimestamp(),
+                type: 'text',
+                status: 'sent'
+            };
+
+            if (replyingToMessage) {
+                const senderDetails = activeChat?.participantDetails?.[replyingToMessage.senderId];
+                const senderName = replyingToMessage.senderId === user.uid ? 'You' : (senderDetails?.name || 'Member');
+                messageData.replyTo = {
+                    messageId: replyingToMessage.id,
+                    text: replyingToMessage.isDeleted ? 'This message was deleted' : replyingToMessage.text,
+                    senderName
+                };
+                setReplyingToMessage(null);
+            }
+
+            await addDoc(collection(firestore!, `direct_messages/${selectedChatId}/messages`), messageData);
+            
+            const chatRef = doc(firestore!, 'direct_messages', selectedChatId);
+            const otherParticipants = activeChat?.participants.filter(id => id !== user.uid) || [];
+            
+            const unreadUpdates: Record<string, any> = {};
+            otherParticipants.forEach(id => {
+                const currentUnread = activeChat?.unreadCount?.[id] || 0;
+                unreadUpdates[`unreadCount.${id}`] = currentUnread + 1;
             });
-            await updateDoc(doc(firestore!, 'direct_messages', selectedChatId), {
-                lastMessage: text, lastMessageTime: serverTimestamp()
+
+            await updateDoc(chatRef, {
+                lastMessage: text,
+                lastMessageTime: serverTimestamp(),
+                ...unreadUpdates
             });
         } catch (e: any) {
             toast({ variant: 'destructive', title: 'Send Failed', description: e.message });
         } finally {
             setIsSending(false);
+        }
+    };
+
+    const handleSendFileMessage = async (fileUrl: string, fileName: string, fileSize: number, fileType: 'image' | 'video' | 'file') => {
+        if (!selectedChatId || !user || !firestore) return;
+        try {
+            const messageData: any = {
+                text: fileType === 'image' ? '📷 Photo' : fileType === 'video' ? '🎥 Video' : '📄 Document',
+                senderId: user.uid,
+                createdAt: serverTimestamp(),
+                type: fileType,
+                fileUrl,
+                fileName,
+                fileSize,
+                status: 'sent'
+            };
+            await addDoc(collection(firestore, `direct_messages/${selectedChatId}/messages`), messageData);
+            
+            const chatRef = doc(firestore, 'direct_messages', selectedChatId);
+            const otherParticipants = activeChat?.participants.filter(id => id !== user.uid) || [];
+            
+            const unreadUpdates: Record<string, any> = {};
+            otherParticipants.forEach(id => {
+                const currentUnread = activeChat?.unreadCount?.[id] || 0;
+                unreadUpdates[`unreadCount.${id}`] = currentUnread + 1;
+            });
+
+            await updateDoc(chatRef, {
+                lastMessage: messageData.text,
+                lastMessageTime: serverTimestamp(),
+                ...unreadUpdates
+            });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Upload Failed', description: e.message });
+        }
+    };
+
+    const handleSendAudioMessage = async (audioUrl: string) => {
+        if (!selectedChatId || !user || !firestore) return;
+        try {
+            const messageData: any = {
+                text: '🎤 Voice message',
+                senderId: user.uid,
+                createdAt: serverTimestamp(),
+                type: 'audio',
+                fileUrl: audioUrl,
+                status: 'sent'
+            };
+            await addDoc(collection(firestore, `direct_messages/${selectedChatId}/messages`), messageData);
+            
+            const chatRef = doc(firestore, 'direct_messages', selectedChatId);
+            const otherParticipants = activeChat?.participants.filter(id => id !== user.uid) || [];
+            
+            const unreadUpdates: Record<string, any> = {};
+            otherParticipants.forEach(id => {
+                const currentUnread = activeChat?.unreadCount?.[id] || 0;
+                unreadUpdates[`unreadCount.${id}`] = currentUnread + 1;
+            });
+
+            await updateDoc(chatRef, {
+                lastMessage: '🎤 Voice message',
+                lastMessageTime: serverTimestamp(),
+                ...unreadUpdates
+            });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Audio Upload Failed', description: e.message });
+        }
+    };
+
+    const handleDeleteMessage = async (messageId: string) => {
+        if (!selectedChatId || !firestore) return;
+        try {
+            await updateDoc(doc(firestore, `direct_messages/${selectedChatId}/messages`, messageId), {
+                isDeleted: true,
+                text: 'This message was deleted'
+            });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Delete Failed', description: e.message });
+        }
+    };
+
+    const handleEditMessage = async (messageId: string, newText: string) => {
+        if (!newText.trim() || !selectedChatId || !firestore) return;
+        try {
+            await updateDoc(doc(firestore, `direct_messages/${selectedChatId}/messages`, messageId), {
+                text: newText.trim(),
+                edited: true
+            });
+            setEditingMessageId(null);
+            setEditText('');
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Edit Failed', description: e.message });
+        }
+    };
+
+    const handleReactToMessage = async (messageId: string, emoji: string) => {
+        if (!selectedChatId || !user || !firestore) return;
+        try {
+            const msgRef = doc(firestore, `direct_messages/${selectedChatId}/messages`, messageId);
+            const targetMsg = messages?.find(m => m.id === messageId);
+            if (targetMsg) {
+                const currentUsers = targetMsg.reactions?.[emoji] || [];
+                if (currentUsers.includes(user.uid)) {
+                    await updateDoc(msgRef, {
+                        [`reactions.${emoji}`]: arrayRemove(user.uid)
+                    });
+                } else {
+                    await updateDoc(msgRef, {
+                        [`reactions.${emoji}`]: arrayUnion(user.uid)
+                    });
+                }
+            }
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Reaction Failed', description: e.message });
+        }
+    };
+
+    const startRecording = async () => {
+        if (typeof window === 'undefined' || !navigator.mediaDevices) return;
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            audioChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) {
+                    audioChunksRef.current.push(e.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+            setRecordingTime(0);
+
+            recordingIntervalRef.current = setInterval(() => {
+                setRecordingTime(prev => prev + 1);
+            }, 1000);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Mic Access Error', description: 'Could not access your microphone.' });
+        }
+    };
+
+    const stopRecording = async (shouldSend: boolean) => {
+        if (!mediaRecorderRef.current || !isRecording) return;
+        
+        clearInterval(recordingIntervalRef.current);
+        setIsRecording(false);
+
+        const recorder = mediaRecorderRef.current;
+        
+        return new Promise<void>((resolve) => {
+            recorder.onstop = async () => {
+                recorder.stream.getTracks().forEach(track => track.stop());
+
+                if (shouldSend && audioChunksRef.current.length > 0) {
+                    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                    try {
+                        setIsSending(true);
+                        const storage = getStorage();
+                        const fileName = `voice_note_${Date.now()}.webm`;
+                        const fileRef = ref(storage, `schools/${schoolId}/chats/${selectedChatId}/${fileName}`);
+                        
+                        const uploadTask = uploadBytesResumable(fileRef, audioBlob);
+                        uploadTask.on('state_changed', 
+                            (snapshot) => {
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                setUploadProgress(progress);
+                            }, 
+                            (error) => {
+                                toast({ variant: 'destructive', title: 'Audio Upload Error', description: error.message });
+                                setIsSending(false);
+                            }, 
+                            async () => {
+                                const url = await getDownloadURL(uploadTask.snapshot.ref);
+                                await handleSendAudioMessage(url);
+                                setIsSending(false);
+                            }
+                        );
+                    } catch (e: any) {
+                        toast({ variant: 'destructive', title: 'Upload Failed', description: e.message });
+                        setIsSending(false);
+                    }
+                }
+                
+                mediaRecorderRef.current = null;
+                audioChunksRef.current = [];
+                resolve();
+            };
+
+            recorder.stop();
+        });
+    };
+
+    const handleUploadAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !selectedChatId || !schoolId) return;
+
+        setIsUploading(true);
+        setUploadProgress(0);
+
+        try {
+            const storage = getStorage();
+            const fileName = `${Date.now()}_${file.name}`;
+            const fileRef = ref(storage, `schools/${schoolId}/chats/${selectedChatId}/${fileName}`);
+            
+            let fileType: 'image' | 'video' | 'file' = 'file';
+            if (file.type.startsWith('image/')) fileType = 'image';
+            else if (file.type.startsWith('video/')) fileType = 'video';
+
+            const uploadTask = uploadBytesResumable(fileRef, file);
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    setUploadProgress(Math.round(progress));
+                }, 
+                (error) => {
+                    toast({ variant: 'destructive', title: 'Upload Failed', description: error.message });
+                    setIsUploading(false);
+                }, 
+                async () => {
+                    const url = await getDownloadURL(uploadTask.snapshot.ref);
+                    await handleSendFileMessage(url, file.name, file.size, fileType);
+                    setIsUploading(false);
+                    toast({ title: 'Attachment Sent', description: `Successfully uploaded ${file.name}` });
+                }
+            );
+        } catch (error: any) {
+            toast({ variant: 'destructive', title: 'Upload Error', description: error.message });
+            setIsUploading(false);
         }
     };
 
@@ -968,6 +1411,14 @@ export default function MessagesPage() {
     const isLoading = chatsLoading || isLoadingSchool;
     const activeChat = chats?.find(c => c.id === selectedChatId);
     const otherMember = activeChat ? getOtherParticipant(activeChat) : null;
+
+    const typingUsers = useMemo(() => {
+        if (!activeChat?.typingState || !user) return [];
+        return Object.entries(activeChat.typingState)
+            .filter(([uid, isTyping]) => isTyping && uid !== user.uid)
+            .map(([uid]) => activeChat.participantDetails?.[uid]?.name || 'Someone');
+    }, [activeChat, user]);
+    const isAnyoneTyping = typingUsers.length > 0;
 
     // Group messages by date for date separators
     const groupedMessages = messages?.reduce((groups: Record<string, Message[]>, msg) => {
@@ -1178,7 +1629,11 @@ export default function MessagesPage() {
                                     <h3 className="font-bold text-slate-900 text-sm leading-none truncate">
                                         {activeChat.isGroup ? activeChat.groupName : otherMember.name}
                                     </h3>
-                                    {activeChat.isGroup ? (
+                                    {isAnyoneTyping ? (
+                                        <p className="text-[11px] text-emerald-600 font-semibold mt-1 animate-pulse italic">
+                                            {typingUsers.join(', ')} {typingUsers.length > 1 ? 'are' : 'is'} typing...
+                                        </p>
+                                    ) : activeChat.isGroup ? (
                                         <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">
                                             {activeChat.participants.length} Members · View Info
                                         </p>
@@ -1278,8 +1733,10 @@ export default function MessagesPage() {
                                                     return (
                                                         <div
                                                             key={msg.id}
+                                                            onMouseEnter={() => setHoveredMessageId(msg.id)}
+                                                            onMouseLeave={() => setHoveredMessageId(null)}
                                                             className={cn(
-                                                                "flex items-end gap-2",
+                                                                "flex items-end gap-2 relative group",
                                                                 isMe ? "justify-end" : "justify-start",
                                                                 isFirstInGroup ? "mt-3" : "mt-0.5"
                                                             )}
@@ -1310,34 +1767,239 @@ export default function MessagesPage() {
                                                                 </div>
                                                             )}
 
-                                                            {/* Bubble */}
-                                                            <div className={cn(
-                                                                "max-w-[65%] px-4 py-2.5 text-sm leading-relaxed shadow-sm",
-                                                                isMe
-                                                                    ? "bg-indigo-600 text-white rounded-2xl rounded-br-sm"
-                                                                    : "bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-bl-sm",
-                                                                !isLastInGroup && isMe && "rounded-br-2xl rounded-tr-sm",
-                                                                !isLastInGroup && !isMe && "rounded-bl-2xl rounded-tl-sm",
-                                                            )}>
-                                                                {!isMe && activeChat.isGroup && isFirstInGroup && (
-                                                                    <p className="text-[10px] font-black text-indigo-600 mb-1 leading-none uppercase tracking-tight">
-                                                                        {activeChat.participantDetails?.[msg.senderId]?.name || 'Member'}
-                                                                    </p>
-                                                                )}
-                                                                <p className="break-words">{msg.text}</p>
-                                                                {isLastInGroup && (
+                                                            {/* Bubble Wrapper */}
+                                                            <div className="flex flex-col max-w-[65%]">
+                                                                {/* Bubble */}
+                                                                <div className={cn(
+                                                                    "px-4 py-2.5 text-sm leading-relaxed shadow-sm",
+                                                                    isMe
+                                                                        ? "bg-indigo-600 text-white rounded-2xl rounded-br-sm"
+                                                                        : "bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-bl-sm",
+                                                                    !isLastInGroup && isMe && "rounded-br-2xl rounded-tr-sm",
+                                                                    !isLastInGroup && !isMe && "rounded-bl-2xl rounded-tl-sm",
+                                                                )}>
+                                                                    {!isMe && activeChat.isGroup && isFirstInGroup && (
+                                                                        <p className="text-[10px] font-black text-indigo-600 mb-1 leading-none uppercase tracking-tight">
+                                                                            {activeChat.participantDetails?.[msg.senderId]?.name || 'Member'}
+                                                                        </p>
+                                                                    )}
+
+                                                                    {/* Quoted Message */}
+                                                                    {msg.replyTo && !msg.isDeleted && (
+                                                                        <div className={cn(
+                                                                            "border-l-4 rounded px-2.5 py-1 mb-2 text-xs flex flex-col gap-0.5 max-w-full truncate bg-black/5",
+                                                                            isMe ? "border-indigo-300 text-indigo-100" : "border-indigo-500 text-slate-600"
+                                                                        )}>
+                                                                            <span className="font-bold text-[10px] uppercase tracking-wider">{msg.replyTo.senderName}</span>
+                                                                            <span className="truncate">{msg.replyTo.text}</span>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Main Message Content */}
+                                                                    {msg.isDeleted ? (
+                                                                        <p className="italic text-xs flex items-center gap-1.5 opacity-70">
+                                                                            <span>🚫 This message was deleted</span>
+                                                                        </p>
+                                                                    ) : editingMessageId === msg.id ? (
+                                                                        <div className="space-y-2 py-1 min-w-[200px]">
+                                                                            <Input
+                                                                                value={editText}
+                                                                                onChange={e => setEditText(e.target.value)}
+                                                                                className={cn(
+                                                                                    "h-8 text-xs rounded-lg border-2 focus-visible:ring-1",
+                                                                                    isMe ? "bg-indigo-700 text-white border-indigo-500 focus-visible:ring-white" : "bg-slate-50 text-slate-800 border-slate-200 focus-visible:ring-indigo-500"
+                                                                                )}
+                                                                                onKeyDown={(e) => {
+                                                                                    if (e.key === 'Enter') handleEditMessage(msg.id, editText);
+                                                                                    if (e.key === 'Escape') setEditingMessageId(null);
+                                                                                }}
+                                                                            />
+                                                                            <div className="flex gap-1.5 justify-end">
+                                                                                <Button 
+                                                                                    size="sm" 
+                                                                                    variant="ghost" 
+                                                                                    onClick={() => setEditingMessageId(null)}
+                                                                                    className={cn("h-6 px-2 text-[10px] rounded", isMe ? "text-indigo-200 hover:text-white hover:bg-indigo-700" : "text-slate-500 hover:bg-slate-100")}
+                                                                                >
+                                                                                    Cancel
+                                                                                </Button>
+                                                                                <Button 
+                                                                                    size="sm" 
+                                                                                    onClick={() => handleEditMessage(msg.id, editText)}
+                                                                                    className={cn("h-6 px-2 text-[10px] rounded font-bold", isMe ? "bg-white text-indigo-600 hover:bg-slate-100" : "bg-indigo-600 text-white hover:bg-indigo-700")}
+                                                                                >
+                                                                                    Save
+                                                                                </Button>
+                                                                            </div>
+                                                                        </div>
+                                                                    ) : msg.type === 'image' ? (
+                                                                        <div className="space-y-1.5 py-0.5">
+                                                                            <div className="relative rounded-lg overflow-hidden border border-black/5 bg-slate-50/10 max-w-[260px]">
+                                                                                <img src={msg.fileUrl} className="max-h-[200px] w-full object-cover rounded-lg" alt={msg.fileName || "Attachment"} />
+                                                                                <a 
+                                                                                    href={msg.fileUrl} 
+                                                                                    target="_blank" 
+                                                                                    rel="noopener noreferrer"
+                                                                                    className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1 rounded-lg"
+                                                                                >
+                                                                                    <Download className="h-4 w-4" /> Download
+                                                                                </a>
+                                                                            </div>
+                                                                            {msg.fileName && <p className="text-[11px] font-medium opacity-85 truncate max-w-[260px]">{msg.fileName}</p>}
+                                                                        </div>
+                                                                    ) : msg.type === 'video' ? (
+                                                                        <div className="space-y-1.5 py-0.5">
+                                                                            <video src={msg.fileUrl} controls className="max-h-[200px] w-full rounded-lg border border-black/5 max-w-[260px]" />
+                                                                            {msg.fileName && <p className="text-[11px] font-medium opacity-85 truncate max-w-[260px]">{msg.fileName}</p>}
+                                                                        </div>
+                                                                    ) : msg.type === 'audio' ? (
+                                                                        <div className="py-0.5">
+                                                                            <AudioMessagePlayer url={msg.fileUrl || ''} />
+                                                                        </div>
+                                                                    ) : msg.type === 'file' ? (
+                                                                        <div className={cn(
+                                                                            "flex items-center gap-3 p-2.5 rounded-xl border max-w-[260px]",
+                                                                            isMe ? "bg-indigo-700 border-indigo-500 text-white" : "bg-slate-50 border-slate-200 text-slate-800"
+                                                                        )}>
+                                                                            <div className="h-10 w-10 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
+                                                                                <FileText className="h-5 w-5 text-indigo-600" />
+                                                                            </div>
+                                                                            <div className="flex-1 min-w-0">
+                                                                                <p className="text-xs font-semibold truncate leading-tight">{msg.fileName || 'Document'}</p>
+                                                                                {msg.fileSize && (
+                                                                                    <p className="text-[9px] opacity-70 mt-0.5">
+                                                                                        {(msg.fileSize / 1024).toFixed(0)} KB
+                                                                                    </p>
+                                                                                )}
+                                                                            </div>
+                                                                            <a
+                                                                                href={msg.fileUrl}
+                                                                                download={msg.fileName}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className={cn(
+                                                                                    "h-8 w-8 rounded-lg flex items-center justify-center transition-colors shrink-0",
+                                                                                    isMe ? "hover:bg-indigo-800 text-indigo-200 hover:text-white" : "hover:bg-slate-100 text-slate-500 hover:text-slate-700"
+                                                                                )}
+                                                                            >
+                                                                                <Download className="h-4 w-4" />
+                                                                            </a>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <p className="break-words whitespace-pre-wrap">{msg.text}</p>
+                                                                    )}
+
+                                                                    {/* Message Metadata */}
                                                                     <div className={cn(
-                                                                        "text-[9px] mt-1.5 flex items-center gap-1",
+                                                                        "text-[9px] mt-1.5 flex items-center gap-1.5",
                                                                         isMe ? "text-indigo-200 justify-end" : "text-slate-400"
                                                                     )}>
+                                                                        {msg.edited && !msg.isDeleted && <span className="font-medium italic opacity-75">edited</span>}
                                                                         {msg.createdAt
                                                                             ? format(msg.createdAt.toDate(), 'HH:mm')
-                                                                            : <span className="italic">Sending...</span>
+                                                                            : <span className="italic text-[8px]">Sending...</span>
                                                                         }
-                                                                        {isMe && <CheckCheck className="h-3 w-3" />}
+                                                                        {isMe && !msg.isDeleted && (
+                                                                            msg.status === 'read' ? (
+                                                                                <CheckCheck className="h-3 w-3 text-sky-300" />
+                                                                            ) : msg.status === 'delivered' ? (
+                                                                                <CheckCheck className="h-3 w-3 text-slate-300" />
+                                                                            ) : (
+                                                                                <Check className="h-3 w-3 text-slate-300" />
+                                                                            )
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Reactions Badge Tray */}
+                                                                {msg.reactions && Object.entries(msg.reactions).some(([_, uids]) => uids.length > 0) && (
+                                                                    <div className={cn(
+                                                                        "flex flex-wrap gap-1 mt-1",
+                                                                        isMe ? "justify-end" : "justify-start"
+                                                                    )}>
+                                                                        {Object.entries(msg.reactions)
+                                                                            .filter(([_, uids]) => uids.length > 0)
+                                                                            .map(([emoji, uids]) => {
+                                                                                const hasReacted = uids.includes(user?.uid || '');
+                                                                                return (
+                                                                                    <button
+                                                                                        key={emoji}
+                                                                                        onClick={() => handleReactToMessage(msg.id, emoji)}
+                                                                                        className={cn(
+                                                                                            "inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border shadow-sm transition-all hover:scale-105 active:scale-95",
+                                                                                            hasReacted
+                                                                                                ? "bg-indigo-50 border-indigo-200 text-indigo-700 font-bold"
+                                                                                                : "bg-white border-slate-100 text-slate-500 hover:bg-slate-50"
+                                                                                        )}
+                                                                                        title={uids.map(uid => activeChat.participantDetails?.[uid]?.name || 'Someone').join(', ')}
+                                                                                    >
+                                                                                        <span>{emoji}</span>
+                                                                                        <span>{uids.length}</span>
+                                                                                    </button>
+                                                                                );
+                                                                            })}
                                                                     </div>
                                                                 )}
                                                             </div>
+
+                                                            {/* Actions / Reactions overlay on Hover */}
+                                                            {hoveredMessageId === msg.id && !msg.isDeleted && (
+                                                                <div className={cn(
+                                                                    "flex items-center gap-1.5 bg-white border border-slate-150/80 shadow-md rounded-full px-2 py-1 z-15 animate-in fade-in duration-100 mx-1 mb-1 shrink-0",
+                                                                    isMe ? "order-first" : "order-last"
+                                                                )}>
+                                                                    {/* Reactions Tray */}
+                                                                    <div className="flex items-center gap-0.5 pr-1.5 border-r border-slate-100">
+                                                                        {EMOJI_LIST.map(emoji => {
+                                                                            const uids = msg.reactions?.[emoji] || [];
+                                                                            const hasReacted = uids.includes(user?.uid || '');
+                                                                            return (
+                                                                                <button
+                                                                                    key={emoji}
+                                                                                    onClick={() => handleReactToMessage(msg.id, emoji)}
+                                                                                    className={cn(
+                                                                                        "h-6 w-6 rounded-full flex items-center justify-center text-sm hover:bg-slate-100 transition-all hover:scale-125",
+                                                                                        hasReacted && "bg-indigo-50"
+                                                                                    )}
+                                                                                >
+                                                                                    {emoji}
+                                                                                </button>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                    {/* General Actions */}
+                                                                    <div className="flex items-center gap-0.5">
+                                                                        <button
+                                                                            onClick={() => setReplyingToMessage(msg)}
+                                                                            className="h-6 w-6 rounded-full flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
+                                                                            title="Reply"
+                                                                        >
+                                                                            <CornerUpLeft className="h-3.5 w-3.5" />
+                                                                        </button>
+                                                                        {isMe && (
+                                                                            <>
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        setEditingMessageId(msg.id);
+                                                                                        setEditText(msg.text);
+                                                                                    }}
+                                                                                    className="h-6 w-6 rounded-full flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-slate-100 transition-colors"
+                                                                                    title="Edit"
+                                                                                >
+                                                                                    <Edit3 className="h-3.5 w-3.5" />
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={() => handleDeleteMessage(msg.id)}
+                                                                                    className="h-6 w-6 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-slate-100 transition-colors"
+                                                                                    title="Delete"
+                                                                                >
+                                                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                                                </button>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     );
                                                 })}
@@ -1350,36 +2012,126 @@ export default function MessagesPage() {
 
                         {/* Message Input */}
                         <div className="px-5 py-4 bg-white border-t border-slate-100 shrink-0">
-                            <form
-                                onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-                                className="flex items-center gap-3"
-                            >
-                                <div className="flex-1 relative">
-                                    <input
-                                        ref={inputRef}
-                                        value={newMessage}
-                                        onChange={e => setNewMessage(e.target.value)}
-                                        placeholder={activeChat.isGroup ? `Message ${activeChat.groupName}...` : `Message ${otherMember.name}...`}
-                                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 placeholder:text-slate-400 transition-all pr-4"
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' && !e.shiftKey) {
-                                                e.preventDefault();
-                                                handleSendMessage();
-                                            }
-                                        }}
-                                    />
+                            {replyingToMessage && (
+                                <div className="flex items-center justify-between bg-indigo-50/50 border-l-4 border-indigo-500 px-4 py-2.5 rounded-r-xl mb-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-bold text-indigo-700">
+                                            Replying to {replyingToMessage.senderId === user?.uid ? 'yourself' : (activeChat?.participantDetails?.[replyingToMessage.senderId]?.name || 'Member')}
+                                        </p>
+                                        <p className="text-xs text-slate-500 truncate mt-0.5">
+                                            {replyingToMessage.isDeleted ? 'This message was deleted' : replyingToMessage.text}
+                                        </p>
+                                    </div>
+                                    <button 
+                                        onClick={() => setReplyingToMessage(null)} 
+                                        className="h-6 w-6 rounded-full flex items-center justify-center hover:bg-slate-200/50 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+                                    >
+                                        <X className="h-3.5 w-3.5" />
+                                    </button>
                                 </div>
-                                <button
-                                    type="submit"
-                                    disabled={!newMessage.trim() || isSending}
-                                    className="h-12 w-12 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md shadow-indigo-200/50 transition-all hover:scale-105 active:scale-95 shrink-0"
+                            )}
+
+                            {isUploading && (
+                                <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 mb-3">
+                                    <Loader2 className="h-4 w-4 animate-spin text-indigo-600 shrink-0" />
+                                    <div className="flex-1">
+                                        <div className="flex justify-between text-xs font-bold text-slate-600 mb-1">
+                                            <span>Uploading file...</span>
+                                            <span>{uploadProgress}%</span>
+                                        </div>
+                                        <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                            <div className="h-full bg-indigo-600 transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {isRecording ? (
+                                <div className="flex items-center justify-between bg-red-50/40 border border-red-200 rounded-2xl px-4 py-3 animate-pulse">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                                        <span className="text-xs font-semibold text-red-600">Recording Voice Note...</span>
+                                        <span className="text-xs font-mono bg-red-100 text-red-700 px-2 py-0.5 rounded">
+                                            {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => stopRecording(false)}
+                                            className="h-9 w-9 rounded-xl hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
+                                            title="Cancel recording"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => stopRecording(true)}
+                                            className="h-9 w-9 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md shadow-red-200 transition-colors"
+                                            title="Send Voice Note"
+                                        >
+                                            <Send className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <form
+                                    onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
+                                    className="flex items-center gap-2.5"
                                 >
-                                    {isSending
-                                        ? <Loader2 className="h-4 w-4 animate-spin" />
-                                        : <Send className="h-4 w-4" />
-                                    }
-                                </button>
-                            </form>
+                                    <div className="relative shrink-0">
+                                        <input
+                                            type="file"
+                                            id="chat-file-upload"
+                                            onChange={handleUploadAttachment}
+                                            className="hidden"
+                                            accept="image/*,video/*,application/pdf,text/*,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar"
+                                        />
+                                        <label
+                                            htmlFor="chat-file-upload"
+                                            className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                                            title="Attach file"
+                                        >
+                                            <Paperclip className="h-4.5 w-4.5" />
+                                        </label>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={startRecording}
+                                        className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0"
+                                        title="Record Voice Note"
+                                    >
+                                        <Mic className="h-4.5 w-4.5" />
+                                    </button>
+
+                                    <div className="flex-1 relative">
+                                        <input
+                                            ref={inputRef}
+                                            value={newMessage}
+                                            onChange={e => setNewMessage(e.target.value)}
+                                            placeholder={activeChat.isGroup ? `Message ${activeChat.groupName}...` : `Message ${otherMember.name}...`}
+                                            className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 placeholder:text-slate-400 transition-all"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                    e.preventDefault();
+                                                    handleSendMessage();
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        disabled={!newMessage.trim() || isSending}
+                                        className="h-12 w-12 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:cursor-not-allowed text-white flex items-center justify-center shadow-md shadow-indigo-200/50 transition-all hover:scale-105 active:scale-95 shrink-0"
+                                    >
+                                        {isSending
+                                            ? <Loader2 className="h-4 w-4 animate-spin" />
+                                            : <Send className="h-4 w-4" />
+                                        }
+                                    </button>
+                                </form>
+                            )}
                             <p className="text-[10px] text-slate-400 text-center mt-2 font-medium">
                                 Press Enter to send · Shift+Enter for new line
                             </p>
