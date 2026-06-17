@@ -445,28 +445,39 @@ export default function IDCardGeneratorPage() {
     if (isLoadingSchool) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin h-8 w-8 text-blue-600" /></div>;
 
     return (
-        <div className="p-6 space-y-6">
-            <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-black text-indigo-600 tracking-tight flex items-center gap-2 italic uppercase">
-                    <IdCard className="h-8 w-8" /> ID Card Generator
-                </h1>
-                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">
-                    Generate printable identification cards — entire class or individual students
-                </p>
+        <div className="space-y-8">
+            {/* Premium Gradient Banner */}
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 p-8 md:p-12 text-white shadow-2xl border border-slate-700/30">
+                <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-2xl" />
+                <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-slate-500/10 blur-2xl" />
+                
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-indigo-200 backdrop-blur-md">
+                            <IdCard className="h-3 w-3" /> Digital Badge Studio
+                        </span>
+                        <h1 className="text-3xl md:text-4xl font-black tracking-tight italic uppercase">
+                            ID Card <span className="text-indigo-400">Generator</span>
+                        </h1>
+                        <p className="max-w-md text-sm font-medium text-slate-300">
+                            Configure, preview, and generate print-ready student identification cards in compliance with CR80 badge templates.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* ── Controls Card ── */}
-            <Card className="border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem] print:hidden">
-                <CardHeader>
-                    <CardTitle className="text-lg">Select Population</CardTitle>
-                    <CardDescription>Choose a class, then optionally narrow down to a single student.</CardDescription>
+            <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden print:hidden">
+                <CardHeader className="bg-slate-900 text-white pb-6 pt-8 px-8">
+                    <CardTitle className="text-lg font-black uppercase tracking-tight">Select Population</CardTitle>
+                    <CardDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">Choose class and select target students.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col md:flex-row gap-4 items-end flex-wrap">
+                <CardContent className="flex flex-col md:flex-row gap-4 items-end flex-wrap p-8">
                     {/* Class Selector */}
                     <div className="space-y-2 flex-1 min-w-[180px] max-w-sm">
-                        <Label className="text-[10px] font-black uppercase text-slate-400">Target Class</Label>
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Target Class</Label>
                         <Select value={classId} onValueChange={setClassId}>
-                            <SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50">
+                            <SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
                                 <SelectValue placeholder="Select Class" />
                             </SelectTrigger>
                             <SelectContent>
@@ -480,11 +491,11 @@ export default function IDCardGeneratorPage() {
                     {/* Student Selector — only shown once a class is chosen */}
                     {classId && !loadingStudents && sortedStudents.length > 0 && (
                         <div className="space-y-2 flex-1 min-w-[200px] max-w-sm">
-                            <Label className="text-[10px] font-black uppercase text-slate-400 flex items-center gap-1">
+                            <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
                                 <Users className="h-3 w-3" /> Student (optional)
                             </Label>
                             <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
-                                <SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50">
+                                <SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
                                     <SelectValue placeholder="All Students" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -506,7 +517,7 @@ export default function IDCardGeneratorPage() {
                         <Button
                             onClick={handleDownloadPDF}
                             disabled={isGenerating || !studentsToExport.length || unresolvedPhotosCount > 0}
-                            className="flex-1 md:w-64 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black uppercase tracking-tight shadow-lg shadow-indigo-100"
+                            className="flex-1 md:w-64 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black uppercase tracking-wider shadow-lg shadow-indigo-100 transition-all duration-200"
                         >
                             {unresolvedPhotosCount > 0 ? (
                                 <>
@@ -531,32 +542,37 @@ export default function IDCardGeneratorPage() {
 
             {/* ── Preview Card ── */}
             {classId && (
-                <Card className="rounded-[2.5rem] border-none shadow-2xl bg-slate-50/50 print:hidden">
-                    <CardHeader className="p-8 border-b bg-white rounded-t-[2.5rem]">
-                        <CardTitle className="text-xl">
-                            Layout Preview
-                            <span className="ml-2 text-indigo-600">{currentClassName}</span>
-                            {selectedStudentId !== 'all' && previewStudent && (
-                                <span className="ml-2 text-slate-400 font-normal text-base">
-                                    — {previewStudent.firstName} {previewStudent.lastName}
-                                </span>
-                            )}
-                        </CardTitle>
-                        <CardDescription>
-                            {selectedStudentId === 'all'
-                                ? `Showing sample card. ${sortedStudents.length} cards will be exported.`
-                                : 'Showing selected student card preview.'}
-                        </CardDescription>
+                <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden print:hidden">
+                    <CardHeader className="bg-slate-900 text-white pb-6 pt-8 px-8 flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle className="text-xl font-black uppercase tracking-tight">
+                                Layout Preview
+                                <span className="ml-2 text-indigo-400">{currentClassName}</span>
+                                {selectedStudentId !== 'all' && previewStudent && (
+                                    <span className="ml-2 text-slate-400 font-normal text-base">
+                                        — {previewStudent.firstName} {previewStudent.lastName}
+                                    </span>
+                                )}
+                            </CardTitle>
+                            <CardDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">
+                                {selectedStudentId === 'all'
+                                    ? `Showing sample card. ${sortedStudents.length} cards will be exported.`
+                                    : 'Showing selected student card preview.'}
+                            </CardDescription>
+                        </div>
                     </CardHeader>
                     <CardContent className="p-8">
                         {loadingStudents ? (
                             <div className="flex flex-col items-center py-20 gap-3">
-                                <Loader2 className="animate-spin text-indigo-600 h-10 w-10" />
+                                <Loader2 className="animate-spin text-indigo-650 h-10 w-10" />
                                 <p className="text-xs font-black uppercase text-slate-400">Scanning Database...</p>
                             </div>
                         ) : previewStudent ? (
-                            <div className="flex flex-wrap justify-center gap-10">
-                                <div className="p-10 bg-white rounded-[3rem] shadow-xl border-4 border-white ring-1 ring-slate-200">
+                            <div className="flex flex-wrap justify-center gap-10 p-12 bg-slate-950 rounded-[3rem] shadow-inner relative overflow-hidden border border-slate-900">
+                                {/* Designer guidelines grid overlay */}
+                                <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-35" />
+                                
+                                <div className="relative z-10 p-10 bg-white/5 backdrop-blur-md rounded-[2.5rem] shadow-2xl border border-white/10 flex flex-col items-center">
                                     <IDCard
                                         student={previewStudent}
                                         className={currentClassName}
@@ -567,8 +583,8 @@ export default function IDCardGeneratorPage() {
                                         forPrint={false}
                                         photoBase64={resolvedPhotos[previewStudent.id || previewStudent.uid]}
                                     />
-                                    <p className="mt-14 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Sample Digital Proof
+                                    <p className="mt-14 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.25em]">
+                                        Active Studio Blueprint (120% Zoom)
                                     </p>
                                 </div>
                             </div>
