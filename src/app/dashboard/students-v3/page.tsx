@@ -47,7 +47,7 @@ import { sendSMSAction } from '@/app/actions/sms';
 export default function StudentsV3Page() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
-  const { role, profile } = useRole();
+  const { role, profile, loading: isRoleLoading } = useRole();
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchool } = useCurrentSchool();
 
@@ -371,6 +371,28 @@ export default function StudentsV3Page() {
   }, [students, searchTerm, classFilter, statusFilter]);
 
   const overallLoading = isLoadingSchool || isLoading;
+  const isAuthorized = role === 'Director' || role === 'Administrator' || role === 'Secretary' || role === 'Receptionist';
+
+  if (isUserLoading || isLoadingSchool || isRoleLoading) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="p-6">
+        <Card className="border-red-200/50 shadow-md">
+          <CardHeader className="bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-400">
+            <CardTitle>Access Denied</CardTitle>
+            <CardDescription>This student directory is restricted to Directors, Administrators, Secretaries, and Receptionists.</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 p-6">

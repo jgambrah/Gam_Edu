@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ScatterChart, Scatter
@@ -38,6 +38,7 @@ const LOADING_PHASES = [
 
 export default function LearningAnalyticsPage() {
   const firestore = useFirestore();
+  const { user } = useUser();
   const { toast } = useToast();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
   const { role, loading: isRoleLoading } = useRole();
@@ -79,6 +80,37 @@ export default function LearningAnalyticsPage() {
     return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
   }, [firestore, schoolId, isRoleLoading, canAccess]);
   const { data: classes, isLoading: classesLoading } = useCollection<Class>(classesQuery);
+
+  const timetableQuery = useMemoFirebase(() => 
+    (firestore && schoolId && role === 'Teacher')
+      ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
+      : null, 
+  [firestore, schoolId, role]);
+  const { data: timetable } = useCollection<any>(timetableQuery);
+
+  const visibleClasses = useMemo(() => {
+    if (!classes) return [];
+    if (role !== 'Teacher') return classes;
+    const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
+    return classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
+  }, [classes, timetable, role, user?.uid]);
+
+  // Class access guard
+  useEffect(() => {
+    if (selectedClassId && !classesLoading) {
+      if (role === 'Teacher') {
+        const isAuthorized = visibleClasses.some((c: any) => c.id === selectedClassId);
+        if (!isAuthorized) {
+          toast({
+            variant: 'destructive',
+            title: 'Access Restricted',
+            description: 'You do not have access to this class analytics.'
+          });
+          setSelectedClassId(visibleClasses[0]?.id || '');
+        }
+      }
+    }
+  }, [selectedClassId, role, visibleClasses, classesLoading, toast]);
 
   // 2. Fetch Data (Dependent on selected Class)
   const studentsQuery = useMemoFirebase(() => {
@@ -241,7 +273,7 @@ export default function LearningAnalyticsPage() {
                             <SelectValue placeholder="Select Class to Analyze" />
                         </SelectTrigger>
                         <SelectContent>
-                            {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            {visibleClasses?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>

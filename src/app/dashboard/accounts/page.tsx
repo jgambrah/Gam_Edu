@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -1754,7 +1754,18 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
                                       <TableCell className={`text-right font-mono ${rec.billedAmount < 0 ? 'text-green-600' : ''}`}>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
                                       <TableCell className="text-right font-mono text-green-600">GH₵{(rec.amountPaid || 0).toFixed(2)}</TableCell>
                                       <TableCell className="text-xs">{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
-                                      <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
+                                      <TableCell>
+                                          <span className={cn(
+                                              "px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider",
+                                              rec.status === 'Paid' ? "bg-emerald-50 text-emerald-700 border-emerald-250" :
+                                              rec.status === 'Unpaid' ? "bg-slate-50 text-slate-655 border-slate-200" :
+                                              rec.status === 'Overdue' ? "bg-rose-50 text-rose-700 border-rose-200" :
+                                              rec.status === 'Pending Reversal' ? "bg-amber-50 text-amber-700 border-amber-200 animate-pulse" :
+                                              "bg-slate-100 text-slate-500 border-slate-200"
+                                          )}>
+                                              {rec.status}
+                                          </span>
+                                      </TableCell>
                                       <TableCell>
                                           <div className="flex gap-1 justify-end">
                                               <Button variant="ghost" size="icon" onClick={() => setOpenRowId(openRowId === rec.id ? null : rec.id)}><ChevronsUpDown className="h-4 w-4 text-slate-500"/></Button>
@@ -1817,6 +1828,7 @@ export default function AccountsPage() {
   const firestore = useFirestore(); 
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
+  const { user } = useUser();
   
   const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termly-transport' | 'termly-canteen' | 'daily' | null>(null); 
   const [searchTerm, setSearchTerm] = useState('');
@@ -1825,6 +1837,49 @@ export default function AccountsPage() {
   const [activeTab, setActiveTab] = useState('billing');
   const [analyticsTab, setAnalyticsTab] = useState('summary');
   const [isProcessingReversal, setIsProcessingReversal] = useState<string | null>(null);
+  
+  const [isOpeningTill, setIsOpeningTill] = useState(false);
+  const [sendingSMSStudentId, setSendingSMSStudentId] = useState<string | null>(null);
+
+  const activeTillQuery = useMemoFirebase(() => 
+    (firestore && user?.uid && schoolId) ? 
+    query(
+        collection(firestore, 'tills'), 
+        where('schoolId', '==', schoolId),
+        where('accountantId', '==', user.uid), 
+        where('status', '==', 'Open')
+    ) : null,
+    [firestore, user?.uid, schoolId]
+  );
+  const { data: activeTills, isLoading: isLoadingTills, forceRefetch: refetchActiveTill } = useCollection<any>(activeTillQuery);
+  const activeTill = activeTills?.[0];
+
+  const handleOpenTill = useCallback(async () => {
+    if (!user || !schoolId || !firestore) return;
+    setIsOpeningTill(true);
+    try {
+        const newTillRef = doc(collection(firestore, 'tills'));
+        await setDoc(newTillRef, {
+            accountantId: user.uid,
+            accountantName: user.displayName || user.email,
+            openingBalance: 0,
+            currentBalance: 0,
+            closingBalance: null,
+            dateOpened: serverTimestamp(),
+            dateClosed: null,
+            status: 'Open',
+            directorApproval: { directorId: null, directorName: null, approvedAt: null },
+            schoolId: schoolId,
+        });
+        toast({ title: 'Success', description: 'New till opened for the day.' });
+        if (refetchActiveTill) refetchActiveTill();
+    } catch (e: any) {
+        console.error(e);
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to open till: ' + e.message });
+    } finally {
+        setIsOpeningTill(false);
+    }
+  }, [user, schoolId, firestore, refetchActiveTill, toast]);
 
   const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
@@ -2001,6 +2056,111 @@ export default function AccountsPage() {
   const filteredStudentsWithBills = useMemo(() => studentFinancials.filter(sf => searchStudent(sf.student, searchTerm)), [studentFinancials, searchTerm]);
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
 
+  const collectionRate = useMemo(() => {
+    const total = dashboardStats.totalRevenue + dashboardStats.totalOutstanding;
+    return total > 0 ? (dashboardStats.totalRevenue / total) * 100 : 100;
+  }, [dashboardStats]);
+
+  const categoryCollections = useMemo(() => {
+    if (!records || !students) return [];
+    
+    const activeStudentIds = new Set(students.map(s => s.uid));
+    const activeRecords = records.filter(r => activeStudentIds.has(r.studentId) && r.status !== 'Pending Reversal');
+    
+    const categories: Record<string, { billed: number, paid: number, waived: number }> = {
+        'Tuition': { billed: 0, paid: 0, waived: 0 },
+        'Canteen': { billed: 0, paid: 0, waived: 0 },
+        'Transport': { billed: 0, paid: 0, waived: 0 },
+        'PTA Levy': { billed: 0, paid: 0, waived: 0 },
+        'Other': { billed: 0, paid: 0, waived: 0 }
+    };
+    
+    activeRecords.forEach(r => {
+        const type = r.type.toLowerCase();
+        let cat = 'Other';
+        if (type.includes('tuition')) cat = 'Tuition';
+        else if (type.includes('canteen')) cat = 'Canteen';
+        else if (type.includes('transport')) cat = 'Transport';
+        else if (type.includes('pta')) cat = 'PTA Levy';
+        
+        categories[cat].billed += Number(r.billedAmount) || 0;
+        categories[cat].paid += Number(r.amountPaid) || 0;
+        categories[cat].waived += Number(r.waiverAmount) || 0;
+    });
+    
+    return Object.entries(categories).map(([name, stats]) => {
+        const netBilled = stats.billed - stats.waived;
+        const rate = netBilled > 0 ? (stats.paid / netBilled) * 100 : 100;
+        return {
+            name,
+            billed: stats.billed,
+            paid: stats.paid,
+            waived: stats.waived,
+            outstanding: Math.max(0, netBilled - stats.paid),
+            rate
+        };
+    });
+  }, [records, students]);
+
+  const topDebtors = useMemo(() => {
+      return studentFinancials
+          .filter(sf => sf.balance > 0.01)
+          .slice(0, 5);
+  }, [studentFinancials]);
+
+  const getOldestOverdueDays = useCallback((studentRecords: FinancialRecord[]) => {
+      const unpaidOrOverdue = studentRecords.filter(r => 
+          (r.status === 'Unpaid' || r.status === 'Overdue') && 
+          (r.billedAmount - (r.amountPaid || 0) - (r.waiverAmount || 0) > 0.01)
+      );
+      if (unpaidOrOverdue.length === 0) return 0;
+      
+      const oldestDueDate = unpaidOrOverdue.reduce((oldest, current) => {
+          const currentD = current.dueDate?.toDate ? current.dueDate.toDate() : new Date(current.dueDate);
+          const oldestD = oldest.dueDate?.toDate ? oldest.dueDate.toDate() : new Date(oldest.dueDate);
+          return currentD < oldestD ? current : oldest;
+      });
+      
+      const oldestD = oldestDueDate.dueDate?.toDate ? oldestDueDate.dueDate.toDate() : new Date(oldestDueDate.dueDate);
+      const diffTime = new Date().getTime() - oldestD.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays > 0 ? diffDays : 0;
+  }, []);
+
+  const handleSendOverallSMSReminder = useCallback(async (studentId: string, studentName: string, balance: number) => {
+      if (!firestore || !schoolId) return;
+      setSendingSMSStudentId(studentId);
+      try {
+          const parentQ = query(collection(firestore, 'parents'), where('schoolId', '==', schoolId), where('studentIds', 'array-contains', studentId));
+          const pSnap = await getDocs(parentQ);
+          if (pSnap.empty) {
+              toast({ variant: 'destructive', title: "No Parent Found", description: "No parent record is linked to this student." });
+              return;
+          }
+          const parentData = pSnap.docs[0].data();
+          const phone = parentData.phone;
+          if (!phone) {
+              toast({ variant: 'destructive', title: "No Phone Number", description: "Parent record has no phone number." });
+              return;
+          }
+
+          const msg = `Dear Parent, you have an outstanding balance of GHS ${balance.toFixed(2)} for ${studentName}. Please log in to your Parent Portal to view bills and pay online. - GAM Edu`;
+          
+          toast({ title: "Sending SMS Reminder...", description: `Sending to ${phone}` });
+          const result = await sendSchoolSMSAction(schoolId, phone, msg);
+          
+          if (result.success) {
+              toast({ title: "Reminder Sent!", description: "Parent has been notified successfully." });
+          } else {
+              throw new Error(result.error);
+          }
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Failed to send SMS", description: e.message });
+      } finally {
+          setSendingSMSStudentId(null);
+      }
+  }, [firestore, schoolId, toast]);
+
   // --- REVERSAL HANDLERS ---
   const handleApproveReversal = async (record: FinancialRecord) => {
     if (!firestore || isProcessingReversal) return;
@@ -2087,193 +2247,419 @@ export default function AccountsPage() {
                 </TabsTrigger>
             </TabsList>
             <TabsContent value="billing" className="space-y-6">
-                
-                {/* Advanced Analytics Tabs */}
-                <div className="bg-white border rounded-2xl p-4 shadow-sm">
-                    <Tabs value={analyticsTab} onValueChange={setAnalyticsTab} className="w-full">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-3 mb-4">
-                            <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Collections Advisory Desk</h3>
-                            <TabsList className="bg-slate-100 p-0.5 rounded-lg border">
-                                <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md">Financial Summary</TabsTrigger>
-                                <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md">Debt Aging</TabsTrigger>
-                                <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md">Class Pace</TabsTrigger>
-                            </TabsList>
-                        </div>
-                        
-                        <TabsContent value="summary" className="mt-0">
-                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                                <Card className="border-l-4 border-l-rose-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                    <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Outstanding</CardTitle>
-                                    <Wallet className="h-4 w-4 text-rose-500" />
-                                  </CardHeader>
-                                  <CardContent className="p-4 pt-1">
-                                    <div className="text-xl font-extrabold text-rose-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div>
-                                  </CardContent>
-                                </Card>
-                                <Card className="border-l-4 border-l-emerald-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                    <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Revenue</CardTitle>
-                                    <DollarSign className="h-4 w-4 text-emerald-500" />
-                                  </CardHeader>
-                                  <CardContent className="p-4 pt-1">
-                                    <div className="text-xl font-extrabold text-emerald-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div>
-                                  </CardContent>
-                                </Card>
-                                <Card className="border-l-4 border-l-blue-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                    <CardTitle className="text-[10px] font-medium text-muted-foreground">Tuition Debt</CardTitle>
-                                    <BookOpen className="h-4 w-4 text-blue-500" />
-                                  </CardHeader>
-                                  <CardContent className="p-4 pt-1">
-                                    <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div>
-                                  </CardContent>
-                                </Card>
-                                <Card className="border-l-4 border-l-orange-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                    <CardTitle className="text-[10px] font-medium text-muted-foreground">Canteen Debt</CardTitle>
-                                    <Utensils className="h-4 w-4 text-orange-500" />
-                                  </CardHeader>
-                                  <CardContent className="p-4 pt-1">
-                                    <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div>
-                                  </CardContent>
-                                </Card>
-                                <Card className="border-l-4 border-l-amber-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                    <CardTitle className="text-[10px] font-medium text-muted-foreground">Transport Debt</CardTitle>
-                                    <BusIcon className="h-4 w-4 text-amber-500" />
-                                  </CardHeader>
-                                  <CardContent className="p-4 pt-1">
-                                    <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div>
-                                  </CardContent>
-                                </Card>
-                                <Card className="border-l-4 border-l-slate-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                  <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                    <CardTitle className="text-[10px] font-medium text-muted-foreground">Other Fees</CardTitle>
-                                    <HandCoins className="h-4 w-4 text-slate-400" />
-                                  </CardHeader>
-                                  <CardContent className="p-4 pt-1">
-                                    <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.otherDebt.toFixed(2)}</div>
-                                  </CardContent>
-                                </Card>
+                {/* Advanced Analytics Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Left: Collections Advisory Desk */}
+                    <div className="lg:col-span-2 bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
+                        <Tabs value={analyticsTab} onValueChange={setAnalyticsTab} className="w-full">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-3 mb-4">
+                                <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Collections Advisory Desk</h3>
+                                <TabsList className="bg-slate-100 p-0.5 rounded-lg border">
+                                    <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md">Financial Summary</TabsTrigger>
+                                    <TabsTrigger value="debtors" className="text-xs px-3 py-1 rounded-md">Aged Debt Call List</TabsTrigger>
+                                    <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md">Debt Aging</TabsTrigger>
+                                    <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md">Class Pace</TabsTrigger>
+                                </TabsList>
                             </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="aging" className="mt-0">
-                            <div className="space-y-4">
-                                <div className="h-5 flex rounded-lg overflow-hidden bg-slate-100 border shadow-inner">
-                                    {debtAgingStats.total > 0 ? (
-                                        <>
-                                            {debtAgingStats.current > 0 && (
-                                                <div 
-                                                    style={{ width: `${(debtAgingStats.current / debtAgingStats.total) * 100}%` }} 
-                                                    className="bg-emerald-500 transition-all duration-500 hover:opacity-90"
-                                                    title={`Current: GH₵ ${debtAgingStats.current.toFixed(2)}`}
+                            
+                            <TabsContent value="summary" className="mt-0 space-y-6 animate-in fade-in-50">
+                                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                    <Card className="border-l-4 border-l-rose-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Outstanding</CardTitle>
+                                        <Wallet className="h-4 w-4 text-rose-500" />
+                                      </CardHeader>
+                                      <CardContent className="p-4 pt-1">
+                                        <div className="text-xl font-extrabold text-rose-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="border-l-4 border-l-emerald-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Revenue</CardTitle>
+                                        <DollarSign className="h-4 w-4 text-emerald-500" />
+                                      </CardHeader>
+                                      <CardContent className="p-4 pt-1">
+                                        <div className="text-xl font-extrabold text-emerald-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="border-l-4 border-l-blue-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-medium text-muted-foreground">Tuition Debt</CardTitle>
+                                        <BookOpen className="h-4 w-4 text-blue-500" />
+                                      </CardHeader>
+                                      <CardContent className="p-4 pt-1">
+                                        <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="border-l-4 border-l-orange-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-medium text-muted-foreground">Canteen Debt</CardTitle>
+                                        <Utensils className="h-4 w-4 text-orange-500" />
+                                      </CardHeader>
+                                      <CardContent className="p-4 pt-1">
+                                        <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="border-l-4 border-l-amber-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-medium text-muted-foreground">Transport Debt</CardTitle>
+                                        <BusIcon className="h-4 w-4 text-amber-500" />
+                                      </CardHeader>
+                                      <CardContent className="p-4 pt-1">
+                                        <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="border-l-4 border-l-slate-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-medium text-muted-foreground">Other Fees</CardTitle>
+                                        <HandCoins className="h-4 w-4 text-slate-400" />
+                                      </CardHeader>
+                                      <CardContent className="p-4 pt-1">
+                                        <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.otherDebt.toFixed(2)}</div>
+                                      </CardContent>
+                                    </Card>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mt-6 pt-6 border-t border-slate-100">
+                                    {/* SVG Target Collection Gauge */}
+                                    <div className="md:col-span-2 flex flex-col items-center justify-center text-center p-4 bg-slate-50/50 rounded-xl border border-slate-100">
+                                        <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-4">Overall Target Pace</h4>
+                                        <div className="relative flex items-center justify-center h-32 w-32">
+                                            {/* Background Circle */}
+                                            <svg className="w-full h-full transform -rotate-90">
+                                                <circle
+                                                    cx="64"
+                                                    cy="64"
+                                                    r="52"
+                                                    className="stroke-slate-200 fill-none"
+                                                    strokeWidth="10"
                                                 />
-                                            )}
-                                            {debtAgingStats.age30 > 0 && (
-                                                <div 
-                                                    style={{ width: `${(debtAgingStats.age30 / debtAgingStats.total) * 100}%` }} 
-                                                    className="bg-amber-400 transition-all duration-500 hover:opacity-90"
-                                                    title={`1-30 Days Overdue: GH₵ ${debtAgingStats.age30.toFixed(2)}`}
+                                                {/* Foreground Progress Circle */}
+                                                <circle
+                                                    cx="64"
+                                                    cy="64"
+                                                    r="52"
+                                                    className="stroke-emerald-500 fill-none transition-all duration-1000 ease-out"
+                                                    strokeWidth="10"
+                                                    strokeDasharray={2 * Math.PI * 52}
+                                                    strokeDashoffset={2 * Math.PI * 52 - (collectionRate / 100) * (2 * Math.PI * 52)}
+                                                    strokeLinecap="round"
                                                 />
-                                            )}
-                                            {debtAgingStats.age60 > 0 && (
-                                                <div 
-                                                    style={{ width: `${(debtAgingStats.age60 / debtAgingStats.total) * 100}%` }} 
-                                                    className="bg-orange-500 transition-all duration-500 hover:opacity-90"
-                                                    title={`31-60 Days Overdue: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
-                                                />
-                                            )}
-                                            {debtAgingStats.age90 > 0 && (
-                                                <div 
-                                                    style={{ width: `${(debtAgingStats.age90 / debtAgingStats.total) * 100}%` }} 
-                                                    className="bg-rose-600 transition-all duration-500 hover:opacity-90"
-                                                    title={`61+ Days Overdue: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
-                                                />
-                                            )}
-                                        </>
+                                            </svg>
+                                            <div className="absolute flex flex-col items-center justify-center">
+                                                <span className="text-2xl font-black text-slate-800 font-mono">{collectionRate.toFixed(1)}%</span>
+                                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Collected</span>
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 max-w-[240px]">
+                                            <p className="text-[11px] font-medium text-slate-500 leading-normal">
+                                                {collectionRate >= 80 ? (
+                                                    "Excellent collection health. Continue regular cash auditing."
+                                                ) : collectionRate >= 55 ? (
+                                                    "Moderate collection health. Trigger reminders for aging accounts."
+                                                ) : (
+                                                    "Urgent attention needed. Overall collection rate is critical."
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Category Collections Pace */}
+                                    <div className="md:col-span-3 space-y-4">
+                                        <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Fee Stream Collection Performance</h4>
+                                        <div className="space-y-3">
+                                            {categoryCollections.map(cat => {
+                                                const color = cat.rate >= 80 ? 'bg-emerald-500' : cat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
+                                                const textColor = cat.rate >= 80 ? 'text-emerald-700' : cat.rate >= 50 ? 'text-amber-700' : 'text-rose-700';
+                                                return (
+                                                    <div key={cat.name} className="space-y-1">
+                                                        <div className="flex justify-between text-xs">
+                                                            <span className="font-semibold text-slate-700">{cat.name}</span>
+                                                            <span className={cn("font-bold font-mono", textColor)}>{cat.rate.toFixed(1)}% ({cat.outstanding > 0 ? `GH₵${cat.outstanding.toFixed(0)} owed` : 'Settled'})</span>
+                                                        </div>
+                                                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                            <div 
+                                                                className={cn("h-full transition-all duration-500", color)}
+                                                                style={{ width: `${Math.min(cat.rate, 100)}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </TabsContent>
+
+                            <TabsContent value="debtors" className="mt-0 space-y-4 animate-in fade-in-50">
+                                <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
+                                    <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                        <AlertTriangle className="h-4 w-4 text-rose-500" /> Actionable Aged Debt Reminders
+                                    </h4>
+                                    <p className="text-xs text-slate-500 leading-normal">
+                                        The following students have the largest outstanding balances. Click the SMS button to send parent reminder messages including safe payment portal instructions.
+                                    </p>
+                                </div>
+                                
+                                <div className="grid gap-3 max-h-[360px] overflow-y-auto pr-1">
+                                    {topDebtors.map(({ student, balance, records: studentRecs }) => {
+                                        const overdueDays = getOldestOverdueDays(studentRecs);
+                                        const isSending = sendingSMSStudentId === student.uid;
+                                        
+                                        return (
+                                            <div key={student.uid} className="bg-white border hover:border-slate-350 p-3.5 rounded-xl shadow-sm hover:shadow transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                                <div className="flex items-center gap-3">
+                                                    <StudentDisplay student={student} variant="compact" />
+                                                    <div className="hidden sm:block border-l pl-3 py-1">
+                                                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Oldest Aging</p>
+                                                        <p className={cn("text-xs font-semibold mt-0.5", overdueDays > 30 ? "text-rose-600" : "text-slate-500")}>
+                                                            {overdueDays > 0 ? `${overdueDays} Days Overdue` : "Current"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0">
+                                                    <div className="text-left sm:text-right">
+                                                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Outstanding</p>
+                                                        <p className="text-md font-extrabold text-rose-600 font-mono">
+                                                            GH₵{balance.toFixed(2)}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="h-9 px-3 text-xs text-blue-600 border-blue-200 hover:bg-blue-50/50"
+                                                            onClick={() => {
+                                                                setSearchTerm(`${student.firstName} ${student.lastName}`);
+                                                                setActiveTab('billing');
+                                                            }}
+                                                        >
+                                                            View Ledger
+                                                        </Button>
+                                                        <Button 
+                                                            size="sm" 
+                                                            className="h-9 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                                                            disabled={isSending}
+                                                            onClick={() => handleSendOverallSMSReminder(student.uid, `${student.firstName} ${student.lastName}`, balance)}
+                                                        >
+                                                            {isSending ? (
+                                                                <>
+                                                                    <Loader2 className="h-3 w-3 animate-spin mr-1.5" /> Sending...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Send className="h-3 w-3 mr-1.5" /> Send Reminder
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                    {topDebtors.length === 0 && (
+                                        <div className="text-center py-10 text-muted-foreground italic text-xs">
+                                            All accounts are in good standing! No outstanding debt found.
+                                        </div>
+                                    )}
+                                </div>
+                            </TabsContent>
+                            
+                            <TabsContent value="aging" className="mt-0">
+                                <div className="space-y-4">
+                                    <div className="h-5 flex rounded-lg overflow-hidden bg-slate-100 border shadow-inner">
+                                        {debtAgingStats.total > 0 ? (
+                                            <>
+                                                {debtAgingStats.current > 0 && (
+                                                    <div 
+                                                        style={{ width: `${(debtAgingStats.current / debtAgingStats.total) * 100}%` }} 
+                                                        className="bg-emerald-500 transition-all duration-500 hover:opacity-90"
+                                                        title={`Current: GH₵ ${debtAgingStats.current.toFixed(2)}`}
+                                                    />
+                                                )}
+                                                {debtAgingStats.age30 > 0 && (
+                                                    <div 
+                                                        style={{ width: `${(debtAgingStats.age30 / debtAgingStats.total) * 100}%` }} 
+                                                        className="bg-amber-400 transition-all duration-500 hover:opacity-90"
+                                                        title={`1-30 Days Overdue: GH₵ ${debtAgingStats.age30.toFixed(2)}`}
+                                                    />
+                                                )}
+                                                {debtAgingStats.age60 > 0 && (
+                                                    <div 
+                                                        style={{ width: `${(debtAgingStats.age60 / debtAgingStats.total) * 100}%` }} 
+                                                        className="bg-orange-500 transition-all duration-500 hover:opacity-90"
+                                                        title={`31-60 Days Overdue: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
+                                                    />
+                                                )}
+                                                {debtAgingStats.age90 > 0 && (
+                                                    <div 
+                                                        style={{ width: `${(debtAgingStats.age90 / debtAgingStats.total) * 100}%` }} 
+                                                        className="bg-rose-600 transition-all duration-500 hover:opacity-90"
+                                                        title={`61+ Days Overdue: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
+                                                    />
+                                                )}
+                                            </>
+                                        ) : (
+                                            <div className="w-full bg-slate-100 flex items-center justify-center text-xs text-muted-foreground italic">No Outstanding Debt</div>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <Card className="p-3 border-l-4 border-l-emerald-500 bg-emerald-50/10 bg-slate-50/20">
+                                            <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Current (Not Overdue)</p>
+                                            <p className="text-lg font-bold text-slate-800 mt-1">GH₵{debtAgingStats.current.toFixed(2)}</p>
+                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.current / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                        </Card>
+                                        <Card className="p-3 border-l-4 border-l-amber-400 bg-amber-50/10 bg-slate-50/20">
+                                            <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-amber-500" /> 1 - 30 Days Overdue</p>
+                                            <p className="text-lg font-bold text-amber-700 mt-1">GH₵{debtAgingStats.age30.toFixed(2)}</p>
+                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age30 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                        </Card>
+                                        <Card className="p-3 border-l-4 border-l-orange-500 bg-orange-50/10 bg-slate-50/20">
+                                            <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-orange-500" /> 31 - 60 Days Overdue</p>
+                                            <p className="text-lg font-bold text-orange-700 mt-1">GH₵{debtAgingStats.age60.toFixed(2)}</p>
+                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age60 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                        </Card>
+                                        <Card className="p-3 border-l-4 border-l-rose-600 bg-rose-50/10 bg-slate-50/20">
+                                            <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><AlertCircle className="h-3 w-3 text-rose-600" /> 61+ Days Overdue</p>
+                                            <p className="text-lg font-bold text-rose-700 mt-1">GH₵{debtAgingStats.age90.toFixed(2)}</p>
+                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age90 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                        </Card>
+                                    </div>
+                                </div>
+                            </TabsContent>
+                            
+                            <TabsContent value="classPace" className="mt-0">
+                                {classCollectionsStats.length === 0 ? (
+                                    <p className="text-center py-10 text-muted-foreground italic text-xs">No class data found.</p>
+                                ) : (
+                                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                        {classCollectionsStats.map(stat => {
+                                            const progressBarColor = stat.rate >= 80 ? 'bg-emerald-500' : stat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
+                                            const badgeColor = stat.rate >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : stat.rate >= 50 ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200';
+                                            
+                                            return (
+                                                <Card key={stat.classId} className="p-4 flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all duration-300 bg-slate-50/20">
+                                                    <div>
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <div>
+                                                                <h4 className="font-bold text-slate-800 text-sm">{stat.className}</h4>
+                                                                <p className="text-[10px] text-muted-foreground mt-0.5">{stat.studentCount} Students</p>
+                                                            </div>
+                                                            <Badge variant="outline" className={cn("font-bold text-xs px-2 py-0.5", badgeColor)}>
+                                                                {stat.rate.toFixed(1)}%
+                                                            </Badge>
+                                                        </div>
+                                                        <div className="space-y-1.5 mt-3">
+                                                            <div className="flex justify-between text-xs font-mono text-slate-600">
+                                                                <span>Billed:</span>
+                                                                <span>GH₵{(stat.totalBilled - stat.totalWaivers).toFixed(0)}</span>
+                                                            </div>
+                                                            <div className="flex justify-between text-xs font-mono text-emerald-600">
+                                                                <span>Collected:</span>
+                                                                <span>GH₵{stat.totalPaid.toFixed(0)}</span>
+                                                            </div>
+                                                            <div className="flex justify-between text-xs font-mono text-rose-600">
+                                                                <span>Owed:</span>
+                                                                <span>GH₵{stat.outstanding.toFixed(0)}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-4 pt-2 border-t">
+                                                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                            <div 
+                                                                className={cn("h-full transition-all duration-500", progressBarColor)}
+                                                                style={{ width: `${Math.min(stat.rate, 100)}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </Card>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </TabsContent>
+                        </Tabs>
+                    </div>
+                    
+                    {/* Right: Cash Register Registry Widget */}
+                    <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
+                        <Card className="border-0 shadow-none p-0 flex flex-col justify-between h-full bg-transparent">
+                            <div>
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
+                                        <Wallet className="h-4 w-4 text-slate-500" /> Cash Register Desk
+                                    </h3>
+                                    {isLoadingTills ? (
+                                        <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                                    ) : activeTill ? (
+                                        <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold flex items-center gap-1.5 py-0.5">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-white animate-ping" /> Open
+                                        </Badge>
                                     ) : (
-                                        <div className="w-full bg-slate-100 flex items-center justify-center text-xs text-muted-foreground italic">No Outstanding Debt</div>
+                                        <Badge variant="destructive" className="font-extrabold py-0.5">Closed</Badge>
                                     )}
                                 </div>
                                 
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <Card className="p-3 border-l-4 border-l-emerald-500 bg-emerald-50/10 bg-slate-50/20">
-                                        <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Current (Not Overdue)</p>
-                                        <p className="text-lg font-bold text-slate-800 mt-1">GH₵{debtAgingStats.current.toFixed(2)}</p>
-                                        <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.current / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
-                                    </Card>
-                                    <Card className="p-3 border-l-4 border-l-amber-400 bg-amber-50/10 bg-slate-50/20">
-                                        <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-amber-500" /> 1 - 30 Days Overdue</p>
-                                        <p className="text-lg font-bold text-amber-700 mt-1">GH₵{debtAgingStats.age30.toFixed(2)}</p>
-                                        <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age30 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
-                                    </Card>
-                                    <Card className="p-3 border-l-4 border-l-orange-500 bg-orange-50/10 bg-slate-50/20">
-                                        <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-orange-500" /> 31 - 60 Days Overdue</p>
-                                        <p className="text-lg font-bold text-orange-700 mt-1">GH₵{debtAgingStats.age60.toFixed(2)}</p>
-                                        <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age60 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
-                                    </Card>
-                                    <Card className="p-3 border-l-4 border-l-rose-600 bg-rose-50/10 bg-slate-50/20">
-                                        <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><AlertCircle className="h-3 w-3 text-rose-600" /> 61+ Days Overdue</p>
-                                        <p className="text-lg font-bold text-rose-700 mt-1">GH₵{debtAgingStats.age90.toFixed(2)}</p>
-                                        <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age90 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
-                                    </Card>
-                                </div>
+                                {activeTill ? (
+                                    <div className="space-y-4">
+                                        <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
+                                            <p className="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wide">Cash Balance in Till</p>
+                                            <p className="text-3xl font-black text-emerald-800 tracking-tight mt-1">
+                                                GH₵{activeTill.currentBalance?.toFixed(2) || "0.00"}
+                                            </p>
+                                            <p className="text-[9px] text-slate-500 mt-2 font-medium">
+                                                Session ID: #{activeTill.id.substring(0, 8).toUpperCase()}
+                                            </p>
+                                        </div>
+                                        <p className="text-xs text-slate-500 leading-relaxed">
+                                            You are authorized to log cash payments from students. Receipts will link to this register desk.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="p-4 bg-rose-50/50 border border-rose-100 rounded-xl flex items-start gap-2.5">
+                                            <AlertTriangle className="h-5 w-5 text-rose-500 flex-shrink-0 mt-0.5 animate-pulse" />
+                                            <div>
+                                                <p className="text-xs font-bold text-rose-800">Closed Registry</p>
+                                                <p className="text-[11px] text-rose-600/90 mt-0.5 leading-normal">
+                                                    You must open a cash till session before accepting any Cash payments from student bill ledgers.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-slate-500 leading-relaxed">
+                                            Open registry initiates the digital cashier till tracking for correct payment reconciliation.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="classPace" className="mt-0">
-                            {classCollectionsStats.length === 0 ? (
-                                <p className="text-center py-10 text-muted-foreground italic text-xs">No class data found.</p>
-                            ) : (
-                                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                    {classCollectionsStats.map(stat => {
-                                        const progressBarColor = stat.rate >= 80 ? 'bg-emerald-500' : stat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
-                                        const badgeColor = stat.rate >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : stat.rate >= 50 ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200';
-                                        
-                                        return (
-                                            <Card key={stat.classId} className="p-4 flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all duration-300 bg-slate-50/20">
-                                                <div>
-                                                    <div className="flex justify-between items-start mb-2">
-                                                        <div>
-                                                            <h4 className="font-bold text-slate-800 text-sm">{stat.className}</h4>
-                                                            <p className="text-[10px] text-muted-foreground mt-0.5">{stat.studentCount} Students</p>
-                                                        </div>
-                                                        <Badge variant="outline" className={cn("font-bold text-xs px-2 py-0.5", badgeColor)}>
-                                                            {stat.rate.toFixed(1)}%
-                                                        </Badge>
-                                                    </div>
-                                                    <div className="space-y-1.5 mt-3">
-                                                        <div className="flex justify-between text-xs font-mono text-slate-600">
-                                                            <span>Billed:</span>
-                                                            <span>GH₵{(stat.totalBilled - stat.totalWaivers).toFixed(0)}</span>
-                                                        </div>
-                                                        <div className="flex justify-between text-xs font-mono text-emerald-600">
-                                                            <span>Collected:</span>
-                                                            <span>GH₵{stat.totalPaid.toFixed(0)}</span>
-                                                        </div>
-                                                        <div className="flex justify-between text-xs font-mono text-rose-600">
-                                                            <span>Owed:</span>
-                                                            <span>GH₵{stat.outstanding.toFixed(0)}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="mt-4 pt-2 border-t">
-                                                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                                                        <div 
-                                                            className={cn("h-full transition-all duration-500", progressBarColor)}
-                                                            style={{ width: `${Math.min(stat.rate, 100)}%` }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </Card>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </TabsContent>
-                    </Tabs>
+                            <div className="mt-6 pt-4 border-t flex flex-col gap-2">
+                                {activeTill ? (
+                                    <Button asChild className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold h-10 text-xs">
+                                        <a href="/dashboard/accounts/cash-till" className="flex items-center justify-center gap-2 cursor-pointer">
+                                            Open Till Dashboard <ArrowUpRight className="h-4 w-4" />
+                                        </a>
+                                    </Button>
+                                ) : (
+                                    <Button 
+                                        onClick={handleOpenTill} 
+                                        disabled={isOpeningTill || isLoadingTills}
+                                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 text-xs"
+                                    >
+                                        {isOpeningTill ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Activating Register...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <PlusCircle className="mr-2 h-4 w-4" /> Open Active Till
+                                            </>
+                                        )}
+                                    </Button>
+                                )}
+                            </div>
+                        </Card>
+                    </div>
                 </div>
                 
                 <Card className="border border-slate-200/60 shadow-sm rounded-2xl overflow-hidden">
@@ -2343,45 +2729,59 @@ export default function AccountsPage() {
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
                         {activeForm === 'single' && schoolId && (
-                            <div className="bg-slate-50 p-4 rounded-lg border mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4 text-blue-900">Create Single Bill</h3>
+                            <div className="bg-blue-50/30 p-5 rounded-2xl border border-blue-100 mb-6 shadow-sm animate-in slide-in-from-top-2">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <PlusCircle className="h-5 w-5 text-blue-600" />
+                                    <h3 className="font-bold text-blue-900 text-sm">Create Single Custom Bill</h3>
+                                </div>
                                 <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />
                             </div>
                         )}
                         
                         {activeForm === 'bulk' && schoolId && (
-                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4 text-blue-900">{"Bulk Class Billing (Tuition/Levies)"}</h3>
+                            <div className="bg-indigo-50/30 p-5 rounded-2xl border border-indigo-100 mb-6 shadow-sm animate-in slide-in-from-top-2">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <FileCog className="h-5 w-5 text-indigo-600" />
+                                    <h3 className="font-bold text-indigo-900 text-sm">{"Bulk Class Billing Setup (Tuition / Levies)"}</h3>
+                                </div>
                                 <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
                         )}
 
                         {activeForm === 'termly-transport' && schoolId && (
-                            <div className="bg-amber-50/60 p-4 rounded-lg border border-amber-200 mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4 text-amber-900 flex items-center gap-2">
-                                    <BusIcon className="h-5 w-5 text-amber-600" /> Batch Bill Termly Transport Fee
-                                </h3>
+                            <div className="bg-amber-50/30 p-5 rounded-2xl border border-amber-100 mb-6 shadow-sm animate-in slide-in-from-top-2">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <BusIcon className="h-5 w-5 text-amber-600" />
+                                    <h3 className="font-bold text-amber-900 text-sm">Batch Bill Termly Transport Subscriptions</h3>
+                                </div>
                                 <TermlyTransportForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
                         )}
 
                         {activeForm === 'termly-canteen' && schoolId && (
-                            <div className="bg-green-50/60 p-4 rounded-lg border border-green-200 mb-4 animate-in slide-in-from-top-2">
-                                <h3 className="font-bold mb-4 text-green-900 flex items-center gap-2">
-                                    <Utensils className="h-5 w-5 text-green-600" /> Batch Bill Termly Canteen Fee
-                                </h3>
+                            <div className="bg-emerald-50/30 p-5 rounded-2xl border border-emerald-100 mb-6 shadow-sm animate-in slide-in-from-top-2">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <Utensils className="h-5 w-5 text-emerald-600" />
+                                    <h3 className="font-bold text-emerald-900 text-sm">Batch Bill Termly Canteen Subscriptions</h3>
+                                </div>
                                 <TermlyCanteenForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />
                             </div>
                         )}
 
                         {activeForm === 'levy' && schoolId && (
-                            <DailyChargeForm 
-                                setOpen={() => setActiveForm(null)} 
-                                classes={classes || []} 
-                                students={students || []} 
-                                schoolId={schoolId} 
-                                onRecordsAdded={forceRefetch} 
-                            />
+                            <div className="bg-orange-50/30 p-5 rounded-2xl border border-orange-100 mb-6 shadow-sm animate-in slide-in-from-top-2">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <HandCoins className="h-5 w-5 text-orange-600" />
+                                    <h3 className="font-bold text-orange-950 text-sm">Generate Daily Attendance-based Charges (Manual)</h3>
+                                </div>
+                                <DailyChargeForm 
+                                    setOpen={() => setActiveForm(null)} 
+                                    classes={classes || []} 
+                                    students={students || []} 
+                                    schoolId={schoolId} 
+                                    onRecordsAdded={forceRefetch} 
+                                />
+                            </div>
                         )}
                         
                         <div className="flex items-center gap-2 relative max-w-sm">

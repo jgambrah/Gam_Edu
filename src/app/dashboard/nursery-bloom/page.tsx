@@ -10,7 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Bot
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Bot,
+  Hash, Play, Pause, BarChart3, TrendingUp
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails } from '@/ai/flows/junior-actions';
@@ -2678,7 +2679,1243 @@ function StickerBook() {
     );
 }
 
+// --- 9. NUMBER GARDEN (COUNTING, TRACING & WORD MATCHING) ---
+function NumberGarden() {
+    const [activeTab, setActiveTab] = useState<'counting' | 'tracing' | 'matching'>('counting');
+    const [currentNumber, setCurrentNumber] = useState(1);
+    const [countingItems, setCountingItems] = useState<string[]>([]);
+    const [tappedCount, setTappedCount] = useState(0);
+    const [feedback, setFeedback] = useState('');
+    const [streak, setStreak] = useState(0);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isTracing, setIsTracing] = useState(false);
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+
+    // Matching game state
+    const [matchTarget, setMatchTarget] = useState<{ digit: number; word: string }>({ digit: 5, word: 'five' });
+    const [matchOptions, setMatchOptions] = useState<string[]>([]);
+    const [matchMode, setMatchMode] = useState<'digit-to-word' | 'word-to-digit'>('digit-to-word');
+
+    const numberWords: Record<number, string> = {
+        1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
+        6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten',
+        11: 'eleven', 12: 'twelve', 13: 'thirteen', 14: 'fourteen', 15: 'fifteen',
+        16: 'sixteen', 17: 'seventeen', 18: 'eighteen', 19: 'nineteen', 20: 'twenty'
+    };
+
+    const emojis = ['🍎', '🌟', '🐶', '🐱', '🦋', '🌺', '🚗', '⚽', '🎈', '🍪', '🐝', '🌈', '🍓', '🐸', '🎵', '🌻', '🍬', '🐠', '🎀', '🌙'];
+
+    const generateCounting = useCallback(() => {
+        const num = Math.floor(Math.random() * 10) + 1;
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        setCurrentNumber(num);
+        setCountingItems(Array(num).fill(emoji));
+        setTappedCount(0);
+        setFeedback('');
+        speak(`How many do you see? Tap each one to count!`);
+    }, []);
+
+    const generateMatching = useCallback(() => {
+        const targetNum = Math.floor(Math.random() * 20) + 1;
+        const mode = Math.random() > 0.5 ? 'digit-to-word' : 'word-to-digit';
+        setMatchMode(mode);
+        setMatchTarget({ digit: targetNum, word: numberWords[targetNum] });
+
+        // Generate 3 wrong options + 1 correct
+        const wrongNumbers = new Set<number>();
+        while (wrongNumbers.size < 3) {
+            const r = Math.floor(Math.random() * 20) + 1;
+            if (r !== targetNum) wrongNumbers.add(r);
+        }
+
+        if (mode === 'digit-to-word') {
+            const options = [...Array.from(wrongNumbers).map(n => numberWords[n]), numberWords[targetNum]];
+            setMatchOptions(options.sort(() => Math.random() - 0.5));
+        } else {
+            const options = [...Array.from(wrongNumbers).map(n => String(n)), String(targetNum)];
+            setMatchOptions(options.sort(() => Math.random() - 0.5));
+        }
+        setFeedback('');
+    }, []);
+
+    useEffect(() => {
+        if (activeTab === 'counting') generateCounting();
+        if (activeTab === 'matching') generateMatching();
+    }, [activeTab, generateCounting, generateMatching]);
+
+    const handleTapItem = (idx: number) => {
+        const newCount = tappedCount + 1;
+        setTappedCount(newCount);
+        speak(String(newCount));
+
+        if (newCount === currentNumber) {
+            setFeedback('PERFECT! 🎉');
+            setStreak(s => s + 1);
+            confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
+            speak(`Yes! There are ${currentNumber}!`);
+
+            if ((streak + 1) % 5 === 0 && user && firestore) {
+                addDoc(collection(firestore, 'junior_stickers'), {
+                    userId: user.uid, emoji: '🔢', name: 'Number Whiz',
+                    category: 'math', earnedAt: serverTimestamp()
+                });
+                toast({ title: "Achievement!", description: "You earned a Number Whiz sticker!" });
+            }
+            setTimeout(generateCounting, 2000);
+        }
+    };
+
+    const handleMatchAnswer = (answer: string) => {
+        const correct = matchMode === 'digit-to-word'
+            ? answer === matchTarget.word
+            : answer === String(matchTarget.digit);
+
+        if (correct) {
+            setFeedback('CORRECT! 🎉');
+            setStreak(s => s + 1);
+            confetti({ particleCount: 60, spread: 50 });
+            speak('Correct! Well done!');
+            setTimeout(generateMatching, 1500);
+        } else {
+            setFeedback('Try Again! 🤔');
+            setStreak(0);
+            speak('Not quite. Try again!');
+        }
+    };
+
+    // Number Tracing
+    useEffect(() => {
+        if (activeTab === 'tracing' && canvasRef.current) {
+            const ctx = canvasRef.current.getContext('2d');
+            if (ctx) {
+                ctx.clearRect(0, 0, 400, 400);
+                ctx.font = 'bold 300px sans-serif';
+                ctx.fillStyle = '#f1f5f9';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(String(currentNumber), 200, 220);
+            }
+        }
+    }, [currentNumber, activeTab]);
+
+    const startTracing = (e: any) => {
+        const ctx = canvasRef.current?.getContext('2d');
+        if (!ctx) return;
+        const rect = canvasRef.current!.getBoundingClientRect();
+        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+        ctx.beginPath(); ctx.moveTo(x, y);
+        ctx.strokeStyle = '#f97316'; ctx.lineWidth = 20; ctx.lineCap = 'round';
+        setIsTracing(true);
+    };
+
+    const drawTrace = (e: any) => {
+        if (!isTracing) return;
+        const canvas = canvasRef.current; if (!canvas) return;
+        const ctx = canvas.getContext('2d'); if (!ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+        ctx.lineTo(x, y); ctx.stroke();
+    };
+
+    const resetCanvas = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext('2d');
+        if (canvas && ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = 'bold 300px sans-serif';
+            ctx.fillStyle = '#f1f5f9';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(String(currentNumber), 200, 220);
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* Tab Nav */}
+            <div className="flex flex-wrap gap-2 p-1.5 bg-amber-50/50 rounded-2xl w-fit mx-auto border border-amber-100/60 shadow-inner">
+                <Button variant={activeTab === 'counting' ? 'default' : 'ghost'} onClick={() => setActiveTab('counting')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'counting' ? 'bg-amber-500 text-white shadow-sm' : 'text-amber-700 hover:bg-amber-100/55')}>Counting</Button>
+                <Button variant={activeTab === 'tracing' ? 'default' : 'ghost'} onClick={() => setActiveTab('tracing')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'tracing' ? 'bg-amber-500 text-white shadow-sm' : 'text-amber-700 hover:bg-amber-100/55')}>Number Tracing</Button>
+                <Button variant={activeTab === 'matching' ? 'default' : 'ghost'} onClick={() => setActiveTab('matching')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'matching' ? 'bg-amber-500 text-white shadow-sm' : 'text-amber-700 hover:bg-amber-100/55')}>Word Match</Button>
+            </div>
+
+            {/* COUNTING TAB */}
+            {activeTab === 'counting' && (
+                <div className="space-y-8 animate-in fade-in">
+                    <div className="bg-gradient-to-br from-amber-50 via-white to-orange-50/30 p-8 rounded-[40px] border-4 border-amber-100 shadow-inner text-center space-y-6">
+                        <h2 className="text-3xl font-black text-amber-800">How many {countingItems[0]} do you see?</h2>
+                        <p className="text-amber-600 font-bold text-sm">Tap each one to count!</p>
+
+                        <div className="flex flex-wrap gap-4 justify-center max-w-md mx-auto py-6">
+                            {countingItems.map((emoji, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => handleTapItem(idx)}
+                                    disabled={tappedCount > idx}
+                                    className={cn(
+                                        "text-5xl w-20 h-20 rounded-3xl border-2 border-b-[8px] flex items-center justify-center transition-all duration-200 shadow-md",
+                                        tappedCount > idx
+                                            ? "bg-green-100 border-green-300 scale-90 opacity-70"
+                                            : "bg-white border-amber-200 hover:scale-110 hover:border-amber-400 active:translate-y-1 active:border-b-2 cursor-pointer"
+                                    )}
+                                >
+                                    {emoji}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Counter Display */}
+                        <div className="inline-flex items-center gap-4 bg-white px-8 py-4 rounded-full border-4 border-amber-200 shadow-lg">
+                            <span className="text-sm font-black text-amber-500 uppercase tracking-widest">Count</span>
+                            <span className="text-6xl font-black text-amber-600">{tappedCount}</span>
+                        </div>
+
+                        {feedback && (
+                            <p className={`text-3xl font-black animate-in zoom-in ${feedback.includes("PERFECT") ? "text-green-500" : "text-red-400"}`}>
+                                {feedback}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="flex justify-center gap-3">
+                        <Button onClick={generateCounting} variant="ghost" className="text-amber-500 hover:text-amber-700 font-bold hover:bg-amber-50 rounded-full py-6 px-6">
+                            Try Another <ArrowRight className="ml-2 h-4 w-4"/>
+                        </Button>
+                        <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-2.5 rounded-full shadow-lg border border-amber-400 text-white">
+                            <Star className="text-yellow-300 fill-yellow-300 w-5 h-5" />
+                            <span className="font-black tracking-wide text-sm">Streak: {streak}</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* NUMBER TRACING TAB */}
+            {activeTab === 'tracing' && (
+                <div className="space-y-6 animate-in slide-in-from-right-4">
+                    <div className="flex flex-wrap justify-center gap-2 bg-amber-50 p-2 rounded-2xl border border-amber-100 shadow-inner">
+                        {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
+                            <button
+                                key={n}
+                                onClick={() => { setCurrentNumber(n); speak(String(n)); }}
+                                className={cn(
+                                    "w-10 h-10 rounded-xl font-black text-sm transition-all border-2 border-b-4 active:translate-y-0.5 active:border-b-2",
+                                    currentNumber === n
+                                        ? "bg-gradient-to-b from-amber-400 to-orange-500 text-white border-amber-600 shadow-sm -translate-y-0.5"
+                                        : "bg-white text-amber-600 border-amber-200 hover:bg-amber-50/50"
+                                )}
+                            >
+                                {n}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="flex flex-col items-center space-y-4">
+                        <h3 className="text-2xl font-black text-slate-800">Trace the number <span className="text-amber-600">{currentNumber}</span></h3>
+                        <p className="text-sm font-bold text-amber-600">"{numberWords[currentNumber]}"</p>
+
+                        <div className="relative bg-amber-50 p-6 rounded-[36px] border-8 border-amber-800 shadow-2xl flex items-center justify-center">
+                            <div className="absolute top-2 left-4 w-4 h-4 rounded-full bg-amber-900/40"></div>
+                            <div className="absolute top-2 right-4 w-4 h-4 rounded-full bg-amber-900/40"></div>
+                            <div className="bg-white rounded-2xl overflow-hidden shadow-inner border border-amber-900/10">
+                                <canvas
+                                    ref={canvasRef} width={400} height={400}
+                                    className="touch-none cursor-crosshair"
+                                    onMouseDown={startTracing}
+                                    onMouseMove={drawTrace}
+                                    onMouseUp={() => setIsTracing(false)}
+                                    onMouseLeave={() => setIsTracing(false)}
+                                    onTouchStart={startTracing}
+                                    onTouchMove={drawTrace}
+                                    onTouchEnd={() => setIsTracing(false)}
+                                />
+                            </div>
+                            <Button variant="ghost" size="sm" className="absolute bottom-2 right-8 text-slate-400 hover:text-slate-600 font-black" onClick={resetCanvas}>
+                                Reset
+                            </Button>
+                        </div>
+                        <div className="flex gap-4">
+                            <Button onClick={() => speak(String(currentNumber))} className="bg-amber-600 hover:bg-amber-700 rounded-full h-12 px-6 font-black shadow-md">
+                                <Volume2 className="mr-2 w-4 h-4"/> Hear Number
+                            </Button>
+                            <Button onClick={() => speak(numberWords[currentNumber])} variant="outline" className="border-2 border-amber-200 text-amber-700 rounded-full h-12 px-6 font-black hover:bg-amber-50">
+                                <Volume2 className="mr-2 w-4 h-4"/> Hear Word
+                            </Button>
+                        </div>
+                        <p className="text-xs font-black text-amber-500 uppercase tracking-widest animate-pulse">★ Trace from top to bottom! ★</p>
+                    </div>
+                </div>
+            )}
+
+            {/* WORD MATCHING TAB */}
+            {activeTab === 'matching' && (
+                <div className="flex flex-col items-center space-y-8 animate-in zoom-in">
+                    <Card className="w-full max-w-md bg-white border-4 border-b-[12px] border-amber-200 shadow-2xl rounded-[40px] overflow-hidden">
+                        <CardContent className="p-8 flex flex-col items-center text-center space-y-6">
+                            <p className="text-xs font-black text-amber-400 uppercase tracking-widest">
+                                {matchMode === 'digit-to-word' ? 'Find the correct word!' : 'Find the correct number!'}
+                            </p>
+                            
+                            <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-8 rounded-[32px] border-4 border-amber-200 shadow-inner">
+                                {matchMode === 'digit-to-word' ? (
+                                    <div className="text-9xl font-black text-amber-600 select-none">{matchTarget.digit}</div>
+                                ) : (
+                                    <div className="text-5xl font-black text-amber-700 capitalize select-none">{matchTarget.word}</div>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 w-full">
+                                {matchOptions.map((opt, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => handleMatchAnswer(opt)}
+                                        className="h-16 bg-white border-2 border-b-[8px] border-amber-200 hover:border-amber-400 hover:bg-amber-50 text-amber-700 text-xl font-black rounded-2xl transition-all active:translate-y-1 active:border-b-2 shadow-md capitalize"
+                                    >
+                                        {opt}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {feedback && (
+                                <p className={`text-2xl font-black animate-in zoom-in ${feedback.includes("CORRECT") ? "text-green-500" : "text-red-400"}`}>
+                                    {feedback}
+                                </p>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-2.5 rounded-full shadow-lg border border-amber-400 text-white animate-bounce">
+                        <Star className="text-yellow-300 fill-yellow-300 w-5 h-5" />
+                        <span className="font-black tracking-wide text-sm">Streak: {streak}</span>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// --- 10. MUSIC & RHYTHM CORNER ---
+const pianoNotes = [
+    { note: 'C', freq: 261.63, color: 'white' },
+    { note: 'C#', freq: 277.18, color: 'black' },
+    { note: 'D', freq: 293.66, color: 'white' },
+    { note: 'D#', freq: 311.13, color: 'black' },
+    { note: 'E', freq: 329.63, color: 'white' },
+    { note: 'F', freq: 349.23, color: 'white' },
+    { note: 'F#', freq: 369.99, color: 'black' },
+    { note: 'G', freq: 392.00, color: 'white' },
+    { note: 'G#', freq: 415.30, color: 'black' },
+    { note: 'A', freq: 440.00, color: 'white' },
+    { note: 'A#', freq: 466.16, color: 'black' },
+    { note: 'B', freq: 493.88, color: 'white' },
+    { note: 'C5', freq: 523.25, color: 'white' },
+];
+
+const SONGS = [
+    {
+        name: "Mary Had a Little Lamb 🐑",
+        notes: ['E', 'D', 'C', 'D', 'E', 'E', 'E', 'D', 'D', 'D', 'E', 'G', 'G'],
+    },
+    {
+        name: "Twinkle Twinkle Little Star ⭐️",
+        notes: ['C', 'C', 'G', 'G', 'A', 'A', 'G', 'F', 'F', 'E', 'E', 'D', 'D', 'C'],
+    },
+    {
+        name: "Row, Row, Row Your Boat 🛶",
+        notes: ['C', 'C', 'C', 'D', 'E', 'E', 'D', 'E', 'F', 'G'],
+    },
+    {
+        name: "Jingle Bells 🔔",
+        notes: ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'G', 'C', 'D', 'E'],
+    }
+];
+
+function MusicRhythmCorner() {
+    const [activeTab, setActiveTab] = useState<'piano' | 'patterns' | 'drums'>('piano');
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentPattern, setCurrentPattern] = useState<number[]>([]);
+    const [playerPattern, setPlayerPattern] = useState<number[]>([]);
+    const [patternStep, setPatternStep] = useState(0);
+    const [patternLength, setPatternLength] = useState(3);
+    const [showingPattern, setShowingPattern] = useState(false);
+    const [patternFeedback, setPatternFeedback] = useState('');
+    const [streak, setStreak] = useState(0);
+    const [activeKey, setActiveKey] = useState<number | null>(null);
+    const [activeDrum, setActiveDrum] = useState<string | null>(null);
+    const audioCtxRef = useRef<AudioContext | null>(null);
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+
+    // Drum challenge state
+    const [drumMode, setDrumMode] = useState<'free' | 'challenge'>('free');
+    const [drumPattern, setDrumPattern] = useState<string[]>([]);
+    const [drumPlayerPattern, setDrumPlayerPattern] = useState<string[]>([]);
+    const [drumShowingPattern, setDrumShowingPattern] = useState(false);
+    const [drumStreak, setDrumStreak] = useState(0);
+    const [drumFeedback, setDrumFeedback] = useState('');
+    const [drumPatternLength, setDrumPatternLength] = useState(2);
+
+    // Piano guided song state
+    const [pianoMode, setPianoMode] = useState<'free' | 'song'>('free');
+    const [currentSongIndex, setCurrentSongIndex] = useState(0);
+    const [songNoteIndex, setSongNoteIndex] = useState(0);
+    const [songFeedback, setSongFeedback] = useState('');
+
+    const getAudioCtx = useCallback(() => {
+        if (!audioCtxRef.current) {
+            audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        return audioCtxRef.current;
+    }, []);
+
+    const playTone = useCallback((freq: number, duration = 0.3) => {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.4, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + duration);
+    }, [getAudioCtx]);
+
+    const handlePianoPress = useCallback((noteName: string, freq: number) => {
+        playTone(freq, 0.5);
+
+        // Flash key visual
+        const whiteIdx = pianoNotes.filter(n => n.color === 'white').findIndex(n => n.note === noteName);
+        if (whiteIdx !== -1) {
+            setActiveKey(whiteIdx);
+            setTimeout(() => setActiveKey(null), 200);
+        }
+
+        if (pianoMode === 'free') return;
+
+        const currentSong = SONGS[currentSongIndex];
+        const expectedNote = currentSong.notes[songNoteIndex];
+
+        if (noteName === expectedNote) {
+            const nextIndex = songNoteIndex + 1;
+            if (nextIndex >= currentSong.notes.length) {
+                setSongFeedback('🎵 SONG COMPLETED! 🌟');
+                speak('Fantastic playing!');
+                confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
+                
+                if (user && firestore) {
+                    addDoc(collection(firestore, 'junior_stickers'), {
+                        userId: user.uid,
+                        emoji: '🎹',
+                        name: 'Little Mozart',
+                        category: 'art',
+                        earnedAt: serverTimestamp()
+                    });
+                    toast({ title: "Achievement!", description: "You earned a Little Mozart sticker!" });
+                }
+                
+                setSongNoteIndex(0);
+            } else {
+                setSongNoteIndex(nextIndex);
+                setSongFeedback('');
+            }
+        } else {
+            setSongFeedback('Oops! Try the highlighted key! 🌟');
+        }
+    }, [pianoMode, currentSongIndex, songNoteIndex, playTone, user, firestore, toast]);
+
+    const playDrum = useCallback((type: string) => {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'kick') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.8, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+        } else if (type === 'snare') {
+            osc.type = 'triangle';
+            osc.frequency.value = 200;
+            gain.gain.setValueAtTime(0.5, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.15);
+            // Noise burst for snare
+            const noise = ctx.createOscillator();
+            const noiseGain = ctx.createGain();
+            noise.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.type = 'square';
+            noise.frequency.value = 800;
+            noiseGain.gain.setValueAtTime(0.15, ctx.currentTime);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+            noise.start(ctx.currentTime);
+            noise.stop(ctx.currentTime + 0.1);
+        } else if (type === 'hihat') {
+            osc.type = 'square';
+            osc.frequency.value = 1500;
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.08);
+        } else if (type === 'tom') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(250, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.25);
+            gain.gain.setValueAtTime(0.6, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.25);
+        }
+
+        setActiveDrum(type);
+        setTimeout(() => setActiveDrum(null), 150);
+    }, [getAudioCtx]);
+
+    const generateDrumPattern = useCallback(() => {
+        const drumIds = ['kick', 'snare', 'hihat', 'tom'];
+        const newPattern = Array.from({ length: drumPatternLength }, () => drumIds[Math.floor(Math.random() * 4)]);
+        setDrumPattern(newPattern);
+        setDrumPlayerPattern([]);
+        setDrumFeedback('');
+        setDrumShowingPattern(true);
+
+        newPattern.forEach((drumId, i) => {
+            setTimeout(() => {
+                playDrum(drumId);
+                if (i === newPattern.length - 1) {
+                    setTimeout(() => setDrumShowingPattern(false), 400);
+                }
+            }, i * 700);
+        });
+    }, [drumPatternLength, playDrum]);
+
+    const handleDrumPress = useCallback((drumId: string) => {
+        playDrum(drumId);
+
+        if (drumMode === 'free') return;
+        if (drumShowingPattern) return;
+
+        const newPlayerPattern = [...drumPlayerPattern, drumId];
+        setDrumPlayerPattern(newPlayerPattern);
+
+        if (drumPattern[newPlayerPattern.length - 1] !== drumId) {
+            setDrumFeedback('Oops! Try again! 🥁');
+            speak('Listen to the beat and try again!');
+            setDrumStreak(0);
+            setTimeout(generateDrumPattern, 1500);
+            return;
+        }
+
+        if (newPlayerPattern.length === drumPattern.length) {
+            setDrumFeedback('FANTASTIC BEAT! 🥳');
+            setDrumStreak(s => s + 1);
+            confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 }, colors: ['#a78bfa', '#f43f5e', '#3b82f6', '#10b981'] });
+            speak('Perfect rhythm!');
+
+            if ((drumStreak + 1) % 2 === 0) {
+                setDrumPatternLength(l => Math.min(l + 1, 6));
+            }
+
+            if ((drumStreak + 1) % 4 === 0 && user && firestore) {
+                addDoc(collection(firestore, 'junior_stickers'), {
+                    userId: user.uid,
+                    emoji: '🥁',
+                    name: 'Master Drummer',
+                    category: 'art',
+                    earnedAt: serverTimestamp()
+                });
+                toast({ title: "Achievement!", description: "You earned a Master Drummer sticker!" });
+            }
+            setTimeout(generateDrumPattern, 2000);
+        }
+    }, [drumMode, drumShowingPattern, drumPlayerPattern, drumPattern, drumStreak, drumPatternLength, generateDrumPattern, playDrum, user, firestore, toast]);
+
+    // Pattern game: 4 colored buttons
+    const patternColors = [
+        { idx: 0, label: 'Red', bg: 'bg-red-500', active: 'bg-red-300 ring-4 ring-red-200', border: 'border-red-600', freq: 261.63 },
+        { idx: 1, label: 'Blue', bg: 'bg-blue-500', active: 'bg-blue-300 ring-4 ring-blue-200', border: 'border-blue-600', freq: 329.63 },
+        { idx: 2, label: 'Green', bg: 'bg-green-500', active: 'bg-green-300 ring-4 ring-green-200', border: 'border-green-600', freq: 392.00 },
+        { idx: 3, label: 'Yellow', bg: 'bg-yellow-400', active: 'bg-yellow-200 ring-4 ring-yellow-200', border: 'border-yellow-500', freq: 523.25 },
+    ];
+
+    const generatePattern = useCallback(() => {
+        const newPattern = Array.from({ length: patternLength }, () => Math.floor(Math.random() * 4));
+        setCurrentPattern(newPattern);
+        setPlayerPattern([]);
+        setPatternStep(0);
+        setPatternFeedback('');
+        setShowingPattern(true);
+
+        // Play the pattern visually and audibly
+        newPattern.forEach((colorIdx, i) => {
+            setTimeout(() => {
+                setActiveKey(colorIdx);
+                playTone(patternColors[colorIdx].freq, 0.4);
+                setTimeout(() => setActiveKey(null), 350);
+                if (i === newPattern.length - 1) {
+                    setTimeout(() => setShowingPattern(false), 500);
+                }
+            }, i * 700);
+        });
+    }, [patternLength, playTone]);
+
+    const handlePatternPress = (colorIdx: number) => {
+        if (showingPattern) return;
+
+        playTone(patternColors[colorIdx].freq, 0.3);
+        setActiveKey(colorIdx);
+        setTimeout(() => setActiveKey(null), 200);
+
+        const newPlayerPattern = [...playerPattern, colorIdx];
+        setPlayerPattern(newPlayerPattern);
+
+        // Check if this step is correct
+        if (currentPattern[newPlayerPattern.length - 1] !== colorIdx) {
+            setPatternFeedback('Oops! Try again! 🔄');
+            speak('Not quite. Watch the pattern again!');
+            setStreak(0);
+            setTimeout(generatePattern, 1500);
+            return;
+        }
+
+        // Check if pattern is complete
+        if (newPlayerPattern.length === currentPattern.length) {
+            setPatternFeedback('PERFECT! 🎶');
+            setStreak(s => s + 1);
+            confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 }, colors: ['#ef4444', '#3b82f6', '#22c55e', '#eab308'] });
+            speak('Amazing rhythm!');
+
+            if ((streak + 1) % 3 === 0) {
+                setPatternLength(l => Math.min(l + 1, 8));
+            }
+
+            if ((streak + 1) % 5 === 0 && user && firestore) {
+                addDoc(collection(firestore, 'junior_stickers'), {
+                    userId: user.uid, emoji: '🎵', name: 'Rhythm Star',
+                    category: 'art', earnedAt: serverTimestamp()
+                });
+                toast({ title: "Achievement!", description: "You earned a Rhythm Star sticker!" });
+            }
+            setTimeout(generatePattern, 2000);
+        }
+    };
+
+    const drums = [
+        { id: 'kick', label: 'Kick', emoji: '🥁', color: 'from-red-400 to-rose-500 border-red-600' },
+        { id: 'snare', label: 'Snare', emoji: '🪘', color: 'from-blue-400 to-indigo-500 border-blue-600' },
+        { id: 'hihat', label: 'Hi-Hat', emoji: '🔔', color: 'from-yellow-400 to-amber-500 border-yellow-600' },
+        { id: 'tom', label: 'Tom', emoji: '🎯', color: 'from-green-400 to-emerald-500 border-green-600' },
+    ];
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-wrap gap-2 p-1.5 bg-violet-50/50 rounded-2xl w-fit mx-auto border border-violet-100/60 shadow-inner">
+                <Button variant={activeTab === 'piano' ? 'default' : 'ghost'} onClick={() => setActiveTab('piano')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'piano' ? 'bg-violet-500 text-white shadow-sm' : 'text-violet-700 hover:bg-violet-100/55')}>🎹 Piano</Button>
+                <Button variant={activeTab === 'patterns' ? 'default' : 'ghost'} onClick={() => { setActiveTab('patterns'); setTimeout(generatePattern, 300); }} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'patterns' ? 'bg-violet-500 text-white shadow-sm' : 'text-violet-700 hover:bg-violet-100/55')}>🎵 Patterns</Button>
+                <Button variant={activeTab === 'drums' ? 'default' : 'ghost'} onClick={() => setActiveTab('drums')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'drums' ? 'bg-violet-500 text-white shadow-sm' : 'text-violet-700 hover:bg-violet-100/55')}>🥁 Drums</Button>
+            </div>
+
+            {/* PIANO TAB */}
+            {activeTab === 'piano' && (() => {
+                const nextSongNote = pianoMode === 'song' ? SONGS[currentSongIndex].notes[songNoteIndex] : null;
+                return (
+                    <div className="space-y-6 animate-in fade-in">
+                        <div className="text-center">
+                            <h2 className="text-3xl font-black text-violet-800">Mini Piano 🎹</h2>
+                            <p className="text-violet-600 font-bold text-sm mt-1">Tap the keys to play music or practice a song!</p>
+                        </div>
+
+                        <div className="flex justify-center gap-2 max-w-md mx-auto mb-2">
+                            <Button
+                                variant={pianoMode === 'free' ? 'default' : 'outline'}
+                                onClick={() => {
+                                    setPianoMode('free');
+                                    setSongFeedback('');
+                                }}
+                                className={cn(
+                                    "flex-1 rounded-2xl font-bold py-5 border-2 transition-all",
+                                    pianoMode === 'free' 
+                                        ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-transparent shadow-md' 
+                                        : 'border-violet-200 text-violet-700 hover:bg-violet-50'
+                                )}
+                            >
+                                🎹 Free Play
+                            </Button>
+                            <Button
+                                variant={pianoMode === 'song' ? 'default' : 'outline'}
+                                onClick={() => {
+                                    setPianoMode('song');
+                                    setSongNoteIndex(0);
+                                    setSongFeedback('');
+                                }}
+                                className={cn(
+                                    "flex-1 rounded-2xl font-bold py-5 border-2 transition-all",
+                                    pianoMode === 'song' 
+                                        ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-transparent shadow-md' 
+                                        : 'border-violet-200 text-violet-700 hover:bg-violet-50'
+                                )}
+                            >
+                                🎼 Play a Song
+                            </Button>
+                        </div>
+
+                        {pianoMode === 'song' && (
+                            <div className="max-w-2xl mx-auto p-4 bg-violet-50/50 rounded-2xl border border-violet-100 flex flex-col items-center gap-4 animate-in zoom-in">
+                                <div className="flex items-center gap-3 w-full">
+                                    <span className="font-bold text-violet-700 text-sm whitespace-nowrap">Choose Song:</span>
+                                    <Select
+                                        value={currentSongIndex.toString()}
+                                        onValueChange={(val) => {
+                                            setCurrentSongIndex(parseInt(val));
+                                            setSongNoteIndex(0);
+                                            setSongFeedback('');
+                                        }}
+                                    >
+                                        <SelectTrigger className="w-full bg-white border-violet-200 rounded-xl font-bold text-violet-800">
+                                            <SelectValue placeholder="Select a song" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl">
+                                            {SONGS.map((s, idx) => (
+                                                <SelectItem key={idx} value={idx.toString()} className="font-bold text-violet-800">
+                                                    {s.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {/* Song notes sheet */}
+                                <div className="flex flex-wrap gap-2 justify-center items-center p-3 bg-white rounded-xl border border-violet-100/80 w-full shadow-inner">
+                                    {SONGS[currentSongIndex].notes.map((note, idx) => {
+                                        const isCurrent = idx === songNoteIndex;
+                                        const isPast = idx < songNoteIndex;
+                                        return (
+                                            <span
+                                                key={idx}
+                                                className={cn(
+                                                    "w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all duration-300",
+                                                    isCurrent 
+                                                        ? "bg-yellow-400 text-white ring-4 ring-yellow-200 scale-125 shadow-md animate-bounce" 
+                                                        : isPast 
+                                                            ? "bg-green-100 text-green-600 opacity-60" 
+                                                            : "bg-slate-100 text-slate-400"
+                                                )}
+                                            >
+                                                {note}
+                                            </span>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="bg-gradient-to-b from-slate-800 to-slate-900 p-6 pb-2 rounded-[32px] shadow-2xl border-4 border-slate-700 max-w-2xl mx-auto">
+                            {/* Piano top frame */}
+                            <div className="h-4 bg-gradient-to-b from-slate-700 to-slate-800 rounded-t-xl mb-2 border-b border-slate-600"></div>
+                            
+                            <div className="relative flex">
+                                {pianoNotes.filter(n => n.color === 'white').map((note, i) => {
+                                    const isNextKey = nextSongNote === note.note;
+                                    return (
+                                        <button
+                                            key={note.note}
+                                            onClick={() => handlePianoPress(note.note, note.freq)}
+                                            className={cn(
+                                                "flex-1 h-44 rounded-b-xl border-x border-b-4 transition-all duration-100 flex items-end justify-center pb-3 text-xs font-black relative overflow-hidden",
+                                                activeKey === i
+                                                    ? "bg-violet-100 border-violet-300 text-violet-600 translate-y-1 border-b-2 shadow-inner"
+                                                    : "bg-gradient-to-b from-white to-slate-50 border-slate-300 text-slate-400 hover:bg-slate-50 shadow-md",
+                                                isNextKey && "ring-4 ring-yellow-400 ring-inset animate-pulse bg-yellow-50/50"
+                                            )}
+                                        >
+                                            {note.note}
+                                            {isNextKey && (
+                                                <div className="absolute top-4 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                                {/* Black keys overlay */}
+                                <div className="absolute top-0 left-0 right-0 flex pointer-events-none" style={{ paddingLeft: '5%', paddingRight: '7%' }}>
+                                    {pianoNotes.filter(n => n.color === 'white').map((note, i) => {
+                                        const hasSharp = pianoNotes.find(n => n.note === note.note + '#');
+                                        if (!hasSharp) return <div key={`gap-${i}`} className="flex-1"></div>;
+                                        const isNextSharp = nextSongNote === hasSharp.note;
+                                        return (
+                                            <div key={`black-${i}`} className="flex-1 flex justify-end">
+                                                <button
+                                                    onClick={() => handlePianoPress(hasSharp.note, hasSharp.freq)}
+                                                    className={cn(
+                                                        "pointer-events-auto w-8 h-28 bg-gradient-to-b from-slate-800 to-slate-900 rounded-b-lg shadow-lg border border-slate-700 hover:from-slate-700 hover:to-slate-800 active:h-[108px] active:shadow-inner transition-all z-10 translate-x-4 text-slate-400 text-[9px] font-bold flex items-end justify-center pb-2 relative overflow-hidden",
+                                                        isNextSharp && "ring-4 ring-yellow-400 ring-inset border-yellow-400 shadow-md animate-pulse"
+                                                    )}
+                                                >
+                                                    {hasSharp.note}
+                                                    {isNextSharp && (
+                                                        <div className="absolute top-4 left-2 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
+                        {songFeedback && (
+                            <p className={`text-2xl font-black text-center animate-in zoom-in ${songFeedback.includes("COMPLETED") ? "text-green-500" : "text-orange-500"}`}>
+                                {songFeedback}
+                            </p>
+                        )}
+
+                        <p className="text-center text-xs font-black text-violet-400 uppercase tracking-widest">🎵 Make beautiful music! 🎵</p>
+                    </div>
+                );
+            })()}
+
+            {/* PATTERN GAME TAB */}
+            {activeTab === 'patterns' && (
+                <div className="flex flex-col items-center space-y-8 animate-in zoom-in">
+                    <div className="text-center">
+                        <h2 className="text-3xl font-black text-violet-800">Rhythm Patterns 🎵</h2>
+                        <p className="text-violet-600 font-bold text-sm mt-1">
+                            {showingPattern ? "Watch and listen to the pattern..." : "Now repeat the pattern!"}
+                        </p>
+                        <div className="flex justify-center gap-1.5 mt-3">
+                            {currentPattern.map((_, i) => (
+                                <div key={i} className={cn(
+                                    "h-2.5 w-8 rounded-full transition-all duration-300",
+                                    i < playerPattern.length ? 'bg-green-400' : i === playerPattern.length && !showingPattern ? 'bg-violet-500 w-12' : 'bg-slate-200'
+                                )} />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6 max-w-sm">
+                        {patternColors.map(pc => (
+                            <button
+                                key={pc.idx}
+                                onClick={() => handlePatternPress(pc.idx)}
+                                disabled={showingPattern}
+                                className={cn(
+                                    "w-32 h-32 rounded-3xl border-4 border-b-[10px] transition-all duration-150 shadow-xl font-black text-white text-lg active:translate-y-1 active:border-b-4",
+                                    activeKey === pc.idx ? pc.active : pc.bg,
+                                    pc.border,
+                                    showingPattern && "opacity-80 cursor-not-allowed"
+                                )}
+                            >
+                                {pc.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {patternFeedback && (
+                        <p className={`text-2xl font-black animate-in zoom-in ${patternFeedback.includes("PERFECT") ? "text-green-500" : "text-orange-500"}`}>
+                            {patternFeedback}
+                        </p>
+                    )}
+
+                    <div className="flex items-center gap-4">
+                        <Button onClick={generatePattern} variant="outline" className="border-2 border-violet-200 text-violet-700 font-black rounded-full px-6 hover:bg-violet-50">
+                            New Pattern
+                        </Button>
+                        <div className="flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-2.5 rounded-full shadow-lg text-white">
+                            <Star className="text-yellow-300 fill-yellow-300 w-5 h-5" />
+                            <span className="font-black text-sm">Level {patternLength - 2} • Streak: {streak}</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* DRUMS TAB */}
+            {activeTab === 'drums' && (
+                <div className="space-y-8 animate-in fade-in">
+                    <div className="text-center">
+                        <h2 className="text-3xl font-black text-violet-800">Drum Playground 🥁</h2>
+                        <p className="text-violet-600 font-bold text-sm mt-1">Tap the drums or take the rhythm challenge!</p>
+                    </div>
+
+                    <div className="flex justify-center gap-2 max-w-md mx-auto mb-2">
+                        <Button
+                            variant={drumMode === 'free' ? 'default' : 'outline'}
+                            onClick={() => {
+                                setDrumMode('free');
+                                setDrumFeedback('');
+                                setDrumStreak(0);
+                            }}
+                            className={cn(
+                                "flex-1 rounded-2xl font-bold py-5 border-2 transition-all",
+                                drumMode === 'free' 
+                                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-transparent shadow-md' 
+                                    : 'border-violet-200 text-violet-700 hover:bg-violet-50'
+                            )}
+                        >
+                            🥁 Free Play
+                        </Button>
+                        <Button
+                            variant={drumMode === 'challenge' ? 'default' : 'outline'}
+                            onClick={() => {
+                                setDrumMode('challenge');
+                                setDrumStreak(0);
+                                setDrumPatternLength(2);
+                                setTimeout(generateDrumPattern, 200);
+                            }}
+                            className={cn(
+                                "flex-1 rounded-2xl font-bold py-5 border-2 transition-all",
+                                drumMode === 'challenge' 
+                                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-transparent shadow-md' 
+                                    : 'border-violet-200 text-violet-700 hover:bg-violet-50'
+                            )}
+                        >
+                            🏆 Beat Challenge
+                        </Button>
+                    </div>
+
+                    {drumMode === 'challenge' && (
+                        <div className="text-center">
+                            <p className="text-violet-600 font-bold text-sm mt-1">
+                                {drumShowingPattern ? "👂 Listen carefully to the beat..." : "👉 Your turn! Tap the drums in order!"}
+                            </p>
+                            <div className="flex justify-center gap-1.5 mt-3">
+                                {drumPattern.map((_, i) => (
+                                    <div key={i} className={cn(
+                                        "h-2.5 w-8 rounded-full transition-all duration-300",
+                                        i < drumPlayerPattern.length ? 'bg-green-400' : i === drumPlayerPattern.length && !drumShowingPattern ? 'bg-violet-500 w-12' : 'bg-slate-200'
+                                    )} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-6 max-w-md mx-auto">
+                        {drums.map(drum => (
+                            <button
+                                key={drum.id}
+                                onClick={() => handleDrumPress(drum.id)}
+                                disabled={drumShowingPattern}
+                                className={cn(
+                                    "relative h-36 rounded-[32px] bg-gradient-to-b border-4 border-b-[12px] flex flex-col items-center justify-center gap-2 transition-all duration-100 shadow-2xl text-white font-black",
+                                    drum.color,
+                                    activeDrum === drum.id
+                                        ? "translate-y-2 border-b-4 shadow-inner brightness-110 scale-95"
+                                        : "hover:scale-105 hover:-translate-y-1 active:translate-y-2 active:border-b-4",
+                                    drumShowingPattern && "opacity-80 cursor-not-allowed"
+                                )}
+                            >
+                                <span className="text-5xl select-none">{drum.emoji}</span>
+                                <span className="text-sm uppercase tracking-wider">{drum.label}</span>
+                                {activeDrum === drum.id && (
+                                    <div className="absolute inset-0 rounded-[28px] bg-white/30 animate-ping pointer-events-none"></div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    {drumFeedback && (
+                        <p className={`text-2xl font-black text-center animate-in zoom-in ${drumFeedback.includes("FANTASTIC") ? "text-green-500" : "text-orange-500"}`}>
+                            {drumFeedback}
+                        </p>
+                    )}
+
+                    {drumMode === 'challenge' ? (
+                        <div className="flex items-center justify-center gap-4">
+                            <Button onClick={generateDrumPattern} disabled={drumShowingPattern} variant="outline" className="border-2 border-violet-200 text-violet-700 font-black rounded-full px-6 hover:bg-violet-50">
+                                Replay Beat
+                            </Button>
+                            <div className="flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-2.5 rounded-full shadow-lg text-white">
+                                <Star className="text-yellow-300 fill-yellow-300 w-5 h-5" />
+                                <span className="font-black text-sm">Level {drumPatternLength - 1} • Streak: {drumStreak}</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-center text-xs font-black text-violet-400 uppercase tracking-widest animate-pulse">
+                            ★ Create your own beat! ★
+                        </p>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// --- 11. TEACHER PROGRESS DASHBOARD ---
+function TeacherDashboard() {
+    const firestore = useFirestore();
+    const [classStats, setClassStats] = useState<{
+        totalStickers: number;
+        mathStickers: number;
+        literacyStickers: number;
+        scienceStickers: number;
+        artStickers: number;
+        topStudents: { uid: string; count: number }[];
+        recentActivity: any[];
+    }>({
+        totalStickers: 0, mathStickers: 0, literacyStickers: 0,
+        scienceStickers: 0, artStickers: 0, topStudents: [], recentActivity: []
+    });
+    const [loading, setLoading] = useState(true);
+    const [timeRange, setTimeRange] = useState<'all' | 'week' | 'month'>('all');
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            if (!firestore) return;
+            setLoading(true);
+            try {
+                const stickersSnap = await getDocs(query(collection(firestore, 'junior_stickers'), orderBy('earnedAt', 'desc')));
+                const allStickers = stickersSnap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+
+                // Filter by time range
+                const now = new Date();
+                const filtered = timeRange === 'all' ? allStickers : allStickers.filter(s => {
+                    if (!s.earnedAt?.toDate) return false;
+                    const earned = s.earnedAt.toDate();
+                    if (timeRange === 'week') return (now.getTime() - earned.getTime()) < 7 * 24 * 60 * 60 * 1000;
+                    if (timeRange === 'month') return (now.getTime() - earned.getTime()) < 30 * 24 * 60 * 60 * 1000;
+                    return true;
+                });
+
+                const math = filtered.filter(s => s.category === 'math').length;
+                const literacy = filtered.filter(s => s.category === 'literacy' || s.name?.includes('ABC') || s.name?.includes('Word')).length;
+                const science = filtered.filter(s => s.category === 'science').length;
+                const art = filtered.filter(s => s.category === 'art').length;
+
+                // Top students by sticker count
+                const studentMap = new Map<string, number>();
+                filtered.forEach(s => {
+                    if (s.userId) studentMap.set(s.userId, (studentMap.get(s.userId) || 0) + 1);
+                });
+                const topStudents = Array.from(studentMap.entries())
+                    .map(([uid, count]) => ({ uid, count }))
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 5);
+
+                setClassStats({
+                    totalStickers: filtered.length,
+                    mathStickers: math,
+                    literacyStickers: literacy,
+                    scienceStickers: science,
+                    artStickers: art,
+                    topStudents,
+                    recentActivity: filtered.slice(0, 10)
+                });
+            } catch (err) {
+                console.error('Dashboard fetch error:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, [firestore, timeRange]);
+
+    const maxSubject = Math.max(classStats.mathStickers, classStats.literacyStickers, classStats.scienceStickers, classStats.artStickers, 1);
+
+    const subjects = [
+        { label: 'Math', count: classStats.mathStickers, color: 'bg-orange-500', lightColor: 'bg-orange-100', icon: <Calculator className="w-4 h-4 text-orange-600" />, iconBg: 'bg-orange-50 border-orange-200' },
+        { label: 'Literacy', count: classStats.literacyStickers, color: 'bg-purple-500', lightColor: 'bg-purple-100', icon: <BookOpen className="w-4 h-4 text-purple-600" />, iconBg: 'bg-purple-50 border-purple-200' },
+        { label: 'Science', count: classStats.scienceStickers, color: 'bg-blue-500', lightColor: 'bg-blue-100', icon: <Atom className="w-4 h-4 text-blue-600" />, iconBg: 'bg-blue-50 border-blue-200' },
+        { label: 'Art & Music', count: classStats.artStickers, color: 'bg-pink-500', lightColor: 'bg-pink-100', icon: <Palette className="w-4 h-4 text-pink-600" />, iconBg: 'bg-pink-50 border-pink-200' },
+    ];
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
+                <span className="ml-3 font-bold text-slate-500">Loading class data...</span>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-8 animate-in fade-in">
+            {/* HEADER BANNER */}
+            <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 rounded-[32px] p-8 text-white shadow-2xl relative overflow-hidden border-b-8 border-indigo-700/25">
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="text-center md:text-left">
+                        <h3 className="text-3xl font-black mb-1 tracking-tight flex items-center gap-2">
+                            <BarChart3 className="w-8 h-8" /> Class Progress Dashboard
+                        </h3>
+                        <p className="font-extrabold opacity-90 text-lg">Overview of all student achievements</p>
+                    </div>
+
+                    <div className="flex gap-2 p-1 bg-white/20 rounded-xl backdrop-blur-sm border border-white/10">
+                        {(['all', 'month', 'week'] as const).map(range => (
+                            <Button
+                                key={range}
+                                size="sm"
+                                variant={timeRange === range ? 'secondary' : 'ghost'}
+                                onClick={() => setTimeRange(range)}
+                                className={cn(
+                                    "rounded-lg font-black capitalize text-xs transition-all",
+                                    timeRange === range ? "bg-white text-indigo-700 shadow-sm" : "text-white/90 hover:bg-white/10"
+                                )}
+                            >
+                                {range === 'all' ? 'All Time' : range === 'month' ? 'This Month' : 'This Week'}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+                <Activity className="absolute -bottom-4 -right-4 w-40 h-40 opacity-10 rotate-12" />
+            </div>
+
+            {/* KPI CARDS */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <Card className="border-2 border-b-[8px] border-indigo-200 rounded-3xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                    <CardContent className="p-5 text-center">
+                        <div className="bg-indigo-50 p-2.5 rounded-xl w-fit mx-auto mb-2 border border-indigo-200">
+                            <Trophy className="w-5 h-5 text-indigo-600" />
+                        </div>
+                        <div className="text-3xl font-black text-slate-800">{classStats.totalStickers}</div>
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Total Stickers</div>
+                    </CardContent>
+                </Card>
+                {subjects.map(s => (
+                    <Card key={s.label} className="border-2 border-b-[8px] border-slate-100 rounded-3xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                        <CardContent className="p-5 text-center">
+                            <div className={cn("p-2.5 rounded-xl w-fit mx-auto mb-2 border", s.iconBg)}>
+                                {s.icon}
+                            </div>
+                            <div className="text-3xl font-black text-slate-800">{s.count}</div>
+                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{s.label}</div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+
+            {/* BAR CHART + LEADERBOARD */}
+            <div className="grid md:grid-cols-2 gap-6">
+                {/* Subject Distribution */}
+                <Card className="border-2 border-slate-100 rounded-3xl shadow-md">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="font-black text-slate-800 text-lg flex items-center gap-2">
+                            <BarChart3 className="w-5 h-5 text-indigo-500" /> Subject Distribution
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pb-6">
+                        {subjects.map(s => (
+                            <div key={s.label} className="space-y-1.5">
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-2">
+                                        <div className={cn("p-1 rounded-lg border", s.iconBg)}>{s.icon}</div>
+                                        <span className="font-black text-sm text-slate-700">{s.label}</span>
+                                    </div>
+                                    <span className="font-black text-sm text-slate-500">{s.count}</span>
+                                </div>
+                                <div className="h-5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/50 shadow-inner">
+                                    <div
+                                        className={cn("h-full rounded-full transition-all duration-1000 ease-out", s.color)}
+                                        style={{ width: `${Math.max((s.count / maxSubject) * 100, 4)}%` }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+
+                {/* Top Students Leaderboard */}
+                <Card className="border-2 border-slate-100 rounded-3xl shadow-md">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="font-black text-slate-800 text-lg flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 text-indigo-500" /> Top Students
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3 pb-6">
+                        {classStats.topStudents.length === 0 ? (
+                            <p className="text-center text-slate-400 font-bold py-8">No student data yet.</p>
+                        ) : (
+                            classStats.topStudents.map((student, idx) => {
+                                const medals = ['🥇', '🥈', '🥉', '🏅', '⭐'];
+                                return (
+                                    <div key={student.uid} className="flex items-center gap-3 p-3 bg-slate-50/70 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-colors">
+                                        <span className="text-2xl select-none">{medals[idx] || '⭐'}</span>
+                                        <div className="flex-1">
+                                            <p className="font-black text-sm text-slate-700 truncate">Student {idx + 1}</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{student.uid.slice(0, 8)}...</p>
+                                        </div>
+                                        <div className="bg-indigo-100 px-3 py-1 rounded-full">
+                                            <span className="font-black text-sm text-indigo-700">{student.count} 🌟</span>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* RECENT ACTIVITY FEED */}
+            <Card className="border-2 border-slate-100 rounded-3xl shadow-md">
+                <CardHeader className="pb-2">
+                    <CardTitle className="font-black text-slate-800 text-lg flex items-center gap-2">
+                        <Activity className="w-5 h-5 text-indigo-500" /> Recent Achievements
+                    </CardTitle>
+                    <CardDescription className="font-bold text-slate-400">Latest stickers earned across the class</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {classStats.recentActivity.length === 0 ? (
+                        <p className="text-center text-slate-400 font-bold py-8">No recent activity.</p>
+                    ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                            {classStats.recentActivity.map((sticker: any, idx: number) => (
+                                <div key={sticker.id || idx} className="flex items-center gap-2.5 p-3 bg-slate-50/70 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-colors">
+                                    <span className="text-2xl">{sticker.emoji}</span>
+                                    <div className="overflow-hidden">
+                                        <p className="font-black text-xs text-slate-700 truncate">{sticker.name}</p>
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{sticker.category}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* ENGAGEMENT INSIGHTS */}
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50/30 p-6 rounded-[32px] border-2 border-indigo-100 shadow-inner">
+                <h4 className="font-black text-indigo-800 flex items-center gap-2 mb-4">
+                    <Lightbulb className="w-5 h-5 text-indigo-500" /> Engagement Insights
+                </h4>
+                <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="bg-white p-4 rounded-2xl border border-indigo-100/50 shadow-sm">
+                        <p className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-1">Most Popular</p>
+                        <p className="font-black text-lg text-slate-800">
+                            {subjects.sort((a, b) => b.count - a.count)[0]?.label || 'N/A'}
+                        </p>
+                        <p className="text-xs font-bold text-slate-400 mt-1">Highest sticker count</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-indigo-100/50 shadow-sm">
+                        <p className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-1">Needs Attention</p>
+                        <p className="font-black text-lg text-slate-800">
+                            {[...subjects].sort((a, b) => a.count - b.count)[0]?.label || 'N/A'}
+                        </p>
+                        <p className="text-xs font-bold text-slate-400 mt-1">Lowest engagement</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-indigo-100/50 shadow-sm">
+                        <p className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-1">Active Learners</p>
+                        <p className="font-black text-lg text-slate-800">
+                            {classStats.topStudents.length}
+                        </p>
+                        <p className="text-xs font-bold text-slate-400 mt-1">Students with stickers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 // Utility Helpers for Flood Fill
+
 function getPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number) {
     const i = (y * width + x) * 4;
     return [data[i], data[i+1], data[i+2], data[i+3]];
@@ -2707,11 +3944,14 @@ export default function JuniorCampusPage() {
     { id: 'coach', name: 'Voice Coach', icon: <Mic className="w-5 h-5"/>, color: 'text-pink-600 bg-pink-100' },
     { id: 'phonics', name: 'Phonics Forest', icon: <Music className="w-5 h-5"/>, color: 'text-teal-600 bg-teal-100' },
     { id: 'abc', name: 'ABC Kingdom', icon: <Brain className="w-5 h-5"/>, color: 'text-green-600 bg-green-100' },
+    { id: 'numbers', name: 'Number Garden', icon: <Hash className="w-5 h-5"/>, color: 'text-amber-600 bg-amber-100' },
     { id: 'math', name: 'Math Playground', icon: <Calculator className="w-5 h-5"/>, color: 'text-orange-600 bg-orange-100' },
     { id: 'stories', name: 'Story Spark', icon: <BookOpen className="w-5 h-5"/>, color: 'text-purple-600 bg-purple-100' },
     { id: 'science', name: 'Science World', icon: <Atom className="w-5 h-5"/>, color: 'text-blue-600 bg-blue-100' },
+    { id: 'music', name: 'Music Corner', icon: <Lightbulb className="w-5 h-5"/>, color: 'text-violet-600 bg-violet-100' },
     { id: 'art', name: 'Art Studio', icon: <Palette className="w-5 h-5"/>, color: 'text-cyan-600 bg-cyan-100' },
     { id: 'rewards', name: 'Sticker Book', icon: <Trophy className="w-5 h-5"/>, color: 'text-yellow-600 bg-yellow-100' },
+    ...(canEdit ? [{ id: 'dashboard', name: 'Dashboard', icon: <BarChart3 className="w-5 h-5"/>, color: 'text-indigo-600 bg-indigo-100' }] : []),
   ];
 
   return (
@@ -2753,7 +3993,7 @@ export default function JuniorCampusPage() {
       <div className="max-w-6xl mx-auto">
         <Tabs defaultValue="coach" className="w-full">
             <div className="bg-white/70 backdrop-blur-md p-2 rounded-3xl shadow-lg border border-white/80 mb-8 overflow-x-auto no-scrollbar">
-              <TabsList className="flex w-max md:w-full md:grid md:grid-cols-8 gap-2 bg-transparent p-0 h-auto">
+              <TabsList className="flex w-max md:w-full md:grid gap-2 bg-transparent p-0 h-auto" style={{ gridTemplateColumns: `repeat(${pageModules.length}, minmax(0, 1fr))` }}>
                   {pageModules.map(mod => (
                       <TabsTrigger 
                           key={mod.id}
@@ -2768,7 +4008,10 @@ export default function JuniorCampusPage() {
                             mod.id === 'stories' && "data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white text-purple-600 hover:bg-purple-50/50",
                             mod.id === 'science' && "data-[state=active]:from-blue-500 data-[state=active]:to-sky-500 data-[state=active]:text-white text-blue-600 hover:bg-blue-50/50",
                             mod.id === 'art' && "data-[state=active]:from-cyan-500 data-[state=active]:to-teal-400 data-[state=active]:text-white text-cyan-700 hover:bg-cyan-50/50",
-                            mod.id === 'rewards' && "data-[state=active]:from-yellow-400 data-[state=active]:to-orange-400 data-[state=active]:text-white text-yellow-600 hover:bg-yellow-50/50"
+                            mod.id === 'rewards' && "data-[state=active]:from-yellow-400 data-[state=active]:to-orange-400 data-[state=active]:text-white text-yellow-600 hover:bg-yellow-50/50",
+                            mod.id === 'numbers' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-400 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
+                            mod.id === 'music' && "data-[state=active]:from-violet-500 data-[state=active]:to-purple-500 data-[state=active]:text-white text-violet-600 hover:bg-violet-50/50",
+                            mod.id === 'dashboard' && "data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white text-indigo-600 hover:bg-indigo-50/50"
                           )}
                       >
                           <div className="p-1.5 rounded-xl bg-white/20 shadow-inner">
@@ -2822,6 +4065,23 @@ export default function JuniorCampusPage() {
                     <StickerBook />
                   </div>
                 </TabsContent>
+                <TabsContent value="numbers" className="mt-0 animate-in fade-in-50 duration-300">
+                  <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-amber-400">
+                    <NumberGarden />
+                  </div>
+                </TabsContent>
+                <TabsContent value="music" className="mt-0 animate-in fade-in-50 duration-300">
+                  <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-violet-400">
+                    <MusicRhythmCorner />
+                  </div>
+                </TabsContent>
+                {canEdit && (
+                  <TabsContent value="dashboard" className="mt-0 animate-in fade-in-50 duration-300">
+                    <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-indigo-400">
+                      <TeacherDashboard />
+                    </div>
+                  </TabsContent>
+                )}
             </div>
         </Tabs>
       </div>

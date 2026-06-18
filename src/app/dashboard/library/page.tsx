@@ -11,7 +11,8 @@ import { LibraryItem, libraryItemSchema } from '@/lib/types';
 import { 
   Loader2, PlusCircle, BookCheck, AlertTriangle, Library as LibraryIcon, 
   Book, CheckCircle, BookOpen, Newspaper, 
-  Film, FileText, Calendar, User, Clock, Search
+  Film, FileText, Calendar, User, Clock, Search,
+  LayoutGrid, List as ListIcon, Info, Sparkles, BookOpenCheck, ShieldAlert
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,14 +29,27 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 
+// --- Form Zod schema supporting HTML5 standard controls ---
+const libraryFormSchema = z.object({
+  name: z.string().min(1, "Item name is required."),
+  category: z.enum(['Book', 'Magazine', 'DVD', 'Other']),
+  quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
+  location: z.string().min(1, "Location is required."),
+  author: z.string().optional(),
+  isbn: z.string().optional(),
+  publisher: z.string().optional(),
+  unitPrice: z.coerce.number().optional(),
+  purchaseDate: z.string().optional(),
+});
+
 // --- Form for adding new library items ---
 function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => void, schoolId: string }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<z.infer<typeof libraryItemSchema>>({
-    resolver: zodResolver(libraryItemSchema),
+  const form = useForm<z.infer<typeof libraryFormSchema>>({
+    resolver: zodResolver(libraryFormSchema),
     defaultValues: {
       name: '',
       category: 'Book',
@@ -43,10 +57,13 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
       location: '',
       author: '',
       isbn: '',
+      publisher: '',
+      unitPrice: undefined,
+      purchaseDate: '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof libraryItemSchema>) {
+  async function onSubmit(values: z.infer<typeof libraryFormSchema>) {
     setIsSubmitting(true);
     try {
       const newItemRef = doc(collection(firestore!, 'library'));
@@ -54,6 +71,8 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
         ...values,
         status: 'Available',
         createdAt: new Date(),
+        purchaseDate: values.purchaseDate ? new Date(values.purchaseDate) : null,
+        unitPrice: values.unitPrice ? Number(values.unitPrice) : null,
         schoolId: schoolId, // SAAS STAMP
       };
       await setDocumentNonBlocking(newItemRef, dataToSave, {});
@@ -92,15 +111,26 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
             <FormMessage />
           </FormItem>
         )} />
-        <FormField control={form.control} name="isbn" render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-xs font-black uppercase text-slate-400">ISBN</FormLabel>
-            <FormControl><Input placeholder="e.g., 978-3-16-148410-0" {...field} className="h-11 rounded-xl border-2" /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField control={form.control} name="publisher" render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-black uppercase text-slate-400">Publisher</FormLabel>
+              <FormControl><Input placeholder="e.g., Penguin Books" {...field} className="h-11 rounded-xl border-2" /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="isbn" render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-black uppercase text-slate-400">ISBN</FormLabel>
+              <FormControl><Input placeholder="e.g., 978-..." {...field} className="h-11 rounded-xl border-2" /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+        </div>
+
         <div className="grid grid-cols-3 gap-4">
-            <FormField control={form.control} name="category" render={({ field }) => (
+          <FormField control={form.control} name="category" render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-black uppercase text-slate-400">Category</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -114,25 +144,43 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
               </Select>
               <FormMessage />
             </FormItem>
-            )} />
-            <FormField control={form.control} name="quantity" render={({ field }) => (
+          )} />
+          <FormField control={form.control} name="quantity" render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-black uppercase text-slate-400">Quantity</FormLabel>
               <FormControl><Input type="number" {...field} className="h-11 rounded-xl border-2" /></FormControl>
               <FormMessage />
             </FormItem>
-            )} />
-            <FormField control={form.control} name="location" render={({ field }) => (
+          )} />
+          <FormField control={form.control} name="location" render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-black uppercase text-slate-400">Location</FormLabel>
-              <FormControl><Input placeholder="Shelf A-3" {...field} className="h-11 rounded-xl border-2" /></FormControl>
+              <FormLabel className="text-xs font-black uppercase text-slate-400">Location / Shelf</FormLabel>
+              <FormControl><Input placeholder="e.g., Shelf A-3" {...field} className="h-11 rounded-xl border-2" /></FormControl>
               <FormMessage />
             </FormItem>
-            )} />
+          )} />
         </div>
-        <Button type="submit" disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 rounded-2xl font-black uppercase tracking-tight shadow-md">
+
+        <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
+          <FormField control={form.control} name="unitPrice" render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-black uppercase text-slate-400">Unit Price (GH₵)</FormLabel>
+              <FormControl><Input type="number" step="0.01" placeholder="0.00" {...field} className="h-11 rounded-xl border-2" /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="purchaseDate" render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-black uppercase text-slate-400">Purchase Date</FormLabel>
+              <FormControl><Input type="date" {...field} className="h-11 rounded-xl border-2" /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+        </div>
+
+        <Button type="submit" disabled={isSubmitting} className="w-full bg-indigo-650 hover:bg-indigo-750 text-white h-12 rounded-xl font-black uppercase tracking-wider shadow-md shadow-indigo-100/50 mt-2">
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Add Item
+          Add Item to Catalog
         </Button>
       </form>
     </Form>
@@ -140,21 +188,22 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
 }
 
 // --- Stat Card Component ---
-function StatCard({ title, value, icon: Icon, gradientClass }: { title: string; value: string | number; icon: React.ElementType; gradientClass: string }) {
-    return (
-      <Card className="border-none shadow-md bg-white rounded-3xl overflow-hidden relative group hover:shadow-lg transition-all duration-300">
-        <div className={`absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b ${gradientClass}`} />
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
-          <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</CardTitle>
-          <div className="h-8 w-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:bg-slate-100 transition-colors">
-            <Icon className="h-4 w-4" />
-          </div>
-        </CardHeader>
-        <CardContent className="px-6 pb-6 pt-0">
-          <div className="text-3xl font-black text-slate-900 tracking-tight">{value}</div>
-        </CardContent>
-      </Card>
-    );
+function StatCard({ title, value, icon: Icon, gradientClass, subtitle }: { title: string; value: string | number; icon: React.ElementType; gradientClass: string; subtitle?: string }) {
+  return (
+    <Card className="border border-slate-100 shadow-[0_10px_35px_-12px_rgba(0,0,0,0.02)] bg-white rounded-3xl overflow-hidden relative group hover:shadow-md transition-all duration-300 hover:scale-[1.02] border-b-4 border-b-slate-100/80">
+      <div className={`absolute top-0 left-0 w-2 h-full bg-gradient-to-b ${gradientClass}`} />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
+        <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</CardTitle>
+        <div className="p-2.5 rounded-xl bg-slate-50 text-slate-655 group-hover:scale-115 transition-transform shadow-inner border border-slate-100">
+          <Icon className="h-4 w-4 text-indigo-600" />
+        </div>
+      </CardHeader>
+      <CardContent className="px-6 pb-6 pt-0">
+        <div className="text-3xl font-black text-slate-900 tracking-tight leading-none">{value}</div>
+        {subtitle && <p className="text-[9px] font-bold text-slate-400 mt-1.5 uppercase tracking-wider truncate">{subtitle}</p>}
+      </CardContent>
+    </Card>
+  );
 }
 
 // --- Main Library Page ---
@@ -167,6 +216,7 @@ export default function LibraryPage() {
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('catalog');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const canManage = ['Librarian', 'Administrator', 'Director'].includes(role || '');
@@ -199,10 +249,6 @@ export default function LibraryPage() {
     if (!libraryItems) return [];
     let items = libraryItems;
 
-    if (!canManage) {
-        items = items.filter(item => item.status === 'Available');
-    }
-
     if (categoryFilter !== 'All') {
         items = items.filter(item => item.category === categoryFilter);
     }
@@ -214,7 +260,7 @@ export default function LibraryPage() {
       );
     }
     return items;
-  }, [libraryItems, filter, categoryFilter, canManage]);
+  }, [libraryItems, filter, categoryFilter]);
   
   const myBorrowedItems = useMemo(() => {
       if (!user || !libraryItems) return [];
@@ -250,11 +296,11 @@ export default function LibraryPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Available': return <Badge className="bg-green-50 text-green-700 border-green-200 font-bold uppercase text-[9px]">Available</Badge>;
-      case 'Requested': return <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-bold uppercase text-[9px]">Requested</Badge>;
-      case 'Pending Return': return <Badge className="bg-amber-50 text-amber-700 border-amber-200 font-bold uppercase text-[9px]">Pending Return</Badge>;
-      case 'Borrowed': return <Badge className="bg-rose-50 text-rose-700 border-rose-200 font-bold uppercase text-[9px]">Borrowed</Badge>;
-      default: return <Badge variant="secondary" className="font-bold uppercase text-[9px]">{status}</Badge>;
+      case 'Available': return <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200/50 font-bold uppercase text-[9px] px-2.5 py-0.5 rounded-lg">Available</Badge>;
+      case 'Requested': return <Badge className="bg-blue-50 text-blue-755 border border-blue-200/50 font-bold uppercase text-[9px] px-2.5 py-0.5 rounded-lg">Requested</Badge>;
+      case 'Pending Return': return <Badge className="bg-amber-50 text-amber-705 border border-amber-200/50 font-bold uppercase text-[9px] px-2.5 py-0.5 rounded-lg">Pending Return</Badge>;
+      case 'Borrowed': return <Badge className="bg-rose-55 text-rose-755 border border-rose-200/50 font-bold uppercase text-[9px] px-2.5 py-0.5 rounded-lg">Borrowed</Badge>;
+      default: return <Badge variant="secondary" className="font-bold uppercase text-[9px] px-2.5 py-0.5 rounded-lg">{status}</Badge>;
     }
   };
 
@@ -270,7 +316,7 @@ export default function LibraryPage() {
         currentHolderName: user.displayName || user.email,
     });
     toast({ title: 'Request Sent', description: `Your request to borrow "${item.name}" has been sent for approval.`});
-  }
+  };
   
   const handleMarkForReturn = (item: LibraryItem) => {
     if (!firestore) return;
@@ -278,7 +324,7 @@ export default function LibraryPage() {
         status: 'Pending Return',
     });
     toast({ title: 'Return Initiated', description: `"${item.name}" is now pending return confirmation from the librarian.`});
-  }
+  };
   
   const handleApproveRequest = async (item: LibraryItem) => {
     if (!firestore) return;
@@ -324,89 +370,115 @@ export default function LibraryPage() {
   };
 
   return (
-    <div className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2 italic uppercase">
-                    <LibraryIcon className="h-8 w-8 text-indigo-600 animate-pulse" /> Library <span className="text-indigo-600">Portal</span>
-                </h1>
-                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Catalog, borrow, and manage library resources</p>
+    <div className="space-y-8 animate-in fade-in duration-300">
+        {/* Premium Gradient Header Banner */}
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-slate-900 via-indigo-955 to-purple-955 p-8 md:p-12 text-white shadow-2xl border border-white/10 group">
+            <div className="absolute right-[-40px] bottom-[-40px] opacity-10 text-white transition-transform duration-700 group-hover:scale-110 pointer-events-none">
+                <LibraryIcon className="h-60 w-60 animate-pulse" />
             </div>
-            
-            {canManage && schoolId && (
-                <div className="flex gap-2">
-                    <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-                        <DialogTrigger asChild>
-                            <Button disabled={!schoolId} className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100 h-12 px-6 rounded-2xl font-black uppercase tracking-tight">
-                                <PlusCircle className="mr-2 h-5 w-5" /> Add New Item
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="rounded-3xl border-0 shadow-2xl sm:max-w-md">
-                            <DialogHeader>
-                                <DialogTitle className="text-xl font-black uppercase text-slate-800 tracking-tight">Add to Catalog</DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Register a new library resource.</DialogDescription>
-                            </DialogHeader>
-                            {schoolId && <LibraryItemForm setOpen={setFormOpen} schoolId={schoolId} />}
-                        </DialogContent>
-                    </Dialog>
+            <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none" />
+            <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                <div className="space-y-3">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-xs font-black uppercase tracking-widest text-indigo-300 backdrop-blur-md border border-white/5">
+                        <BookOpenCheck className="h-3 w-3 text-indigo-400" /> Catalog Indexer
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-2 uppercase italic leading-none">
+                        Library <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300">Portal</span> Hub 📚
+                    </h1>
+                    <p className="text-slate-300 text-sm font-medium max-w-xl">
+                        Search the entire school resource index, request book issues, check shelf catalog locations, and manage pending returns.
+                    </p>
                 </div>
-            )}
+
+                {canManage && schoolId && (
+                    <div className="shrink-0">
+                        <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
+                            <DialogTrigger asChild>
+                                <Button disabled={!schoolId} className="bg-gradient-to-r from-indigo-500 to-purple-650 hover:from-indigo-600 hover:to-purple-750 text-white font-black rounded-xl text-xs uppercase h-12 px-6 shadow-lg shadow-indigo-500/10 transition-all border border-indigo-400/20">
+                                    <PlusCircle className="mr-2 h-5 w-5" /> Add New Item
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="rounded-[2.2rem] border-0 shadow-2xl p-6 sm:max-w-lg bg-white">
+                                <DialogHeader className="mb-4">
+                                    <DialogTitle className="text-lg font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
+                                        <Book className="h-5 w-5 text-indigo-600 animate-bounce" /> Add catalog item
+                                    </DialogTitle>
+                                    <DialogDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">Register a new library resource in the school index.</DialogDescription>
+                                </DialogHeader>
+                                {schoolId && <LibraryItemForm setOpen={setFormOpen} schoolId={schoolId} />}
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                )}
+            </div>
         </div>
         
+        {/* KPI Stats Grid */}
         {canManage && (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="Total Items" value={libraryStats.total} icon={Book} gradientClass="from-blue-500 to-indigo-500" />
-                <StatCard title="Available" value={libraryStats.available} icon={CheckCircle} gradientClass="from-emerald-500 to-teal-500" />
-                <StatCard title="Borrowed" value={libraryStats.borrowed} icon={BookCheck} gradientClass="from-purple-500 to-indigo-500" />
-                <StatCard title="Overdue" value={libraryStats.overdue} icon={AlertTriangle} gradientClass="from-rose-500 to-red-500" />
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="Total Items" value={libraryStats.total} icon={Book} gradientClass="from-blue-500 to-indigo-500" subtitle="Total stock quantity" />
+                <StatCard title="Available" value={libraryStats.available} icon={CheckCircle} gradientClass="from-emerald-500 to-teal-500" subtitle="Ready for checkouts" />
+                <StatCard title="Borrowed" value={libraryStats.borrowed} icon={BookCheck} gradientClass="from-purple-500 to-indigo-500" subtitle="Issued to readers" />
+                <StatCard title="Overdue" value={libraryStats.overdue} icon={AlertTriangle} gradientClass="from-rose-500 to-red-500" subtitle="Overdue return dates" />
             </div>
         )}
 
+        {/* Borrower Personal Deck */}
         {canBorrow && myBorrowedItems.length > 0 && (
             <div className="space-y-4">
-                <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">My Borrowed Items</h2>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                    <BookCheck className="h-4 w-4 text-indigo-600" /> My Borrowed Items
+                </h2>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {myBorrowedItems.map(item => {
                         const daysLeft = getDaysRemaining(item.dueDate);
                         const isOverdue = daysLeft < 0;
                         const itemIcon = getItemIcon(item.category);
                         return (
-                            <Card key={item.id} className="border-none shadow-md bg-white rounded-3xl overflow-hidden hover:shadow-lg transition-all relative">
-                                {isOverdue && <div className="absolute top-0 right-0 bg-rose-500 text-white text-[9px] font-black uppercase px-3 py-1 rounded-bl-xl tracking-wider animate-pulse">Overdue</div>}
+                            <Card key={item.id} className="border border-slate-100 shadow-md bg-white rounded-3xl overflow-hidden hover:shadow-lg transition-all relative">
+                                {isOverdue && (
+                                    <div className="absolute top-0 right-0 bg-rose-600 text-white text-[8px] font-black uppercase px-3.5 py-1.5 rounded-bl-2xl tracking-wider animate-pulse">
+                                        Overdue
+                                    </div>
+                                )}
                                 <CardContent className="p-6 space-y-4">
                                     <div className="flex items-start gap-3">
-                                        <div className={cn("p-3 rounded-2xl", isOverdue ? "bg-rose-50 text-rose-500" : "bg-indigo-50 text-indigo-500")}>
+                                        <div className={cn("p-3 rounded-2xl shrink-0 shadow-inner border", isOverdue ? "bg-rose-50 text-rose-600 border-rose-100" : "bg-indigo-50 text-indigo-600 border-indigo-100")}>
                                             {itemIcon}
                                         </div>
-                                        <div>
-                                            <h4 className="font-black text-slate-800 uppercase tracking-tight line-clamp-1">{item.name}</h4>
-                                            <p className="text-xs text-slate-400 font-bold uppercase">{item.author || 'Unknown Author'}</p>
+                                        <div className="min-w-0 flex-1">
+                                            <h4 className="font-black text-slate-800 uppercase tracking-tight line-clamp-1 text-sm">{item.name}</h4>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider truncate">By {item.author || 'Unknown Author'}</p>
                                         </div>
                                     </div>
-                                    <div className="border-t border-slate-100 pt-3 flex items-center justify-between text-xs">
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Due Date</p>
-                                            <p className="font-bold text-slate-700 flex items-center gap-1">
+                                    <div className="border-t border-slate-50 pt-3.5 flex items-center justify-between text-xs">
+                                        <div className="space-y-0.5">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Due Date</p>
+                                            <p className="font-bold text-slate-750 flex items-center gap-1">
                                                 <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                                                {item.dueDate ? format(item.dueDate.toDate(), 'PP') : 'N/A'}
+                                                {item.dueDate ? format(item.dueDate.toDate(), 'dd MMM yyyy') : 'N/A'}
                                             </p>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Time Left</p>
+                                        <div className="text-right space-y-0.5">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Time Left</p>
                                             {isOverdue ? (
-                                                <span className="text-xs font-black text-rose-600 uppercase">{Math.abs(daysLeft)} days overdue</span>
+                                                <span className="text-xs font-black text-rose-600 uppercase flex items-center gap-0.5 justify-end">
+                                                    <ShieldAlert className="h-3.5 w-3.5" /> {Math.abs(daysLeft)} days late
+                                                </span>
                                             ) : (
                                                 <span className="text-xs font-black text-emerald-600 uppercase">{daysLeft} days left</span>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex justify-end pt-2">
+                                    <div className="flex justify-end pt-1">
                                         {item.status === 'Borrowed' ? (
-                                            <Button onClick={() => handleMarkForReturn(item)} className="w-full bg-slate-900 hover:bg-indigo-600 text-white font-black uppercase text-xs tracking-wider rounded-2xl h-10 transition-colors">
+                                            <Button onClick={() => handleMarkForReturn(item)} className="w-full bg-slate-800 hover:bg-indigo-600 text-white font-black uppercase text-xs tracking-wider rounded-xl h-11 transition-all">
                                                 Mark for Return
                                             </Button>
                                         ) : (
-                                            <Badge className="w-full justify-center bg-amber-50 text-amber-700 border-amber-200 py-2 rounded-2xl font-black uppercase text-[10px] tracking-wider">
+                                            <Badge className="w-full justify-center bg-amber-50 text-amber-705 border border-amber-250 py-2.5 rounded-xl font-black uppercase text-[9px] tracking-widest animate-pulse">
                                                 Pending Librarian Check-In
                                             </Badge>
                                         )}
@@ -419,10 +491,11 @@ export default function LibraryPage() {
             </div>
         )}
       
-        <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+        {/* Main Tabbed Operations Panel */}
+        <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden border-b-8 border-b-slate-100">
             <div className="bg-slate-50/50 border-b p-8">
                 <div className="flex flex-col gap-6">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <Tabs defaultValue="catalog" value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
                             <TabsList className="bg-slate-100 p-1 rounded-2xl h-12">
                                 <TabsTrigger value="catalog" className="rounded-xl font-bold uppercase text-[11px] tracking-wider px-5 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">
@@ -430,24 +503,55 @@ export default function LibraryPage() {
                                 </TabsTrigger>
                                 {canManage && (
                                     <TabsTrigger value="requests" className="rounded-xl font-bold uppercase text-[11px] tracking-wider px-5 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">
-                                        Pending Requests <Badge className="ml-2 bg-indigo-100 text-indigo-700 hover:bg-indigo-100 border-none font-black">{pendingRequests.length}</Badge>
+                                        Pending Requests <Badge className="ml-2 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-none font-black">{pendingRequests.length}</Badge>
                                     </TabsTrigger>
                                 )}
                                 {canManage && (
                                     <TabsTrigger value="borrowed" className="rounded-xl font-bold uppercase text-[11px] tracking-wider px-5 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">
-                                        Outstanding Checkouts <Badge className="ml-2 bg-violet-100 text-violet-700 hover:bg-violet-100 border-none font-black">{outstandingCheckouts.length}</Badge>
+                                        Outstanding Checkouts <Badge className="ml-2 bg-purple-105 text-purple-700 hover:bg-purple-105 border-none font-black">{outstandingCheckouts.length}</Badge>
                                     </TabsTrigger>
                                 )}
                             </TabsList>
                         </Tabs>
-                        <div className="relative w-full md:w-80">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                            <Input 
-                                placeholder="Search by title or author..." 
-                                value={filter} 
-                                onChange={e => setFilter(e.target.value)}
-                                className="pl-9 h-11 bg-white border-2 rounded-xl"
-                            />
+
+                        {/* Search & Layout Toggles */}
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <div className="relative flex-1 md:w-80 md:flex-initial">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Input 
+                                    placeholder="Search by title or author..." 
+                                    value={filter} 
+                                    onChange={e => setFilter(e.target.value)}
+                                    className="pl-9 h-11 bg-white border-2 rounded-xl focus-visible:ring-indigo-500 shadow-sm"
+                                />
+                            </div>
+                            
+                            <div className="flex gap-1.5 bg-slate-100 p-1 rounded-2xl h-11 border border-slate-200/50">
+                                <button
+                                    onClick={() => setViewMode('grid')}
+                                    className={cn(
+                                        "h-9 px-3 rounded-xl transition-all flex items-center gap-1.5 text-xs font-black uppercase tracking-wider",
+                                        viewMode === 'grid' 
+                                            ? "bg-white text-slate-900 shadow-sm border border-slate-200/30" 
+                                            : "text-slate-400 hover:text-slate-655"
+                                    )}
+                                    title="Bookshelf Grid"
+                                >
+                                    <LayoutGrid className="h-4 w-4" />
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('table')}
+                                    className={cn(
+                                        "h-9 px-3 rounded-xl transition-all flex items-center gap-1.5 text-xs font-black uppercase tracking-wider",
+                                        viewMode === 'table' 
+                                            ? "bg-white text-slate-900 shadow-sm border border-slate-200/30" 
+                                            : "text-slate-400 hover:text-slate-655"
+                                    )}
+                                    title="Table View"
+                                >
+                                    <ListIcon className="h-4 w-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -463,7 +567,7 @@ export default function LibraryPage() {
                                             "h-9 px-4 rounded-xl text-xs font-black uppercase tracking-wider border-2 transition-all flex items-center gap-1.5",
                                             active 
                                                 ? "bg-slate-900 border-slate-900 text-white shadow-md" 
-                                                : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                                                : "bg-white border-slate-200 text-slate-500 hover:border-slate-350"
                                         )}
                                     >
                                         {cat === 'All' && <LibraryIcon className="h-3.5 w-3.5" />}
@@ -479,73 +583,210 @@ export default function LibraryPage() {
                     )}
                 </div>
             </div>
+
             <CardContent className="p-0">
-                {isLoading ? <div className='flex justify-center p-20'><Loader2 className="h-10 w-10 animate-spin text-indigo-600" /></div> : 
-                activeTab === 'catalog' ? (
-                     <Table className="border-t border-slate-100">
-                        <TableHeader>
-                            <TableRow className="bg-slate-50/50">
-                                <TableHead className="font-bold uppercase text-[10px] tracking-widest">Resource Details</TableHead>
-                                <TableHead className="font-bold uppercase text-[10px] tracking-widest">Classification</TableHead>
-                                <TableHead className="font-bold uppercase text-[10px] tracking-widest">Location</TableHead>
-                                <TableHead className="font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
-                                <TableHead className="text-right font-bold uppercase text-[10px] tracking-widest">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                           {filteredItems.map(item => (
-                               <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                                   <TableCell>
-                                       <div className="flex items-center gap-3">
-                                           <div className="h-10 w-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center">
-                                               {getItemIcon(item.category)}
-                                           </div>
-                                           <div>
-                                               <div className="font-black text-slate-800 uppercase tracking-tight">{item.name}</div>
-                                               <div className="text-[10px] text-slate-400 font-bold uppercase">By {item.author || 'Unknown author'}</div>
-                                           </div>
-                                       </div>
-                                   </TableCell>
-                                   <TableCell>
-                                       <Badge variant="outline" className="bg-white border-slate-200 text-slate-500 font-bold uppercase text-[9px]">
-                                           {item.category}
-                                       </Badge>
-                                   </TableCell>
-                                   <TableCell className="text-xs font-medium text-slate-500 italic">
-                                       {item.location || 'Not Specified'}
-                                   </TableCell>
-                                   <TableCell>
-                                       {getStatusBadge(item.status)}
-                                       {item.status !== 'Available' && item.currentHolderName && (
-                                           <div className="text-[9px] font-bold text-slate-500 mt-1 uppercase flex items-center gap-1">
-                                               <User className="h-2.5 w-2.5" /> {item.currentHolderName}
-                                           </div>
-                                       )}
-                                   </TableCell>
-                                   <TableCell className="text-right">
-                                       {canBorrow && item.status === 'Available' && (
-                                           <Button size="sm" onClick={() => handleRequestBorrow(item)} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold uppercase text-[10px] tracking-wider">
-                                               Request Borrow
-                                           </Button>
-                                       )}
-                                       {canManage && item.status === 'Pending Return' && (
-                                           <Button size="sm" onClick={() => handleConfirmReturn(item)} className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold uppercase text-[10px] tracking-wider">
-                                               Confirm Return
-                                           </Button>
-                                       )}
-                                   </TableCell>
-                               </TableRow>
-                           ))}
-                           {filteredItems.length === 0 && (
-                               <TableRow>
-                                   <TableCell colSpan={5} className="py-20 text-center text-slate-400">
-                                       <Book className="h-16 w-16 mx-auto mb-4 opacity-10" />
-                                       <p className="font-bold text-xs uppercase tracking-widest">No matching catalog items</p>
-                                   </TableCell>
-                               </TableRow>
-                           )}
-                        </TableBody>
-                    </Table>
+                {isLoading ? (
+                    <div className='flex justify-center p-24'><Loader2 className="h-10 w-10 animate-spin text-indigo-650" /></div>
+                ) : activeTab === 'catalog' ? (
+                     viewMode === 'grid' ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
+                            {filteredItems.map(item => {
+                                const isAvailable = item.status === 'Available';
+                                const isRequested = item.status === 'Requested';
+                                const isBorrowed = item.status === 'Borrowed';
+                                const isPendingReturn = item.status === 'Pending Return';
+                                
+                                const getCoverGradient = (category: string) => {
+                                    switch (category) {
+                                        case 'Book': return 'from-indigo-950 via-slate-900 to-indigo-900 text-indigo-50';
+                                        case 'Magazine': return 'from-teal-955 via-slate-900 to-teal-900 text-teal-50';
+                                        case 'DVD': return 'from-amber-955 via-slate-900 to-amber-900 text-amber-50';
+                                        default: return 'from-slate-800 to-slate-950 text-slate-50';
+                                    }
+                                };
+
+                                const getCoverAccent = (category: string) => {
+                                    switch (category) {
+                                        case 'Book': return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20';
+                                        case 'Magazine': return 'text-teal-400 bg-teal-500/10 border-teal-500/20';
+                                        case 'DVD': return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+                                        default: return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
+                                    }
+                                };
+
+                                return (
+                                    <Card key={item.id} className="rounded-[2.2rem] border border-slate-100 shadow-md overflow-hidden bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative group flex flex-col h-full border-b-[6px] border-b-slate-105">
+                                        <div className={cn("h-36 bg-gradient-to-br flex flex-col justify-between p-6 relative overflow-hidden shrink-0", getCoverGradient(item.category))}>
+                                            <div className="absolute right-[-20px] bottom-[-20px] opacity-[0.04] pointer-events-none group-hover:scale-110 transition-transform duration-500">
+                                                <BookOpen className="h-36 w-36" />
+                                            </div>
+                                            <div className="absolute top-[-10%] left-[-10%] w-32 h-32 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+
+                                            <div className="flex justify-between items-start gap-2 relative z-10">
+                                                <span className={cn("text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border", getCoverAccent(item.category))}>
+                                                    {item.category}
+                                                </span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 bg-white/5 px-2 py-0.5 rounded-lg border border-white/5">
+                                                    {item.location || 'Shelf N/A'}
+                                                </span>
+                                            </div>
+
+                                            <div className="space-y-1 relative z-10">
+                                                <h4 className="font-black text-sm uppercase tracking-tight line-clamp-2 leading-none uppercase italic text-white group-hover:text-indigo-200 transition-colors">{item.name}</h4>
+                                                <p className="text-[10px] opacity-70 font-bold uppercase tracking-wider truncate">By {item.author || 'Unknown Author'}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-6 flex-1 flex flex-col justify-between gap-4">
+                                            <div className="space-y-3.5 text-xs">
+                                                <div className="flex justify-between items-center text-[9px] text-slate-400 font-black uppercase tracking-widest">
+                                                    <span>Availability Status</span>
+                                                    <span>Copies</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <div>{getStatusBadge(item.status)}</div>
+                                                    <Badge className="font-extrabold bg-slate-100 hover:bg-slate-100 text-slate-700 border-none px-2.5 py-0.5 rounded-lg text-xs">{item.quantity || 1}</Badge>
+                                                </div>
+
+                                                <div className="border-t border-slate-100 pt-3.5 space-y-2.5">
+                                                    {item.isbn && (
+                                                        <div className="flex justify-between items-center text-slate-500">
+                                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">ISBN:</span>
+                                                            <span className="font-mono text-[10px] font-semibold text-slate-655">{item.isbn}</span>
+                                                        </div>
+                                                    )}
+                                                    {item.publisher && (
+                                                        <div className="flex justify-between items-center text-slate-500">
+                                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Publisher:</span>
+                                                            <span className="text-[11px] font-bold text-slate-600 truncate max-w-[150px]">{item.publisher}</span>
+                                                        </div>
+                                                    )}
+                                                    {item.unitPrice !== undefined && item.unitPrice > 0 && (
+                                                        <div className="flex justify-between items-center text-slate-500">
+                                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Value:</span>
+                                                            <span className="text-[11px] font-extrabold text-slate-800">GH₵ {Number(item.unitPrice).toFixed(2)}</span>
+                                                        </div>
+                                                    )}
+                                                    {!isAvailable && item.currentHolderName && (
+                                                        <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 mt-1 flex flex-col gap-1 text-[9px]">
+                                                            <div className="flex items-center gap-1 text-slate-400 font-black uppercase tracking-wider">
+                                                                <User className="h-3 w-3" /> Holder
+                                                            </div>
+                                                            <div className="font-black text-slate-700 uppercase tracking-tight truncate">{item.currentHolderName}</div>
+                                                            {item.dueDate && (
+                                                                <div className="text-slate-450 font-bold flex items-center gap-1 uppercase tracking-wider text-[8px] pt-0.5">
+                                                                    <Calendar className="h-2.5 w-2.5" /> Due: {format(item.dueDate.toDate(), 'dd MMM yyyy')}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2 border-t border-slate-100/50">
+                                                {canBorrow && isAvailable && (
+                                                    <Button size="sm" onClick={() => handleRequestBorrow(item)} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold uppercase text-[10px] tracking-wider h-10 transition-all shadow-sm">
+                                                        Request Borrow
+                                                    </Button>
+                                                )}
+                                                {canBorrow && !isAvailable && (
+                                                    <Button size="sm" disabled className="w-full bg-slate-150 text-slate-450 border border-slate-200/55 rounded-xl font-black uppercase text-[10px] tracking-wider h-10 pointer-events-none">
+                                                        {isRequested ? 'Requested' : 'Checked Out'}
+                                                    </Button>
+                                                )}
+                                                {canManage && isPendingReturn && (
+                                                    <Button size="sm" onClick={() => handleConfirmReturn(item)} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold uppercase text-[10px] tracking-wider h-10 transition-all shadow-sm">
+                                                        Confirm Return
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Card>
+                                );
+                            })}
+                            {filteredItems.length === 0 && (
+                                <div className="col-span-full py-20 text-center text-slate-400 bg-white border border-dashed border-slate-200 rounded-[2.2rem]">
+                                    <Book className="h-16 w-16 mx-auto mb-4 opacity-10" />
+                                    <p className="font-bold text-xs uppercase tracking-widest">No matching catalog items</p>
+                                </div>
+                            )}
+                        </div>
+                     ) : (
+                        <Table className="border-t border-slate-100">
+                            <TableHeader>
+                                <TableRow className="bg-slate-50/50">
+                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Resource Details</TableHead>
+                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Classification</TableHead>
+                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Location</TableHead>
+                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
+                                    <TableHead className="text-right font-bold uppercase text-[10px] tracking-widest">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                               {filteredItems.map(item => {
+                                   const isAvailable = item.status === 'Available';
+                                   const isRequested = item.status === 'Requested';
+                                   
+                                   return (
+                                       <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                                           <TableCell>
+                                               <div className="flex items-center gap-3">
+                                                   <div className="h-10 w-10 rounded-xl bg-slate-50 text-slate-505 flex items-center justify-center border border-slate-100">
+                                                       {getItemIcon(item.category)}
+                                                   </div>
+                                                   <div>
+                                                       <div className="font-black text-slate-800 uppercase tracking-tight">{item.name}</div>
+                                                       <div className="text-[10px] text-slate-400 font-bold uppercase">By {item.author || 'Unknown Author'}</div>
+                                                   </div>
+                                               </div>
+                                           </TableCell>
+                                           <TableCell>
+                                               <Badge variant="outline" className="bg-white border-slate-200 text-slate-500 font-bold uppercase text-[9px] rounded-lg px-2.5">
+                                                   {item.category}
+                                               </Badge>
+                                           </TableCell>
+                                           <TableCell className="text-xs font-medium text-slate-500 italic">
+                                               {item.location || 'Not Specified'}
+                                           </TableCell>
+                                           <TableCell>
+                                               {getStatusBadge(item.status)}
+                                               {item.status !== 'Available' && item.currentHolderName && (
+                                                   <div className="text-[9px] font-bold text-slate-500 mt-1 uppercase flex items-center gap-1">
+                                                       <User className="h-2.5 w-2.5" /> {item.currentHolderName}
+                                                   </div>
+                                               )}
+                                           </TableCell>
+                                           <TableCell className="text-right">
+                                               {canBorrow && isAvailable && (
+                                                   <Button size="sm" onClick={() => handleRequestBorrow(item)} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold uppercase text-[10px] tracking-wider">
+                                                       Request Borrow
+                                                   </Button>
+                                               )}
+                                               {canBorrow && !isAvailable && (
+                                                   <Badge variant="outline" className="text-slate-450 border-slate-200 font-bold uppercase text-[9px] px-2.5 py-0.5 rounded-lg">
+                                                       {isRequested ? 'Requested' : 'Checked Out'}
+                                                   </Badge>
+                                               )}
+                                               {canManage && item.status === 'Pending Return' && (
+                                                   <Button size="sm" onClick={() => handleConfirmReturn(item)} className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold uppercase text-[10px] tracking-wider">
+                                                       Confirm Return
+                                                   </Button>
+                                               )}
+                                           </TableCell>
+                                       </TableRow>
+                                   );
+                               })}
+                               {filteredItems.length === 0 && (
+                                   <TableRow>
+                                       <TableCell colSpan={5} className="py-20 text-center text-slate-400">
+                                           <Book className="h-16 w-16 mx-auto mb-4 opacity-10" />
+                                           <p className="font-bold text-xs uppercase tracking-widest">No matching catalog items</p>
+                                       </TableCell>
+                                   </TableRow>
+                               )}
+                            </TableBody>
+                        </Table>
+                     )
                 ) : activeTab === 'requests' ? (
                     <Table className="border-t border-slate-100">
                         <TableHeader>
@@ -560,12 +801,12 @@ export default function LibraryPage() {
                                 <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                                            <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
                                                 {getItemIcon(item.category)}
                                             </div>
                                             <div>
                                                 <div className="font-black text-slate-800 uppercase tracking-tight">{item.name}</div>
-                                                <div className="text-[10px] text-slate-400 font-bold uppercase">By {item.author || 'Unknown author'}</div>
+                                                <div className="text-[10px] text-slate-400 font-bold uppercase">By {item.author || 'Unknown Author'}</div>
                                             </div>
                                         </div>
                                     </TableCell>
@@ -614,12 +855,12 @@ export default function LibraryPage() {
                                     <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
                                         <TableCell>
                                             <div className="flex items-center gap-3">
-                                                <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center", isOverdue ? "bg-rose-50 text-rose-500" : "bg-slate-50 text-slate-500")}>
+                                                <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center border", isOverdue ? "bg-rose-50 text-rose-600 border-rose-100" : "bg-slate-50 text-slate-500 border-slate-100")}>
                                                     {getItemIcon(item.category)}
                                                 </div>
                                                 <div>
                                                     <div className="font-black text-slate-800 uppercase tracking-tight">{item.name}</div>
-                                                    <div className="text-[10px] text-slate-400 font-bold uppercase">By {item.author || 'Unknown author'}</div>
+                                                    <div className="text-[10px] text-slate-400 font-bold uppercase">By {item.author || 'Unknown Author'}</div>
                                                 </div>
                                             </div>
                                         </TableCell>
@@ -632,7 +873,7 @@ export default function LibraryPage() {
                                         <TableCell>
                                             <div className="text-xs font-bold text-slate-600 flex items-center gap-1">
                                                 <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                                                {item.dueDate ? format(item.dueDate.toDate(), 'PP') : 'N/A'}
+                                                {item.dueDate ? format(item.dueDate.toDate(), 'dd MMM yyyy') : 'N/A'}
                                             </div>
                                         </TableCell>
                                         <TableCell>
@@ -653,7 +894,7 @@ export default function LibraryPage() {
                                             <Button 
                                                 size="sm" 
                                                 onClick={() => handleConfirmReturn(item)} 
-                                                className="bg-indigo-600 hover:bg-emerald-600 text-white rounded-xl font-black uppercase text-[9px] tracking-widest h-9 px-4 transition-all"
+                                                className="bg-slate-800 hover:bg-emerald-600 text-white rounded-xl font-black uppercase text-[9px] tracking-widest h-9 px-4 transition-all"
                                             >
                                                 {item.status === 'Pending Return' ? 'Confirm Return' : 'Return Book'}
                                             </Button>
@@ -677,4 +918,3 @@ export default function LibraryPage() {
     </div>
   );
 }
-

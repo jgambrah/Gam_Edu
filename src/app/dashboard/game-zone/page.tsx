@@ -384,7 +384,13 @@ export default function GameZonePage() {
       console.warn("AI Quiz generation failed, loading local fallback questions:", err.message);
       setTriviaQuestions(generateOfflineTriviaQuiz(selectedCategory, activeGroup));
       setIsPlayingTrivia(true);
-      toast({ title: "Local Match Ready", description: "Successfully loaded offline training set." });
+      const isCreditError = err.message?.toLowerCase().includes("credit");
+      toast({ 
+        title: isCreditError ? "AI Credits Depleted" : "Local Match Ready", 
+        description: isCreditError 
+          ? "No AI credits remaining. Diverting to offline training set." 
+          : "Successfully loaded offline training set." 
+      });
     } finally {
       setIsGenerating(false);
     }

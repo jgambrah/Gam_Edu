@@ -298,13 +298,9 @@ export default function AcademicsPageContent() {
 
   // Queries
   const classesQuery = useMemoFirebase(() => {
-    if (!firestore || !user || !schoolId || !isStaff) return null;
-    let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-    if (role === 'Teacher') {
-      q = query(q, where('teacherId', '==', user.uid));
-    }
-    return q;
-  }, [firestore, user, role, schoolId, isStaff]);
+    if (!firestore || !schoolId || !isStaff) return null;
+    return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+  }, [firestore, schoolId, isStaff]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
   
   // Guard teachers query to prevent permission errors
@@ -347,6 +343,22 @@ export default function AcademicsPageContent() {
       : null,
   [firestore, schoolId, isStaff]);
   const { data: timeSlots, isLoading: isLoadingSlots } = useCollection<TimeSlot>(timeSlotsQuery);
+
+  // Filter classes for teachers to class teacher or subject teacher classes
+  const visibleClasses = useMemo(() => {
+    if (!classes) return [];
+    if (role !== 'Teacher') return classes;
+    const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
+    return classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
+  }, [classes, timetable, role, user?.uid]);
+
+  // Filter students to only those in the visible classes
+  const visibleStudents = useMemo(() => {
+    if (!students) return [];
+    if (role !== 'Teacher') return students;
+    const visibleClassIds = visibleClasses.map((c: any) => c.id);
+    return students.filter((s: any) => s.classId && visibleClassIds.includes(s.classId));
+  }, [students, visibleClasses, role]);
 
   const onSubmit = async (values: z.infer<typeof classSchema>) => {
     if (!firestore || !schoolId) return;
@@ -412,15 +424,15 @@ export default function AcademicsPageContent() {
   const isLoading = isLoadingSchool || isRoleLoading || isLoadingClasses || (canListStaff && isLoadingTeachers) || isLoadingStudents || isLoadingTimetable || isLoadingSubjects || isLoadingSlots;
 
   const selectedClass = useMemo(() => {
-      return classes?.find(c => c.id === selectedClassId) || null;
-  }, [classes, selectedClassId]);
+      return visibleClasses?.find(c => c.id === selectedClassId) || null;
+  }, [visibleClasses, selectedClassId]);
 
   if (selectedClass) {
       return (
           <ClassDetailView 
             selectedClass={selectedClass} 
             onBack={() => setSelectedClassId(null)} 
-            students={students || []}
+            students={visibleStudents}
             timetable={timetable || []}
             subjects={subjects || []}
             teachers={teachers || []}
@@ -609,16 +621,16 @@ export default function AcademicsPageContent() {
                 </Card>
               ))}
             </div>
-          ) : classes && classes.length > 0 ? (
+          ) : visibleClasses && visibleClasses.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {classes.map((c) => {
+              {visibleClasses.map((c) => {
                 const classTeacher = teachers?.find(t => t.uid === c.teacherId) || 
                                    (profile && c.teacherId === profile.uid ? profile : null);
                 
-                const classStudents = students?.filter(s => 
+                const classStudents = visibleStudents.filter(s => 
                     s.classId === c.id && 
                     (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
-                ) || [];
+                );
 
                 return (
                   <Card 

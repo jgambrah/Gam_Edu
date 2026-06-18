@@ -93,17 +93,48 @@ export default function ReportCardManager() {
     
     const printRef = useRef<HTMLDivElement>(null);
 
-    const isAdminOrDirector = ['Administrator', 'Director'].includes(role || '');
-    const isTeacher = role === 'Teacher';
+    const isAdminOrDirector = ['administrator', 'director'].includes(role?.toLowerCase() || '');
+    const isTeacher = role?.toLowerCase() === 'teacher';
 
     // Data Fetching
     const classesQuery = useMemoFirebase(() => {
         if(!firestore || !user || !schoolId) return null;
-        let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-        if (role === 'Teacher') q = query(q, where('teacherId', '==', user.uid));
-        return q;
-    }, [firestore, user, role, schoolId]);
-    const { data: classes } = useCollection<any>(classesQuery);
+        return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+    }, [firestore, user, schoolId]);
+    const { data: classes, isLoading: isLoadingClasses } = useCollection<any>(classesQuery);
+
+    const timetableQuery = useMemoFirebase(() => 
+      (firestore && schoolId && role?.toLowerCase() === 'teacher')
+        ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
+        : null, 
+    [firestore, schoolId, role]);
+    const { data: timetable } = useCollection<any>(timetableQuery);
+
+    const visibleClasses = useMemo(() => {
+        if (!classes) return [];
+        if (role?.toLowerCase() !== 'teacher') return classes;
+        const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
+        return classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
+    }, [classes, timetable, role, user?.uid]);
+
+    // Class access guard
+    useEffect(() => {
+        if (classId && !isLoadingClasses) {
+            if (role?.toLowerCase() === 'teacher') {
+                const isAuthorized = visibleClasses.some((c: any) => c.id === classId);
+                if (!isAuthorized) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Access Restricted',
+                        description: 'You do not have access to this class report cards.'
+                    });
+                    setClassId(visibleClasses[0]?.id || '');
+                    setSelectedStudentId(null);
+                    setProcessedReport(null);
+                }
+            }
+        }
+    }, [classId, role, visibleClasses, isLoadingClasses, toast]);
 
     const { data: students } = useCollection<any>(useMemoFirebase(() => 
         (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, 
@@ -325,6 +356,8 @@ export default function ReportCardManager() {
             setProcessedReport({
                 student: targetStudent,
                 studentId: selectedStudentId,
+                schoolId,
+                classId,
                 rows: reportRows,
                 overallAverage: subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0,
                 classPosition,
@@ -370,6 +403,7 @@ export default function ReportCardManager() {
             const finalData = {
                 ...processedReport,
                 schoolId, 
+                classId,
                 status: 'Draft', 
                 classTeacherComment, 
                 headmasterComment,
@@ -379,6 +413,7 @@ export default function ReportCardManager() {
             
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
+            setProcessedReport(finalData);
             toast({ title: "Draft Report Saved" });
 
             await logAuditEvent({
@@ -405,6 +440,8 @@ export default function ReportCardManager() {
 
             const finalData = {
                 ...processedReport,
+                schoolId,
+                classId,
                 status: 'Published', 
                 publishedAt: serverTimestamp(),
                 classTeacherComment, 
@@ -417,7 +454,7 @@ export default function ReportCardManager() {
 
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
-            
+            setProcessedReport(finalData);
             toast({ title: "Report Card Signed & Published! 🎓", description: "Parents and students can now view the official transcript." });
             
             await logAuditEvent({
@@ -563,15 +600,23 @@ export default function ReportCardManager() {
                 </div>
                 <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-3">
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-2">
                             Report Card Manager
                         </h1>
-                        <p className="text-indigo-200 text-lg max-w-2xl font-light leading-relaxed">
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                            <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-white/10 text-indigo-300 rounded-full border border-white/5">
+                                Resolved Role: {role || 'Loading...'}
+                            </span>
+                            <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-indigo-500/20 text-indigo-200 rounded-full border border-indigo-500/10">
+                                Permission: {isAdminOrDirector ? 'Admin/Director (Sign & Publish Active)' : 'Staff/Teacher (Draft Only)'}
+                            </span>
+                        </div>
+                        <p className="text-indigo-200 text-sm max-w-2xl font-light leading-relaxed">
                             Draft remarks, sign with electronic stamps, and batch publish certified academic terminal reports.
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center gap-3">
-                        {role !== 'Student' && role !== 'Parent' && (
+                        {role?.toLowerCase() !== 'student' && role?.toLowerCase() !== 'parent' && (
                             <CreditBalance />
                         )}
                     </div>
@@ -609,7 +654,7 @@ export default function ReportCardManager() {
                             <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
                                 <SelectValue placeholder="Select Class"/>
                             </SelectTrigger>
-                            <SelectContent>{classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                            <SelectContent>{visibleClasses?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
@@ -651,7 +696,7 @@ export default function ReportCardManager() {
                                 <AlertDialogTrigger asChild>
                                     <Button 
                                         disabled={classSummary.drafts.length === 0 || isBulkPublishing} 
-                                        className="bg-emerald-650 hover:bg-emerald-750 font-bold rounded-xl text-white shadow h-10 px-6 text-xs"
+                                        className="bg-emerald-600 hover:bg-emerald-700 font-bold rounded-xl text-white shadow h-10 px-6 text-xs"
                                     >
                                         {isBulkPublishing ? (
                                             <Loader2 className="animate-spin mr-2 h-4 w-4" />
@@ -837,7 +882,7 @@ export default function ReportCardManager() {
                             <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary" className="rounded-xl font-bold h-10">{isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>} Download PDF</Button>
                             <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 rounded-xl font-bold h-10 text-white"><Save className="mr-2 h-4 w-4"/> Save Draft</Button>
                             {isAdminOrDirector && (
-                                <Button onClick={handlePublish} disabled={isPublishing} className="bg-emerald-650 hover:bg-emerald-750 font-bold rounded-xl h-10 text-white">
+                                <Button onClick={handlePublish} disabled={isPublishing} className="bg-emerald-600 hover:bg-emerald-700 font-bold rounded-xl h-10 text-white">
                                     {isPublishing ? <Loader2 className="animate-spin h-4 w-4"/> : <ShieldCheck className="mr-2 h-4 w-4"/>} Sign & Publish
                                 </Button>
                             )}

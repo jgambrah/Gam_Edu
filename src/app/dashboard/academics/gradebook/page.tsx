@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
@@ -65,7 +65,38 @@ export default function GradebookPage() {
 
     // Data Fetching
     const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: classes } = useCollection<any>(classesQuery);
+    const { data: classes, isLoading: isLoadingClasses } = useCollection<any>(classesQuery);
+
+    const timetableQuery = useMemoFirebase(() => 
+      (firestore && schoolId && role === 'Teacher')
+        ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
+        : null, 
+    [firestore, schoolId, role]);
+    const { data: timetable } = useCollection<any>(timetableQuery);
+
+    const visibleClasses = useMemo(() => {
+        if (!classes) return [];
+        if (role !== 'Teacher') return classes;
+        const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
+        return classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
+    }, [classes, timetable, role, user?.uid]);
+
+    // Class access guard
+    useEffect(() => {
+        if (classId && !isLoadingClasses) {
+            if (role === 'Teacher') {
+                const isAuthorized = visibleClasses.some((c: any) => c.id === classId);
+                if (!isAuthorized) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Access Restricted',
+                        description: 'You do not have access to this class roster.'
+                    });
+                    setClassId(visibleClasses[0]?.id || '');
+                }
+            }
+        }
+    }, [classId, role, visibleClasses, isLoadingClasses, toast]);
 
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
@@ -284,7 +315,7 @@ export default function GradebookPage() {
                         <Select value={classId} onValueChange={setClassId}>
                             <SelectTrigger className="bg-white border-2"><SelectValue placeholder="Select Class"/></SelectTrigger>
                             <SelectContent>
-                                {classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                {visibleClasses?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>

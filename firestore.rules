@@ -460,6 +460,58 @@ service cloud.firestore {
       allow write: if isAdmin() || isFinanceStaff() || isTransportStaff();
     }
 
+    // Support Staff Collections
+    match /cafeteria_menus/{menuId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Cook';
+    }
+
+    match /kitchen_inventory/{itemId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Cook';
+    }
+
+    match /meal_logs/{logId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Cook';
+    }
+
+    match /cleaning_tasks/{taskId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Cleaner';
+    }
+
+    match /sanitation_logs/{logId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Cleaner';
+    }
+
+    match /cleaning_issues/{issueId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Cleaner';
+    }
+
+    match /visitor_logs/{logId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Security Officer';
+    }
+
+    match /security_incidents/{incidentId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Security Officer';
+    }
+
+    match /gate_logs/{logId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Security Officer';
+    }
+
+    match /vehicle_logs/{logId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || isTransportStaff();
+    }
+
+
     match /admissionApplications/{applicationId} {
       allow read, write, list: if isAdmin() || isSuperAdmin();
       allow create: if true;

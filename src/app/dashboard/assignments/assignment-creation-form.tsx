@@ -52,17 +52,25 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
     () => (firestore && schoolId) ? query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId)) : null,
     [firestore, schoolId]
   );
-  const { data: allSchoolClasses } = useCollection(classesQuery);
+  const { data: allSchoolClasses } = useCollection<any>(classesQuery);
+
+  const timetableQuery = useMemoFirebase(() => 
+    (firestore && schoolId && role === 'Teacher')
+      ? query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId)) 
+      : null, 
+  [firestore, schoolId, role]);
+  const { data: timetable } = useCollection<any>(timetableQuery);
 
   // 2. Filter the classes on the client-side based on the role.
   const classes = useMemo(() => {
     if (!allSchoolClasses) return [];
     if (role === 'Teacher') {
-      return allSchoolClasses.filter(c => c.teacherId === user?.uid);
+      const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
+      return allSchoolClasses.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
     }
     // Admins/Directors see all classes
     return allSchoolClasses;
-  }, [allSchoolClasses, role, user?.uid]);
+  }, [allSchoolClasses, timetable, role, user?.uid]);
 
 
   const form = useForm<z.infer<typeof assignmentSchema>>({

@@ -13,7 +13,7 @@ import { CalendarIcon, Loader2, Utensils, Bus, Check, Search, Clock, X, FileText
 import { cn } from '@/lib/utils';
 import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { type Student, type AttendanceRecord, type Class } from '@/lib/types';
@@ -62,14 +62,24 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const [billingProgress, setBillingProgress] = useState<string | null>(null);
 
     const classesQuery = useMemoFirebase(() => {
-        if (!user || !firestore || !schoolId) return null;
-        let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-        if (role === 'Teacher') {
-          q = query(q, where('teacherId', '==', user.uid));
-        }
-        return q;
-    }, [firestore, user, role, schoolId]);
+        if (!firestore || !schoolId) return null;
+        return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+
+    const timetableQuery = useMemoFirebase(() => 
+      (firestore && schoolId && role === 'Teacher')
+        ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
+        : null, 
+    [firestore, schoolId, role]);
+    const { data: timetable } = useCollection<any>(timetableQuery);
+
+    const visibleClasses = useMemo(() => {
+        if (!classes) return [];
+        if (role !== 'Teacher') return classes;
+        const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
+        return classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
+    }, [classes, timetable, role, user?.uid]);
 
     const form = useForm<AttendanceFormData>({
         resolver: zodResolver(attendanceFormSchema),
@@ -144,8 +154,22 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     }, [selectedClassId, selectedDate, firestore, toast, replace, schoolId]);
 
     useEffect(() => {
-        if (selectedClassId) handleLoadStudents();
-    }, [selectedClassId, selectedDate, handleLoadStudents]);
+        if (selectedClassId && !isLoadingClasses) {
+            if (role === 'Teacher') {
+                const isAuthorized = visibleClasses.some((c: any) => c.id === selectedClassId);
+                if (!isAuthorized) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Access Restricted',
+                        description: 'You do not have access to this class roster.'
+                    });
+                    setSelectedClassId(visibleClasses[0]?.id || '');
+                    return;
+                }
+            }
+            handleLoadStudents();
+        }
+    }, [selectedClassId, selectedDate, handleLoadStudents, role, visibleClasses, isLoadingClasses, toast]);
     
     async function onSubmit(data: AttendanceFormData) {
         if (!firestore || !schoolId) {
@@ -295,7 +319,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                     <SelectValue placeholder="Select a class" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-150">
-                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                    {visibleClasses?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>

@@ -81,15 +81,25 @@ export function PaymentReceipt({
 
   return (
     <div 
-        className="bg-white text-black font-sans flex flex-col"
+        className="bg-white text-black font-sans flex flex-col relative overflow-hidden"
         style={{ width: '148mm', minHeight: '210mm', position: 'relative' }}
     >
+      {/* Decorative top border */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-indigo-650 to-emerald-500" />
+
+      {/* Official background watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none opacity-[0.02] z-0">
+          <span className="text-6xl font-black uppercase tracking-[0.2em] rotate-[25deg] select-none text-emerald-700">
+              OFFICIAL RECEIPT PAID
+          </span>
+      </div>
+
       <header 
-        className="flex items-center justify-between px-8 py-8 mb-6"
+        className="flex items-center justify-between px-8 py-8 mb-6 relative z-10"
         style={{ backgroundColor: primaryTheme, color: '#ffffff' }}
       >
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-white rounded-xl p-2 flex items-center justify-center">
+          <div className="w-14 h-14 bg-white rounded-xl p-2 flex items-center justify-center shadow-md border border-white/20">
             {schoolProfile?.logoBase64 ? (
               <img 
                 src={schoolProfile.logoBase64} 
@@ -101,69 +111,69 @@ export function PaymentReceipt({
             )}
           </div>
           <div>
-            <h1 className="text-lg font-black uppercase tracking-tight leading-none text-white">
+            <h1 className="text-lg font-black uppercase tracking-tight leading-none text-white mb-0.5">
               {schoolProfile?.name || 'School Name'}
             </h1>
             
-            <div className="mt-1 space-y-0.5">
+            <div className="mt-1 space-y-0.5 opacity-90 text-white/80">
                 {schoolProfile?.motto && (
-                    <p className="text-[10px] italic font-medium opacity-90">"{schoolProfile.motto}"</p>
+                    <p className="text-[9px] italic font-medium">"{schoolProfile.motto}"</p>
                 )}
                 {schoolProfile?.address && (
-                    <p className="text-[9px] font-medium">{schoolProfile.address}</p>
+                    <p className="text-[8px] font-bold uppercase tracking-wider">{schoolProfile.address}</p>
                 )}
                 {(schoolProfile?.phone || schoolProfile?.email) && (
-                    <p className="text-[9px] font-medium">
-                        {schoolProfile?.phone || ""} {schoolProfile?.phone && schoolProfile?.email ? " | " : ""} {schoolProfile?.email || ""}
+                    <p className="text-[8px] font-bold uppercase tracking-wider">
+                        {schoolProfile?.phone || ""} {schoolProfile?.phone && schoolProfile?.email ? " • " : ""} {schoolProfile?.email || ""}
                     </p>
                 )}
             </div>
           </div>
         </div>
         <div className="text-right">
-          <h2 className="text-2xl font-black uppercase tracking-widest opacity-40">Receipt</h2>
-          <p className="text-[9px] font-mono font-bold mt-1 uppercase opacity-60">
-            #{payment.id}
+          <h2 className="text-2xl font-black uppercase tracking-widest opacity-25 text-white">Receipt</h2>
+          <p className="text-[8px] font-mono font-black mt-1 uppercase opacity-60 text-white/80">
+            #{payment.id.slice(0, 16)}
           </p>
         </div>
       </header>
       
-      <div className="px-8 pb-8 flex-1">
-        <section className="grid grid-cols-2 gap-8 my-6 text-xs">
+      <div className="px-8 pb-8 flex-1 relative z-10">
+        <section className="grid grid-cols-2 gap-8 my-6 text-xs bg-slate-50/50 p-4 rounded-2xl border border-slate-100/80">
           <div>
-            <h3 className="text-[10px] uppercase font-black text-slate-400 mb-1 tracking-widest">Billed To</h3>
-            <p className="font-black text-sm uppercase">{student?.firstName} {student?.lastName}</p>
-            <p className="text-slate-500 font-mono font-bold">{student ? formatStudentId(student) : ''}</p>
+            <h3 className="text-[8px] uppercase font-black text-slate-400 mb-1 tracking-widest">Billed To</h3>
+            <p className="font-black text-sm uppercase text-slate-800">{student?.firstName} {student?.lastName}</p>
+            <p className="text-slate-500 font-mono font-bold text-[10px] mt-0.5">{student ? formatStudentId(student) : ''}</p>
           </div>
           <div className="text-right">
-            <h3 className="text-[10px] uppercase font-black text-slate-400 mb-1 tracking-widest">Payment Details</h3>
-            <p className="font-bold text-slate-600"><span className="opacity-50">Date:</span> {paymentDate}</p>
-            <p className="font-bold text-slate-600"><span className="opacity-50">Method:</span> {payment.method}</p>
-            {payment.notes && <p className="font-bold text-slate-600"><span className="opacity-50">Ref:</span> {payment.notes}</p>}
+            <h3 className="text-[8px] uppercase font-black text-slate-400 mb-1 tracking-widest">Payment Details</h3>
+            <p className="font-bold text-slate-700"><span className="opacity-50">Date:</span> {paymentDate}</p>
+            <p className="font-bold text-slate-700"><span className="opacity-50">Method:</span> {payment.method}</p>
+            {payment.notes && <p className="font-bold text-slate-700"><span className="opacity-50">Ref:</span> {payment.notes}</p>}
           </div>
         </section>
 
         <section className="mt-8">
             <h3 
-                className="text-[11px] font-black uppercase tracking-[0.2em] mb-4 pb-1 border-b-2"
+                className="text-[9px] font-black uppercase tracking-[0.2em] mb-4 pb-1 border-b-2"
                 style={{ color: primaryTheme, borderBottomColor: secondaryTheme }}
             >
                 Financial Breakdown
             </h3>
-            <table className="w-full text-xs border-2 rounded-xl overflow-hidden" style={{ borderColor: secondaryTheme }}>
+            <table className="w-full text-xs border rounded-xl overflow-hidden shadow-sm" style={{ border: `1px solid ${secondaryTheme}20` }}>
                 <thead style={{ backgroundColor: secondaryTheme, color: 'white' }}>
-                    <tr className="border-b" style={{ borderBottomColor: secondaryTheme }}>
-                        <th className="text-left p-3 font-black uppercase tracking-widest">Description</th>
-                        <th className="text-right p-3 font-black uppercase tracking-widest">Amount Paid</th>
+                    <tr className="border-b" style={{ borderBottomColor: `${secondaryTheme}10` }}>
+                        <th className="text-left p-3 font-black uppercase tracking-widest text-[9px]">Description</th>
+                        <th className="text-right p-3 font-black uppercase tracking-widest text-[9px]">Amount Paid</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr className="bg-white">
-                        <td className="p-3 border-r" style={{ borderRightColor: `${secondaryTheme}20` }}>
+                        <td className="p-3 border-r" style={{ borderRightColor: `${secondaryTheme}10` }}>
                             <p className="font-bold text-slate-800">{transaction.description}</p>
-                            <p className="text-[9px] text-slate-400 font-black uppercase mt-0.5">FEE TYPE: {transaction.type}</p>
+                            <p className="text-[9px] text-indigo-500 font-black uppercase mt-1">FEE TYPE: {transaction.type}</p>
                         </td>
-                        <td className="text-right p-3 font-black text-sm" style={{ color: primaryTheme }}>
+                        <td className="text-right p-3 font-black text-slate-800 font-mono" style={{ color: primaryTheme }}>
                             GH₵ {amountPaid.toFixed(2)}
                         </td>
                     </tr>
@@ -174,11 +184,11 @@ export function PaymentReceipt({
         <section className="flex justify-end mt-8">
             <div className="w-2/3 space-y-2">
                 <div 
-                    className="flex justify-between items-center py-4 px-5 text-white rounded-2xl shadow-xl"
+                    className="flex justify-between items-center py-4 px-5 text-white rounded-2xl shadow-lg border border-black/10"
                     style={{ backgroundColor: primaryTheme }}
                 >
-                    <span className="font-black uppercase tracking-tighter text-xs">Total Outstanding Ledger</span>
-                    <span className="font-black text-lg font-mono">GH₵ {totalBalance.toFixed(2)}</span>
+                    <span className="font-black uppercase tracking-wide text-[10px]">Total Outstanding Ledger</span>
+                    <span className="font-black text-base font-mono">GH₵ {totalBalance.toFixed(2)}</span>
                 </div>
                 
                 <p className="text-[8px] text-slate-400 font-bold italic text-right pt-2 uppercase">
@@ -188,14 +198,22 @@ export function PaymentReceipt({
         </section>
       </div>
 
-      <footer className="px-8 pb-8 text-xs mt-auto">
+      <footer className="px-8 pb-8 text-xs mt-auto relative z-10">
         <div className="flex justify-between items-end">
-            <div className="text-center w-1/3">
-                <div className="border-b-2 border-dashed border-slate-300 mb-1 w-full"></div>
-                <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Bursar's Signature</p>
+            <div className="text-center w-1/3 space-y-1.5">
+                {/* SVG stamp seal marking it as PAID */}
+                <div className="relative flex items-center justify-center w-16 h-16 mx-auto rotate-[-12deg] opacity-75 border-2 border-dashed border-emerald-500 rounded-full p-1">
+                    <div className="flex flex-col items-center justify-center border border-emerald-500 rounded-full w-full h-full text-emerald-500">
+                        <span className="text-[5px] font-black uppercase tracking-widest">OFFICIAL</span>
+                        <span className="text-[11px] font-black uppercase italic my-0.5">PAID</span>
+                        <span className="text-[4px] font-black uppercase tracking-wider">{paymentDate.slice(0, 11)}</span>
+                    </div>
+                </div>
+                <div className="border-b-2 border-dashed border-slate-300 w-full"></div>
+                <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Bursar's Signature</p>
             </div>
              <div className="text-right opacity-30">
-                <p className="text-[8px] font-black uppercase tracking-widest text-slate-500">GAM-EDU SECURE RECEIPT</p>
+                <p className="text-[7px] font-black uppercase tracking-widest text-slate-400">GAM-EDU SECURE RECEIPT</p>
              </div>
         </div>
       </footer>

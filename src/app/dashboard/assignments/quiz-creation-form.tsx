@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { collection, query, serverTimestamp, where, addDoc } from 'firebase/firestore';
 import { quizSchema } from '@/lib/types';
 import { Loader2, Wand2 } from 'lucide-react';
@@ -34,10 +34,23 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const classesQuery = useMemoFirebase(
-    () => (user && schoolId && firestore) ? query(collection(firestore!, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
-    [firestore, user, schoolId]
+    () => (firestore && schoolId) ? query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
   );
-  const { data: classes } = useCollection<Class>(classesQuery);
+  const { data: allSchoolClasses } = useCollection<Class>(classesQuery);
+
+  const timetableQuery = useMemoFirebase(() => 
+    (firestore && schoolId)
+      ? query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId)) 
+      : null, 
+    [firestore, schoolId]);
+  const { data: timetable } = useCollection<any>(timetableQuery);
+
+  const classes = useMemo(() => {
+    if (!allSchoolClasses) return [];
+    const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
+    return allSchoolClasses.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
+  }, [allSchoolClasses, timetable, user?.uid]);
 
   const form = useForm<z.infer<typeof quizSchema>>({
     resolver: zodResolver(quizSchema),

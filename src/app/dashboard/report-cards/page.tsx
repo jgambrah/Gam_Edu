@@ -18,11 +18,11 @@ function ReportCardsPageContent() {
     );
   }
 
-  if (role === 'Student' || role === 'Parent') {
+  if (role?.toLowerCase() === 'student' || role?.toLowerCase() === 'parent') {
     return <StudentParentReportCardView />;
   }
 
-  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+  const isStaff = ['teacher', 'administrator', 'director'].includes(role?.toLowerCase() || '');
 
   if (!isStaff) {
     return (
