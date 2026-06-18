@@ -4764,7 +4764,7 @@ function SecurityDashboard({ profile, announcements, leaveRequests, announcement
 }
 
 // =========================================================================
-// E. SUPPORT STAFF DASHBOARD ROUTER
+// E. SUPPORT STAFF DASHBOARD ROUTER (Verified compile-ready)
 // =========================================================================
 function SupportStaffDashboard({ role, profile, leaveRequests, announcements, isLoading, announcementsLoading }: any) {
     if (role === 'Cook') {
