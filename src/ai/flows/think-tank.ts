@@ -98,3 +98,25 @@ export async function generateDebateTopic(input: { targetGroup: string; schoolId
     throw new Error(e.message || "Failed to generate debate topic.");
   }
 }
+
+export async function generateTriviaQuiz(input: { targetGroup: string; category: string; schoolId: string }) {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+    if (!creditResult.success) {
+        throw new Error(creditResult.error || "Insufficient AI credits.");
+    }
+    const schema = z.object({
+        questions: z.array(z.object({
+            question: z.string(),
+            options: z.array(z.string()),
+            correctAnswer: z.string(),
+            explanation: z.string(),
+        }))
+    });
+
+    const output = await callAi(
+        `Generate a 5-question multiple choice trivia quiz. Target level: ${input.targetGroup}. Category: ${input.category}. Each question must have exactly 4 choices. Return the list of questions. Output strictly JSON.`,
+        schema
+    );
+    return output;
+}
+

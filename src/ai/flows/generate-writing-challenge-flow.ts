@@ -33,7 +33,21 @@ Challenge Type: {{{challengeType}}}
 Based on the above, generate a suitable title and a detailed, creative prompt for the students to respond to. Ensure the prompt is clear and appropriate for the challenge type.`,
 });
 
-export async function generateWritingChallenge(input: GenerateWritingChallengeInput): Promise<GenerateWritingChallengeOutput> {
-  const { output } = await generateWritingChallengePrompt(input, { model: 'googleai/gemini-3-flash-preview' });
-  return output!;
+import { checkAndSpendCredits } from '@/app/actions/credits';
+
+export async function generateWritingChallenge(
+  input: GenerateWritingChallengeInput & { schoolId: string }
+): Promise<{ success: boolean; data?: GenerateWritingChallengeOutput; error?: string }> {
+  try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 5);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Not enough AI credits to generate writing challenge." };
+    }
+    const { schoolId, ...promptInput } = input;
+    const { output } = await generateWritingChallengePrompt(promptInput, { model: 'googleai/gemini-3-flash-preview' });
+    return { success: true, data: output! };
+  } catch (error: any) {
+    console.error("Writing challenge generation error:", error);
+    return { success: false, error: error.message || "Failed to generate writing challenge." };
+  }
 }

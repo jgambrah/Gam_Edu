@@ -76,50 +76,83 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
         setOpen(false);
     };
 
-    // Helper utility for classnames
-    function cn(...classes: (string | undefined | null | false)[]) {
-        return classes.filter(Boolean).join(' ');
-    }
-
     return (
         <Dialog open={open} onOpenChange={handleReset}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] bg-slate-950 border border-slate-800 text-slate-100 shadow-2xl rounded-2xl">
                 <DialogHeader>
-                    <DialogTitle>{drill.topic} Practice</DialogTitle>
-                    <DialogDescription>Read the prompt and select the correct answer.</DialogDescription>
+                    <DialogTitle className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                        <span>✨</span> {drill.topic} Practice
+                    </DialogTitle>
+                    <DialogDescription className="text-slate-400">
+                        Read the prompt and select the correct answer.
+                    </DialogDescription>
                 </DialogHeader>
                 
                 <div className="py-4 space-y-4">
-                    <div className="bg-muted p-4 rounded-md text-lg font-medium">
+                    <div className="bg-slate-900 border border-slate-800/80 p-4 rounded-xl text-lg font-medium text-slate-200 shadow-inner">
                         {drill.question_prompt}
                     </div>
 
-                    <RadioGroup value={selectedOption} onValueChange={setSelectedOption} disabled={isSubmitted}>
-                        {drill.options?.map((option, idx) => (
-                            <div key={idx} className={cn("flex items-center space-x-2 border p-3 rounded-md transition-colors", 
-                                isSubmitted && option === drill.correct_answer ? "border-green-500 bg-green-50" : "",
-                                isSubmitted && option === selectedOption && !isCorrect ? "border-red-500 bg-red-50" : ""
-                            )}>
-                                <RadioGroupItem value={option} id={`opt-${idx}`} />
-                                <Label htmlFor={`opt-${idx}`} className="flex-grow cursor-pointer">{option}</Label>
-                                {isSubmitted && option === drill.correct_answer && <CheckCircle2 className="h-5 w-5 text-green-600" />}
-                                {isSubmitted && option === selectedOption && !isCorrect && <XCircle className="h-5 w-5 text-red-600" />}
-                            </div>
-                        ))}
+                    <RadioGroup value={selectedOption} onValueChange={setSelectedOption} disabled={isSubmitted} className="space-y-2">
+                        {drill.options?.map((option, idx) => {
+                            const isCorrectAnswer = option === drill.correct_answer;
+                            const isUserSelection = option === selectedOption;
+                            
+                            let optionClass = "flex items-center space-x-3 border p-3.5 rounded-xl transition-all duration-200 cursor-pointer ";
+                            if (isSubmitted) {
+                                if (isCorrectAnswer) {
+                                    optionClass += "border-emerald-500/50 bg-emerald-950/20 text-emerald-200";
+                                } else if (isUserSelection && !isCorrect) {
+                                    optionClass += "border-rose-500/50 bg-rose-950/20 text-rose-200";
+                                } else {
+                                    optionClass += "border-slate-850 bg-slate-900/20 text-slate-500 opacity-60";
+                                }
+                            } else {
+                                if (isUserSelection) {
+                                    optionClass += "border-indigo-500 bg-indigo-500/10 text-white shadow-[0_0_12px_rgba(99,102,241,0.15)]";
+                                } else {
+                                    optionClass += "border-slate-800 bg-slate-900/40 text-slate-300 hover:border-slate-700/80 hover:bg-slate-900/60";
+                                }
+                            }
+
+                            return (
+                                <label key={idx} className={optionClass}>
+                                    <RadioGroupItem value={option} id={`opt-${idx}`} className="text-indigo-500 focus:ring-indigo-500 border-slate-700 bg-slate-900" />
+                                    <span className="flex-grow text-sm font-medium cursor-pointer">{option}</span>
+                                    {isSubmitted && isCorrectAnswer && <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />}
+                                    {isSubmitted && isUserSelection && !isCorrect && <XCircle className="h-5 w-5 text-rose-400 shrink-0" />}
+                                </label>
+                            );
+                        })}
                     </RadioGroup>
 
                     {isSubmitted && (
-                        <div className={cn("p-4 rounded-md text-center font-bold", isCorrect ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800")}>
-                            {isCorrect ? "Correct! Great job." : `Incorrect. The correct answer was: ${drill.correct_answer}`}
+                        <div className={`p-4 rounded-xl text-center text-sm font-semibold border ${
+                            isCorrect 
+                                ? "bg-emerald-950/30 border-emerald-800/50 text-emerald-300 shadow-sm" 
+                                : "bg-rose-950/30 border-rose-800/50 text-rose-300 shadow-sm"
+                        }`}>
+                            {isCorrect ? "🎉 Correct! Great job." : `❌ Incorrect. The correct answer is: ${drill.correct_answer}`}
                         </div>
                     )}
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="gap-2 sm:gap-0">
                     {!isSubmitted ? (
-                        <Button onClick={handleSubmit} disabled={!selectedOption}>Check Answer</Button>
+                        <Button 
+                            onClick={handleSubmit} 
+                            disabled={!selectedOption}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-lg shadow-indigo-500/20 rounded-xl px-5 py-2 transition-all w-full sm:w-auto"
+                        >
+                            Check Answer
+                        </Button>
                     ) : (
-                        <Button onClick={handleReset}>Close & Continue</Button>
+                        <Button 
+                            onClick={handleReset}
+                            className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/50 rounded-xl px-5 py-2 transition-all w-full sm:w-auto"
+                        >
+                            Close & Continue
+                        </Button>
                     )}
                 </DialogFooter>
             </DialogContent>
@@ -191,67 +224,75 @@ export function GrammarPractice() {
 
   return (
     <>
-        <Card>
-        <CardHeader>
-            <CardTitle>Grammar & Mechanics Practice</CardTitle>
-            <CardDescription>Select a topic and a question to test your skills.</CardDescription>
-        </CardHeader>
-        <CardContent>
-            {isLoading ? (
-            <div className="flex flex-col space-y-4">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <div className="flex justify-center text-muted-foreground text-sm gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" /> Loading drills...
-                </div>
-            </div>
-            ) : (!isStaff && !studentClassId) ? (
-            <div className="text-center py-8">
-                <p className="text-muted-foreground">You are not assigned to a class.</p>
-            </div>
-            ) : drills && drills.length > 0 ? (
-                <div className="space-y-6 max-w-xl mx-auto py-4">
-                    
-                    <div className="space-y-2">
-                        <Label>1. Choose a Topic</Label>
-                        <Select value={selectedTopic} onValueChange={(val) => { setSelectedTopic(val); setSelectedDrillId(''); }}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select Grammar Topic" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {uniqueTopics.map(topic => (
-                                    <SelectItem key={topic} value={topic}>{topic}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+        <Card className="border border-slate-800/80 bg-slate-900/40 backdrop-blur-md text-white rounded-3xl shadow-2xl relative overflow-hidden">
+            <CardHeader>
+                <CardTitle className="text-2xl font-black text-white flex items-center gap-2">
+                    🎯 Grammar & Mechanics Practice
+                </CardTitle>
+                <CardDescription className="text-slate-400">
+                    Select a topic and a question to test your skills.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? (
+                    <div className="flex flex-col space-y-4 max-w-xl mx-auto">
+                        <Skeleton className="h-12 w-full bg-slate-800/60 animate-pulse rounded-xl" />
+                        <Skeleton className="h-12 w-full bg-slate-800/60 animate-pulse rounded-xl" />
+                        <div className="flex justify-center text-slate-400 text-sm gap-2 py-4">
+                            <Loader2 className="h-4 w-4 animate-spin text-indigo-400" /> Loading grammar drills...
+                        </div>
                     </div>
-
-                    <div className="space-y-2">
-                        <Label>2. Choose a Question</Label>
-                        <Select value={selectedDrillId} onValueChange={setSelectedDrillId} disabled={!selectedTopic}>
-                            <SelectTrigger>
-                                <SelectValue placeholder={!selectedTopic ? "Select a topic first" : "Select a specific question"} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {filteredDrills.map((drill, index) => (
-                                    <SelectItem key={drill.id} value={drill.id}>
-                                        Q{index + 1}: {drill.question_prompt.substring(0, 50)}{drill.question_prompt.length > 50 ? "..." : ""}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                ) : (!isStaff && !studentClassId) ? (
+                    <div className="text-center py-12">
+                        <p className="text-slate-400">You are not assigned to a class.</p>
                     </div>
+                ) : drills && drills.length > 0 ? (
+                    <div className="space-y-6 max-w-xl mx-auto py-4">
+                        
+                        <div className="space-y-2">
+                            <Label className="text-sm font-semibold text-slate-300 ml-1">1. Choose a Topic</Label>
+                            <Select value={selectedTopic} onValueChange={(val) => { setSelectedTopic(val); setSelectedDrillId(''); }}>
+                                <SelectTrigger className="bg-slate-950/80 border-slate-800 text-slate-100 placeholder:text-slate-500 focus:ring-indigo-500 rounded-xl h-12">
+                                    <SelectValue placeholder="Select Grammar Topic" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
+                                    {uniqueTopics.map(topic => (
+                                        <SelectItem key={topic} value={topic} className="focus:bg-indigo-600 focus:text-white">{topic}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                    <Button className="w-full" size="lg" onClick={handleStart} disabled={!selectedDrillId}>
-                        Start Practice Drill
-                    </Button>
-                </div>
-            ) : (
-            <p className="text-center text-muted-foreground py-10">
-                {isStaff ? "No grammar drills found." : "No grammar drills found for your class."}
-            </p>
-            )}
-        </CardContent>
+                        <div className="space-y-2">
+                            <Label className="text-sm font-semibold text-slate-300 ml-1">2. Choose a Question</Label>
+                            <Select value={selectedDrillId} onValueChange={setSelectedDrillId} disabled={!selectedTopic}>
+                                <SelectTrigger className="bg-slate-950/80 border-slate-800 text-slate-100 placeholder:text-slate-500 focus:ring-indigo-500 rounded-xl h-12">
+                                    <SelectValue placeholder={!selectedTopic ? "Select a topic first" : "Select a specific question"} />
+                                </SelectTrigger>
+                                <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
+                                    {filteredDrills.map((drill, index) => (
+                                        <SelectItem key={drill.id} value={drill.id} className="focus:bg-indigo-600 focus:text-white">
+                                            Q{index + 1}: {drill.question_prompt.substring(0, 60)}{drill.question_prompt.length > 60 ? "..." : ""}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <Button 
+                            className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-bold py-6 rounded-xl transition-all duration-300 shadow-lg shadow-indigo-500/25 h-12 flex items-center justify-center gap-2" 
+                            onClick={handleStart} 
+                            disabled={!selectedDrillId}
+                        >
+                            🚀 Start Practice Drill
+                        </Button>
+                    </div>
+                ) : (
+                    <p className="text-center text-slate-400 py-12">
+                        {isStaff ? "No grammar drills found. Please add drills via the Manage Problems tab." : "No grammar drills found for your class."}
+                    </p>
+                )}
+            </CardContent>
         </Card>
 
         <ActiveDrillDialog 

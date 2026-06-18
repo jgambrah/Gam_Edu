@@ -1,27 +1,26 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { logAuditEvent } from '@/lib/audit';
-import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, orderBy, updateDoc, Timestamp, writeBatch } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, updateDoc, Timestamp, writeBatch } from 'firebase/firestore';
 import { format, parseISO, startOfDay, endOfDay } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Calendar as CalendarIcon, Eye, Save, Send, ShieldCheck, Lock, AlertCircle, PenTool, Sparkles } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Eye, Save, ShieldCheck, AlertCircle, PenTool, Sparkles, BookOpen, User, ChevronRight, FileText } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { cn, getGradeFromScale } from '@/lib/utils';
+import { getGradeFromScale } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -36,8 +35,7 @@ import {
 import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
 import { generateReportCommentAction } from '@/app/actions/report-ai';
-
-// --- HELPERS ---
+import CreditBalance from '@/components/CreditBalance';
 
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
@@ -185,7 +183,7 @@ export default function ReportCardManager() {
         if (!firestore || !schoolId || !classId || !selectedStudentId || !schoolProfile) return;
         
         if (areDatesMissing) {
-            toast({ variant: 'destructive', title: "Incomplete Configuration", description: "Term dates are required to calculate attendance." });
+            toast({ variant: 'destructive', title: "Dates Not Configured", description: "Term start and end dates must be set under Settings to calculate attendance." });
             return;
         }
 
@@ -209,7 +207,7 @@ export default function ReportCardManager() {
             const assessmentSnap = await getDocs(qAssessments);
             const allAssessments = assessmentSnap.docs.map(d => d.data());
 
-            // 2. Normalize and Fetch Attendance
+            // 2. Attendance Date Calculation
             const tStartStr = schoolProfile.termStartDate;
             const tEndStr = schoolProfile.termEndDate;
             const tStartDate = typeof tStartStr === 'string' ? parseISO(tStartStr) : tStartStr.toDate();
@@ -226,7 +224,7 @@ export default function ReportCardManager() {
             const attSnap = await getDocs(qAttendance);
             const allAttRecords = attSnap.docs.map(d => d.data());
 
-            // 3. Calculate Attendance Stats
+            // 3. Attendance Ratios
             const uniqueDates = new Set(allAttRecords.map(r => 
                 r.date?.toDate ? r.date.toDate().toDateString() : new Date(r.date).toDateString()
             ));
@@ -237,7 +235,7 @@ export default function ReportCardManager() {
             );
             const studentPresentDays = studentAtt.length;
 
-            // 4. Calculate Academic Stats
+            // 4. Grades Weighting & Position computation
             const studentTotals: Record<string, number> = {};
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
@@ -253,7 +251,6 @@ export default function ReportCardManager() {
                         const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
                         const rawExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight;
                         
-                        // FIX: Round components before adding to total
                         const finalCA = Math.round(rawCA);
                         const finalExam = Math.round(rawExam);
                         total100 = finalCA + finalExam;
@@ -282,7 +279,6 @@ export default function ReportCardManager() {
                 const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
                 const rawExam = exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight;
                 
-                // FIX: Round components before adding to total to prevent addition errors on paper
                 const finalCA = Math.round(rawCA);
                 const finalExam = Math.round(rawExam);
                 const total100 = finalCA + finalExam;
@@ -301,7 +297,7 @@ export default function ReportCardManager() {
                 });
             });
 
-            // 5. Signatures Conversion
+            // 5. Signatures Base64 Conversion
             const selectedClass = classes?.find((c: any) => c.id === classId);
             const classTeacherId = selectedClass?.teacherId;
 
@@ -342,6 +338,7 @@ export default function ReportCardManager() {
                 schoolPhone: schoolProfile?.phone,
                 schoolEmail: schoolProfile?.email,
                 brandColor: schoolProfile?.brandColor || '#1e293b',
+                logoUrl: schoolProfile?.logoUrl || null, // Stored to assist parent view loading
                 nextTermDate: schoolProfile?.nextTermDate || null,
                 logoBase64: logoB64,
                 headmasterSigBase64: headmasterSigB64,
@@ -360,7 +357,7 @@ export default function ReportCardManager() {
 
         } catch (error: any) {
             console.error(error);
-            toast({ variant: 'destructive', title: "Error", description: "Failed to compile report. Ensure assessments and attendance are recorded." });
+            toast({ variant: 'destructive', title: "Compilation Error", description: "Failed to pull marks or dates ledger logs." });
         } finally {
             setIsGenerating(false);
         }
@@ -382,7 +379,7 @@ export default function ReportCardManager() {
             
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
-            toast({ title: "Draft Saved" });
+            toast({ title: "Draft Report Saved" });
 
             await logAuditEvent({
                 firestore: firestore!,
@@ -391,8 +388,9 @@ export default function ReportCardManager() {
                 action: 'SAVE_REPORT_CARD_DRAFT',
                 details: `Saved draft report card for student ${processedReport.student?.firstName || ''} ${processedReport.student?.lastName || ''}`
             });
-        } catch (e) {
-            toast({ variant: 'destructive', title: "Error" });
+        } catch (e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Database Error", description: "Could not write draft to Firestore." });
         } finally {
             setIsSaving(false);
         }
@@ -418,10 +416,9 @@ export default function ReportCardManager() {
             };
 
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
-            
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
             
-            toast({ title: "Report Published!" });
+            toast({ title: "Report Card Signed & Published! 🎓", description: "Parents and students can now view the official transcript." });
             
             await logAuditEvent({
                 firestore: firestore!,
@@ -431,9 +428,10 @@ export default function ReportCardManager() {
                 details: `Published report card for student ${processedReport.student?.firstName || ''} ${processedReport.student?.lastName || ''} (${term}, ${academicYear})`
             });
 
-            await notifyParents([selectedStudentId!], "Report Card Ready 🎓", `Report for ${processedReport.student?.firstName} is now available.`, "/dashboard/my-reports");
-        } catch (e) {
-            toast({ variant: 'destructive', title: "Error" });
+            await notifyParents([selectedStudentId!], "Report Card Ready 🎓", `Terminal report card for ${processedReport.student?.firstName} has been released.`, "/dashboard/my-reports");
+        } catch (e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Publish Error", description: "Database publish transaction failed." });
         } finally {
             setIsPublishing(false);
         }
@@ -465,7 +463,7 @@ export default function ReportCardManager() {
             });
 
             await batch.commit();
-            toast({ title: "Bulk Publish Complete!", description: `Successfully published ${studentIdsToNotify.length} report cards.` });
+            toast({ title: "Bulk Publish Successful! 🎉", description: `Released ${studentIdsToNotify.length} report cards.` });
             
             await logAuditEvent({
                 firestore,
@@ -475,10 +473,9 @@ export default function ReportCardManager() {
                 details: `Bulk published ${studentIdsToNotify.length} report cards for class ${classes?.find(c => c.id === classId)?.name || classId} (${term}, ${academicYear})`
             });
 
-            // Notify parents in background (non-blocking)
             notifyParents(studentIdsToNotify, "Report Card Ready 🎓", "Terminal report cards are now available.", "/dashboard/my-reports")
                 .catch(err => console.error("Bulk notification failed:", err));
-        } catch (e) {
+        } catch (e: any) {
             console.error("Bulk publish error:", e);
             toast({ variant: 'destructive', title: "Bulk Publish Failed" });
         } finally {
@@ -518,10 +515,10 @@ export default function ReportCardManager() {
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
             pdf.save(`${processedReport.student?.firstName}_Report_${term}.pdf`);
-            toast({ title: "Export Complete" });
-        } catch (error) {
+            toast({ title: "PDF Export Complete 📥" });
+        } catch (error: any) {
             console.error(error);
-            toast({ variant: 'destructive', title: "Export Failed" });
+            toast({ variant: 'destructive', title: "PDF Generation Failed" });
         } finally {
             setIsExporting(false);
         }
@@ -545,78 +542,108 @@ export default function ReportCardManager() {
             
             if (res.success && res.text) {
                 setComment(res.text); 
-                toast({ title: "Comment Generated ✨", description: "You can edit the text before publishing." });
+                toast({ title: "AI Draft Remark Generated ✨", description: "Review and edit text comments before saving." });
             } else {
-                toast({ variant: 'destructive', title: "AI Error", description: res.error });
+                toast({ variant: 'destructive', title: "AI Remark Failed", description: res.error });
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            toast({ variant: 'destructive', title: "AI Connection Error", description: e.message || "Failed to generate AI comments." });
         } finally {
             setLoader(false);
         }
     };
 
     return (
-        <div className="p-6 space-y-6 max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">Report Card Manager</h1>
-                    <p className="text-slate-500 font-medium italic">Sign and publish terminal results.</p>
+        <div className="space-y-6 p-6">
+            {/* Premium Gradient Header Banner */}
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-8 md:p-12 shadow-2xl border border-white/10 group">
+                <div className="absolute right-[-40px] bottom-[-40px] opacity-10 text-white transition-transform duration-700 group-hover:scale-110 pointer-events-none">
+                    <FileText className="h-60 w-60 animate-pulse" />
+                </div>
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-3">
+                            Report Card Manager
+                        </h1>
+                        <p className="text-indigo-200 text-lg max-w-2xl font-light leading-relaxed">
+                            Draft remarks, sign with electronic stamps, and batch publish certified academic terminal reports.
+                        </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                        {role !== 'Student' && role !== 'Parent' && (
+                            <CreditBalance />
+                        )}
+                    </div>
                 </div>
             </div>
 
-            <Card className="border-t-4 border-t-indigo-600 shadow-md print:hidden">
-                <CardHeader>
-                    <CardTitle className="text-lg">Filter Student Records</CardTitle>
-                    <CardDescription>Select academic period and student to compile report.</CardDescription>
+            {/* Filter Roster Selection Card */}
+            <Card className="border border-slate-100 shadow-md rounded-[2rem] overflow-hidden bg-white">
+                <CardHeader className="border-b border-slate-50 bg-slate-50/20 p-6">
+                    <CardTitle className="text-lg font-black text-slate-800">Filter Student Records</CardTitle>
+                    <CardDescription className="text-slate-400">Select academic term settings and target student to compile report card.</CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-white">
                     <div className="space-y-2">
-                        <Label>Academic Year</Label>
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Academic Year</Label>
                         <Select value={academicYear} onValueChange={setAcademicYear}>
-                            <SelectTrigger className="bg-white"><SelectValue/></SelectTrigger>
+                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
+                                <SelectValue/>
+                            </SelectTrigger>
                             <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Term</Label>
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Term</Label>
                         <Select value={term} onValueChange={setTerm}>
-                            <SelectTrigger className="bg-white"><SelectValue/></SelectTrigger>
+                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
+                                <SelectValue/>
+                            </SelectTrigger>
                             <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Class</Label>
-                        <Select value={classId} onValueChange={setClassId}>
-                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Class"/></SelectTrigger>
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Class</Label>
+                        <Select value={classId} onValueChange={(val) => { setClassId(val); setSelectedStudentId(null); setProcessedReport(null); }}>
+                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
+                                <SelectValue placeholder="Select Class"/>
+                            </SelectTrigger>
                             <SelectContent>{classes?.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Student</Label>
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Student</Label>
                         <Select value={selectedStudentId || ''} onValueChange={setSelectedStudentId} disabled={!classId}>
-                            <SelectTrigger className="bg-white"><SelectValue placeholder="Choose Student"/></SelectTrigger>
+                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
+                                <SelectValue placeholder="Choose Student"/>
+                            </SelectTrigger>
                             <SelectContent>{activeStudents.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                 </CardContent>
-                <CardFooter className="justify-end bg-slate-50 pt-4 border-t">
-                    <Button onClick={generateReport} disabled={isGenerating || !selectedStudentId} className="bg-indigo-600 hover:bg-indigo-700 px-8 h-12 rounded-xl font-bold">
-                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>} Compile Report
+                <CardFooter className="justify-end bg-slate-50/50 p-4 border-t border-slate-100">
+                    <Button 
+                      onClick={generateReport} 
+                      disabled={isGenerating || !selectedStudentId} 
+                      className="bg-indigo-600 hover:bg-indigo-700 px-8 h-11 rounded-xl font-bold text-white shadow-sm transition-all"
+                    >
+                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>} Compile Transcript
                     </Button>
                 </CardFooter>
             </Card>
 
+            {/* Class Summary widgets */}
             {classId && classSummary && (
-                <Card className="border-t-4 border-t-emerald-600 shadow-md print:hidden">
-                    <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <Card className="border border-emerald-100 shadow-md rounded-[2rem] overflow-hidden bg-white">
+                    <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 border-b border-slate-50">
                         <div>
-                            <CardTitle className="text-lg flex items-center gap-2">
+                            <CardTitle className="text-lg flex items-center gap-2 font-black text-slate-800">
                                 <GraduationCap className="text-emerald-600 h-5 w-5" /> 
-                                Class Status: {classes?.find((c: any) => c.id === classId)?.name || ''}
+                                Class Status Summary: {classes?.find((c: any) => c.id === classId)?.name || ''}
                             </CardTitle>
-                            <CardDescription>
-                                Overview of terminal report cards compilation for this class.
+                            <CardDescription className="text-slate-400">
+                                Overview of terminal report cards draft status for this class.
                             </CardDescription>
                         </div>
                         {isAdminOrDirector && (
@@ -624,7 +651,7 @@ export default function ReportCardManager() {
                                 <AlertDialogTrigger asChild>
                                     <Button 
                                         disabled={classSummary.drafts.length === 0 || isBulkPublishing} 
-                                        className="bg-green-600 hover:bg-green-700 font-bold"
+                                        className="bg-emerald-650 hover:bg-emerald-750 font-bold rounded-xl text-white shadow h-10 px-6 text-xs"
                                     >
                                         {isBulkPublishing ? (
                                             <Loader2 className="animate-spin mr-2 h-4 w-4" />
@@ -634,19 +661,18 @@ export default function ReportCardManager() {
                                         Bulk Publish Drafts ({classSummary.drafts.length})
                                     </Button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent>
+                                <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-6">
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Bulk Publish Report Cards?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This will sign and publish all **{classSummary.drafts.length}** draft report cards for this class. 
-                                            Parents will be notified immediately and will be able to view their children's terminal report cards.
+                                        <AlertDialogTitle className="font-black text-slate-800">Bulk Publish Report Cards?</AlertDialogTitle>
+                                        <AlertDialogDescription className="text-slate-400 text-sm leading-relaxed">
+                                            This will officially sign and publish all **{classSummary.drafts.length}** draft report cards. Parents and students will be notified in-app and can download the files immediately.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogFooter className="gap-2 mt-4">
+                                        <AlertDialogCancel className="rounded-xl border border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
                                         <AlertDialogAction 
                                             onClick={handleBulkPublish} 
-                                            className="bg-green-600 hover:bg-green-700"
+                                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl"
                                         >
                                             Publish All Drafts
                                         </AlertDialogAction>
@@ -655,40 +681,47 @@ export default function ReportCardManager() {
                             </AlertDialog>
                         )}
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6 p-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="p-4 rounded-xl bg-green-50 border border-green-100 flex items-center gap-3">
-                                <CheckCircle className="h-8 w-8 text-green-600" />
+                            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-center gap-3">
+                                <div className="bg-emerald-100 p-2.5 rounded-full text-emerald-700">
+                                    <CheckCircle className="h-5 w-5" />
+                                </div>
                                 <div>
-                                    <p className="text-xs font-semibold text-green-600 uppercase">Published</p>
-                                    <p className="text-2xl font-bold text-slate-800">{classSummary.published.length}</p>
+                                    <p className="text-xs font-black text-emerald-655 uppercase tracking-wider">Published</p>
+                                    <p className="text-2xl font-black text-slate-800 mt-0.5">{classSummary.published.length}</p>
                                 </div>
                             </div>
-                            <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-center gap-3">
-                                <PenTool className="h-8 w-8 text-amber-600" />
+                            <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 flex items-center gap-3">
+                                <div className="bg-amber-100 p-2.5 rounded-full text-amber-700">
+                                    <PenTool className="h-5 w-5" />
+                                </div>
                                 <div>
-                                    <p className="text-xs font-semibold text-amber-600 uppercase">Drafts Ready</p>
-                                    <p className="text-2xl font-bold text-slate-800">{classSummary.drafts.length}</p>
+                                    <p className="text-xs font-black text-amber-655 uppercase tracking-wider">Drafts Ready</p>
+                                    <p className="text-2xl font-black text-slate-800 mt-0.5">{classSummary.drafts.length}</p>
                                 </div>
                             </div>
-                            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
-                                <AlertCircle className="h-8 w-8 text-slate-400" />
+                            <div className="p-4 rounded-2xl bg-slate-50/60 border border-slate-100 flex items-center gap-3">
+                                <div className="bg-slate-100 p-2.5 rounded-full text-slate-500">
+                                    <AlertCircle className="h-5 w-5" />
+                                </div>
                                 <div>
-                                    <p className="text-xs font-semibold text-slate-500 uppercase">Not Compiled</p>
-                                    <p className="text-2xl font-bold text-slate-800">{classSummary.missing.length}</p>
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider">Not Compiled</p>
+                                    <p className="text-2xl font-black text-slate-800 mt-0.5">{classSummary.missing.length}</p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* List breakdown */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 border-t">
+                        {/* List breakdown scrollables */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-100">
                             <div>
-                                <h4 className="text-xs font-bold text-green-700 mb-2 uppercase tracking-wide">Published ({classSummary.published.length})</h4>
-                                <ScrollArea className="h-32 border rounded-lg p-2 bg-white">
+                                <h4 className="text-xs font-black text-emerald-700 mb-2 uppercase tracking-widest">Published ({classSummary.published.length})</h4>
+                                <ScrollArea className="h-36 border border-slate-100 rounded-xl p-3 bg-white shadow-inner">
                                     {classSummary.published.length > 0 ? (
                                         classSummary.published.map(({ student }: any) => (
-                                            <div key={student.uid} className="text-xs py-1 border-b last:border-0 font-medium text-slate-700">
-                                                ✅ {student.firstName} {student.lastName}
+                                            <div key={student.uid} className="text-xs py-2 border-b border-slate-50 last:border-0 font-semibold text-slate-700 flex items-center gap-2">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                                {student.firstName} {student.lastName}
                                             </div>
                                         ))
                                     ) : (
@@ -697,16 +730,16 @@ export default function ReportCardManager() {
                                 </ScrollArea>
                             </div>
                             <div>
-                                <h4 className="text-xs font-bold text-amber-700 mb-2 uppercase tracking-wide">Drafts Ready ({classSummary.drafts.length})</h4>
-                                <ScrollArea className="h-32 border rounded-lg p-2 bg-white">
+                                <h4 className="text-xs font-black text-amber-700 mb-2 uppercase tracking-widest">Drafts Ready ({classSummary.drafts.length})</h4>
+                                <ScrollArea className="h-36 border border-slate-100 rounded-xl p-3 bg-white shadow-inner">
                                     {classSummary.drafts.length > 0 ? (
                                         classSummary.drafts.map(({ student }: any) => (
-                                            <div key={student.uid} className="text-xs py-1 border-b last:border-0 font-medium text-slate-700 flex justify-between items-center">
-                                                <span>📝 {student.firstName} {student.lastName}</span>
+                                            <div key={student.uid} className="text-xs py-1.5 border-b border-slate-50 last:border-0 font-semibold text-slate-700 flex justify-between items-center">
+                                                <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-amber-450 animate-pulse"></span> {student.firstName} {student.lastName}</span>
                                                 <Button 
                                                     variant="ghost" 
                                                     size="sm" 
-                                                    className="h-5 text-[10px] text-indigo-600 font-bold hover:text-indigo-800 px-1"
+                                                    className="h-6 text-[10px] text-indigo-600 font-bold hover:text-indigo-800 hover:bg-indigo-50 px-2 rounded-lg"
                                                     onClick={() => setSelectedStudentId(student.uid)}
                                                 >
                                                     View
@@ -719,16 +752,16 @@ export default function ReportCardManager() {
                                 </ScrollArea>
                             </div>
                             <div>
-                                <h4 className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Not Compiled ({classSummary.missing.length})</h4>
-                                <ScrollArea className="h-32 border rounded-lg p-2 bg-white">
+                                <h4 className="text-xs font-black text-slate-500 mb-2 uppercase tracking-widest">Not Compiled ({classSummary.missing.length})</h4>
+                                <ScrollArea className="h-36 border border-slate-100 rounded-xl p-3 bg-white shadow-inner">
                                     {classSummary.missing.length > 0 ? (
                                         classSummary.missing.map((student: any) => (
-                                            <div key={student.uid} className="text-xs py-1 border-b last:border-0 font-medium text-slate-700 flex justify-between items-center">
-                                                <span>⚠️ {student.firstName} {student.lastName}</span>
+                                            <div key={student.uid} className="text-xs py-1.5 border-b border-slate-50 last:border-0 font-semibold text-slate-700 flex justify-between items-center">
+                                                <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-slate-300"></span> {student.firstName} {student.lastName}</span>
                                                 <Button 
                                                     variant="ghost" 
                                                     size="sm" 
-                                                    className="h-5 text-[10px] text-indigo-600 font-bold hover:text-indigo-800 px-1"
+                                                    className="h-6 text-[10px] text-indigo-650 font-bold hover:text-indigo-800 hover:bg-indigo-50 px-2 rounded-lg"
                                                     onClick={() => setSelectedStudentId(student.uid)}
                                                 >
                                                     Compile
@@ -736,7 +769,7 @@ export default function ReportCardManager() {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-xs text-slate-400 italic p-2">All report cards compiled!</p>
+                                        <p className="text-xs text-slate-450 italic p-2">All report cards compiled!</p>
                                     )}
                                 </ScrollArea>
                             </div>
@@ -747,54 +780,76 @@ export default function ReportCardManager() {
 
             {processedReport && (
                 <div className="space-y-6 animate-in slide-in-from-top-4 duration-500">
-                    <Card className="border-t-4 border-t-orange-400 shadow-md">
-                        <CardHeader><CardTitle>Final Remarks</CardTitle></CardHeader>
-                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Final Remarks card */}
+                    <Card className="border border-orange-100 shadow-md rounded-[2rem] overflow-hidden bg-white">
+                        <CardHeader className="border-b border-slate-50 bg-slate-50/10 p-6">
+                            <CardTitle className="text-base font-black text-slate-800">Review Comments & Actions</CardTitle>
+                            <CardDescription className="text-slate-400">Add final remarks, generate AI drafts, and publish terminal reports.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <Label className="font-bold">Class Teacher's Remark</Label>
+                                    <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Class Teacher's Remark</Label>
                                     <Button 
                                         variant="ghost" size="sm" 
-                                        className="text-purple-600 h-6 gap-1" 
+                                        className="text-purple-650 hover:text-purple-800 hover:bg-purple-50 h-7 px-2.5 rounded-lg text-[10px] font-bold gap-1 transition-all" 
                                         onClick={() => handleGenerateComment('Teacher')}
                                         disabled={isGeneratingTeacherComment || (!isTeacher && !isAdminOrDirector)}
                                     >
-                                        {isGeneratingTeacherComment ? <Loader2 className="h-3 w-3 animate-spin"/> : <Sparkles className="h-3 w-3"/>}
-                                        AI Draft
+                                        {isGeneratingTeacherComment ? <Loader2 className="h-3 w-3 animate-spin"/> : <Sparkles className="h-3 w-3 text-purple-600 animate-pulse"/>}
+                                        AI Draft (1 credit)
                                     </Button>
                                 </div>
-                                <Textarea placeholder="Overall performance remark..." value={classTeacherComment} onChange={(e) => setClassTeacherComment(e.target.value)} rows={4} disabled={!isTeacher && !isAdminOrDirector}/>
+                                <Textarea 
+                                  placeholder="Type class teacher remarks..." 
+                                  value={classTeacherComment} 
+                                  onChange={(e) => setClassTeacherComment(e.target.value)} 
+                                  rows={4} 
+                                  disabled={!isTeacher && !isAdminOrDirector}
+                                  className="rounded-xl border border-slate-200 focus-visible:ring-indigo-500 shadow-sm text-sm"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <Label className="font-bold">Headmaster's Remark</Label>
+                                    <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Headmaster's Remark</Label>
                                     <Button 
                                         variant="ghost" size="sm" 
-                                        className="text-purple-600 h-6 gap-1" 
+                                        className="text-purple-650 hover:text-purple-800 hover:bg-purple-50 h-7 px-2.5 rounded-lg text-[10px] font-bold gap-1 transition-all" 
                                         onClick={() => handleGenerateComment('Headmaster')}
                                         disabled={isGeneratingHeadmasterComment || !isAdminOrDirector}
                                     >
-                                        {isGeneratingHeadmasterComment ? <Loader2 className="h-3 w-3 animate-spin"/> : <Sparkles className="h-3 w-3"/>}
-                                        AI Draft
+                                        {isGeneratingHeadmasterComment ? <Loader2 className="h-3 w-3 animate-spin"/> : <Sparkles className="h-3 w-3 text-purple-600 animate-pulse"/>}
+                                        AI Draft (1 credit)
                                     </Button>
                                 </div>
-                                <Textarea placeholder="Headmaster final decision..." value={headmasterComment} onChange={(e) => setHeadmasterComment(e.target.value)} rows={4} disabled={!isAdminOrDirector}/>
+                                <Textarea 
+                                  placeholder="Type headmaster comments..." 
+                                  value={headmasterComment} 
+                                  onChange={(e) => setHeadmasterComment(e.target.value)} 
+                                  rows={4} 
+                                  disabled={!isAdminOrDirector}
+                                  className="rounded-xl border border-slate-200 focus-visible:ring-indigo-500 shadow-sm text-sm"
+                                />
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-end gap-2 bg-slate-50 border-t pt-4">
-                            <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print</Button>
-                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary">{isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>} Save PDF</Button>
-                            <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800"><Save className="mr-2 h-4 w-4"/> Save Draft</Button>
+                        <CardFooter className="justify-end gap-2 bg-slate-50/50 border-t border-slate-100 p-4">
+                            <Button variant="outline" onClick={() => window.print()} className="rounded-xl font-bold h-10"><Printer className="mr-2 h-4 w-4"/> Print Document</Button>
+                            <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary" className="rounded-xl font-bold h-10">{isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>} Download PDF</Button>
+                            <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 rounded-xl font-bold h-10 text-white"><Save className="mr-2 h-4 w-4"/> Save Draft</Button>
                             {isAdminOrDirector && (
-                                <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700">
+                                <Button onClick={handlePublish} disabled={isPublishing} className="bg-emerald-650 hover:bg-emerald-750 font-bold rounded-xl h-10 text-white">
                                     {isPublishing ? <Loader2 className="animate-spin h-4 w-4"/> : <ShieldCheck className="mr-2 h-4 w-4"/>} Sign & Publish
                                 </Button>
                             )}
                         </CardFooter>
                     </Card>
 
-                    <div className="flex justify-center bg-slate-200 p-12 rounded-[3rem] border-8 border-white shadow-inner overflow-x-auto">
-                        <div className="shadow-2xl ring-1 ring-black/10 bg-white" style={{ width: '794px' }}>
+                    {/* Styled Mockup Viewport container */}
+                    <div className="flex flex-col items-center justify-center bg-slate-800 py-12 px-6 rounded-[2.5rem] border border-slate-700 shadow-inner relative group">
+                        <div className="absolute top-4 left-6 flex items-center gap-2 text-slate-400 font-mono text-[10px]">
+                            <Eye className="h-3.5 w-3.5 text-slate-500" /> A4 PAGE LIVE VIEWPORT MOCKUP
+                        </div>
+                        <div className="shadow-2xl ring-4 ring-black/40 bg-white scale-[0.7] sm:scale-[0.8] origin-top md:scale-100 transition-all rounded-sm overflow-hidden" style={{ width: '794px' }}>
                             <ReportCardTemplate
                                 data={processedReport}
                                 classTeacherComment={classTeacherComment}

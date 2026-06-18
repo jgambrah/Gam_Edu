@@ -1,9 +1,15 @@
 'use server';
 
 import { ai } from '@/ai/genkit'; 
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
-export async function generateScienceFactAction(topic?: string) {
+export async function generateScienceFactAction(schoolId: string, topic?: string) {
   try {
+    const creditResult = await checkAndSpendCredits(schoolId, 2); // Cost: 2 credits
+    if (!creditResult.success) {
+      return { success: false, error: "Not enough AI credits to generate this fact." };
+    }
+
     const promptText = topic 
       ? `Tell me a fascinating scientific fact about ${topic} for a curious student. Keep it under 50 words.`
       : `Tell me a random fascinating scientific fact for a curious student. Keep it under 50 words.`;
@@ -24,3 +30,4 @@ export async function generateScienceFactAction(topic?: string) {
     return { success: false, error: "Failed to generate fact. Please try again." };
   }
 }
+

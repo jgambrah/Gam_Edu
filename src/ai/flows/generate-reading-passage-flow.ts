@@ -46,7 +46,21 @@ Instructions:
 5.  For each question, provide a brief explanation for why the answer is correct.`,
 });
 
-export async function generateReadingPassage(input: GenerateReadingPassageInput): Promise<GenerateReadingPassageOutput> {
-  const { output } = await generateReadingPassagePrompt(input, { model: 'googleai/gemini-3-flash-preview' });
-  return output!;
+import { checkAndSpendCredits } from '@/app/actions/credits';
+
+export async function generateReadingPassage(
+  input: GenerateReadingPassageInput & { schoolId: string }
+): Promise<{ success: boolean; data?: GenerateReadingPassageOutput; error?: string }> {
+  try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 5);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Not enough AI credits to generate reading passage." };
+    }
+    const { schoolId, ...promptInput } = input;
+    const { output } = await generateReadingPassagePrompt(promptInput, { model: 'googleai/gemini-3-flash-preview' });
+    return { success: true, data: output! };
+  } catch (error: any) {
+    console.error("Passage generation error:", error);
+    return { success: false, error: error.message || "Failed to generate reading passage." };
+  }
 }

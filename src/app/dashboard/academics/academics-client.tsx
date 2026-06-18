@@ -57,7 +57,7 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DailyAttendanceSheet } from '../attendance/daily-attendance-sheet';
-import { Subject, TimetableEntry, Student, Class, Room } from '@/lib/types';
+import { Subject, TimetableEntry, Student, Class, Room, TimeSlot } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -85,6 +85,8 @@ function ClassDetailView({
     timetable, 
     subjects, 
     teachers,
+    rooms,
+    timeSlots,
     currentUserProfile 
 }: { 
     selectedClass: Class, 
@@ -93,6 +95,8 @@ function ClassDetailView({
     timetable: TimetableEntry[], 
     subjects: Subject[], 
     teachers: any[],
+    rooms: Room[],
+    timeSlots: TimeSlot[],
     currentUserProfile: any
 }) {
     // Filter for ACTIVE students in memory to handle legacy records with undefined status
@@ -223,13 +227,13 @@ function ClassDetailView({
                             <DailyAttendanceSheet classId={selectedClass.id} />
                         </TabsContent>
 
-                        <TabsContent value="timetable" className="p-8 m-0 bg-slate-50/20">
+                        <TabsContent value="timetable" className="p-8 m-0 bg-slate-50/20 animate-in fade-in duration-300">
                             <TimetableDisplay 
                                 timetable={classTimetable}
                                 subjects={subjects}
                                 teachers={teachers && teachers.length > 0 ? teachers : (teacher ? [teacher] : [])}
-                                rooms={[]} 
-                                timeSlots={[]} 
+                                rooms={rooms} 
+                                timeSlots={timeSlots} 
                             />
                         </TabsContent>
                     </Tabs>
@@ -337,6 +341,13 @@ export default function AcademicsPageContent() {
   [firestore, schoolId, isStaff]);
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
+  const timeSlotsQuery = useMemoFirebase(() => 
+    (firestore && schoolId && isStaff) 
+      ? query(collection(firestore, 'timeSlots'), where('schoolId', '==', schoolId), orderBy('startTime')) 
+      : null,
+  [firestore, schoolId, isStaff]);
+  const { data: timeSlots, isLoading: isLoadingSlots } = useCollection<TimeSlot>(timeSlotsQuery);
+
   const onSubmit = async (values: z.infer<typeof classSchema>) => {
     if (!firestore || !schoolId) return;
     setIsSubmitting(true);
@@ -398,7 +409,7 @@ export default function AcademicsPageContent() {
     );
   }
 
-  const isLoading = isLoadingSchool || isRoleLoading || isLoadingClasses || (canListStaff && isLoadingTeachers) || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
+  const isLoading = isLoadingSchool || isRoleLoading || isLoadingClasses || (canListStaff && isLoadingTeachers) || isLoadingStudents || isLoadingTimetable || isLoadingSubjects || isLoadingSlots;
 
   const selectedClass = useMemo(() => {
       return classes?.find(c => c.id === selectedClassId) || null;
@@ -413,6 +424,8 @@ export default function AcademicsPageContent() {
             timetable={timetable || []}
             subjects={subjects || []}
             teachers={teachers || []}
+            rooms={rooms || []}
+            timeSlots={timeSlots || []}
             currentUserProfile={profile}
           />
       );

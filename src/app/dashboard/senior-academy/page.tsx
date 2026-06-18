@@ -8,7 +8,8 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, serverTimestamp, deleteDoc, doc, addDoc } from 'firebase/firestore';
 import { 
   Sigma, Languages, Microscope, BookOpen, 
-  Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon
+  Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
+  Folder, FileText, ChevronRight
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -35,6 +36,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import CreditBalance from '@/components/CreditBalance';
+import { cn } from '@/lib/utils';
 
 
 // --- HELPER: TEXT TO SPEECH ---
@@ -123,6 +126,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
 
     const isJunior = isJuniorLevel(selectedGrade);
+    const isPrimary = selectedGrade === 'Early Childhood' || selectedGrade === 'Lower Primary' || selectedGrade === 'Upper Primary';
 
     const storiesQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, 
@@ -156,20 +160,20 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
             {/* SIDEBAR NAVIGATION */}
             <div className="lg:col-span-1 space-y-4">
-                <div className="bg-indigo-900 p-4 rounded-3xl shadow-lg">
-                    <Label className="text-indigo-300 text-[10px] uppercase font-black ml-2 mb-2 block">English Level</Label>
+                <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-800">
+                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">English Level</Label>
                     <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                        <SelectTrigger className="bg-indigo-800 border-indigo-700 text-white rounded-2xl h-12">
+                        <SelectTrigger className="bg-slate-950 border-slate-850 text-white rounded-2xl h-12">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
 
-                <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
+                <ScrollArea className="h-[70vh] rounded-3xl border border-indigo-500/20 bg-slate-900 p-2 shadow-2xl">
                     <div className="p-2 space-y-2">
                         {Object.keys(folderStructure).length === 0 ? (
-                            <div className="text-center py-20 text-slate-300">
+                            <div className="text-center py-20 text-slate-500">
                                 <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
                                 <p className="text-xs font-bold">No passages in this category yet.</p>
                             </div>
@@ -177,22 +181,38 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             Object.entries(folderStructure).map(([cat, subs]) => (
                                 <Accordion key={cat} type="single" collapsible className="w-full">
                                     <AccordionItem value={cat} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-indigo-50 rounded-2xl mb-1 group">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-950/80 hover:bg-slate-900 border border-slate-850 rounded-2xl mb-1 group flex items-center justify-between text-indigo-300">
                                             <div className="flex items-center gap-2">
-                                                <BookOpen className="w-3 h-3 text-indigo-500" />
-                                                <span className="font-black text-indigo-900 text-xs uppercase">{cat}</span>
+                                                <Folder className="w-4 h-4 text-indigo-400 group-data-[state=open]:hidden" />
+                                                <FolderOpen className="w-4 h-4 text-indigo-400 hidden group-data-[state=open]:block" />
+                                                <span className="font-black text-xs uppercase tracking-wider">{cat}</span>
                                             </div>
                                         </AccordionTrigger>
-                                        <AccordionContent className="pt-1 pl-4">
+                                        <AccordionContent className="pt-1 pl-3 space-y-1">
                                             {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
                                                 <Accordion key={subTitle} type="single" collapsible>
                                                     <AccordionItem value={subTitle} className="border-none">
-                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-indigo-600">
-                                                            {subTitle}
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-300 py-2.5 hover:text-indigo-400 pl-2 flex items-center justify-between group">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <Folder className="w-3.5 h-3.5 text-indigo-500/80 group-data-[state=open]:hidden" />
+                                                                <FolderOpen className="w-3.5 h-3.5 text-indigo-500/80 hidden group-data-[state=open]:block" />
+                                                                <span>{subTitle}</span>
+                                                            </div>
                                                         </AccordionTrigger>
-                                                        <AccordionContent className="space-y-1">
+                                                        <AccordionContent className="space-y-1 pl-3">
                                                             {items.map((item: any) => (
-                                                                <button key={item.id} onClick={() => { setActiveStory(item); setAnswers([]); }} className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${activeStory?.id === item.id ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-indigo-50 text-slate-600'}`}>{item.title}</button>
+                                                                <button 
+                                                                    key={item.id} 
+                                                                    onClick={() => { setActiveStory(item); setAnswers([]); }} 
+                                                                    className={`w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+                                                                        activeStory?.id === item.id 
+                                                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' 
+                                                                            : 'hover:bg-slate-800/60 text-slate-200 hover:text-white'
+                                                                    }`}
+                                                                >
+                                                                    <FileText className="w-3.5 h-3.5 shrink-0 opacity-80" />
+                                                                    <span className="truncate">{item.title}</span>
+                                                                </button>
                                                             ))}
                                                         </AccordionContent>
                                                     </AccordionItem>
@@ -210,49 +230,77 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
             {/* WORKSTATION */}
             <div className="lg:col-span-3">
                 {activeStory ? (
-                    <Card className={`overflow-hidden bg-white ${isJunior ? juniorStyles.storybook : "rounded-[48px] border-none shadow-2xl animate-in zoom-in"}`}>
-                        <div className={isJunior ? "text-center mb-8" : "bg-indigo-600 p-10 text-white"}>
+                    <Card className={`overflow-hidden ${isJunior ? juniorStyles.storybook : "rounded-[48px] bg-slate-900 border border-slate-800 shadow-2xl animate-in zoom-in"}`}>
+                        <div className={isJunior ? "text-center mb-8" : "bg-gradient-to-r from-indigo-950 to-slate-900 p-10 border-b border-indigo-900/30 text-white"}>
                             {isJunior && <div className="text-7xl mb-4 animate-bounce">📖</div>}
-                            <CardTitle className={isJunior ? "text-5xl font-black text-orange-800" : "text-4xl font-black"}>
+                            <CardTitle className={isJunior ? "text-5xl font-black text-orange-800" : "text-4xl font-black text-white"}>
                                 {activeStory.title}
                             </CardTitle>
                             {isJunior && <p className="text-orange-400 font-black mt-2 uppercase tracking-widest">A Magic Tale</p>}
                         </div>
 
-                        <CardContent className={isJunior ? "space-y-12" : "p-12 space-y-10"}>
-                            <p className={isJunior ? juniorStyles.storyText : "text-2xl leading-relaxed text-slate-700 font-serif whitespace-pre-wrap"}>
-                                {activeStory.content}
-                            </p>
+                        <CardContent className={isJunior ? "space-y-12" : "p-10 space-y-10"}>
+                            <div className={cn(
+                                "relative overflow-hidden font-serif leading-relaxed whitespace-pre-wrap rounded-3xl p-8 md:p-12 shadow-inner",
+                                isJunior 
+                                    ? "bg-[#FFFDF7] text-orange-950 text-2xl pl-12 md:pl-16 border-4 border-orange-100" 
+                                    : isPrimary 
+                                        ? "bg-[#FCFBF7] text-slate-800 text-lg pl-12 md:pl-16 border border-slate-200"
+                                        : "bg-[#FCFAF2] text-slate-850 text-lg md:columns-2 gap-10 border border-[#EADFCA]"
+                            )}>
+                                {isPrimary ? (
+                                    <>
+                                        {/* Vertical red line */}
+                                        <div className="absolute left-8 md:left-12 top-0 bottom-0 w-[2px] bg-red-400/50" />
+                                        <div style={{
+                                            backgroundImage: 'linear-gradient(rgba(14, 165, 233, 0.15) 1px, transparent 1px)',
+                                            backgroundSize: '100% 2.4rem',
+                                            lineHeight: '2.4rem',
+                                            paddingTop: '0.4rem'
+                                        }}>
+                                            {activeStory.content}
+                                        </div>
+                                    </>
+                                ) : (
+                                    activeStory.content
+                                )}
+                            </div>
 
-                            <div className={isJunior ? "bg-white/80 p-10 rounded-[50px] border-4 border-dashed border-orange-300 space-y-8" : "bg-slate-50 p-8 rounded-[32px] space-y-6 border-2 border-slate-100"}>
-                                <h3 className={isJunior ? "text-4xl font-black text-pink-500 text-center" : "text-2xl font-black text-indigo-900"}>
-                                    {isJunior ? "🌟 Discovery Questions 🌟" : "Critical Analysis Questions"}
+                            <div className={isJunior ? "bg-white/80 p-10 rounded-[50px] border-4 border-dashed border-orange-300 space-y-8" : "bg-slate-950/60 p-8 rounded-[32px] space-y-6 border border-slate-850"}>
+                                <h3 className={isJunior ? "text-4xl font-black text-pink-500 text-center" : "text-2xl font-black text-indigo-400 flex items-center gap-2"}>
+                                    {isJunior ? "🌟 Discovery Questions 🌟" : <><Brain className="w-6 h-6 text-indigo-450" /> Critical Analysis Questions</>}
                                 </h3>
                                 
                                 {activeStory.quiz.map((q: any, i: number) => (
-                                    <div key={i} className="space-y-4 text-center">
-                                        <p className={isJunior ? "text-2xl font-black text-blue-900" : "font-bold text-slate-800"}>
-                                            {isJunior ? `🌈 ${q.question}` : `${i + 1}. ${q.question}`}
+                                    <div key={i} className={isJunior ? "space-y-4 text-center" : "space-y-2"}>
+                                        <p className={isJunior ? "text-2xl font-black text-blue-900" : "font-bold text-slate-200 text-sm flex items-center gap-2"}>
+                                            {isJunior ? `🌈 ${q.question}` : <><span className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-black">{i + 1}</span> {q.question}</>}
                                         </p>
                                         <Input 
                                             placeholder={isJunior ? "Tell me the secret..." : "Type analysis..."} 
                                             value={answers[i] || ""} 
                                             onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} 
-                                            className={isJunior ? juniorStyles.input : "h-14 rounded-2xl border-2"} 
+                                            className={isJunior ? juniorStyles.input : "h-12 bg-slate-900 border-slate-850 text-white rounded-xl focus:border-indigo-550 focus:ring-0"} 
                                         />
                                     </div>
                                 ))}
-                                <Button onClick={checkAnswers} className={isJunior ? juniorStyles.button : "w-full h-16 bg-indigo-600 font-black"}>
+                                <Button 
+                                    onClick={checkAnswers} 
+                                    className={isJunior 
+                                        ? juniorStyles.button 
+                                        : "w-full h-14 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-400 hover:to-violet-500 text-white font-black text-base rounded-xl shadow-[0_4px_0_#4338ca] hover:shadow-[0_2px_0_#4338ca] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all"
+                                    }
+                                >
                                     {isJunior ? "CHECK MY ANSWERS! 🏆" : "SUBMIT ANALYSIS"}
                                 </Button>
                             </div>
                         </CardContent>
                     </Card>
                 ) : <div className="h-full flex flex-col items-center justify-center text-center">
-                         <div className={`p-10 rounded-full mb-6 ${isJunior ? 'bg-yellow-100 animate-pulse' : 'bg-slate-50'}`}>
-                            <BookOpen className={`w-20 h-20 ${isJunior ? 'text-yellow-500' : 'text-slate-100'}`} />
+                         <div className={`p-10 rounded-full mb-6 ${isJunior ? 'bg-yellow-100 animate-pulse' : 'bg-slate-900/60 border border-slate-800'}`}>
+                            <BookOpen className={`w-20 h-20 ${isJunior ? 'text-yellow-500' : 'text-slate-650'}`} />
                          </div>
-                         <h2 className="text-3xl font-black text-slate-300">Choose a Magic Book</h2>
+                         <h2 className="text-3xl font-black text-slate-700">Choose a Magic Book</h2>
                     </div>}
             </div>
         </div>
@@ -335,10 +383,10 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
-                <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
+                <ScrollArea className="h-[70vh] rounded-3xl border border-emerald-500/20 bg-slate-900 p-2 shadow-2xl">
                     <div className="space-y-2 p-2">
                         {isLoading ? <Skeleton className="h-40 w-full" /> : Object.keys(folderStructure).length === 0 ? (
-                            <div className="text-center py-20 text-slate-300">
+                            <div className="text-center py-20 text-slate-500">
                                 <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
                                 <p className="text-xs font-bold">No questions in this category yet.</p>
                             </div>
@@ -346,27 +394,37 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             Object.entries(folderStructure).map(([subject, subTopics]) => (
                                 <Accordion key={subject} type="single" collapsible className="w-full">
                                     <AccordionItem value={subject} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-emerald-50 rounded-2xl mb-1 group">
+                                        <AccordionTrigger className="hover:no-underline p-3.5 bg-slate-950/80 hover:bg-slate-900 border border-slate-850 rounded-2xl mb-1 group flex items-center justify-between text-emerald-400">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                                <span className="font-black text-slate-700 text-xs uppercase tracking-tight">{subject}</span>
+                                                <Folder className="w-4 h-4 text-emerald-400 group-data-[state=open]:hidden" />
+                                                <FolderOpen className="w-4 h-4 text-emerald-400 hidden group-data-[state=open]:block" />
+                                                <span className="font-black text-xs uppercase tracking-wider">{subject}</span>
                                             </div>
                                         </AccordionTrigger>
-                                        <AccordionContent className="pt-1 pl-4 space-y-1">
+                                        <AccordionContent className="pt-1 pl-3 space-y-1">
                                             {Object.entries(subTopics as any).map(([subTitle, items]: [string, any]) => (
                                                 <Accordion key={subTitle} type="single" collapsible>
                                                     <AccordionItem value={subTitle} className="border-none">
-                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-emerald-600">
-                                                            {subTitle} ({items.length})
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-300 py-2.5 hover:text-emerald-400 pl-2 flex items-center justify-between group">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <Folder className="w-3.5 h-3.5 text-emerald-500/80 group-data-[state=open]:hidden" />
+                                                                <FolderOpen className="w-3.5 h-3.5 text-emerald-500/80 hidden group-data-[state=open]:block" />
+                                                                <span>{subTitle} ({items.length})</span>
+                                                            </div>
                                                         </AccordionTrigger>
-                                                        <AccordionContent className="space-y-1">
+                                                        <AccordionContent className="space-y-1 pl-3">
                                                             {items.map((item: any) => (
                                                                 <button
                                                                     key={item.id}
                                                                     onClick={() => { setProblem(item); setFeedback(null); setUserInput(""); }}
-                                                                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-medium transition-all ${problem?.id === item.id ? 'bg-emerald-500 text-white shadow-md' : 'hover:bg-slate-100 text-slate-600'}`}
+                                                                    className={`w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+                                                                        problem?.id === item.id 
+                                                                            ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' 
+                                                                            : 'hover:bg-slate-800/60 text-slate-200 hover:text-white'
+                                                                    }`}
                                                                 >
-                                                                    {item.title}
+                                                                    <FileText className="w-3.5 h-3.5 shrink-0 opacity-80" />
+                                                                    <span className="truncate">{item.title}</span>
                                                                 </button>
                                                             ))}
                                                         </AccordionContent>
@@ -385,33 +443,53 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
             {/* MAIN STAGE */}
             <div className="lg:col-span-3">
                 {problem ? (
-                    <Card className={isJunior ? theme?.card : "rounded-[48px] border-none shadow-2xl overflow-hidden bg-white"}>
-                        <div className={isJunior ? theme?.header : "bg-emerald-600 p-10 text-white"}>
+                    <Card className={isJunior ? theme?.card : "rounded-[48px] bg-slate-900 border border-slate-850 shadow-2xl overflow-hidden text-white animate-in zoom-in"}>
+                        <div className={isJunior ? theme?.header : "bg-gradient-to-r from-emerald-950 to-slate-900 p-10 border-b border-emerald-900/30 text-white"}>
                             <div className="flex justify-between items-center">
-                                <CardTitle className={isJunior ? "text-5xl font-black text-blue-900" : "text-4xl font-black"}>
+                                <CardTitle className={isJunior ? "text-5xl font-black text-blue-900" : "text-4xl font-black text-white"}>
                                     {isJunior && "🌈 "} {problem.title}
                                 </CardTitle>
-                                <Badge className={isJunior ? "bg-white text-pink-500 text-lg px-4" : "bg-emerald-400"}>
+                                <Badge className={isJunior ? "bg-white text-pink-500 text-lg px-4" : "bg-emerald-600"}>
                                     {problem.gradeLevel}
                                 </Badge>
                             </div>
                         </div>
 
                         <CardContent className="p-12 space-y-10">
-                            <div className={isJunior ? theme?.mathBox : "bg-slate-900 p-12 rounded-[40px] shadow-inner border-t-8 border-emerald-500"}>
-                                <div className={isJunior ? "text-7xl text-blue-600 flex justify-center" : "text-5xl text-emerald-400"}>
-                                    <SafeMath formula={problem.latexFormula} />
-                                </div>
-                                {isJunior && !isNaN(parseInt(problem.answer)) && (
-                                    <div className="mt-8 border-t border-sky-200 pt-6">
-                                        <p className="text-center font-black text-sky-500 uppercase text-xs tracking-widest mb-2">Can you count them?</p>
-                                        <CounterDisplay count={parseInt(problem.answer)} />
+                            {isJunior ? (
+                                <div className={theme?.mathBox}>
+                                    <div className="text-7xl text-blue-600 flex justify-center">
+                                        <SafeMath formula={problem.latexFormula} />
                                     </div>
-                                )}
-                            </div>
+                                    {(!isNaN(parseInt(problem.answer))) && (
+                                        <div className="mt-8 border-t border-sky-200 pt-6">
+                                            <p className="text-center font-black text-sky-500 uppercase text-xs tracking-widest mb-2">Can you count them?</p>
+                                            <CounterDisplay count={parseInt(problem.answer)} />
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="bg-slate-950 border border-slate-800 shadow-2xl rounded-[36px] overflow-hidden">
+                                  {/* Terminal Bar */}
+                                  <div className="bg-slate-900/80 px-5 py-3 border-b border-slate-850 flex items-center justify-between">
+                                    <div className="flex gap-2">
+                                      <div className="w-3 h-3 rounded-full bg-rose-500" />
+                                      <div className="w-3 h-3 rounded-full bg-amber-500" />
+                                      <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                                    </div>
+                                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">DERIVATION ENGINE v1.0</span>
+                                    <div className="w-12" />
+                                  </div>
+                                  <div className="p-10 md:p-14 flex flex-col justify-center items-center">
+                                    <div className="text-4xl md:text-5xl text-emerald-450 font-mono tracking-wide drop-shadow-[0_0_8px_rgba(52,211,153,0.25)]">
+                                      <SafeMath formula={problem.latexFormula} />
+                                    </div>
+                                  </div>
+                                </div>
+                            )}
 
                             <div className="text-center space-y-8">
-                                <p className={isJunior ? "text-3xl font-black text-blue-800" : "text-2xl font-medium text-slate-600 italic"}>
+                                <p className={isJunior ? "text-3xl font-black text-blue-800" : "text-2xl font-semibold text-slate-350 italic"}>
                                     {isJunior ? "✨ " + problem.instruction : `"${problem.instruction}"`}
                                 </p>
                                 <div className="flex flex-col items-center gap-6">
@@ -421,12 +499,15 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                         placeholder={isJunior ? "Type Number Here..." : "Enter Solution..."} 
                                         className={isJunior 
                                             ? juniorStyles.input 
-                                            : "h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] focus:border-emerald-500 shadow-inner"
+                                            : "h-20 text-4xl font-mono text-center border-4 border-slate-800 bg-slate-950 text-emerald-400 rounded-[24px] focus:border-emerald-500 focus:ring-0 shadow-inner max-w-md w-full"
                                         }
                                     />
                                     <Button 
                                         onClick={checkAnswer} 
-                                        className={isJunior ? theme?.button : "h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full"}
+                                        className={isJunior 
+                                            ? theme?.button 
+                                            : "h-16 px-16 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-lg rounded-2xl shadow-[0_4px_0_#047857] hover:shadow-[0_2px_0_#047857] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all"
+                                        }
                                     >
                                         {isJunior ? "I'M FINISHED! 🚀" : "VERIFY ANSWER"}
                                     </Button>
@@ -434,7 +515,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             </div>
 
                             {feedback && (
-                                <div className={`p-8 rounded-[32px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                                <div className={`p-8 rounded-[32px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
                                     {feedback.ok ? <CheckCircle2 className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
                                     <p className="text-xl font-black">{feedback.msg}</p>
                                 </div>
@@ -442,9 +523,9 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
-                        <div className="p-8 bg-slate-50 rounded-full mb-6"><Sigma className="w-20 h-20 text-slate-200" /></div>
-                        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">
+                    <div className="h-full flex flex-col items-center justify-center bg-slate-900/60 border-4 border-dashed border-slate-800/80 rounded-[48px] min-h-[600px] w-full">
+                        <div className="p-8 bg-slate-950 border border-slate-800 rounded-full mb-6"><Sigma className="w-20 h-20 text-slate-700" /></div>
+                        <h2 className="text-2xl font-black text-slate-500 uppercase tracking-widest text-center">
                             Select a topic from the <br /> {selectedGrade} library
                         </h2>
                     </div>
@@ -486,41 +567,59 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
             {/* SIDEBAR NAVIGATION */}
             <div className="lg:col-span-1 space-y-4">
-                <div className="bg-cyan-900 p-4 rounded-3xl shadow-lg">
+                <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-800">
                     <Label className="text-cyan-300 text-[10px] uppercase font-black ml-2 mb-2 block">Research Level</Label>
                     <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                        <SelectTrigger className="bg-cyan-800 border-cyan-700 text-white rounded-2xl h-12">
+                        <SelectTrigger className="bg-slate-950 border-slate-850 text-white rounded-2xl h-12">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
 
-                <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
+                <ScrollArea className="h-[70vh] rounded-3xl border border-cyan-500/20 bg-slate-900 p-2 shadow-2xl">
                     <div className="p-2 space-y-2">
                          {Object.keys(folderStructure).length === 0 ? (
-                            <div className="text-center py-20 text-slate-300">
+                            <div className="text-center py-20 text-slate-500">
                                 <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
                                 <p className="text-xs font-bold">No labs in this category yet.</p>
                             </div>
-                         ) : (
+                          ) : (
                             Object.entries(folderStructure).map(([cat, subs]) => (
                                 <Accordion key={cat} type="single" collapsible className="w-full">
                                     <AccordionItem value={cat} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-cyan-50 rounded-2xl mb-1">
+                                        <AccordionTrigger className="hover:no-underline p-3.5 bg-slate-950/80 hover:bg-slate-900 border border-slate-855 rounded-2xl mb-1 group flex items-center justify-between text-cyan-400">
                                             <div className="flex items-center gap-2">
-                                                <div className="text-lg">{cat === 'Life Science' ? '🧬' : cat === 'Physical Science' ? '🔬' : '🌍'}</div>
-                                                <span className="font-black text-cyan-900 text-xs uppercase">{cat}</span>
+                                                <Folder className="w-4 h-4 text-cyan-450 group-data-[state=open]:hidden" />
+                                                <FolderOpen className="w-4 h-4 text-cyan-450 hidden group-data-[state=open]:block" />
+                                                <span className="font-black text-xs uppercase tracking-wider">{cat}</span>
                                             </div>
                                         </AccordionTrigger>
-                                        <AccordionContent className="pt-1 pl-4">
+                                        <AccordionContent className="pt-1 pl-3 space-y-1">
                                             {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
                                                 <Accordion key={subTitle} type="single" collapsible>
                                                     <AccordionItem value={subTitle} className="border-none">
-                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2">{subTitle}</AccordionTrigger>
-                                                        <AccordionContent className="space-y-1">
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-300 py-2.5 hover:text-cyan-400 pl-2 flex items-center justify-between group">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <Folder className="w-3.5 h-3.5 text-cyan-500/80 group-data-[state=open]:hidden" />
+                                                                <FolderOpen className="w-3.5 h-3.5 text-cyan-500/80 hidden group-data-[state=open]:block" />
+                                                                <span>{subTitle}</span>
+                                                            </div>
+                                                        </AccordionTrigger>
+                                                        <AccordionContent className="space-y-1 pl-3">
                                                             {items.map((item: any) => (
-                                                                <button key={item.id} onClick={() => { setLab(item); setStage('hypothesis'); }} className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${lab?.id === item.id ? 'bg-cyan-600 text-white shadow-md' : 'hover:bg-cyan-50 text-slate-600'}`}>{item.title}</button>
+                                                                <button 
+                                                                    key={item.id} 
+                                                                    onClick={() => { setLab(item); setStage('hypothesis'); }} 
+                                                                    className={`w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+                                                                        lab?.id === item.id 
+                                                                            ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30' 
+                                                                            : 'hover:bg-slate-800/60 text-slate-200 hover:text-white'
+                                                                    }`}
+                                                                >
+                                                                    <FileText className="w-3.5 h-3.5 shrink-0 opacity-80" />
+                                                                    <span className="truncate">{item.title}</span>
+                                                                </button>
                                                             ))}
                                                         </AccordionContent>
                                                     </AccordionItem>
@@ -538,42 +637,79 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
             {/* WORKSTATION (Discovery View) */}
             <div className="lg:col-span-3">
                 {lab ? (
-                    <Card className={`overflow-hidden bg-white ${isJunior ? theme?.card : "rounded-[48px] shadow-2xl animate-in zoom-in"}`}>
+                    <Card className={`overflow-hidden ${isJunior ? theme?.card : "rounded-[48px] bg-slate-900 border border-slate-855 shadow-2xl animate-in zoom-in"}`}>
                         <div className={`grid md:grid-cols-3 ${isJunior ? 'min-h-[500px]' : 'min-h-[600px]'}`}>
-                            <div className={isJunior ? `p-10 space-y-8 ${theme?.questCard}` : `bg-slate-900 text-white p-10 space-y-8`}>
-                                <div className="flex flex-col gap-6">
-                                    {['hypothesis', 'experiment', 'conclusion'].map((s: any, i) => (
-                                        <div key={s} className={`flex items-center gap-4 transition-opacity ${stage === s ? 'opacity-100' : 'opacity-30'}`}>
-                                            <div className={isJunior ? theme?.stepBubble : "w-10 h-10 rounded-full flex items-center justify-center font-bold bg-blue-500"}>{i+1}</div>
-                                            <span className="font-black capitalize">{isJunior ? (s === 'hypothesis' ? 'The Big Question' : s === 'experiment' ? 'Let\'s Explore!' : 'What Happened?') : s}</span>
-                                        </div>
-                                    ))}
+                            <div className={isJunior ? `p-10 space-y-8 ${theme?.questCard}` : `bg-slate-950 text-white p-10 space-y-8 border-r border-slate-850 relative`}>
+                                {!isJunior && (
+                                    <div className="absolute left-[38px] top-12 bottom-36 w-0.5 bg-gradient-to-b from-cyan-500 via-indigo-500 to-violet-500/20 hidden md:block" />
+                                )}
+                                <div className="flex flex-col gap-6 relative z-10">
+                                    {['hypothesis', 'experiment', 'conclusion'].map((s: any, i) => {
+                                        const isActive = stage === s;
+                                        const isCompleted = (stage === 'experiment' && i === 0) || (stage === 'conclusion' && i <= 1);
+                                        return (
+                                            <div key={s} className={cn("flex items-center gap-4 transition-all duration-300", isActive ? 'opacity-100 scale-105' : 'opacity-40 hover:opacity-60')}>
+                                                <div className={isJunior 
+                                                    ? theme?.stepBubble 
+                                                    : cn(
+                                                        "w-12 h-12 rounded-full flex items-center justify-center font-bold relative transition-all duration-300 border-2",
+                                                        isActive ? 'bg-cyan-500 text-white border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.5)]' : 
+                                                        isCompleted ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-900 text-slate-400 border-slate-800'
+                                                    )
+                                                }>
+                                                    {(!isJunior && isActive) && <div className="absolute -inset-1.5 rounded-full border border-cyan-400/40 animate-ping" />}
+                                                    <span className={isJunior ? "" : "font-mono text-sm"}>{i+1}</span>
+                                                </div>
+                                                <div>
+                                                    {!isJunior && <span className="font-black text-slate-500 text-[10px] tracking-wider block">STAGE {i+1}</span>}
+                                                    <span className="font-black text-sm text-slate-200">
+                                                        {isJunior 
+                                                            ? (s === 'hypothesis' ? 'The Big Guess' : s === 'experiment' ? 'Let\'s Explore!' : 'What Happened?') 
+                                                            : (s === 'hypothesis' ? 'Hypothesis' : s === 'experiment' ? 'Experiment' : 'Conclusion')
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                <hr className="opacity-10" />
+                                <hr className="opacity-10 border-slate-800" />
                                 <div className="space-y-2">
-                                    <p className={`text-[10px] font-black uppercase tracking-widest ${isJunior ? 'text-blue-200' : 'text-blue-400'}`}>Scientific Background</p>
-                                    <p className={`text-sm leading-relaxed italic ${isJunior ? 'opacity-80' : 'opacity-60'}`}>{lab.background}</p>
+                                    <p className={`text-[10px] font-black uppercase tracking-widest ${isJunior ? 'text-blue-200' : 'text-cyan-400 flex items-center gap-1'}`}>🧪 Scientific Background</p>
+                                    <p className={isJunior 
+                                        ? "text-sm leading-relaxed italic opacity-85" 
+                                        : "text-xs leading-relaxed text-slate-400 italic bg-slate-900/40 p-4 rounded-2xl border border-slate-850 shadow-inner"
+                                    }>
+                                        {lab.background}
+                                    </p>
                                 </div>
                             </div>
-                            <div className="md:col-span-2 p-12 flex flex-col justify-center">
+                            
+                            <div className="md:col-span-2 p-12 flex flex-col justify-center bg-slate-900/10">
                                 {stage === 'hypothesis' && (
                                     <div className="space-y-8 animate-in slide-in-from-right-4">
-                                        <h2 className={isJunior ? "text-5xl font-black text-blue-600 text-center" : "text-3xl font-black text-slate-800"}>
+                                        <h2 className={isJunior ? "text-5xl font-black text-blue-600 text-center" : "text-3xl font-black text-slate-200"}>
                                             {isJunior ? '🤔 What is your Guess?' : lab.question}
                                         </h2>
-                                        <div className={isJunior ? "p-10 bg-white rounded-[60px] border-8 border-blue-100 shadow-inner" : "p-8 bg-blue-50 rounded-[32px] border-2 border-blue-100"}>
+                                        <div className={isJunior ? "p-10 bg-white rounded-[60px] border-8 border-blue-100 shadow-inner animate-in zoom-in" : "p-8 bg-slate-950 border border-slate-800 rounded-[32px] shadow-2xl animate-in zoom-in"}>
                                             {isJunior && <p className="text-blue-400 font-bold mb-6 text-center uppercase tracking-widest">Pick a card!</p>}
-                                            <div className={isJunior ? "grid grid-cols-1 gap-4" : "grid gap-3"}>
+                                            <div className="grid grid-cols-1 gap-4">
                                                 {lab.hypothesisOptions.map((opt: string) => (
                                                     <Button 
                                                         key={opt} 
                                                         variant="outline" 
                                                         className={isJunior 
                                                             ? "h-24 text-2xl font-black border-4 border-blue-50 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-[35px] transition-all" 
-                                                            : "bg-white border-2 h-auto py-4 font-bold rounded-2xl"} 
+                                                            : "bg-slate-900 border-2 border-slate-800 hover:border-cyan-500 hover:bg-slate-850 text-slate-200 hover:text-white h-auto py-6 px-8 text-left justify-start font-bold rounded-2xl transition-all duration-300 flex items-center gap-4 group shadow-md"
+                                                        } 
                                                         onClick={() => setStage('experiment')}
                                                     >
-                                                        {isJunior && "✨ "} {opt}
+                                                        {isJunior ? "✨ " + opt : (
+                                                            <>
+                                                                <div className="w-8 h-8 rounded-lg bg-cyan-950 text-cyan-400 flex items-center justify-center font-black group-hover:bg-cyan-500 group-hover:text-white transition-colors">?</div>
+                                                                <span className="flex-1 text-base">{opt}</span>
+                                                            </>
+                                                        )}
                                                     </Button>
                                                 ))}
                                             </div>
@@ -581,33 +717,68 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                     </div>
                                 )}
                                 {stage === 'experiment' && (
-                                    <div className="text-center space-y-12 animate-in zoom-in">
-                                        <h2 className={isJunior ? "text-5xl font-black text-orange-500" : "text-3xl font-black text-slate-800"}>
+                                    <div className="text-center space-y-10 animate-in zoom-in">
+                                        <h2 className={isJunior ? "text-5xl font-black text-orange-500 animate-bounce" : "text-3xl font-black text-slate-200"}>
                                             {isJunior ? "🚀 Let's Try It!" : "Mission: Data Collection"}
                                         </h2>
-                                        <div className={isJunior ? "text-[200px] hover:rotate-12 transition-transform cursor-pointer" : "text-[180px] py-10 animate-pulse"}>{lab.icon}</div>
-                                        <Button onClick={() => setStage('conclusion')} className={isJunior ? juniorStyles.button : "h-16 px-12 bg-orange-500 hover:bg-orange-600 text-xl font-black rounded-full shadow-xl"}>
-                                            {isJunior ? "SEE THE SECRET! 🔍" : "Observe Outcome"}
+                                        <div className="relative flex justify-center items-center py-6">
+                                            {!isJunior && (
+                                                <>
+                                                    <div className="absolute w-64 h-64 bg-cyan-500/10 rounded-full blur-xl animate-pulse" />
+                                                    <div className="absolute w-48 h-48 border-2 border-dashed border-cyan-500/20 rounded-full animate-spin [animation-duration:15s]" />
+                                                </>
+                                            )}
+                                            <div className={isJunior 
+                                                ? "text-[200px] hover:rotate-12 transition-transform cursor-pointer" 
+                                                : "text-[120px] relative z-10 filter drop-shadow-[0_10px_15px_rgba(6,182,212,0.2)] hover:scale-110 transition-transform duration-300 select-none cursor-pointer"
+                                            }>
+                                                {lab.icon}
+                                            </div>
+                                        </div>
+                                        {!isJunior && (
+                                            <p className="text-slate-400 text-sm max-w-sm mx-auto font-medium">Activate the particle scanner or press below to record outcomes from the simulation.</p>
+                                        )}
+                                        <Button 
+                                            onClick={() => setStage('conclusion')} 
+                                            className={isJunior 
+                                                ? juniorStyles.button 
+                                                : "h-16 px-16 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-black text-lg rounded-2xl shadow-[0_4px_0_#0891b2] hover:shadow-[0_2px_0_#0891b2] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all"
+                                            }
+                                        >
+                                            {isJunior ? "SEE THE SECRET! 🔍" : "OBSERVE OUTCOME"}
                                         </Button>
                                     </div>
                                 )}
                                 {stage === 'conclusion' && (
                                     <div className="space-y-6 animate-in slide-in-from-bottom-4">
-                                        <h2 className={`font-black ${isJunior ? 'text-5xl text-green-800' : 'text-4xl text-green-700'}`}>Discovery Conclusion</h2>
-                                        <div className={`p-8 rounded-[40px] border-4 space-y-4 ${isJunior ? 'bg-green-50 border-green-200' : 'bg-green-50 border-green-100'}`}>
-                                            <p className={`font-bold ${isJunior ? 'text-3xl' : 'text-2xl'} text-slate-800`}>{lab.conclusion}</p>
-                                            <p className={`leading-relaxed ${isJunior ? 'text-2xl text-slate-600' : 'text-lg text-slate-600'}`}>{lab.explanation}</p>
+                                        <h2 className={`font-black ${isJunior ? 'text-5xl text-green-800' : 'text-3xl text-slate-200 flex items-center gap-2'}`}>
+                                            {!isJunior && <CheckCircle2 className="w-8 h-8 text-emerald-500 animate-bounce" />} Discovery Conclusion
+                                        </h2>
+                                        <div className={isJunior 
+                                            ? "p-8 rounded-[40px] border-4 space-y-4 bg-green-50 border-green-200" 
+                                            : "p-8 rounded-[32px] border border-emerald-500/20 space-y-4 bg-emerald-500/10 shadow-lg"
+                                        }>
+                                            <p className={`font-bold ${isJunior ? 'text-3xl text-slate-800' : 'text-2xl text-emerald-400 leading-snug'}`}>{lab.conclusion}</p>
+                                            <p className={`leading-relaxed ${isJunior ? 'text-2xl text-slate-600' : 'text-base text-slate-300'}`}>{lab.explanation}</p>
                                         </div>
-                                        <Button onClick={() => { setLab(null); confetti(); }} className={`w-full h-16 text-xl font-black rounded-2xl shadow-xl ${isJunior ? juniorStyles.button : 'bg-green-600 hover:bg-green-700'}`}>Complete Mission</Button>
+                                        <Button 
+                                            onClick={() => { setLab(null); confetti(); }} 
+                                            className={isJunior 
+                                                ? juniorStyles.button 
+                                                : "w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-lg rounded-2xl shadow-[0_4px_0_#047857] hover:shadow-[0_2px_0_#047857] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all"
+                                            }
+                                        >
+                                            {isJunior ? "COMPLETE MY MISSION! 🏆" : "COMPLETE MISSION"}
+                                        </Button>
                                     </div>
                                 )}
                             </div>
                         </div>
                     </Card>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[500px]">
-                        <Microscope className="w-20 h-20 text-slate-100 mb-4" />
-                        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">Select an Active Research Lab</h2>
+                    <div className="h-full flex flex-col items-center justify-center bg-slate-900/60 border-4 border-dashed border-slate-800/80 rounded-[48px] min-h-[500px] w-full">
+                        <Microscope className="w-20 h-20 text-slate-700 mb-4 animate-pulse" />
+                        <h2 className="text-2xl font-black text-slate-500 uppercase tracking-widest text-center">Select an Active Research Lab</h2>
                     </div>
                 )}
             </div>
@@ -700,39 +871,63 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     };
 
     return (
-        <Card className="bg-slate-900 border-none rounded-[40px] text-white p-8 mb-12 shadow-2xl">
-            <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-black flex items-center gap-2"><PenTool className="text-yellow-400" /> Professor's Desk</h2>
-                <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
-                    <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} size="sm" onClick={() => setCreationMode('ai')}>AI Magic</Button>
-                    <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} size="sm" onClick={() => setCreationMode('manual')}>Manual</Button>
+        <Card className="bg-slate-900/60 backdrop-blur-md border-2 border-slate-800 rounded-[32px] text-white p-6 md:p-8 mb-12 shadow-2xl relative overflow-hidden">
+            <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
+                <div className="flex items-center gap-3">
+                    <h2 className="text-2xl font-black flex items-center gap-2"><PenTool className="text-indigo-450" /> Professor's Desk</h2>
+                    <span className="bg-indigo-950 text-indigo-300 text-[10px] px-3 py-1 rounded-full font-black border border-indigo-800/40 flex items-center gap-1.5 shadow-inner">
+                        <Sparkles className="w-3 h-3 text-indigo-400 animate-pulse" /> Costs 10 Credits
+                    </span>
+                </div>
+                <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
+                    <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} size="sm" onClick={() => setCreationMode('ai')} className={cn("rounded-lg font-black h-8 px-4", creationMode === 'ai' ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md' : 'text-slate-400 hover:text-slate-200')}>AI Magic</Button>
+                    <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} size="sm" onClick={() => setCreationMode('manual')} className={cn("rounded-lg font-black h-8 px-4", creationMode === 'manual' ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md' : 'text-slate-400 hover:text-slate-200')}>Manual</Button>
                 </div>
             </div>
             
             {creationMode === 'ai' ? (
-                <div className="flex flex-col md:flex-row gap-4 items-end">
-                    <div className="flex-1 space-y-2 w-full"><Label className="text-slate-400 text-[10px] font-black uppercase ml-2">Topic for AI</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Simultaneous Equations, Plant Cells..." className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl" /></div>
-                    <div className="w-full md:w-64 space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase ml-2">Target Grade</Label><Select value={targetGrade} onValueChange={setTargetGrade}><SelectTrigger className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl"><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
-                    <div className="w-full md:w-48 space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase ml-2">Subject</Label><Select value={subject} onValueChange={setSubject as any}><SelectTrigger className="capitalize h-14 bg-slate-800 border-slate-700 text-white rounded-2xl"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="math">Math</SelectItem><SelectItem value="english">English</SelectItem><SelectItem value="science">Science</SelectItem></SelectContent></Select></div>
-                    <Button onClick={handleAiGenerate} disabled={loading || !topic} className="h-14 px-8 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-black min-w-[160px]">
-                        {loading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2 h-4 w-4"/> GENERATE</>}
+                <div className="flex flex-col md:flex-row gap-4 items-end animate-in fade-in">
+                    <div className="flex-1 space-y-2 w-full">
+                        <Label className="text-slate-400 text-[10px] font-black uppercase ml-2 tracking-wider">Topic for AI</Label>
+                        <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Simultaneous Equations, Plant Cells..." className="h-12 bg-slate-950 border-slate-800 text-white rounded-xl focus:border-indigo-550 focus:ring-0" />
+                    </div>
+                    <div className="w-full md:w-64 space-y-2">
+                        <Label className="text-slate-400 text-[10px] font-black uppercase ml-2 tracking-wider">Target Grade</Label>
+                        <Select value={targetGrade} onValueChange={setTargetGrade}>
+                            <SelectTrigger className="h-12 bg-slate-950 border-slate-800 text-white font-bold rounded-xl"><SelectValue /></SelectTrigger>
+                            <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                        </Select>
+                    </div>
+                    <div className="w-full md:w-48 space-y-2">
+                        <Label className="text-slate-400 text-[10px] font-black uppercase ml-2 tracking-wider">Subject</Label>
+                        <Select value={subject} onValueChange={setSubject as any}>
+                            <SelectTrigger className="capitalize h-12 bg-slate-950 border-slate-800 text-white font-bold rounded-xl"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="math">Math (10 Credits)</SelectItem>
+                                <SelectItem value="english">English (10 Credits)</SelectItem>
+                                <SelectItem value="science">Science (10 Credits)</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Button onClick={handleAiGenerate} disabled={loading || !topic} className="h-12 px-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black min-w-[160px] shadow-lg flex items-center justify-center gap-2">
+                        {loading ? <Loader2 className="animate-spin h-5 w-5" /> : <><Wand2 className="h-4 w-4"/> Generate</>}
                     </Button>
                 </div>
             ) : (
                 <div className="space-y-6 animate-in slide-in-from-top-4">
                     <div className="grid md:grid-cols-3 gap-4">
-                        <div className="space-y-2"><Label>Category (Main Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /></div>
-                        <div className="space-y-2"><Label>Sub-Topic (Sub Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Differentiation' : subject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /></div>
-                        <div className="space-y-2"><Label>Target Student Category</Label><Select value={manualData.gradeLevel} onValueChange={(v) => setManualData({...manualData, gradeLevel: v})}><SelectTrigger className="h-12 bg-slate-800 border-slate-700 text-white rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+                        <div className="space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase tracking-wider">Category (Main Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-12 rounded-xl focus:border-indigo-550 focus:ring-0" /></div>
+                        <div className="space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase tracking-wider">Sub-Topic (Sub Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Differentiation' : subject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-12 rounded-xl focus:border-indigo-550 focus:ring-0" /></div>
+                        <div className="space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase tracking-wider">Target Student Category</Label><Select value={manualData.gradeLevel} onValueChange={(v) => setManualData({...manualData, gradeLevel: v})}><SelectTrigger className="h-12 bg-slate-950 border-slate-800 text-white font-bold rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
                     </div>
                     <div className="space-y-4">
-                        <Input placeholder="Problem/Passage Title" value={manualData.title} onChange={e => setManualData({...manualData, title: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl text-lg font-bold" />
-                        {subject === 'math' && <div className="grid md:grid-cols-2 gap-4"><div><Textarea placeholder="LaTeX Formula (e.g. \frac{x}{y})" value={manualData.latexFormula} onChange={e => setManualData({...manualData, latexFormula: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl font-mono" /><Input placeholder="Instruction (e.g. Solve for x)" value={manualData.instruction} onChange={e => setManualData({...manualData, instruction: e.target.value})} className="bg-slate-800 border-slate-700 text-white mt-2" /><Input placeholder="Final Answer" value={manualData.answer} onChange={e => setManualData({...manualData, answer: e.target.value})} className="bg-slate-800 border-slate-700 text-white mt-2" /></div><div className="bg-slate-950 p-6 rounded-2xl flex flex-col justify-center items-center border-2 border-dashed border-slate-800"><p className="text-[10px] font-black text-slate-600 uppercase mb-4 tracking-widest">Live Math Preview</p><div className="text-2xl text-emerald-400">{manualData.latexFormula ? <SafeMath formula={manualData.latexFormula} /> : <span className="opacity-20 italic text-sm">Formula will render here</span>}</div></div></div>}
-                        {subject === 'english' && <div className="space-y-4"><Textarea placeholder="Full Literary Passage Content..." value={manualData.content} onChange={e => setManualData({...manualData, content: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-48 rounded-xl" /><div className="grid grid-cols-3 gap-2">{[0,1,2].map(i => (<div key={i} className="p-3 bg-slate-800/50 rounded-xl space-y-2"><Label className="text-[9px] text-indigo-400 font-bold uppercase">Quiz Q{i+1}</Label><Input placeholder="Question" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].question} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], question: e.target.value}; setManualData({...manualData, quiz: n});}} /><Input placeholder="Answer" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].answer} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], answer: e.target.value}; setManualData({...manualData, quiz: n});}} /></div>))}</div></div>}
-                        {subject === 'science' && <div className="grid md:grid-cols-2 gap-4"><Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" /><Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" /><div className="md:col-span-2 grid grid-cols-3 gap-2">{manualData.hypothesisOptions.map((opt: string, i: number) => (<Input key={i} placeholder={`Option ${i+1}`} value={opt} onChange={e => {const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});}} className="bg-slate-800 border-slate-700 text-white h-10 rounded-lg" />))}<Input placeholder="Icon Emoji (e.g. 🔬)" value={manualData.icon} onChange={e => setManualData({...manualData, icon: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /><Input placeholder="Conclusion" value={manualData.conclusion} onChange={e => setManualData({...manualData, conclusion: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /><Textarea placeholder="Explanation" value={manualData.explanation} onChange={e => setManualData({...manualData, explanation: e.target.value})} className="md:col-span-2 bg-slate-800 border-slate-700 text-white h-24 rounded-xl" /></div></div>}
+                        <Input placeholder="Problem/Passage Title" value={manualData.title} onChange={e => setManualData({...manualData, title: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-12 rounded-xl text-lg font-bold focus:border-indigo-550 focus:ring-0" />
+                        {subject === 'math' && <div className="grid md:grid-cols-2 gap-4"><div><Textarea placeholder="LaTeX Formula (e.g. \frac{x}{y})" value={manualData.latexFormula} onChange={e => setManualData({...manualData, latexFormula: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-32 rounded-xl font-mono focus:border-indigo-550 focus:ring-0" /><Input placeholder="Instruction (e.g. Solve for x)" value={manualData.instruction} onChange={e => setManualData({...manualData, instruction: e.target.value})} className="bg-slate-950 border-slate-800 text-white mt-2 h-11 rounded-lg" /><Input placeholder="Final Answer" value={manualData.answer} onChange={e => setManualData({...manualData, answer: e.target.value})} className="bg-slate-950 border-slate-800 text-white mt-2 h-11 rounded-lg" /></div><div className="bg-slate-950 p-6 rounded-2xl flex flex-col justify-center items-center border-2 border-dashed border-slate-800"><p className="text-[10px] font-black text-slate-600 uppercase mb-4 tracking-widest">Live Math Preview</p><div className="text-2xl text-emerald-450">{manualData.latexFormula ? <SafeMath formula={manualData.latexFormula} /> : <span className="opacity-20 italic text-sm text-slate-500">Formula will render here</span>}</div></div></div>}
+                        {subject === 'english' && <div className="space-y-4"><Textarea placeholder="Full Literary Passage Content..." value={manualData.content} onChange={e => setManualData({...manualData, content: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-48 rounded-xl focus:border-indigo-550 focus:ring-0" /><div className="grid grid-cols-3 gap-2">{[0,1,2].map(i => (<div key={i} className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2"><Label className="text-[9px] text-indigo-400 font-bold uppercase">Quiz Q{i+1}</Label><Input placeholder="Question" className="h-8 text-xs bg-slate-900 border-none text-white focus:ring-0" value={manualData.quiz[i].question} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], question: e.target.value}; setManualData({...manualData, quiz: n});}} /><Input placeholder="Answer" className="h-8 text-xs bg-slate-900 border-none text-white focus:ring-0" value={manualData.quiz[i].answer} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], answer: e.target.value}; setManualData({...manualData, quiz: n});}} /></div>))}</div></div>}
+                        {subject === 'science' && <div className="grid md:grid-cols-2 gap-4"><Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-32 rounded-xl focus:border-indigo-550 focus:ring-0" /><Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-32 rounded-xl focus:border-indigo-550 focus:ring-0" /><div className="md:col-span-2 grid grid-cols-3 gap-2">{manualData.hypothesisOptions.map((opt: string, i: number) => (<Input key={i} placeholder={`Option ${i+1}`} value={opt} onChange={e => {const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});}} className="bg-slate-950 border-slate-800 text-white h-10 rounded-lg" />))}<Input placeholder="Icon Emoji (e.g. 🔬)" value={manualData.icon} onChange={e => setManualData({...manualData, icon: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-12 rounded-xl mt-2" /><Input placeholder="Conclusion" value={manualData.conclusion} onChange={e => setManualData({...manualData, conclusion: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-12 rounded-xl mt-2" /><Textarea placeholder="Explanation" value={manualData.explanation} onChange={e => setManualData({...manualData, explanation: e.target.value})} className="md:col-span-2 bg-slate-950 border-slate-800 text-white h-24 rounded-xl mt-2 focus:border-indigo-550 focus:ring-0" /></div></div>}
                     </div>
-                    <Button onClick={handleManualSave} disabled={loading} className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black shadow-xl">
-                        {loading ? <Loader2 className="animate-spin" /> : <><Save className="mr-2" /> PUBLISH MANUAL MISSION</>}
+                    <Button onClick={handleManualSave} disabled={loading} className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black shadow-xl flex items-center justify-center gap-2">
+                        {loading ? <Loader2 className="animate-spin h-5 w-5" /> : <><Save className="h-5 w-5" /> Publish Manual Mission</>}
                     </Button>
                 </div>
             )}
@@ -759,17 +954,30 @@ export default function SeniorAcademyPage() {
     }, [forceMath, forceEnglish, forceScience]);
     
     return (
-        <div className="space-y-8 p-1">
-            <Card className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-[48px] shadow-2xl border-b-8 border-slate-700">
-                <CardHeader className="p-10">
-                    <CardTitle className="text-5xl font-black flex items-center gap-4">
-                        <Rocket className="w-12 h-12 text-indigo-400" />
-                        <span>Senior Academy</span>
-                    </CardTitle>
-                    <CardDescription className="text-slate-400 text-lg max-w-2xl mt-2">
-                        Advanced, folder-organized learning modules for focused study in Mathematics, Literature, and Scientific Discovery, complete with AI-powered content generation for teachers.
-                    </CardDescription>
-                </CardHeader>
+        <div className="space-y-8 p-6 bg-slate-950 text-slate-100 rounded-3xl min-h-screen relative overflow-hidden border border-slate-900 shadow-2xl">
+            {/* Ambient background glows */}
+            <div className="absolute top-10 left-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
+
+            <Card className="bg-gradient-to-br from-indigo-950 via-slate-900 to-violet-950 text-white rounded-[36px] shadow-2xl relative overflow-hidden border-b-8 border-indigo-500/20 p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-800">
+                <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full rotate-45 pointer-events-none"></div>
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full rotate-45 pointer-events-none"></div>
+                
+                <div className="flex items-center gap-6 z-10">
+                    <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/10 shadow-lg hover:rotate-12 transition-transform duration-300">
+                        <Rocket className="h-14 w-14 text-indigo-400 animate-pulse" />
+                    </div>
+                    <div>
+                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight flex items-center gap-2">
+                            Senior Academy <Sparkles className="w-7 h-7 text-indigo-400 animate-pulse" />
+                        </h1>
+                        <p className="text-slate-300/80 font-bold text-lg mt-1">Advanced subject modules and scientific discoveries.</p>
+                    </div>
+                </div>
+
+                <div className="z-10 bg-slate-900/60 backdrop-blur-md border border-slate-800 p-4 rounded-2xl shadow-inner min-w-[200px] flex justify-center items-center">
+                    <CreditBalance />
+                </div>
             </Card>
 
             <div className="space-y-12">
@@ -777,15 +985,36 @@ export default function SeniorAcademyPage() {
                 {canEdit && <div className="mb-8"><AdminConsole onContentAdded={handleContentUpdate} /></div>}
 
                 <Tabs defaultValue="math" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
-                        <TabsTrigger value="math" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
-                            <SigmaIcon className="w-6 h-6"/> Advanced Math Lab
+                    <TabsList className="grid w-full grid-cols-3 h-20 bg-slate-950 p-2 rounded-[24px] shadow-2xl border border-slate-850 mb-12">
+                        <TabsTrigger 
+                            value="math" 
+                            className={cn(
+                              "h-full rounded-xl text-base font-black flex items-center gap-2 transition-all duration-300",
+                              "data-[state=active]:bg-gradient-to-b data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg",
+                              "text-slate-400 hover:text-slate-200"
+                            )}
+                        >
+                            <SigmaIcon className="w-5 h-5"/> Advanced Math Lab
                         </TabsTrigger>
-                        <TabsTrigger value="english" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
-                            <LanguagesIcon className="w-6 h-6"/> English Mastery
+                        <TabsTrigger 
+                            value="english" 
+                            className={cn(
+                              "h-full rounded-xl text-base font-black flex items-center gap-2 transition-all duration-300",
+                              "data-[state=active]:bg-gradient-to-b data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg",
+                              "text-slate-400 hover:text-slate-200"
+                            )}
+                        >
+                            <LanguagesIcon className="w-5 h-5"/> English Mastery
                         </TabsTrigger>
-                        <TabsTrigger value="science" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
-                            <AtomIcon className="w-6 h-6"/> Discovery Lab
+                        <TabsTrigger 
+                            value="science" 
+                            className={cn(
+                              "h-full rounded-xl text-base font-black flex items-center gap-2 transition-all duration-300",
+                              "data-[state=active]:bg-gradient-to-b data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg",
+                              "text-slate-400 hover:text-slate-200"
+                            )}
+                        >
+                            <AtomIcon className="w-5 h-5"/> Discovery Lab
                         </TabsTrigger>
                     </TabsList>
                     

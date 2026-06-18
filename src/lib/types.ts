@@ -1087,6 +1087,7 @@ export const elaGrammarDrillSchema = z.object({
 export type ElaGrammarDrill = z.infer<typeof elaGrammarDrillSchema> & {
   id: string;
   schoolId?: string;
+  classId?: string;
 };
 
 export const elaReadingPassageSchema = z.object({
@@ -1104,6 +1105,7 @@ export const elaReadingPassageSchema = z.object({
 export type ElaReadingPassage = z.infer<typeof elaReadingPassageSchema> & {
   id: string;
   schoolId?: string;
+  classId?: string;
 };
 
 export const elaWritingChallengeSchema = z.object({
@@ -1115,6 +1117,7 @@ export const elaWritingChallengeSchema = z.object({
 export type ElaWritingChallenge = z.infer<typeof elaWritingChallengeSchema> & {
   id: string;
   schoolId?: string;
+  classId?: string;
 };
 
 export interface ElaUserSubmission {

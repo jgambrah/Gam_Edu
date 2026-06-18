@@ -148,17 +148,24 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
 
   return (
     <div className="space-y-4">
-      <div className="space-y-4 p-4 border rounded-md">
+      <div className="space-y-5 p-5 bg-slate-950/40 border border-slate-900 rounded-2xl text-slate-100">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <Label>Topic</Label>
-              <Input placeholder="e.g., Algebra" value={topic} onChange={(e) => setTopic(e.target.value)} />
+              <Label className="text-[10px] uppercase font-black tracking-wider text-slate-400">Topic Area</Label>
+              <Input 
+                placeholder="e.g., Algebra" 
+                value={topic} 
+                onChange={(e) => setTopic(e.target.value)} 
+                className="bg-slate-950 border-slate-900 text-slate-100 placeholder:text-slate-600 focus-visible:ring-indigo-500 rounded-xl h-11"
+              />
             </div>
             <div className="space-y-2">
-              <Label>Difficulty</Label>
+              <Label className="text-[10px] uppercase font-black tracking-wider text-slate-400">Difficulty Scale</Label>
               <Select onValueChange={(val: 'Easy' | 'Medium' | 'Hard') => setDifficulty(val)} value={difficulty}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="bg-slate-950 border-slate-900 text-slate-100 focus-visible:ring-indigo-500 rounded-xl h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-950 border-slate-900 text-slate-200">
                     <SelectItem value="Easy">Easy</SelectItem>
                     <SelectItem value="Medium">Medium</SelectItem>
                     <SelectItem value="Hard">Hard</SelectItem>
@@ -166,51 +173,69 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
               </Select>
             </div>
             <div className="space-y-2">
-              <Label># of Questions</Label>
-              <Input type="number" min={1} max={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} />
+              <Label className="text-[10px] uppercase font-black tracking-wider text-slate-400"># of Questions</Label>
+              <Input 
+                type="number" 
+                min={1} 
+                max={10} 
+                value={numQuestions} 
+                onChange={(e) => setNumQuestions(Number(e.target.value))} 
+                className="bg-slate-950 border-slate-900 text-slate-100 focus-visible:ring-indigo-500 rounded-xl h-11"
+              />
             </div>
              <div className="space-y-2">
-              <Label>Assign to Class</Label>
+              <Label className="text-[10px] uppercase font-black tracking-wider text-slate-400">Assign to Class Matrix</Label>
               <Select onValueChange={setClassId} value={classId}>
-                  <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                  <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                  <SelectTrigger className="bg-slate-950 border-slate-900 text-slate-100 focus-visible:ring-indigo-500 rounded-xl h-11">
+                    <SelectValue placeholder="Select a class" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-950 border-slate-900 text-slate-200">{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
               </Select>
             </div>
           </div>
-          <Button type="button" onClick={onGenerate} disabled={isGenerating}>
+          <Button 
+            type="button" 
+            onClick={onGenerate} 
+            disabled={isGenerating}
+            className="bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white font-bold h-11 w-full rounded-xl mt-2 shadow-lg shadow-indigo-500/20 transition-all duration-300"
+          >
             {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
             Generate Problems (-5 Credits)
           </Button>
       </div>
 
         {generatedProblems && generatedProblems.problems.length > 0 && (
-            <Card className="bg-muted/50">
-            <CardHeader>
-                <CardTitle>Generated Problems</CardTitle>
-                <CardDescription>Review the generated questions. Select a class and click "Save Problems" to add them to the problem bank.</CardDescription>
+            <Card className="bg-slate-950 border border-slate-900 text-slate-100 rounded-2xl overflow-hidden mt-4 shadow-xl">
+            <CardHeader className="border-b border-slate-900/60 p-5">
+                <CardTitle className="text-lg font-black text-white">Generated Problems</CardTitle>
+                <CardDescription className="text-slate-400 text-xs mt-1">Review the generated questions. Select a class and click "Save Problems" to add them to the problem bank.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-5">
                 <ScrollArea className="h-60 w-full pr-4">
                     <Accordion type="single" collapsible className="w-full">
                         {generatedProblems.problems.map((p, index) => (
-                        <AccordionItem value={`item-${index}`} key={index}>
-                            <AccordionTrigger>Question {index + 1}: {p.question_text}</AccordionTrigger>
-                            <AccordionContent>
-                            <ul className="space-y-2 list-disc pl-5">
-                                {p.options.map((opt, i) => (
-                                <li key={i} className={opt === p.correct_answer ? 'font-semibold text-green-600' : ''}>
-                                    {opt}
-                                </li>
-                                ))}
-                            </ul>
+                        <AccordionItem value={`item-${index}`} key={index} className="border-b border-slate-900/60">
+                            <AccordionTrigger className="text-sm font-bold text-slate-350 hover:text-white transition-colors py-3 text-left">Question {index + 1}: {p.question_text}</AccordionTrigger>
+                            <AccordionContent className="text-slate-300 py-2">
+                              <ul className="space-y-2 list-disc pl-5">
+                                  {p.options.map((opt, i) => (
+                                  <li key={i} className={opt === p.correct_answer ? 'font-bold text-emerald-400' : 'text-slate-400'}>
+                                      {opt}
+                                  </li>
+                                  ))}
+                              </ul>
                             </AccordionContent>
                         </AccordionItem>
                         ))}
                     </Accordion>
                 </ScrollArea>
-                <Button onClick={onSave} disabled={isSaving || !classId}>
-                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Save Problems
+                <Button 
+                  onClick={onSave} 
+                  disabled={isSaving || !classId}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold h-11 w-full rounded-xl shadow-lg shadow-emerald-500/20 transition-all"
+                >
+                  {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Save Problems
                 </Button>
             </CardContent>
             </Card>

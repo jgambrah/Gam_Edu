@@ -93,6 +93,8 @@ export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>
   }
 }
 
+import { checkAndSpendCredits } from '@/app/actions/credits';
+
 // --- AI ACTION: PYTHON TUTOR ---
 const TutorSchema = z.object({
   explanation: z.string().describe("A helpful explanation of the concept or the error."),
@@ -105,9 +107,15 @@ export async function getPythonTutorHelp(context: {
   lesson: string, 
   task: string, 
   userCode: string, 
-  question: string 
+  question: string,
+  schoolId: string
 }) {
   try {
+    const creditResult = await checkAndSpendCredits(context.schoolId, 1);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Not enough AI credits to ask Dr. Gam." };
+    }
+
     const prompt = `You are a professional Python Tutor for a student in ${context.phase}.
     Current Lesson: ${context.lesson}
     Current Task: ${context.task}
@@ -127,7 +135,7 @@ export async function getPythonTutorHelp(context: {
 
     const { output } = await ai.generate({ model: 'googleai/gemini-3-flash-preview', prompt, output: { schema: TutorSchema } });
     return { success: true, data: output };
-  } catch (error) {
-    return { success: false, error: "Tutor is currently busy. Try again!" };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Tutor is currently busy. Try again!" };
   }
 }

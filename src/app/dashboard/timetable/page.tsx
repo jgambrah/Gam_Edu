@@ -37,6 +37,7 @@ import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import CreditBalance from '@/components/CreditBalance';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
@@ -723,58 +724,147 @@ export default function TimetablePage() {
     };
   }, [timeSlots, rooms, subjects, classes, allTeachers]);
 
+  const stats = useMemo(() => {
+      const lessonSlots = timeSlots?.filter(ts => ts.type === 'Lesson' || !ts.type) || [];
+      const totalPeriods = lessonSlots.filter(ts => !ts.classId || ts.classId === selectedClassId).length || 0;
+      
+      const assignedCount = filteredTimetable.length;
+      const openSlots = Math.max(0, totalPeriods - assignedCount);
+      const utilization = totalPeriods > 0 ? Math.round((assignedCount / totalPeriods) * 100) : 0;
+      
+      const breakTimeSlots = timeSlots?.filter(ts => ts.type === 'Break' || ts.type === 'Lunch' || ts.type === 'Worship' || ts.type === 'Event') || [];
+      const filteredBreaks = breakTimeSlots.filter(ts => !ts.classId || ts.classId === selectedClassId);
+      
+      let totalBreakMinutes = 0;
+      filteredBreaks.forEach(ts => {
+          try {
+              const [sHour, sMin] = ts.startTime.split(':').map(Number);
+              const [eHour, eMin] = ts.endTime.split(':').map(Number);
+              const diff = (eHour * 60 + eMin) - (sHour * 60 + sMin);
+              if (diff > 0) totalBreakMinutes += diff;
+          } catch(e) {}
+      });
+
+      return {
+          totalPeriods,
+          assignedCount,
+          openSlots,
+          utilization,
+          totalBreakMinutes
+      };
+  }, [timeSlots, filteredTimetable, selectedClassId]);
+
   if (!canAccess && !isLoadingSchool) return <Card className="p-8 text-center text-red-500">Access Denied</Card>;
 
   return (
     <div className="space-y-6">
+      {/* Premium Gradient Banner */}
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 p-8 md:p-10 shadow-xl border border-indigo-950/20 text-white">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/15 rounded-full blur-[80px]" />
+          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-600/10 rounded-full blur-[80px]" />
+
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div className="space-y-4">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-indigo-200 text-xs font-black uppercase tracking-wider">
+                      <CalendarDays className="h-3.5 w-3.5" /> Academic Planning Hub
+                  </div>
+                  <div className="space-y-2">
+                      <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight uppercase italic">
+                          Timetable & AI Planner
+                      </h1>
+                      <p className="text-indigo-200/80 text-sm md:text-base max-w-xl font-medium leading-relaxed font-sans">
+                          Generate weekly timetables dynamically, manage room locations, and configure time slots. Powered by Gemini AI constraints engine.
+                      </p>
+                  </div>
+              </div>
+              
+              <div className="shrink-0 bg-white/5 border border-white/10 rounded-2xl p-3 backdrop-blur-sm">
+                  <CreditBalance />
+              </div>
+          </div>
+      </div>
+
       <Tabs defaultValue="view" className="w-full">
-        <div className="flex justify-between items-center mb-6">
-            <TabsList className="bg-slate-100 p-1 rounded-xl">
-                <TabsTrigger value="view" className="rounded-lg font-bold px-6">Timetable View</TabsTrigger>
-                {canManage && <TabsTrigger value="config" className="rounded-lg font-bold px-6">Configuration</TabsTrigger>}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <TabsList className="bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/50 backdrop-blur-sm">
+                <TabsTrigger value="view" className="rounded-xl font-black text-xs uppercase px-6 py-2.5 flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4" /> Timetable View
+                </TabsTrigger>
+                {canManage && (
+                    <TabsTrigger value="config" className="rounded-xl font-black text-xs uppercase px-6 py-2.5 flex items-center gap-2">
+                        <Settings2 className="h-4 w-4" /> Configuration
+                    </TabsTrigger>
+                )}
             </TabsList>
-            <div className="flex gap-2">
-                <Button variant="outline" onClick={() => { refetchTimetable(); refetchSlots(); refetchRooms(); }} className="gap-2">
-                    <RefreshCw className={cn("h-4 w-4", isTimetableLoading && "animate-spin")} /> Sync Data
+            
+            <div className="flex gap-2 w-full sm:w-auto">
+                <Button variant="outline" onClick={() => { refetchTimetable(); refetchSlots(); refetchRooms(); }} className="gap-2 rounded-xl font-bold border-slate-200 hover:bg-slate-50/50 shadow-sm flex-1 sm:flex-initial justify-center">
+                    <RefreshCw className={cn("h-4 w-4 text-indigo-650", isTimetableLoading && "animate-spin")} /> Sync Data
                 </Button>
                 {canManage && selectedClassId && (
-                    <Button onClick={() => { setEditingEntry(null); setIsManualOpen(true); }} className="bg-slate-800">
-                        <Plus className="mr-2 h-4 w-4"/> Manual Assignment
+                    <Button onClick={() => { setEditingEntry(null); setIsManualOpen(true); }} className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold shadow-md flex-1 sm:flex-initial justify-center">
+                        <Plus className="mr-2 h-4 w-4 text-indigo-400"/> Manual Assignment
                     </Button>
                 )}
             </div>
         </div>
 
         <TabsContent value="view" className="space-y-6">
-            <Card className="border-t-4 border-t-indigo-600 shadow-sm">
-                <CardHeader>
+            {/* Dynamic stats row */}
+            {selectedClassId && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in duration-300">
+                    <Card className="rounded-3xl border border-slate-150/80 bg-white p-5 shadow-sm hover:shadow-md transition-all">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Scheduled Periods</p>
+                        <p className="text-2xl font-black text-indigo-650 mt-1">{stats.assignedCount}</p>
+                        <p className="text-[9px] font-bold text-slate-500 uppercase mt-0.5">Lessons Active</p>
+                    </Card>
+                    <Card className="rounded-3xl border border-slate-150/80 bg-white p-5 shadow-sm hover:shadow-md transition-all">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Available Slots</p>
+                        <p className="text-2xl font-black text-slate-800 mt-1">{stats.openSlots}</p>
+                        <p className="text-[9px] font-bold text-slate-500 uppercase mt-0.5">Periods Free</p>
+                    </Card>
+                    <Card className="rounded-3xl border border-slate-150/80 bg-white p-5 shadow-sm hover:shadow-md transition-all">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class Utilization</p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className="text-2xl font-black text-emerald-650">{stats.utilization}%</span>
+                            <div className="h-1.5 w-12 bg-slate-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${stats.utilization}%` }} />
+                            </div>
+                        </div>
+                        <p className="text-[9px] font-bold text-slate-500 uppercase mt-0.5">Occupancy Rate</p>
+                    </Card>
+                    <Card className="rounded-3xl border border-slate-150/80 bg-white p-5 shadow-sm hover:shadow-md transition-all">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Recess & Breaks</p>
+                        <p className="text-2xl font-black text-amber-650 mt-1">{stats.totalBreakMinutes}m</p>
+                        <p className="text-[9px] font-bold text-slate-500 uppercase mt-0.5">Recess Duration</p>
+                    </Card>
+                </div>
+            )}
+
+            <Card className="border border-slate-150/80 rounded-[2rem] shadow-md overflow-hidden">
+                <CardHeader className="bg-slate-50/50 p-6 md:p-8 border-b border-slate-150/80">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
-                            <CardTitle className="text-2xl font-black text-slate-900 tracking-tight italic uppercase">
-                                <CalendarDays className="h-6 w-6 text-indigo-600"/> Weekly Schedule
+                            <CardTitle className="text-xl font-black text-slate-900 tracking-tight italic uppercase flex items-center gap-2">
+                                <CalendarDays className="h-5.5 w-5.5 text-indigo-650"/> Weekly Schedule
                             </CardTitle>
-                            <CardDescription>View official class lessons and automated break periods.</CardDescription>
+                            <CardDescription className="text-xs font-semibold text-slate-450 mt-0.5">View official class lessons and scheduled recess slots.</CardDescription>
                         </div>
                         <div className="w-full md:w-64">
                             <Select onValueChange={setSelectedClassId} value={selectedClassId}>
-                                <SelectTrigger className="bg-white border-2 h-11"><SelectValue placeholder="Select Class..." /></SelectTrigger>
-                                <SelectContent>
+                                <SelectTrigger className="bg-white border-2 border-slate-200 h-11 rounded-xl font-bold"><SelectValue placeholder="Select Class..." /></SelectTrigger>
+                                <SelectContent className="rounded-xl">
                                     {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6 md:p-8">
                     {isTimetableLoading ? (
                         <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>
                     ) : selectedClassId ? (
                         <div className="space-y-4">
-                            <div className="flex justify-end px-2">
-                                <p className="text-[10px] font-black uppercase text-indigo-600 tracking-widest bg-indigo-50 px-3 py-1 rounded-full">
-                                    {filteredTimetable.length} Lessons Scheduled
-                                </p>
-                            </div>
                             <TimetableDisplay 
                                 timetable={filteredTimetable}
                                 subjects={subjects || []}
@@ -785,25 +875,26 @@ export default function TimetablePage() {
                             />
                         </div>
                     ) : (
-                        <div className="text-center py-20 bg-slate-50 border-2 border-dashed rounded-3xl">
-                            <Info className="h-10 w-10 text-slate-300 mx-auto mb-2" />
-                            <p className="text-slate-50 font-bold uppercase tracking-widest text-xs">Please select a class to view its timetable.</p>
+                        <div className="text-center py-20 bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-[2rem] p-6">
+                            <Info className="h-10 w-10 text-slate-300 mx-auto mb-2 animate-pulse" />
+                            <p className="text-slate-450 font-bold uppercase tracking-widest text-xs">Please select a class to view its weekly timetable.</p>
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className="bg-slate-50 p-4 flex gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-t">
-                    <span className="flex items-center gap-1"><BookCopy size={12}/> PE, Worship, and Club time should be added as 'Subjects'</span>
-                    <span className="flex items-center gap-1"><Clock size={12}/> Breaks are configured in the 'Configuration' tab</span>
+                <CardFooter className="bg-slate-50/50 p-5 flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-t border-slate-150/80">
+                    <span className="flex items-center gap-1.5"><BookCopy size={12} className="text-indigo-500" /> PE, Worship, and Club time should be added as 'Subjects'</span>
+                    <span className="flex items-center gap-1.5"><Clock size={12} className="text-indigo-500" /> Breaks are configured in the 'Configuration' tab</span>
                 </CardFooter>
             </Card>
 
             {canManage && (
-                <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
-                    <CardHeader className="p-8">
-                        <CardTitle className="flex items-center gap-2 text-emerald-400 uppercase italic tracking-tight"><Wand2 /> AI Scheduler</CardTitle>
-                        <CardDescription className="text-slate-400">Generate a conflict-free school schedule automatically based on institutional logic.</CardDescription>
+                <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px]" />
+                    <CardHeader className="p-8 pb-4">
+                        <CardTitle className="flex items-center gap-2 text-emerald-400 uppercase italic tracking-tight text-xl font-black"><Wand2 /> AI Scheduler Engine</CardTitle>
+                        <CardDescription className="text-slate-400 font-medium">Generate a conflict-free school schedule automatically based on institutional rules.</CardDescription>
                     </CardHeader>
-                    <CardContent className="px-8 pb-8 space-y-8">
+                    <CardContent className="px-8 pb-8 space-y-8 relative z-10">
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <ChecklistItem 
@@ -829,11 +920,11 @@ export default function TimetablePage() {
                         {!readiness.isFullyReady && (
                             <div className="space-y-4 animate-in fade-in duration-500">
                                 {readiness.missingSubjects.length > 0 && (
-                                    <Alert variant="destructive" className="bg-red-900/20 border-red-500/50 text-red-200">
+                                    <Alert variant="destructive" className="bg-red-900/20 border-red-500/50 text-red-200 rounded-2xl">
                                         <AlertTriangle className="h-4 w-4" />
                                         <AlertTitle className="font-bold">Missing Teachers</AlertTitle>
                                         <AlertDescription className="text-xs">
-                                            The following subjects need at least one teacher assigned in Academics {`&gt;`} Subjects:
+                                            The following subjects need at least one teacher assigned in Academics {`>`} Subjects:
                                             <div className="flex flex-wrap gap-2 mt-2">
                                                 {readiness.missingSubjects.map(s => (
                                                     <Badge key={s.id} variant="secondary" className="bg-red-500/20 text-red-200 border-red-500/30">
@@ -846,11 +937,11 @@ export default function TimetablePage() {
                                 )}
 
                                 {readiness.missingRooms.length > 0 && (
-                                    <Alert variant="destructive" className="bg-orange-900/20 border-orange-500/50 text-orange-200">
+                                    <Alert variant="destructive" className="bg-orange-900/20 border-orange-500/50 text-orange-200 rounded-2xl">
                                         <MapPin className="h-4 w-4" />
                                         <AlertTitle className="font-bold">Missing Home Rooms</AlertTitle>
                                         <AlertDescription className="text-xs">
-                                            These classes need a 'Primary Room' assigned in Academics {`&gt;`} Classes:
+                                            These classes need a 'Primary Room' assigned in Academics {`>`} Classes:
                                             <div className="flex flex-wrap gap-2 mt-2">
                                                 {readiness.missingRooms.map(c => (
                                                     <Badge key={c.id} variant="secondary" className="bg-orange-50/20 text-orange-200 border-orange-500/30">
@@ -885,7 +976,7 @@ export default function TimetablePage() {
                             
                             <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
                                 <h4 className="text-sm font-bold uppercase text-slate-400 tracking-widest flex items-center gap-2">
-                                    <Settings2 className="h-4 w-4"/> AI Logic Rules
+                                    <Settings2 className="h-4 w-4 text-emerald-400"/> AI Logic Rules
                                 </h4>
                                 <ul className="space-y-3 text-[11px] font-medium text-slate-300">
                                     <li className="flex gap-2">
@@ -937,17 +1028,21 @@ export default function TimetablePage() {
 function ChecklistItem({ icon: Icon, title, status, desc }: { icon: any, title: string, status: boolean, desc: string }) {
     return (
         <div className={cn(
-            "p-4 rounded-2xl border-2 transition-all",
-            status ? "bg-emerald-500/10 border-emerald-500/20" : "bg-rose-500/5 border-rose-500/20 opacity-80"
+            "p-5 rounded-3xl border-2 transition-all duration-300 flex items-center justify-between gap-4",
+            status 
+                ? "bg-emerald-500/10 border-emerald-500/20 text-white" 
+                : "bg-rose-500/5 border-rose-500/15 opacity-85 text-slate-400"
         )}>
-            <div className="flex items-center justify-between mb-2">
-                <div className={cn("p-2 rounded-xl", status ? "bg-emerald-500 text-white" : "bg-rose-500 text-white")}>
-                    <Icon className="h-4 w-4" />
-                </div>
-                {status ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> : <XCircle className="h-5 w-5 text-rose-500" />}
+            <div className="space-y-1">
+                <p className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                    <Icon className={cn("h-4 w-4 shrink-0", status ? "text-emerald-400" : "text-rose-400")} />
+                    {title}
+                </p>
+                <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">{desc}</p>
             </div>
-            <p className="font-bold text-sm text-white">{title}</p>
-            <p className="text-[10px] text-slate-400 font-medium uppercase mt-1">{desc}</p>
+            <div className={cn("p-1.5 rounded-full shrink-0", status ? "bg-emerald-500 text-slate-950" : "bg-rose-500/20 text-rose-400 border border-rose-500/30")}>
+                {status ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+            </div>
         </div>
     );
 }
