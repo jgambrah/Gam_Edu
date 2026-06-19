@@ -55,6 +55,7 @@ type Student = {
     lastName: string;
     parentId?: string;
     schoolId?: string;
+    enrollmentStatus?: 'Active' | 'Graduated' | 'Inactive';
 };
 
 // --- MAIN PAGE COMPONENT ---
@@ -252,7 +253,7 @@ export default function ParentsPage() {
   const filteredParents = useMemo(() => parents.filter(p => searchStudent(p as any, searchTerm)), [parents, searchTerm]);
   
   const filteredStudentsForModal = useMemo(() => {
-      let list = students.filter(s => searchStudent(s as any, studentSearch));
+      let list = students.filter(s => s.enrollmentStatus !== 'Inactive' && searchStudent(s as any, studentSearch));
       if (showOnlyUnlinked) {
           list = list.filter(s => !s.parentId || selectedStudentIds.includes(s.uid) || (editingParent && s.parentId === editingParent.uid));
       }
@@ -360,7 +361,10 @@ export default function ParentsPage() {
                       <TableCell className="py-4 text-slate-600 text-sm font-medium">{p.email}</TableCell>
                       <TableCell className="py-4">
                         <Badge variant="secondary" className="font-bold text-xs bg-slate-100 text-slate-700 border border-slate-200/50 rounded-md px-2 py-0.5">
-                          {p.studentIds?.length || 0} Students
+                          {p.studentIds?.filter((sid: string) => {
+                            const foundStudent = students.find(s => s.uid === sid);
+                            return foundStudent && foundStudent.enrollmentStatus !== 'Inactive';
+                          }).length || 0} Students
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right py-4 px-6">

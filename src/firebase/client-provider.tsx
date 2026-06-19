@@ -5,7 +5,7 @@ import React, { useMemo, type ReactNode } from 'react';
 import { FirebaseProvider } from '@/firebase/provider';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { initializeFirestore, getFirestore, Firestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore'; 
+import { initializeFirestore, getFirestore, Firestore, memoryLocalCache } from 'firebase/firestore'; 
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
@@ -46,15 +46,13 @@ function initializeFirebaseOnClient(): FirebaseServices | null {
   
   let firestoreInstance: Firestore;
   try {
-    // Correct way to initialize with multi-tab coordinated local cache
+    // Disable offline IndexedDB cache to prevent loading latency and transaction abort errors
     firestoreInstance = initializeFirestore(app, {
-      localCache: persistentLocalCache({
-        tabManager: persistentMultipleTabManager()
-      })
+      localCache: memoryLocalCache({})
     });
   } catch (e) {
     // Fallback if initialization settings differ
-    console.warn("Firestore persistence failed to initialize, falling back to in-memory:", e);
+    console.warn("Firestore initialization failed, falling back to default:", e);
     firestoreInstance = getFirestore(app);
   }
 

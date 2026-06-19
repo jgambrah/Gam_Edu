@@ -253,7 +253,12 @@ export default function AttendanceReportsPage() {
         if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
         return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
     }, [firestore, schoolId, isRoleLoading, canAccess]);
-    const { data: students, isLoading: isLoadingStudents } = useCollection(studentsQuery);
+    const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<any>(studentsQuery);
+
+    const students = useMemo(() => {
+        if (!rawStudents) return [];
+        return rawStudents.filter((s: any) => s.enrollmentStatus !== 'Inactive');
+    }, [rawStudents]);
 
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
@@ -274,9 +279,11 @@ export default function AttendanceReportsPage() {
                 const recordDate = record.date?.toDate ? record.date.toDate() : new Date(record.date);
                 if (recordDate < fromDate || recordDate > toDate) return false;
                 if (selectedClassId !== 'all' && record.classId !== selectedClassId) return false;
+                
+                const student = studentMap.get(record.studentId);
+                if (!student) return false;
+
                 if (searchStudentTerm.trim()) {
-                    const student = studentMap.get(record.studentId);
-                    if (!student) return false;
                     const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
                     if (!fullName.includes(searchStudentTerm.toLowerCase().trim())) return false;
                 }

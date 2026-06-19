@@ -77,12 +77,13 @@ export default function EnrollmentReportsPage() {
     const reportData = useMemo(() => {
         if (!students || !classes || !staff) return null;
         
-        const totalStudents = students.length;
+        const activeStudents = students.filter(s => s.enrollmentStatus !== 'Inactive');
+        const totalStudents = activeStudents.length;
         const totalStaff = staff.length;
         const totalClasses = classes.length;
 
         // Student gender breakdown
-        const genderDistribution = students.reduce((acc, student) => {
+        const genderDistribution = activeStudents.reduce((acc, student) => {
             const gender = student.gender || 'Other';
             acc[gender] = (acc[gender] || 0) + 1;
             return acc;
@@ -101,7 +102,7 @@ export default function EnrollmentReportsPage() {
 
         // Class enrollment, capacity, and utilization rate
         const classEnrollment = classes.map(c => {
-            const studentCount = students.filter(s => s.classId === c.id).length;
+            const studentCount = activeStudents.filter(s => s.classId === c.id).length;
             const cap = c.capacity || 0;
             const utilization = cap > 0 ? (studentCount / cap) * 100 : 0;
             return { 
@@ -126,7 +127,7 @@ export default function EnrollmentReportsPage() {
         classes.forEach(c => {
             if (c.capacity && c.capacity > 0) {
                 totalCapacity += c.capacity;
-                const studentCount = students.filter(s => s.classId === c.id).length;
+                const studentCount = activeStudents.filter(s => s.classId === c.id).length;
                 occupiedSeats += studentCount;
             }
         });
@@ -166,13 +167,15 @@ export default function EnrollmentReportsPage() {
     // Student list search filter
     const filteredStudents = useMemo(() => {
         if (!students) return [];
-        return students.filter(s => {
-            const fullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-            const classObj = classes?.find(c => c.id === s.classId);
-            const className = (classObj?.name || 'N/A').toLowerCase();
-            return fullName.includes(studentSearchQuery.toLowerCase()) || 
-                   className.includes(studentSearchQuery.toLowerCase());
-        });
+        return students
+            .filter(s => s.enrollmentStatus !== 'Inactive')
+            .filter(s => {
+                const fullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const classObj = classes?.find(c => c.id === s.classId);
+                const className = (classObj?.name || 'N/A').toLowerCase();
+                return fullName.includes(studentSearchQuery.toLowerCase()) || 
+                       className.includes(studentSearchQuery.toLowerCase());
+            });
     }, [students, classes, studentSearchQuery]);
 
     // Staff list search filter

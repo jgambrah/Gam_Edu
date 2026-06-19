@@ -100,7 +100,12 @@ export default function AcademicReportsPage() {
         if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
         return query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
     }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
-    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+    const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+
+    const students = useMemo(() => {
+        if (!rawStudents) return [];
+        return rawStudents.filter(s => s.enrollmentStatus !== 'Inactive');
+    }, [rawStudents]);
 
     // Query ALL Assessments for the selected class (so we can compile multi-subject aggregates in-memory)
     const assessmentsQuery = useMemoFirebase(() => {

@@ -174,10 +174,11 @@ function NewChatDialog({ open, setOpen, onStartChat, schoolId }: {
                 };
             }) as SearchUser[];
 
-            const filtered = users.filter(u => 
-                ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (u.email || '').toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            const filtered = users.filter(u => {
+                if (searchRole === 'students' && (u as any).enrollmentStatus === 'Inactive') return false;
+                return ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (u.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+            });
             setResults(filtered);
         } catch (e) { 
             console.error("Messaging Search Error:", e); 
@@ -328,10 +329,11 @@ function NewGroupDialog({ open, setOpen, onCreateGroup, schoolId }: {
                 };
             }) as SearchUser[];
 
-            const filtered = users.filter(u => 
-                ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (u.email || '').toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            const filtered = users.filter(u => {
+                if (searchRole === 'students' && (u as any).enrollmentStatus === 'Inactive') return false;
+                return ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (u.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+            });
             setResults(filtered);
         } catch (e) {
             console.error("Group Search Error:", e);
@@ -573,11 +575,12 @@ function GroupDetailsDialog({ open, setOpen, chat, currentUser, onUpdateGroup, o
                 role: d.data().role || (searchRole === 'students' ? 'Student' : 'Staff')
             })) as SearchUser[];
 
-            const filtered = users.filter(u => 
-                !chat.participants.includes(u.uid) && 
+            const filtered = users.filter(u => {
+                if (searchRole === 'students' && (u as any).enrollmentStatus === 'Inactive') return false;
+                return !chat.participants.includes(u.uid) && 
                 (((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase()) ||
-                 (u.email || '').toLowerCase().includes(searchTerm.toLowerCase()))
-            );
+                 (u.email || '').toLowerCase().includes(searchTerm.toLowerCase()));
+            });
             setResults(filtered);
         } catch (e) {
             console.error("Search Group Add Member Error:", e);
@@ -2975,7 +2978,7 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
             const parentsSnap = await getDocs(query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)));
             
             setEstimateCounts({
-                students: studentsSnap.docs.filter(d => d.id !== currentUser?.uid).length,
+                students: studentsSnap.docs.filter(d => d.id !== currentUser?.uid && d.data().enrollmentStatus !== 'Inactive').length,
                 staff: staffSnap.docs.filter(d => d.id !== currentUser?.uid).length,
                 parents: parentsSnap.docs.filter(d => d.id !== currentUser?.uid).length
             });
@@ -3024,9 +3027,10 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
                 };
             }) as BroadcastRecipient[];
 
-            const filtered = users.filter(u =>
-                ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            const filtered = users.filter(u => {
+                if (customSearchRole === 'students' && (u as any).enrollmentStatus === 'Inactive') return false;
+                return ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase());
+            });
             setSearchResults(filtered.filter(u => u.uid !== currentUser?.uid));
         } catch (e) {
             console.error("Search broadcast error:", e);
@@ -3114,9 +3118,10 @@ function BroadcastDialog({ open, setOpen, schoolId, currentUser, role, onStartBr
                         firstName: data.firstName || '',
                         lastName: data.lastName || '',
                         role: rRole || 'Member',
-                        photoURL: data.photoURL || undefined
+                        photoURL: data.photoURL || undefined,
+                        enrollmentStatus: data.enrollmentStatus
                     };
-                }).filter(u => u.uid !== currentUser?.uid);
+                }).filter(u => u.uid !== currentUser?.uid && !(targetType === 'students' && u.enrollmentStatus === 'Inactive'));
             } catch (err: any) {
                 toast({ variant: 'destructive', title: 'Target Query Failed', description: err.message });
                 setIsUploadingFile(false);

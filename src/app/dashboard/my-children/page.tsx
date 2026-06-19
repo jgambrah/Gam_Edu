@@ -272,13 +272,8 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
         );
     }
     
-    if (!student) {
-        return (
-             <div className="p-4 border-b text-red-500 bg-red-50 rounded-md my-2">
-                <ShieldAlert className="h-4 w-4 inline mr-2" />
-                <span>Student record could not be found.</span>
-            </div>
-        );
+    if (!student || student.enrollmentStatus === 'Inactive') {
+        return null;
     }
 
     return (

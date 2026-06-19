@@ -112,13 +112,17 @@ export default function BulkSMSPage() {
   const bulkTargets = useMemo(() => {
     if (!parents || !students) return [];
 
-    if (targetGroup === 'all') return parents;
+    const activeStudentIds = new Set(students.filter(s => s.enrollmentStatus !== 'Inactive').map(s => s.uid));
+
+    if (targetGroup === 'all') {
+        return parents.filter(p => p.studentIds?.some((sid: string) => activeStudentIds.has(sid)));
+    }
     
     if (targetGroup === 'debtors') {
         if (!financialRecords) return [];
         
         const debtorStudentIds = new Set(financialRecords
-            .filter(r => r.status === 'Unpaid' || r.status === 'Overdue')
+            .filter(r => (r.status === 'Unpaid' || r.status === 'Overdue') && activeStudentIds.has(r.studentId))
             .map(r => r.studentId));
             
         return parents.filter(p => 
@@ -128,7 +132,7 @@ export default function BulkSMSPage() {
     
     if (targetGroup.startsWith('class_')) {
         const classId = targetGroup.replace('class_', '');
-        const studentIdsInClass = students.filter(s => s.classId === classId).map(s => s.uid);
+        const studentIdsInClass = students.filter(s => s.classId === classId && s.enrollmentStatus !== 'Inactive').map(s => s.uid);
         return parents.filter(p => p.studentIds?.some((sid: string) => studentIdsInClass.includes(sid)));
     }
     
@@ -137,15 +141,18 @@ export default function BulkSMSPage() {
 
   // Filter Logic (Manual Selection)
   const filteredManualParents = useMemo(() => {
-    if (!parents) return [];
-    if (!manualSearch.trim()) return parents;
+    if (!parents || !students) return [];
+    const activeStudentIds = new Set(students.filter(s => s.enrollmentStatus !== 'Inactive').map(s => s.uid));
+    const activeParents = parents.filter(p => p.studentIds?.some((sid: string) => activeStudentIds.has(sid)));
+
+    if (!manualSearch.trim()) return activeParents;
     const searchTerm = manualSearch.toLowerCase();
-    return parents.filter(p =>
+    return activeParents.filter(p =>
       (p.firstName?.toLowerCase() || '').includes(searchTerm) ||
       (p.lastName?.toLowerCase() || '').includes(searchTerm) ||
       (p.phone || '').includes(searchTerm)
     );
-  }, [parents, manualSearch]);
+  }, [parents, students, manualSearch]);
 
   // Final Selected Recipient List
   const finalRecipients = mode === 'bulk' ? bulkTargets : parents?.filter(p => selectedParents.includes(p.id)) || [];

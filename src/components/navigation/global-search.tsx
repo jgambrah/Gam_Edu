@@ -80,10 +80,12 @@ export function GlobalSearch() {
         const filteredStudents = studentSnap.docs
           .map(d => ({ id: d.id, ...d.data() }))
           .filter((s: any) => 
-            s.firstName?.toLowerCase().includes(term) || 
-            s.lastName?.toLowerCase().includes(term) ||
-            s.studentId?.toLowerCase().includes(term) ||
-            s.email?.toLowerCase().includes(term)
+            s.enrollmentStatus !== 'Inactive' && (
+              s.firstName?.toLowerCase().includes(term) || 
+              s.lastName?.toLowerCase().includes(term) ||
+              s.studentId?.toLowerCase().includes(term) ||
+              s.email?.toLowerCase().includes(term)
+            )
           )
           .slice(0, 5);
 

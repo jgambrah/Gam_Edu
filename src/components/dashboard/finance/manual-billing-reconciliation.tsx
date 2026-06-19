@@ -104,7 +104,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
             for (const attDoc of attendanceSnap.docs) {
                 const att = attDoc.data();
                 const studentMeta = studentMap.get(att.studentId);
-                if (!studentMeta) continue;
+                if (!studentMeta || studentMeta.enrollmentStatus === 'Inactive') continue;
 
                 const studentName = att.studentName || `${studentMeta.firstName} ${studentMeta.lastName}`;
                 
