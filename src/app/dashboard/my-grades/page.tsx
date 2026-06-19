@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, TrendingUp, BookOpen, User as UserIcon, Calendar, History, Sparkles, X, Info, AlertCircle, Award, ChevronRight, ArrowUpRight } from 'lucide-react';
+import { Loader2, TrendingUp, BookOpen, User as UserIcon, Calendar, History, Sparkles, X, Info, AlertCircle, Award, ChevronRight, ArrowUpRight, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Assessment, Student, Subject } from '@/lib/types';
@@ -407,6 +407,41 @@ export default function MyGradesPage() {
                                                         style={{ width: `${sub.classAverage}%` }}
                                                     />
                                                 </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Subject difficulty coaching advice highlight */}
+                                    <div className="pt-3 border-t border-slate-200 mt-2 space-y-1">
+                                        {sub.average < sub.classAverage - 3 || sub.average < 50 ? (
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-1 text-[9px] font-black text-rose-600 uppercase tracking-wider">
+                                                    <AlertTriangle className="h-3.5 w-3.5 text-rose-500 animate-pulse" />
+                                                    <span>Needs Support: Below Average</span>
+                                                </div>
+                                                <p className="text-[9.5px] text-rose-700 leading-normal font-semibold bg-rose-50/50 p-2 rounded-lg">
+                                                    Advisory: scoring below average in {sub.name}. Encourage daily textbook revisions, review homework answers, or drop a line to the teacher.
+                                                </p>
+                                            </div>
+                                        ) : sub.average > sub.classAverage + 5 ? (
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-1 text-[9px] font-black text-emerald-600 uppercase tracking-wider">
+                                                    <Award className="h-3.5 w-3.5 text-emerald-500" />
+                                                    <span>Excelling in {sub.name}</span>
+                                                </div>
+                                                <p className="text-[9.5px] text-emerald-700 leading-normal font-semibold bg-emerald-50/30 p-2 rounded-lg">
+                                                    Advisory: performing exceptionally! Keep up the encouragement and sustain their structured reading environment.
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-1 text-[9px] font-black text-amber-600 uppercase tracking-wider">
+                                                    <Info className="h-3.5 w-3.5 text-amber-500" />
+                                                    <span>Steady: Average standing</span>
+                                                </div>
+                                                <p className="text-[9.5px] text-amber-700 leading-normal font-semibold bg-amber-50/30 p-2 rounded-lg">
+                                                    Advisory: on track with classmates. Practicing additional quizzes and chapter summaries can help push them above class cohort index.
+                                                </p>
                                             </div>
                                         )}
                                     </div>

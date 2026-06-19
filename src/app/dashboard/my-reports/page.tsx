@@ -153,13 +153,13 @@ export default function MyReportsPage() {
     if (selectedReport) {
         return (
             <div className="space-y-6 max-w-5xl mx-auto pb-20 p-4 md:p-6">
-                <div className="flex justify-between items-center print:hidden bg-slate-55/40 p-4 rounded-2xl border border-slate-100/50 backdrop-blur-md">
+                <div className="flex justify-between items-center print:hidden bg-slate-50/40 p-4 rounded-2xl border border-slate-100/50 backdrop-blur-md">
                     <Button variant="ghost" onClick={() => setSelectedReport(null)} className="gap-2 font-bold hover:bg-slate-100/80 rounded-xl">
                         <ChevronRight className="rotate-180 h-4 w-4" /> Back to List
                     </Button>
                     <div className="flex gap-2">
                         <Button variant="outline" onClick={() => window.print()} className="rounded-xl font-bold border-slate-200 shadow-sm"><Printer className="mr-2 h-4 w-4 text-indigo-600"/> Print</Button>
-                        <Button onClick={handleDownloadPDF} disabled={isExporting} className="bg-indigo-650 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">
+                        <Button onClick={handleDownloadPDF} disabled={isExporting} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">
                             {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>}
                             Download PDF
                         </Button>
@@ -226,7 +226,7 @@ export default function MyReportsPage() {
                         
                         const getAverageColor = (avg: number) => {
                             if (avg >= 80) return 'from-emerald-500 to-teal-500 text-white';
-                            if (avg >= 70) return 'from-indigo-500 to-indigo-650 text-white';
+                            if (avg >= 70) return 'from-indigo-500 to-indigo-600 text-white';
                             if (avg >= 50) return 'from-amber-500 to-orange-500 text-white';
                             return 'from-rose-500 to-red-500 text-white';
                         };
@@ -247,7 +247,7 @@ export default function MyReportsPage() {
                                         </span>
                                     </div>
                                     <CardTitle className="pt-3 text-lg font-black text-slate-800 leading-snug">{report.term}</CardTitle>
-                                    <CardDescription className="text-xs font-semibold text-slate-450 uppercase tracking-wider">
+                                    <CardDescription className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                                         {report.student?.firstName} {report.student?.lastName}
                                     </CardDescription>
                                 </CardHeader>

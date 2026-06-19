@@ -476,6 +476,16 @@ service cloud.firestore {
       allow write: if isAdmin() || getUserRole() == 'Cook';
     }
 
+    match /canteen_requisitions/{reqId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Cook';
+    }
+
+    match /canteen_transactions/{transId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || getUserRole() == 'Cook';
+    }
+
     match /cleaning_tasks/{taskId} {
       allow read, list: if isSignedIn();
       allow write: if isAdmin() || getUserRole() == 'Cleaner';

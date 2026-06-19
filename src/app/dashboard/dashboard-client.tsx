@@ -3,13 +3,13 @@
 import { useMemo, useState, useTransition, useCallback } from 'react';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, 
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
   Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
-  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, ShieldAlert,
+  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, ShieldAlert, Compass, Info,
   ArrowDownRight,
   Activity,
   Database,
@@ -118,14 +118,277 @@ function AdminDashboard({
   attendance,
   schoolId,
 }: any) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'staff' | 'financials' | 'system'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'staff' | 'financials' | 'system' | 'canteen'>('overview');
   const [isAuditorOpen, setIsAuditorOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [auditResult, setAuditResult] = useState<string | null>(null);
   const [auditError, setAuditError] = useState<string | null>(null);
 
   const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
   const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Administrator';
+
+  // Canteen Inventory & Requisitions
+  const canteenInventoryQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'kitchen_inventory'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: canteenInventory } = useCollection<any>(canteenInventoryQuery);
+
+  const pendingRequisitionsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'canteen_requisitions'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+  const { data: canteenRequisitions } = useCollection<any>(pendingRequisitionsQuery);
+
+  // Canteen restock form state
+  const [restockForm, setRestockForm] = useState({ itemId: '', quantity: 0 });
+  const [newPantryForm, setNewPantryForm] = useState({ sku: '', name: '', unit: 'kg', category: 'Dry Goods' });
+  const [isProcessingCanteen, setIsProcessingCanteen] = useState(false);
+  const [canteenFeedback, setCanteenFeedback] = useState<Record<string, string>>({}); // feedback per requisition id
+  const [editingPantryItem, setEditingPantryItem] = useState<any | null>(null);
+  const [historyItem, setHistoryItem] = useState<any | null>(null);
+  const [historyTransactions, setHistoryTransactions] = useState<any[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+
+  const handleApproveRequisition = async (req: any) => {
+    if (!firestore || !schoolId) return;
+    setIsProcessingCanteen(true);
+    try {
+      const batch = writeBatch(firestore);
+      
+      // Update requisition status
+      const reqRef = doc(firestore, 'canteen_requisitions', req.id);
+      batch.update(reqRef, {
+        status: 'Approved',
+        feedback: canteenFeedback[req.id] || '',
+        processedAt: serverTimestamp(),
+        processedBy: user?.uid || '',
+        processedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Admin'
+      });
+
+      // Deduct items from inventory
+      for (const item of req.items) {
+        const itemRef = doc(firestore, 'kitchen_inventory', item.itemId);
+        const itemSnap = await getDoc(itemRef);
+        if (itemSnap.exists()) {
+          const currentQty = Number(itemSnap.data().quantity) || 0;
+          const newQty = Math.max(0, currentQty - Number(item.quantity));
+          let status = 'In Stock';
+          if (newQty === 0) status = 'Out of Stock';
+          else if (newQty < 10) status = 'Low Stock';
+
+          batch.update(itemRef, {
+            quantity: newQty,
+            status,
+            updatedAt: serverTimestamp()
+          });
+
+          // Record subtraction transaction
+          const transRef = doc(collection(firestore, 'canteen_transactions'));
+          batch.set(transRef, {
+            schoolId,
+            itemId: item.itemId,
+            itemName: item.name || itemSnap.data().name || 'Unknown',
+            sku: item.sku || itemSnap.data().sku || '',
+            type: 'OUT',
+            quantity: Number(item.quantity),
+            prevQuantity: currentQty,
+            newQuantity: newQty,
+            source: 'Requisition',
+            notes: `Approved Requisition for Cook: ${req.requestedByName}`,
+            performedBy: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Admin',
+            timestamp: serverTimestamp()
+          });
+        }
+      }
+
+      await batch.commit();
+      toast({ title: 'Requisition Approved', description: 'Pantry quantities deducted successfully.' });
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to approve requisition.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleRejectRequisition = async (req: any) => {
+    if (!firestore || !schoolId) return;
+    setIsProcessingCanteen(true);
+    try {
+      const reqRef = doc(firestore, 'canteen_requisitions', req.id);
+      await setDoc(reqRef, {
+        status: 'Rejected',
+        feedback: canteenFeedback[req.id] || '',
+        processedAt: serverTimestamp(),
+        processedBy: user?.uid || '',
+        processedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Admin'
+      }, { merge: true });
+      toast({ title: 'Requisition Rejected', description: 'Requisition has been marked as rejected.' });
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to reject requisition.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleManualRestock = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firestore || !schoolId || !restockForm.itemId || restockForm.quantity <= 0) return;
+    setIsProcessingCanteen(true);
+    try {
+      const itemRef = doc(firestore, 'kitchen_inventory', restockForm.itemId);
+      const itemSnap = await getDoc(itemRef);
+      if (itemSnap.exists()) {
+        const currentQty = Number(itemSnap.data().quantity) || 0;
+        const newQty = currentQty + Number(restockForm.quantity);
+        let status = 'In Stock';
+        if (newQty === 0) status = 'Out of Stock';
+        else if (newQty < 10) status = 'Low Stock';
+
+        const batch = writeBatch(firestore);
+        batch.update(itemRef, {
+          quantity: newQty,
+          status,
+          updatedAt: serverTimestamp()
+        });
+
+        // Add to transactions log
+        const transRef = doc(collection(firestore, 'canteen_transactions'));
+        batch.set(transRef, {
+          schoolId,
+          itemId: restockForm.itemId,
+          itemName: itemSnap.data().name || 'Unknown',
+          sku: itemSnap.data().sku || '',
+          type: 'IN',
+          quantity: Number(restockForm.quantity),
+          prevQuantity: currentQty,
+          newQuantity: newQty,
+          source: 'Manual Restock',
+          notes: 'Manually restocked by Admin',
+          performedBy: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Admin',
+          timestamp: serverTimestamp()
+        });
+
+        await batch.commit();
+        toast({ title: 'Inventory Restocked', description: `Added ${restockForm.quantity} to ${itemSnap.data().name}.` });
+        setRestockForm({ itemId: '', quantity: 0 });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to restock item.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleAddNewPantryItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firestore || !schoolId || !newPantryForm.name) return;
+    setIsProcessingCanteen(true);
+    const categoryPrefix = newPantryForm.category.substring(0, 3).toUpperCase();
+    const nameClean = newPantryForm.name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
+    const randomNum = Math.floor(100 + Math.random() * 900);
+    const finalSku = newPantryForm.sku.trim() || `CAN-${categoryPrefix}-${nameClean}-${randomNum}`;
+    const docId = `${schoolId}-${newPantryForm.name.replace(/\s+/g, '-').toLowerCase()}`;
+    try {
+      await setDoc(doc(firestore, 'kitchen_inventory', docId), {
+        ...newPantryForm,
+        sku: finalSku,
+        quantity: 0,
+        status: 'Out of Stock',
+        schoolId,
+        updatedAt: serverTimestamp()
+      });
+      toast({ title: 'New Item Registered', description: `${newPantryForm.name} registered as a supply template.` });
+      setNewPantryForm({ sku: '', name: '', unit: 'kg', category: 'Dry Goods' });
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to register item template.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleUpdatePantryItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firestore || !schoolId || !editingPantryItem || !editingPantryItem.id) return;
+    setIsProcessingCanteen(true);
+    try {
+      const itemRef = doc(firestore, 'kitchen_inventory', editingPantryItem.id);
+      await setDoc(itemRef, {
+        name: editingPantryItem.name,
+        sku: editingPantryItem.sku.trim().toUpperCase(),
+        unit: editingPantryItem.unit,
+        category: editingPantryItem.category,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      toast({ title: 'Template Updated', description: `${editingPantryItem.name} has been updated successfully.` });
+      setEditingPantryItem(null);
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to update item template.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleDeletePantryItem = async (item: any) => {
+    if (!firestore || !schoolId) return;
+    if ((item.quantity || 0) > 0) {
+      toast({ 
+        variant: 'destructive', 
+        title: 'Cannot Delete Template', 
+        description: `This template has an active stock balance of ${item.quantity} ${item.unit}. Please deplete or adjust the stock to 0 before deleting.` 
+      });
+      return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete the item template "${item.name}"?`)) {
+      return;
+    }
+
+    setIsProcessingCanteen(true);
+    try {
+      const itemRef = doc(firestore, 'kitchen_inventory', item.id);
+      await deleteDoc(itemRef);
+      toast({ title: 'Template Deleted', description: `Item template "${item.name}" has been deleted.` });
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete item template.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleViewHistory = async (item: any) => {
+    if (!firestore || !schoolId) return;
+    setHistoryItem(item);
+    setIsLoadingHistory(true);
+    try {
+      const q = query(
+        collection(firestore, 'canteen_transactions'),
+        where('schoolId', '==', schoolId),
+        where('itemId', '==', item.id)
+      );
+      const snap = await getDocs(q);
+      const records = snap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      // Sort in-memory to prevent indexing requirements
+      records.sort((a: any, b: any) => {
+        const timeA = a.timestamp?.seconds || 0;
+        const timeB = b.timestamp?.seconds || 0;
+        return timeB - timeA;
+      });
+      
+      setHistoryTransactions(records);
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to fetch transaction history.' });
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
 
   const activeStudents = useMemo(() => {
     return students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus) || [];
@@ -288,6 +551,14 @@ function AdminDashboard({
         badge: "System Operations",
         badgeColor: "bg-amber-500/20 text-amber-300",
         icon: Megaphone,
+      },
+      canteen: {
+        gradient: "from-amber-900 via-orange-950 to-slate-900 border-orange-500/20",
+        title: "Canteen Pantry & Approvals",
+        description: "Approve cook requisitions, deduct stock, log manual restocking, and audit pantry supplies.",
+        badge: "Canteen Operations",
+        badgeColor: "bg-amber-500/20 text-amber-300",
+        icon: ChefHat,
       }
     };
     return bannerMap[activeTab];
@@ -346,7 +617,7 @@ function AdminDashboard({
         <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
           {/* Custom Tab Bar */}
           <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-            {(['overview', 'students', 'staff', 'financials', 'system'] as const).map((tab) => {
+            {(['overview', 'students', 'staff', 'financials', 'canteen', 'system'] as const).map((tab) => {
               if (tab === 'financials' && !hasFinanceAccess) return null;
               return (
                 <button
@@ -921,6 +1192,499 @@ function AdminDashboard({
             </div>
           </div>
         )}
+        {activeTab === 'canteen' && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-in fade-in duration-300">
+            {/* Requisition Board */}
+            <div className="xl:col-span-2 space-y-6">
+              <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
+                <CardHeader className="bg-slate-50/50 p-8 border-b">
+                  <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
+                    <ClipboardList className="h-5 w-5 text-indigo-650" /> Requisition approvals
+                  </CardTitle>
+                  <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">
+                    Process requests submitted by cafeteria cooks
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-8 space-y-6">
+                  {canteenRequisitions && canteenRequisitions.filter((r: any) => r.status === 'Pending').length > 0 ? (
+                    canteenRequisitions.filter((r: any) => r.status === 'Pending').map((req: any) => (
+                      <div key={req.id} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4 hover:shadow-sm transition-all">
+                        <div className="flex justify-between items-start border-b pb-3">
+                          <div>
+                            <h4 className="font-extrabold text-sm text-slate-800 uppercase">{req.requestedByName || 'Cook'}</h4>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">
+                              Submitted {req.createdAt?.toDate ? format(req.createdAt.toDate(), 'PPP p') : 'Just now'}
+                            </p>
+                          </div>
+                          <Badge className="bg-blue-100 text-blue-800 border-none font-black text-[9px] px-3 py-1 rounded-full uppercase tracking-wider animate-pulse">
+                            Pending Approval
+                          </Badge>
+                        </div>
+
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Requested Items</p>
+                          <div className="bg-white rounded-2xl p-4 border border-slate-100 divide-y divide-slate-100 text-xs">
+                            {req.items?.map((it: any, idx: number) => {
+                              const invItem = canteenInventory?.find((i: any) => i.id === it.itemId);
+                              const currentQty = invItem?.quantity || 0;
+                              const isLow = currentQty < it.quantity;
+                              const displaySku = it.sku || invItem?.sku;
+
+                              return (
+                                <div key={idx} className="py-2.5 flex justify-between items-center text-slate-700">
+                                  <div>
+                                    <span className="font-semibold">
+                                      {displaySku ? `[${displaySku}] ` : ''}{it.name}
+                                    </span>
+                                    <span className="text-[10px] text-slate-400 block">Current stock: {currentQty} {it.unit}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {isLow && (
+                                      <Badge variant="outline" className="text-[8px] font-bold text-rose-600 border-rose-200 bg-rose-50/50 uppercase">
+                                        Insufficient Stock
+                                      </Badge>
+                                    )}
+                                    <span className="font-mono font-bold text-slate-900">{it.quantity} {it.unit}</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {req.notes && (
+                          <div className="text-xs text-slate-500 bg-slate-100/50 p-3 rounded-xl border border-slate-100 italic">
+                            <span className="font-bold not-italic text-slate-400 uppercase block text-[8px] mb-1">Cook Notes:</span>
+                            "{req.notes}"
+                          </div>
+                        )}
+
+                        <div className="space-y-2 pt-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Process Response / Feedback</label>
+                          <Input
+                            placeholder="Add approval context or reject reasons..."
+                            value={canteenFeedback[req.id] || ''}
+                            onChange={e => setCanteenFeedback({...canteenFeedback, [req.id]: e.target.value})}
+                            className="bg-white rounded-xl h-10 text-xs"
+                          />
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-2">
+                          <Button
+                            onClick={() => handleRejectRequisition(req)}
+                            disabled={isProcessingCanteen}
+                            variant="outline"
+                            className="h-10 text-rose-600 border-rose-100 hover:bg-rose-50 font-bold rounded-xl text-xs uppercase"
+                          >
+                            Reject Request
+                          </Button>
+                          <Button
+                            onClick={() => handleApproveRequisition(req)}
+                            disabled={isProcessingCanteen}
+                            className="h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase shadow-md border-0"
+                          >
+                            Approve Requisition
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-16 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                      <CheckCircle2 className="h-10 w-10 text-slate-300 mx-auto mb-2.5" />
+                      <p className="text-xs font-black uppercase text-slate-400">All requisitions processed</p>
+                      <p className="text-[10px] text-slate-400 mt-1">No cook requisitions are currently pending approval.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Requisition Audit History */}
+              <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
+                <CardHeader className="bg-slate-50/50 p-8 border-b">
+                  <CardTitle className="text-sm font-black uppercase tracking-tight text-slate-800">Processing History</CardTitle>
+                </CardHeader>
+                <CardContent className="p-8">
+                  {canteenRequisitions && canteenRequisitions.filter((r: any) => r.status !== 'Pending').length > 0 ? (
+                    <div className="space-y-4">
+                      {canteenRequisitions.filter((r: any) => r.status !== 'Pending').slice(0, 5).map((req: any) => (
+                        <div key={req.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-extrabold text-slate-800 uppercase">{req.requestedByName || 'Cook'}</span>
+                              <span className="text-slate-400">•</span>
+                              <span className="text-[10px] text-slate-500 font-bold uppercase">{req.items?.length || 0} Items</span>
+                            </div>
+                            <p className="text-[10px] text-slate-400">Approved by {req.processedByName || 'Admin'} on {req.processedAt?.toDate ? format(req.processedAt.toDate(), 'PPP p') : 'Just now'}</p>
+                          </div>
+                          <Badge className={cn("text-[8px] font-black px-2.5 py-1 rounded-full border-none w-fit uppercase",
+                            req.status === 'Approved' ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                          )}>{req.status}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6 text-slate-400 italic text-xs uppercase tracking-widest font-black">No past processed logs.</div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Direct Restock and Pantry list */}
+            <div className="space-y-6">
+              {/* Manual Restock */}
+              <Card className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)]">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Direct Stock Replenishment</h3>
+                <form onSubmit={handleManualRestock} className="space-y-4">
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Select Pantry Item</label>
+                    <select
+                      value={restockForm.itemId}
+                      onChange={e => setRestockForm({...restockForm, itemId: e.target.value})}
+                      required
+                      className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                    >
+                      <option value="">Choose item...</option>
+                      {canteenInventory?.map((item: any) => (
+                        <option key={item.id} value={item.id}>
+                          {item.sku ? `[${item.sku}] ` : ''}{item.name} ({item.quantity} {item.unit} left)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Restock Quantity</label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={restockForm.quantity || ''}
+                      onChange={e => setRestockForm({...restockForm, quantity: Number(e.target.value)})}
+                      required
+                      placeholder="e.g. 5"
+                      className="h-10 rounded-xl"
+                    />
+                  </div>
+                  <Button type="submit" disabled={isProcessingCanteen} className="w-full bg-indigo-600 hover:bg-indigo-700 h-10 text-xs font-black uppercase text-white font-bold rounded-xl shadow-md border-0">
+                    Restock Quantity
+                  </Button>
+                </form>
+              </Card>
+
+              {/* Add New Pantry Item Template */}
+              <Card className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)]">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Register Item Template</h3>
+                <form onSubmit={handleAddNewPantryItem} className="space-y-4">
+                  <div className="grid grid-cols-3 gap-2 items-end">
+                    <div className="col-span-2">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Item Name</label>
+                      <Input
+                        placeholder="e.g. Rice (Grown in Ghana)"
+                        value={newPantryForm.name}
+                        onChange={e => setNewPantryForm({...newPantryForm, name: e.target.value})}
+                        required
+                        className="h-10 rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">SKU (Opt)</label>
+                      <Input
+                        placeholder="e.g. RICE-01"
+                        value={newPantryForm.sku || ''}
+                        onChange={e => setNewPantryForm({...newPantryForm, sku: e.target.value})}
+                        className="h-10 rounded-xl font-mono text-[10px]"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Unit</label>
+                    <select
+                      value={newPantryForm.unit}
+                      onChange={e => setNewPantryForm({...newPantryForm, unit: e.target.value})}
+                      className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                    >
+                      {['kg', 'litres', 'bags', 'boxes', 'pcs', 'units'].map(u => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
+                    <select
+                      value={newPantryForm.category}
+                      onChange={e => setNewPantryForm({...newPantryForm, category: e.target.value})}
+                      className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                    >
+                      {['Dry Goods', 'Fresh Produce', 'Dairy', 'Meat', 'Condiments', 'Beverages'].map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <Button type="submit" disabled={isProcessingCanteen} className="w-full bg-indigo-600 hover:bg-indigo-700 h-10 text-xs font-black uppercase text-white font-bold rounded-xl shadow-md border-0">
+                    Register Item Template
+                  </Button>
+                </form>
+              </Card>
+
+              {/* Active Pantry stock tracking */}
+              <Card className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)]">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Stock Ledger Status</h3>
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                  {canteenInventory && canteenInventory.length > 0 ? (
+                    canteenInventory.map((item: any) => (
+                      <div key={item.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 gap-4">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">{item.category}</span>
+                            {item.sku && (
+                              <span className="text-[8px] font-mono font-bold bg-slate-200/60 text-slate-500 px-1 py-0.2 rounded uppercase">
+                                {item.sku}
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="font-extrabold text-slate-700 text-xs uppercase truncate">{item.name}</h4>
+                          <span className="text-[10px] font-mono font-bold text-slate-900">{item.quantity} {item.unit}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Badge className={cn("text-[8px] font-black px-2 py-0.5 rounded-full border-none uppercase",
+                            item.status === 'In Stock' ? "bg-emerald-100 text-emerald-800" :
+                            item.status === 'Low Stock' ? "bg-amber-100 text-amber-800" :
+                            "bg-rose-100 text-rose-800"
+                          )}>{item.status}</Badge>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleViewHistory(item)} 
+                            className="h-7 w-7 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 border-0"
+                            title="Transaction History"
+                          >
+                            <ClipboardList className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => setEditingPantryItem(item)} 
+                            className="h-7 w-7 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 border-0"
+                          >
+                            <PenLine className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleDeletePantryItem(item)} 
+                            className="h-7 w-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 border-0"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-6 text-slate-400 italic text-xs uppercase tracking-widest font-black">No inventory registered.</div>
+                  )}
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
+
+      {/* Edit Pantry Item Modal Overlay */}
+      {editingPantryItem && (
+        <>
+          <div 
+            onClick={() => setEditingPantryItem(null)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200"
+          />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
+            <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Edit Item Template</h3>
+            <form onSubmit={handleUpdatePantryItem} className="space-y-4">
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Item Name</label>
+                <Input
+                  value={editingPantryItem.name || ''}
+                  onChange={e => setEditingPantryItem({...editingPantryItem, name: e.target.value})}
+                  required
+                  className="h-10 rounded-xl"
+                />
+              </div>
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">SKU</label>
+                <Input
+                  value={editingPantryItem.sku || ''}
+                  onChange={e => setEditingPantryItem({...editingPantryItem, sku: e.target.value})}
+                  required
+                  className="h-10 rounded-xl font-mono text-xs uppercase"
+                />
+              </div>
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Unit</label>
+                <select
+                  value={editingPantryItem.unit}
+                  onChange={e => setEditingPantryItem({...editingPantryItem, unit: e.target.value})}
+                  className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                >
+                  {['kg', 'litres', 'bags', 'boxes', 'pcs', 'units'].map(u => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
+                <select
+                  value={editingPantryItem.category}
+                  onChange={e => setEditingPantryItem({...editingPantryItem, category: e.target.value})}
+                  className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                >
+                  {['Dry Goods', 'Fresh Produce', 'Dairy', 'Meat', 'Condiments', 'Beverages'].map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={() => setEditingPantryItem(null)} className="flex-1 h-10 text-xs font-black uppercase rounded-xl border border-slate-200">
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isProcessingCanteen} className="flex-1 bg-indigo-600 hover:bg-indigo-700 h-10 text-xs font-black uppercase text-white font-bold rounded-xl shadow-md border-0">
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </div>
+        </>
+      )}
+
+      {/* Canteen Transaction History Overlay (Print reconciliation) */}
+      {historyItem && (
+        <>
+          <div 
+            onClick={() => setHistoryItem(null)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200 no-print"
+          />
+          <div id="print-section" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-2xl z-50 animate-in zoom-in-95 duration-200 max-h-[85vh] overflow-y-auto">
+            <style>{`
+              @media print {
+                body * {
+                  visibility: hidden;
+                }
+                #print-section, #print-section * {
+                  visibility: visible;
+                }
+                #print-section {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  max-height: none !important;
+                  overflow: visible !important;
+                  box-shadow: none !important;
+                  border: none !important;
+                  padding: 0 !important;
+                  margin: 0 !important;
+                  background: white !important;
+                  color: black !important;
+                }
+                .no-print {
+                  display: none !important;
+                }
+              }
+            `}</style>
+            
+            <div className="flex justify-between items-start mb-6 no-print">
+              <div>
+                <span className="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wider block w-fit mb-1.5 font-bold">Reconciliation Ledger</span>
+                <h3 className="text-lg font-black uppercase text-slate-800 tracking-tight">Stock Transaction History</h3>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setHistoryItem(null)} className="h-8 w-8 rounded-full border-0">
+                <XCircle className="h-5 w-5 text-slate-400" />
+              </Button>
+            </div>
+
+            {/* Print Header (Visible ONLY on print) */}
+            <div className="hidden print:block mb-8 border-b pb-4">
+              <h1 className="text-xl font-bold uppercase tracking-tight text-slate-900">Canteen Stock Reconciliation Ledger</h1>
+              <p className="text-xs text-slate-500 uppercase font-semibold mt-1">Generated on: {new Date().toLocaleString()}</p>
+            </div>
+
+            <div className="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Item Template</span>
+                <h4 className="font-extrabold text-slate-800 text-sm uppercase">{historyItem.name}</h4>
+              </div>
+              <div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">SKU / Unit</span>
+                <h4 className="font-extrabold text-slate-800 text-sm uppercase font-mono">{historyItem.sku || 'N/A'} ({historyItem.unit})</h4>
+              </div>
+            </div>
+
+            {isLoadingHistory ? (
+              <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mb-2" />
+                <p className="text-xs font-bold uppercase tracking-widest">Loading history log...</p>
+              </div>
+            ) : historyTransactions.length > 0 ? (
+              <div className="space-y-4">
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        <th className="py-2.5 px-3">Date</th>
+                        <th className="py-2.5 px-3">Type</th>
+                        <th className="py-2.5 px-3 text-right">Qty</th>
+                        <th className="py-2.5 px-3 text-right">Balance</th>
+                        <th className="py-2.5 px-3">Source</th>
+                        <th className="py-2.5 px-3">Performed By</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                      {historyTransactions.map((tx: any) => {
+                        const dateStr = tx.timestamp?.toDate ? tx.timestamp.toDate().toLocaleDateString() : 'Pending';
+                        return (
+                          <tr key={tx.id} className="hover:bg-slate-50/50">
+                            <td className="py-2.5 px-3 whitespace-nowrap font-semibold text-slate-500">{dateStr}</td>
+                            <td className="py-2.5 px-3">
+                              <Badge className={cn("text-[9px] font-black px-1.5 py-0.2 rounded border-none uppercase",
+                                tx.type === 'IN' ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                              )}>{tx.type}</Badge>
+                            </td>
+                            <td className={cn("py-2.5 px-3 text-right font-bold", tx.type === 'IN' ? "text-emerald-600" : "text-rose-600")}>
+                              {tx.type === 'IN' ? '+' : '-'}{tx.quantity}
+                            </td>
+                            <td className="py-2.5 px-3 text-right font-mono text-slate-500">
+                              {tx.prevQuantity} &rarr; {tx.newQuantity}
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <span className="font-semibold text-slate-800">{tx.source}</span>
+                              {tx.notes && <span className="text-[10px] text-slate-400 block font-normal">{tx.notes}</span>}
+                            </td>
+                            <td className="py-2.5 px-3 text-slate-500 truncate max-w-[120px]">{tx.performedBy}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex gap-3 pt-4 border-t no-print">
+                  <Button variant="outline" onClick={() => setHistoryItem(null)} className="flex-1 h-10 text-xs font-black uppercase rounded-xl border border-slate-200">
+                    Close Ledger
+                  </Button>
+                  <Button onClick={() => window.print()} className="flex-1 bg-slate-900 hover:bg-slate-800 h-10 text-xs font-black uppercase text-white font-bold rounded-xl shadow-md border-0">
+                    Print reconciliation
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 text-slate-400 space-y-2">
+                <ClipboardList className="h-10 w-10 mx-auto text-slate-300" />
+                <p className="text-xs font-black uppercase tracking-wider">No transaction logs recorded for this item.</p>
+                <div className="no-print pt-2">
+                  <Button variant="outline" onClick={() => setHistoryItem(null)} className="h-9 px-4 text-xs font-bold uppercase rounded-xl">
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </>
+      )}
       </div>
 
       {/* AI School Auditor Sidebar Drawer Panel */}
@@ -1109,13 +1873,277 @@ function DirectorDashboard({
   schoolId,
   recentAssessments,
 }: any) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'financials' | 'general'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'financials' | 'general' | 'canteen'>('overview');
   const [isAuditorOpen, setIsAuditorOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [auditResult, setAuditResult] = useState<string | null>(null);
   const [auditError, setAuditError] = useState<string | null>(null);
 
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
   const displayName = profile?.firstName || 'Director';
+
+  // Canteen Inventory & Requisitions
+  const canteenInventoryQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'kitchen_inventory'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: canteenInventory } = useCollection<any>(canteenInventoryQuery);
+
+  const pendingRequisitionsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'canteen_requisitions'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+  const { data: canteenRequisitions } = useCollection<any>(pendingRequisitionsQuery);
+
+  // Canteen restock form state
+  const [restockForm, setRestockForm] = useState({ itemId: '', quantity: 0 });
+  const [newPantryForm, setNewPantryForm] = useState({ sku: '', name: '', unit: 'kg', category: 'Dry Goods' });
+  const [isProcessingCanteen, setIsProcessingCanteen] = useState(false);
+  const [canteenFeedback, setCanteenFeedback] = useState<Record<string, string>>({}); // feedback per requisition id
+  const [editingPantryItem, setEditingPantryItem] = useState<any | null>(null);
+  const [historyItem, setHistoryItem] = useState<any | null>(null);
+  const [historyTransactions, setHistoryTransactions] = useState<any[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+
+  const handleApproveRequisition = async (req: any) => {
+    if (!firestore || !schoolId) return;
+    setIsProcessingCanteen(true);
+    try {
+      const batch = writeBatch(firestore);
+      
+      // Update requisition status
+      const reqRef = doc(firestore, 'canteen_requisitions', req.id);
+      batch.update(reqRef, {
+        status: 'Approved',
+        feedback: canteenFeedback[req.id] || '',
+        processedAt: serverTimestamp(),
+        processedBy: user?.uid || '',
+        processedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director'
+      });
+
+      // Deduct items from inventory
+      for (const item of req.items) {
+        const itemRef = doc(firestore, 'kitchen_inventory', item.itemId);
+        const itemSnap = await getDoc(itemRef);
+        if (itemSnap.exists()) {
+          const currentQty = Number(itemSnap.data().quantity) || 0;
+          const newQty = Math.max(0, currentQty - Number(item.quantity));
+          let status = 'In Stock';
+          if (newQty === 0) status = 'Out of Stock';
+          else if (newQty < 10) status = 'Low Stock';
+
+          batch.update(itemRef, {
+            quantity: newQty,
+            status,
+            updatedAt: serverTimestamp()
+          });
+
+          // Record subtraction transaction
+          const transRef = doc(collection(firestore, 'canteen_transactions'));
+          batch.set(transRef, {
+            schoolId,
+            itemId: item.itemId,
+            itemName: item.name || itemSnap.data().name || 'Unknown',
+            sku: item.sku || itemSnap.data().sku || '',
+            type: 'OUT',
+            quantity: Number(item.quantity),
+            prevQuantity: currentQty,
+            newQuantity: newQty,
+            source: 'Requisition',
+            notes: `Approved Requisition for Cook: ${req.requestedByName}`,
+            performedBy: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
+            timestamp: serverTimestamp()
+          });
+        }
+      }
+
+      await batch.commit();
+      toast({ title: 'Requisition Approved', description: 'Pantry quantities deducted successfully.' });
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to approve requisition.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleRejectRequisition = async (req: any) => {
+    if (!firestore || !schoolId) return;
+    setIsProcessingCanteen(true);
+    try {
+      const reqRef = doc(firestore, 'canteen_requisitions', req.id);
+      await setDoc(reqRef, {
+        status: 'Rejected',
+        feedback: canteenFeedback[req.id] || '',
+        processedAt: serverTimestamp(),
+        processedBy: user?.uid || '',
+        processedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director'
+      }, { merge: true });
+      toast({ title: 'Requisition Rejected', description: 'Requisition has been marked as rejected.' });
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to reject requisition.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleManualRestock = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firestore || !schoolId || !restockForm.itemId || restockForm.quantity <= 0) return;
+    setIsProcessingCanteen(true);
+    try {
+      const itemRef = doc(firestore, 'kitchen_inventory', restockForm.itemId);
+      const itemSnap = await getDoc(itemRef);
+      if (itemSnap.exists()) {
+        const currentQty = Number(itemSnap.data().quantity) || 0;
+        const newQty = currentQty + Number(restockForm.quantity);
+        let status = 'In Stock';
+        if (newQty === 0) status = 'Out of Stock';
+        else if (newQty < 10) status = 'Low Stock';
+
+        const batch = writeBatch(firestore);
+        batch.update(itemRef, {
+          quantity: newQty,
+          status,
+          updatedAt: serverTimestamp()
+        });
+
+        // Add to transactions log
+        const transRef = doc(collection(firestore, 'canteen_transactions'));
+        batch.set(transRef, {
+          schoolId,
+          itemId: restockForm.itemId,
+          itemName: itemSnap.data().name || 'Unknown',
+          sku: itemSnap.data().sku || '',
+          type: 'IN',
+          quantity: Number(restockForm.quantity),
+          prevQuantity: currentQty,
+          newQuantity: newQty,
+          source: 'Manual Restock',
+          notes: 'Manually restocked by Director',
+          performedBy: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
+          timestamp: serverTimestamp()
+        });
+
+        await batch.commit();
+        toast({ title: 'Inventory Restocked', description: `Added ${restockForm.quantity} to ${itemSnap.data().name}.` });
+        setRestockForm({ itemId: '', quantity: 0 });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to restock item.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleAddNewPantryItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firestore || !schoolId || !newPantryForm.name) return;
+    setIsProcessingCanteen(true);
+    const categoryPrefix = newPantryForm.category.substring(0, 3).toUpperCase();
+    const nameClean = newPantryForm.name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
+    const randomNum = Math.floor(100 + Math.random() * 900);
+    const finalSku = newPantryForm.sku.trim() || `CAN-${categoryPrefix}-${nameClean}-${randomNum}`;
+    const docId = `${schoolId}-${newPantryForm.name.replace(/\s+/g, '-').toLowerCase()}`;
+    try {
+      await setDoc(doc(firestore, 'kitchen_inventory', docId), {
+        ...newPantryForm,
+        sku: finalSku,
+        quantity: 0,
+        status: 'Out of Stock',
+        schoolId,
+        updatedAt: serverTimestamp()
+      });
+      toast({ title: 'New Item Registered', description: `${newPantryForm.name} registered as a supply template.` });
+      setNewPantryForm({ sku: '', name: '', unit: 'kg', category: 'Dry Goods' });
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to register item template.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleUpdatePantryItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firestore || !schoolId || !editingPantryItem || !editingPantryItem.id) return;
+    setIsProcessingCanteen(true);
+    try {
+      const itemRef = doc(firestore, 'kitchen_inventory', editingPantryItem.id);
+      await setDoc(itemRef, {
+        name: editingPantryItem.name,
+        sku: editingPantryItem.sku.trim().toUpperCase(),
+        unit: editingPantryItem.unit,
+        category: editingPantryItem.category,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      toast({ title: 'Template Updated', description: `${editingPantryItem.name} has been updated successfully.` });
+      setEditingPantryItem(null);
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to update item template.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleDeletePantryItem = async (item: any) => {
+    if (!firestore || !schoolId) return;
+    if ((item.quantity || 0) > 0) {
+      toast({ 
+        variant: 'destructive', 
+        title: 'Cannot Delete Template', 
+        description: `This template has an active stock balance of ${item.quantity} ${item.unit}. Please deplete or adjust the stock to 0 before deleting.` 
+      });
+      return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete the item template "${item.name}"?`)) {
+      return;
+    }
+
+    setIsProcessingCanteen(true);
+    try {
+      const itemRef = doc(firestore, 'kitchen_inventory', item.id);
+      await deleteDoc(itemRef);
+      toast({ title: 'Template Deleted', description: `Item template "${item.name}" has been deleted.` });
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete item template.' });
+    } finally {
+      setIsProcessingCanteen(false);
+    }
+  };
+
+  const handleViewHistory = async (item: any) => {
+    if (!firestore || !schoolId) return;
+    setHistoryItem(item);
+    setIsLoadingHistory(true);
+    try {
+      const q = query(
+        collection(firestore, 'canteen_transactions'),
+        where('schoolId', '==', schoolId),
+        where('itemId', '==', item.id)
+      );
+      const snap = await getDocs(q);
+      const records = snap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      // Sort in-memory to prevent indexing requirements
+      records.sort((a: any, b: any) => {
+        const timeA = a.timestamp?.seconds || 0;
+        const timeB = b.timestamp?.seconds || 0;
+        return timeB - timeA;
+      });
+      
+      setHistoryTransactions(records);
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to fetch transaction history.' });
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
 
   const academicTidbits = useMemo(() => {
     if (!recentAssessments || recentAssessments.length === 0) {
@@ -1198,6 +2226,14 @@ function DirectorDashboard({
         badge: "Noticeboard Buzz",
         badgeColor: "bg-amber-500/20 text-amber-300",
         icon: Megaphone,
+      },
+      canteen: {
+        gradient: "from-amber-900 via-orange-950 to-slate-900 border-orange-500/20",
+        title: "Canteen Pantry & Approvals",
+        description: "Approve cook requisitions, deduct stock, log manual restocking, and audit pantry supplies.",
+        badge: "Canteen Operations",
+        badgeColor: "bg-amber-500/20 text-amber-300",
+        icon: ChefHat,
       }
     };
     return bannerMap[activeTab];
@@ -1376,7 +2412,7 @@ function DirectorDashboard({
         <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
           {/* Custom Silicon Valley Tab Bar */}
           <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-            {(['overview', 'academics', 'financials', 'general'] as const).map((tab) => (
+            {(['overview', 'academics', 'financials', 'canteen', 'general'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -2025,6 +3061,499 @@ function DirectorDashboard({
             </div>
           </div>
         )}
+        {activeTab === 'canteen' && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-in fade-in duration-300">
+            {/* Requisition Board */}
+            <div className="xl:col-span-2 space-y-6">
+              <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
+                <CardHeader className="bg-slate-50/50 p-8 border-b">
+                  <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
+                    <ClipboardList className="h-5 w-5 text-indigo-650" /> Requisition approvals
+                  </CardTitle>
+                  <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">
+                    Process requests submitted by cafeteria cooks
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-8 space-y-6">
+                  {canteenRequisitions && canteenRequisitions.filter((r: any) => r.status === 'Pending').length > 0 ? (
+                    canteenRequisitions.filter((r: any) => r.status === 'Pending').map((req: any) => (
+                      <div key={req.id} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4 hover:shadow-sm transition-all">
+                        <div className="flex justify-between items-start border-b pb-3">
+                          <div>
+                            <h4 className="font-extrabold text-sm text-slate-800 uppercase">{req.requestedByName || 'Cook'}</h4>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">
+                              Submitted {req.createdAt?.toDate ? format(req.createdAt.toDate(), 'PPP p') : 'Just now'}
+                            </p>
+                          </div>
+                          <Badge className="bg-blue-100 text-blue-800 border-none font-black text-[9px] px-3 py-1 rounded-full uppercase tracking-wider animate-pulse">
+                            Pending Approval
+                          </Badge>
+                        </div>
+
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Requested Items</p>
+                          <div className="bg-white rounded-2xl p-4 border border-slate-100 divide-y divide-slate-100 text-xs">
+                            {req.items?.map((it: any, idx: number) => {
+                              const invItem = canteenInventory?.find((i: any) => i.id === it.itemId);
+                              const currentQty = invItem?.quantity || 0;
+                              const isLow = currentQty < it.quantity;
+                              const displaySku = it.sku || invItem?.sku;
+
+                              return (
+                                <div key={idx} className="py-2.5 flex justify-between items-center text-slate-700">
+                                  <div>
+                                    <span className="font-semibold">
+                                      {displaySku ? `[${displaySku}] ` : ''}{it.name}
+                                    </span>
+                                    <span className="text-[10px] text-slate-400 block">Current stock: {currentQty} {it.unit}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {isLow && (
+                                      <Badge variant="outline" className="text-[8px] font-bold text-rose-600 border-rose-200 bg-rose-50/50 uppercase">
+                                        Insufficient Stock
+                                      </Badge>
+                                    )}
+                                    <span className="font-mono font-bold text-slate-900">{it.quantity} {it.unit}</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {req.notes && (
+                          <div className="text-xs text-slate-500 bg-slate-100/50 p-3 rounded-xl border border-slate-100 italic">
+                            <span className="font-bold not-italic text-slate-400 uppercase block text-[8px] mb-1">Cook Notes:</span>
+                            "{req.notes}"
+                          </div>
+                        )}
+
+                        <div className="space-y-2 pt-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Process Response / Feedback</label>
+                          <Input
+                            placeholder="Add approval context or reject reasons..."
+                            value={canteenFeedback[req.id] || ''}
+                            onChange={e => setCanteenFeedback({...canteenFeedback, [req.id]: e.target.value})}
+                            className="bg-white rounded-xl h-10 text-xs"
+                          />
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-2">
+                          <Button
+                            onClick={() => handleRejectRequisition(req)}
+                            disabled={isProcessingCanteen}
+                            variant="outline"
+                            className="h-10 text-rose-600 border-rose-100 hover:bg-rose-50 font-bold rounded-xl text-xs uppercase"
+                          >
+                            Reject Request
+                          </Button>
+                          <Button
+                            onClick={() => handleApproveRequisition(req)}
+                            disabled={isProcessingCanteen}
+                            className="h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase shadow-md border-0"
+                          >
+                            Approve Requisition
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-16 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                      <CheckCircle2 className="h-10 w-10 text-slate-300 mx-auto mb-2.5" />
+                      <p className="text-xs font-black uppercase text-slate-400">All requisitions processed</p>
+                      <p className="text-[10px] text-slate-400 mt-1">No cook requisitions are currently pending approval.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Requisition Audit History */}
+              <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
+                <CardHeader className="bg-slate-50/50 p-8 border-b">
+                  <CardTitle className="text-sm font-black uppercase tracking-tight text-slate-800">Processing History</CardTitle>
+                </CardHeader>
+                <CardContent className="p-8">
+                  {canteenRequisitions && canteenRequisitions.filter((r: any) => r.status !== 'Pending').length > 0 ? (
+                    <div className="space-y-4">
+                      {canteenRequisitions.filter((r: any) => r.status !== 'Pending').slice(0, 5).map((req: any) => (
+                        <div key={req.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-extrabold text-slate-800 uppercase">{req.requestedByName || 'Cook'}</span>
+                              <span className="text-slate-400">•</span>
+                              <span className="text-[10px] text-slate-500 font-bold uppercase">{req.items?.length || 0} Items</span>
+                            </div>
+                            <p className="text-[10px] text-slate-400">Approved by {req.processedByName || 'Director'} on {req.processedAt?.toDate ? format(req.processedAt.toDate(), 'PPP p') : 'Just now'}</p>
+                          </div>
+                          <Badge className={cn("text-[8px] font-black px-2.5 py-1 rounded-full border-none w-fit uppercase",
+                            req.status === 'Approved' ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                          )}>{req.status}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6 text-slate-400 italic text-xs uppercase tracking-widest font-black">No past processed logs.</div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Direct Restock and Pantry list */}
+            <div className="space-y-6">
+              {/* Manual Restock */}
+              <Card className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)]">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Direct Stock Replenishment</h3>
+                <form onSubmit={handleManualRestock} className="space-y-4">
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Select Pantry Item</label>
+                    <select
+                      value={restockForm.itemId}
+                      onChange={e => setRestockForm({...restockForm, itemId: e.target.value})}
+                      required
+                      className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                    >
+                      <option value="">Choose item...</option>
+                      {canteenInventory?.map((item: any) => (
+                        <option key={item.id} value={item.id}>
+                          {item.sku ? `[${item.sku}] ` : ''}{item.name} ({item.quantity} {item.unit} left)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Restock Quantity</label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={restockForm.quantity || ''}
+                      onChange={e => setRestockForm({...restockForm, quantity: Number(e.target.value)})}
+                      required
+                      placeholder="e.g. 5"
+                      className="h-10 rounded-xl"
+                    />
+                  </div>
+                  <Button type="submit" disabled={isProcessingCanteen} className="w-full bg-indigo-600 hover:bg-indigo-700 h-10 text-xs font-black uppercase text-white font-bold rounded-xl shadow-md border-0">
+                    Restock Quantity
+                  </Button>
+                </form>
+              </Card>
+
+              {/* Register Canteen Supply Item Template */}
+              <Card className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)]">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Register Item Template</h3>
+                <form onSubmit={handleAddNewPantryItem} className="space-y-4">
+                  <div className="grid grid-cols-3 gap-2 items-end">
+                    <div className="col-span-2">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Item Name</label>
+                      <Input
+                        placeholder="e.g. Rice (Grown in Ghana)"
+                        value={newPantryForm.name}
+                        onChange={e => setNewPantryForm({...newPantryForm, name: e.target.value})}
+                        required
+                        className="h-10 rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">SKU (Opt)</label>
+                      <Input
+                        placeholder="e.g. RICE-01"
+                        value={newPantryForm.sku || ''}
+                        onChange={e => setNewPantryForm({...newPantryForm, sku: e.target.value})}
+                        className="h-10 rounded-xl font-mono text-[10px]"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Unit</label>
+                    <select
+                      value={newPantryForm.unit}
+                      onChange={e => setNewPantryForm({...newPantryForm, unit: e.target.value})}
+                      className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                    >
+                      {['kg', 'litres', 'bags', 'boxes', 'pcs', 'units'].map(u => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
+                    <select
+                      value={newPantryForm.category}
+                      onChange={e => setNewPantryForm({...newPantryForm, category: e.target.value})}
+                      className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                    >
+                      {['Dry Goods', 'Fresh Produce', 'Dairy', 'Meat', 'Condiments', 'Beverages'].map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <Button type="submit" disabled={isProcessingCanteen} className="w-full bg-indigo-600 hover:bg-indigo-700 h-10 text-xs font-black uppercase text-white font-bold rounded-xl shadow-md border-0">
+                    Register Item Template
+                  </Button>
+                </form>
+              </Card>
+
+              {/* Active Pantry stock tracking */}
+              <Card className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)]">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Stock Ledger Status</h3>
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                  {canteenInventory && canteenInventory.length > 0 ? (
+                    canteenInventory.map((item: any) => (
+                      <div key={item.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 gap-4">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">{item.category}</span>
+                            {item.sku && (
+                              <span className="text-[8px] font-mono font-bold bg-slate-200/60 text-slate-500 px-1 py-0.2 rounded uppercase">
+                                {item.sku}
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="font-extrabold text-slate-700 text-xs uppercase truncate">{item.name}</h4>
+                          <span className="text-[10px] font-mono font-bold text-slate-900">{item.quantity} {item.unit}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Badge className={cn("text-[8px] font-black px-2 py-0.5 rounded-full border-none uppercase",
+                            item.status === 'In Stock' ? "bg-emerald-100 text-emerald-800" :
+                            item.status === 'Low Stock' ? "bg-amber-100 text-amber-800" :
+                            "bg-rose-100 text-rose-800"
+                          )}>{item.status}</Badge>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleViewHistory(item)} 
+                            className="h-7 w-7 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 border-0"
+                            title="Transaction History"
+                          >
+                            <ClipboardList className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => setEditingPantryItem(item)} 
+                            className="h-7 w-7 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 border-0"
+                          >
+                            <PenLine className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleDeletePantryItem(item)} 
+                            className="h-7 w-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 border-0"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-6 text-slate-400 italic text-xs uppercase tracking-widest font-black">No inventory registered.</div>
+                  )}
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
+
+      {/* Edit Pantry Item Modal Overlay */}
+      {editingPantryItem && (
+        <>
+          <div 
+            onClick={() => setEditingPantryItem(null)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200"
+          />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
+            <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Edit Item Template</h3>
+            <form onSubmit={handleUpdatePantryItem} className="space-y-4">
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Item Name</label>
+                <Input
+                  value={editingPantryItem.name || ''}
+                  onChange={e => setEditingPantryItem({...editingPantryItem, name: e.target.value})}
+                  required
+                  className="h-10 rounded-xl"
+                />
+              </div>
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">SKU</label>
+                <Input
+                  value={editingPantryItem.sku || ''}
+                  onChange={e => setEditingPantryItem({...editingPantryItem, sku: e.target.value})}
+                  required
+                  className="h-10 rounded-xl font-mono text-xs uppercase"
+                />
+              </div>
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Unit</label>
+                <select
+                  value={editingPantryItem.unit}
+                  onChange={e => setEditingPantryItem({...editingPantryItem, unit: e.target.value})}
+                  className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                >
+                  {['kg', 'litres', 'bags', 'boxes', 'pcs', 'units'].map(u => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
+                <select
+                  value={editingPantryItem.category}
+                  onChange={e => setEditingPantryItem({...editingPantryItem, category: e.target.value})}
+                  className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                >
+                  {['Dry Goods', 'Fresh Produce', 'Dairy', 'Meat', 'Condiments', 'Beverages'].map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={() => setEditingPantryItem(null)} className="flex-1 h-10 text-xs font-black uppercase rounded-xl border border-slate-200">
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isProcessingCanteen} className="flex-1 bg-indigo-600 hover:bg-indigo-700 h-10 text-xs font-black uppercase text-white font-bold rounded-xl shadow-md border-0">
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </div>
+        </>
+      )}
+
+      {/* Canteen Transaction History Overlay (Print reconciliation) */}
+      {historyItem && (
+        <>
+          <div 
+            onClick={() => setHistoryItem(null)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200 no-print"
+          />
+          <div id="print-section" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-2xl z-50 animate-in zoom-in-95 duration-200 max-h-[85vh] overflow-y-auto">
+            <style>{`
+              @media print {
+                body * {
+                  visibility: hidden;
+                }
+                #print-section, #print-section * {
+                  visibility: visible;
+                }
+                #print-section {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  max-height: none !important;
+                  overflow: visible !important;
+                  box-shadow: none !important;
+                  border: none !important;
+                  padding: 0 !important;
+                  margin: 0 !important;
+                  background: white !important;
+                  color: black !important;
+                }
+                .no-print {
+                  display: none !important;
+                }
+              }
+            `}</style>
+            
+            <div className="flex justify-between items-start mb-6 no-print">
+              <div>
+                <span className="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wider block w-fit mb-1.5 font-bold">Reconciliation Ledger</span>
+                <h3 className="text-lg font-black uppercase text-slate-800 tracking-tight">Stock Transaction History</h3>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setHistoryItem(null)} className="h-8 w-8 rounded-full border-0">
+                <XCircle className="h-5 w-5 text-slate-400" />
+              </Button>
+            </div>
+
+            {/* Print Header (Visible ONLY on print) */}
+            <div className="hidden print:block mb-8 border-b pb-4">
+              <h1 className="text-xl font-bold uppercase tracking-tight text-slate-900">Canteen Stock Reconciliation Ledger</h1>
+              <p className="text-xs text-slate-500 uppercase font-semibold mt-1">Generated on: {new Date().toLocaleString()}</p>
+            </div>
+
+            <div className="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Item Template</span>
+                <h4 className="font-extrabold text-slate-800 text-sm uppercase">{historyItem.name}</h4>
+              </div>
+              <div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">SKU / Unit</span>
+                <h4 className="font-extrabold text-slate-800 text-sm uppercase font-mono">{historyItem.sku || 'N/A'} ({historyItem.unit})</h4>
+              </div>
+            </div>
+
+            {isLoadingHistory ? (
+              <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mb-2" />
+                <p className="text-xs font-bold uppercase tracking-widest">Loading history log...</p>
+              </div>
+            ) : historyTransactions.length > 0 ? (
+              <div className="space-y-4">
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        <th className="py-2.5 px-3">Date</th>
+                        <th className="py-2.5 px-3">Type</th>
+                        <th className="py-2.5 px-3 text-right">Qty</th>
+                        <th className="py-2.5 px-3 text-right">Balance</th>
+                        <th className="py-2.5 px-3">Source</th>
+                        <th className="py-2.5 px-3">Performed By</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                      {historyTransactions.map((tx: any) => {
+                        const dateStr = tx.timestamp?.toDate ? tx.timestamp.toDate().toLocaleDateString() : 'Pending';
+                        return (
+                          <tr key={tx.id} className="hover:bg-slate-50/50">
+                            <td className="py-2.5 px-3 whitespace-nowrap font-semibold text-slate-500">{dateStr}</td>
+                            <td className="py-2.5 px-3">
+                              <Badge className={cn("text-[9px] font-black px-1.5 py-0.2 rounded border-none uppercase",
+                                tx.type === 'IN' ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                              )}>{tx.type}</Badge>
+                            </td>
+                            <td className={cn("py-2.5 px-3 text-right font-bold", tx.type === 'IN' ? "text-emerald-600" : "text-rose-600")}>
+                              {tx.type === 'IN' ? '+' : '-'}{tx.quantity}
+                            </td>
+                            <td className="py-2.5 px-3 text-right font-mono text-slate-500">
+                              {tx.prevQuantity} &rarr; {tx.newQuantity}
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <span className="font-semibold text-slate-800">{tx.source}</span>
+                              {tx.notes && <span className="text-[10px] text-slate-400 block font-normal">{tx.notes}</span>}
+                            </td>
+                            <td className="py-2.5 px-3 text-slate-500 truncate max-w-[120px]">{tx.performedBy}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex gap-3 pt-4 border-t no-print">
+                  <Button variant="outline" onClick={() => setHistoryItem(null)} className="flex-1 h-10 text-xs font-black uppercase rounded-xl border border-slate-200">
+                    Close Ledger
+                  </Button>
+                  <Button onClick={() => window.print()} className="flex-1 bg-slate-900 hover:bg-slate-800 h-10 text-xs font-black uppercase text-white font-bold rounded-xl shadow-md border-0">
+                    Print reconciliation
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 text-slate-400 space-y-2">
+                <ClipboardList className="h-10 w-10 mx-auto text-slate-300" />
+                <p className="text-xs font-black uppercase tracking-wider">No transaction logs recorded for this item.</p>
+                <div className="no-print pt-2">
+                  <Button variant="outline" onClick={() => setHistoryItem(null)} className="h-9 px-4 text-xs font-bold uppercase rounded-xl">
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </>
+      )}
       </div>
 
       {/* AI School Auditor Sidebar Drawer Panel */}
@@ -3115,7 +4644,7 @@ function CookDashboard({ profile, announcements, leaveRequests, announcementsLoa
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     const { toast } = useToast();
-    const [activeTab, setActiveTab] = useState<'menu' | 'inventory' | 'meals' | 'portal'>('portal');
+    const [activeTab, setActiveTab] = useState<'menu' | 'inventory' | 'meals' | 'portal' | 'requisitions'>('portal');
 
     // Menu Planner
     const menuQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'cafeteria_menus'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -3129,15 +4658,100 @@ function CookDashboard({ profile, announcements, leaveRequests, announcementsLoa
     const mealLogsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'meal_logs'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: mealLogs } = useCollection<any>(mealLogsQuery);
 
+    // Canteen Requisitions
+    const requisitionsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'canteen_requisitions'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+    const { data: requisitions } = useCollection<any>(requisitionsQuery);
+
+    // Requisitions Form State
+    const [reqItems, setReqItems] = useState<{ itemId: string; quantity: number }[]>([{ itemId: '', quantity: 1 }]);
+    const [reqNotes, setReqNotes] = useState('');
+
+    const handleSaveRequisition = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!firestore || !schoolId || !user) return;
+        
+        // Filter out empty item selections
+        const validItems = reqItems.filter(item => item.itemId && item.quantity > 0).map(item => {
+            const matched = inventoryItems?.find((i: any) => i.id === item.itemId);
+            return {
+                itemId: item.itemId,
+                name: matched?.name || 'Unknown Item',
+                sku: matched?.sku || '',
+                quantity: Number(item.quantity),
+                unit: matched?.unit || 'pcs'
+            };
+        });
+
+        if (validItems.length === 0) {
+            toast({ variant: 'destructive', title: 'Invalid Requisition', description: 'Please select at least one item with quantity greater than 0.' });
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            await addDoc(collection(firestore, 'canteen_requisitions'), {
+                schoolId,
+                requestedBy: user.uid,
+                requestedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Cook',
+                items: validItems,
+                notes: reqNotes,
+                status: 'Pending',
+                createdAt: serverTimestamp()
+            });
+            toast({ title: 'Requisition Submitted', description: 'Your daily/weekly pantry requisition has been sent for approval.' });
+            setReqItems([{ itemId: '', quantity: 1 }]);
+            setReqNotes('');
+        } catch (err) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to submit requisition.' });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     const sortedMealLogs = useMemo(() => {
         return mealLogs ? [...mealLogs].sort((a, b) => (b.recordedAt?.seconds || 0) - (a.recordedAt?.seconds || 0)) : [];
     }, [mealLogs]);
 
     // Forms State
     const [menuForm, setMenuForm] = useState({ dayOfWeek: 'Monday', mealType: 'Lunch', mealName: '', description: '', notes: '' });
-    const [invForm, setInvForm] = useState({ name: '', quantity: 0, unit: 'kg', category: 'Dry Goods', status: 'In Stock' });
     const [mealLogForm, setMealLogForm] = useState({ mealName: '', servingsPrepared: 100, rating: 5, notes: '' });
+    const [mealLogInventoryItem, setMealLogInventoryItem] = useState('');
+    const [mealLogInventoryQty, setMealLogInventoryQty] = useState(0);
     const [isSaving, setIsSaving] = useState(false);
+
+    // Canteen History Dialog states
+    const [historyItem, setHistoryItem] = useState<any | null>(null);
+    const [historyTransactions, setHistoryTransactions] = useState<any[]>([]);
+    const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+
+    const handleViewHistory = async (item: any) => {
+        if (!firestore || !schoolId) return;
+        setHistoryItem(item);
+        setIsLoadingHistory(true);
+        try {
+            const q = query(
+                collection(firestore, 'canteen_transactions'),
+                where('schoolId', '==', schoolId),
+                where('itemId', '==', item.id)
+            );
+            const snap = await getDocs(q);
+            const records = snap.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            records.sort((a: any, b: any) => {
+                const timeA = a.timestamp?.seconds || 0;
+                const timeB = b.timestamp?.seconds || 0;
+                return timeB - timeA;
+            });
+            setHistoryTransactions(records);
+        } catch (err) {
+            console.error(err);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to fetch transaction history.' });
+        } finally {
+            setIsLoadingHistory(false);
+        }
+    };
 
     const handleSaveMenu = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -3159,67 +4773,75 @@ function CookDashboard({ profile, announcements, leaveRequests, announcementsLoa
         }
     };
 
-    const handleSaveInventory = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!firestore || !schoolId || !invForm.name) return;
-        setIsSaving(true);
-        const docId = `${schoolId}-${invForm.name.replace(/\s+/g, '-').toLowerCase()}`;
-        try {
-            await setDoc(doc(firestore, 'kitchen_inventory', docId), {
-                ...invForm,
-                quantity: Number(invForm.quantity),
-                schoolId,
-                updatedAt: serverTimestamp()
-            });
-            toast({ title: 'Inventory Item Saved', description: `${invForm.name} saved successfully.` });
-            setInvForm({ name: '', quantity: 0, unit: 'kg', category: 'Dry Goods', status: 'In Stock' });
-        } catch (err) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to save inventory.' });
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
     const handleSaveMealLog = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!firestore || !schoolId || !mealLogForm.mealName) return;
         setIsSaving(true);
         const docId = `meallog-${Date.now()}`;
         try {
-            await setDoc(doc(firestore, 'meal_logs', docId), {
+            const batch = writeBatch(firestore);
+            let finalNotes = mealLogForm.notes;
+
+            if (mealLogInventoryItem && mealLogInventoryQty > 0) {
+                const itemRef = doc(firestore, 'kitchen_inventory', mealLogInventoryItem);
+                const itemSnap = await getDoc(itemRef);
+                if (itemSnap.exists()) {
+                    const currentQty = Number(itemSnap.data().quantity) || 0;
+                    const newQty = Math.max(0, currentQty - mealLogInventoryQty);
+                    let status = 'In Stock';
+                    if (newQty === 0) status = 'Out of Stock';
+                    else if (newQty < 10) status = 'Low Stock';
+
+                    batch.update(itemRef, {
+                        quantity: newQty,
+                        status,
+                        updatedAt: serverTimestamp()
+                    });
+
+                    // Log transaction
+                    const transRef = doc(collection(firestore, 'canteen_transactions'));
+                    batch.set(transRef, {
+                        schoolId,
+                        itemId: mealLogInventoryItem,
+                        itemName: itemSnap.data().name || 'Unknown',
+                        sku: itemSnap.data().sku || '',
+                        type: 'OUT',
+                        quantity: mealLogInventoryQty,
+                        prevQuantity: currentQty,
+                        newQuantity: newQty,
+                        source: 'Meal Preparation',
+                        notes: `Used for prepared meal: ${mealLogForm.mealName}`,
+                        performedBy: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Cook',
+                        timestamp: serverTimestamp()
+                    });
+
+                    finalNotes = `${finalNotes ? finalNotes + ' | ' : ''}Used ${mealLogInventoryQty} ${itemSnap.data().unit} of ${itemSnap.data().name}.`;
+                }
+            }
+
+            const logRef = doc(firestore, 'meal_logs', docId);
+            batch.set(logRef, {
                 ...mealLogForm,
+                notes: finalNotes,
                 servingsPrepared: Number(mealLogForm.servingsPrepared),
                 schoolId,
                 recordedAt: serverTimestamp()
             });
-            toast({ title: 'Meal Log Saved', description: `Logged preparation of ${mealLogForm.mealName}.` });
+
+            await batch.commit();
+            toast({ title: 'Meal Log Saved', description: `Logged preparation of ${mealLogForm.mealName} and deducted pantry stock.` });
             setMealLogForm({ mealName: '', servingsPrepared: 100, rating: 5, notes: '' });
+            setMealLogInventoryItem('');
+            setMealLogInventoryQty(0);
         } catch (err) {
+            console.error(err);
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to save meal log.' });
         } finally {
             setIsSaving(false);
         }
     };
 
-    const handleAdjustInventory = async (item: any, delta: number) => {
-        if (!firestore) return;
-        const newQty = Math.max(0, (item.quantity || 0) + delta);
-        let status = 'In Stock';
-        if (newQty === 0) status = 'Out of Stock';
-        else if (newQty < 10) status = 'Low Stock';
 
-        try {
-            await setDoc(doc(firestore, 'kitchen_inventory', item.id), {
-                ...item,
-                quantity: newQty,
-                status,
-                updatedAt: serverTimestamp()
-            }, { merge: true });
-            toast({ title: 'Inventory Updated', description: `${item.name} quantity updated to ${newQty}.` });
-        } catch (err) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to adjust quantity.' });
-        }
-    };
 
     const activeMenuForDay = (day: string, type: string) => {
         return menuItems?.find((m: any) => m.dayOfWeek === day && m.mealType === type);
@@ -3261,6 +4883,7 @@ function CookDashboard({ profile, announcements, leaveRequests, announcementsLoa
                 <button onClick={() => setActiveTab('menu')} className={cn("px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider border-2 transition-all shadow-sm whitespace-nowrap", activeTab === 'menu' ? "bg-amber-600 text-white border-amber-600" : "bg-white text-slate-600 border-slate-100 hover:border-amber-200")}>Weekly Menu Planner</button>
                 <button onClick={() => setActiveTab('inventory')} className={cn("px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider border-2 transition-all shadow-sm whitespace-nowrap", activeTab === 'inventory' ? "bg-amber-600 text-white border-amber-600" : "bg-white text-slate-600 border-slate-100 hover:border-amber-200")}>Kitchen Inventory</button>
                 <button onClick={() => setActiveTab('meals')} className={cn("px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider border-2 transition-all shadow-sm whitespace-nowrap", activeTab === 'meals' ? "bg-amber-600 text-white border-amber-600" : "bg-white text-slate-600 border-slate-100 hover:border-amber-200")}>Daily Meal Logs</button>
+                <button onClick={() => setActiveTab('requisitions')} className={cn("px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider border-2 transition-all shadow-sm whitespace-nowrap", activeTab === 'requisitions' ? "bg-amber-600 text-white border-amber-600" : "bg-white text-slate-600 border-slate-100 hover:border-amber-200")}>Pantry Requisitions</button>
             </div>
 
             {/* STATS STRIP */}
@@ -3418,79 +5041,56 @@ function CookDashboard({ profile, announcements, leaveRequests, announcementsLoa
                 </div>
             )}
 
-            {activeTab === 'inventory' && (
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    {/* Inventory Table Grid */}
-                    <div className="xl:col-span-2 space-y-4">
-                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Kitchen Store Inventory</h3>
-                        {inventoryItems && inventoryItems.length > 0 ? (
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {inventoryItems.map((item: any) => (
-                                    <Card key={item.id} className="rounded-2xl border bg-white p-5 hover:shadow-sm transition-all flex flex-col justify-between">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">{item.category}</span>
-                                                <h4 className="font-extrabold text-slate-800 uppercase text-xs">{item.name}</h4>
-                                            </div>
-                                            <Badge className={cn("text-[9px] font-black px-2 py-0.5 rounded-full border-none",
-                                                item.status === 'In Stock' ? "bg-emerald-100 text-emerald-800" :
-                                                item.status === 'Low Stock' ? "bg-amber-100 text-amber-800 animate-pulse" :
-                                                "bg-rose-100 text-rose-800 animate-bounce"
-                                            )}>{item.status}</Badge>
-                                        </div>
-                                        <div className="flex items-center justify-between mt-6 pt-3 border-t">
-                                            <div className="text-sm font-black text-slate-900">
-                                                {item.quantity} <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{item.unit}</span>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <button onClick={() => handleAdjustInventory(item, -1)} className="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs flex items-center justify-center">-</button>
-                                                <button onClick={() => handleAdjustInventory(item, 1)} className="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs flex items-center justify-center">+</button>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-16 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
-                                <Database className="h-10 w-10 text-slate-300 mx-auto mb-2" />
-                                <p className="text-xs font-black uppercase text-slate-400">No inventory items listed. Start adding pantry supplies.</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Inventory Item Form */}
-                    <Card className="rounded-3xl border-none shadow-lg bg-white p-6 h-fit">
-                        <h4 className="font-black text-xs uppercase tracking-widest text-slate-400 mb-4">Add Pantry Item</h4>
-                        <form onSubmit={handleSaveInventory} className="space-y-4">
-                            <div>
-                                <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Item Name</label>
-                                <Input value={invForm.name} onChange={e => setInvForm({...invForm, name: e.target.value})} placeholder="e.g. Rice, Vegetable Oil" required className="h-11 rounded-xl" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Quantity</label>
-                                    <Input type="number" value={invForm.quantity} onChange={e => setInvForm({...invForm, quantity: Number(e.target.value)})} required className="h-11 rounded-xl" />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Unit</label>
-                                    <select value={invForm.unit} onChange={e => setInvForm({...invForm, unit: e.target.value})} className="w-full h-11 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold">
-                                        {['kg', 'liters', 'bags', 'cartons', 'packets', 'pieces'].map(u => <option key={u} value={u}>{u}</option>)}
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Category</label>
-                                <select value={invForm.category} onChange={e => setInvForm({...invForm, category: e.target.value})} className="w-full h-11 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold">
-                                    {['Dry Goods', 'Fresh Produce', 'Dairy', 'Meat', 'Condiments', 'Beverages'].map(c => <option key={c} value={c}>{c}</option>)}
-                                </select>
-                            </div>
-                            <Button type="submit" disabled={isSaving} className="w-full bg-amber-600 hover:bg-amber-700 h-11 rounded-xl text-xs font-black uppercase">
-                                {isSaving ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <PlusCircle className="h-4 w-4 mr-2" />} Save Pantry Item
-                            </Button>
-                        </form>
-                    </Card>
-                </div>
-            )}
+             {activeTab === 'inventory' && (
+                   <div className="space-y-4">
+                       <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Kitchen Store Inventory</h3>
+                       {inventoryItems && inventoryItems.length > 0 ? (
+                           <div className="grid md:grid-cols-3 xl:grid-cols-4 gap-4">
+                               {inventoryItems.map((item: any) => (
+                                   <Card key={item.id} className="rounded-2xl border bg-white p-5 hover:shadow-sm transition-all flex flex-col justify-between">
+                                       <div className="flex justify-between items-start">
+                                           <div>
+                                               <div className="flex items-center gap-1.5 mb-0.5">
+                                                   <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">{item.category}</span>
+                                                    {item.sku && (
+                                                        <span className="text-[8px] font-mono font-bold bg-amber-100 text-amber-800 px-1 py-0.2 rounded uppercase">
+                                                            {item.sku}
+                                                        </span>
+                                                    )}
+                                               </div>
+                                               <h4 className="font-extrabold text-slate-800 uppercase text-xs">{item.name}</h4>
+                                           </div>
+                                           <Badge className={cn("text-[9px] font-black px-2 py-0.5 rounded-full border-none",
+                                               item.status === 'In Stock' ? "bg-emerald-100 text-emerald-800" :
+                                               item.status === 'Low Stock' ? "bg-amber-100 text-amber-800 animate-pulse" :
+                                               "bg-rose-100 text-rose-800 animate-bounce"
+                                           )}>{item.status}</Badge>
+                                       </div>
+                                       <div className="flex items-center justify-between mt-6 pt-3 border-t">
+                                           <div className="text-sm font-black text-slate-900">
+                                               {item.quantity} <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{item.unit}</span>
+                                           </div>
+                                           <Button 
+                                               variant="ghost" 
+                                               size="icon" 
+                                               onClick={() => handleViewHistory(item)} 
+                                               className="h-7 w-7 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 border-0"
+                                               title="Transaction History"
+                                           >
+                                               <ClipboardList className="h-3.5 w-3.5" />
+                                           </Button>
+                                       </div>
+                                   </Card>
+                               ))}
+                           </div>
+                       ) : (
+                           <div className="text-center py-16 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                               <Database className="h-10 w-10 text-slate-300 mx-auto mb-2" />
+                               <p className="text-xs font-black uppercase text-slate-400">No inventory items listed. Start adding pantry supplies.</p>
+                           </div>
+                       )}
+                   </div>
+               )}
 
             {activeTab === 'meals' && (
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -3545,6 +5145,35 @@ function CookDashboard({ profile, announcements, leaveRequests, announcementsLoa
                                     {[5, 4, 3, 2, 1].map(r => <option key={r} value={r}>{r} Star{r > 1 ? 's' : ''}</option>)}
                                 </select>
                             </div>
+                            <div className="grid grid-cols-3 gap-2 items-end">
+                                <div className="col-span-2">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Ingredient Used (Optional)</label>
+                                    <select
+                                        value={mealLogInventoryItem}
+                                        onChange={e => setMealLogInventoryItem(e.target.value)}
+                                        className="w-full h-11 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold"
+                                    >
+                                        <option value="">None / External Supply</option>
+                                        {inventoryItems?.map((item: any) => (
+                                            <option key={item.id} value={item.id}>
+                                                {item.sku ? `[${item.sku}] ` : ''}{item.name} ({item.quantity} {item.unit} left)
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Qty Used</label>
+                                    <Input
+                                        type="number"
+                                        min="0"
+                                        step="any"
+                                        value={mealLogInventoryQty || ''}
+                                        onChange={e => setMealLogInventoryQty(Number(e.target.value))}
+                                        placeholder="Qty"
+                                        className="h-11 rounded-xl"
+                                    />
+                                </div>
+                            </div>
                             <div>
                                 <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Observations/Remarks</label>
                                 <textarea value={mealLogForm.notes} onChange={e => setMealLogForm({...mealLogForm, notes: e.target.value})} placeholder="Allergies noticed, leftovers count..." className="w-full h-20 px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold" />
@@ -3555,6 +5184,300 @@ function CookDashboard({ profile, announcements, leaveRequests, announcementsLoa
                         </form>
                     </Card>
                 </div>
+            )}
+
+            {activeTab === 'requisitions' && (
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-in fade-in duration-300">
+                    {/* Requisitions History */}
+                    <div className="xl:col-span-2 space-y-4">
+                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Requisitions History</h3>
+                        {requisitions && requisitions.length > 0 ? (
+                            <div className="space-y-3">
+                                {requisitions.map((req: any) => (
+                                    <Card key={req.id} className="rounded-3xl border bg-white p-6 hover:shadow-sm transition-all">
+                                        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 border-b pb-4 mb-4">
+                                            <div>
+                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">
+                                                    Requested on {req.createdAt?.toDate ? format(req.createdAt.toDate(), 'PPP') : 'Just now'}
+                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-extrabold text-slate-800">
+                                                        {req.items?.length || 0} Item{req.items?.length > 1 ? 's' : ''} requested
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <Badge className={cn("text-[9px] font-black px-3 py-1 rounded-full border-none w-fit uppercase",
+                                                req.status === 'Approved' ? "bg-emerald-100 text-emerald-800" :
+                                                req.status === 'Rejected' ? "bg-rose-100 text-rose-800" :
+                                                "bg-blue-100 text-blue-800 animate-pulse"
+                                            )}>{req.status}</Badge>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Requested Pantry Items</p>
+                                                <div className="divide-y divide-slate-100 text-xs">
+                                                    {req.items?.map((it: any, idx: number) => (
+                                                        <div key={idx} className="py-1.5 flex justify-between items-center text-slate-700">
+                                                            <span className="font-semibold">{it.name}</span>
+                                                            <span className="font-mono font-bold text-slate-900">{it.quantity} {it.unit}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            {req.notes && (
+                                                <div className="text-xs text-slate-500 italic mt-2">
+                                                    <span className="font-bold not-italic text-slate-400">Notes:</span> "{req.notes}"
+                                                </div>
+                                            )}
+                                            {req.feedback && (
+                                                <div className="text-xs mt-2 p-3 bg-amber-50 text-amber-900 rounded-xl border border-amber-100">
+                                                    <span className="font-bold">Admin Feedback:</span> {req.feedback}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-16 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                                <ClipboardList className="h-10 w-10 text-slate-300 mx-auto mb-2" />
+                                <p className="text-xs font-black uppercase text-slate-400">No past requisitions found.</p>
+                                <p className="text-[10px] text-slate-400 mt-1">Submit pantry requests to the Admin or Director for processing.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Requisition Submission Form */}
+                    <Card className="rounded-3xl border-none shadow-lg bg-white p-6 h-fit">
+                        <h4 className="font-black text-xs uppercase tracking-widest text-slate-400 mb-4">Request Supplies</h4>
+                        <form onSubmit={handleSaveRequisition} className="space-y-4">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black uppercase text-slate-400 block">Pantry Items & Quantities</label>
+                                
+                                {reqItems.map((field, index) => {
+                                    const selectedItem = inventoryItems?.find((i: any) => i.id === field.itemId);
+                                    return (
+                                        <div key={index} className="flex gap-2 items-end bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                            <div className="flex-grow">
+                                                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Item</label>
+                                                <select
+                                                    value={field.itemId}
+                                                    onChange={e => {
+                                                        const updated = [...reqItems];
+                                                        updated[index].itemId = e.target.value;
+                                                        setReqItems(updated);
+                                                    }}
+                                                    required
+                                                    className="w-full h-9 px-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold"
+                                                >
+                                                    <option value="">Select Item...</option>
+                                                    {inventoryItems?.map((item: any) => (
+                                                        <option key={item.id} value={item.id}>
+                                                            {item.sku ? `[${item.sku}] ` : ''}{item.name} ({item.quantity} {item.unit} left)
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="w-20">
+                                                <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Qty</label>
+                                                <div className="relative">
+                                                    <Input
+                                                        type="number"
+                                                        min="1"
+                                                        value={field.quantity}
+                                                        onChange={e => {
+                                                            const updated = [...reqItems];
+                                                            updated[index].quantity = Number(e.target.value);
+                                                            setReqItems(updated);
+                                                        }}
+                                                        required
+                                                        className="h-9 px-2 text-center text-xs font-mono font-bold rounded-lg bg-white"
+                                                    />
+                                                    {selectedItem && (
+                                                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-bold uppercase text-slate-400">
+                                                            {selectedItem.unit}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {reqItems.length > 1 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const updated = reqItems.filter((_, idx) => idx !== index);
+                                                        setReqItems(updated);
+                                                    }}
+                                                    className="h-9 w-9 text-rose-500 hover:text-rose-700 flex items-center justify-center rounded-lg hover:bg-rose-50 shrink-0"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setReqItems([...reqItems, { itemId: '', quantity: 1 }])}
+                                    className="w-full h-9 rounded-xl text-xs font-bold text-slate-600 border-slate-200"
+                                >
+                                    <Plus className="h-3.5 w-3.5 mr-1" /> Add Item Line
+                                </Button>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Requisition Notes (Optional)</label>
+                                <textarea
+                                    value={reqNotes}
+                                    onChange={e => setReqNotes(e.target.value)}
+                                    placeholder="Explain the urgency, purpose, or weekly menu context..."
+                                    className="w-full h-20 px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold"
+                                />
+                            </div>
+
+                            <Button type="submit" disabled={isSaving} className="w-full bg-amber-600 hover:bg-amber-700 h-11 rounded-xl text-xs font-black uppercase text-white font-bold">
+                                {isSaving ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <Send className="h-4 w-4 mr-2" />} Submit Requisition
+                            </Button>
+                        </form>
+                    </Card>
+                </div>
+            )}
+
+            {/* Canteen Transaction History Overlay (Print reconciliation) */}
+            {historyItem && (
+              <>
+                <div 
+                  onClick={() => setHistoryItem(null)}
+                  className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200 no-print"
+                />
+                <div id="print-section" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-2xl z-50 animate-in zoom-in-95 duration-200 max-h-[85vh] overflow-y-auto">
+                  <style>{`
+                    @media print {
+                      body * {
+                        visibility: hidden;
+                      }
+                      #print-section, #print-section * {
+                        visibility: visible;
+                      }
+                      #print-section {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        max-height: none !important;
+                        overflow: visible !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
+                        background: white !important;
+                        color: black !important;
+                      }
+                      .no-print {
+                        display: none !important;
+                      }
+                    }
+                  `}</style>
+                  
+                  <div className="flex justify-between items-start mb-6 no-print">
+                    <div>
+                      <span className="text-[9px] font-black text-indigo-650 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wider block w-fit mb-1.5 font-bold">Reconciliation Ledger</span>
+                      <h3 className="text-lg font-black uppercase text-slate-800 tracking-tight">Stock Transaction History</h3>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setHistoryItem(null)} className="h-8 w-8 rounded-full border-0">
+                      <XCircle className="h-5 w-5 text-slate-400" />
+                    </Button>
+                  </div>
+
+                  {/* Print Header (Visible ONLY on print) */}
+                  <div className="hidden print:block mb-8 border-b pb-4">
+                    <h1 className="text-xl font-bold uppercase tracking-tight text-slate-900">Canteen Stock Reconciliation Ledger</h1>
+                    <p className="text-xs text-slate-500 uppercase font-semibold mt-1">Generated on: {new Date().toLocaleString()}</p>
+                  </div>
+
+                  <div className="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Item Template</span>
+                      <h4 className="font-extrabold text-slate-800 text-sm uppercase">{historyItem.name}</h4>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">SKU / Unit</span>
+                      <h4 className="font-extrabold text-slate-800 text-sm uppercase font-mono">{historyItem.sku || 'N/A'} ({historyItem.unit})</h4>
+                    </div>
+                  </div>
+
+                  {isLoadingHistory ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                      <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mb-2" />
+                      <p className="text-xs font-bold uppercase tracking-widest">Loading history log...</p>
+                    </div>
+                  ) : historyTransactions.length > 0 ? (
+                    <div className="space-y-4">
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse text-left text-xs">
+                          <thead>
+                            <tr className="border-b border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                              <th className="py-2.5 px-3">Date</th>
+                              <th className="py-2.5 px-3">Type</th>
+                              <th className="py-2.5 px-3 text-right">Qty</th>
+                              <th className="py-2.5 px-3 text-right">Balance</th>
+                              <th className="py-2.5 px-3">Source</th>
+                              <th className="py-2.5 px-3">Performed By</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                            {historyTransactions.map((tx: any) => {
+                              const dateStr = tx.timestamp?.toDate ? tx.timestamp.toDate().toLocaleDateString() : 'Pending';
+                              return (
+                                <tr key={tx.id} className="hover:bg-slate-50/50">
+                                  <td className="py-2.5 px-3 whitespace-nowrap font-semibold text-slate-500">{dateStr}</td>
+                                  <td className="py-2.5 px-3">
+                                    <Badge className={cn("text-[9px] font-black px-1.5 py-0.2 rounded border-none uppercase",
+                                      tx.type === 'IN' ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                                    )}>{tx.type}</Badge>
+                                  </td>
+                                  <td className={cn("py-2.5 px-3 text-right font-bold", tx.type === 'IN' ? "text-emerald-600" : "text-rose-600")}>
+                                    {tx.type === 'IN' ? '+' : '-'}{tx.quantity}
+                                  </td>
+                                  <td className="py-2.5 px-3 text-right font-mono text-slate-500">
+                                    {tx.prevQuantity} &rarr; {tx.newQuantity}
+                                  </td>
+                                  <td className="py-2.5 px-3">
+                                    <span className="font-semibold text-slate-800">{tx.source}</span>
+                                    {tx.notes && <span className="text-[10px] text-slate-400 block font-normal">{tx.notes}</span>}
+                                  </td>
+                                  <td className="py-2.5 px-3 text-slate-500 truncate max-w-[120px]">{tx.performedBy}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="flex gap-3 pt-4 border-t no-print">
+                        <Button variant="outline" onClick={() => setHistoryItem(null)} className="flex-1 h-10 text-xs font-black uppercase rounded-xl border border-slate-200">
+                          Close Ledger
+                        </Button>
+                        <Button onClick={() => window.print()} className="flex-1 bg-slate-900 hover:bg-slate-800 h-10 text-xs font-black uppercase text-white font-bold rounded-xl shadow-md border-0">
+                          Print reconciliation
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-slate-400 space-y-2">
+                      <ClipboardList className="h-10 w-10 mx-auto text-slate-300" />
+                      <p className="text-xs font-black uppercase tracking-wider">No transaction logs recorded for this item.</p>
+                      <div className="no-print pt-2">
+                        <Button variant="outline" onClick={() => setHistoryItem(null)} className="h-9 px-4 text-xs font-bold uppercase rounded-xl">
+                          Close
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
         </div>
     );
@@ -4173,7 +6096,7 @@ function TransportDashboard({ profile, announcements, leaveRequests, announcemen
                                                         {stopRiders.map(s => (
                                                             <div key={s.uid} className="flex justify-between items-center p-2 bg-slate-50 border border-slate-100 rounded-xl">
                                                                 <div>
-                                                                    <div className="font-extrabold text-slate-700 text-[11px] uppercase">{s.firstName} {s.lastName}</div>
+                                                                    <div className="font-extrabold text-slate-705 text-[11px] uppercase">{s.firstName} {s.lastName}</div>
                                                                     <div className="text-[9px] font-bold text-indigo-500 uppercase">{s.classId || 'No Class'}</div>
                                                                 </div>
                                                                 <span className="text-[9px] font-mono text-slate-400 font-bold">{s.parentPhone || 'No Phone'}</span>
@@ -5508,6 +7431,314 @@ function TeacherDashboard({ profile, classes, students, assessments, announcemen
     );
 }
 
+function ParentCoachingWidget({ activeChild, subjectAverages, attendanceStats, onTabChange }: {
+    activeChild: any;
+    subjectAverages: any[];
+    attendanceStats: any;
+    onTabChange: (tab: 'overview' | 'academics' | 'financials' | 'notices' | 'canteen') => void;
+}) {
+    const strugglingSubjects = useMemo(() => {
+        return subjectAverages.filter(
+            (sub: any) => sub.average < sub.classAverage - 3 || sub.average < 50
+        );
+    }, [subjectAverages]);
+
+    const averageSubjects = useMemo(() => {
+        return subjectAverages.filter(
+            (sub: any) => sub.average >= sub.classAverage - 3 && sub.average <= sub.classAverage + 5 && sub.average >= 50
+        );
+    }, [subjectAverages]);
+
+    const excellingSubjects = useMemo(() => {
+        return subjectAverages.filter(
+            (sub: any) => sub.average > sub.classAverage + 5 && sub.average >= 50
+        );
+    }, [subjectAverages]);
+
+    const [showCertModal, setShowCertModal] = useState(false);
+
+    if (!activeChild) return null;
+
+    const hasStruggling = strugglingSubjects.length > 0;
+    const hasAverage = averageSubjects.length > 0;
+    const hasExcelling = excellingSubjects.length > 0;
+
+    return (
+        <Card className="rounded-[2.5rem] border border-indigo-100 shadow-[0_20px_50px_-12px_rgba(99,102,241,0.05)] bg-white overflow-hidden p-8 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
+                <div>
+                    <span className="text-[9px] font-black tracking-[0.25em] bg-emerald-500/10 text-emerald-600 px-3.5 py-1.5 rounded-full uppercase">
+                        Active Academic Partner
+                    </span>
+                    <h3 className="text-xl font-black text-slate-800 mt-2 flex items-center gap-2">
+                        <BrainCircuit className="h-5 w-5 text-indigo-600" /> Parent Coaching Advisor
+                    </h3>
+                    <p className="text-xs font-medium text-slate-400 mt-1">Smart feedback and recommendations for {activeChild.firstName}</p>
+                </div>
+                {hasExcelling && (
+                    <Button 
+                        onClick={() => setShowCertModal(true)}
+                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-wider h-11 px-6 shadow-md shadow-indigo-500/10 flex items-center gap-2 shrink-0"
+                    >
+                        <Award className="h-4 w-4" /> Celebrate Success
+                    </Button>
+                )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Academic Coaching Section */}
+                <div className="space-y-4">
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Grades & Curriculum Pulse</h4>
+                    
+                    {/* RED FLAG: Struggling */}
+                    {hasStruggling && (
+                        <div className="p-5 rounded-2xl bg-rose-50/50 border border-rose-100 flex items-start gap-4 animate-in slide-in-from-top-2 duration-300">
+                            <div className="p-2.5 bg-rose-100 text-rose-600 rounded-xl shrink-0">
+                                <AlertTriangle className="h-5 w-5" />
+                            </div>
+                            <div className="space-y-2">
+                                <h5 className="font-extrabold text-rose-800 text-xs uppercase tracking-wider">Attention Required: Performance Alert</h5>
+                                <p className="text-xs text-rose-700 font-semibold leading-relaxed">
+                                    {activeChild.firstName} is currently performing below the class average in:
+                                    <span className="font-black underline block mt-1 text-rose-900">
+                                        {strugglingSubjects.map((s) => `${s.name} (${s.average}% vs Class: ${s.classAverage}%)`).join(', ')}
+                                    </span>
+                                </p>
+                                <p className="text-[11px] text-rose-600 leading-normal font-medium">
+                                    <strong>Advisory:</strong> Continuous assessment scores indicate challenges with comprehension in these areas. We recommend scheduling a chat with the teacher to align on study habits, daily homework checks, and setting aside dedicated quiet study time at home.
+                                </p>
+                                <div className="flex items-center gap-2 pt-1">
+                                    <Button asChild size="sm" variant="outline" className="h-8 border-rose-250 text-rose-800 hover:bg-rose-100 text-[10px] uppercase font-black tracking-wider rounded-lg">
+                                        <Link href="/dashboard/messages">
+                                            Message Teacher
+                                        </Link>
+                                    </Button>
+                                    <Button onClick={() => onTabChange('academics')} size="sm" variant="ghost" className="h-8 text-rose-700 hover:bg-rose-100/50 text-[10px] uppercase font-black tracking-wider rounded-lg">
+                                        Check Grade Log
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* AMBER FLAG: Average */}
+                    {hasAverage && (
+                        <div className="p-5 rounded-2xl bg-amber-50/50 border border-amber-100 flex items-start gap-4 animate-in slide-in-from-top-2 duration-300">
+                            <div className="p-2.5 bg-amber-100 text-amber-600 rounded-xl shrink-0">
+                                <Compass className="h-5 w-5" />
+                            </div>
+                            <div className="space-y-2">
+                                <h5 className="font-extrabold text-amber-800 text-xs uppercase tracking-wider">On Track: Steady Progress</h5>
+                                <p className="text-xs text-amber-700 font-semibold leading-relaxed">
+                                    {activeChild.firstName} is performing within the average class cohort range in:
+                                    <span className="font-black block mt-1 text-amber-900">
+                                        {averageSubjects.map((s) => `${s.name} (${s.average}% vs Class: ${s.classAverage}%)`).join(', ')}
+                                    </span>
+                                </p>
+                                <p className="text-[11px] text-amber-600 leading-normal font-medium">
+                                    <strong>Advisory:</strong> To help them push above the average class level, encourage structured daily reading after school and review practice worksheets. Celebrating micro-improvements will fuel their drive!
+                                </p>
+                                <div className="flex items-center gap-2 pt-1">
+                                    <Button onClick={() => onTabChange('academics')} size="sm" variant="outline" className="h-8 border-amber-250 text-amber-800 hover:bg-amber-100 text-[10px] uppercase font-black tracking-wider rounded-lg">
+                                        Review Performance
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* GREEN FLAG: Excelling */}
+                    {hasExcelling && (
+                        <div className="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-4 animate-in slide-in-from-top-2 duration-300">
+                            <div className="p-2.5 bg-emerald-100 text-emerald-600 rounded-xl shrink-0">
+                                <Sparkles className="h-5 w-5" />
+                            </div>
+                            <div className="space-y-2">
+                                <h5 className="font-extrabold text-emerald-800 text-xs uppercase tracking-wider">Academic Excellence Achieved</h5>
+                                <p className="text-xs text-emerald-700 font-semibold leading-relaxed">
+                                    {activeChild.firstName} is scoring significantly above the class cohort average in:
+                                    <span className="font-black block mt-1 text-emerald-900">
+                                        {excellingSubjects.map((s) => `${s.name} (${s.average}% vs Class: ${s.classAverage}%)`).join(', ')}
+                                    </span>
+                                </p>
+                                <p className="text-[11px] text-emerald-600 leading-normal font-medium">
+                                    <strong>Advisory:</strong> Outstanding performance! Celebrate this success with your child. Maintain the current positive encouragement and study schedules to sustain this trajectory.
+                                </p>
+                                <div className="flex items-center gap-2 pt-1">
+                                    <Button onClick={() => setShowCertModal(true)} size="sm" variant="outline" className="h-8 border-emerald-250 text-emerald-800 hover:bg-emerald-100 text-[10px] uppercase font-black tracking-wider rounded-lg">
+                                        Kudos Certificate
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {!hasStruggling && !hasAverage && !hasExcelling && (
+                        <div className="p-8 text-center text-slate-400 bg-slate-50 border rounded-2xl border-dashed">
+                            <BookOpen className="h-8 w-8 mx-auto mb-2 text-slate-350" />
+                            <p className="text-xs font-black uppercase tracking-wider">No academic assessments compiled for this student.</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Attendance Consistency Section */}
+                <div className="space-y-4">
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Attendance & consistency pulse</h4>
+                    
+                    {attendanceStats.rate < 90 ? (
+                        <div className="p-5 rounded-2xl bg-rose-50/50 border border-rose-100 flex items-start gap-4">
+                            <div className="p-2.5 bg-rose-100 text-rose-600 rounded-xl shrink-0">
+                                <AlertCircle className="h-5 w-5" />
+                            </div>
+                            <div className="space-y-2">
+                                <h5 className="font-extrabold text-rose-800 text-xs uppercase tracking-wider">Critical Attendance Warning</h5>
+                                <p className="text-xs text-rose-700 font-semibold leading-relaxed">
+                                    {activeChild.firstName}'s attendance rate is currently <span className="font-black">{attendanceStats.rate}%</span>, which is below the school's expected threshold.
+                                </p>
+                                <p className="text-[11px] text-rose-600 leading-normal font-medium">
+                                    <strong>Advisory:</strong> Frequent absenteeism causes significant academic gaps. Please check with the school office regarding missing records or make sure they catch up on missed worksheets with the class teacher.
+                                </p>
+                                <Button asChild size="sm" className="h-8 bg-rose-600 hover:bg-rose-700 text-white text-[10px] uppercase font-black tracking-wider rounded-lg">
+                                    <Link href="/dashboard/my-children">Check Absences</Link>
+                                </Button>
+                            </div>
+                        </div>
+                    ) : attendanceStats.rate < 95 ? (
+                        <div className="p-5 rounded-2xl bg-amber-50/50 border border-amber-100 flex items-start gap-4">
+                            <div className="p-2.5 bg-amber-100 text-amber-600 rounded-xl shrink-0">
+                                <Clock className="h-5 w-5" />
+                            </div>
+                            <div className="space-y-2">
+                                <h5 className="font-extrabold text-amber-800 text-xs uppercase tracking-wider">Borderline Attendance Alert</h5>
+                                <p className="text-xs text-amber-700 font-semibold leading-relaxed">
+                                    {activeChild.firstName} has an attendance rate of <span className="font-black">{attendanceStats.rate}%</span>. They are close to the target of 95%.
+                                </p>
+                                <p className="text-[11px] text-amber-600 leading-normal font-medium">
+                                    <strong>Advisory:</strong> Monitor dates to avoid preventable absences and protect their consistent classroom exposure.
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-4">
+                            <div className="p-2.5 bg-emerald-100 text-emerald-600 rounded-xl shrink-0">
+                                <CheckCircle2 className="h-5 w-5" />
+                            </div>
+                            <div className="space-y-2">
+                                <h5 className="font-extrabold text-emerald-800 text-xs uppercase tracking-wider">Excellent Attendance Health</h5>
+                                <p className="text-xs text-emerald-700 font-semibold leading-relaxed">
+                                    Stellar attendance rate of <span className="font-black">{attendanceStats.rate}%</span>! Excellent dedication to learning.
+                                </p>
+                                <p className="text-[11px] text-emerald-600 leading-normal font-medium">
+                                    <strong>Advisory:</strong> Consistent school attendance is directly correlated with long-term retention. Commend {activeChild.firstName} on their punctuality and commitment.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Praise Certificate Modal */}
+            {showCertModal && (
+                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <Card className="max-w-2xl w-full bg-white rounded-[2.5rem] overflow-hidden border-none shadow-2xl relative p-8 flex flex-col justify-between">
+                        <button onClick={() => setShowCertModal(false)} className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors">
+                            <XCircle className="h-6 w-6" />
+                        </button>
+                        
+                        {/* Certificate View Frame */}
+                        <div id="praise-certificate" className="border-8 border-double border-indigo-600 p-8 rounded-3xl text-center space-y-6 bg-slate-50 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(99,102,241,0.03),_rgba(255,255,255,0))] pointer-events-none" />
+                            <div className="absolute bottom-4 right-4 opacity-5 pointer-events-none">
+                                <GraduationCap className="h-48 w-48 text-indigo-600" />
+                            </div>
+
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] bg-indigo-500/10 text-indigo-600 px-4 py-1.5 rounded-full inline-block">
+                                Certificate of Appreciation
+                            </span>
+                            
+                            <h2 className="text-3xl font-black text-slate-800 tracking-tight uppercase italic mt-4 font-serif">
+                                Star Academic Performer
+                            </h2>
+                            
+                            <p className="text-xs text-slate-400 uppercase tracking-widest">This honors certificate is proudly awarded to</p>
+                            
+                            <div className="space-y-1">
+                                <h3 className="text-2.5xl font-black text-indigo-700 border-b-2 border-slate-300 w-fit mx-auto pb-1 uppercase italic tracking-tight">
+                                    {activeChild.firstName} {activeChild.lastName}
+                                </h3>
+                                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold mt-1">
+                                    {activeChild.classId || 'Enrolled Student'}
+                                </p>
+                            </div>
+                            
+                            <p className="text-xs text-slate-650 max-w-md mx-auto leading-relaxed font-semibold">
+                                For achieving outstanding marks and performing significantly above the class cohort standards. Your diligence, focus, and passion for excellence are an inspiration.
+                            </p>
+
+                            <div className="flex justify-between items-end pt-8 max-w-sm mx-auto border-t border-slate-200">
+                                <div className="text-left space-y-1">
+                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Presented by</p>
+                                    <p className="text-xs font-black text-slate-800 uppercase italic">GAM Edu Board</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="h-10 w-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-black text-xs border border-indigo-200">
+                                        ★
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modal Action Buttons */}
+                        <div className="flex justify-end gap-3 mt-6">
+                            <Button variant="outline" onClick={() => setShowCertModal(false)} className="rounded-xl h-12 px-6 text-xs uppercase font-black tracking-wider">
+                                Close
+                            </Button>
+                            <Button 
+                                onClick={() => {
+                                    const printContent = document.getElementById('praise-certificate')?.innerHTML;
+                                    if (printContent) {
+                                        const win = window.open('', '_blank');
+                                        if (win) {
+                                            win.document.write(`
+                                                <html>
+                                                    <head>
+                                                        <title>Kudos Certificate - \${activeChild.firstName}</title>
+                                                        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+                                                        <style>
+                                                            @media print {
+                                                                body { padding: 40px; }
+                                                            }
+                                                        </style>
+                                                    </head>
+                                                    <body class="bg-white flex items-center justify-center min-h-screen">
+                                                        <div class="border-8 border-double border-indigo-600 p-12 rounded-3xl text-center space-y-6 bg-slate-50 relative overflow-hidden w-[600px] mx-auto">
+                                                            \${printContent}
+                                                        </div>
+                                                        <script>
+                                                            window.onload = function() {
+                                                                window.print();
+                                                                window.close();
+                                                            }
+                                                        </script>
+                                                    </body>
+                                                </html>
+                                            `);
+                                            win.document.close();
+                                        }
+                                    }
+                                }} 
+                                className="bg-indigo-650 hover:bg-indigo-750 text-white font-black rounded-xl text-xs uppercase tracking-wider h-12 px-6 shadow-lg shadow-indigo-500/10 flex items-center gap-2"
+                            >
+                                <FileText className="h-4 w-4" /> Print Certificate
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
+        </Card>
+    );
+}
+
 function ParentDashboard({ 
   profile, 
   children, 
@@ -5524,8 +7755,13 @@ function ParentDashboard({
   classAssessments
 }: any) {
     const { user } = useUser();
+    const { schoolId } = useCurrentSchool();
+    const firestore = useFirestore();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Parent';
-    const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'financials' | 'notices'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'financials' | 'notices' | 'canteen'>('overview');
+
+    const menuQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'cafeteria_menus'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: menuItems } = useCollection<any>(menuQuery);
 
     const totalOutstanding = useMemo(() => {
         if (!financials) return 0;
@@ -5670,6 +7906,14 @@ function ParentDashboard({
         badge: "School Notice Board",
         badgeColor: "bg-amber-500/20 text-amber-300",
         icon: Megaphone,
+      },
+      canteen: {
+        gradient: "from-amber-600 via-orange-700 to-slate-900 border-amber-500/20",
+        title: "Weekly Canteen Meal Plan",
+        description: "Review planned school menus to coordinate meals at home and ensure nutritional variety.",
+        badge: "Pantry & Cafeteria Menu",
+        badgeColor: "bg-amber-500/20 text-amber-300",
+        icon: Utensils,
       }
     };
 
@@ -5713,7 +7957,7 @@ function ParentDashboard({
                 <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
                     {/* Custom Tab Bar */}
                     <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-                        {(['overview', 'academics', 'financials', 'notices'] as const).map((tab) => (
+                        {(['overview', 'academics', 'financials', 'notices', 'canteen'] as const).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
@@ -5794,6 +8038,14 @@ function ParentDashboard({
                                 subtitle="Notice Board Alerts"
                             />
                         </div>
+
+                        {/* Parent Academic Coaching Alert Widget */}
+                        <ParentCoachingWidget 
+                            activeChild={activeChild} 
+                            subjectAverages={subjectAverages} 
+                            attendanceStats={attendanceStats}
+                            onTabChange={(tab) => setActiveTab(tab)}
+                        />
 
                         {/* Operations Control Grid */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -5993,6 +8245,26 @@ function ParentDashboard({
                                                                                 style={{ width: `${sub.classAverage}%` }}
                                                                             />
                                                                         </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Contextual difficulty coaching tag */}
+                                                            <div className="pt-2.5 border-t border-slate-200/50 mt-2 flex items-center justify-between">
+                                                                {sub.average < sub.classAverage - 3 || sub.average < 50 ? (
+                                                                    <div className="flex items-center gap-1.5 text-[9px] font-black text-rose-650 uppercase tracking-tight">
+                                                                        <AlertTriangle className="h-3.5 w-3.5 text-rose-500 animate-pulse" />
+                                                                        <span>Attention Needed: Support At Home</span>
+                                                                    </div>
+                                                                ) : sub.average > sub.classAverage + 5 ? (
+                                                                    <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-650 uppercase tracking-tight">
+                                                                        <Award className="h-3.5 w-3.5 text-emerald-500" />
+                                                                        <span>Outstanding Performer</span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex items-center gap-1.5 text-[9px] font-black text-amber-650 uppercase tracking-tight">
+                                                                        <Info className="h-3.5 w-3.5 text-amber-500" />
+                                                                        <span>On par with class cohort</span>
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -6291,6 +8563,101 @@ function ParentDashboard({
                                 )}
                             </CardContent>
                         </Card>
+                    </div>
+                )}
+
+                {activeTab === 'canteen' && (
+                    <div className="space-y-8 animate-in fade-in duration-300">
+                        {/* Parent Coordination Tip Banner */}
+                        <div className="bg-amber-50 border border-amber-200/60 rounded-3xl p-6 flex items-start gap-4 shadow-sm">
+                            <div className="p-3 bg-amber-500/10 text-amber-700 rounded-2xl shrink-0">
+                                <Utensils className="h-6 w-6" />
+                            </div>
+                            <div className="space-y-1">
+                                <h4 className="font-black text-sm uppercase tracking-tight text-amber-800">Dietary Coordination Advice</h4>
+                                <p className="text-xs text-amber-700 leading-relaxed font-semibold">
+                                    Coordinate your home-cooked dinners and breakfasts with the school menu below to avoid repeat meals (e.g. serving rice at home on days they eat rice at school) and ensure balanced nutritional variety for your child.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Menu Schedule Grid */}
+                        <div className="grid gap-6 xl:grid-cols-5">
+                            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => {
+                                const mealsForDay = menuItems?.filter((m: any) => m.dayOfWeek === day) || [];
+                                return (
+                                    <Card key={day} className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-md transition-shadow">
+                                        <div className="space-y-4">
+                                            <div className="border-b pb-2">
+                                                <h3 className="text-sm font-black uppercase text-slate-800 tracking-wider">{day}</h3>
+                                            </div>
+
+                                            {mealsForDay.length > 0 ? (
+                                                <div className="space-y-4">
+                                                    {['Breakfast', 'Lunch', 'Snacks', 'Dinner'].map((type) => {
+                                                        const meal = mealsForDay.find((m: any) => m.mealType === type);
+                                                        if (!meal || !meal.mealName) return null;
+                                                        return (
+                                                            <div key={type} className="space-y-1">
+                                                                <Badge className={cn("text-[8px] font-black px-2 py-0.5 rounded-full border-none w-fit uppercase mb-1",
+                                                                    type === 'Breakfast' ? "bg-blue-100 text-blue-800" :
+                                                                    type === 'Lunch' ? "bg-emerald-100 text-emerald-800" :
+                                                                    type === 'Snacks' ? "bg-purple-100 text-purple-800" :
+                                                                    "bg-amber-100 text-amber-800"
+                                                                )}>{type}</Badge>
+                                                                <h4 className="font-extrabold text-slate-700 text-xs uppercase leading-tight">{meal.mealName}</h4>
+                                                                {meal.description && (
+                                                                    <p className="text-[10px] text-slate-500 leading-normal">{meal.description}</p>
+                                                                )}
+                                                                {meal.notes && (
+                                                                    <div className="text-[9px] bg-rose-50 text-rose-700 p-1.5 rounded-md border border-rose-100/50 mt-1 font-semibold italic">
+                                                                        ⚠️ {meal.notes}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
+
+                                                    {/* Suggested home dinners */}
+                                                    {(() => {
+                                                        const lunchMeal = mealsForDay.find((m: any) => m.mealType === 'Lunch');
+                                                        const lunchName = lunchMeal?.mealName || '';
+                                                        let recommendedDinner = 'Light soup with yam or plantain';
+                                                        let dinnerReason = 'A light, digestion-friendly choice to end the school day.';
+                                                        if (lunchName.toLowerCase().includes('rice') || lunchName.toLowerCase().includes('jollof') || lunchName.toLowerCase().includes('waakye')) {
+                                                            recommendedDinner = 'Assorted Yam Fries with fish or Kenkey';
+                                                            dinnerReason = 'Provides a healthy break from grain-based carbs eaten at school.';
+                                                        } else if (lunchName.toLowerCase().includes('pasta') || lunchName.toLowerCase().includes('spaghetti') || lunchName.toLowerCase().includes('noodle')) {
+                                                            recommendedDinner = 'Banku with hot pepper and grilled fish';
+                                                            dinnerReason = 'Offers a traditional swallow shifting away from wheat pasta.';
+                                                        } else if (lunchName.toLowerCase().includes('beans') || lunchName.toLowerCase().includes('gobe') || lunchName.toLowerCase().includes('red-red')) {
+                                                            recommendedDinner = 'Fried rice with fresh coleslaw';
+                                                            dinnerReason = 'Switches high-protein legume meal to light, nutrient-dense veggies.';
+                                                        } else if (lunchName.toLowerCase().includes('fufu') || lunchName.toLowerCase().includes('banku') || lunchName.toLowerCase().includes('tz')) {
+                                                            recommendedDinner = 'Light bread toast or tea with oatmeal';
+                                                            dinnerReason = 'Balances out the heavy traditional swallow eaten during lunch.';
+                                                        }
+                                                        return (
+                                                            <div className="mt-4 pt-4 border-t border-dashed border-amber-250 bg-amber-50/40 p-3 rounded-xl space-y-1">
+                                                                <div className="flex items-center gap-1.5 text-[8.5px] font-black text-amber-800 uppercase tracking-widest">
+                                                                    <ChefHat className="h-3.5 w-3.5 text-amber-600" /> Suggested Home Dinner
+                                                                </div>
+                                                                <p className="font-extrabold text-[10px] text-amber-900 leading-tight uppercase mt-1">{recommendedDinner}</p>
+                                                                <p className="text-[9px] text-slate-500 font-semibold leading-relaxed">{dinnerReason}</p>
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            ) : (
+                                                <div className="py-8 text-center text-slate-400 italic text-[10px] uppercase font-black tracking-wider">
+                                                    No meals planned
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Card>
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
             </div>
@@ -6774,7 +9141,7 @@ function StudentDashboard({ profile }: any) {
                                 <div className="space-y-4">
                                     {sortedAnnouncements.map((ann: any, idx: number) => (
                                         <div key={ann.id || idx} className="flex gap-3 text-xs">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-650 shrink-0 mt-1.5 animate-pulse"></div>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0 mt-1.5 animate-pulse"></div>
                                             <div className="space-y-0.5 min-w-0 flex-1">
                                                 <h4 className="font-bold text-slate-800 truncate uppercase">{ann.title}</h4>
                                                 <p className="text-slate-500 line-clamp-2 leading-relaxed">{ann.content}</p>

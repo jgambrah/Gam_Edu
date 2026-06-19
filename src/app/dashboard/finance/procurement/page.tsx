@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, serverTimestamp, updateDoc, writeBatch, query, where, addDoc, orderBy } from 'firebase/firestore';
+import { collection, doc, serverTimestamp, updateDoc, writeBatch, query, where, addDoc, orderBy, getDoc, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
@@ -72,6 +72,7 @@ interface PurchaseOrder {
     schoolId: string;
     createdAt: any;
     createdBy: string;
+    postedToCanteenInventory?: boolean;
 }
 
 // --- HELPER: DATE FORMATTING ---
@@ -612,6 +613,92 @@ function PurchaseOrderForm({ setOpen, onPOCreated, schoolId, vendors }: POFormPr
     );
 }
 
+// --- HELPER: POST CATERING PO ITEMS TO CANTEEN INVENTORY ---
+const addPoItemsToCanteenInventory = async (po: PurchaseOrder, vendors: Vendor[], firestore: any) => {
+    if (!firestore || !po || po.postedToCanteenInventory) return;
+    
+    // Find the vendor's category
+    const vendor = vendors.find(v => v.id === po.vendorId);
+    if (!vendor || vendor.category !== 'Catering') return;
+
+    try {
+        const batch = writeBatch(firestore);
+        
+        for (const item of po.items) {
+            const cleanName = item.description.trim();
+            if (!cleanName) continue;
+            const docId = `${po.schoolId}-${cleanName.replace(/\s+/g, '-').toLowerCase()}`;
+            const itemRef = doc(firestore, 'kitchen_inventory', docId);
+            const itemSnap = await getDoc(itemRef);
+            
+            let prevQty = 0;
+            let finalSku = '';
+            
+            if (itemSnap.exists()) {
+                prevQty = Number(itemSnap.data().quantity) || 0;
+                finalSku = itemSnap.data().sku || '';
+                const newQty = prevQty + Number(item.quantity);
+                let status = 'In Stock';
+                if (newQty === 0) status = 'Out of Stock';
+                else if (newQty < 10) status = 'Low Stock';
+                
+                batch.update(itemRef, {
+                    quantity: newQty,
+                    status: status,
+                    updatedAt: serverTimestamp()
+                });
+            } else {
+                const newQty = Number(item.quantity);
+                let status = 'In Stock';
+                if (newQty === 0) status = 'Out of Stock';
+                else if (newQty < 10) status = 'Low Stock';
+                
+                const categoryPrefix = 'DRY';
+                const nameClean = cleanName.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
+                const randomNum = Math.floor(100 + Math.random() * 900);
+                finalSku = `CAN-${categoryPrefix}-${nameClean}-${randomNum}`;
+                
+                batch.set(itemRef, {
+                    name: cleanName,
+                    sku: finalSku,
+                    quantity: newQty,
+                    unit: 'pcs',
+                    category: 'Dry Goods',
+                    status: status,
+                    schoolId: po.schoolId,
+                    updatedAt: serverTimestamp()
+                });
+            }
+
+            // Record stock intake transaction
+            const transRef = doc(collection(firestore, 'canteen_transactions'));
+            batch.set(transRef, {
+                schoolId: po.schoolId,
+                itemId: docId,
+                itemName: cleanName,
+                sku: finalSku,
+                type: 'IN',
+                quantity: Number(item.quantity),
+                prevQuantity: prevQty,
+                newQuantity: prevQty + Number(item.quantity),
+                source: 'Procurement',
+                notes: `Received via Purchase Order #${po.poNumber}`,
+                performedBy: 'System (Procurement)',
+                timestamp: serverTimestamp()
+            });
+        }
+        
+        const poRef = doc(firestore, 'purchase_orders', po.id);
+        batch.update(poRef, {
+            postedToCanteenInventory: true
+        });
+        
+        await batch.commit();
+    } catch (error) {
+        console.error("Error adding PO items to canteen inventory:", error);
+    }
+};
+
 // --- SUB-COMPONENT: PURCHASE ORDER VIEW DOCUMENT & PRINT ---
 interface POViewProps {
     po: PurchaseOrder;
@@ -636,6 +723,9 @@ function PurchaseOrderView({ po, vendors, schoolProfile, onStatusUpdate }: POVie
         if (!firestore) return;
         setUpdating(true);
         try {
+            if (newStatus === 'Delivered') {
+                await addPoItemsToCanteenInventory(po, vendors, firestore);
+            }
             await updateDoc(doc(firestore, 'purchase_orders', po.id), {
                 status: newStatus
             });
@@ -665,6 +755,8 @@ function PurchaseOrderView({ po, vendors, schoolProfile, onStatusUpdate }: POVie
                 createdAt: serverTimestamp(),
                 schoolId: po.schoolId,
             });
+
+            await addPoItemsToCanteenInventory(po, vendors, firestore);
 
             await updateDoc(doc(firestore, 'purchase_orders', po.id), {
                 convertedToBill: true,
