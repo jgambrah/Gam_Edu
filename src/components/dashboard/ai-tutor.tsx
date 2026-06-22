@@ -40,6 +40,9 @@ export const AITutor: React.FC<AITutorProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
 
+  // Voice Auto-Speak state
+  const [autoSpeak, setAutoSpeak] = useState(true);
+
   // Voice Speech Synthesis (TTS) State
   const [playingId, setPlayingId] = useState<number | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
@@ -173,7 +176,16 @@ export const AITutor: React.FC<AITutorProps> = ({
         timestamp: Date.now()
       };
 
-      setMessages(prev => [...prev, aiMsg]);
+      setMessages(prev => {
+        const nextMsgs = [...prev, aiMsg];
+        const newIdx = nextMsgs.length - 1;
+        if (autoSpeak) {
+          setTimeout(() => {
+            speakText(response.text, newIdx);
+          }, 50);
+        }
+        return nextMsgs;
+      });
       
     } catch (error: any) {
         console.error("Chat error", error);
@@ -195,6 +207,25 @@ export const AITutor: React.FC<AITutorProps> = ({
     handleSendMessage(text);
   };
 
+  // Helper to speak text via browser synthesis API
+  const speakText = (text: string, id: number) => {
+    if (!synthRef.current) return;
+    
+    synthRef.current.cancel();
+    
+    // Strip markdown elements before reading
+    const utteranceText = text
+      .replace(/[\*\#\`\_]/g, '')
+      .replace(/SHOW BOARD:\s*\w+/i, '');
+
+    const utterance = new SpeechSynthesisUtterance(utteranceText);
+    utterance.onend = () => setPlayingId(null);
+    utterance.onerror = () => setPlayingId(null);
+    
+    setPlayingId(id);
+    synthRef.current.speak(utterance);
+  };
+
   // Toggle Text-to-Speech
   const handleToggleSpeech = (text: string, id: number) => {
     if (!synthRef.current) {
@@ -211,19 +242,7 @@ export const AITutor: React.FC<AITutorProps> = ({
       return;
     }
 
-    synthRef.current.cancel();
-    
-    // Strip markdown elements before reading
-    const utteranceText = text
-      .replace(/[\*\#\`\_]/g, '')
-      .replace(/SHOW BOARD:\s*\w+/i, '');
-
-    const utterance = new SpeechSynthesisUtterance(utteranceText);
-    utterance.onend = () => setPlayingId(null);
-    utterance.onerror = () => setPlayingId(null);
-    
-    setPlayingId(id);
-    synthRef.current.speak(utterance);
+    speakText(text, id);
   };
 
   // Speech to Text (STT) Trigger
@@ -303,10 +322,42 @@ export const AITutor: React.FC<AITutorProps> = ({
           </div>
         </div>
 
-        {/* Cost & Spark Status */}
-        <div className="flex items-center gap-2 bg-indigo-950/50 px-3 py-1.5 rounded-xl border border-indigo-500/20 text-xs">
-          <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />
-          <span className="text-indigo-200 font-semibold">1 Spark / Query</span>
+        <div className="flex items-center gap-2.5">
+          {/* Auto-Speak Toggle Button */}
+          <button
+            type="button"
+            onClick={() => {
+              if (autoSpeak && synthRef.current) {
+                synthRef.current.cancel();
+                setPlayingId(null);
+              }
+              setAutoSpeak(!autoSpeak);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all duration-200 ${
+              autoSpeak 
+                ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/35 hover:bg-indigo-500/20' 
+                : 'bg-slate-900 text-slate-500 border-slate-800 hover:text-slate-400'
+            }`}
+            title={autoSpeak ? "Disable Auto-Speak" : "Enable Auto-Speak"}
+          >
+            {autoSpeak ? (
+              <>
+                <Volume2 className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+                <span>Auto-Voice On</span>
+              </>
+            ) : (
+              <>
+                <VolumeX className="w-3.5 h-3.5 animate-none" />
+                <span>Voice Muted</span>
+              </>
+            )}
+          </button>
+
+          {/* Cost & Spark Status */}
+          <div className="flex items-center gap-2 bg-indigo-950/50 px-3 py-1.5 rounded-xl border border-indigo-500/20 text-xs">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />
+            <span className="text-indigo-200 font-semibold">1 Spark / Query</span>
+          </div>
         </div>
       </div>
 

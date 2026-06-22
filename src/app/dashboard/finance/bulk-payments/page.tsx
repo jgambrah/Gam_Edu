@@ -16,7 +16,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Search, CheckCircle2, CalendarIcon, Coins, AlertCircle, RefreshCw, Users, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { generateNextReceiptId } from '@/lib/student-utils';
+import { generateNextReceiptId, sendPaymentNotificationToParent } from '@/lib/student-utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 
@@ -231,6 +231,15 @@ export default function BulkDailyReceiptsPage() {
             let totalCollected = 0;
             let processedCount = 0;
 
+            // Keep track of the generated payments to notify parents after batch commit
+            const paymentsToNotify: {
+                studentId: string;
+                studentName: string;
+                payAmount: number;
+                description: string;
+                receiptId: string;
+            }[] = [];
+
             for (const bill of billsToPay) {
                 const payAmount = Number(paymentData[bill.id]);
                 const receiptId = await generateNextReceiptId(firestore, schoolId);
@@ -273,6 +282,14 @@ export default function BulkDailyReceiptsPage() {
 
                 totalCollected += payAmount;
                 processedCount++;
+
+                paymentsToNotify.push({
+                    studentId: bill.studentId,
+                    studentName: bill.studentName,
+                    payAmount,
+                    description: bill.description,
+                    receiptId
+                });
             }
 
             batch.update(doc(firestore, 'tills', activeTill.id), {
@@ -280,6 +297,25 @@ export default function BulkDailyReceiptsPage() {
             });
 
             await batch.commit();
+
+            // Notify parents for each processed payment asynchronously
+            paymentsToNotify.forEach(p => {
+                sendPaymentNotificationToParent({
+                    firestore,
+                    schoolId,
+                    studentId: p.studentId,
+                    studentName: p.studentName,
+                    paymentAmount: p.payAmount,
+                    feeType: p.description,
+                    receiptId: p.receiptId,
+                    paymentMethod: 'Cash',
+                    senderUid: user.uid,
+                    senderName: user.displayName || user.email || 'Accountant',
+                    senderRole: 'Accountant'
+                }).catch(err => {
+                    console.error(`Failed to send parent notification for student ${p.studentName}:`, err);
+                });
+            });
 
             toast({ title: "Payments Processed! 🎉", description: `Successfully received GH₵${totalCollected.toFixed(2)} from ${processedCount} students.` });
             

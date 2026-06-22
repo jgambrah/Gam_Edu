@@ -141,6 +141,99 @@ export async function POST(req: NextRequest) {
         });
       });
 
+      // E. Send DM notification to parents asynchronously
+      try {
+        const studentIdVal = studentId;
+        const recordSnap = await db.collection('financialRecords').doc(recordId).get();
+        const recordData = recordSnap.data();
+        const studentName = recordData?.studentName || "Student";
+        const feeType = recordData?.description || "School Fees";
+        const paymentAmount = data.amount / 100;
+        const receiptId = `ONLINE-${data.reference.slice(0, 8).toUpperCase()}`;
+
+        // 1. Fetch school name
+        const schoolDoc = await db.collection('schools').doc(schoolId).get();
+        const schoolName = schoolDoc.data()?.name || 'our school';
+
+        // 2. Query parents linked to student
+        const parentsSnap = await db.collection('parents')
+          .where('schoolId', '==', schoolId)
+          .where('studentIds', 'array-contains', studentIdVal)
+          .get();
+
+        const senderUid = 'SYSTEM';
+        const senderName = 'System Automated Online Payment';
+        const senderRole = 'System';
+
+        for (const parentDoc of parentsSnap.docs) {
+          const parentData = parentDoc.data();
+          const parentId = parentDoc.id;
+          const parentName = `${parentData.firstName || ''} ${parentData.lastName || ''}`.trim() || 'Parent';
+
+          // 3. Find existing 1-on-1 chat
+          const chatsSnap = await db.collection('direct_messages')
+            .where('schoolId', '==', schoolId)
+            .where('participants', 'array-contains', parentId)
+            .get();
+
+          let chatId = '';
+          const existingChat = chatsSnap.docs.find(d => {
+            const chatData = d.data();
+            return !chatData.isGroup && chatData.participants.includes(senderUid);
+          });
+
+          if (existingChat) {
+            chatId = existingChat.id;
+          } else {
+            // Create new direct chat
+            const newChatRef = await db.collection('direct_messages').add({
+              participants: [senderUid, parentId],
+              participantDetails: {
+                [senderUid]: { name: senderName, role: senderRole, photoURL: null },
+                [parentId]: { name: parentName, role: 'Parent', photoURL: parentData.photoURL || null }
+              },
+              lastMessage: 'Receipt acknowledged',
+              lastMessageTime: FieldValue.serverTimestamp(),
+              unreadCount: { [parentId]: 1, [senderUid]: 0 },
+              schoolId,
+              isGroup: false
+            });
+            chatId = newChatRef.id;
+          }
+
+          // 4. Construct direct message content
+          const msgText = `Dear ${parentName},\n\n` +
+            `This is to acknowledge the receipt of your payment of GH₵${paymentAmount.toFixed(2)} ` +
+            `towards ${feeType} for your ward, ${studentName}.\n\n` +
+            `Receipt Reference: ${receiptId}\n` +
+            `Payment Method: Paystack Online\n\n` +
+            `Thank you for your payment. Please contact the accountant, administrator, or the director in case of any discrepancy.\n\n` +
+            `Best regards,\n` +
+            `${senderName}\n` +
+            `${schoolName}`;
+
+          // 5. Send message
+          await db.collection(`direct_messages/${chatId}/messages`).add({
+            text: msgText,
+            senderId: senderUid,
+            createdAt: FieldValue.serverTimestamp(),
+            type: 'text',
+            status: 'sent'
+          });
+
+          // 6. Update direct_messages metadata
+          const chatRef = db.collection('direct_messages').doc(chatId);
+          const chatUpdate: any = {
+            lastMessage: `Payment acknowledged: GH₵${paymentAmount.toFixed(2)}`,
+            lastMessageTime: FieldValue.serverTimestamp()
+          };
+          chatUpdate[`unreadCount.${parentId}`] = FieldValue.increment(1);
+          await chatRef.update(chatUpdate);
+        }
+      } catch (err) {
+        console.error("Failed to send parent notification DM from webhook:", err);
+      }
+
       console.log(`✅ Successfully processed online payment for Student ${studentId} in School ${schoolId}`);
     }
 

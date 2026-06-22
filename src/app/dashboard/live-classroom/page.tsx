@@ -4,7 +4,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 import { decode, decodeAudioData, createBlob } from './services/audio';
-import { generateLessonImage } from './services/gemini';
+import { generateLessonImage, createLiveAuthToken } from './services/gemini';
 import { saasService } from './services/saas';
 import { AI_COSTS } from './types';
 import { Button } from '@/components/ui/button';
@@ -142,18 +142,24 @@ const TutorSession: React.FC = () => {
       await audioContextRef.current.resume();
     }
 
-    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    if (!apiKey) {
-      toast({
-        variant: "destructive",
-        title: "Live Classroom Disabled",
-        description: "API Key not configured",
-        duration: 10000,
-      });
-      return;
-    }
-
     setIsConnecting(true);
+
+    let activeKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (!activeKey) {
+      try {
+        activeKey = await createLiveAuthToken();
+      } catch (err: any) {
+        console.error("Token generation failed:", err);
+        toast({
+          variant: "destructive",
+          title: "Live Classroom Disabled",
+          description: "Could not establish secure connection to AI services. Please contact your administrator.",
+          duration: 10000,
+        });
+        setIsConnecting(false);
+        return;
+      }
+    }
     
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -171,7 +177,7 @@ const TutorSession: React.FC = () => {
           return;
       }
 
-      const ai = new GoogleGenAI({ apiKey, apiVersion: 'v1alpha' });
+      const ai = new GoogleGenAI({ apiKey: activeKey, apiVersion: 'v1alpha' });
       const inputAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
 
       const session = await ai.live.connect({
@@ -237,17 +243,21 @@ const TutorSession: React.FC = () => {
           },
 
           onmessage: async (message: LiveServerMessage) => {
-            const base64 = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
-            
-            if (base64 && audioContextRef.current) {
-              nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
-              const bytes = decode(base64);
-              const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
-              const source = audioContextRef.current.createBufferSource();
-              source.buffer = buffer;
-              source.connect(audioContextRef.current.destination);
-              source.start(nextStartTimeRef.current);
-              nextStartTimeRef.current += buffer.duration;
+            const parts = message.serverContent?.modelTurn?.parts;
+            if (parts && audioContextRef.current) {
+              for (const part of parts) {
+                const base64 = part.inlineData?.data;
+                if (base64) {
+                  nextStartTimeRef.current = Math.max(nextStartTimeRef.current, audioContextRef.current.currentTime);
+                  const bytes = decode(base64);
+                  const buffer = await decodeAudioData(bytes, audioContextRef.current, 24000, 1);
+                  const source = audioContextRef.current.createBufferSource();
+                  source.buffer = buffer;
+                  source.connect(audioContextRef.current.destination);
+                  source.start(nextStartTimeRef.current);
+                  nextStartTimeRef.current += buffer.duration;
+                }
+              }
             }
 
             if (message.serverContent?.outputTranscription) {

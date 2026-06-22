@@ -1,6 +1,6 @@
 
 import type { Student } from '@/lib/types';
-import { doc, collection, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { doc, collection, runTransaction, serverTimestamp, query, where, getDocs, addDoc, updateDoc, increment, getDoc } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
 
 /**
@@ -121,3 +121,134 @@ export async function generateNextReceiptId(firestore: Firestore, schoolId: stri
   
   return `RCT-${year}-${paddedNumber}`;
 }
+
+export interface PaymentNotificationConfig {
+  firestore: Firestore;
+  schoolId: string;
+  studentId: string;
+  studentName: string;
+  paymentAmount: number;
+  feeType: string;
+  receiptId: string;
+  paymentMethod: string;
+  senderUid: string;
+  senderName: string;
+  senderRole?: string;
+}
+
+/**
+ * Sends a direct message notification to the linked parent(s) of a student when a payment is recorded.
+ */
+export async function sendPaymentNotificationToParent(config: PaymentNotificationConfig): Promise<{ success: boolean; parentCount: number; error?: string }> {
+  const {
+    firestore,
+    schoolId,
+    studentId,
+    studentName,
+    paymentAmount,
+    feeType,
+    receiptId,
+    paymentMethod,
+    senderUid,
+    senderName,
+    senderRole = 'Staff'
+  } = config;
+
+  try {
+    // 1. Fetch school name
+    const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
+    const schoolName = schoolDoc.data()?.name || 'our school';
+
+    // 2. Query parents linked to the student
+    const parentsQuery = query(
+      collection(firestore, 'parents'),
+      where('schoolId', '==', schoolId),
+      where('studentIds', 'array-contains', studentId)
+    );
+    const parentsSnap = await getDocs(parentsQuery);
+
+    if (parentsSnap.empty) {
+      console.warn(`No parents found linked to student ${studentId} (${studentName}).`);
+      return { success: false, parentCount: 0, error: 'No linked parents found.' };
+    }
+
+    let parentCount = 0;
+
+    for (const parentDoc of parentsSnap.docs) {
+      const parentData = parentDoc.data();
+      const parentId = parentDoc.id;
+      const parentName = `${parentData.firstName || ''} ${parentData.lastName || ''}`.trim() || 'Parent';
+
+      // 3. Find if there's an existing 1-on-1 chat
+      const chatsQuery = query(
+        collection(firestore, 'direct_messages'),
+        where('schoolId', '==', schoolId),
+        where('participants', 'array-contains', parentId)
+      );
+      const chatsSnap = await getDocs(chatsQuery);
+      
+      let chatId = '';
+      const existingChat = chatsSnap.docs.find(d => {
+        const data = d.data();
+        return !data.isGroup && data.participants.includes(senderUid);
+      });
+
+      if (existingChat) {
+        chatId = existingChat.id;
+      } else {
+        // Create new direct chat
+        const newChatRef = await addDoc(collection(firestore, 'direct_messages'), {
+          participants: [senderUid, parentId],
+          participantDetails: {
+            [senderUid]: { name: senderName, role: senderRole, photoURL: null },
+            [parentId]: { name: parentName, role: 'Parent', photoURL: parentData.photoURL || null }
+          },
+          lastMessage: 'Receipt acknowledged',
+          lastMessageTime: serverTimestamp(),
+          unreadCount: { [parentId]: 1, [senderUid]: 0 },
+          schoolId,
+          isGroup: false
+        });
+        chatId = newChatRef.id;
+      }
+
+      // 4. Construct direct message content
+      const msgText = `Dear ${parentName},\n\n` +
+        `This is to acknowledge the receipt of your payment of GH₵${paymentAmount.toFixed(2)} ` +
+        `towards ${feeType} for your ward, ${studentName}.\n\n` +
+        `Receipt Reference: ${receiptId}\n` +
+        `Payment Method: ${paymentMethod}\n\n` +
+        `Thank you for your payment. Please contact the accountant, administrator, or the director in case of any discrepancy.\n\n` +
+        `Best regards,\n` +
+        `${senderName} (${senderRole})\n` +
+        `${schoolName}`;
+
+      // 5. Send message
+      await addDoc(collection(firestore, `direct_messages/${chatId}/messages`), {
+        text: msgText,
+        senderId: senderUid,
+        createdAt: serverTimestamp(),
+        type: 'text',
+        status: 'sent'
+      });
+
+      // 6. Update direct_messages metadata
+      const chatRef = doc(firestore, 'direct_messages', chatId);
+      const chatUpdate: any = {
+        lastMessage: `Payment acknowledged: GH₵${paymentAmount.toFixed(2)}`,
+        lastMessageTime: serverTimestamp()
+      };
+      
+      chatUpdate[`unreadCount.${parentId}`] = increment(1);
+      await updateDoc(chatRef, chatUpdate);
+
+      parentCount++;
+    }
+
+    return { success: true, parentCount };
+  } catch (error: any) {
+    console.error('Error sending payment notification:', error);
+    return { success: false, parentCount: 0, error: error.message };
+  }
+}
+

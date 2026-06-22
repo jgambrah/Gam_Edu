@@ -43,7 +43,7 @@ import { Progress } from '@/components/ui/progress';
 
 import { Student, financialRecordSchema, recordPaymentSchema, bulkBillingSchema, applyWaiverSchema, Class, PaymentTransaction, Route, FinancialRecord } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
-import { searchStudent, generateNextReceiptId } from '@/lib/student-utils';
+import { searchStudent, generateNextReceiptId, sendPaymentNotificationToParent } from '@/lib/student-utils';
 import { GenerateReceipt } from './generate-receipt';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -1545,6 +1545,26 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
             }
             batch.set(paymentDocRef, paymentData);
             await batch.commit();
+
+            // Send DM payment notification to parent(s) asynchronously
+            if (record.studentId) {
+                sendPaymentNotificationToParent({
+                    firestore,
+                    schoolId,
+                    studentId: record.studentId,
+                    studentName: record.studentName || 'Student',
+                    paymentAmount: values.amount,
+                    feeType: record.description || 'School Fees',
+                    receiptId,
+                    paymentMethod: values.method,
+                    senderUid: user.uid,
+                    senderName: user.displayName || user.email || 'Staff',
+                    senderRole: 'Accountant'
+                }).catch(err => {
+                    console.error("Failed to send parent payment notification DM:", err);
+                });
+            }
+
             toast({ title: 'Payment Logged', description: `Receipt ${receiptId} generated.` });
             onUpdate(); setOpen(false);
         } catch (e: any) {
