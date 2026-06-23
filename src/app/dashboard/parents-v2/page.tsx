@@ -39,6 +39,7 @@ import { searchStudent } from '@/lib/student-utils';
 type ParentMember = {
   id: string;
   uid: string;
+  title?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -163,6 +164,7 @@ export default function ParentsPage() {
 
           await setDoc(doc(firestore, 'parents', result.uid), {
               uid: result.uid,
+              title: values.title || '',
               firstName: values.firstName,
               lastName: values.lastName,
               email: values.email,
@@ -204,6 +206,7 @@ export default function ParentsPage() {
     try {
         const parentRef = doc(firestore, 'parents', editingParent.id);
         await updateDoc(parentRef, { 
+            title: values.title || '',
             firstName: values.firstName,
             lastName: values.lastName,
             role: 'Parent',
@@ -353,7 +356,7 @@ export default function ParentsPage() {
                             {p.firstName?.charAt(0) || '?'}{p.lastName?.charAt(0) || ''}
                           </div>
                           <div>
-                            <div className="font-bold text-slate-800">{p.firstName} {p.lastName}</div>
+                            <div className="font-bold text-slate-800">{p.title ? `${p.title} ` : ''}{p.firstName} {p.lastName}</div>
                             {p.phone && <div className="text-[10px] text-slate-400 font-medium">{p.phone}</div>}
                           </div>
                         </div>
@@ -388,7 +391,7 @@ export default function ParentsPage() {
                                   <AlertDialogHeader>
                                     <AlertDialogTitle className="text-lg font-bold text-slate-800">Remove Parent Profile?</AlertDialogTitle>
                                     <AlertDialogDescription className="text-slate-500 text-sm">
-                                      Are you sure you want to delete the profile for <strong>{p.firstName} {p.lastName}</strong>? This will unlink all associated students.
+                                      Are you sure you want to delete the profile for <strong>{p.title ? `${p.title} ` : ''}{p.firstName} {p.lastName}</strong>? This will unlink all associated students.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter className="gap-2">
@@ -420,9 +423,22 @@ export default function ParentsPage() {
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Add New Parent</DialogTitle></DialogHeader>
             <form onSubmit={handleAddParent} className="space-y-4 mt-4">
-                 <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="Jane"/></div>
-                    <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Doe"/></div>
+                 <div className="grid grid-cols-4 gap-4">
+                    <div className="space-y-2 col-span-1">
+                      <Label>Title</Label>
+                      <select name="title" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-2">
+                        <option value="">None</option>
+                        <option value="Mr.">Mr.</option>
+                        <option value="Mrs.">Mrs.</option>
+                        <option value="Ms.">Ms.</option>
+                        <option value="Dr.">Dr.</option>
+                        <option value="Prof.">Prof.</option>
+                        <option value="Rev.">Rev.</option>
+                        <option value="Hon.">Hon.</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2 col-span-1.5"><Label>First Name *</Label><Input name="firstName" required placeholder="Jane"/></div>
+                    <div className="space-y-2 col-span-1.5"><Label>Last Name *</Label><Input name="lastName" required placeholder="Doe"/></div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                      <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="jane.doe@example.com"/></div>
@@ -495,12 +511,25 @@ export default function ParentsPage() {
           <DialogHeader><DialogTitle>{canManage ? 'Edit Parent Details' : 'Parent Profile'}</DialogTitle></DialogHeader>
             {editingParent && (
                 <form onSubmit={handleUpdateParent} className="space-y-4 mt-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
+                    <div className="grid grid-cols-4 gap-4">
+                        <div className="space-y-2 col-span-1">
+                            <Label>Title</Label>
+                            <select name="title" defaultValue={editingParent.title || ''} disabled={isSecretary} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-2">
+                                <option value="">None</option>
+                                <option value="Mr.">Mr.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Ms.">Ms.</option>
+                                <option value="Dr.">Dr.</option>
+                                <option value="Prof.">Prof.</option>
+                                <option value="Rev.">Rev.</option>
+                                <option value="Hon.">Hon.</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2 col-span-1.5">
                             <Label>First Name</Label>
                             <Input name="firstName" defaultValue={editingParent.firstName} required disabled={isSecretary} />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 col-span-1.5">
                             <Label>Last Name</Label>
                             <Input name="lastName" defaultValue={editingParent.lastName} required disabled={isSecretary} />
                         </div>
@@ -607,7 +636,7 @@ export default function ParentsPage() {
               <DialogHeader>
                   <DialogTitle>Reset Password</DialogTitle>
                   <DialogDescription>
-                      Set a temporary password for <strong>{resetPasswordUser?.firstName} {resetPasswordUser?.lastName}</strong>. 
+                      Set a temporary password for <strong>{resetPasswordUser?.title ? `${resetPasswordUser.title} ` : ''}{resetPasswordUser?.firstName} {resetPasswordUser?.lastName}</strong>.  
                       They will be forced to change it upon their next login.
                   </DialogDescription>
               </DialogHeader>

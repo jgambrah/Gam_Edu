@@ -543,8 +543,9 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
                             </div>
                         </CardHeader>
                         <CardContent className="p-0">
-                            <Table>
-                                <TableHeader className="bg-slate-50/75">
+                            <div className="w-full overflow-x-auto">
+                                <Table className="min-w-[650px]">
+                                    <TableHeader className="bg-slate-50/75">
                                     <TableRow>
                                         <TableHead className="text-xs pl-6 font-bold">Time</TableHead>
                                         <TableHead className="text-xs font-bold">Payer details</TableHead>
@@ -595,6 +596,7 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
                                     )}
                                 </TableBody>
                             </Table>
+                            </div>
                         </CardContent>
                     </Card>
 
@@ -904,7 +906,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-4xl">
+            <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
                 <DialogHeader className="flex flex-row justify-between items-center gap-4 border-b pb-4">
                     <div>
                         <DialogTitle className="text-slate-800 font-bold">Till Submission Audit Review</DialogTitle>
@@ -961,8 +963,9 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
                 </div>
 
                 <ScrollArea className="max-h-[350px] overflow-y-auto pr-2 border rounded-xl shadow-inner">
-                    <Table>
-                        <TableHeader className="bg-slate-50">
+                    <div className="w-full overflow-x-auto">
+                        <Table className="min-w-[650px]">
+                            <TableHeader className="bg-slate-50">
                             <TableRow>
                                 <TableHead className="text-[11px] font-bold py-2">Time</TableHead>
                                 <TableHead className="text-[11px] font-bold py-2">Payer name</TableHead>
@@ -1018,6 +1021,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
                             )}
                         </TableBody>
                     </Table>
+                    </div>
                 </ScrollArea>
 
                 {till.status !== 'Closed' && (
@@ -1129,8 +1133,9 @@ function DirectorTillView({ setSelectedTill }: { setSelectedTill: (till: Till) =
                             <TabsTrigger value="history" className="rounded-lg font-bold">Closed Desk History</TabsTrigger>
                         </TabsList>
                         <TabsContent value="pending" className="mt-4">
-                            <Table>
-                                <TableHeader>
+                            <div className="w-full overflow-x-auto border rounded-xl">
+                                <Table className="min-w-[650px]">
+                                    <TableHeader>
                                     <TableRow>
                                         <TableHead className="font-bold text-xs pl-4">Accountant Cashier</TableHead>
                                         <TableHead className="font-bold text-xs">Date Opened</TableHead>
@@ -1166,10 +1171,12 @@ function DirectorTillView({ setSelectedTill }: { setSelectedTill: (till: Till) =
                                     )}
                                 </TableBody>
                             </Table>
+                            </div>
                         </TabsContent>
                         <TabsContent value="history" className="mt-4">
-                            <Table>
-                                <TableHeader>
+                            <div className="w-full overflow-x-auto border rounded-xl">
+                                <Table className="min-w-[650px]">
+                                    <TableHeader>
                                     <TableRow>
                                         <TableHead className="font-bold text-xs pl-4">Accountant Cashier</TableHead>
                                         <TableHead className="font-bold text-xs">Date Closed</TableHead>
@@ -1198,6 +1205,7 @@ function DirectorTillView({ setSelectedTill }: { setSelectedTill: (till: Till) =
                                     )}
                                 </TableBody>
                             </Table>
+                            </div>
                         </TabsContent>
                     </Tabs>
                 </CardContent>

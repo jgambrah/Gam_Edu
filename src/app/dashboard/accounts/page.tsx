@@ -2089,7 +2089,7 @@ function ParentLetterPrintArea({
   const parent = parents?.find(p => p.id === parentId || p.uid === parentId);
   if (!parent) return null;
 
-  const parentName = parent.name || `${parent.firstName || ''} ${parent.lastName || ''}`.trim() || 'Parent / Guardian';
+  const parentName = parent.name || `${parent.title ? parent.title + ' ' : ''}${parent.firstName || ''} ${parent.lastName || ''}`.trim() || 'Parent / Guardian';
   const schoolName = schoolProfile?.name || schoolProfile?.schoolName || 'GAM Edu School';
   const brandColor = schoolProfile?.brandColor || '#1e293b';
 
