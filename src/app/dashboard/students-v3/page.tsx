@@ -34,7 +34,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -54,6 +54,7 @@ export default function StudentsV3Page() {
   // Data State
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
+  const [hostelAllocations, setHostelAllocations] = useState<any[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
   const [statusMsg, setStatusMsg] = useState("Initializing...");
@@ -76,7 +77,7 @@ export default function StudentsV3Page() {
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState<'Active' | 'Inactive' | 'All'>('Active');
+  const [statusFilter, setStatusFilter] = useState<string>('Active');
 
   // Form State (Subscription Focused)
   const [selectedClassId, setSelectedClassId] = useState('');
@@ -85,6 +86,7 @@ export default function StudentsV3Page() {
   const [usesBus, setUsesBus] = useState(false);
   const [billingModel, setBillingModel] = useState<'Daily' | 'Termly'>('Daily');
   const [canteenBillingMode, setCanteenBillingMode] = useState<'Daily' | 'Termly' | 'None'>('Daily');
+  const [selectedStatus, setSelectedStatus] = useState<string>('Active');
 
   // --- PERMISSIONS ---
   const schoolSettingsQuery = useMemoFirebase(
@@ -126,6 +128,15 @@ export default function StudentsV3Page() {
             ...d.data() 
         })) as Student[];
         setStudents(studentList);
+
+        const allocationQuery = query(
+            collection(firestore, 'hostel_allocations'),
+            where('schoolId', '==', adminSchoolId),
+            where('status', '==', 'Active')
+        );
+        const allocationSnap = await getDocs(allocationQuery);
+        const allocationList = allocationSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        setHostelAllocations(allocationList);
         
         setStatusMsg("Ready");
     } catch (err: any) {
@@ -163,6 +174,7 @@ export default function StudentsV3Page() {
         setUsesBus(editingStudent.usesBusService === true);
         setBillingModel(editingStudent.transportBillingModel || 'Daily');
         setCanteenBillingMode(editingStudent.canteenBillingMode || 'Daily');
+        setSelectedStatus(editingStudent.enrollmentStatus || 'Active');
     }
   }, [editingStudent]);
 
@@ -203,7 +215,7 @@ export default function StudentsV3Page() {
   };
 
   const executeArchive = async () => {
-    if (!archiveTask || !firestore || !adminSchoolId) return;
+    if (!archiveTask || !firestore || !adminSchoolId || !user) return;
     
     setIsSubmitting(true);
     const { id, currentStatus } = archiveTask;
@@ -214,10 +226,17 @@ export default function StudentsV3Page() {
     const studentName = studentObj ? `${studentObj.firstName} ${studentObj.lastName}` : `Student (UID: ${id})`;
 
     try {
-        await updateDoc(doc(firestore, 'students', id), {
-            enrollmentStatus: newStatus,
-            updatedAt: serverTimestamp()
+        const token = await user.getIdToken();
+        const res = await fetch('/api/students/status-change', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ studentId: id, newStatus })
         });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to update status');
 
         await logAuditEvent({
             firestore,
@@ -231,7 +250,7 @@ export default function StudentsV3Page() {
         loadData();
     } catch (error: any) {
         console.error(error);
-        toast({ variant: 'destructive', title: "Error", description: "Failed to update status." });
+        toast({ variant: 'destructive', title: "Error", description: error.message || "Failed to update status." });
     } finally {
         setIsSubmitting(false);
         setIsConfirmOpen(false);
@@ -279,7 +298,11 @@ export default function StudentsV3Page() {
               photoURL: photoURL || null,
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp(),
-              schoolId: adminSchoolId
+              schoolId: adminSchoolId,
+              bloodGroup: (values.bloodGroup as string) || null,
+              chronicIllnesses: (values.chronicIllnesses as string) || null,
+              allergies: (values.allergies as string) || null,
+              healthNotes: (values.healthNotes as string) || null
           });
 
           await logAuditEvent({
@@ -302,7 +325,7 @@ export default function StudentsV3Page() {
 
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!editingStudent || isSubmitting || !firestore) return;
+    if (!editingStudent || isSubmitting || !firestore || !user) return;
 
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
@@ -312,6 +335,22 @@ export default function StudentsV3Page() {
         let photoURL = editingStudent.photoURL || null;
         if (selectedPhoto) {
             photoURL = await uploadProfilePhoto(editingStudent.uid, selectedPhoto) || photoURL;
+        }
+
+        // Call status-change API if status changed
+        const statusChanged = selectedStatus !== (editingStudent.enrollmentStatus || 'Active');
+        if (statusChanged) {
+            const token = await user.getIdToken();
+            const statusRes = await fetch('/api/students/status-change', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ studentId: editingStudent.id, newStatus: selectedStatus })
+            });
+            const statusData = await statusRes.json();
+            if (!statusRes.ok) throw new Error(statusData.error || 'Failed to update status');
         }
 
         const studentRef = doc(firestore, 'students', editingStudent.id);
@@ -326,6 +365,10 @@ export default function StudentsV3Page() {
             address: (values.address as string) || null,
             photoURL: photoURL || null,
             role: 'Student',
+            bloodGroup: (values.bloodGroup as string) || null,
+            chronicIllnesses: (values.chronicIllnesses as string) || null,
+            allergies: (values.allergies as string) || null,
+            healthNotes: (values.healthNotes as string) || null,
             updatedAt: serverTimestamp()
         };
 
@@ -469,6 +512,9 @@ export default function StudentsV3Page() {
                         <SelectContent className="rounded-xl">
                             <SelectItem value="Active">Active Only</SelectItem>
                             <SelectItem value="Inactive">Archived Only</SelectItem>
+                            <SelectItem value="Suspended">Suspended Only</SelectItem>
+                            <SelectItem value="Withdrawn">Withdrawn Only</SelectItem>
+                            <SelectItem value="Graduated">Graduated Only</SelectItem>
                             <SelectItem value="All">Show All</SelectItem>
                         </SelectContent>
                     </Select>
@@ -497,6 +543,7 @@ export default function StudentsV3Page() {
                                 <TableHead className="font-bold text-slate-700 h-12">Enrollment Status</TableHead>
                                 <TableHead className="font-bold text-slate-700 h-12">Student ID</TableHead>
                                 <TableHead className="font-bold text-slate-700 h-12">Assigned Class</TableHead>
+                                <TableHead className="font-bold text-slate-700 h-12">Housing Details</TableHead>
                                 <TableHead className="font-bold text-slate-700 h-12">Subscribed Services</TableHead>
                                 <TableHead className="text-right font-bold text-slate-700 h-12 px-6">Actions</TableHead>
                             </TableRow>
@@ -511,7 +558,17 @@ export default function StudentsV3Page() {
                                             <StudentDisplay student={s} variant="list" showAvatar />
                                         </TableCell>
                                         <TableCell className="py-4">
-                                            <Badge variant={isInactive ? "secondary" : "default"} className={cn("font-bold text-xs rounded-md px-2 py-0.5", isInactive ? "bg-slate-100 text-slate-600 border border-slate-200" : "bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border border-emerald-100")}>
+                                            <Badge 
+                                                variant="outline"
+                                                className={cn(
+                                                    "font-bold text-xs rounded-md px-2 py-0.5",
+                                                    currentStatus === 'Active' && "bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border border-emerald-100",
+                                                    currentStatus === 'Inactive' && "bg-slate-100 text-slate-600 border border-slate-200",
+                                                    currentStatus === 'Suspended' && "bg-amber-50 text-amber-700 border border-amber-200",
+                                                    currentStatus === 'Withdrawn' && "bg-rose-50 text-rose-700 border-rose-200",
+                                                    currentStatus === 'Graduated' && "bg-blue-50 text-blue-700 border-blue-200"
+                                                )}
+                                            >
                                                 {currentStatus}
                                             </Badge>
                                         </TableCell>
@@ -524,6 +581,20 @@ export default function StudentsV3Page() {
                                             ) : (
                                                 <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-200 bg-amber-50 font-black tracking-wider uppercase">Unplaced</Badge>
                                             )}
+                                        </TableCell>
+                                        <TableCell className="py-4 text-xs">
+                                            {(() => {
+                                                const alloc = hostelAllocations.find(a => a.studentId === s.id);
+                                                if (alloc) {
+                                                    return (
+                                                        <div className="flex flex-col gap-0.5">
+                                                            <span className="font-bold text-[12px] text-slate-800">{alloc.blockName}</span>
+                                                            <span className="text-[11px] text-slate-500 font-medium">Room {alloc.roomNumber} (Bed {alloc.bedIdentifier})</span>
+                                                        </div>
+                                                    );
+                                                }
+                                                return <span className="text-xs text-slate-400 font-normal italic">Not Boarded</span>;
+                                            })()}
                                         </TableCell>
                                         <TableCell className="py-4">
                                             <div className="flex gap-2.5">
@@ -635,6 +706,42 @@ export default function StudentsV3Page() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Blood Group</Label>
+                        <Select name="bloodGroup">
+                            <SelectTrigger className="bg-white">
+                                <SelectValue placeholder="Select blood group" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="A+">A+</SelectItem>
+                                <SelectItem value="A-">A-</SelectItem>
+                                <SelectItem value="B+">B+</SelectItem>
+                                <SelectItem value="B-">B-</SelectItem>
+                                <SelectItem value="AB+">AB+</SelectItem>
+                                <SelectItem value="AB-">AB-</SelectItem>
+                                <SelectItem value="O+">O+</SelectItem>
+                                <SelectItem value="O-">O-</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Chronic Illnesses / Conditions</Label>
+                        <Input name="chronicIllnesses" placeholder="e.g. Asthma, Diabetes" />
+                    </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Allergies</Label>
+                        <Input name="allergies" placeholder="e.g. Peanuts, Penicillin, Dust" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Other Health Notes / Issues</Label>
+                        <Input name="healthNotes" placeholder="e.g. Wears glasses, ADHD" />
+                    </div>
+                </div>
+                
                 {canEditBillingToggles ? (
                     <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
                         <h4 className="font-bold text-sm text-slate-700">Services & Subscriptions</h4>
@@ -714,7 +821,22 @@ export default function StudentsV3Page() {
                         <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required disabled={isSecretary} /></div>
                         <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required disabled={isSecretary} /></div>
                     </div>
-                     <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100 cursor-not-allowed" /></div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100 cursor-not-allowed" /></div>
+                        <div className="space-y-2">
+                            <Label>Enrollment Status</Label>
+                            <Select value={selectedStatus} onValueChange={setSelectedStatus} disabled={isSecretary}>
+                                <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Active">Active</SelectItem>
+                                    <SelectItem value="Inactive">Inactive</SelectItem>
+                                    <SelectItem value="Suspended">Suspended</SelectItem>
+                                    <SelectItem value="Withdrawn">Withdrawn</SelectItem>
+                                    <SelectItem value="Graduated">Graduated</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
                     <div className="space-y-2">
                         <Label>Class</Label>
                         <Select value={selectedClassId} onValueChange={setSelectedClassId} disabled={isSecretary}>
@@ -733,6 +855,73 @@ export default function StudentsV3Page() {
                         </div>
                     </div>
                     <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} disabled={isSecretary} /></div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Blood Group</Label>
+                            <Select name="bloodGroup" defaultValue={editingStudent.bloodGroup || editingStudent.medical?.bloodGroup || ''} disabled={isSecretary}>
+                                <SelectTrigger className="bg-white">
+                                    <SelectValue placeholder="Select blood group" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="A+">A+</SelectItem>
+                                    <SelectItem value="A-">A-</SelectItem>
+                                    <SelectItem value="B+">B+</SelectItem>
+                                    <SelectItem value="B-">B-</SelectItem>
+                                    <SelectItem value="AB+">AB+</SelectItem>
+                                    <SelectItem value="AB-">AB-</SelectItem>
+                                    <SelectItem value="O+">O+</SelectItem>
+                                    <SelectItem value="O-">O-</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Chronic Illnesses / Conditions</Label>
+                            <Input name="chronicIllnesses" placeholder="e.g. Asthma, Diabetes" defaultValue={editingStudent.chronicIllnesses || editingStudent.medical?.conditions || ''} disabled={isSecretary} />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Allergies</Label>
+                            <Input name="allergies" placeholder="e.g. Peanuts, Penicillin, Dust" defaultValue={editingStudent.allergies || editingStudent.medical?.allergies || ''} disabled={isSecretary} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Other Health Notes / Issues</Label>
+                            <Input name="healthNotes" placeholder="e.g. Wears glasses, ADHD" defaultValue={editingStudent.healthNotes || ''} disabled={isSecretary} />
+                        </div>
+                    </div>
+
+                    {/* Boarding & Housing Details (Read-only Profile section) */}
+                    {(() => {
+                        const alloc = hostelAllocations.find(a => a.studentId === editingStudent.id);
+                        if (alloc) {
+                            return (
+                                <div className="p-4 border rounded-2xl bg-indigo-50/30 border-indigo-100 space-y-2.5 shadow-sm">
+                                    <h4 className="font-bold text-xs uppercase tracking-wider text-indigo-800 flex items-center gap-1.5">
+                                        <Home className="h-4 w-4" /> Boarding & Housing Allocation
+                                    </h4>
+                                    <div className="grid grid-cols-2 gap-4 text-xs">
+                                        <div>
+                                            <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Hostel Block</span>
+                                            <span className="font-semibold text-slate-800 text-[13px]">{alloc.blockName}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Room & Bed</span>
+                                            <span className="font-semibold text-slate-800 text-[13px]">Room {alloc.roomNumber} (Bed {alloc.bedIdentifier})</span>
+                                        </div>
+                                        <div className="col-span-2 border-t border-indigo-100/50 pt-2 mt-1">
+                                            <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Check-in Date</span>
+                                            <span className="font-semibold text-slate-800">
+                                                {alloc.checkInDate?.toDate ? alloc.checkInDate.toDate().toLocaleDateString() : new Date(alloc.checkInDate).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
+                        return null;
+                    })()}
                     
                     {canEditBillingToggles ? (
                         <div className="space-y-4 p-4 border rounded-xl bg-slate-50">

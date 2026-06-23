@@ -827,7 +827,93 @@ service cloud.firestore {
       allow update: if isLibrarian() || isAdmin() || isTeacher() ||
                     (isStudent() && request.resource.data.status == 'Requested' && request.resource.data.currentHolderId == request.auth.uid) ||
                     (isStudent() && resource.data.currentHolderId == request.auth.uid && request.resource.data.status == 'Pending Return');
-      allow delete: if isLibrarian() || isAdmin();
+    }
+
+    // =========================================================
+    // 8.2 BOARDING MODULE SUBMODULES
+    // =========================================================
+
+    match /hostel_blocks/{blockId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /hostel_rooms/{roomId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /hostel_beds/{bedId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /hostel_allocations/{allocationId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /boarding_applications/{applicationId} {
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /student_leaves/{leaveId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /boarding_visitors/{visitorId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /roll_calls/{rollCallId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /mess_weekly_menus/{menuId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /mess_attendance/{attendanceId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /infirmary_logs/{logId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // =========================================================
+    // 8.5 DIGITAL POCKET MONEY WALLET
+    // =========================================================
+
+    match /student_wallets/{studentId} {
+      allow get: if isSignedIn() && (
+        isOwner(studentId) ||
+        parentOwnsStudent(studentId) ||
+        isStaff() ||
+        isAdmin()
+      );
+      allow list: if isSignedIn() && (isStaff() || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    match /wallet_transactions/{transactionId} {
+      allow get: if isSignedIn() && (
+        resource.data.studentId == request.auth.uid ||
+        parentOwnsStudent(resource.data.studentId) ||
+        isStaff() ||
+        isAdmin()
+      );
+      allow list: if isSignedIn();
+      allow write: if isAdmin();
     }
 
     // =========================================================

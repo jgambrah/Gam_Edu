@@ -424,7 +424,7 @@ export type Student = {
     dateOfBirth?: string;
     gender?: string;
     address?: string;
-    enrollmentStatus?: 'Active' | 'Graduated' | 'Inactive';
+    enrollmentStatus?: 'Active' | 'Graduated' | 'Inactive' | 'Suspended' | 'Withdrawn';
     graduationYear?: number;
     alumniDetails?: AlumniDetails;
     transportStopId?: string;
@@ -436,6 +436,17 @@ export type Student = {
     canteenBillingMode?: 'Daily' | 'Termly' | 'None';
     schoolId?: string;
     biometricId?: string;
+    bloodGroup?: string;
+    chronicIllnesses?: string;
+    allergies?: string;
+    healthNotes?: string;
+    medical?: {
+        bloodGroup?: string;
+        conditions?: string;
+        allergies?: string;
+        physicianName?: string;
+        physicianPhone?: string;
+    };
 };
 
 export type Class = {
@@ -1288,4 +1299,233 @@ export const budgetFormSchema = z.object({
     path: ["endDate"],
 });
 
+// --- Boarding Module Schemas & Types ---
+
+export const hostelBlockSchema = z.object({
+    name: z.string().min(1, "Hostel block name is required."),
+    genderRestriction: z.enum(['Male', 'Female', 'Co-Ed', 'None']),
+    totalFloors: z.coerce.number().min(1, "Total floors must be at least 1."),
+});
+
+export type HostelBlock = z.infer<typeof hostelBlockSchema> & {
+    id: string;
+    schoolId: string;
+    createdAt: any;
+    createdBy: string;
+};
+
+export const hostelRoomSchema = z.object({
+    roomNumber: z.string().min(1, "Room number is required."),
+    floorLevel: z.coerce.number().min(0, "Floor level must be 0 or greater."),
+    totalCapacity: z.coerce.number().min(1, "Total capacity must be at least 1."),
+    roomType: z.enum(['Standard', 'AC', 'Premium', 'Study']),
+    status: z.enum(['Available', 'Full', 'Maintenance', 'Inactive']),
+});
+
+export type HostelRoom = z.infer<typeof hostelRoomSchema> & {
+    id: string;
+    schoolId: string;
+    blockId: string;
+    createdAt: any;
+};
+
+export const hostelBedSchema = z.object({
+    bedIdentifier: z.string().min(1, "Bed identifier is required."),
+    status: z.enum(['Available', 'Occupied', 'Maintenance']),
+    currentOccupantId: z.string().nullable().optional(),
+});
+
+export type HostelBed = z.infer<typeof hostelBedSchema> & {
+    id: string;
+    schoolId: string;
+    blockId: string;
+    roomId: string;
+    createdAt: any;
+};
+
+export const hostelAllocationSchema = z.object({
+    studentId: z.string().min(1, "Student ID is required."),
+    studentName: z.string().min(1, "Student Name is required."),
+    blockId: z.string().min(1, "Block ID is required."),
+    blockName: z.string().min(1, "Block Name is required."),
+    roomId: z.string().min(1, "Room ID is required."),
+    roomNumber: z.string().min(1, "Room number is required."),
+    bedId: z.string().min(1, "Bed ID is required."),
+    bedIdentifier: z.string().min(1, "Bed identifier is required."),
+    checkInDate: z.date({ required_error: "Check-in date is required." }),
+    checkOutDate: z.date().nullable().optional(),
+    status: z.enum(['Active', 'Completed', 'Cancelled']),
+});
+
+export type HostelAllocation = z.infer<typeof hostelAllocationSchema> & {
+    id: string;
+    schoolId: string;
+    allocatedById: string;
+    allocatedByName: string;
+    createdAt: any;
+};
+
+// --- Student Outings & Leaves Schemas & Types ---
+
+export const studentLeaveSchema = z.object({
+    studentId: z.string().min(1, "Student ID is required."),
+    studentName: z.string().min(1, "Student Name is required."),
+    leaveType: z.enum(['Day Outing', 'Weekend Leave', 'Vacation']),
+    departureDate: z.date({ required_error: "Departure date is required." }),
+    expectedReturnDate: z.date({ required_error: "Expected return date is required." }),
+    destination: z.string().min(1, "Destination is required."),
+    reason: z.string().min(1, "Reason is required."),
+    parentContact: z.string().min(1, "Parent contact is required."),
+});
+
+export type StudentLeave = z.infer<typeof studentLeaveSchema> & {
+    id: string;
+    schoolId: string;
+    status: 'Pending' | 'Approved' | 'Rejected' | 'CheckedOut' | 'Completed' | 'Overdue';
+    gatePassToken?: string | null;
+    approvedById?: string | null;
+    approvedByName?: string | null;
+    approvedAt?: any | null;
+    actualDepartureTime?: any | null;
+    actualReturnTime?: any | null;
+    securityCheckOutById?: string | null;
+    securityCheckOutByName?: string | null;
+    securityCheckInById?: string | null;
+    securityCheckInByName?: string | null;
+    createdAt: any;
+    createdBy: string;
+    createdByName: string;
+    createdByRole: 'Parent' | 'Student';
+};
+
+// --- Boarding Visitors Schemas & Types ---
+
+export const boardingVisitorSchema = z.object({
+    visitorName: z.string().min(1, "Visitor name is required."),
+    contactNumber: z.string().min(1, "Contact number is required."),
+    relationshipToStudent: z.string().min(1, "Relationship to student is required."),
+    photoIdUrl: z.string().min(1, "Photo ID is required."),
+    studentId: z.string().min(1, "Student visited ID is required."),
+    studentName: z.string().min(1, "Student Name is required."),
+});
+
+export type BoardingVisitor = z.infer<typeof boardingVisitorSchema> & {
+    id: string;
+    schoolId: string;
+    checkInTime: any;
+    checkOutTime: any | null;
+    recordedById: string;
+    recordedByName: string;
+    createdAt: any;
+};
+
+// --- Roll Call Report Schemas & Types ---
+
+export const rollCallReportSchema = z.object({
+    date: z.string().min(1, "Roll call date is required."),
+    presentStudentIds: z.array(z.string()),
+});
+
+export type RollCallReport = {
+    id: string;
+    schoolId: string;
+    date: string;
+    presentCount: number;
+    absentCount: number;
+    unaccountedCount: number;
+    legallyAbsentCount: number;
+    presentStudentIds: string[];
+    unaccountedStudentIds: string[];
+    legallyAbsentStudentIds: string[];
+    recordedById: string;
+    recordedByName: string;
+    createdAt: any;
+};
+
+// --- Mess & Diet Management Schemas & Types ---
+
+export const mealItemSchema = z.object({
+    breakfast: z.string().min(1, "Breakfast menu description is required."),
+    lunch: z.string().min(1, "Lunch menu description is required."),
+    dinner: z.string().min(1, "Dinner menu description is required."),
+});
+
+export const messMenuSchema = z.object({
+    weekStartDate: z.string().min(1, "Week start date is required."),
+    menu: z.record(mealItemSchema),
+});
+
+export type MessMenu = z.infer<typeof messMenuSchema> & {
+    id: string;
+    schoolId: string;
+    publishedById: string;
+    publishedByName: string;
+    createdAt: any;
+    updatedAt: any;
+};
+
+export const diningAttendanceSchema = z.object({
+    date: z.string().min(1, "Attendance date is required."),
+    mealType: z.enum(['Breakfast', 'Lunch', 'Dinner']),
+    studentId: z.string().min(1, "Student ID is required."),
+    status: z.enum(['Attended', 'Missed']),
+});
+
+export type DiningAttendance = z.infer<typeof diningAttendanceSchema> & {
+    id: string;
+    schoolId: string;
+    studentName: string;
+    recordedById: string;
+    recordedByName: string;
+    timestamp: any;
+};
+
+// --- Infirmary & Medical Tracking Schemas & Types ---
+
+export const infirmaryVisitSchema = z.object({
+    studentId: z.string().min(1, "Student ID is required."),
+    reportedSymptoms: z.string().min(1, "Reported symptoms are required."),
+    treatmentAdministered: z.string().min(1, "Medication / Treatment administered is required."),
+    disposition: z.enum(['Returned to Dorm', 'Kept for Observation', 'Transferred to Hospital']),
+    isSevereTriage: z.boolean().default(false),
+});
+
+export type InfirmaryVisit = z.infer<typeof infirmaryVisitSchema> & {
+    id: string;
+    schoolId: string;
+    studentName: string;
+    visitDate: any;
+    treatingStaffId: string;
+    treatingStaffName: string;
+    createdAt: any;
+};
+// --- Student Digital Wallet Schemas & Types ---
+
+export const studentWalletSchema = z.object({
+    studentId: z.string().min(1, "Student ID is required."),
+    studentName: z.string().min(1, "Student Name is required."),
+    schoolId: z.string().min(1, "School ID is required."),
+    balance: z.number().default(0),
+});
+
+export type StudentWallet = z.infer<typeof studentWalletSchema> & {
+    id: string;
+    updatedAt: any;
+};
+
+export const walletTransactionSchema = z.object({
+    studentId: z.string().min(1, "Student ID is required."),
+    schoolId: z.string().min(1, "School ID is required."),
+    amount: z.number(),
+    type: z.enum(['Credit', 'Debit']),
+    description: z.string().min(1, "Description is required."),
+    reference: z.string().min(1, "Reference code is required."),
+});
+
+export type WalletTransaction = z.infer<typeof walletTransactionSchema> & {
+    id: string;
+    recordedById: string;
+    recordedByName: string;
+    timestamp: any;
+};
 

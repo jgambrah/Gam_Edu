@@ -69,6 +69,12 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
+    path: '/dashboard/my-children',
+    title: 'My Children',
+    icon: Users,
+    roles: ['Parent'],
+  },
+  {
     path: '/dashboard/announcements',
     title: 'Announcements',
     icon: Megaphone,
@@ -475,6 +481,12 @@ export const navItems: NavItem[] = [
             title: 'Transport',
             icon: RouteIcon,
             roles: ['Administrator', 'Director', 'Transport Staff', 'Receptionist'],
+        },
+        {
+            path: '/dashboard/boarding',
+            title: 'Boarding',
+            icon: Building2,
+            roles: ['Administrator', 'Director', 'Teacher', 'Student', 'Secretary'],
         },
     ]
   },

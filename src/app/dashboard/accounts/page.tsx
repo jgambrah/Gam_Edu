@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -480,12 +480,124 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     );
 }
 
-function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { setOpen: (open: boolean) => void; students: Student[], schoolId: string, onRecordAdded: () => void }) {
+interface SearchableSelectOption {
+  id: string;
+  name: string;
+  subtext?: string;
+}
+
+interface SearchableSelectProps {
+  options: SearchableSelectOption[];
+  value: string;
+  onValueChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+}
+
+function SearchableSelect({
+  options,
+  value,
+  onValueChange,
+  placeholder = "Search and select...",
+  className = ""
+}: SearchableSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const selectedOption = options.find(opt => opt.id === value);
+  const displayValue = isOpen ? searchQuery : (selectedOption ? selectedOption.name : '');
+
+  const filteredOptions = options.filter(opt => 
+    opt.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (opt.subtext && opt.subtext.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    opt.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className={cn("relative w-full", className)}>
+      <div className="relative">
+        <Input
+          type="text"
+          placeholder={selectedOption ? selectedOption.name : placeholder}
+          value={displayValue}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            if (!isOpen) setIsOpen(true);
+          }}
+          onFocus={() => {
+            setIsOpen(true);
+            setSearchQuery('');
+          }}
+          onBlur={() => {
+            // Delay to allow clicking items in dropdown
+            setTimeout(() => setIsOpen(false), 250);
+          }}
+          className="bg-white border-2 pr-10 cursor-pointer text-xs h-9 rounded-xl w-full"
+        />
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400">
+          {value && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onValueChange('');
+                setSearchQuery('');
+              }}
+              className="hover:text-rose-500 p-0.5"
+            >
+              <X size={14} />
+            </button>
+          )}
+          <ChevronsUpDown size={14} className="pointer-events-none" />
+        </div>
+      </div>
+
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 animate-in fade-in slide-in-from-top-1 duration-150">
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onMouseDown={() => {
+                  onValueChange(opt.id);
+                  setSearchQuery('');
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  "w-full text-left px-3 py-2 text-xs rounded-lg transition-colors flex flex-col",
+                  value === opt.id 
+                    ? 'bg-indigo-50 text-indigo-900 font-bold' 
+                    : 'hover:bg-slate-50 text-slate-700'
+                )}
+              >
+                <span>{opt.name}</span>
+                {opt.subtext && (
+                  <span className="text-[10px] text-slate-400 font-normal mt-0.5">{opt.subtext}</span>
+                )}
+              </button>
+            ))
+          ) : (
+            <div className="p-3 text-center text-xs text-slate-400 italic">No results found</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FinancialRecordForm({ setOpen, students, classes, schoolId, onRecordAdded }: { setOpen: (open: boolean) => void; students: Student[], classes: Class[], schoolId: string, onRecordAdded: () => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [studentSearch, setStudentSearch] = useState('');
   
+  const classMap = useMemo(() => {
+    const map = new Map<string, string>();
+    (classes || []).forEach(c => map.set(c.id, c.name));
+    return map;
+  }, [classes]);
+
   const form = useForm<z.infer<typeof extendedFinancialRecordSchema>>({ 
     resolver: zodResolver(extendedFinancialRecordSchema), 
     defaultValues: { 
@@ -506,10 +618,6 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
         form.setValue('description', 'Opening Balance (Arrears from previous term)'); 
       }
   }, [isOpeningBalance, form]);
-
-  const filteredStudents = useMemo(() => 
-    students.filter(s => searchStudent(s, studentSearch)), 
-  [students, studentSearch]);
 
   async function onSubmit(values: z.infer<typeof extendedFinancialRecordSchema>) {
     if (!firestore || !schoolId) return;
@@ -556,32 +664,24 @@ function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { s
             <FormField 
                 control={form.control} 
                 name="studentId" 
-                render={({ field }) => {
-                  return (
+                render={({ field }) => (
                     <FormItem>
                         <FormLabel>Search & Select Student</FormLabel>
-                        <div className="space-y-2">
-                            <StudentSearchInput value={studentSearch} onChange={setStudentSearch} placeholder="Start typing name or ID..." className="h-9"/>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl>
-                                    <SelectTrigger><SelectValue placeholder="Choose student from results..."/></SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <ScrollArea className="h-[200px]">
-                                        {filteredStudents.map(s => (
-                                            <SelectItem key={s.uid} value={s.uid}>
-                                                <StudentDisplay student={s} variant="compact" />
-                                            </SelectItem>
-                                        ))}
-                                        {filteredStudents.length === 0 && <p className="p-4 text-center text-xs text-muted-foreground">No students match your search.</p>}
-                                    </ScrollArea>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        <FormControl>
+                            <SearchableSelect
+                                options={students.map(s => ({
+                                    id: s.uid,
+                                    name: `${s.firstName} ${s.lastName}`,
+                                    subtext: `ID: ${s.studentId || s.uid} | Class: ${classMap.get(s.classId) || 'N/A'}`
+                                }))}
+                                value={field.value}
+                                onValueChange={field.onChange}
+                                placeholder="Start typing name or ID..."
+                            />
+                        </FormControl>
                         <FormMessage />
                     </FormItem>
-                  );
-                }}
+                )}
             />
 
             {isOpeningBalance ? null : (
@@ -2754,7 +2854,7 @@ export default function AccountsPage() {
                                     <PlusCircle className="h-5 w-5 text-blue-600" />
                                     <h3 className="font-bold text-blue-900 text-sm">Create Single Custom Bill</h3>
                                 </div>
-                                <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />
+                                <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} classes={classes || []} schoolId={schoolId} onRecordAdded={forceRefetch} />
                             </div>
                         )}
                         

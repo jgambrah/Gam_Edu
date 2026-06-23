@@ -358,6 +358,77 @@ service cloud.firestore {
     }
 
     // =========================================================
+    // 7.8. BOARDING MODULE
+    // =========================================================
+
+    match /hostel_blocks/{blockId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /hostel_rooms/{roomId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /hostel_beds/{bedId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /hostel_allocations/{allocationId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /boarding_applications/{applicationId} {
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /student_leaves/{leaveId} {
+      allow read, list: if isSignedIn();
+      allow write: if isSignedIn() && (isAdmin() || request.auth.uid == request.resource.data.createdBy);
+    }
+
+    match /boarding_visitors/{visitorId} {
+      allow read, list: if isSignedIn();
+      allow write: if isSignedIn() && isAdmin();
+    }
+
+    match /roll_calls/{rollCallId} {
+      allow read, list: if isSignedIn();
+      allow write: if isSignedIn() && isAdmin();
+    }
+
+    match /mess_weekly_menus/{menuId} {
+      allow read, list: if isSignedIn();
+      allow write: if isSignedIn() && (isAdmin() || getUserRole() == 'Cook');
+    }
+
+    match /mess_attendance/{attendanceId} {
+      allow read, list: if isSignedIn();
+      allow write: if isSignedIn() && (isAdmin() || getUserRole() in ['Cook', 'Security Officer']);
+    }
+
+    match /infirmary_logs/{logId} {
+      allow read, list: if isSignedIn();
+      allow write: if isSignedIn() && (isAdmin() || getUserRole() in ['Nurse', 'Doctor', 'Warden', 'Boarding Staff']);
+    }
+
+    match /student_wallets/{studentId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /wallet_transactions/{transactionId} {
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // =========================================================
     // 8. CATCH-ALL
     // =========================================================
 

@@ -12,7 +12,7 @@ import {
     MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, 
     Loader2, ArrowLeft, CheckCheck, BookOpen, GraduationCap, Users, HeartHandshake, X,
     Paperclip, Mic, MicOff, Play, Pause, Smile, CornerUpLeft, Edit3, Trash2, Check, Download, Music,
-    FileText, Forward, Megaphone, Sparkles, CheckCircle2, AlertCircle
+    FileText, Forward, Megaphone, Sparkles, CheckCircle2, AlertCircle, Shield
 } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -26,6 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { moderateMessageAction } from '@/app/actions/moderation-actions';
 
 // --- TYPES ---
 interface ChatMetadata {
@@ -63,6 +64,10 @@ interface Message {
     };
     status?: 'sent' | 'delivered' | 'read';
     deletedFor?: string[];
+    flagged?: boolean;
+    flagType?: 'safe' | 'romantic' | 'abusive' | 'privacy_violation' | 'harmful';
+    flagExplanation?: string;
+    educationalMessage?: string;
 }
 interface SearchUser {
     uid: string;
@@ -948,6 +953,7 @@ export default function MessagesPage() {
     const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
     const [deletingMessage, setDeletingMessage] = useState<Message | null>(null);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [revealedMessageIds, setRevealedMessageIds] = useState<Record<string, boolean>>({});
 
     // Media & File sharing
     const [isUploading, setIsUploading] = useState(false);
@@ -1300,12 +1306,24 @@ export default function MessagesPage() {
         setNewMessage('');
         setIsSending(true);
         try {
+            // Call AI moderation safety service
+            let moderation = { flagged: false, flagType: 'safe' as const, explanation: '', educationalMessage: '' };
+            try {
+                moderation = await moderateMessageAction(text) as any;
+            } catch (e) {
+                console.error("AI Moderation API error, failing safe:", e);
+            }
+
             const messageData: any = {
                 text,
                 senderId: user.uid,
                 createdAt: serverTimestamp(),
                 type: 'text',
-                status: 'sent'
+                status: 'sent',
+                flagged: moderation.flagged || false,
+                flagType: moderation.flagType || 'safe',
+                flagExplanation: moderation.explanation || '',
+                educationalMessage: moderation.educationalMessage || ''
             };
 
             if (replyingToMessage) {
@@ -1331,10 +1349,18 @@ export default function MessagesPage() {
             });
 
             await updateDoc(chatRef, {
-                lastMessage: text,
+                lastMessage: moderation.flagged ? `⚠️ [Flagged: ${moderation.flagType}]` : text,
                 lastMessageTime: serverTimestamp(),
                 ...unreadUpdates
             });
+
+            if (moderation.flagged) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Message Flagged by AI Safety',
+                    description: moderation.educationalMessage || 'This content violates safety guidelines.'
+                });
+            }
         } catch (e: any) {
             toast({ variant: 'destructive', title: 'Send Failed', description: e.message });
         } finally {
@@ -1447,6 +1473,13 @@ export default function MessagesPage() {
             if (msg.fileName) messageData.fileName = msg.fileName;
             if (msg.fileSize) messageData.fileSize = msg.fileSize;
 
+            if (msg.flagged) {
+                messageData.flagged = msg.flagged;
+                messageData.flagType = msg.flagType;
+                messageData.flagExplanation = msg.flagExplanation;
+                messageData.educationalMessage = msg.educationalMessage;
+            }
+
             await addDoc(collection(firestore, `direct_messages/${targetChatId}/messages`), messageData);
 
             const chatRef = doc(firestore, 'direct_messages', targetChatId);
@@ -1460,7 +1493,11 @@ export default function MessagesPage() {
             });
 
             await updateDoc(chatRef, {
-                lastMessage: msg.type && msg.type !== 'text' ? `Forwarded ${msg.type === 'image' ? 'Photo 📷' : msg.type === 'video' ? 'Video 🎥' : msg.type === 'audio' ? 'Voice note 🎤' : 'Document 📄'}` : msg.text,
+                lastMessage: msg.flagged 
+                    ? `⚠️ [Flagged: ${msg.flagType}]` 
+                    : (msg.type && msg.type !== 'text' 
+                        ? `Forwarded ${msg.type === 'image' ? 'Photo 📷' : msg.type === 'video' ? 'Video 🎥' : msg.type === 'audio' ? 'Voice note 🎤' : 'Document 📄'}` 
+                        : msg.text),
                 lastMessageTime: serverTimestamp(),
                 ...unreadUpdates
             });
@@ -1474,12 +1511,33 @@ export default function MessagesPage() {
     const handleEditMessage = async (messageId: string, newText: string) => {
         if (!newText.trim() || !selectedChatId || !firestore) return;
         try {
+            // Call AI moderation safety service on edit
+            let moderation = { flagged: false, flagType: 'safe' as const, explanation: '', educationalMessage: '' };
+            try {
+                moderation = await moderateMessageAction(newText) as any;
+            } catch (e) {
+                console.error("AI Moderation API error on edit, failing safe:", e);
+            }
+
             await updateDoc(doc(firestore, `direct_messages/${selectedChatId}/messages`, messageId), {
                 text: newText.trim(),
-                edited: true
+                edited: true,
+                flagged: moderation.flagged || false,
+                flagType: moderation.flagType || 'safe',
+                flagExplanation: moderation.explanation || '',
+                educationalMessage: moderation.educationalMessage || ''
             });
+
             setEditingMessageId(null);
             setEditText('');
+
+            if (moderation.flagged) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Message Flagged by AI Safety',
+                    description: moderation.educationalMessage || 'This content violates safety guidelines.'
+                });
+            }
         } catch (e: any) {
             toast({ variant: 'destructive', title: 'Edit Failed', description: e.message });
         }
@@ -1985,6 +2043,29 @@ export default function MessagesPage() {
                             <div className="absolute top-[20%] left-[10%] w-[250px] h-[250px] rounded-full bg-indigo-200/10 blur-3xl pointer-events-none" />
                             <div className="absolute bottom-[30%] right-[10%] w-[300px] h-[300px] rounded-full bg-violet-200/10 blur-3xl pointer-events-none" />
 
+                            {/* Premium Chat Welcome/Safety Banner */}
+                            <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-700 text-white shadow-md relative overflow-hidden flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300 z-10 border border-white/10">
+                                <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" />
+                                <div className="absolute left-1/3 bottom-0 w-16 h-16 bg-white/5 rounded-full blur-lg pointer-events-none" />
+                                <div className="flex items-center gap-3 relative z-10">
+                                    <div className="h-10 w-10 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center text-white shrink-0 shadow-inner border border-white/10">
+                                        <Sparkles className="h-5 w-5 animate-pulse text-indigo-200" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xs font-black uppercase tracking-wider italic leading-none flex items-center gap-1">
+                                            CampusConnect SafeChat
+                                        </h4>
+                                        <p className="text-[10px] text-indigo-100 font-medium mt-1.5 max-w-[320px] md:max-w-[450px] leading-relaxed">
+                                            Keep conversations safe, educational, and respectful. Active AI Safety moderation monitors and flags abusive/romantic language.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="shrink-0 relative z-10 flex items-center gap-1.5 text-[9px] font-black uppercase bg-emerald-500/20 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-emerald-400/30 text-emerald-200 leading-none">
+                                    <Shield className="h-3 w-3 text-emerald-400" />
+                                    AI Moderated
+                                </div>
+                            </div>
+
                             {msgsLoading ? (
                                 <div className="flex flex-col items-center justify-center h-full gap-3 opacity-40">
                                     <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
@@ -2193,7 +2274,53 @@ export default function MessagesPage() {
                                                                             </a>
                                                                         </div>
                                                                     ) : (
-                                                                        <p className="break-words whitespace-pre-wrap">{msg.text}</p>
+                                                                        msg.flagged ? (
+                                                                            isMe ? (
+                                                                                <div className="space-y-1.5">
+                                                                                    <p className="break-words whitespace-pre-wrap">{msg.text}</p>
+                                                                                    <div className="flex items-start gap-1.5 p-2 rounded-xl border bg-amber-950/40 border-amber-500/30 text-amber-200 text-[10px] max-w-[260px] text-left">
+                                                                                        <AlertCircle className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                                                                                        <div className="flex-1">
+                                                                                            <span className="font-extrabold uppercase block text-[9px] tracking-wide text-amber-300">Flagged: {msg.flagType}</span>
+                                                                                            {msg.educationalMessage && <p className="font-normal opacity-90 leading-tight mt-0.5">{msg.educationalMessage}</p>}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            ) : (
+                                                                                !revealedMessageIds[msg.id] ? (
+                                                                                    <div className="p-3.5 rounded-xl border border-rose-150 bg-rose-50/95 text-rose-800 space-y-2.5 max-w-[260px] animate-in fade-in duration-200 text-left">
+                                                                                        <div className="flex items-start gap-2">
+                                                                                            <Shield className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
+                                                                                            <div className="space-y-0.5">
+                                                                                                <p className="text-[10px] font-black uppercase tracking-wider text-rose-700">Safety Flag: {msg.flagType}</p>
+                                                                                                <p className="text-[10px] leading-tight text-rose-600 font-medium">This message was flagged by the Campus AI Safety Assistant.</p>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <Button
+                                                                                            size="sm"
+                                                                                            variant="outline"
+                                                                                            onClick={() => setRevealedMessageIds(prev => ({ ...prev, [msg.id]: true }))}
+                                                                                            className="w-full bg-white hover:bg-rose-100/50 text-rose-700 border-rose-200 h-7 text-[10px] font-bold rounded-lg transition-all"
+                                                                                        >
+                                                                                            Reveal message
+                                                                                        </Button>
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <div className="space-y-1.5 text-left">
+                                                                                        <p className="break-words whitespace-pre-wrap">{msg.text}</p>
+                                                                                        <div className="flex items-start gap-1.5 p-2 rounded-xl border bg-rose-50/40 border-rose-150 text-rose-800 text-[10px] max-w-[260px]">
+                                                                                            <AlertCircle className="h-3.5 w-3.5 text-rose-500 shrink-0 mt-0.5" />
+                                                                                            <div className="flex-1">
+                                                                                                <span className="font-extrabold uppercase block text-[9px] tracking-wide text-rose-700">Safety Flagged: {msg.flagType}</span>
+                                                                                                {msg.flagExplanation && <p className="font-normal text-rose-600 leading-tight mt-0.5">{msg.flagExplanation}</p>}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )
+                                                                            )
+                                                                        ) : (
+                                                                            <p className="break-words whitespace-pre-wrap">{msg.text}</p>
+                                                                        )
                                                                     )}
 
                                                                     {/* Message Metadata */}
@@ -2507,32 +2634,59 @@ export default function MessagesPage() {
                     </>
                 ) : (
                     /* Empty state when no chat selected */
-                    <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-slate-50/60 relative overflow-hidden">
+                    <div className="flex-1 flex flex-col items-center justify-center bg-[#fafbfc] relative overflow-hidden px-8"
+                        style={{
+                            backgroundImage: `radial-gradient(circle at 1px 1px, rgb(226 232 240 / 0.8) 1px, transparent 0)`,
+                            backgroundSize: '20px 20px',
+                        }}
+                    >
                         {/* Soft decorative visual mesh blobs */}
-                        <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] rounded-full bg-indigo-100/30 blur-3xl pointer-events-none" />
-                        <div className="absolute bottom-[-10%] left-[-10%] w-[350px] h-[350px] rounded-full bg-violet-100/30 blur-3xl pointer-events-none" />
+                        <div className="absolute top-[-10%] right-[-10%] w-[350px] h-[350px] rounded-full bg-indigo-100/20 blur-3xl pointer-events-none" />
+                        <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-violet-100/20 blur-3xl pointer-events-none" />
 
-                        <div
-                            className="h-24 w-24 rounded-3xl flex items-center justify-center shadow-xl animate-bounce duration-3000"
-                            style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
-                        >
-                            <MessageCircle className="h-11 w-11 text-white animate-pulse" />
+                        <div className="max-w-md w-full bg-white border border-slate-150 rounded-[2.5rem] shadow-xl p-8 text-center space-y-6 relative z-10 overflow-hidden">
+                            {/* Decorative background accent */}
+                            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+                            
+                            <div
+                                className="h-16 w-16 rounded-2xl flex items-center justify-center shadow-lg mx-auto hover:rotate-12 transition-transform duration-300"
+                                style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
+                            >
+                                <MessageCircle className="h-7 w-7 text-white" />
+                            </div>
+                            
+                            <div className="space-y-2">
+                                <span className="text-[9px] font-black tracking-[0.2em] text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full uppercase">
+                                    Campus Connect Messaging
+                                </span>
+                                <h2 className="text-2xl font-black text-slate-800 tracking-tight mt-3">School Community Chat</h2>
+                                <p className="text-xs text-slate-400 font-bold leading-relaxed max-w-xs mx-auto">
+                                    Select any active conversation on the left, or launch a direct thread to talk with classmates, parents, and school staff.
+                                </p>
+                            </div>
+
+                            {/* Safety Notice Banner */}
+                            <div className="p-3.5 bg-slate-50 border border-slate-150 rounded-2xl flex items-center gap-3 text-left">
+                                <div className="h-8 w-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+                                    <Shield className="h-4 w-4" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-extrabold text-slate-700 uppercase leading-none">Safety Assistant Active</p>
+                                    <p className="text-[9px] text-slate-400 font-semibold mt-1 leading-tight">
+                                        Messages are moderated automatically to prevent inappropriate content and protect students.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setIsNewChatOpen(true)}
+                                disabled={!schoolId}
+                                className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50"
+                            >
+                                <Plus className="h-4 w-4" />
+                                Start New Conversation
+                            </button>
                         </div>
-                        <div className="text-center space-y-2 max-w-sm z-10 px-4">
-                            <h2 className="text-2xl font-black text-slate-800 tracking-tight leading-none">School Community Chat</h2>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-1">GAM Edu Messaging</p>
-                            <p className="text-sm text-slate-500 leading-relaxed max-w-xs mx-auto mt-2">
-                                Select any active conversation on the left, or launch a direct thread to talk with classmates, parents, and school staff.
-                            </p>
-                        </div>
-                        <button
-                            onClick={() => setIsNewChatOpen(true)}
-                            disabled={!schoolId}
-                            className="flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-100 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 z-10"
-                        >
-                            <Plus className="h-4 w-4" />
-                            Start New Chat
-                        </button>
                     </div>
                 )}
             </div>
