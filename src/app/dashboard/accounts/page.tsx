@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -1943,6 +1943,701 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
     );
 }
 
+// --- SUB-COMPONENT: Print Debtors Dialog ---
+interface PrintDebtorsDialogProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  classes: Class[];
+  printMode: 'all-classes-split' | 'single-class' | 'whole-school-grouped';
+  setPrintMode: (mode: 'all-classes-split' | 'single-class' | 'whole-school-grouped') => void;
+  selectedClassId: string;
+  setSelectedClassId: (id: string) => void;
+  minDebt: number;
+  setMinDebt: (val: number) => void;
+  debtorsCount: number;
+  classDebtorsCount: number;
+  totalSum: number;
+  onPrint: () => void;
+}
+
+function PrintDebtorsDialog({ 
+  open, 
+  setOpen, 
+  classes, 
+  printMode, 
+  setPrintMode, 
+  selectedClassId, 
+  setSelectedClassId, 
+  minDebt, 
+  setMinDebt,
+  debtorsCount,
+  classDebtorsCount,
+  totalSum,
+  onPrint
+}: PrintDebtorsDialogProps) {
+  useEffect(() => {
+    if (classes && classes.length > 0 && !selectedClassId) {
+      setSelectedClassId(classes[0].id);
+    }
+  }, [classes, selectedClassId, setSelectedClassId]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Printer className="h-5 w-5 text-indigo-650" /> Print Debtors Lists
+          </DialogTitle>
+          <DialogDescription>
+            Configure the printing format. You can print sheet-by-sheet for class teachers or a full school list.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-3">
+          <div className="space-y-2">
+            <Label className="font-bold text-xs uppercase text-slate-500">Print Mode Option</Label>
+            <Select value={printMode} onValueChange={(v: any) => setPrintMode(v)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all-classes-split">All Classes (Individual sheets - Page breaks)</SelectItem>
+                <SelectItem value="single-class">Single Class Only</SelectItem>
+                <SelectItem value="whole-school-grouped">Whole School (Grouped by Class)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {printMode === 'single-class' && (
+            <div className="space-y-2">
+              <Label className="font-bold text-xs uppercase text-slate-500">Select Class</Label>
+              <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a class..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {classes.map(c => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label className="font-bold text-xs uppercase text-slate-500">Minimum Balance Owed (GH₵)</Label>
+            <Input
+              type="number"
+              step="0.01"
+              value={minDebt}
+              onChange={e => setMinDebt(parseFloat(e.target.value) || 0)}
+              placeholder="e.g. 5"
+            />
+          </div>
+
+          <div className="p-3 bg-slate-50 border rounded-xl text-xs space-y-1.5 text-slate-650">
+            <div className="flex justify-between">
+              <span>Total school debtors found:</span>
+              <span className="font-bold text-slate-800">{debtorsCount} students</span>
+            </div>
+            {printMode === 'single-class' && (
+              <div className="flex justify-between">
+                <span>Debtors in selected class:</span>
+                <span className="font-bold text-slate-800">
+                  {classDebtorsCount} students
+                </span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span>Total outstanding sum:</span>
+              <span className="font-bold text-slate-800">
+                GH₵{totalSum.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>
+
+          <Button onClick={onPrint} className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold h-11 rounded-xl">
+            <Printer className="mr-2 h-4 w-4" /> Open Print Setup / Print
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
+
+interface ParentLetterPrintAreaProps {
+  parentId: string;
+  parents: any[];
+  students: Student[];
+  classes: Class[];
+  records: FinancialRecord[];
+  schoolProfile: any;
+}
+
+function ParentLetterPrintArea({
+  parentId,
+  parents,
+  students,
+  classes,
+  records,
+  schoolProfile
+}: ParentLetterPrintAreaProps) {
+  const parent = parents?.find(p => p.id === parentId || p.uid === parentId);
+  if (!parent) return null;
+
+  const parentName = parent.name || `${parent.firstName || ''} ${parent.lastName || ''}`.trim() || 'Parent / Guardian';
+  const schoolName = schoolProfile?.name || schoolProfile?.schoolName || 'GAM Edu School';
+  const brandColor = schoolProfile?.brandColor || '#1e293b';
+
+  const classMap = new Map<string, string>();
+  classes?.forEach(c => classMap.set(c.id, c.name));
+
+  const parentChildren = students?.filter(s => parent.studentIds?.includes(s.uid)) || [];
+
+  const childrenDebts = parentChildren.map(s => {
+    const studentRecords = records?.filter(r => r.studentId === s.uid && r.status !== 'Pending Reversal') || [];
+    const totalBilled = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
+    const totalPaid = studentRecords.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
+    const balance = totalBilled - totalPaid;
+
+    const tuitionDebt = studentRecords.filter(r => r.type.toLowerCase().includes('tuition')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+    const canteenDebt = studentRecords.filter(r => r.type.toLowerCase().includes('canteen')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+    const transportDebt = studentRecords.filter(r => r.type.toLowerCase().includes('transport')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+    const otherDebt = balance - tuitionDebt - canteenDebt - transportDebt;
+
+    return {
+      student: s,
+      balance: Math.max(0, balance),
+      breakdown: {
+        tuition: Math.max(0, tuitionDebt),
+        canteen: Math.max(0, canteenDebt),
+        transport: Math.max(0, transportDebt),
+        other: Math.max(0, otherDebt)
+      }
+    };
+  }).filter(cd => cd.balance > 0);
+
+  const grandTotal = childrenDebts.reduce((sum, cd) => sum + cd.balance, 0);
+
+  return (
+    <div id="parent-letter-print-area" className="hidden print:block text-black bg-white w-full p-4 font-serif leading-normal">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          html, body {
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            overflow: visible !important;
+            background: white !important;
+            color: black !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-family: Georgia, 'Times New Roman', serif !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+          /* Hide all interactive app elements */
+          aside, nav, header, footer, button, [role="dialog"], [data-radix-portal], .fixed, .absolute, .fixed.inset-0 {
+            display: none !important;
+            height: 0 !important;
+            width: 0 !important;
+            visibility: hidden !important;
+          }
+
+          /* Reset layouts for natural A4 flow */
+          div.flex.h-screen,
+          div.flex.flex-1.flex-col,
+          main,
+          div.p-4.md\:p-8,
+          div.pb-24,
+          div.space-y-6.accounts-page-container {
+            display: block !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            overflow: visible !important;
+            position: static !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+          }
+
+          div.space-y-6.accounts-page-container > *:not(#parent-letter-print-area) {
+            display: none !important;
+          }
+
+          #parent-letter-print-area {
+            display: block !important;
+            visibility: visible !important;
+            position: static !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            background: white !important;
+            color: black !important;
+            padding: 0.3in !important;
+            margin: 0 !important;
+          }
+
+          .letterhead-divider {
+            border-top: 3px double ${brandColor} !important;
+            margin-top: 8px !important;
+            margin-bottom: 12px !important;
+          }
+
+          table.letter-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin-top: 10px !important;
+            margin-bottom: 10px !important;
+          }
+
+          table.letter-table th, table.letter-table td {
+            font-size: 11px !important;
+            padding: 6px 8px !important;
+            border: 1px solid #94a3b8 !important;
+            text-align: left !important;
+          }
+
+          table.letter-table th {
+            background-color: ${brandColor} !important;
+            color: white !important;
+            font-weight: bold !important;
+            border-bottom: 2px solid ${brandColor} !important;
+          }
+
+          table.letter-table td.amount {
+            text-align: right !important;
+            font-family: Courier, monospace !important;
+            font-weight: 700;
+          }
+
+          .summary-box {
+            border: 2.5px solid ${brandColor} !important;
+            background-color: #f8fafc !important;
+            padding: 10px 15px !important;
+            margin-top: 12px !important;
+            margin-bottom: 12px !important;
+            border-radius: 6px !important;
+            page-break-inside: avoid !important;
+          }
+
+          .recipient-box {
+            border: 1px solid #e2e8f0 !important;
+            background-color: #fafafa !important;
+            padding: 10px !important;
+            border-radius: 6px !important;
+          }
+
+          .metadata-table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: fixed !important;
+            border-collapse: collapse !important;
+            border: none !important;
+            margin-bottom: 12px !important;
+          }
+
+          .metadata-left-cell {
+            width: 55% !important;
+            vertical-align: top !important;
+            border: none !important;
+            padding: 0 !important;
+            text-align: left !important;
+          }
+
+          .metadata-right-cell {
+            width: 45% !important;
+            vertical-align: top !important;
+            border: none !important;
+            padding: 0 !important;
+            text-align: right !important;
+          }
+
+          .metadata-right-cell div {
+            text-align: right !important;
+            width: 100% !important;
+            display: block !important;
+          }
+
+          .metadata-right-cell p {
+            text-align: right !important;
+            margin: 0 0 2px auto !important;
+            display: block !important;
+          }
+
+          .metadata-right-cell .badge-container {
+            text-align: right !important;
+            display: block !important;
+            width: 100% !important;
+            margin-top: 4px !important;
+          }
+
+          .metadata-right-cell .badge {
+            display: inline-block !important;
+            float: right !important;
+          }
+
+          @page {
+            size: A4 portrait;
+            margin: 0.4in !important;
+          }
+        }
+      `}} />
+
+      {/* 1. Official School Letterhead Banner (Table-based for maximum print safety) */}
+      <table style={{
+        width: '100%',
+        backgroundColor: brandColor,
+        color: 'white',
+        borderRadius: '6px',
+        marginBottom: '12px',
+        borderCollapse: 'collapse',
+        border: 'none',
+        WebkitPrintColorAdjust: 'exact',
+        printColorAdjust: 'exact'
+      }}>
+        <tbody>
+          <tr>
+            <td style={{
+              padding: '12px 16px',
+              width: '70px',
+              verticalAlign: 'middle',
+              border: 'none'
+            }}>
+              {schoolProfile?.logoUrl ? (
+                <div style={{
+                  backgroundColor: 'white',
+                  padding: '4px',
+                  borderRadius: '50%',
+                  display: 'inline-block',
+                  width: '56px',
+                  height: '56px',
+                  textAlign: 'center',
+                  boxSizing: 'border-box'
+                }}>
+                  <img src={schoolProfile.logoUrl} alt="Logo" style={{ height: '48px', width: '48px', objectFit: 'contain', verticalAlign: 'middle' }} />
+                </div>
+              ) : (
+                <div style={{
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                  borderRadius: '50%',
+                  display: 'inline-block',
+                  width: '56px',
+                  height: '56px',
+                  lineHeight: '56px',
+                  textAlign: 'center',
+                  fontSize: '9px',
+                  fontWeight: 'bold',
+                  color: 'white'
+                }}>
+                  Logo
+                </div>
+              )}
+            </td>
+            <td style={{
+              padding: '12px 16px 12px 0',
+              verticalAlign: 'middle',
+              textAlign: 'left',
+              border: 'none'
+            }}>
+              <h1 style={{ fontSize: '18px', fontWeight: '900', margin: '0', textTransform: 'uppercase', color: 'white', lineHeight: '1.1' }}>
+                {schoolName}
+              </h1>
+              {schoolProfile?.motto && (
+                <p style={{ fontSize: '10px', fontStyle: 'italic', margin: '2px 0 0 0', opacity: 0.95, color: 'white', lineHeight: '1.2' }}>"{schoolProfile.motto}"</p>
+              )}
+              <p style={{ fontSize: '9px', margin: '2px 0 0 0', opacity: 0.85, color: 'white', lineHeight: '1.2' }}>
+                {schoolProfile?.address || 'School Location Address'}
+              </p>
+              <p style={{ fontSize: '8px', margin: '1px 0 0 0', opacity: 0.85, color: 'white', lineHeight: '1.2' }}>
+                {schoolProfile?.phone && `Tel: ${schoolProfile.phone}`}
+                {schoolProfile?.phone && schoolProfile?.email && ` | `}
+                {schoolProfile?.email && `Email: ${schoolProfile.email}`}
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* 2. Letter Metadata layout (Float-based for absolute alignment safety) */}
+      <div style={{ width: '100%', marginBottom: '12px', clear: 'both', display: 'block', overflow: 'hidden' }}>
+        <div style={{ float: 'left', width: '50%', textAlign: 'left' }}>
+          <div className="recipient-box" style={{ marginRight: '10px', textAlign: 'left' }}>
+            <p className="font-bold text-slate-500 uppercase tracking-wider text-[8px] mb-0.5" style={{ margin: '0', textAlign: 'left' }}>To Parent / Guardian:</p>
+            <p className="text-xs font-bold text-slate-900" style={{ margin: '2px 0 0 0', textAlign: 'left' }}>{parentName}</p>
+            {parent.phone && <p className="mt-0.5 text-[10px] font-medium text-slate-600" style={{ margin: '2px 0 0 0', textAlign: 'left' }}>Phone: {parent.phone}</p>}
+            {parent.email && <p className="text-[10px] font-medium text-slate-600" style={{ margin: '2px 0 0 0', textAlign: 'left' }}>Email: {parent.email}</p>}
+          </div>
+        </div>
+        <div style={{ float: 'right', width: '45%', textAlign: 'right' }}>
+          <div style={{ textAlign: 'right', float: 'right', width: '100%' }}>
+            <p style={{ fontSize: '10px', fontWeight: 'bold', color: '#0f172a', margin: '0', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right' }}>OFFICIAL NOTICE</p>
+            <p style={{ fontSize: '8px', color: '#64748b', fontFamily: 'monospace', margin: '2px 0 4px 0', textAlign: 'right' }}>REF: GAM-EDU/{format(new Date(), 'yyyy')}/DEBT-{parentId.slice(-6).toUpperCase()}</p>
+            <p style={{ fontSize: '10px', fontWeight: '500', margin: '0 0 4px 0', textAlign: 'right' }}><span style={{ fontWeight: 'bold' }}>DATE:</span> {format(new Date(), 'MMMM dd, yyyy')}</p>
+            <div style={{ width: '100%', textAlign: 'right', marginTop: '4px', clear: 'both', display: 'block' }}>
+              <span className="inline-flex rounded bg-rose-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-rose-700 border border-rose-200" style={{ display: 'inline-block', float: 'right' }}>
+                Payment Demand
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Subject */}
+      <div className="border-b border-slate-900 pb-0.5 mb-3">
+        <h2 className="text-[10px] font-black uppercase tracking-wide text-slate-850">
+          SUBJECT: NOTICE OF OUTSTANDING SCHOOL FEES ARREARS
+        </h2>
+      </div>
+
+      {/* 4. Body Content */}
+      <div className="space-y-3.5 text-xs font-serif text-slate-800 leading-relaxed">
+        <p>Dear {parentName},</p>
+        
+        <p>
+          We request your prompt attention to outstanding fee balances on your child(ren)'s institutional ledger accounts. Below is the itemized breakdown of dues owed to **{schoolName}**:
+        </p>
+
+        {/* 5. Horizontal Wards Table */}
+        <table className="letter-table">
+          <thead>
+            <tr>
+              <th>Student (Ward) Name</th>
+              <th>Class</th>
+              <th className="text-right">Tuition</th>
+              <th className="text-right">Canteen</th>
+              <th className="text-right">Transport</th>
+              <th className="text-right">Other Dues</th>
+              <th className="text-right">Total Owed</th>
+            </tr>
+          </thead>
+          <tbody>
+            {childrenDebts.map((cd: any) => {
+              let tuition = Math.max(0, cd.breakdown.tuition);
+              let canteen = Math.max(0, cd.breakdown.canteen);
+              let transport = Math.max(0, cd.breakdown.transport);
+              const sumCategories = tuition + canteen + transport;
+              let other = 0;
+
+              if (sumCategories < cd.balance) {
+                other = cd.balance - sumCategories;
+              } else if (sumCategories > cd.balance) {
+                const ratio = cd.balance / (sumCategories || 1);
+                tuition = tuition * ratio;
+                canteen = canteen * ratio;
+                transport = transport * ratio;
+                other = 0;
+              }
+
+              return (
+                <tr key={cd.student.uid}>
+                  <td className="font-bold text-slate-900">{cd.student.firstName} {cd.student.lastName}</td>
+                  <td className="text-slate-600">{classMap.get(cd.student.classId) || 'N/A'}</td>
+                  <td className="amount">GH₵{tuition.toFixed(2)}</td>
+                  <td className="amount">GH₵{canteen.toFixed(2)}</td>
+                  <td className="amount">GH₵{transport.toFixed(2)}</td>
+                  <td className="amount">GH₵{other.toFixed(2)}</td>
+                  <td className="amount font-bold text-rose-600">GH₵{cd.balance.toFixed(2)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        {/* 6. Grand Summary Box */}
+        <div className="summary-box">
+          <table style={{ width: '100%', borderCollapse: 'collapse', border: 'none' }}>
+            <tbody>
+              <tr>
+                <td style={{ border: 'none', padding: '0' }}>
+                  <p className="text-[9px] uppercase font-black tracking-wider" style={{ color: brandColor }}>Total Consolidated Arrears Owed</p>
+                  <p className="text-[8px] text-slate-500 italic mt-0.5">Aggregated family balance due immediately</p>
+                </td>
+                <td style={{ border: 'none', padding: '0', textAlign: 'right' }}>
+                  <p className="text-lg font-black text-rose-600 font-mono">
+                    GH₵{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* 7. Polite request & payment instructions */}
+        <p>
+          Kindly arrange to clear these overdue arrears immediately. Your prompt support is crucial in helping the school run smoothly and maintain operational standards.
+        </p>
+
+        <div className="border-t pt-2 mt-2 page-break-inside-avoid">
+          <p className="font-bold text-[9px] uppercase text-slate-700 mb-0.5">
+            APPROVED PAYMENT OPTIONS:
+          </p>
+          <p className="text-[10px] text-slate-600">
+            • <strong>Portal:</strong> Pay instantly via Mobile Money (MoMo) or Card. 
+            • <strong>Bank Transfer:</strong> Pay to school's bank account & submit slip. 
+            • <strong>POS/Cash:</strong> Walk in to pay at the finance office desk.
+          </p>
+        </div>
+
+        <p className="italic text-[9px] text-slate-400">
+          *Note: If you have made payments recently, please present the receipts at our accounts desk for immediate reconciliation. If you have any questions or require a payment plan, please contact the Principal or Accounts Officer.
+        </p>
+
+        {/* 8. Sign-off and headmaster signature */}
+        <div className="pt-3 page-break-inside-avoid">
+          <p>Sincerely,</p>
+          <div style={{ marginTop: '8px' }}>
+            {schoolProfile?.headmasterSignatureUrl ? (
+              <img src={schoolProfile.headmasterSignatureUrl} alt="Headmaster Signature" style={{ height: '35px', objectFit: 'contain', display: 'block', marginBottom: '4px' }} />
+            ) : (
+              <div style={{ height: '35px', borderBottom: '1px dashed #cbd5e1', width: '150px', marginBottom: '4px' }}></div>
+            )}
+            <p className="font-bold text-slate-800 uppercase text-[11px] tracking-wide">Headmaster / Principal</p>
+            <p className="text-slate-500 font-medium text-[9px]">{schoolName}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ParentDemandLettersDialogProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  parents: any[];
+  students: Student[];
+  classes: Class[];
+  records: FinancialRecord[];
+  isSending: boolean;
+  onPrint: (parentId: string) => void;
+}
+
+function ParentDemandLettersDialog({
+  open,
+  setOpen,
+  parents,
+  students,
+  classes,
+  records,
+  isSending,
+  onPrint
+}: ParentDemandLettersDialogProps) {
+  const [selectedParentId, setSelectedParentId] = useState('');
+  const classMap = useMemo(() => {
+    const map = new Map<string, string>();
+    (classes || []).forEach(c => map.set(c.id, c.name));
+    return map;
+  }, [classes]);
+
+  const selectedParent = useMemo(() => {
+    return parents?.find(p => p.id === selectedParentId || p.uid === selectedParentId);
+  }, [selectedParentId, parents]);
+
+  const childrenDebts = useMemo(() => {
+    if (!selectedParent || !students || !records) return [];
+    
+    return (selectedParent.studentIds || []).map((sid: string) => {
+      const student = students.find(s => s.uid === sid);
+      if (!student) return null;
+
+      const studentRecords = records.filter(r => r.studentId === sid && r.status !== 'Pending Reversal');
+      const totalBilled = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
+      const totalPaid = studentRecords.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
+      const balance = totalBilled - totalPaid;
+
+      return {
+        student,
+        balance
+      };
+    }).filter((cd: any) => cd !== null);
+  }, [selectedParent, students, records]);
+
+  const totalOutstanding = useMemo(() => {
+    return childrenDebts.reduce((sum: number, cd: any) => sum + cd.balance, 0);
+  }, [childrenDebts]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <FileCog className="h-5 w-5 text-indigo-650" /> Parent Debt Letters
+          </DialogTitle>
+          <DialogDescription>
+            Generate beautifully formatted print/PDF correspondence sheets for parents, itemized by child.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-3">
+          <div className="space-y-2">
+            <Label className="font-bold text-xs uppercase text-slate-500">Select Parent</Label>
+            <SearchableSelect
+              options={(parents || []).map(p => ({
+                id: p.id || p.uid,
+                name: p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Unnamed Parent',
+                subtext: `Phone: ${p.phone || 'N/A'} | Linked Children: ${p.studentIds?.length || 0}`
+              }))}
+              value={selectedParentId}
+              onValueChange={setSelectedParentId}
+              placeholder="Search parent by name..."
+            />
+          </div>
+
+          {selectedParentId && selectedParent && (
+            <div className="space-y-4 animate-in fade-in slide-in-from-top-1">
+              <div className="p-4 bg-slate-50 border rounded-xl space-y-2 text-xs text-slate-700">
+                <div className="flex justify-between border-b pb-1 font-bold">
+                  <span>Parent: {selectedParent.name || `${selectedParent.firstName || ''} ${selectedParent.lastName || ''}`.trim()}</span>
+                  <span className="text-slate-550 font-mono">Phone: {selectedParent.phone || 'N/A'}</span>
+                </div>
+                <div className="space-y-1.5 pt-1">
+                  <p className="font-bold text-[10px] text-slate-400 uppercase">Linked Children Balances:</p>
+                  {childrenDebts.map((cd: any) => (
+                    <div key={cd.student.uid} className="flex justify-between items-center">
+                      <span>{cd.student.firstName} {cd.student.lastName} ({classMap.get(cd.student.classId) || 'N/A'})</span>
+                      <span className={cn("font-mono font-bold", cd.balance > 0.01 ? "text-rose-600" : "text-emerald-600")}>
+                        GH₵{cd.balance.toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-between items-center border-t pt-2 font-black text-sm mt-2 text-slate-800">
+                  <span>Total Debt Owed:</span>
+                  <span className={totalOutstanding > 0.01 ? "text-rose-600 font-mono" : "text-emerald-600 font-mono"}>
+                    GH₵{totalOutstanding.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {totalOutstanding > 0.01 ? (
+                <Button
+                  onClick={() => onPrint(selectedParentId)}
+                  disabled={isSending}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-11 rounded-xl shadow-md transition-all active:scale-95"
+                >
+                  <Printer className="mr-2 h-4 w-4" /> Print/Save PDF Letter
+                </Button>
+              ) : (
+                <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-center text-xs text-emerald-800 font-semibold animate-pulse">
+                  This parent has no outstanding balance. Letter generation is locked.
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function AccountsPage() {
   const { role, profile } = useRole(); 
   const firestore = useFirestore(); 
@@ -1954,6 +2649,13 @@ export default function AccountsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null); 
+  const [printDebtorsOpen, setPrintDebtorsOpen] = useState(false); 
+  const [parentLettersOpen, setParentLettersOpen] = useState(false);
+  const [selectedParentIdForPrint, setSelectedParentIdForPrint] = useState<string>('');
+  const [activePrintType, setActivePrintType] = useState<'debtors-list' | 'parent-letter' | null>(null);
+  const [printMode, setPrintMode] = useState<'all-classes-split' | 'single-class' | 'whole-school-grouped'>('all-classes-split');
+  const [selectedClassId, setSelectedClassId] = useState<string>('');
+  const [minDebt, setMinDebt] = useState<number>(1); 
   const [activeTab, setActiveTab] = useState('billing');
   const [analyticsTab, setAnalyticsTab] = useState('summary');
   const [isProcessingReversal, setIsProcessingReversal] = useState<string | null>(null);
@@ -2014,6 +2716,92 @@ export default function AccountsPage() {
 
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: classes } = useCollection<Class>(classesQuery);
+
+  const parentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: parents, isLoading: isLoadingParents } = useCollection<any>(parentsQuery);
+
+  const schoolRef = useMemoFirebase(
+    () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+    [firestore, schoolId]
+  );
+  const { data: schoolProfile } = useDoc<any>(schoolRef);
+  const schoolName = schoolProfile?.name || 'GAM Edu School';
+
+  const debtors = useMemo(() => {
+    if (!students || !records) return [];
+
+    const studentRecordsMap: Record<string, FinancialRecord[]> = {};
+    records.forEach(r => {
+      if (r.status === 'Pending Reversal') return;
+      if (!studentRecordsMap[r.studentId]) {
+        studentRecordsMap[r.studentId] = [];
+      }
+      studentRecordsMap[r.studentId].push(r);
+    });
+
+    return students.map(s => {
+      const recs = studentRecordsMap[s.uid] || [];
+      const totalBilled = recs.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
+      const totalPaid = recs.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
+      const balance = totalBilled - totalPaid;
+
+      const tuitionDebt = recs.filter(r => r.type.toLowerCase().includes('tuition')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+      const canteenDebt = recs.filter(r => r.type.toLowerCase().includes('canteen')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+      const transportDebt = recs.filter(r => r.type.toLowerCase().includes('transport')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+      const otherDebt = balance - tuitionDebt - canteenDebt - transportDebt;
+
+      return {
+        student: s,
+        balance,
+        breakdown: {
+          tuition: Math.max(0, tuitionDebt),
+          canteen: Math.max(0, canteenDebt),
+          transport: Math.max(0, transportDebt),
+          other: Math.max(0, otherDebt)
+        }
+      };
+    }).filter(d => d.balance >= minDebt);
+  }, [students, records, minDebt]);
+
+  const classGroupedDebtors = useMemo(() => {
+    const groups: Record<string, typeof debtors> = {};
+    debtors.forEach(d => {
+      const cid = d.student.classId || 'unassigned';
+      if (!groups[cid]) groups[cid] = [];
+      groups[cid].push(d);
+    });
+    return groups;
+  }, [debtors]);
+
+  const classesToPrint = useMemo(() => {
+    if (printMode === 'single-class') {
+      return (classes || []).filter(c => c.id === selectedClassId);
+    }
+    return (classes || [])
+      .filter(c => (classGroupedDebtors[c.id] || []).length > 0)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [classes, printMode, selectedClassId, classGroupedDebtors]);
+
+  const classesMap = useMemo(() => {
+    const map = new Map<string, string>();
+    (classes || []).forEach(c => map.set(c.id, c.name));
+    return map;
+  }, [classes]);
+
+  const handlePrintDebtorsList = () => {
+    setActivePrintType('debtors-list');
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
+
+  const handlePrintParentLetter = (parentId: string) => {
+    setSelectedParentIdForPrint(parentId);
+    setActivePrintType('parent-letter');
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
 
   const schoolSettingsRef = useMemoFirebase(
     () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
@@ -2281,6 +3069,8 @@ export default function AccountsPage() {
       }
   }, [firestore, schoolId, toast]);
 
+
+
   // --- REVERSAL HANDLERS ---
   const handleApproveReversal = async (record: FinancialRecord) => {
     if (!firestore || isProcessingReversal) return;
@@ -2327,7 +3117,7 @@ export default function AccountsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 accounts-page-container">
         {/* PREMIUM gradient hero banner */}
         <div className="bg-gradient-to-r from-teal-600 via-emerald-600 to-green-700 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
             <div className="absolute right-0 top-0 translate-x-1/4 -translate-y-1/4 w-80 h-80 bg-white/10 rounded-full blur-2xl pointer-events-none" />
@@ -2798,6 +3588,24 @@ export default function AccountsPage() {
                                     <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
                                 </Button>
 
+
+
+                                <Button
+                                    variant="outline"
+                                    className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 shadow-sm font-semibold"
+                                    onClick={() => setParentLettersOpen(true)}
+                                >
+                                    <Printer className="mr-2 h-4 w-4" /> Parent Debt Letters
+                                </Button>
+
+                                <Button
+                                    variant="outline"
+                                    className="border-rose-200 text-rose-700 hover:bg-rose-50 shadow-sm font-semibold"
+                                    onClick={() => setPrintDebtorsOpen(true)}
+                                >
+                                    <Printer className="mr-2 h-4 w-4" /> Print Debtors
+                                </Button>
+
                                 <Dialog open={activeForm === 'daily'} onOpenChange={(open) => setActiveForm(open ? 'daily' : null)}>
                                     <DialogTrigger asChild>
                                         <Button variant="outline" className="border-indigo-200 text-indigo-700 bg-indigo-50 shadow-sm">
@@ -3013,6 +3821,376 @@ export default function AccountsPage() {
         )}
         {editingRecord && (
             <EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={forceRefetch} />
+        )}
+        <PrintDebtorsDialog 
+            open={printDebtorsOpen} 
+            setOpen={setPrintDebtorsOpen} 
+            classes={classes || []} 
+            printMode={printMode}
+            setPrintMode={setPrintMode}
+            selectedClassId={selectedClassId}
+            setSelectedClassId={setSelectedClassId}
+            minDebt={minDebt}
+            setMinDebt={setMinDebt}
+            debtorsCount={debtors.length}
+            classDebtorsCount={(classGroupedDebtors[selectedClassId] || []).length}
+            totalSum={debtors.reduce((sum, d) => sum + d.balance, 0)}
+            onPrint={handlePrintDebtorsList}
+        />
+
+
+        <ParentDemandLettersDialog
+            open={parentLettersOpen}
+            setOpen={setParentLettersOpen}
+            parents={parents || []}
+            students={students || []}
+            classes={classes || []}
+            records={records || []}
+            isSending={false}
+            onPrint={handlePrintParentLetter}
+        />
+
+        {activePrintType === 'parent-letter' && (
+          <ParentLetterPrintArea
+            parentId={selectedParentIdForPrint}
+            parents={parents || []}
+            students={students || []}
+            classes={classes || []}
+            records={records || []}
+            schoolProfile={schoolProfile}
+          />
+        )}
+
+        {activePrintType === 'debtors-list' && (
+          <div id="debtors-print-area" className="hidden print:block text-black bg-white w-full">
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media print {
+                html, body {
+                  height: auto !important;
+                  min-height: 0 !important;
+                  max-height: none !important;
+                  overflow: visible !important;
+                  background: white !important;
+                  color: black !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                }
+
+                /* Hide all interactive app elements and portal dialogs */
+                aside, nav, header, footer, button, [role="dialog"], [data-radix-portal], .fixed.inset-0 {
+                  display: none !important;
+                  height: 0 !important;
+                  width: 0 !important;
+                  overflow: hidden !important;
+                  visibility: hidden !important;
+                }
+
+                /* Reset parent layouts to block / natural flow and remove margins */
+                div.flex.h-screen {
+                  display: block !important;
+                  height: auto !important;
+                  min-height: 0 !important;
+                  max-height: none !important;
+                  overflow: visible !important;
+                  position: static !important;
+                }
+
+                div.flex.flex-1.flex-col {
+                  display: block !important;
+                  margin-left: 0 !important;
+                  padding-left: 0 !important;
+                  height: auto !important;
+                  min-height: 0 !important;
+                  max-height: none !important;
+                  overflow: visible !important;
+                  position: static !important;
+                }
+
+                main {
+                  display: block !important;
+                  height: auto !important;
+                  min-height: 0 !important;
+                  max-height: none !important;
+                  overflow: visible !important;
+                  position: static !important;
+                  padding: 0 !important;
+                  margin: 0 !important;
+                }
+
+                div.p-4.md\:p-8,
+                div.pb-24,
+                div.space-y-6.accounts-page-container {
+                  display: block !important;
+                  height: auto !important;
+                  min-height: 0 !important;
+                  max-height: none !important;
+                  overflow: visible !important;
+                  position: static !important;
+                  padding: 0 !important;
+                  margin: 0 !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+
+                /* Hide other elements inside accounts-page-container except print area */
+                .accounts-page-container > *:not(#debtors-print-area) {
+                  display: none !important;
+                }
+
+                #debtors-print-area {
+                  display: block !important;
+                  visibility: visible !important;
+                  position: static !important;
+                  width: 100% !important;
+                  height: auto !important;
+                  overflow: visible !important;
+                  background: white !important;
+                  color: black !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                }
+
+                .page-break {
+                  page-break-after: always !important;
+                  break-after: page !important;
+                  height: 0 !important;
+                  overflow: hidden !important;
+                }
+
+                table {
+                  width: 100% !important;
+                  border-collapse: collapse !important;
+                  table-layout: fixed !important;
+                  margin-top: 10px !important;
+                }
+
+                tr {
+                  page-break-inside: avoid !important;
+                }
+
+                th, td {
+                  font-size: 12px !important;
+                  padding: 6px 6px !important;
+                  border: 1px solid #1e293b !important;
+                  word-wrap: break-word !important;
+                  overflow: hidden !important;
+                }
+
+                th {
+                  font-size: 13px !important;
+                  background-color: #cbd5e1 !important;
+                  color: #0f172a !important;
+                  font-weight: 800 !important;
+                }
+
+                /* Make student name bold and highly readable */
+                td:nth-child(2) {
+                  font-size: 12px !important;
+                  font-weight: 700 !important;
+                  color: #0f172a !important;
+                }
+
+                /* Make financial numbers columns bold and clear */
+                td.text-right {
+                  font-weight: 700 !important;
+                  font-size: 12.5px !important;
+                  color: #1e293b !important;
+                }
+
+                /* Highlight outstanding total balance column with rose color and soft background */
+                td.text-right:last-child {
+                  font-weight: 900 !important;
+                  font-size: 14px !important;
+                  color: #be123c !important;
+                  background-color: #fff1f2 !important;
+                }
+
+                /* Sizing and visibility overrides for headings */
+                h1 {
+                  font-size: 26px !important;
+                  font-weight: 900 !important;
+                  color: #0f172a !important;
+                }
+                h2 {
+                  font-size: 18px !important;
+                  font-weight: 800 !important;
+                  color: #1e293b !important;
+                }
+                h3 {
+                  font-size: 15px !important;
+                  font-weight: 800 !important;
+                  color: #0f172a !important;
+                }
+
+                /* Meta data info box at top of class sheet */
+                .p-4.bg-slate-50 {
+                  background-color: #f8fafc !important;
+                  border: 2px solid #94a3b8 !important;
+                  font-size: 12px !important;
+                }
+                .p-4.bg-slate-50 span {
+                  font-weight: 800 !important;
+                }
+
+                .col-id { width: 14% !important; }
+                .col-name { width: 22% !important; }
+                .col-fee { width: 12% !important; }
+                .col-total { width: 16% !important; }
+
+                @page {
+                  size: A4 portrait;
+                  margin: 0.4in !important;
+                }
+              }
+            `}} />
+
+            {printMode === 'whole-school-grouped' ? (
+              <div className="space-y-6">
+                <div className="border-b-4 border-slate-900 pb-4 text-center">
+                  <h1 className="text-2xl font-black uppercase tracking-tight">{schoolName}</h1>
+                  <h2 className="text-lg font-extrabold uppercase tracking-wide text-slate-700 mt-1">Whole School Debtors List Report</h2>
+                  <p className="text-xs text-slate-500 font-bold uppercase mt-1">Generated: {format(new Date(), 'PPpp')}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 py-4 text-sm border-b mb-4">
+                  <div className="border p-3 rounded-lg text-center bg-slate-50">
+                    <p className="text-xs font-bold text-slate-500 uppercase">Total School Debtors</p>
+                    <p className="text-xl font-extrabold text-slate-800 mt-1">{debtors.length}</p>
+                  </div>
+                  <div className="border p-3 rounded-lg text-center bg-slate-50">
+                    <p className="text-xs font-bold text-slate-500 uppercase">Total Outstanding Sum</p>
+                    <p className="text-xl font-extrabold text-rose-600 mt-1">GH₵{debtors.reduce((sum, d) => sum + d.balance, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-8">
+                  {classesToPrint.map(c => {
+                    const classDebtors = classGroupedDebtors[c.id] || [];
+                    if (classDebtors.length === 0) return null;
+
+                    return (
+                      <div key={c.id} className="space-y-3">
+                        <div className="bg-slate-100 p-2 rounded-lg border flex justify-between items-center">
+                          <h3 className="font-extrabold text-sm uppercase text-slate-800">{c.name}</h3>
+                          <span className="text-xs font-bold text-slate-650 font-mono">
+                            {classDebtors.length} debtors | Total: GH₵{classDebtors.reduce((sum, d) => sum + d.balance, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          </span>
+                        </div>
+
+                        <table>
+                          <thead>
+                            <tr>
+                              <th className="col-id text-left">Student ID</th>
+                              <th className="col-name text-left">Name</th>
+                              <th className="col-fee text-right">Tuition</th>
+                              <th className="col-fee text-right">Canteen</th>
+                              <th className="col-fee text-right">Transport</th>
+                              <th className="col-fee text-right">Other</th>
+                              <th className="col-total text-right">Total Balance</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {classDebtors.map(d => (
+                              <tr key={d.student.uid}>
+                                <td className="font-mono text-left">{d.student.studentId || 'ID Pending'}</td>
+                                <td className="font-bold text-left">{d.student.firstName} {d.student.lastName}</td>
+                                <td className="text-right font-mono">GH₵{d.breakdown.tuition.toFixed(2)}</td>
+                                <td className="text-right font-mono">GH₵{d.breakdown.canteen.toFixed(2)}</td>
+                                <td className="text-right font-mono">GH₵{d.breakdown.transport.toFixed(2)}</td>
+                                <td className="text-right font-mono">GH₵{d.breakdown.other.toFixed(2)}</td>
+                                <td className="text-right font-bold font-mono text-rose-600">GH₵{d.balance.toFixed(2)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 pt-12 text-center text-xs">
+                  <div>
+                    <div className="border-b border-slate-400 h-8 max-w-[220px] mx-auto"></div>
+                    <p className="font-bold text-slate-500 mt-2 uppercase text-[10px]">Accounts Officer Signature</p>
+                  </div>
+                  <div>
+                    <div className="border-b border-slate-400 h-8 max-w-[220px] mx-auto"></div>
+                    <p className="font-bold text-slate-500 mt-2 uppercase text-[10px]">Headmaster / Director Approval</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-12">
+                {classesToPrint.map((c, index) => {
+                  const classDebtors = classGroupedDebtors[c.id] || [];
+                  if (classDebtors.length === 0) return null;
+
+                  const classTotal = classDebtors.reduce((sum, d) => sum + d.balance, 0);
+
+                  return (
+                    <div key={c.id} className={cn("space-y-6", index < classesToPrint.length - 1 && "page-break")}>
+                      <div className="border-b-4 border-slate-900 pb-4 text-center">
+                        <h1 className="text-2xl font-black uppercase tracking-tight">{schoolName}</h1>
+                        <h2 className="text-lg font-extrabold uppercase tracking-wide text-slate-700 mt-1">Class Debtors Collection Sheet</h2>
+                        <h3 className="text-base font-black text-rose-600 uppercase tracking-wider mt-1">Class Target: {c.name}</h3>
+                        <p className="text-xs text-slate-500 font-bold uppercase mt-1">Printed Date: {format(new Date(), 'PP')}</p>
+                      </div>
+
+                      <div className="p-4 bg-slate-50 border-2 border-slate-200 rounded-xl grid grid-cols-2 gap-4 text-xs font-bold text-slate-700 uppercase">
+                        <div>Class: <span className="font-extrabold text-slate-900">{c.name}</span></div>
+                        <div className="text-right">Debtors Owed: <span className="font-extrabold text-slate-900">{classDebtors.length} ward(s)</span></div>
+                        <div className="col-span-2 text-center border-t pt-2 mt-2 text-sm text-rose-700 font-black">
+                          Total Class Deficit Owed: GH₵{classTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </div>
+                      </div>
+
+                      <table>
+                        <thead>
+                          <tr>
+                            <th className="col-id text-left">Student ID</th>
+                            <th className="col-name text-left">Student Name</th>
+                            <th className="col-fee text-right">Tuition</th>
+                            <th className="col-fee text-right">Canteen</th>
+                            <th className="col-fee text-right">Transport</th>
+                            <th className="col-fee text-right">Other</th>
+                            <th className="col-total text-right">Total Balance</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {classDebtors.map(d => (
+                            <tr key={d.student.uid}>
+                              <td className="font-mono text-left">{d.student.studentId || 'ID Pending'}</td>
+                              <td className="font-black text-slate-800 text-left">{d.student.firstName} {d.student.lastName}</td>
+                              <td className="text-right font-mono">GH₵{d.breakdown.tuition.toFixed(2)}</td>
+                              <td className="text-right font-mono">GH₵{d.breakdown.canteen.toFixed(2)}</td>
+                              <td className="text-right font-mono">GH₵{d.breakdown.transport.toFixed(2)}</td>
+                              <td className="text-right font-mono">GH₵{d.breakdown.other.toFixed(2)}</td>
+                              <td className="text-right font-black font-mono text-rose-600 text-[11px]">GH₵{d.balance.toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      <div className="pt-4 text-[10px] text-slate-400 leading-normal italic">
+                        Notice to Class Teacher: Please check receipts or online portals for payments recorded after the printed date before enforcing balance reminders.
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-8 pt-10 text-center text-xs">
+                        <div>
+                          <div className="border-b border-slate-400 h-8 max-w-[200px] mx-auto"></div>
+                          <p className="font-bold text-slate-500 mt-2 uppercase text-[9px]">Class Teacher Signature</p>
+                        </div>
+                        <div>
+                          <div className="border-b border-slate-400 h-8 max-w-[200px] mx-auto"></div>
+                          <p className="font-bold text-slate-500 mt-2 uppercase text-[9px]">Authorized Finance Auditor</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         )}
     </div>
   );
