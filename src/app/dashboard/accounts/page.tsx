@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -2131,7 +2130,7 @@ function ParentLetterPrintArea({
             height: auto !important;
             min-height: 0 !important;
             max-height: none !important;
-            overflow: visible !important;
+            overflow: hidden !important;
             background: white !important;
             color: black !important;
             margin: 0 !important;
@@ -2139,6 +2138,14 @@ function ParentLetterPrintArea({
             font-family: Georgia, 'Times New Roman', serif !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+          }
+
+          ::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
           }
 
           /* Hide all interactive app elements */
@@ -2160,7 +2167,7 @@ function ParentLetterPrintArea({
             height: auto !important;
             min-height: 0 !important;
             max-height: none !important;
-            overflow: visible !important;
+            overflow: hidden !important;
             position: static !important;
             padding: 0 !important;
             margin: 0 !important;
@@ -2179,11 +2186,12 @@ function ParentLetterPrintArea({
             position: static !important;
             width: 100% !important;
             height: auto !important;
-            overflow: visible !important;
+            overflow: hidden !important;
             background: white !important;
             color: black !important;
             padding: 0.3in !important;
             margin: 0 !important;
+            font-size: 12pt !important;
           }
 
           .letterhead-divider {
@@ -2200,7 +2208,7 @@ function ParentLetterPrintArea({
           }
 
           table.letter-table th, table.letter-table td {
-            font-size: 11px !important;
+            font-size: 12px !important;
             padding: 6px 8px !important;
             border: 1px solid #94a3b8 !important;
             text-align: left !important;
@@ -2371,19 +2379,19 @@ function ParentLetterPrintArea({
       <div style={{ width: '100%', marginBottom: '12px', clear: 'both', display: 'block', overflow: 'hidden' }}>
         <div style={{ float: 'left', width: '50%', textAlign: 'left' }}>
           <div className="recipient-box" style={{ marginRight: '10px', textAlign: 'left' }}>
-            <p className="font-bold text-slate-500 uppercase tracking-wider text-[8px] mb-0.5" style={{ margin: '0', textAlign: 'left' }}>To Parent / Guardian:</p>
-            <p className="text-xs font-bold text-slate-900" style={{ margin: '2px 0 0 0', textAlign: 'left' }}>{parentName}</p>
-            {parent.phone && <p className="mt-0.5 text-[10px] font-medium text-slate-600" style={{ margin: '2px 0 0 0', textAlign: 'left' }}>Phone: {parent.phone}</p>}
-            {parent.email && <p className="text-[10px] font-medium text-slate-600" style={{ margin: '2px 0 0 0', textAlign: 'left' }}>Email: {parent.email}</p>}
+            <p className="font-bold text-slate-500 uppercase tracking-wider text-[11px] mb-0.5" style={{ margin: '0', textAlign: 'left' }}>To Parent / Guardian:</p>
+            <p className="text-sm font-bold text-slate-900" style={{ margin: '2px 0 0 0', textAlign: 'left' }}>{parentName}</p>
+            {parent.phone && <p className="mt-0.5 text-[12px] font-medium text-slate-600" style={{ margin: '2px 0 0 0', textAlign: 'left' }}>Phone: {parent.phone}</p>}
+            {parent.email && <p className="text-[12px] font-medium text-slate-600" style={{ margin: '2px 0 0 0', textAlign: 'left' }}>Email: {parent.email}</p>}
           </div>
         </div>
         <div style={{ float: 'right', width: '45%', textAlign: 'right' }}>
           <div style={{ textAlign: 'right', float: 'right', width: '100%' }}>
-            <p style={{ fontSize: '10px', fontWeight: 'bold', color: '#0f172a', margin: '0', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right' }}>OFFICIAL NOTICE</p>
-            <p style={{ fontSize: '8px', color: '#64748b', fontFamily: 'monospace', margin: '2px 0 4px 0', textAlign: 'right' }}>REF: GAM-EDU/{format(new Date(), 'yyyy')}/DEBT-{parentId.slice(-6).toUpperCase()}</p>
-            <p style={{ fontSize: '10px', fontWeight: '500', margin: '0 0 4px 0', textAlign: 'right' }}><span style={{ fontWeight: 'bold' }}>DATE:</span> {format(new Date(), 'MMMM dd, yyyy')}</p>
+            <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#0f172a', margin: '0', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right' }}>OFFICIAL NOTICE</p>
+            <p style={{ fontSize: '10px', color: '#64748b', fontFamily: 'monospace', margin: '2px 0 4px 0', textAlign: 'right' }}>REF: GAM-EDU/{format(new Date(), 'yyyy')}/DEBT-{parentId.slice(-6).toUpperCase()}</p>
+            <p style={{ fontSize: '12px', fontWeight: '500', margin: '0 0 4px 0', textAlign: 'right' }}><span style={{ fontWeight: 'bold' }}>DATE:</span> {format(new Date(), 'MMMM dd, yyyy')}</p>
             <div style={{ width: '100%', textAlign: 'right', marginTop: '4px', clear: 'both', display: 'block' }}>
-              <span className="inline-flex rounded bg-rose-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-rose-700 border border-rose-200" style={{ display: 'inline-block', float: 'right' }}>
+              <span className="inline-flex rounded bg-rose-50 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-rose-700 border border-rose-200" style={{ display: 'inline-block', float: 'right' }}>
                 Payment Demand
               </span>
             </div>
@@ -2393,13 +2401,13 @@ function ParentLetterPrintArea({
 
       {/* 3. Subject */}
       <div className="border-b border-slate-900 pb-0.5 mb-3">
-        <h2 className="text-[10px] font-black uppercase tracking-wide text-slate-850">
+        <h2 className="text-[12px] font-black uppercase tracking-wide text-slate-850">
           SUBJECT: NOTICE OF OUTSTANDING SCHOOL FEES ARREARS
         </h2>
       </div>
 
       {/* 4. Body Content */}
-      <div className="space-y-3.5 text-xs font-serif text-slate-800 leading-relaxed">
+      <div className="space-y-3.5 text-[12pt] font-serif text-slate-800 leading-relaxed">
         <p>Dear {parentName},</p>
         
         <p>
@@ -2458,11 +2466,11 @@ function ParentLetterPrintArea({
             <tbody>
               <tr>
                 <td style={{ border: 'none', padding: '0' }}>
-                  <p className="text-[9px] uppercase font-black tracking-wider" style={{ color: brandColor }}>Total Consolidated Arrears Owed</p>
-                  <p className="text-[8px] text-slate-500 italic mt-0.5">Aggregated family balance due immediately</p>
+                  <p className="text-[11px] uppercase font-black tracking-wider" style={{ color: brandColor }}>Total Consolidated Arrears Owed</p>
+                  <p className="text-[10px] text-slate-500 italic mt-0.5">Aggregated family balance due immediately</p>
                 </td>
                 <td style={{ border: 'none', padding: '0', textAlign: 'right' }}>
-                  <p className="text-lg font-black text-rose-600 font-mono">
+                  <p className="text-xl font-black text-rose-600 font-mono">
                     GH₵{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </p>
                 </td>
@@ -2477,17 +2485,17 @@ function ParentLetterPrintArea({
         </p>
 
         <div className="border-t pt-2 mt-2 page-break-inside-avoid">
-          <p className="font-bold text-[9px] uppercase text-slate-700 mb-0.5">
+          <p className="font-bold text-[11px] uppercase text-slate-700 mb-0.5">
             APPROVED PAYMENT OPTIONS:
           </p>
-          <p className="text-[10px] text-slate-600">
+          <p className="text-[12px] text-slate-600">
             • <strong>Portal:</strong> Pay instantly via Mobile Money (MoMo) or Card. 
             • <strong>Bank Transfer:</strong> Pay to school's bank account & submit slip. 
             • <strong>POS/Cash:</strong> Walk in to pay at the finance office desk.
           </p>
         </div>
 
-        <p className="italic text-[9px] text-slate-400">
+        <p className="italic text-[11px] text-slate-400">
           *Note: If you have made payments recently, please present the receipts at our accounts desk for immediate reconciliation. If you have any questions or require a payment plan, please contact the Principal or Accounts Officer.
         </p>
 
@@ -2500,8 +2508,8 @@ function ParentLetterPrintArea({
             ) : (
               <div style={{ height: '35px', borderBottom: '1px dashed #cbd5e1', width: '150px', marginBottom: '4px' }}></div>
             )}
-            <p className="font-bold text-slate-800 uppercase text-[11px] tracking-wide">Headmaster / Principal</p>
-            <p className="text-slate-500 font-medium text-[9px]">{schoolName}</p>
+            <p className="font-bold text-slate-800 uppercase text-[12px] tracking-wide">Headmaster / Principal</p>
+            <p className="text-slate-500 font-medium text-[11px]">{schoolName}</p>
           </div>
         </div>
       </div>
@@ -3869,11 +3877,19 @@ export default function AccountsPage() {
                   height: auto !important;
                   min-height: 0 !important;
                   max-height: none !important;
-                  overflow: visible !important;
+                  overflow: hidden !important;
                   background: white !important;
                   color: black !important;
                   margin: 0 !important;
                   padding: 0 !important;
+                  scrollbar-width: none !important;
+                  -ms-overflow-style: none !important;
+                }
+
+                ::-webkit-scrollbar {
+                  display: none !important;
+                  width: 0 !important;
+                  height: 0 !important;
                 }
 
                 /* Hide all interactive app elements and portal dialogs */
@@ -3891,7 +3907,7 @@ export default function AccountsPage() {
                   height: auto !important;
                   min-height: 0 !important;
                   max-height: none !important;
-                  overflow: visible !important;
+                  overflow: hidden !important;
                   position: static !important;
                 }
 
@@ -3902,7 +3918,7 @@ export default function AccountsPage() {
                   height: auto !important;
                   min-height: 0 !important;
                   max-height: none !important;
-                  overflow: visible !important;
+                  overflow: hidden !important;
                   position: static !important;
                 }
 
@@ -3911,7 +3927,7 @@ export default function AccountsPage() {
                   height: auto !important;
                   min-height: 0 !important;
                   max-height: none !important;
-                  overflow: visible !important;
+                  overflow: hidden !important;
                   position: static !important;
                   padding: 0 !important;
                   margin: 0 !important;
