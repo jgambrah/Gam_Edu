@@ -32,7 +32,8 @@ import {
   Plus,
   Wrench,
   User,
-  Calendar
+  Calendar,
+  Heart
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area, LineChart, Line } from 'recharts';
@@ -50,6 +51,12 @@ import { useToast } from '@/hooks/use-toast';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
 import { StudentDisplay } from '@/components/student-display';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { AdmissionsDashboardView } from './admissions-dashboard-view';
+import { StaffPerformanceDashboardView } from './staff-performance-dashboard-view';
+import { DisciplineDashboardView } from './discipline-dashboard-view';
+import { SchoolHealthDashboardView } from './school-health-dashboard-view';
+import { FinancialDashboardView } from './financial-dashboard-view';
+import { ParentDashboard } from './parent-dashboard-view';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600", subtitle }: any) {
   return (
@@ -176,8 +183,18 @@ function AdminDashboard({
   subjects,
   schoolSettings,
   rooms,
+  lessonPlans,
+  assignments,
+  submissions,
+  medicalLogs,
+  budgets,
+  budgetItems,
+  accounts,
+  journals,
 }: any) {
   const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'system' | 'canteen'>('overview');
+  const [studentSubTab, setStudentSubTab] = useState<'registry' | 'discipline' | 'admissions' | 'health'>('registry');
+  const [staffSubTab, setStaffSubTab] = useState<'directory' | 'performance'>('directory');
   const [isAuditorOpen, setIsAuditorOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [auditResult, setAuditResult] = useState<string | null>(null);
@@ -620,6 +637,7 @@ function AdminDashboard({
     let totalBilled = 0;
     let totalPaid = 0;
     let totalWaivers = 0;
+    let totalOutstanding = 0;
     const types: Record<string, number> = {};
 
     activeRecords.forEach((r: any) => {
@@ -631,14 +649,19 @@ function AdminDashboard({
       totalPaid += paid;
       totalWaivers += waiver;
 
+      const balance = billed - paid - waiver;
+      if (balance > 0) {
+        totalOutstanding += balance;
+      }
+
       if (paid > 0) {
         const type = r.type || 'Other';
         types[type] = (types[type] || 0) + paid;
       }
     });
 
-    const collectionRate = totalBilled > 0 ? Math.round((totalPaid / (totalBilled - totalWaivers)) * 100) : 0;
-    const totalOutstanding = totalBilled - totalPaid - totalWaivers;
+    const finalBilled = totalPaid + totalOutstanding;
+    const collectionRate = finalBilled > 0 ? Math.round((totalPaid / finalBilled) * 100) : 0;
 
     const revenueByType = Object.entries(types).map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value)
@@ -647,7 +670,7 @@ function AdminDashboard({
     return { 
       totalOutstanding, 
       totalRevenue: totalPaid, 
-      totalBilled,
+      totalBilled: finalBilled,
       collectionRate, 
       revenueByType 
     };
@@ -655,7 +678,7 @@ function AdminDashboard({
 
   const debtAgingStats = useMemo(() => {
     if (!financialRecords || !activeStudents || activeStudents.length === 0) {
-      return { current: 0, age30: 0, age60: 0, age90: 0, total: 0 };
+      return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
     }
     
     const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
@@ -665,6 +688,7 @@ function AdminDashboard({
     let age30 = 0;
     let age60 = 0;
     let age90 = 0;
+    let overpayments = 0;
 
     financialRecords.forEach((r: any) => {
       if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return;
@@ -674,6 +698,10 @@ function AdminDashboard({
       const waiver = Number(r.waiverAmount) || 0;
       const balance = billed - paid - waiver;
 
+      if (balance < 0) {
+        overpayments += Math.abs(balance);
+        return;
+      }
       if (balance <= 0.01) return;
 
       const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
@@ -691,9 +719,51 @@ function AdminDashboard({
       }
     });
 
-    const total = current + age30 + age60 + age90;
-    return { current, age30, age60, age90, total };
+    const total = current + age30 + age60 + age90 - overpayments;
+    const grossTotal = current + age30 + age60 + age90;
+    return { current, age30, age60, age90, total, overpayments, grossTotal };
   }, [financialRecords, activeStudents]);
+
+  const todayPresentCount = useMemo(() => {
+    if (!attendance || !activeStudents || activeStudents.length === 0) return 0;
+    const today = startOfDay(new Date());
+    return attendance.filter((r: any) => {
+      const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
+      return startOfDay(d).getTime() === today.getTime() && (r.status === 'Present' || r.status === 'Late');
+    }).length;
+  }, [attendance, activeStudents]);
+
+  const hasTodayAttendance = useMemo(() => {
+    if (!attendance || attendance.length === 0) return false;
+    const today = startOfDay(new Date());
+    return attendance.some((r: any) => {
+      const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
+      return startOfDay(d).getTime() === today.getTime();
+    });
+  }, [attendance]);
+
+  const todayAttendanceRate = useMemo(() => {
+    if (activeStudents.length === 0) return 0;
+    return Math.round((todayPresentCount / activeStudents.length) * 100);
+  }, [todayPresentCount, activeStudents]);
+
+  const collectedToday = useMemo(() => {
+    if (!financialRecords) return 0;
+    const today = startOfDay(new Date());
+    let total = 0;
+    financialRecords.forEach((r: any) => {
+      const paid = Number(r.amountPaid) || 0;
+      if (paid <= 0) return;
+      const dateVal = r.createdAt || r.date;
+      if (!dateVal) return;
+      const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
+      if (isNaN(d.getTime())) return;
+      if (startOfDay(d).getTime() === today.getTime()) {
+        total += paid;
+      }
+    });
+    return total;
+  }, [financialRecords]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
@@ -732,20 +802,20 @@ function AdminDashboard({
         icon: CheckCircle2,
       },
       students: {
-        gradient: "from-purple-900 via-purple-950 to-indigo-950 border-purple-500/20",
-        title: "Student Registry & Classes",
-        description: "Review active classes distribution, class sizes, room assignments, and student onboarding.",
-        badge: "Student Dynamics",
-        badgeColor: "bg-purple-500/20 text-purple-300",
-        icon: GraduationCap,
+        gradient: studentSubTab === 'admissions' ? "from-indigo-900 via-purple-950 to-slate-900 border-indigo-500/20" : studentSubTab === 'health' ? "from-rose-900 via-rose-950 to-slate-900 border-rose-500/20" : "from-purple-900 via-purple-950 to-indigo-950 border-purple-500/20",
+        title: studentSubTab === 'registry' ? "Student Registry & Classes" : studentSubTab === 'discipline' ? "Student Discipline & Behavior" : studentSubTab === 'health' ? "School Health & Infirmary Dashboard" : "Admissions & Enrollment Hub",
+        description: studentSubTab === 'registry' ? "Review active classes distribution, class sizes, room assignments, and student onboarding." : studentSubTab === 'discipline' ? "Real-time safety alerts, bullying / fighting incidence logs, and chronic repeated offenders." : studentSubTab === 'health' ? "Aggregate sick bay check-in rates, chronic condition tracking, medication alerts, and immunization coverage." : "Manage incoming candidate applications, statistics, trends and demographical student analytics.",
+        badge: studentSubTab === 'registry' ? "Student Dynamics" : studentSubTab === 'discipline' ? "Discipline Desk" : studentSubTab === 'health' ? "Infirmary Desk" : "Admissions Desk",
+        badgeColor: studentSubTab === 'admissions' ? "bg-indigo-500/20 text-indigo-300" : studentSubTab === 'health' ? "bg-rose-500/20 text-rose-300" : "bg-purple-500/20 text-purple-300",
+        icon: studentSubTab === 'registry' ? GraduationCap : studentSubTab === 'discipline' ? ShieldAlert : studentSubTab === 'health' ? Heart : ClipboardList,
       },
       staff: {
         gradient: "from-blue-900 via-blue-950 to-indigo-950 border-blue-500/20",
-        title: "Staffing & Faculty Control",
-        description: "View teacher directory, roles allocations, performance appraisal reviews, and ratios.",
-        badge: "Staff Intelligence",
+        title: staffSubTab === 'directory' ? "Staffing & Faculty Control" : "Staff Performance & Appraisals",
+        description: staffSubTab === 'directory' ? "View teacher directory, roles allocations, and general stats." : "Track lesson notes, student homework results, attendance, and reviews.",
+        badge: staffSubTab === 'directory' ? "Staff Intelligence" : "Performance Analytics",
         badgeColor: "bg-blue-500/20 text-blue-300",
-        icon: Users,
+        icon: staffSubTab === 'directory' ? Users : Award,
       },
       financials: {
         gradient: "from-emerald-950 via-slate-900 to-indigo-950 border-emerald-500/20",
@@ -773,7 +843,7 @@ function AdminDashboard({
       }
     };
     return bannerMap[activeTab];
-  }, [activeTab]);
+  }, [activeTab, studentSubTab, staffSubTab]);
 
   const handleRunAudit = () => {
     setIsAuditorOpen(true);
@@ -901,12 +971,12 @@ function AdminDashboard({
                 glowColor="rgba(168, 85, 247, 0.08)"
               />
               <DirectorStatCard 
-                title="Attendance Today" 
-                value={`${attendanceRate}%`} 
+                title="Students Present" 
+                value={`${todayPresentCount} of ${activeStudents.length}`} 
                 icon={CalendarCheck} 
                 link="/dashboard/attendance" 
                 isLoading={isLoading}
-                subtitle="Daily Attendance" 
+                subtitle={hasTodayAttendance ? `${todayAttendanceRate}% Attendance Today` : "Attendance Not Taken"} 
                 color="text-sky-600"
                 glowColor="rgba(14, 165, 233, 0.08)"
               />
@@ -971,14 +1041,14 @@ function AdminDashboard({
                 glowColor="rgba(99, 102, 241, 0.08)"
               />
               <DirectorStatCard 
-                title="Dropout Rate" 
-                value={`${dropoutRate}%`} 
-                icon={TrendingUp} 
-                link="#" 
+                title="Collected Today" 
+                value={`GH₵ ${Math.round(collectedToday).toLocaleString()}`} 
+                icon={HandCoins} 
+                link={hasFinanceAccess ? "/dashboard/accounts" : "#"} 
                 isLoading={isLoading}
-                subtitle="Term Retention" 
-                color="text-rose-600"
-                glowColor="rgba(244, 63, 94, 0.08)"
+                subtitle="Today's Collections" 
+                color="text-emerald-600"
+                glowColor="rgba(16, 185, 129, 0.08)"
               />
             </div>
             
@@ -1119,7 +1189,7 @@ function AdminDashboard({
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 rounded-xl bg-sky-50/30 border border-sky-100/50">
                         <p className="text-[10px] font-black text-sky-600 uppercase tracking-widest mb-1">Attendance Pulse</p>
-                        <p className="text-2xl font-black text-slate-800">{attendanceRate}%</p>
+                        <p className="text-2xl font-black text-slate-800">{hasTodayAttendance ? `${todayAttendanceRate}%` : "Not Taken"}</p>
                       </div>
                       <div className="p-4 rounded-xl bg-teal-50/30 border border-teal-100/50 flex justify-between items-center">
                         <div>
@@ -1259,6 +1329,12 @@ function AdminDashboard({
                             <span className="text-slate-500 uppercase tracking-tight text-[10px]">61+ Days Overdue</span>
                             <span className="text-rose-600">GH₵ {Math.round(debtAgingStats.age90).toLocaleString()}</span>
                           </div>
+                          {debtAgingStats.overpayments > 0 && (
+                            <div className="flex justify-between items-center p-2 rounded-xl bg-slate-50/70 border border-slate-100 text-xs font-bold">
+                              <span className="text-slate-500 uppercase tracking-tight text-[10px]">Less: Overpayments</span>
+                              <span className="text-emerald-600">-GH₵ {Math.round(debtAgingStats.overpayments).toLocaleString()}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1309,21 +1385,27 @@ function AdminDashboard({
                     {/* Low Attendance Alert */}
                     <div className={cn(
                       "p-4 rounded-2xl border flex flex-col justify-between",
-                      attendanceRate < 85 
+                      hasTodayAttendance && todayAttendanceRate < 85 
                         ? "bg-rose-50/40 border-rose-100 text-rose-800" 
                         : "bg-slate-50/80 border-slate-100 text-slate-700"
                     )}>
                       <div>
                         <p className="text-[9px] font-black uppercase tracking-widest mb-1.5 opacity-60">Attendance Alert</p>
                         <h4 className="text-sm font-black uppercase">
-                          {attendanceRate < 85 ? "Critical Absenteeism" : "Attendance Stable"}
+                          {!hasTodayAttendance 
+                            ? "Not Logged Today" 
+                            : todayAttendanceRate < 85 
+                              ? "Critical Absenteeism" 
+                              : "Attendance Stable"}
                         </h4>
                         <p className="text-[9px] font-bold mt-1 opacity-70">
-                          Daily rate stands at {attendanceRate}%. Target is &ge;85% school-wide.
+                          {hasTodayAttendance 
+                            ? `Daily rate stands at ${todayAttendanceRate}%. Target is ≥85% school-wide.`
+                            : `Today's attendance has not been recorded yet.`}
                         </p>
                       </div>
-                      <Badge className={cn("mt-4 w-fit border-none font-black text-[9px] uppercase", attendanceRate < 85 ? "bg-rose-100 text-rose-700" : "bg-slate-100 text-slate-700")}>
-                        {attendanceRate < 85 ? "Investigation Open" : "Operational"}
+                      <Badge className={cn("mt-4 w-fit border-none font-black text-[9px] uppercase", hasTodayAttendance && todayAttendanceRate < 85 ? "bg-rose-100 text-rose-700" : "bg-slate-100 text-slate-700")}>
+                        {hasTodayAttendance && todayAttendanceRate < 85 ? "Investigation Open" : "Operational"}
                       </Badge>
                     </div>
 
@@ -1471,326 +1553,252 @@ function AdminDashboard({
 
         {activeTab === 'students' && (
           <div className="space-y-8 animate-in fade-in duration-300">
-            {/* Student statistics row */}
-            <div className="grid gap-6 md:grid-cols-3">
-              <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-purple-200/50 transition-all duration-300">
-                <div>
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Enrollment</p>
-                  <h4 className="text-2xl font-black text-slate-800 mt-2">{activeStudents.length} Students</h4>
-                  <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Official School Registry</p>
-                </div>
-                <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl"><GraduationCap className="h-5 w-5" /></div>
-              </div>
-
-              <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-emerald-200/50 transition-all duration-300">
-                <div>
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Attendance Pulse</p>
-                  <h4 className="text-2xl font-black text-slate-800 mt-2">{attendanceRate}%</h4>
-                  <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Today's Present Log</p>
-                </div>
-                <div className="p-3.5 bg-emerald-50 text-emerald-600 rounded-2xl"><CheckCircle2 className="h-5 w-5" /></div>
-              </div>
-
-              <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-amber-200/50 transition-all duration-300">
-                <div>
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Average Class size</p>
-                  <h4 className="text-2xl font-black text-slate-800 mt-2">
-                    {classes?.length ? Math.round(activeStudents.length / classes.length) : 0} Students
-                  </h4>
-                  <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Grade Midpoint</p>
-                </div>
-                <div className="p-3.5 bg-amber-50 text-amber-500 rounded-2xl"><School className="h-5 w-5" /></div>
-              </div>
+            {/* Sub-tab selection bar */}
+            <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner w-fit">
+              <button
+                onClick={() => setStudentSubTab('registry')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  studentSubTab === 'registry' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Registry & Classes
+              </button>
+              <button
+                onClick={() => setStudentSubTab('discipline')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  studentSubTab === 'discipline' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Student Discipline
+              </button>
+              <button
+                onClick={() => setStudentSubTab('admissions')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  studentSubTab === 'admissions' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Admissions Hub
+              </button>
+              <button
+                onClick={() => setStudentSubTab('health')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  studentSubTab === 'health' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                School Health
+              </button>
             </div>
 
-            {/* Class break-down lists */}
-            <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Class Breakdown & Room Audit</CardTitle>
-                  <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Review sizes and class details</CardDescription>
-                </div>
-                <Button asChild size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase h-8 px-4">
-                  <Link href="/dashboard/classes">Manage Classes</Link>
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {classes?.map((c: any) => {
-                  const size = students?.filter((s: any) => s.classId === c.id && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)).length || 0;
-                  return (
-                    <div key={c.id} className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between hover:scale-[1.02] transition-transform duration-300">
-                      <div>
-                        <p className="font-black text-slate-800 uppercase tracking-tight text-sm">{c.name}</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{c.room || 'No Room Assigned'}</p>
-                      </div>
-                      <Badge className="bg-indigo-100 text-indigo-800 border-none font-black text-xs px-3 py-1 rounded-full">{size} Students</Badge>
+            {studentSubTab === 'registry' ? (
+              <>
+                {/* Student statistics row */}
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-purple-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Enrollment</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">{activeStudents.length} Students</h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Official School Registry</p>
                     </div>
-                  );
-                })}
-              </div>
-            </Card>
+                    <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl"><GraduationCap className="h-5 w-5" /></div>
+                  </div>
+
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-emerald-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Attendance Pulse</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">{hasTodayAttendance ? `${todayAttendanceRate}%` : "Not Taken"}</h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Today's Present Log</p>
+                    </div>
+                    <div className="p-3.5 bg-emerald-50 text-emerald-600 rounded-2xl"><CheckCircle2 className="h-5 w-5" /></div>
+                  </div>
+
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-amber-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Average Class size</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">
+                        {classes?.length ? Math.round(activeStudents.length / classes.length) : 0} Students
+                      </h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Grade Midpoint</p>
+                    </div>
+                    <div className="p-3.5 bg-amber-50 text-amber-500 rounded-2xl"><School className="h-5 w-5" /></div>
+                  </div>
+                </div>
+
+                {/* Class break-down lists */}
+                <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Class Breakdown & Room Audit</CardTitle>
+                      <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Review sizes and class details</CardDescription>
+                    </div>
+                    <Button asChild size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase h-8 px-4">
+                      <Link href="/dashboard/classes">Manage Classes</Link>
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {classes?.map((c: any) => {
+                      const size = students?.filter((s: any) => s.classId === c.id && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)).length || 0;
+                      return (
+                        <div key={c.id} className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between hover:scale-[1.02] transition-transform duration-300">
+                          <div>
+                            <p className="font-black text-slate-800 uppercase tracking-tight text-sm">{c.name}</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{c.room || 'No Room Assigned'}</p>
+                          </div>
+                          <Badge className="bg-indigo-100 text-indigo-800 border-none font-black text-xs px-3 py-1 rounded-full">{size} Students</Badge>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              </>
+            ) : studentSubTab === 'discipline' ? (
+              <DisciplineDashboardView 
+                students={students}
+                classes={classes}
+                behavioralRecords={behavioralRecords}
+              />
+            ) : studentSubTab === 'health' ? (
+              <SchoolHealthDashboardView 
+                students={students}
+                classes={classes}
+                medicalLogs={medicalLogs}
+              />
+            ) : (
+              <AdmissionsDashboardView 
+                students={students}
+                classes={classes}
+                admissions={admissions}
+              />
+            )}
           </div>
         )}
 
         {activeTab === 'staff' && (
           <div className="space-y-8 animate-in fade-in duration-300">
-            {/* Staff statistics row */}
-            <div className="grid gap-6 md:grid-cols-3">
-              <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-purple-200/50 transition-all duration-300">
-                <div>
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Workforce</p>
-                  <h4 className="text-2xl font-black text-slate-800 mt-2">{totalStaff} Members</h4>
-                  <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Official Employee Register</p>
-                </div>
-                <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl"><Users className="h-5 w-5" /></div>
-              </div>
-
-              <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-indigo-200/50 transition-all duration-300">
-                <div>
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Student-Teacher Ratio</p>
-                  <h4 className="text-2xl font-black text-slate-800 mt-2">{studentTeacherRatio}:1</h4>
-                  <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Teaching Workload</p>
-                </div>
-                <div className="p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl"><TrendingUp className="h-5 w-5" /></div>
-              </div>
-
-              <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-amber-200/50 transition-all duration-300">
-                <div>
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Teachers</p>
-                  <h4 className="text-2xl font-black text-slate-800 mt-2">
-                    {staff?.filter((s: any) => s.role === 'Teacher')?.length || 0} Faculty
-                  </h4>
-                  <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Classroom Instructors</p>
-                </div>
-                <div className="p-3.5 bg-amber-50 text-amber-500 rounded-2xl"><Award className="h-5 w-5" /></div>
-              </div>
+            {/* Sub-tab selection bar */}
+            <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner w-fit">
+              <button
+                onClick={() => setStaffSubTab('directory')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  staffSubTab === 'directory' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Staff Directory
+              </button>
+              <button
+                onClick={() => setStaffSubTab('performance')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  staffSubTab === 'performance' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Staff Performance
+              </button>
             </div>
 
-            {/* Staff list cards */}
-            <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Faculty & Staff Directory</CardTitle>
-                  <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Review workforce members and roles</CardDescription>
-                </div>
-                <Button asChild size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase h-8 px-4">
-                  <Link href="/dashboard/staff-management-v2">Manage Staff</Link>
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {staff?.slice(0, 9).map((s: any) => (
-                  <div key={s.id || s.uid} className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between hover:scale-[1.02] transition-transform duration-300">
-                    <div className="min-w-0 flex-1 mr-3">
-                      <p className="font-black text-slate-800 uppercase tracking-tight text-sm truncate">{s.firstName || s.name} {s.lastName || ''}</p>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{s.role || 'Staff Member'}</p>
-                      {s.email && <p className="text-[9px] text-slate-400 truncate mt-1">{s.email}</p>}
+            {staffSubTab === 'directory' ? (
+              <>
+                {/* Staff statistics row */}
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-purple-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Workforce</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">{totalStaff} Members</h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Official Employee Register</p>
                     </div>
-                    <Badge className="bg-indigo-100 text-indigo-800 border-none font-black text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">{s.status || 'Active'}</Badge>
+                    <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl"><Users className="h-5 w-5" /></div>
                   </div>
-                ))}
-              </div>
-            </Card>
+
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-indigo-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Student-Teacher Ratio</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">{studentTeacherRatio}:1</h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Teaching Workload</p>
+                    </div>
+                    <div className="p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl"><TrendingUp className="h-5 w-5" /></div>
+                  </div>
+
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-amber-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Teachers</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">
+                        {staff?.filter((s: any) => s.role === 'Teacher')?.length || 0} Faculty
+                      </h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Classroom Instructors</p>
+                    </div>
+                    <div className="p-3.5 bg-amber-50 text-amber-500 rounded-2xl"><Award className="h-5 w-5" /></div>
+                  </div>
+                </div>
+
+                {/* Staff list cards */}
+                <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Faculty & Staff Directory</CardTitle>
+                      <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Review workforce members and roles</CardDescription>
+                    </div>
+                    <Button asChild size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase h-8 px-4">
+                      <Link href="/dashboard/staff-management-v2">Manage Staff</Link>
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {staff?.slice(0, 9).map((s: any) => (
+                      <div key={s.id || s.uid} className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between hover:scale-[1.02] transition-transform duration-300">
+                        <div className="min-w-0 flex-1 mr-3">
+                          <p className="font-black text-slate-800 uppercase tracking-tight text-sm truncate">{s.firstName || s.name} {s.lastName || ''}</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{s.role || 'Staff Member'}</p>
+                          {s.email && <p className="text-[9px] text-slate-400 truncate mt-1">{s.email}</p>}
+                        </div>
+                        <Badge className="bg-indigo-100 text-indigo-800 border-none font-black text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">{s.status || 'Active'}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </>
+            ) : (
+              <StaffPerformanceDashboardView 
+                staff={staff}
+                performanceReviews={performanceReviews}
+                staffAttendance={staffAttendance}
+                classes={classes}
+                students={students}
+                recentAssessments={recentAssessments}
+                lessonPlans={lessonPlans}
+                assignments={assignments}
+                submissions={submissions}
+              />
+            )}
           </div>
         )}
 
         {activeTab === 'financials' && hasFinanceAccess && (
-          <div className="space-y-8 animate-in fade-in duration-300">
-            {/* Financial Stats Row */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-md hover:border-slate-200 transition-all duration-300">
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Gross Billed Capital</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {financials.totalBilled.toLocaleString()}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Initial Target Billed</p>
-              </div>
-              <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-md hover:border-emerald-200 transition-all duration-300">
-                <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest font-bold">Total Liquid Receipts</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {financials.totalRevenue.toLocaleString()}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Deposited & Cleared</p>
-              </div>
-              <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-md hover:border-rose-200 transition-all duration-300">
-                <p className="text-[9px] font-black text-rose-600 uppercase tracking-widest font-bold">Outstanding Receivables</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {financials.totalOutstanding.toLocaleString()}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Outstanding parental debt</p>
-              </div>
-              <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-md hover:border-indigo-200 transition-all duration-300">
-                <p className="text-[9px] font-black text-indigo-600 uppercase tracking-widest font-bold">Collection Recovery</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">{financials.collectionRate}%</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Recovery efficiency</p>
-              </div>
-            </div>
-
-            {/* Financial Analysis Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Fee breakdown list and graph */}
-              <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
-                <CardHeader className="bg-slate-50/50 p-8 border-b">
-                  <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-emerald-600"/> Revenue Collections by Category
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="h-[280px] p-8">
-                  {financials.revenueByType.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={financials.revenueByType} layout="vertical" margin={{ left: 20 }}>
-                        <defs>
-                          <linearGradient id="revenueByTypeGrad" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
-                            <stop offset="100%" stopColor="#6366f1" stopOpacity={0.6} />
-                          </linearGradient>
-                        </defs>
-                        <XAxis type="number" hide />
-                        <YAxis dataKey="name" type="category" fontSize={10} width={100} axisLine={false} tickLine={false} tick={{fill: '#64748b', fontWeight: 'bold'}} />
-                        <Tooltip 
-                          cursor={{fill: 'rgba(99, 102, 241, 0.02)'}}
-                          formatter={(val: number) => [`GH₵ ${val.toLocaleString()}`, 'Amount']}
-                          contentStyle={{ borderRadius: '20px', border: 'none', backgroundColor: '#fff', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.12)' }}
-                        />
-                        <Bar dataKey="value" fill="url(#revenueByTypeGrad)" radius={[0, 10, 10, 0]} barSize={22} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-slate-400 italic text-xs uppercase tracking-widest font-black">No revenue entries detected.</div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Financial shortcuts */}
-              <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-6">Financial Controls</h3>
-                <div className="space-y-4">
-                  <Link href="/dashboard/finance/budget" className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-indigo-200 transition-all duration-300 group hover:translate-x-1">
-                    <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-105 transition-transform"><Calculator className="h-4 w-4" /></div>
-                    <div>
-                      <p className="text-xs font-black uppercase text-slate-800 tracking-tight">Ledger Budgets</p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">Define and audit annual budgets</p>
-                    </div>
-                  </Link>
-                  <Link href="/dashboard/finance/payroll" className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-emerald-200 transition-all duration-300 group hover:translate-x-1">
-                    <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:scale-105 transition-transform"><Wallet className="h-4 w-4" /></div>
-                    <div>
-                      <p className="text-xs font-black uppercase text-slate-800 tracking-tight">Staff Payroll</p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">Review current payroll runs</p>
-                    </div>
-                  </Link>
-                  <Link href="/dashboard/accounts" className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-purple-200 transition-all duration-300 group hover:translate-x-1">
-                    <div className="p-3 bg-purple-50 text-purple-600 rounded-xl group-hover:scale-105 transition-transform"><Banknote className="h-4 w-4" /></div>
-                    <div>
-                      <p className="text-xs font-black uppercase text-slate-800 tracking-tight">Accounts Ledger</p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">Audit student payments and invoices</p>
-                    </div>
-                  </Link>
-                </div>
-              </Card>
-            </div>
-
-            {/* Receivables Debt Aging Analysis Card */}
-            <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8 hover:shadow-[0_30px_60px_-15px_rgba(99,102,241,0.05)] transition-all duration-300">
-              <CardHeader className="p-0 mb-6 flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-indigo-600" /> Receivables Debt Aging Analysis
-                  </CardTitle>
-                  <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">
-                    Outstanding parental balances aged by payment due date
-                  </CardDescription>
-                </div>
-                {debtAgingStats.total > 0 && (
-                  <Badge className="bg-rose-100 text-rose-800 border-none font-black text-[10px] px-3.5 py-1.5 rounded-full uppercase tracking-wider">
-                    Total Arrears: GH₵ {Math.round(debtAgingStats.total).toLocaleString()}
-                  </Badge>
-                )}
-              </CardHeader>
-              <CardContent className="p-0 space-y-6">
-                <div className="h-6 flex rounded-xl overflow-hidden bg-slate-100 border shadow-inner">
-                  {debtAgingStats.total > 0 ? (
-                    <>
-                      {debtAgingStats.current > 0 && (
-                        <div 
-                          style={{ width: `${(debtAgingStats.current / debtAgingStats.total) * 100}%` }} 
-                          className="bg-emerald-500 transition-all duration-500 hover:opacity-90 cursor-pointer"
-                          title={`Current: GH₵ ${debtAgingStats.current.toFixed(2)}`}
-                        />
-                      )}
-                      {debtAgingStats.age30 > 0 && (
-                        <div 
-                          style={{ width: `${(debtAgingStats.age30 / debtAgingStats.total) * 100}%` }} 
-                          className="bg-amber-400 transition-all duration-500 hover:opacity-90 cursor-pointer"
-                          title={`1-30 Days: GH₵ ${debtAgingStats.age30.toFixed(2)}`}
-                        />
-                      )}
-                      {debtAgingStats.age60 > 0 && (
-                        <div 
-                          style={{ width: `${(debtAgingStats.age60 / debtAgingStats.total) * 100}%` }} 
-                          className="bg-orange-500 transition-all duration-500 hover:opacity-90 cursor-pointer"
-                          title={`31-60 Days: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
-                        />
-                      )}
-                      {debtAgingStats.age90 > 0 && (
-                        <div 
-                          style={{ width: `${(debtAgingStats.age90 / debtAgingStats.total) * 100}%` }} 
-                          className="bg-rose-600 transition-all duration-500 hover:opacity-90 cursor-pointer"
-                          title={`61+ Days: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
-                        />
-                      )}
-                    </>
-                  ) : (
-                    <div className="w-full bg-slate-50 flex items-center justify-center text-xs text-slate-400 italic font-black uppercase tracking-widest">No Outstanding Debt</div>
-                  )}
-                </div>
-
-                {/* Grid metrics */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <div className="p-5 border-l-4 border-l-emerald-500 bg-slate-50/50 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Current
-                    </p>
-                    <p className="text-xl font-black text-slate-800 mt-2">
-                      GH₵ {debtAgingStats.current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">
-                      {debtAgingStats.total > 0 ? ((debtAgingStats.current / debtAgingStats.total) * 100).toFixed(1) : 0}% of total
-                    </p>
-                  </div>
-
-                  <div className="p-5 border-l-4 border-l-amber-400 bg-slate-50/50 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5 text-amber-500" /> 1-30 Days
-                    </p>
-                    <p className="text-xl font-black text-amber-600 mt-2">
-                      GH₵ {debtAgingStats.age30.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">
-                      {debtAgingStats.total > 0 ? ((debtAgingStats.age30 / debtAgingStats.total) * 100).toFixed(1) : 0}% of total
-                    </p>
-                  </div>
-
-                  <div className="p-5 border-l-4 border-l-orange-500 bg-slate-50/50 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5 text-orange-500" /> 31-60 Days
-                    </p>
-                    <p className="text-xl font-black text-orange-600 mt-2">
-                      GH₵ {debtAgingStats.age60.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">
-                      {debtAgingStats.total > 0 ? ((debtAgingStats.age60 / debtAgingStats.total) * 100).toFixed(1) : 0}% of total
-                    </p>
-                  </div>
-
-                  <div className="p-5 border-l-4 border-l-rose-600 bg-slate-50/50 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <AlertCircle className="h-3.5 w-3.5 text-rose-500" /> 61+ Days
-                    </p>
-                    <p className="text-xl font-black text-rose-600 mt-2">
-                      GH₵ {debtAgingStats.age90.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">
-                      {debtAgingStats.total > 0 ? ((debtAgingStats.age90 / debtAgingStats.total) * 100).toFixed(1) : 0}% of total
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <FinancialDashboardView 
+            students={students || []}
+            classes={classes || []}
+            financialRecords={financialRecords || []}
+            accounts={accounts || []}
+            budgets={budgets || []}
+            budgetItems={budgetItems || []}
+            journals={journals || []}
+            schoolSettings={schoolSettings}
+            arrearsThreshold={arrearsThreshold}
+          />
         )}
 
         {activeTab === 'system' && (
@@ -2150,6 +2158,8 @@ function AdminDashboard({
             </div>
           </div>
         )}
+
+
 
       {/* Edit Pantry Item Modal Overlay */}
       {editingPantryItem && (
@@ -3770,8 +3780,18 @@ function DirectorDashboard({
   subjects,
   schoolSettings,
   rooms,
+  lessonPlans,
+  assignments,
+  submissions,
+  medicalLogs,
+  budgets,
+  budgetItems,
+  accounts,
+  journals,
 }: any) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'financials' | 'canteen' | 'general'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'canteen' | 'general'>('overview');
+  const [studentSubTab, setStudentSubTab] = useState<'registry' | 'discipline' | 'admissions' | 'health'>('registry');
+  const [staffSubTab, setStaffSubTab] = useState<'directory' | 'performance'>('directory');
   const [isAuditorOpen, setIsAuditorOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [auditResult, setAuditResult] = useState<string | null>(null);
@@ -4200,6 +4220,14 @@ function DirectorDashboard({
         badgeColor: "bg-sky-500/20 text-sky-300",
         icon: CheckCircle2,
       },
+      students: {
+        gradient: studentSubTab === 'admissions' ? "from-indigo-900 via-purple-950 to-slate-900 border-indigo-500/20" : studentSubTab === 'health' ? "from-rose-900 via-rose-950 to-slate-900 border-rose-500/20" : "from-purple-900 via-purple-950 to-indigo-950 border-purple-500/20",
+        title: studentSubTab === 'registry' ? "Student Registry & Classes" : studentSubTab === 'discipline' ? "Student Discipline & Behavior" : studentSubTab === 'health' ? "School Health & Infirmary Dashboard" : "Admissions & Enrollment Hub",
+        description: studentSubTab === 'registry' ? "Review active classes distribution, class sizes, room assignments, and student onboarding." : studentSubTab === 'discipline' ? "Real-time safety alerts, bullying / fighting incidence logs, and chronic repeated offenders." : studentSubTab === 'health' ? "Aggregate sick bay check-in rates, chronic condition tracking, medication alerts, and immunization coverage." : "Manage incoming candidate applications, statistics, trends and demographical student analytics.",
+        badge: studentSubTab === 'registry' ? "Student Dynamics" : studentSubTab === 'discipline' ? "Discipline Desk" : studentSubTab === 'health' ? "Infirmary Desk" : "Admissions Desk",
+        badgeColor: studentSubTab === 'admissions' ? "bg-indigo-500/20 text-indigo-300" : studentSubTab === 'health' ? "bg-rose-500/20 text-rose-300" : "bg-purple-500/20 text-purple-300",
+        icon: studentSubTab === 'registry' ? GraduationCap : studentSubTab === 'discipline' ? ShieldAlert : studentSubTab === 'health' ? Heart : ClipboardList,
+      },
       financials: {
         gradient: "from-emerald-950 via-slate-900 to-indigo-950 border-emerald-500/20",
         title: "Capital Liquid Ledger",
@@ -4223,10 +4251,18 @@ function DirectorDashboard({
         badge: "Canteen Operations",
         badgeColor: "bg-amber-500/20 text-amber-300",
         icon: ChefHat,
+      },
+      staff: {
+        gradient: "from-blue-900 via-blue-950 to-indigo-950 border-blue-500/20",
+        title: staffSubTab === 'directory' ? "Staffing & Faculty Control" : "Staff Performance & Appraisals",
+        description: staffSubTab === 'directory' ? "View teacher directory, roles allocations, and general stats." : "Track lesson notes, student homework results, attendance, and reviews.",
+        badge: staffSubTab === 'directory' ? "Staff Intelligence" : "Performance Analytics",
+        badgeColor: "bg-blue-500/20 text-blue-300",
+        icon: staffSubTab === 'directory' ? Users : Award,
       }
     };
     return bannerMap[activeTab];
-  }, [activeTab]);
+  }, [activeTab, studentSubTab, staffSubTab]);
 
   const activeStudents = useMemo(() => {
     return students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus) || [];
@@ -4268,6 +4304,7 @@ function DirectorDashboard({
     let totalBilled = 0;
     let totalPaid = 0;
     let totalWaivers = 0;
+    let totalOutstanding = 0;
     const types: Record<string, number> = {};
 
     activeRecords.forEach((r: any) => {
@@ -4279,14 +4316,19 @@ function DirectorDashboard({
       totalPaid += paid;
       totalWaivers += waiver;
 
+      const balance = billed - paid - waiver;
+      if (balance > 0) {
+        totalOutstanding += balance;
+      }
+
       if (paid > 0) {
         const type = r.type || 'Other';
         types[type] = (types[type] || 0) + paid;
       }
     });
 
-    const collectionRate = totalBilled > 0 ? Math.round((totalPaid / (totalBilled - totalWaivers)) * 100) : 0;
-    const totalOutstanding = totalBilled - totalPaid - totalWaivers;
+    const finalBilled = totalPaid + totalOutstanding;
+    const collectionRate = finalBilled > 0 ? Math.round((totalPaid / finalBilled) * 100) : 0;
 
     const revenueByType = Object.entries(types).map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value)
@@ -4295,7 +4337,7 @@ function DirectorDashboard({
     return { 
       totalOutstanding, 
       totalRevenue: totalPaid, 
-      totalBilled,
+      totalBilled: finalBilled,
       collectionRate, 
       revenueByType 
     };
@@ -4303,7 +4345,7 @@ function DirectorDashboard({
 
   const debtAgingStats = useMemo(() => {
     if (!financialRecords || !activeStudents || activeStudents.length === 0) {
-      return { current: 0, age30: 0, age60: 0, age90: 0, total: 0 };
+      return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
     }
     
     const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
@@ -4313,6 +4355,7 @@ function DirectorDashboard({
     let age30 = 0;   // Overdue 1-30 days
     let age60 = 0;   // Overdue 31-60 days
     let age90 = 0;   // Overdue 61+ days
+    let overpayments = 0;
 
     financialRecords.forEach((r: any) => {
       if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return;
@@ -4322,6 +4365,10 @@ function DirectorDashboard({
       const waiver = Number(r.waiverAmount) || 0;
       const balance = billed - paid - waiver;
 
+      if (balance < 0) {
+        overpayments += Math.abs(balance);
+        return;
+      }
       if (balance <= 0.01) return;
 
       const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
@@ -4339,9 +4386,51 @@ function DirectorDashboard({
       }
     });
 
-    const total = current + age30 + age60 + age90;
-    return { current, age30, age60, age90, total };
+    const total = current + age30 + age60 + age90 - overpayments;
+    const grossTotal = current + age30 + age60 + age90;
+    return { current, age30, age60, age90, total, overpayments, grossTotal };
   }, [financialRecords, activeStudents]);
+
+  const todayPresentCount = useMemo(() => {
+    if (!attendance || !activeStudents || activeStudents.length === 0) return 0;
+    const today = startOfDay(new Date());
+    return attendance.filter((r: any) => {
+      const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
+      return startOfDay(d).getTime() === today.getTime() && (r.status === 'Present' || r.status === 'Late');
+    }).length;
+  }, [attendance, activeStudents]);
+
+  const hasTodayAttendance = useMemo(() => {
+    if (!attendance || attendance.length === 0) return false;
+    const today = startOfDay(new Date());
+    return attendance.some((r: any) => {
+      const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
+      return startOfDay(d).getTime() === today.getTime();
+    });
+  }, [attendance]);
+
+  const todayAttendanceRate = useMemo(() => {
+    if (activeStudents.length === 0) return 0;
+    return Math.round((todayPresentCount / activeStudents.length) * 100);
+  }, [todayPresentCount, activeStudents]);
+
+  const collectedToday = useMemo(() => {
+    if (!financialRecords) return 0;
+    const today = startOfDay(new Date());
+    let total = 0;
+    financialRecords.forEach((r: any) => {
+      const paid = Number(r.amountPaid) || 0;
+      if (paid <= 0) return;
+      const dateVal = r.createdAt || r.date;
+      if (!dateVal) return;
+      const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
+      if (isNaN(d.getTime())) return;
+      if (startOfDay(d).getTime() === today.getTime()) {
+        total += paid;
+      }
+    });
+    return total;
+  }, [financialRecords]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
@@ -4406,7 +4495,7 @@ function DirectorDashboard({
         <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
           {/* Custom Silicon Valley Tab Bar */}
           <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-            {(['overview', 'academics', 'attendance', 'financials', 'canteen', 'general'] as const).map((tab) => (
+            {(['overview', 'academics', 'attendance', 'students', 'staff', 'financials', 'canteen', 'general'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -4476,12 +4565,12 @@ function DirectorDashboard({
                 glowColor="rgba(168, 85, 247, 0.08)"
               />
               <DirectorStatCard 
-                title="Attendance Today" 
-                value={`${attendanceRate}%`} 
+                title="Students Present" 
+                value={`${todayPresentCount} of ${activeStudents.length}`} 
                 icon={CalendarCheck} 
                 link="/dashboard/attendance" 
                 isLoading={isLoading}
-                subtitle="Daily Attendance" 
+                subtitle={hasTodayAttendance ? `${todayAttendanceRate}% Attendance Today` : "Attendance Not Taken"} 
                 color="text-sky-600"
                 glowColor="rgba(14, 165, 233, 0.08)"
               />
@@ -4546,14 +4635,14 @@ function DirectorDashboard({
                 glowColor="rgba(99, 102, 241, 0.08)"
               />
               <DirectorStatCard 
-                title="Dropout Rate" 
-                value={`${dropoutRate}%`} 
-                icon={TrendingUp} 
-                link="#" 
+                title="Collected Today" 
+                value={`GH₵ ${Math.round(collectedToday).toLocaleString()}`} 
+                icon={HandCoins} 
+                link={hasFinanceAccess ? "/dashboard/accounts" : "#"} 
                 isLoading={isLoading}
-                subtitle="Term Retention" 
-                color="text-rose-600"
-                glowColor="rgba(244, 63, 94, 0.08)"
+                subtitle="Today's Collections" 
+                color="text-emerald-600"
+                glowColor="rgba(16, 185, 129, 0.08)"
               />
             </div>
             
@@ -4694,7 +4783,7 @@ function DirectorDashboard({
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 rounded-xl bg-sky-50/30 border border-sky-100/50">
                         <p className="text-[10px] font-black text-sky-600 uppercase tracking-widest mb-1">Attendance Pulse</p>
-                        <p className="text-2xl font-black text-slate-800">{attendanceRate}%</p>
+                        <p className="text-2xl font-black text-slate-800">{hasTodayAttendance ? `${todayAttendanceRate}%` : "Not Taken"}</p>
                       </div>
                       <div className="p-4 rounded-xl bg-teal-50/30 border border-teal-100/50 flex justify-between items-center">
                         <div>
@@ -4834,6 +4923,12 @@ function DirectorDashboard({
                             <span className="text-slate-500 uppercase tracking-tight text-[10px]">61+ Days Overdue</span>
                             <span className="text-rose-600">GH₵ {Math.round(debtAgingStats.age90).toLocaleString()}</span>
                           </div>
+                          {debtAgingStats.overpayments > 0 && (
+                            <div className="flex justify-between items-center p-2 rounded-xl bg-slate-50/70 border border-slate-100 text-xs font-bold">
+                              <span className="text-slate-500 uppercase tracking-tight text-[10px]">Less: Overpayments</span>
+                              <span className="text-emerald-600">-GH₵ {Math.round(debtAgingStats.overpayments).toLocaleString()}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -4884,21 +4979,27 @@ function DirectorDashboard({
                     {/* Low Attendance Alert */}
                     <div className={cn(
                       "p-4 rounded-2xl border flex flex-col justify-between",
-                      attendanceRate < 85 
+                      hasTodayAttendance && todayAttendanceRate < 85 
                         ? "bg-rose-50/40 border-rose-100 text-rose-800" 
                         : "bg-slate-50/80 border-slate-100 text-slate-700"
                     )}>
                       <div>
                         <p className="text-[9px] font-black uppercase tracking-widest mb-1.5 opacity-60">Attendance Alert</p>
                         <h4 className="text-sm font-black uppercase">
-                          {attendanceRate < 85 ? "Critical Absenteeism" : "Attendance Stable"}
+                          {!hasTodayAttendance 
+                            ? "Not Logged Today" 
+                            : todayAttendanceRate < 85 
+                              ? "Critical Absenteeism" 
+                              : "Attendance Stable"}
                         </h4>
                         <p className="text-[9px] font-bold mt-1 opacity-70">
-                          Daily rate stands at {attendanceRate}%. Target is &ge;85% school-wide.
+                          {hasTodayAttendance 
+                            ? `Daily rate stands at ${todayAttendanceRate}%. Target is ≥85% school-wide.`
+                            : `Today's attendance has not been recorded yet.`}
                         </p>
                       </div>
-                      <Badge className={cn("mt-4 w-fit border-none font-black text-[9px] uppercase", attendanceRate < 85 ? "bg-rose-100 text-rose-700" : "bg-slate-100 text-slate-700")}>
-                        {attendanceRate < 85 ? "Investigation Open" : "Operational"}
+                      <Badge className={cn("mt-4 w-fit border-none font-black text-[9px] uppercase", hasTodayAttendance && todayAttendanceRate < 85 ? "bg-rose-100 text-rose-700" : "bg-slate-100 text-slate-700")}>
+                        {hasTodayAttendance && todayAttendanceRate < 85 ? "Investigation Open" : "Operational"}
                       </Badge>
                     </div>
 
@@ -5037,205 +5138,18 @@ function DirectorDashboard({
           />
         )}
 
-        {activeTab === 'financials' && (
-          <div className="space-y-8">
-            {/* Financial Stats Row */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-md hover:border-slate-200 transition-all duration-300">
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Gross Billed Capital</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {financials.totalBilled.toLocaleString()}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Initial Target Billed</p>
-              </div>
-              <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-md hover:border-slate-200 transition-all duration-300">
-                <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest font-bold">Total Liquid Receipts</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {financials.totalRevenue.toLocaleString()}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Deposited & Cleared</p>
-              </div>
-              <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-md hover:border-slate-200 transition-all duration-300">
-                <p className="text-[9px] font-black text-rose-600 uppercase tracking-widest font-bold">Outstanding Receivables</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {financials.totalOutstanding.toLocaleString()}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Outstanding parental debt</p>
-              </div>
-              <div className="p-6 bg-white border border-slate-100 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] flex flex-col justify-between hover:shadow-md hover:border-slate-200 transition-all duration-300">
-                <p className="text-[9px] font-black text-indigo-600 uppercase tracking-widest font-bold">Collection Recovery</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">{financials.collectionRate}%</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Recovery efficiency</p>
-              </div>
-            </div>
-
-            {/* Financial Analysis Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Fee breakdown list and graph */}
-              <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
-                <CardHeader className="bg-slate-50/50 p-8 border-b">
-                  <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-emerald-600"/> Revenue Collections by Category
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="h-[350px] p-8">
-                  {financials.revenueByType.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={financials.revenueByType} layout="vertical" margin={{ left: 20 }}>
-                        <defs>
-                          <linearGradient id="revenueByTypeGrad" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
-                            <stop offset="100%" stopColor="#6366f1" stopOpacity={0.6} />
-                          </linearGradient>
-                        </defs>
-                        <XAxis type="number" hide />
-                        <YAxis dataKey="name" type="category" fontSize={10} width={100} axisLine={false} tickLine={false} tick={{fill: '#64748b', fontWeight: 'bold'}} />
-                        <Tooltip 
-                          cursor={{fill: 'rgba(99, 102, 241, 0.02)'}}
-                          formatter={(val: number) => [`GH₵ ${val.toLocaleString()}`, 'Amount']}
-                          contentStyle={{ borderRadius: '20px', border: 'none', backgroundColor: '#fff', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.12)' }}
-                        />
-                        <Bar dataKey="value" fill="url(#revenueByTypeGrad)" radius={[0, 10, 10, 0]} barSize={22} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-slate-400 italic text-xs uppercase tracking-widest font-black">No revenue entries detected.</div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Financial shortcuts */}
-              <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-6">Financial Controls</h3>
-                <div className="space-y-4">
-                  <Link href="/dashboard/finance/budget" className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-indigo-200 transition-all duration-300 group hover:translate-x-1">
-                    <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-105 transition-transform"><Calculator className="h-4 w-4" /></div>
-                    <div>
-                      <p className="text-xs font-black uppercase text-slate-800 tracking-tight">Ledger Budgets</p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">Define and audit annual budgets</p>
-                    </div>
-                  </Link>
-                  <Link href="/dashboard/finance/payroll" className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-emerald-200 transition-all duration-300 group hover:translate-x-1">
-                    <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:scale-105 transition-transform"><Wallet className="h-4 w-4" /></div>
-                    <div>
-                      <p className="text-xs font-black uppercase text-slate-800 tracking-tight">Staff Payroll</p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">Review current payroll runs</p>
-                    </div>
-                  </Link>
-                  <Link href="/dashboard/accounts" className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-purple-200 transition-all duration-300 group hover:translate-x-1">
-                    <div className="p-3 bg-purple-50 text-purple-600 rounded-xl group-hover:scale-105 transition-transform"><Banknote className="h-4 w-4" /></div>
-                    <div>
-                      <p className="text-xs font-black uppercase text-slate-800 tracking-tight">Accounts Ledger</p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">Audit student payments and invoices</p>
-                    </div>
-                  </Link>
-                </div>
-              </Card>
-            </div>
-
-            {/* Receivables Debt Aging Analysis Card */}
-            <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8 hover:shadow-[0_30px_60px_-15px_rgba(99,102,241,0.05)] transition-all duration-300">
-              <CardHeader className="p-0 mb-6 flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-indigo-600" /> Receivables Debt Aging Analysis
-                  </CardTitle>
-                  <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">
-                    Outstanding parental balances aged by payment due date
-                  </CardDescription>
-                </div>
-                {debtAgingStats.total > 0 && (
-                  <Badge className="bg-rose-100 text-rose-800 border-none font-black text-[10px] px-3.5 py-1.5 rounded-full uppercase tracking-wider">
-                    Total Arrears: GH₵ {Math.round(debtAgingStats.total).toLocaleString()}
-                  </Badge>
-                )}
-              </CardHeader>
-              <CardContent className="p-0 space-y-6">
-                {/* Segmented aging bar */}
-                <div className="h-6 flex rounded-xl overflow-hidden bg-slate-100 border shadow-inner">
-                  {debtAgingStats.total > 0 ? (
-                    <>
-                      {debtAgingStats.current > 0 && (
-                        <div 
-                          style={{ width: `${(debtAgingStats.current / debtAgingStats.total) * 100}%` }} 
-                          className="bg-emerald-500 transition-all duration-500 hover:opacity-90 cursor-pointer"
-                          title={`Current: GH₵ ${debtAgingStats.current.toFixed(2)}`}
-                        />
-                      )}
-                      {debtAgingStats.age30 > 0 && (
-                        <div 
-                          style={{ width: `${(debtAgingStats.age30 / debtAgingStats.total) * 100}%` }} 
-                          className="bg-amber-400 transition-all duration-500 hover:opacity-90 cursor-pointer"
-                          title={`1-30 Days: GH₵ ${debtAgingStats.age30.toFixed(2)}`}
-                        />
-                      )}
-                      {debtAgingStats.age60 > 0 && (
-                        <div 
-                          style={{ width: `${(debtAgingStats.age60 / debtAgingStats.total) * 100}%` }} 
-                          className="bg-orange-500 transition-all duration-500 hover:opacity-90 cursor-pointer"
-                          title={`31-60 Days: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
-                        />
-                      )}
-                      {debtAgingStats.age90 > 0 && (
-                        <div 
-                          style={{ width: `${(debtAgingStats.age90 / debtAgingStats.total) * 100}%` }} 
-                          className="bg-rose-600 transition-all duration-500 hover:opacity-90 cursor-pointer"
-                          title={`61+ Days: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
-                        />
-                      )}
-                    </>
-                  ) : (
-                    <div className="w-full bg-slate-50 flex items-center justify-center text-xs text-slate-400 italic font-black uppercase tracking-widest">No Outstanding Debt</div>
-                  )}
-                </div>
-
-                {/* Grid metrics */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <div className="p-5 border-l-4 border-l-emerald-500 bg-slate-50/50 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Current
-                    </p>
-                    <p className="text-xl font-black text-slate-800 mt-2">
-                      GH₵ {debtAgingStats.current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">
-                      {debtAgingStats.total > 0 ? ((debtAgingStats.current / debtAgingStats.total) * 100).toFixed(1) : 0}% of total
-                    </p>
-                  </div>
-
-                  <div className="p-5 border-l-4 border-l-amber-400 bg-slate-50/50 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5 text-amber-500" /> 1-30 Days
-                    </p>
-                    <p className="text-xl font-black text-amber-600 mt-2">
-                      GH₵ {debtAgingStats.age30.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">
-                      {debtAgingStats.total > 0 ? ((debtAgingStats.age30 / debtAgingStats.total) * 100).toFixed(1) : 0}% of total
-                    </p>
-                  </div>
-
-                  <div className="p-5 border-l-4 border-l-orange-500 bg-slate-50/50 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5 text-orange-500" /> 31-60 Days
-                    </p>
-                    <p className="text-xl font-black text-orange-600 mt-2">
-                      GH₵ {debtAgingStats.age60.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">
-                      {debtAgingStats.total > 0 ? ((debtAgingStats.age60 / debtAgingStats.total) * 100).toFixed(1) : 0}% of total
-                    </p>
-                  </div>
-
-                  <div className="p-5 border-l-4 border-l-rose-600 bg-slate-50/50 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <AlertCircle className="h-3.5 w-3.5 text-rose-500" /> 61+ Days
-                    </p>
-                    <p className="text-xl font-black text-rose-600 mt-2">
-                      GH₵ {debtAgingStats.age90.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">
-                      {debtAgingStats.total > 0 ? ((debtAgingStats.age90 / debtAgingStats.total) * 100).toFixed(1) : 0}% of total
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        {activeTab === 'financials' && hasFinanceAccess && (
+          <FinancialDashboardView 
+            students={students || []}
+            classes={classes || []}
+            financialRecords={financialRecords || []}
+            accounts={accounts || []}
+            budgets={budgets || []}
+            budgetItems={budgetItems || []}
+            journals={journals || []}
+            schoolSettings={schoolSettings}
+            arrearsThreshold={arrearsThreshold}
+          />
         )}
 
         {activeTab === 'general' && (
@@ -5593,6 +5507,242 @@ function DirectorDashboard({
                 </div>
               </Card>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'students' && (
+          <div className="space-y-8 animate-in fade-in duration-300">
+            {/* Sub-tab selection bar */}
+            <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner w-fit">
+              <button
+                onClick={() => setStudentSubTab('registry')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  studentSubTab === 'registry' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Registry & Classes
+              </button>
+              <button
+                onClick={() => setStudentSubTab('discipline')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  studentSubTab === 'discipline' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Student Discipline
+              </button>
+              <button
+                onClick={() => setStudentSubTab('admissions')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  studentSubTab === 'admissions' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Admissions Hub
+              </button>
+              <button
+                onClick={() => setStudentSubTab('health')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  studentSubTab === 'health' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                School Health
+              </button>
+            </div>
+
+            {studentSubTab === 'registry' ? (
+              <>
+                {/* Student statistics row */}
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-purple-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Enrollment</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">{activeStudents.length} Students</h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Official School Registry</p>
+                    </div>
+                    <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl"><GraduationCap className="h-5 w-5" /></div>
+                  </div>
+
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-emerald-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Attendance Pulse</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">{hasTodayAttendance ? `${todayAttendanceRate}%` : "Not Taken"}</h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Today's Present Log</p>
+                    </div>
+                    <div className="p-3.5 bg-emerald-50 text-emerald-600 rounded-2xl"><CheckCircle2 className="h-5 w-5" /></div>
+                  </div>
+
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-amber-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Average Class size</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">
+                        {classes?.length ? Math.round(activeStudents.length / classes.length) : 0} Students
+                      </h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Grade Midpoint</p>
+                    </div>
+                    <div className="p-3.5 bg-amber-50 text-amber-500 rounded-2xl"><School className="h-5 w-5" /></div>
+                  </div>
+                </div>
+
+                {/* Class break-down lists */}
+                <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Class Breakdown & Room Audit</CardTitle>
+                      <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Review sizes and class details</CardDescription>
+                    </div>
+                    <Button asChild size="sm" className="bg-indigo-650 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase h-8 px-4">
+                      <Link href="/dashboard/classes">Manage Classes</Link>
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {classes?.map((c: any) => {
+                      const size = students?.filter((s: any) => s.classId === c.id && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)).length || 0;
+                      return (
+                        <div key={c.id} className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between hover:scale-[1.02] transition-transform duration-300">
+                          <div>
+                            <p className="font-black text-slate-800 uppercase tracking-tight text-sm">{c.name}</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{c.room || 'No Room Assigned'}</p>
+                          </div>
+                          <Badge className="bg-indigo-100 text-indigo-800 border-none font-black text-xs px-3 py-1 rounded-full">{size} Students</Badge>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              </>
+            ) : studentSubTab === 'discipline' ? (
+              <DisciplineDashboardView 
+                students={students}
+                classes={classes}
+                behavioralRecords={behavioralRecords}
+              />
+            ) : studentSubTab === 'health' ? (
+              <SchoolHealthDashboardView 
+                students={students}
+                classes={classes}
+                medicalLogs={medicalLogs}
+              />
+            ) : (
+              <AdmissionsDashboardView 
+                students={students}
+                classes={classes}
+                admissions={admissions}
+              />
+            )}
+          </div>
+        )}
+
+        {activeTab === 'staff' && (
+          <div className="space-y-8 animate-in fade-in duration-300">
+            {/* Sub-tab selection bar */}
+            <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner w-fit">
+              <button
+                onClick={() => setStaffSubTab('directory')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  staffSubTab === 'directory' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Staff Directory
+              </button>
+              <button
+                onClick={() => setStaffSubTab('performance')}
+                className={cn(
+                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                  staffSubTab === 'performance' 
+                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
+                    : "text-slate-500 hover:text-slate-900"
+                )}
+              >
+                Staff Performance
+              </button>
+            </div>
+
+            {staffSubTab === 'directory' ? (
+              <>
+                {/* Staff statistics row */}
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-purple-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Workforce</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">{totalStaff} Members</h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Official Employee Register</p>
+                    </div>
+                    <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl"><Users className="h-5 w-5" /></div>
+                  </div>
+
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-indigo-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Student-Teacher Ratio</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">{studentTeacherRatio}:1</h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Teaching Workload</p>
+                    </div>
+                    <div className="p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl"><TrendingUp className="h-5 w-5" /></div>
+                  </div>
+
+                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-amber-200/50 transition-all duration-300">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Teachers</p>
+                      <h4 className="text-2xl font-black text-slate-800 mt-2">
+                        {staff?.filter((s: any) => s.role === 'Teacher')?.length || 0} Faculty
+                      </h4>
+                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Classroom Instructors</p>
+                    </div>
+                    <div className="p-3.5 bg-amber-50 text-amber-500 rounded-2xl"><Award className="h-5 w-5" /></div>
+                  </div>
+                </div>
+
+                {/* Staff list cards */}
+                <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Faculty & Staff Directory</CardTitle>
+                      <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Review workforce members and roles</CardDescription>
+                    </div>
+                    <Button asChild size="sm" className="bg-indigo-650 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase h-8 px-4">
+                      <Link href="/dashboard/staff-management-v2">Manage Staff</Link>
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {staff?.slice(0, 9).map((s: any) => (
+                      <div key={s.id || s.uid} className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between hover:scale-[1.02] transition-transform duration-300">
+                        <div className="min-w-0 flex-1 mr-3">
+                          <p className="font-black text-slate-800 uppercase tracking-tight text-sm truncate">{s.firstName || s.name} {s.lastName || ''}</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{s.role || 'Staff Member'}</p>
+                          {s.email && <p className="text-[9px] text-slate-400 truncate mt-1">{s.email}</p>}
+                        </div>
+                        <Badge className="bg-indigo-100 text-indigo-800 border-none font-black text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">{s.status || 'Active'}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </>
+            ) : (
+              <StaffPerformanceDashboardView 
+                staff={staff}
+                performanceReviews={performanceReviews}
+                staffAttendance={staffAttendance}
+                classes={classes}
+                students={students}
+                recentAssessments={recentAssessments}
+                lessonPlans={lessonPlans}
+                assignments={assignments}
+                submissions={submissions}
+              />
+            )}
           </div>
         )}
 
@@ -6271,7 +6421,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
     }, [firestore, schoolId, toast]);
 
     const debtAgingStats = useMemo(() => {
-        if (!records || !students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0 };
+        if (!records || !students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
         
         const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
         const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
@@ -6281,6 +6431,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
         let age30 = 0;
         let age60 = 0;
         let age90 = 0;
+        let overpayments = 0;
 
         records.forEach((r: any) => {
             if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return;
@@ -6290,6 +6441,10 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             const waiver = Number(r.waiverAmount) || 0;
             const balance = billed - paid - waiver;
 
+            if (balance < 0) {
+                overpayments += Math.abs(balance);
+                return;
+            }
             if (balance <= 0.01) return;
 
             const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
@@ -6307,8 +6462,9 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             }
         });
 
-        const total = current + age30 + age60 + age90;
-        return { current, age30, age60, age90, total };
+        const total = current + age30 + age60 + age90 - overpayments;
+        const grossTotal = current + age30 + age60 + age90;
+        return { current, age30, age60, age90, total, overpayments, grossTotal };
     }, [records, students]);
 
     const classCollectionsStats = useMemo(() => {
@@ -6587,32 +6743,32 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
                     {activeTab === 'aging' && (
                         <div className="space-y-4 animate-in fade-in-50">
                             <div className="h-5 flex rounded-lg overflow-hidden bg-slate-100 border shadow-inner">
-                                {debtAgingStats.total > 0 ? (
+                                {debtAgingStats.grossTotal > 0 ? (
                                     <>
                                         {debtAgingStats.current > 0 && (
                                             <div 
-                                                style={{ width: `${(debtAgingStats.current / debtAgingStats.total) * 100}%` }} 
+                                                style={{ width: `${(debtAgingStats.current / debtAgingStats.grossTotal) * 100}%` }} 
                                                 className="bg-emerald-500 transition-all duration-500 hover:opacity-90"
                                                 title={`Current: GH₵ ${debtAgingStats.current.toFixed(2)}`}
                                             />
                                         )}
                                         {debtAgingStats.age30 > 0 && (
                                             <div 
-                                                style={{ width: `${(debtAgingStats.age30 / debtAgingStats.total) * 100}%` }} 
+                                                style={{ width: `${(debtAgingStats.age30 / debtAgingStats.grossTotal) * 100}%` }} 
                                                 className="bg-amber-400 transition-all duration-500 hover:opacity-90"
                                                 title={`1-30 Days Overdue: GH₵ ${debtAgingStats.age30.toFixed(2)}`}
                                             />
                                         )}
                                         {debtAgingStats.age60 > 0 && (
                                             <div 
-                                                style={{ width: `${(debtAgingStats.age60 / debtAgingStats.total) * 100}%` }} 
+                                                style={{ width: `${(debtAgingStats.age60 / debtAgingStats.grossTotal) * 100}%` }} 
                                                 className="bg-orange-500 transition-all duration-500 hover:opacity-90"
                                                 title={`31-60 Days Overdue: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
                                             />
                                         )}
                                         {debtAgingStats.age90 > 0 && (
                                             <div 
-                                                style={{ width: `${(debtAgingStats.age90 / debtAgingStats.total) * 100}%` }} 
+                                                style={{ width: `${(debtAgingStats.age90 / debtAgingStats.grossTotal) * 100}%` }} 
                                                 className="bg-rose-600 transition-all duration-500 hover:opacity-90"
                                                 title={`61+ Days Overdue: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
                                             />
@@ -6623,27 +6779,34 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
                                 )}
                             </div>
                             
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className={cn("grid grid-cols-2 gap-4", debtAgingStats.overpayments > 0 ? "md:grid-cols-3 lg:grid-cols-5" : "md:grid-cols-4")}>
                                 <Card className="p-3 border-l-4 border-l-emerald-500 bg-slate-50/20 shadow-none">
                                     <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Current</p>
                                     <p className="text-lg font-bold text-slate-800 mt-1">GH₵{debtAgingStats.current.toFixed(2)}</p>
-                                    <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.current / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                    <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.current / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
                                 </Card>
                                 <Card className="p-3 border-l-4 border-l-amber-400 bg-slate-50/20 shadow-none">
                                     <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-amber-500" /> 1 - 30 Days</p>
                                     <p className="text-lg font-bold text-amber-700 mt-1">GH₵{debtAgingStats.age30.toFixed(2)}</p>
-                                    <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age30 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                    <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age30 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
                                 </Card>
                                 <Card className="p-3 border-l-4 border-l-orange-500 bg-slate-50/20 shadow-none">
                                     <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-orange-500" /> 31 - 60 Days</p>
                                     <p className="text-lg font-bold text-orange-700 mt-1">GH₵{debtAgingStats.age60.toFixed(2)}</p>
-                                    <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age60 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                    <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age60 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
                                 </Card>
                                 <Card className="p-3 border-l-4 border-l-rose-600 bg-slate-50/20 shadow-none">
                                     <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><AlertCircle className="h-3 w-3 text-rose-600" /> 61+ Days</p>
                                     <p className="text-lg font-bold text-rose-700 mt-1">GH₵{debtAgingStats.age90.toFixed(2)}</p>
-                                    <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age90 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                    <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age90 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
                                 </Card>
+                                {debtAgingStats.overpayments > 0 && (
+                                    <Card className="p-3 border-l-4 border-l-teal-500 bg-slate-50/20 shadow-none">
+                                        <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><HandCoins className="h-3 w-3 text-teal-650" /> Overpayments</p>
+                                        <p className="text-lg font-bold text-teal-700 mt-1">-GH₵{debtAgingStats.overpayments.toFixed(2)}</p>
+                                        <p className="text-[10px] text-muted-foreground">Prepayments & credits</p>
+                                    </Card>
+                                )}
                             </div>
                         </div>
                     )}
@@ -9672,7 +9835,7 @@ function TeacherDashboard({ profile, classes, students, assessments, announcemen
     );
 }
 
-function ParentCoachingWidget({ activeChild, subjectAverages, attendanceStats, onTabChange }: {
+function OldParentCoachingWidget({ activeChild, subjectAverages, attendanceStats, onTabChange }: {
     activeChild: any;
     subjectAverages: any[];
     attendanceStats: any;
@@ -9980,7 +10143,7 @@ function ParentCoachingWidget({ activeChild, subjectAverages, attendanceStats, o
     );
 }
 
-function ParentDashboard({ 
+function OldParentDashboard({ 
   profile, 
   children, 
   financials, 
@@ -10281,7 +10444,7 @@ function ParentDashboard({
                         </div>
 
                         {/* Parent Academic Coaching Alert Widget */}
-                        <ParentCoachingWidget 
+                        <OldParentCoachingWidget 
                             activeChild={activeChild} 
                             subjectAverages={subjectAverages} 
                             attendanceStats={attendanceStats}
@@ -11502,6 +11665,28 @@ export default function DashboardClient() {
   }, [firestore, schoolId, isParent, parentStudentIds]);
   const { data: parentAttendance, isLoading: loadingAttendance } = useCollection(parentAttendanceQuery);
 
+  const parentClassIds = useMemo(() => Array.from(new Set(parentChildren.map((c: any) => c.classId).filter(Boolean))), [parentChildren]);
+
+  const parentAssignmentsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || !isParent || parentClassIds.length === 0) return null;
+    return query(
+      collection(firestore, 'assignments'),
+      where('schoolId', '==', schoolId),
+      where('classId', 'in', parentClassIds)
+    );
+  }, [firestore, schoolId, isParent, parentClassIds]);
+  const { data: parentAssignments, isLoading: loadingParentAssignments } = useCollection<any>(parentAssignmentsQuery);
+
+  const parentSubmissionsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || !isParent || parentStudentIds.length === 0) return null;
+    return query(
+      collection(firestore, 'submissions'),
+      where('schoolId', '==', schoolId),
+      where('studentId', 'in', parentStudentIds)
+    );
+  }, [firestore, schoolId, isParent, parentStudentIds]);
+  const { data: parentSubmissions, isLoading: loadingParentSubmissions } = useCollection<any>(parentSubmissionsQuery);
+
   const subjectsQuery = useMemoFirebase(() => 
     (firestore && schoolId && (isParent || role === 'Director' || role === 'Administrator' || role === 'Teacher')) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null,
   [firestore, schoolId, isParent, role]);
@@ -11530,11 +11715,23 @@ export default function DashboardClient() {
   const behavioralQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'behavioral_records'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: behavioralRecords, isLoading: loadingBehavioral } = useCollection<any>(behavioralQuery);
 
+  const medicalLogsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'infirmary_logs'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
+  const { data: medicalLogs, isLoading: loadingMedical } = useCollection<any>(medicalLogsQuery);
+
   const staffAttendanceQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: staffAttendance, isLoading: loadingStaffAttendance } = useCollection<any>(staffAttendanceQuery);
 
   const performanceQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'performanceReviews'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: performanceReviews, isLoading: loadingPerformance } = useCollection<any>(performanceQuery);
+
+  const lessonPlansQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'lesson-plans'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
+  const { data: lessonPlans } = useCollection<any>(lessonPlansQuery);
+
+  const assignmentsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'assignments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
+  const { data: assignments } = useCollection<any>(assignmentsQuery);
+
+  const submissionsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'submissions'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
+  const { data: submissions } = useCollection<any>(submissionsQuery);
 
   const roomsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: rooms, isLoading: loadingRooms } = useCollection<any>(roomsQuery);
@@ -11576,6 +11773,18 @@ export default function DashboardClient() {
     (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
     user?.email === 'jamesgambrah@gmail.com';
 
+  const budgetsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess) ? query(collection(firestore, 'budgets'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess]);
+  const { data: budgets } = useCollection<any>(budgetsQuery);
+
+  const budgetItemsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess) ? query(collection(firestore, 'budget_items'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess]);
+  const { data: budgetItems } = useCollection<any>(budgetItemsQuery);
+
+  const accountsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess]);
+  const { data: accounts } = useCollection<any>(accountsQuery);
+
+  const journalsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess) ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess]);
+  const { data: journals } = useCollection<any>(journalsQuery);
+
   const isLoading = roleLoading || schoolLoading;
 
   if (isLoading) {
@@ -11583,11 +11792,11 @@ export default function DashboardClient() {
   }
 
   if (role === 'Director') {
-    return <DirectorDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} schoolId={schoolId} recentAssessments={recentAssessments} parents={parents} admissions={admissions} behavioralRecords={behavioralRecords} staffAttendance={staffAttendance} performanceReviews={performanceReviews} subjects={subjects} schoolSettings={schoolSettings} rooms={rooms} />;
+    return <DirectorDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms || loadingMedical} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} schoolId={schoolId} recentAssessments={recentAssessments} parents={parents} admissions={admissions} behavioralRecords={behavioralRecords} staffAttendance={staffAttendance} performanceReviews={performanceReviews} subjects={subjects} schoolSettings={schoolSettings} rooms={rooms} lessonPlans={lessonPlans} assignments={assignments} submissions={submissions} medicalLogs={medicalLogs} budgets={budgets || []} budgetItems={budgetItems || []} accounts={accounts || []} journals={journals || []} />;
   }
 
   if (role === 'Administrator') {
-    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} schoolId={schoolId} recentAssessments={recentAssessments} parents={parents} admissions={admissions} behavioralRecords={behavioralRecords} staffAttendance={staffAttendance} performanceReviews={performanceReviews} subjects={subjects} schoolSettings={schoolSettings} rooms={rooms} />;
+    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms || loadingMedical} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} schoolId={schoolId} recentAssessments={recentAssessments} parents={parents} admissions={admissions} behavioralRecords={behavioralRecords} staffAttendance={staffAttendance} performanceReviews={performanceReviews} subjects={subjects} schoolSettings={schoolSettings} rooms={rooms} lessonPlans={lessonPlans} assignments={assignments} submissions={submissions} medicalLogs={medicalLogs} budgets={budgets || []} budgetItems={budgetItems || []} accounts={accounts || []} journals={journals || []} />;
   }
 
   if (role === 'Secretary') {
@@ -11616,7 +11825,7 @@ export default function DashboardClient() {
       children={parentChildren} 
       financials={parentFinancials} 
       announcements={announcements} 
-      isLoading={loadingStudents || loadingRecords || loadingStickers || loadingParentAssessments || loadingAttendance} 
+      isLoading={loadingStudents || loadingRecords || loadingStickers || loadingParentAssessments || loadingAttendance || loadingParentAssignments || loadingParentSubmissions} 
       schoolSettings={schoolSettings} 
       stickers={parentStickers} 
       assessments={parentAssessments} 
@@ -11625,6 +11834,9 @@ export default function DashboardClient() {
       selectedChildId={selectedChildId}
       setSelectedChildId={setSelectedChildId}
       classAssessments={classAssessments}
+      assignments={parentAssignments}
+      submissions={parentSubmissions}
+      students={students}
     />;
   }
 

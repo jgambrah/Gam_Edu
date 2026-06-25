@@ -2836,14 +2836,14 @@ export default function AccountsPage() {
         r.status !== 'Pending Reversal'
     );
 
-    let totalPaid = 0, totalBilled = 0, totalWaivers = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0;
+    let totalPaid = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0;
 
     for (const record of activeRecords) {
         const billed = Number(record.billedAmount) || 0;
         const paid = Number(record.amountPaid) || 0;
         const waiver = Number(record.waiverAmount) || 0;
         const balance = billed - paid - waiver;
-        totalBilled += billed; totalPaid += paid; totalWaivers += waiver;
+        totalPaid += paid;
         
         if (balance > 0) {
             const type = record.type.toLowerCase();
@@ -2853,9 +2853,10 @@ export default function AccountsPage() {
             else otherDebt += balance;
         }
     }
+    const totalOutstanding = outstandingTuition + outstandingCanteen + outstandingTransport + otherDebt;
     return { 
         totalRevenue: totalPaid, 
-        totalOutstanding: totalBilled - totalPaid - totalWaivers, 
+        totalOutstanding, 
         outstandingTuition, 
         outstandingCanteen, 
         outstandingTransport, 
@@ -2865,7 +2866,7 @@ export default function AccountsPage() {
 
   // --- DEBT AGING CALCULATION ---
   const debtAgingStats = useMemo(() => {
-    if (!records || !students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0 };
+    if (!records || !students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
     
     const activeStudentIds = new Set(students.map(s => s.uid));
     const today = startOfDay(new Date());
@@ -2874,6 +2875,7 @@ export default function AccountsPage() {
     let age30 = 0;   // Overdue 1-30 days
     let age60 = 0;   // Overdue 31-60 days
     let age90 = 0;   // Overdue 61+ days
+    let overpayments = 0;
 
     records.forEach(r => {
       if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return;
@@ -2883,6 +2885,10 @@ export default function AccountsPage() {
       const waiver = Number(r.waiverAmount) || 0;
       const balance = billed - paid - waiver;
 
+      if (balance < 0) {
+        overpayments += Math.abs(balance);
+        return;
+      }
       if (balance <= 0.01) return;
 
       const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
@@ -2900,8 +2906,9 @@ export default function AccountsPage() {
       }
     });
 
-    const total = current + age30 + age60 + age90;
-    return { current, age30, age60, age90, total };
+    const total = current + age30 + age60 + age90 - overpayments;
+    const grossTotal = current + age30 + age60 + age90;
+    return { current, age30, age60, age90, total, overpayments, grossTotal };
   }, [records, students]);
 
   // --- CLASS COLLECTIONS PACE CALCULATION ---
@@ -3386,32 +3393,32 @@ export default function AccountsPage() {
                             <TabsContent value="aging" className="mt-0">
                                 <div className="space-y-4">
                                     <div className="h-5 flex rounded-lg overflow-hidden bg-slate-100 border shadow-inner">
-                                        {debtAgingStats.total > 0 ? (
+                                        {debtAgingStats.grossTotal > 0 ? (
                                             <>
                                                 {debtAgingStats.current > 0 && (
                                                     <div 
-                                                        style={{ width: `${(debtAgingStats.current / debtAgingStats.total) * 100}%` }} 
+                                                        style={{ width: `${(debtAgingStats.current / debtAgingStats.grossTotal) * 100}%` }} 
                                                         className="bg-emerald-500 transition-all duration-500 hover:opacity-90"
                                                         title={`Current: GH₵ ${debtAgingStats.current.toFixed(2)}`}
                                                     />
                                                 )}
                                                 {debtAgingStats.age30 > 0 && (
                                                     <div 
-                                                        style={{ width: `${(debtAgingStats.age30 / debtAgingStats.total) * 100}%` }} 
+                                                        style={{ width: `${(debtAgingStats.age30 / debtAgingStats.grossTotal) * 100}%` }} 
                                                         className="bg-amber-400 transition-all duration-500 hover:opacity-90"
                                                         title={`1-30 Days Overdue: GH₵ ${debtAgingStats.age30.toFixed(2)}`}
                                                     />
                                                 )}
                                                 {debtAgingStats.age60 > 0 && (
                                                     <div 
-                                                        style={{ width: `${(debtAgingStats.age60 / debtAgingStats.total) * 100}%` }} 
+                                                        style={{ width: `${(debtAgingStats.age60 / debtAgingStats.grossTotal) * 100}%` }} 
                                                         className="bg-orange-500 transition-all duration-500 hover:opacity-90"
                                                         title={`31-60 Days Overdue: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
                                                     />
                                                 )}
                                                 {debtAgingStats.age90 > 0 && (
                                                     <div 
-                                                        style={{ width: `${(debtAgingStats.age90 / debtAgingStats.total) * 100}%` }} 
+                                                        style={{ width: `${(debtAgingStats.age90 / debtAgingStats.grossTotal) * 100}%` }} 
                                                         className="bg-rose-600 transition-all duration-500 hover:opacity-90"
                                                         title={`61+ Days Overdue: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
                                                     />
@@ -3422,27 +3429,34 @@ export default function AccountsPage() {
                                         )}
                                     </div>
                                     
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className={cn("grid grid-cols-2 gap-4", debtAgingStats.overpayments > 0 ? "md:grid-cols-3 lg:grid-cols-5" : "md:grid-cols-4")}>
                                         <Card className="p-3 border-l-4 border-l-emerald-500 bg-emerald-50/10 bg-slate-50/20">
                                             <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Current (Not Overdue)</p>
                                             <p className="text-lg font-bold text-slate-800 mt-1">GH₵{debtAgingStats.current.toFixed(2)}</p>
-                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.current / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.current / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
                                         </Card>
                                         <Card className="p-3 border-l-4 border-l-amber-400 bg-amber-50/10 bg-slate-50/20">
                                             <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-amber-500" /> 1 - 30 Days Overdue</p>
                                             <p className="text-lg font-bold text-amber-700 mt-1">GH₵{debtAgingStats.age30.toFixed(2)}</p>
-                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age30 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age30 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
                                         </Card>
                                         <Card className="p-3 border-l-4 border-l-orange-500 bg-orange-50/10 bg-slate-50/20">
                                             <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-orange-500" /> 31 - 60 Days Overdue</p>
                                             <p className="text-lg font-bold text-orange-700 mt-1">GH₵{debtAgingStats.age60.toFixed(2)}</p>
-                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age60 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age60 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
                                         </Card>
                                         <Card className="p-3 border-l-4 border-l-rose-600 bg-rose-50/10 bg-slate-50/20">
                                             <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><AlertCircle className="h-3 w-3 text-rose-600" /> 61+ Days Overdue</p>
                                             <p className="text-lg font-bold text-rose-700 mt-1">GH₵{debtAgingStats.age90.toFixed(2)}</p>
-                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.total > 0 ? ((debtAgingStats.age90 / debtAgingStats.total) * 100).toFixed(1) : 0}% of debt</p>
+                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age90 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
                                         </Card>
+                                        {debtAgingStats.overpayments > 0 && (
+                                            <Card className="p-3 border-l-4 border-l-teal-500 bg-teal-50/10 bg-slate-50/20">
+                                                <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><HandCoins className="h-3 w-3 text-teal-650" /> Overpayments</p>
+                                                <p className="text-lg font-bold text-teal-700 mt-1">-GH₵{debtAgingStats.overpayments.toFixed(2)}</p>
+                                                <p className="text-[10px] text-muted-foreground">Prepayments & credits</p>
+                                            </Card>
+                                        )}
                                     </div>
                                 </div>
                             </TabsContent>

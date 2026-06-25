@@ -627,50 +627,52 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
                         <CardDescription className="text-xs">Summary of your historical submissions and cash desk closure sheets.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0">
-                         <Table>
-                            <TableHeader className="bg-slate-50/75">
-                                <TableRow>
-                                    <TableHead className="pl-6 font-bold text-xs">Date Opened</TableHead>
-                                    <TableHead className="font-bold text-xs">Date Closed</TableHead>
-                                    <TableHead className="font-bold text-xs">Approval Status</TableHead>
-                                    <TableHead className="text-right font-bold text-xs">Expected Cash</TableHead>
-                                    <TableHead className="text-right font-bold text-xs">Counted Cash</TableHead>
-                                    <TableHead className="text-right pr-6 font-bold text-xs">Variance (GH₵)</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {isLoadingHistory ? (
-                                    <TableRow><TableCell colSpan={6} className="text-center py-10"><Loader2 className="mx-auto h-6 w-6 animate-spin text-emerald-600"/></TableCell></TableRow>
-                                ) : historyTills && historyTills.length > 0 ? (
-                                    historyTills.map(till => {
-                                        const hasVariance = (till.discrepancy || 0) !== 0;
-                                        return (
-                                            <TableRow key={till.id} onClick={() => setSelectedTill(till)} className="cursor-pointer hover:bg-slate-50/50">
-                                                <TableCell className="pl-6 text-xs text-slate-700">{till.dateOpened ? formatDateOnlySafe(till.dateOpened) : 'N/A'}</TableCell>
-                                                <TableCell className="text-xs text-slate-500">{till.dateClosed ? formatDateOnlySafe(till.dateClosed) : 'N/A'}</TableCell>
-                                                <TableCell>
-                                                    <Badge 
-                                                        variant={till.status === 'Closed' ? 'default' : 'outline'}
-                                                        className={till.status === 'PendingApproval' ? 'bg-amber-105 text-amber-800 border-amber-300' : ''}
-                                                    >
-                                                        {till.status === 'PendingApproval' ? 'Pending Approval' : till.status}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-right font-semibold text-slate-600 text-xs">GH₵{(till.expectedBalance ?? till.closingBalance ?? 0).toFixed(2)}</TableCell>
-                                                <TableCell className="text-right font-extrabold text-slate-800 text-xs">GH₵{(till.actualCashCounted ?? till.closingBalance ?? 0).toFixed(2)}</TableCell>
-                                                <TableCell className={`text-right font-black pr-6 text-xs ${hasVariance ? 'text-amber-600' : 'text-green-600'}`}>
-                                                    GH₵{(till.discrepancy ?? 0).toFixed(2)}
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })
-                                ) : (
+                        <div className="w-full overflow-x-auto">
+                            <Table className="min-w-[650px]">
+                                <TableHeader className="bg-slate-50/75">
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-12 text-slate-400 text-sm">No historical closed registers found.</TableCell>
+                                        <TableHead className="pl-6 font-bold text-xs">Date Opened</TableHead>
+                                        <TableHead className="font-bold text-xs">Date Closed</TableHead>
+                                        <TableHead className="font-bold text-xs">Approval Status</TableHead>
+                                        <TableHead className="text-right font-bold text-xs">Expected Cash</TableHead>
+                                        <TableHead className="text-right font-bold text-xs">Counted Cash</TableHead>
+                                        <TableHead className="text-right pr-6 font-bold text-xs">Variance (GH₵)</TableHead>
                                     </TableRow>
-                                )}
-                            </TableBody>
-                         </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {isLoadingHistory ? (
+                                        <TableRow><TableCell colSpan={6} className="text-center py-10"><Loader2 className="mx-auto h-6 w-6 animate-spin text-emerald-600"/></TableCell></TableRow>
+                                    ) : historyTills && historyTills.length > 0 ? (
+                                        historyTills.map(till => {
+                                            const hasVariance = (till.discrepancy || 0) !== 0;
+                                            return (
+                                                <TableRow key={till.id} onClick={() => setSelectedTill(till)} className="cursor-pointer hover:bg-slate-50/50">
+                                                    <TableCell className="pl-6 text-xs text-slate-700">{till.dateOpened ? formatDateOnlySafe(till.dateOpened) : 'N/A'}</TableCell>
+                                                    <TableCell className="text-xs text-slate-500">{till.dateClosed ? formatDateOnlySafe(till.dateClosed) : 'N/A'}</TableCell>
+                                                    <TableCell>
+                                                        <Badge 
+                                                            variant={till.status === 'Closed' ? 'default' : 'outline'}
+                                                            className={till.status === 'PendingApproval' ? 'bg-amber-105 text-amber-800 border-amber-300' : ''}
+                                                        >
+                                                            {till.status === 'PendingApproval' ? 'Pending Approval' : till.status}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="text-right font-semibold text-slate-600 text-xs">GH₵{(till.expectedBalance ?? till.currentBalance ?? 0).toFixed(2)}</TableCell>
+                                                    <TableCell className="text-right font-extrabold text-slate-800 text-xs">GH₵{(till.actualCashCounted ?? till.closingBalance ?? 0).toFixed(2)}</TableCell>
+                                                    <TableCell className={`text-right font-black pr-6 text-xs ${hasVariance ? 'text-amber-600' : 'text-green-600'}`}>
+                                                        GH₵{(till.discrepancy ?? 0).toFixed(2)}
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center py-12 text-slate-400 text-sm">No historical closed registers found.</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
                     </CardContent>
                  </Card>
             </TabsContent>
@@ -962,10 +964,9 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
                     </div>
                 </div>
 
-                <ScrollArea className="max-h-[350px] overflow-y-auto pr-2 border rounded-xl shadow-inner">
-                    <div className="w-full overflow-x-auto">
-                        <Table className="min-w-[650px]">
-                            <TableHeader className="bg-slate-50">
+                <div className="max-h-[350px] overflow-y-auto overflow-x-auto pr-2 border rounded-xl shadow-inner">
+                    <Table className="min-w-[650px]">
+                        <TableHeader className="bg-slate-50">
                             <TableRow>
                                 <TableHead className="text-[11px] font-bold py-2">Time</TableHead>
                                 <TableHead className="text-[11px] font-bold py-2">Payer name</TableHead>
@@ -1010,7 +1011,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
                                             <TableCell className="text-right pr-4">
                                                 {tx.status === 'Pending Adjustment' && canApprove && (
                                                     <div className="flex gap-1.5 justify-end">
-                                                        <Button size="sm" variant="outline" className="border-red-300 text-red-600 hover:bg-red-50 h-7 text-[10px] px-2 font-bold" onClick={() => handleAdjustmentDecision(tx, 'Reject')} disabled={isProcessing === tx.id}>Reject</Button>
+                                                        <Button size="sm" variant="outline" className="border-red-300 text-red-650 hover:bg-red-50 h-7 text-[10px] px-2 font-bold" onClick={() => handleAdjustmentDecision(tx, 'Reject')} disabled={isProcessing === tx.id}>Reject</Button>
                                                         <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 h-7 text-[10px] px-2 text-white font-bold" onClick={() => handleAdjustmentDecision(tx, 'Approve')} disabled={isProcessing === tx.id}>Approve</Button>
                                                     </div>
                                                 )}
@@ -1021,8 +1022,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
                             )}
                         </TableBody>
                     </Table>
-                    </div>
-                </ScrollArea>
+                </div>
 
                 {till.status !== 'Closed' && (
                     <DialogFooter className="border-t pt-4 mt-2">

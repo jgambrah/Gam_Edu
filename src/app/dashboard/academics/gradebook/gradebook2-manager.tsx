@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -309,6 +309,17 @@ export default function GradebookManager() {
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
 
+  useEffect(() => {
+      if (schoolSettings) {
+          if (schoolSettings.academicYear) {
+              setSelectedYear(schoolSettings.academicYear);
+          }
+          if (schoolSettings.term) {
+              setSelectedTerm(schoolSettings.term);
+          }
+      }
+  }, [schoolSettings]);
+
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   // 1. Fetch Classes (SAAS Aware)
@@ -444,14 +455,14 @@ export default function GradebookManager() {
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
           <div className="space-y-1">
              <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
-             <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
+             <Select onValueChange={setSelectedYear} value={selectedYear} disabled={role === 'Teacher'}>
                 <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                 <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
              </Select>
           </div>
           <div className="space-y-1">
              <span className="text-xs font-semibold text-slate-500 uppercase">Term</span>
-             <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
+             <Select onValueChange={setSelectedTerm} value={selectedTerm} disabled={role === 'Teacher'}>
                 <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                 <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
              </Select>

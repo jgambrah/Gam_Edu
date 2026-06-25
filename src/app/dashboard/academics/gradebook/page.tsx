@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, writeBatch, doc, serverTimestamp, deleteDoc } from 'firebase/firestore';
@@ -62,6 +62,20 @@ export default function GradebookPage() {
     const [isInsightsOpen, setIsInsightsOpen] = useState(false);
     const [insightsText, setInsightsText] = useState<string | null>(null);
     const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
+
+    const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
+
+    useEffect(() => {
+        if (schoolSettings) {
+            if (schoolSettings.academicYear) {
+                setAcademicYear(schoolSettings.academicYear);
+            }
+            if (schoolSettings.term) {
+                setTerm(schoolSettings.term);
+            }
+        }
+    }, [schoolSettings]);
 
     // Data Fetching
     const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -286,7 +300,7 @@ export default function GradebookPage() {
                 <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     <div className="space-y-2">
                         <Label>Academic Year</Label>
-                        <Select value={academicYear} onValueChange={setAcademicYear}>
+                        <Select value={academicYear} onValueChange={setAcademicYear} disabled={role === 'Teacher'}>
                             <SelectTrigger className="bg-white border-2">
                                 <SelectValue />
                             </SelectTrigger>
@@ -299,7 +313,7 @@ export default function GradebookPage() {
                     </div>
                     <div className="space-y-2">
                         <Label>Term</Label>
-                        <Select value={term} onValueChange={setTerm}>
+                        <Select value={term} onValueChange={setTerm} disabled={role === 'Teacher'}>
                             <SelectTrigger className="bg-white border-2">
                                 <SelectValue />
                             </SelectTrigger>

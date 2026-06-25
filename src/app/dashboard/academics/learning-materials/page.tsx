@@ -932,9 +932,24 @@ export default function LearningMaterialsPage() {
   };
 
   const getEmbedUrl = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+    if (!url) return null;
+    const cleanUrl = url.trim();
+    
+    if (/^[a-zA-Z0-9_-]{11}$/.test(cleanUrl)) {
+      return `https://www.youtube.com/embed/${cleanUrl}`;
+    }
+
+    const m = cleanUrl.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/);
+    if (m && m[2].length === 11) {
+      return `https://www.youtube.com/embed/${m[2]}`;
+    }
+
+    const fallback = cleanUrl.match(/(?:v=|\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})(?:\?|&|$)/);
+    if (fallback) {
+      return `https://www.youtube.com/embed/${fallback[1]}`;
+    }
+
+    return null;
   };
   
   const pageLoading = isUserLoading || isLoadingSchool || (role === 'Student' && isStudentLoading) || isLoadingSubjects || (!!activeClassId && isLoadingMaterials);

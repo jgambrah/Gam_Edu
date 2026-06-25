@@ -19,6 +19,27 @@ import {
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
+function getYouTubeId(url: string) {
+  if (!url) return null;
+  const cleanUrl = url.trim();
+  
+  if (/^[a-zA-Z0-9_-]{11}$/.test(cleanUrl)) {
+    return cleanUrl;
+  }
+
+  const m = cleanUrl.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/);
+  if (m && m[2].length === 11) {
+    return m[2];
+  }
+
+  const fallback = cleanUrl.match(/(?:v=|\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})(?:\?|&|$)/);
+  if (fallback) {
+    return fallback[1];
+  }
+
+  return null;
+}
+
 export default function WebsiteBuilderPage() {
   const { schoolId } = useCurrentSchool();
   const firestore = useFirestore();
@@ -160,7 +181,15 @@ export default function WebsiteBuilderPage() {
   };
 
   const addVideo = () => {
-    if (!newVideoUrl.trim() || !newVideoTitle.trim()) return;
+    if (!newVideoUrl.trim() || !newVideoTitle.trim()) {
+      toast({ variant: 'destructive', title: "Validation Error", description: "Please enter both video title and YouTube URL." });
+      return;
+    }
+    const ytId = getYouTubeId(newVideoUrl);
+    if (!ytId) {
+      toast({ variant: 'destructive', title: "Invalid YouTube URL", description: "We couldn't extract a valid YouTube video ID from that link." });
+      return;
+    }
     setFormData(prev => ({
         ...prev,
         videoUrls: [...prev.videoUrls, { url: newVideoUrl.trim(), title: newVideoTitle.trim() }]
@@ -541,16 +570,40 @@ export default function WebsiteBuilderPage() {
                                     <Button type="button" onClick={addVideo} variant="secondary"><Plus/></Button>
                                 </div>
                             </div>
-                            <div className="space-y-2 mt-4">
-                                {formData.videoUrls.map((video, i) => (
-                                    <div key={i} className="flex items-center justify-between p-3 bg-slate-50 border rounded-xl">
-                                        <div className="flex items-center gap-3">
-                                            <Video className="h-4 w-4 text-indigo-500" />
-                                            <span className="text-sm font-bold text-slate-700">{video.title}</span>
+                            <div className="space-y-3 mt-4">
+                                {formData.videoUrls.map((video, i) => {
+                                    const ytId = getYouTubeId(typeof video === 'string' ? video : video.url);
+                                    return (
+                                        <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 border rounded-2xl gap-4">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                {ytId ? (
+                                                    <div className="relative h-14 aspect-video bg-black rounded-lg overflow-hidden border shrink-0">
+                                                        <img 
+                                                            src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} 
+                                                            alt={video.title} 
+                                                            className="w-full h-full object-cover" 
+                                                        />
+                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                                            <Video className="h-4 w-4 text-white" />
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="h-14 aspect-video bg-red-100 border border-red-200 text-red-650 rounded-lg flex items-center justify-center shrink-0">
+                                                        <Video className="h-5 w-5" />
+                                                    </div>
+                                                )}
+                                                <div className="min-w-0">
+                                                    <span className="text-sm font-bold text-slate-800 block truncate">{video.title}</span>
+                                                    <span className="text-[10px] font-mono text-slate-500 block truncate max-w-[280px] sm:max-w-md">{typeof video === 'string' ? video : video.url}</span>
+                                                    {!ytId && (
+                                                        <span className="text-[10px] font-bold text-red-500 block">Invalid YouTube URL (will not show on live site)</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <Button type="button" variant="ghost" size="sm" onClick={() => removeVideo(i)} className="text-red-500 hover:text-red-600 hover:bg-red-50 shrink-0"><Trash2 className="h-4 w-4"/></Button>
                                         </div>
-                                        <Button type="button" variant="ghost" size="sm" onClick={() => removeVideo(i)} className="text-red-500"><Trash2 className="h-4 w-4"/></Button>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </CardContent>
                     </Card>

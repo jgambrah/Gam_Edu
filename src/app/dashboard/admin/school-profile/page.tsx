@@ -31,6 +31,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { cn, DEFAULT_GRADING_SYSTEM, type GradeBracket } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
+import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -134,6 +135,9 @@ export default function SchoolProfilePage() {
   const [termEndDate, setTermEndDate] = useState<Date | undefined>(undefined);
   const [nextTermDate, setNextTermDate] = useState<Date | undefined>(undefined);
 
+  const [academicYear, setAcademicYear] = useState('2024-2025');
+  const [term, setTerm] = useState('First Term');
+
   const updateGradingBracket = (index: number, field: keyof GradeBracket, value: any) => {
       const updated = [...gradingSystem];
       if (field === 'minScore' || field === 'maxScore') {
@@ -213,6 +217,8 @@ export default function SchoolProfilePage() {
         setReportCardPositionMode(profile.reportCardPositionMode || 'both');
         setGradingSystem(profile.gradingSystem || DEFAULT_GRADING_SYSTEM);
         setCustomCostCenters(profile.customCostCenters || []);
+        setAcademicYear(profile.academicYear || '2024-2025');
+        setTerm(profile.term || 'First Term');
     }
   }, [profile]);
 
@@ -286,6 +292,8 @@ export default function SchoolProfilePage() {
             termStartDate: termStartDate ? format(termStartDate, 'yyyy-MM-dd') : null,
             termEndDate: termEndDate ? format(termEndDate, 'yyyy-MM-dd') : null,
             nextTermDate: nextTermDate ? format(nextTermDate, 'yyyy-MM-dd') : null,
+            academicYear,
+            term,
             allowAdminFinanceAccess,
             allowAdminBillingToggles,
             autoLockDebtors,
@@ -751,7 +759,38 @@ export default function SchoolProfilePage() {
 
                     <div className="space-y-6">
                         <div className="flex items-center gap-2"><CalendarDays className="h-5 w-5 text-indigo-600"/><h3 className="text-lg font-black text-slate-800 uppercase tracking-tight italic">Current Academic Term</h3></div>
-                        <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 shadow-inner">
+                        <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 shadow-inner space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Active Academic Year</Label>
+                                    <Select value={academicYear} onValueChange={setAcademicYear}>
+                                        <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {MOCK_ACADEMIC_YEARS.map(y => (
+                                                <SelectItem key={y} value={y} className="font-semibold">{y}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Active Term</Label>
+                                    <Select value={term} onValueChange={setTerm}>
+                                        <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {MOCK_TERMS.map(t => (
+                                                <SelectItem key={t} value={t} className="font-semibold">{t}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <Separator className="bg-indigo-100" />
+
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-2">
                                     <Label className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Term Start</Label>

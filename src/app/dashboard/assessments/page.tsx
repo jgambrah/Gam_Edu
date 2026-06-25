@@ -21,8 +21,9 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, orderBy, where } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
+import { collection, query, orderBy, where, doc } from 'firebase/firestore';
+import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Assessment, BehavioralRecord, Student, Class } from '@/lib/types';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -60,6 +61,20 @@ export default function AssessmentsPage() {
     const [selectedClassId, setSelectedClassId] = useState<string>('');
     const [academicYear, setAcademicYear] = useState<string>('2024-2025');
     const [term, setTerm] = useState<string>('First Term');
+
+    const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
+
+    useEffect(() => {
+        if (schoolSettings) {
+            if (schoolSettings.academicYear) {
+                setAcademicYear(schoolSettings.academicYear);
+            }
+            if (schoolSettings.term) {
+                setTerm(schoolSettings.term);
+            }
+        }
+    }, [schoolSettings]);
 
     // Search query states
     const [assessmentSearch, setAssessmentSearch] = useState('');
@@ -548,22 +563,23 @@ export default function AssessmentsPage() {
                       <div className="grid grid-cols-2 gap-4 mt-2">
                         <div className="space-y-2">
                           <Label className="text-slate-700 font-bold">Academic Year</Label>
-                          <Select value={academicYear} onValueChange={setAcademicYear}>
+                          <Select value={academicYear} onValueChange={setAcademicYear} disabled={role === 'Teacher'}>
                             <SelectTrigger className="border-slate-200"><SelectValue /></SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="2024-2025">2024-2025</SelectItem>
-                              <SelectItem value="2025-2026">2025-2026</SelectItem>
+                              {MOCK_ACADEMIC_YEARS.map(year => (
+                                <SelectItem key={year} value={year}>{year}</SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </div>
                         <div className="space-y-2">
                           <Label className="text-slate-700 font-bold">Term</Label>
-                          <Select value={term} onValueChange={setTerm}>
+                          <Select value={term} onValueChange={setTerm} disabled={role === 'Teacher'}>
                             <SelectTrigger className="border-slate-200"><SelectValue /></SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="First Term">First Term</SelectItem>
-                              <SelectItem value="Second Term">Second Term</SelectItem>
-                              <SelectItem value="Third Term">Third Term</SelectItem>
+                              {MOCK_TERMS.map(t => (
+                                <SelectItem key={t} value={t}>{t}</SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </div>

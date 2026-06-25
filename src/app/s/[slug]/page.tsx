@@ -14,8 +14,24 @@ import { Badge } from '@/components/ui/badge';
 
 // ─── helpers ────────────────────────────────────────────────
 function getYouTubeId(url: string) {
-  const m = url?.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
-  return m && m[2].length === 11 ? m[2] : null;
+  if (!url) return null;
+  const cleanUrl = url.trim();
+  
+  if (/^[a-zA-Z0-9_-]{11}$/.test(cleanUrl)) {
+    return cleanUrl;
+  }
+
+  const m = cleanUrl.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/);
+  if (m && m[2].length === 11) {
+    return m[2];
+  }
+
+  const fallback = cleanUrl.match(/(?:v=|\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})(?:\?|&|$)/);
+  if (fallback) {
+    return fallback[1];
+  }
+
+  return null;
 }
 
 function isLightColor(colorHex: string) {

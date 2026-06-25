@@ -153,6 +153,17 @@ export default function ReportCardManager() {
 
     const areDatesMissing = !schoolProfile?.termStartDate || !schoolProfile?.termEndDate;
 
+    useEffect(() => {
+        if (schoolProfile) {
+            if (schoolProfile.academicYear) {
+                setAcademicYear(schoolProfile.academicYear);
+            }
+            if (schoolProfile.term) {
+                setTerm(schoolProfile.term);
+            }
+        }
+    }, [schoolProfile]);
+
     const activeStudents = useMemo(() => {
         if (!students) return [];
         return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
@@ -632,7 +643,7 @@ export default function ReportCardManager() {
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-white">
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Academic Year</Label>
-                        <Select value={academicYear} onValueChange={setAcademicYear}>
+                        <Select value={academicYear} onValueChange={setAcademicYear} disabled={role?.toLowerCase() === 'teacher'}>
                             <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
                                 <SelectValue/>
                             </SelectTrigger>
@@ -641,7 +652,7 @@ export default function ReportCardManager() {
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Term</Label>
-                        <Select value={term} onValueChange={setTerm}>
+                        <Select value={term} onValueChange={setTerm} disabled={role?.toLowerCase() === 'teacher'}>
                             <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
                                 <SelectValue/>
                             </SelectTrigger>
