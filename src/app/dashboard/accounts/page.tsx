@@ -2126,6 +2126,11 @@ function ParentLetterPrintArea({
     <div id="parent-letter-print-area" className="hidden print:block text-black bg-white w-full p-4 font-serif leading-normal">
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
           html, body {
             height: auto !important;
             min-height: 0 !important;
@@ -2194,6 +2199,27 @@ function ParentLetterPrintArea({
             font-size: 12pt !important;
           }
 
+          #parent-letter-print-area .print-banner-table {
+            background-color: ${brandColor} !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            border-radius: 6px !important;
+          }
+          
+          #parent-letter-print-area .print-banner-table td {
+            color: white !important;
+            background-color: ${brandColor} !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          #parent-letter-print-area .print-banner-table h1,
+          #parent-letter-print-area .print-banner-table p,
+          #parent-letter-print-area .print-banner-table span {
+            color: white !important;
+          }
+
           .letterhead-divider {
             border-top: 3px double ${brandColor} !important;
             margin-top: 8px !important;
@@ -2219,6 +2245,8 @@ function ParentLetterPrintArea({
             color: white !important;
             font-weight: bold !important;
             border-bottom: 2px solid ${brandColor} !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
 
           table.letter-table td.amount {
@@ -2235,6 +2263,8 @@ function ParentLetterPrintArea({
             margin-bottom: 12px !important;
             border-radius: 6px !important;
             page-break-inside: avoid !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
 
           .recipient-box {
@@ -2242,6 +2272,8 @@ function ParentLetterPrintArea({
             background-color: #fafafa !important;
             padding: 10px !important;
             border-radius: 6px !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
 
           .metadata-table {
@@ -2301,7 +2333,7 @@ function ParentLetterPrintArea({
       `}} />
 
       {/* 1. Official School Letterhead Banner (Table-based for maximum print safety) */}
-      <table style={{
+      <table className="print-banner-table" style={{
         width: '100%',
         backgroundColor: brandColor,
         color: 'white',
@@ -3887,6 +3919,10 @@ export default function AccountsPage() {
           <div id="debtors-print-area" className="hidden print:block text-black bg-white w-full">
             <style dangerouslySetInnerHTML={{ __html: `
               @media print {
+                * {
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
                 html, body {
                   height: auto !important;
                   min-height: 0 !important;

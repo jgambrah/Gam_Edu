@@ -2,7 +2,6 @@ const admin = require('firebase-admin');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// Load environment variables
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -25,21 +24,19 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-async function inspect() {
-  const collections = ['accounts', 'budgets', 'journal_entries', 'paymentVouchers', 'financialRecords'];
+async function run() {
+  const collections = ['admissionApplications', 'students'];
   for (const name of collections) {
     try {
-      const snap = await db.collection(name).limit(2).get();
-      const allSnap = await db.collection(name).select().get();
-      console.log(`\n=================== Collection: ${name} (Total: ${allSnap.size}) ===================`);
-      snap.docs.forEach(doc => {
-        console.log(`Document ID: ${doc.id}`);
-        console.log(JSON.stringify(doc.data(), null, 2));
-      });
+      const snap = await db.collection(name).get();
+      console.log(`Collection '${name}': count = ${snap.size}`);
+      if (snap.size > 0) {
+        console.log(`Sample doc from ${name}:`, snap.docs[0].id, JSON.stringify(snap.docs[0].data(), null, 2));
+      }
     } catch (e) {
-      console.error(`Error querying ${name}:`, e.message);
+      console.error(`Error on ${name}:`, e.message);
     }
   }
 }
 
-inspect();
+run();
