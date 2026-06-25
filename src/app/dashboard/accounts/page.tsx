@@ -2200,24 +2200,27 @@ function ParentLetterPrintArea({
           }
 
           #parent-letter-print-area .print-banner-table {
-            background-color: ${brandColor} !important;
-            color: white !important;
+            background-color: white !important;
+            color: #0f172a !important;
+            border-bottom: 3px solid ${brandColor} !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-            border-radius: 6px !important;
           }
           
           #parent-letter-print-area .print-banner-table td {
-            color: white !important;
-            background-color: ${brandColor} !important;
+            color: #0f172a !important;
+            background-color: white !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
           
-          #parent-letter-print-area .print-banner-table h1,
+          #parent-letter-print-area .print-banner-table h1 {
+            color: ${brandColor} !important;
+          }
+          
           #parent-letter-print-area .print-banner-table p,
           #parent-letter-print-area .print-banner-table span {
-            color: white !important;
+            color: #475569 !important;
           }
 
           .letterhead-divider {
@@ -2335,10 +2338,11 @@ function ParentLetterPrintArea({
       {/* 1. Official School Letterhead Banner (Table-based for maximum print safety) */}
       <table className="print-banner-table" style={{
         width: '100%',
-        backgroundColor: brandColor,
-        color: 'white',
-        borderRadius: '6px',
-        marginBottom: '12px',
+        backgroundColor: 'white',
+        color: '#0f172a',
+        borderBottom: `3px solid ${brandColor}`,
+        borderRadius: '0px',
+        marginBottom: '18px',
         borderCollapse: 'collapse',
         border: 'none',
         WebkitPrintColorAdjust: 'exact',
@@ -2347,57 +2351,61 @@ function ParentLetterPrintArea({
         <tbody>
           <tr>
             <td style={{
-              padding: '12px 16px',
+              padding: '12px 0',
               width: '70px',
               verticalAlign: 'middle',
-              border: 'none'
+              border: 'none',
+              backgroundColor: 'white'
             }}>
               {schoolProfile?.logoUrl ? (
                 <div style={{
                   backgroundColor: 'white',
                   padding: '4px',
-                  borderRadius: '50%',
+                  borderRadius: '8px',
                   display: 'inline-block',
                   width: '56px',
                   height: '56px',
                   textAlign: 'center',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
+                  border: '1px solid #e2e8f0'
                 }}>
-                  <img src={schoolProfile.logoUrl} alt="Logo" style={{ height: '48px', width: '48px', objectFit: 'contain', verticalAlign: 'middle' }} />
+                  <img src={schoolProfile.logoUrl} alt="Logo" style={{ height: '46px', width: '46px', objectFit: 'contain', verticalAlign: 'middle' }} />
                 </div>
               ) : (
                 <div style={{
-                  backgroundColor: 'rgba(255,255,255,0.2)',
-                  borderRadius: '50%',
+                  backgroundColor: '#f1f5f9',
+                  borderRadius: '8px',
                   display: 'inline-block',
                   width: '56px',
                   height: '56px',
                   lineHeight: '56px',
                   textAlign: 'center',
-                  fontSize: '9px',
+                  fontSize: '10px',
                   fontWeight: 'bold',
-                  color: 'white'
+                  color: brandColor,
+                  border: `1px solid ${brandColor}`
                 }}>
-                  Logo
+                  GAM Edu
                 </div>
               )}
             </td>
             <td style={{
-              padding: '12px 16px 12px 0',
+              padding: '12px 16px',
               verticalAlign: 'middle',
               textAlign: 'left',
-              border: 'none'
+              border: 'none',
+              backgroundColor: 'white'
             }}>
-              <h1 style={{ fontSize: '18px', fontWeight: '900', margin: '0', textTransform: 'uppercase', color: 'white', lineHeight: '1.1' }}>
+              <h1 style={{ fontSize: '20px', fontWeight: '900', margin: '0', textTransform: 'uppercase', color: brandColor, lineHeight: '1.1' }}>
                 {schoolName}
               </h1>
               {schoolProfile?.motto && (
-                <p style={{ fontSize: '10px', fontStyle: 'italic', margin: '2px 0 0 0', opacity: 0.95, color: 'white', lineHeight: '1.2' }}>"{schoolProfile.motto}"</p>
+                <p style={{ fontSize: '11px', fontStyle: 'italic', margin: '3px 0 0 0', color: '#475569', lineHeight: '1.2' }}>"{schoolProfile.motto}"</p>
               )}
-              <p style={{ fontSize: '9px', margin: '2px 0 0 0', opacity: 0.85, color: 'white', lineHeight: '1.2' }}>
+              <p style={{ fontSize: '10px', margin: '3px 0 0 0', color: '#475569', lineHeight: '1.2' }}>
                 {schoolProfile?.address || 'School Location Address'}
               </p>
-              <p style={{ fontSize: '8px', margin: '1px 0 0 0', opacity: 0.85, color: 'white', lineHeight: '1.2' }}>
+              <p style={{ fontSize: '9px', margin: '2px 0 0 0', color: '#64748b', lineHeight: '1.2' }}>
                 {schoolProfile?.phone && `Tel: ${schoolProfile.phone}`}
                 {schoolProfile?.phone && schoolProfile?.email && ` | `}
                 {schoolProfile?.email && `Email: ${schoolProfile.email}`}
