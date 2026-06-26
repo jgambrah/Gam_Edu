@@ -530,16 +530,7 @@ export function ParentDashboard({
         });
     }, [assignments, activeClassId, submissions, activeChildId, quizzes, quizAttempts]);
 
-    const displayAssignments = useMemo(() => {
-        if (activeChildAssignmentsList.length > 0) {
-            return activeChildAssignmentsList;
-        }
-        // Fallback spec data
-        return [
-            { id: '1', title: 'Mathematics Project', dueDate: '15 June', status: 'Pending', teacherComment: null, subject: 'Mathematics' },
-            { id: '2', title: 'Science Quiz', dueDate: '10 June', status: 'Submitted', teacherComment: 'Great effort on the cellular biology diagrams!', subject: 'Science' }
-        ];
-    }, [activeChildAssignmentsList]);
+    const displayAssignments = activeChildAssignmentsList;
 
     const assignmentStats = useMemo(() => {
         const total = displayAssignments.length;
@@ -1862,25 +1853,33 @@ export function ParentDashboard({
                                                     </TableRow>
                                                 </TableHeader>
                                                 <TableBody>
-                                                    {displayAssignments.map((a: any) => (
-                                                        <TableRow key={a.id} className="hover:bg-slate-50/50 transition-colors">
-                                                            <TableCell className="font-bold text-slate-900 text-xs py-4">{a.title}</TableCell>
-                                                            <TableCell className="text-slate-550 text-xs font-medium py-4">{a.subject}</TableCell>
-                                                            <TableCell className="text-slate-605 text-xs font-semibold font-mono py-4">{a.dueDate}</TableCell>
-                                                            <TableCell className="py-4">
-                                                                <Badge className={cn(
-                                                                    "border-none font-black text-[9px] px-3 py-1 rounded-full uppercase tracking-wider text-white",
-                                                                    a.status === 'Submitted' ? "bg-emerald-500" :
-                                                                    a.status === 'Overdue' ? "bg-rose-500" : "bg-amber-500"
-                                                                )}>
-                                                                    {a.status}
-                                                                </Badge>
-                                                            </TableCell>
-                                                            <TableCell className="text-xs text-slate-500 italic max-w-xs py-4 leading-normal">
-                                                                {a.teacherComment ? `"${a.teacherComment}"` : <span className="text-slate-400 not-italic font-bold">No feedback yet</span>}
+                                                    {displayAssignments.length > 0 ? (
+                                                        displayAssignments.map((a: any) => (
+                                                            <TableRow key={a.id} className="hover:bg-slate-50/50 transition-colors">
+                                                                <TableCell className="font-bold text-slate-900 text-xs py-4">{a.title}</TableCell>
+                                                                <TableCell className="text-slate-550 text-xs font-medium py-4">{a.subject}</TableCell>
+                                                                <TableCell className="text-slate-605 text-xs font-semibold font-mono py-4">{a.dueDate}</TableCell>
+                                                                <TableCell className="py-4">
+                                                                    <Badge className={cn(
+                                                                        "border-none font-black text-[9px] px-3 py-1 rounded-full uppercase tracking-wider text-white",
+                                                                        a.status === 'Submitted' ? "bg-emerald-500" :
+                                                                        a.status === 'Overdue' ? "bg-rose-500" : "bg-amber-500"
+                                                                    )}>
+                                                                        {a.status}
+                                                                    </Badge>
+                                                                </TableCell>
+                                                                <TableCell className="text-xs text-slate-500 italic max-w-xs py-4 leading-normal">
+                                                                    {a.teacherComment ? `"${a.teacherComment}"` : <span className="text-slate-400 not-italic font-bold">No feedback yet</span>}
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ))
+                                                    ) : (
+                                                        <TableRow>
+                                                            <TableCell colSpan={5} className="text-center py-8 text-slate-400 italic text-xs font-black uppercase">
+                                                                No homework or assignments assigned to this class.
                                                             </TableCell>
                                                         </TableRow>
-                                                    ))}
+                                                    )}
                                                 </TableBody>
                                             </Table>
                                         </div>
