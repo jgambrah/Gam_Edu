@@ -26,6 +26,7 @@ import { useState } from 'react';
 import { addDoc, collection } from 'firebase/firestore';
 import { Assignment, studentSubmissionSchema, StudentSubmission } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 type AssignmentSubmissionDialogProps = {
   isOpen: boolean;
@@ -43,6 +44,7 @@ export function AssignmentSubmissionDialog({
   const firestore = useFirestore();
   const {user} = useUser();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof studentSubmissionSchema>>({
@@ -53,7 +55,7 @@ export function AssignmentSubmissionDialog({
   });
 
   async function onSubmit(values: z.infer<typeof studentSubmissionSchema>) {
-    if(!user || !student || !firestore) return;
+    if(!user || !student || !firestore || !schoolId) return;
     setIsSubmitting(true);
     try {
       const submission: Omit<StudentSubmission, 'id'> = {
@@ -64,9 +66,11 @@ export function AssignmentSubmissionDialog({
         content: values.content,
         submittedAt: new Date(),
         status: new Date() > (typeof (assignment.dueDate as any).toDate === 'function' ? (assignment.dueDate as any).toDate() : new Date(assignment.dueDate)) ? 'Late' : 'Submitted',
+        // @ts-ignore
+        schoolId: schoolId,
       };
 
-      await addDoc(collection(firestore!, `assignments/${assignment.id}/submissions`), submission);
+      await addDoc(collection(firestore!, 'submissions'), submission);
       
       toast({
         title: 'Submission Successful',

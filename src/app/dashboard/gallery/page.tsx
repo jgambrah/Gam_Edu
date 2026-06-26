@@ -84,13 +84,13 @@ export default function GalleryPage() {
 
   // 1. Fetch gallery posts for this school, sorted by newest first
   const galleryQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId) return null;
+    if (!firestore || !schoolId || !user) return null;
     return query(
       collection(firestore, 'gallery'),
       where('schoolId', '==', schoolId),
       orderBy('createdAt', 'desc')
     );
-  }, [firestore, schoolId]);
+  }, [firestore, schoolId, user]);
 
   const { data: posts, isLoading } = useCollection<GalleryPost>(galleryQuery);
 

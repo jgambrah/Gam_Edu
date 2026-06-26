@@ -3,9 +3,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
-import { Assignment, Quiz } from '@/lib/types';
+import { Assignment, Quiz, Student, StudentSubmission, QuizAttempt } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, BookOpen, Layers, GraduationCap, CheckCircle, HelpCircle, Loader2, Sparkles } from 'lucide-react';
+import { PlusCircle, BookOpen, Layers, GraduationCap, CheckCircle, HelpCircle, Loader2, Sparkles, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AssignmentCreationForm } from './assignment-creation-form';
@@ -17,6 +18,81 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
+function QuizItem({ quiz, getClassName }: { quiz: Quiz; getClassName: (id: string) => string }) {
+  const [isExpanded, setExpanded] = useState(false);
+
+  return (
+    <Card className="border border-slate-105 bg-white hover:shadow-md transition-all duration-300 rounded-2xl p-5 group">
+      <div className="flex justify-between items-start gap-4">
+        <div className="space-y-1.5 flex-1">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-wide bg-purple-50 border-purple-100 text-purple-700 rounded-lg px-2">
+              Topic: {quiz.topic}
+            </Badge>
+            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-wide bg-slate-50 border-slate-200 text-slate-600 rounded-lg px-2">
+              {getClassName(quiz.classId)}
+            </Badge>
+          </div>
+          <h3 className="font-extrabold text-slate-800 text-base leading-snug uppercase tracking-tight group-hover:text-purple-700 transition-colors">
+            {quiz.title}
+          </h3>
+          <p className="text-xs text-slate-400 font-medium">
+            Created on {quiz.createdAt?.toDate ? format(quiz.createdAt.toDate(), 'PPP') : 'Unknown'}
+          </p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="h-10 w-10 bg-purple-50 text-purple-600 border border-purple-100/50 rounded-xl flex items-center justify-center font-bold text-xs font-mono">
+            {quiz.questions?.length || 0}Q
+          </div>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full" onClick={() => setExpanded(!isExpanded)}>
+            <ChevronDown className={cn("h-4 w-4 transition-transform text-slate-500", isExpanded && "rotate-180")} />
+          </Button>
+        </div>
+      </div>
+
+      {isExpanded && quiz.questions && quiz.questions.length > 0 && (
+        <div className="mt-5 pt-5 border-t border-slate-100 space-y-4 animate-in fade-in duration-200">
+          <h4 className="text-xs font-black uppercase text-slate-450 tracking-wider mb-2">Quiz Questions & Answers</h4>
+          <div className="space-y-4">
+            {quiz.questions.map((q, idx) => (
+              <div key={idx} className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2.5">
+                <div className="flex items-start gap-2">
+                  <span className="text-xs font-black text-purple-600 mt-0.5">{idx + 1}.</span>
+                  <p className="text-xs font-bold text-slate-700 leading-normal">{q.questionText}</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-5">
+                  {q.options.map((opt, oIdx) => {
+                    const isCorrect = opt === q.correctAnswer;
+                    return (
+                      <div 
+                        key={oIdx} 
+                        className={cn(
+                          "p-2.5 rounded-lg text-[10px] font-semibold transition-all border",
+                          isCorrect 
+                            ? "bg-emerald-50 border-emerald-200 text-emerald-800 font-bold" 
+                            : "bg-white border-slate-150 text-slate-500"
+                        )}
+                      >
+                        <span className="mr-1 font-bold">{String.fromCharCode(65 + oIdx)}.</span> {opt}
+                        {isCorrect && <span className="ml-1.5 text-[8px] bg-emerald-600 text-white font-extrabold uppercase px-1 py-0.5 rounded">Correct</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+                {q.explanation && (
+                  <p className="text-[9px] text-slate-400 font-bold pl-5 leading-normal italic">
+                    Explanation: {q.explanation}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 interface QuizListProps {
   quizzes?: Quiz[] | null;
   isLoading: boolean;
@@ -25,7 +101,7 @@ interface QuizListProps {
 function QuizList({ quizzes, isLoading }: QuizListProps) {
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();
-
+ 
   const { data: classes } = useCollection<{id: string, name: string}>(
     useMemoFirebase(
       () => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null,
@@ -55,33 +131,11 @@ function QuizList({ quizzes, isLoading }: QuizListProps) {
     <div className="space-y-4">
       {sortedQuizzes && sortedQuizzes.length > 0 ? (
         sortedQuizzes.map((quiz) => (
-          <Card key={quiz.id} className="border border-slate-100 bg-white hover:shadow-md transition-all duration-300 rounded-2xl p-5 group">
-            <div className="flex justify-between items-start gap-4">
-              <div className="space-y-1.5 flex-1">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-wide bg-purple-50 border-purple-100 text-purple-700 rounded-lg px-2">
-                    Topic: {quiz.topic}
-                  </Badge>
-                  <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-wide bg-slate-50 border-slate-200 text-slate-600 rounded-lg px-2">
-                    {getClassName(quiz.classId)}
-                  </Badge>
-                </div>
-                <h3 className="font-extrabold text-slate-800 text-base leading-snug uppercase tracking-tight group-hover:text-purple-700 transition-colors">
-                  {quiz.title}
-                </h3>
-                <p className="text-xs text-slate-400 font-medium">
-                  Created on {quiz.createdAt?.toDate ? format(quiz.createdAt.toDate(), 'PPP') : 'Unknown'}
-                </p>
-              </div>
-              <div className="h-10 w-10 bg-purple-50 text-purple-600 border border-purple-100/50 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 font-mono">
-                {quiz.questions.length}Q
-              </div>
-            </div>
-          </Card>
+          <QuizItem key={quiz.id} quiz={quiz} getClassName={getClassName} />
         ))
       ) : (
         <div className="text-center py-12 bg-slate-50/50 border border-dashed rounded-2xl">
-          <HelpCircle className="h-12 w-12 text-slate-300 mx-auto mb-3 stroke-[1.2]" />
+          <HelpCircle className="h-12 w-12 text-slate-350 mx-auto mb-3 stroke-[1.2]" />
           <p className="text-xs font-bold uppercase text-slate-400">No quizzes registered yet</p>
         </div>
       )}
@@ -108,6 +162,24 @@ export default function TeacherAssignmentsView() {
   );
   const { data: quizzes, isLoading: isLoadingQuizzes } = useCollection<Quiz>(quizzesQuery);
 
+  const submissionsQuery = useMemoFirebase(
+    () => (schoolId && firestore) ? query(collection(firestore, 'submissions'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<StudentSubmission>(submissionsQuery);
+
+  const quizAttemptsQuery = useMemoFirebase(
+    () => (schoolId && firestore) ? query(collection(firestore, 'quizAttempts'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: quizAttempts, isLoading: isLoadingAttempts } = useCollection<QuizAttempt>(quizAttemptsQuery);
+
+  const studentsQuery = useMemoFirebase(
+    () => (schoolId && firestore) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+
   const sortedAssignments = useMemo(() => {
     if (!assignments) return [];
     return [...assignments].sort((a, b) => (b.createdAt?.toDate()?.getTime() || 0) - (a.createdAt?.toDate()?.getTime() || 0));
@@ -115,6 +187,43 @@ export default function TeacherAssignmentsView() {
 
   const activeAssignmentsCount = assignments?.length || 0;
   const activeQuizzesCount = quizzes?.length || 0;
+
+  // Dynamic statistics calculations
+  const avgCompletionRate = useMemo(() => {
+    if (!assignments || !students || !submissions || assignments.length === 0) return 0;
+    let totalExpected = 0;
+    let totalActual = 0;
+
+    assignments.forEach((assign) => {
+      const classStudentsCount = students.filter(
+        (s) => s.classId === assign.classId && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
+      ).length;
+
+      const assignmentSubmissionsCount = submissions.filter(
+        (sub) => sub.assignmentId === assign.id
+      ).length;
+
+      totalExpected += classStudentsCount;
+      totalActual += assignmentSubmissionsCount;
+    });
+
+    if (totalExpected === 0) return 0;
+    return Math.round((totalActual / totalExpected) * 100);
+  }, [assignments, students, submissions]);
+
+  const quizPerformanceAvg = useMemo(() => {
+    if (!quizzes || !quizAttempts || quizzes.length === 0) return 0;
+    const teacherQuizIds = new Set(quizzes.map((q) => q.id));
+    const teacherAttempts = quizAttempts.filter((a) => teacherQuizIds.has(a.quizId));
+
+    if (teacherAttempts.length === 0) return 0;
+
+    const totalPct = teacherAttempts.reduce(
+      (sum, attempt) => sum + (attempt.score / (attempt.total || 5)) * 100,
+      0
+    );
+    return Math.round(totalPct / teacherAttempts.length);
+  }, [quizzes, quizAttempts]);
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto p-4 md:p-6">
@@ -204,7 +313,13 @@ export default function TeacherAssignmentsView() {
             <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl"><CheckCircle className="h-4 w-4" /></div>
           </div>
           <div className="mt-3">
-            <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">92%</h3>
+            <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">
+              {isLoadingSubmissions || isLoadingStudents ? (
+                <Skeleton className="h-6 w-12" />
+              ) : (
+                `${avgCompletionRate}%`
+              )}
+            </h3>
             <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Class submission rate</p>
           </div>
         </Card>
@@ -215,7 +330,15 @@ export default function TeacherAssignmentsView() {
             <div className="p-2 bg-orange-50 text-orange-600 rounded-xl"><GraduationCap className="h-4 w-4" /></div>
           </div>
           <div className="mt-3">
-            <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">84%</h3>
+            <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">
+              {isLoadingQuizzes || isLoadingAttempts ? (
+                <Skeleton className="h-6 w-12" />
+              ) : quizPerformanceAvg > 0 ? (
+                `${quizPerformanceAvg}%`
+              ) : (
+                '—'
+              )}
+            </h3>
             <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Quiz performance average</p>
           </div>
         </Card>

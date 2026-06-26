@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
-import { Assignment } from '@/lib/types';
+import { Assignment, Student, StudentSubmission, QuizAttempt } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AssignmentSubmissionsList } from './assignment-submissions-list';
@@ -21,12 +21,64 @@ export default function AdminAssignmentsView() {
   );
   const { data: assignments, isLoading: isLoadingAssignments } = useCollection<Assignment>(assignmentsQuery);
 
+  const submissionsQuery = useMemoFirebase(
+    () => (schoolId && firestore) ? query(collection(firestore, 'submissions'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<StudentSubmission>(submissionsQuery);
+
+  const quizAttemptsQuery = useMemoFirebase(
+    () => (schoolId && firestore) ? query(collection(firestore, 'quizAttempts'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: quizAttempts, isLoading: isLoadingAttempts } = useCollection<QuizAttempt>(quizAttemptsQuery);
+
+  const studentsQuery = useMemoFirebase(
+    () => (schoolId && firestore) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+
   const sortedAssignments = useMemo(() => {
     if (!assignments) return [];
     return [...assignments].sort((a, b) => (b.createdAt?.toDate?.()?.getTime() || 0) - (a.createdAt?.toDate?.()?.getTime() || 0));
   }, [assignments]);
 
-  const isLoading = isLoadingSchool || isLoadingAssignments;
+  const isLoading = isLoadingSchool || isLoadingAssignments || isLoadingSubmissions || isLoadingAttempts || isLoadingStudents;
+
+  // Dynamic statistics calculations
+  const avgSubmissionRate = useMemo(() => {
+    if (!assignments || !students || !submissions || assignments.length === 0) return 0;
+    let totalExpected = 0;
+    let totalActual = 0;
+
+    assignments.forEach((assign) => {
+      const classStudentsCount = students.filter(
+        (s) => s.classId === assign.classId && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
+      ).length;
+
+      const assignmentSubmissionsCount = submissions.filter(
+        (sub) => sub.assignmentId === assign.id
+      ).length;
+
+      totalExpected += classStudentsCount;
+      totalActual += assignmentSubmissionsCount;
+    });
+
+    if (totalExpected === 0) return 0;
+    return Math.round((totalActual / totalExpected) * 100);
+  }, [assignments, students, submissions]);
+
+  const courseAverageGrade = useMemo(() => {
+    if (!quizAttempts || quizAttempts.length === 0) return 0;
+
+    const totalPct = quizAttempts.reduce(
+      (sum, attempt) => sum + (attempt.score / (attempt.total || 5)) * 100,
+      0
+    );
+    return Math.round(totalPct / quizAttempts.length);
+  }, [quizAttempts]);
+
   const activeAssignmentsCount = assignments?.length || 0;
 
   return (
@@ -73,7 +125,13 @@ export default function AdminAssignmentsView() {
             <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl"><CheckCircle className="h-4 w-4" /></div>
           </div>
           <div className="mt-3">
-            <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">94%</h3>
+            <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">
+              {isLoadingSubmissions || isLoadingStudents ? (
+                <Skeleton className="h-6 w-12" />
+              ) : (
+                `${avgSubmissionRate}%`
+              )}
+            </h3>
             <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Timely response averages</p>
           </div>
         </Card>
@@ -84,7 +142,15 @@ export default function AdminAssignmentsView() {
             <div className="p-2 bg-purple-50 text-purple-600 rounded-xl"><GraduationCap className="h-4 w-4" /></div>
           </div>
           <div className="mt-3">
-            <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">83%</h3>
+            <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">
+              {isLoadingAttempts ? (
+                <Skeleton className="h-6 w-12" />
+              ) : courseAverageGrade > 0 ? (
+                `${courseAverageGrade}%`
+              ) : (
+                '—'
+              )}
+            </h3>
             <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Class evaluation index</p>
           </div>
         </Card>

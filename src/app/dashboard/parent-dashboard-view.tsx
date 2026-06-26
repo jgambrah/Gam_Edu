@@ -41,7 +41,8 @@ export function ParentDashboard({
   classAssessments = [],
   assignments = [],
   submissions = [],
-  students = []
+  students = [],
+  classes = []
 }: any) {
     const displayName = profile?.firstName || 'Parent';
     const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'attendance' | 'academics' | 'examination' | 'assignments' | 'financials' | 'notices' | 'canteen' | 'satisfaction'>('overview');
@@ -194,6 +195,11 @@ export function ParentDashboard({
     const activeChildId = selectedChildId || children?.[0]?.uid || '';
     const activeChild = useMemo(() => children?.find((c: any) => c.uid === activeChildId), [children, activeChildId]);
     const activeClassId = activeChild?.classId || '';
+    const activeClassName = useMemo(() => {
+        if (!activeClassId) return 'Unassigned';
+        const matchedClass = classes?.find((c: any) => c.id === activeClassId || c.uid === activeClassId);
+        return matchedClass?.name || activeClassId;
+    }, [activeClassId, classes]);
 
     // Active Child Stickers
     const activeChildStickers = useMemo(() => {
@@ -841,7 +847,7 @@ export function ParentDashboard({
                                         )}
                                         
                                         <h3 className="font-black text-slate-800 text-xl mt-4 uppercase tracking-tight">{activeChild.firstName} {activeChild.lastName}</h3>
-                                        <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mt-1">Class Code: {activeChild.classId || 'Unassigned'}</p>
+                                        <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mt-1">Class Code: {activeClassName}</p>
 
                                         {/* Profile Meta List */}
                                         <div className="w-full space-y-3.5 mt-8 pt-6 border-t border-slate-100">

@@ -25,6 +25,8 @@ import { generateQuiz } from '@/ai/flows/generate-quiz-flow';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import type { Class } from '@/lib/types';
 import { errorEmitter, FirestorePermissionError } from '@/firebase';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   const firestore = useFirestore();
@@ -32,6 +34,8 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previewQuiz, setPreviewQuiz] = useState<any | null>(null);
+  const [formValues, setFormValues] = useState<any | null>(null);
 
   const classesQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId)) : null,
@@ -67,24 +71,12 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
       toast({ title: 'Generating Quiz...', description: 'Please wait while the AI creates your quiz.' });
       const quizData = await generateQuiz({ topic: values.topic, numQuestions: values.numQuestions, forGradeLevel: 'Grade 9' });
       
-      const quizzesCollection = collection(firestore!, 'quizzes');
-      const dataToSave = {
-        ...quizData,
-        classId: values.classId,
-        teacherId: user.uid,
-        schoolId: schoolId,
-        topic: values.topic,
-        createdAt: serverTimestamp(),
-      };
-
-      await addDoc(quizzesCollection, dataToSave);
-
+      setPreviewQuiz(quizData);
+      setFormValues(values);
       toast({
-        title: 'Quiz Created!',
-        description: `The quiz "${quizData.title}" has been successfully generated.`,
+        title: 'Quiz Generated!',
+        description: 'Review the questions below before dispatching.',
       });
-      form.reset();
-      setOpen(false);
     } catch (error: any) {
       if (error.name === 'FirebaseError' && error.code === 'permission-denied') {
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -96,13 +88,121 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: 'An AI or network error occurred while creating the quiz.',
+          description: 'An AI or network error occurred while generating the quiz.',
         });
       }
-      console.error('Error creating quiz:', error);
+      console.error('Error generating quiz:', error);
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (previewQuiz) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-200">
+        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-150 space-y-4">
+          <div className="flex justify-between items-center border-b pb-3">
+            <div>
+              <h3 className="font-extrabold text-slate-800 text-sm uppercase">{previewQuiz.title}</h3>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Topic: {formValues?.topic}</p>
+            </div>
+            <Badge variant="outline" className="bg-purple-100 text-purple-800 border-none uppercase text-[9px] rounded-lg px-2.5">
+              {previewQuiz.questions?.length || 0} Questions
+            </Badge>
+          </div>
+
+          <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+            {previewQuiz.questions?.map((q: any, idx: number) => (
+              <div key={idx} className="bg-white p-4 rounded-xl border border-slate-100 space-y-2.5">
+                <div className="flex items-start gap-2">
+                  <span className="text-xs font-black text-purple-650 mt-0.5">{idx + 1}.</span>
+                  <p className="text-xs font-bold text-slate-700 leading-normal">{q.questionText}</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-5">
+                  {q.options.map((opt: string, oIdx: number) => {
+                    const isCorrect = opt === q.correctAnswer;
+                    return (
+                      <div 
+                        key={oIdx} 
+                        className={cn(
+                          "p-2.5 rounded-lg text-[10px] font-semibold transition-all border",
+                          isCorrect 
+                            ? "bg-emerald-50 border-emerald-250 text-emerald-800 font-bold" 
+                            : "bg-white border-slate-150 text-slate-500"
+                        )}
+                      >
+                        <span className="mr-1 font-bold">{String.fromCharCode(65 + oIdx)}.</span> {opt}
+                        {isCorrect && <span className="ml-1.5 text-[8px] bg-emerald-600 text-white font-extrabold uppercase px-1 py-0.5 rounded">Correct</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+                {q.explanation && (
+                  <p className="text-[9px] text-slate-400 font-bold pl-5 leading-normal italic">
+                    Explanation: {q.explanation}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <Button 
+            type="button"
+            variant="outline" 
+            onClick={() => {
+              setPreviewQuiz(null);
+              setFormValues(null);
+            }}
+            className="flex-1 h-11 rounded-xl border-2 border-slate-200 text-slate-500 font-bold text-xs uppercase"
+            disabled={isSubmitting}
+          >
+            Cancel / Edit
+          </Button>
+          <Button 
+            type="button"
+            onClick={async () => {
+              if (!user || !schoolId || !firestore) return;
+              setIsSubmitting(true);
+              try {
+                const quizzesCollection = collection(firestore!, 'quizzes');
+                const dataToSave = {
+                  ...previewQuiz,
+                  classId: formValues.classId,
+                  teacherId: user.uid,
+                  schoolId: schoolId,
+                  topic: formValues.topic,
+                  createdAt: serverTimestamp(),
+                };
+                await addDoc(quizzesCollection, dataToSave);
+                toast({
+                  title: 'Quiz Dispatched!',
+                  description: `The quiz "${previewQuiz.title}" has been successfully dispatched to the students.`,
+                });
+                setPreviewQuiz(null);
+                setFormValues(null);
+                form.reset();
+                setOpen(false);
+              } catch (error: any) {
+                console.error('Error saving quiz:', error);
+                toast({
+                  variant: 'destructive',
+                  title: 'Error',
+                  description: 'Failed to dispatch quiz. Please try again.',
+                });
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+            className="flex-1 h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-650 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs uppercase"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Dispatch to Students"}
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -180,7 +280,7 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
             {isSubmitting ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin text-white" /> Generating AI Assessment...</>
             ) : (
-              <><Wand2 className="mr-2 h-4 w-4 text-white" /> Generate & Dispatch Quiz</>
+              <><Wand2 className="mr-2 h-4 w-4 text-white" /> Generate & Review Quiz</>
             )}
           </Button>
         </form>

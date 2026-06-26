@@ -6,8 +6,9 @@ import {
   useCollection,
   useMemoFirebase,
 } from '@/firebase';
-import { collection, query, onSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot, where } from 'firebase/firestore';
 import { Assignment, StudentSubmission } from '@/lib/types';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 import {
   Card,
   CardContent,
@@ -37,11 +38,15 @@ type AssignmentSubmissionsListProps = {
 
 export function AssignmentSubmissionsList({ assignment, readOnly = false }: AssignmentSubmissionsListProps) {
   const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
   const [isExpanded, setExpanded] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState<StudentSubmission | null>(null);
   const [isGrading, setIsGrading] = useState(false);
   
-  const submissionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore!, `assignments/${assignment.id}/submissions`)) : null, [firestore, assignment.id]);
+  const submissionsQuery = useMemoFirebase(() => 
+    (firestore && schoolId) ? query(collection(firestore!, 'submissions'), where('assignmentId', '==', assignment.id), where('schoolId', '==', schoolId)) : null, 
+    [firestore, schoolId, assignment.id]
+  );
   const { data: submissions, isLoading } = useCollection<StudentSubmission>(submissionsQuery);
 
   const handleGradeClick = (submission: StudentSubmission) => {
