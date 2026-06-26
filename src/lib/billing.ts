@@ -26,7 +26,8 @@ export async function billStudentForAttendance(
   student: Student,
   attendanceDate: Date,
   schoolId: string,
-  providedRates?: { canteen: number, transport: number }
+  providedRates?: { canteen: number, transport: number },
+  existingBillIds?: Set<string>
 ): Promise<BillingResult> {
   
   try {
@@ -71,8 +72,8 @@ export async function billStudentForAttendance(
     const billedServices: string[] = [];
 
     // 3. Process Canteen Bill (Using Deterministic ID)
-    if (shouldBillCanteen && canteenRate > 0) {
-        const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
+    const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
+    if (shouldBillCanteen && canteenRate > 0 && (!existingBillIds || !existingBillIds.has(canteenRecordId))) {
         const canteenRef = doc(firestore, 'financialRecords', canteenRecordId);
         
         batch.set(canteenRef, {
@@ -94,8 +95,8 @@ export async function billStudentForAttendance(
     }
 
     // 4. Process Transport Bill (Using Deterministic ID)
-    if (isDailyTransportSubscriber && transportRate > 0) {
-        const transportRecordId = `transport-${student.uid}-${dateStr}`;
+    const transportRecordId = `transport-${student.uid}-${dateStr}`;
+    if (isDailyTransportSubscriber && transportRate > 0 && (!existingBillIds || !existingBillIds.has(transportRecordId))) {
         const transportRef = doc(firestore, 'financialRecords', transportRecordId);
         
         batch.set(transportRef, {
@@ -179,6 +180,16 @@ export async function billMultipleStudents(
       });
   });
 
+  // Fetch existing bills for this date and school to avoid overwriting them
+  const normalizedDate = startOfDay(attendanceDate);
+  const billsQuery = query(
+      collection(firestore, 'financialRecords'),
+      where('schoolId', '==', schoolId),
+      where('dueDate', '==', Timestamp.fromDate(normalizedDate))
+  );
+  const billsSnap = await getDocs(billsQuery);
+  const existingBillIds = new Set(billsSnap.docs.map(d => d.id));
+
   let successful = 0;
   let failed = 0;
   let totalBilled = 0;
@@ -202,7 +213,7 @@ export async function billMultipleStudents(
     const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, { 
         canteen: studentCanteenRate, 
         transport: transportRate 
-    });
+    }, existingBillIds);
     
     if (result.success) {
       if (result.amountBilled > 0) {

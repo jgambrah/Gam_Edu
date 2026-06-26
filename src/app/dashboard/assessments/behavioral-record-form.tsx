@@ -28,8 +28,9 @@ import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, where } from 'firebase/firestore'; 
+import { collection, addDoc, serverTimestamp, query, where, doc, getDoc } from 'firebase/firestore'; 
 import { behavioralRecordSchema, Student } from '@/lib/types';
+import { TimelineService } from '@/lib/timeline-service';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -93,6 +94,42 @@ export function BehavioralRecordForm() {
         createdAt: new Date(),
         schoolId: schoolId,
       });
+
+      let academicYear = '';
+      let term = '';
+      try {
+          const settingsSnap = await getDoc(doc(firestore!, 'schoolSettings', schoolId));
+          if (settingsSnap.exists()) {
+              academicYear = settingsSnap.data().academicYear || '';
+              term = settingsSnap.data().term || '';
+          }
+      } catch (e) {
+          console.error("Failed to fetch settings:", e);
+      }
+
+      try {
+          await TimelineService.logEvent(firestore!, {
+              studentId: values.studentId,
+              title: `Behavioral: ${values.incidentType}`,
+              description: `${values.description}.${values.actionTaken ? ' Action Taken: "' + values.actionTaken + '"' : ''}`,
+              category: 'behavior',
+              academicYear,
+              term,
+              classId: student?.classId || null,
+              schoolId,
+              recordedBy: user.displayName || 'Staff',
+              recordedById: user.uid,
+              metadata: {
+                  incidentType: values.incidentType,
+                  description: values.description,
+                  actionTaken: values.actionTaken
+              },
+              date: values.date || new Date()
+          });
+      } catch (err) {
+          console.error("Failed to log timeline event for behavior log:", err);
+      }
+
       toast({ title: 'Success', description: 'Behavioral record logged.' });
       form.reset();
     } catch (error) {

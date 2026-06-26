@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { logAuditEvent } from '@/lib/audit';
-import { collection, doc, query, where, getDocs, onSnapshot, updateDoc, serverTimestamp, addDoc, orderBy } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs, getDoc, onSnapshot, updateDoc, serverTimestamp, addDoc, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -62,6 +62,7 @@ import { StudentDisplay } from '@/components/student-display';
 import { generateNextStudentId } from '@/lib/student-utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
+import { TimelineService } from '@/lib/timeline-service';
 
 function ParentApplicationForm({ onSuccess, schoolId }: { onSuccess: () => void, schoolId: string }) {
     const { user } = useUser();
@@ -312,6 +313,37 @@ function AdminApplicationDashboard() {
                 };
                 
                 await addDoc(collection(firestore, 'students'), studentData);
+
+                let academicYear = '';
+                let term = '';
+                try {
+                    const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId));
+                    if (settingsSnap.exists()) {
+                        academicYear = settingsSnap.data().academicYear || '';
+                        term = settingsSnap.data().term || '';
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch settings:", e);
+                }
+
+                try {
+                    await TimelineService.logEvent(firestore, {
+                        studentId: selectedApp.submittedByParentId,
+                        title: "Admission Approved",
+                        description: `Admission application (${selectedApp.applicationId}) has been approved and student is assigned to class ${availableClasses?.find(c => c.id === assignedClass)?.name || assignedClass}.`,
+                        category: 'admission',
+                        classId: assignedClass,
+                        className: availableClasses?.find(c => c.id === assignedClass)?.name || null,
+                        schoolId,
+                        recordedBy: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user.displayName || 'System'),
+                        recordedById: user.uid,
+                        academicYear,
+                        term,
+                        date: new Date()
+                    });
+                } catch (err) {
+                    console.error("Failed to log timeline event for approved admission:", err);
+                }
 
                 await updateDoc(appRef, {
                     status: 'Admitted',

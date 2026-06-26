@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft, History, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import { TimelineService } from '@/lib/timeline-service';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import {
@@ -180,6 +181,8 @@ export default function GradebookPage() {
                 if (score !== '' && score !== null && !isNaN(Number(score))) {
                     const student = students?.find(s => s.uid === studentId);
                     const studentName = `${student?.firstName || ''} ${student?.lastName || ''}`.trim();
+                    const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
+                    const className = classes?.find((c: any) => c.id === classId)?.name || null;
                     
                     const newAssessmentRef = doc(collection(firestore, 'assessments'));
                     batch.set(newAssessmentRef, {
@@ -198,6 +201,31 @@ export default function GradebookPage() {
                         createdAt: serverTimestamp(),
                         assessmentDate: serverTimestamp()
                     });
+
+                    // Log to timeline
+                    TimelineService.logEventBatch(firestore, batch, {
+                        studentId,
+                        title: `Graded: ${assessmentType}`,
+                        description: `Scored ${score}/${maxScore} in ${subjectName}.${remarks[studentId] ? ' Remark: "' + remarks[studentId] + '"' : ''}`,
+                        category: 'academic',
+                        academicYear,
+                        term,
+                        classId,
+                        className,
+                        schoolId,
+                        recordedBy: user.displayName || 'Teacher',
+                        recordedById: user.uid,
+                        metadata: {
+                            score: Number(score),
+                            maxScore: Number(maxScore),
+                            subjectId,
+                            subjectName,
+                            assessmentType,
+                            remark: remarks[studentId] || ''
+                        },
+                        date: new Date()
+                    });
+
                     count++;
                     updatedStudentIds.push(studentId);
                 }

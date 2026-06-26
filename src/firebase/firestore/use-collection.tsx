@@ -77,6 +77,10 @@ export function useCollection<T = any>(
     setData(null); // Explicitly clear old data to prevent state confusion
     setError(null);
 
+    const pathForLogging = 'path' in memoizedTargetRefOrQuery
+      ? (memoizedTargetRefOrQuery as CollectionReference).path
+      : (memoizedTargetRefOrQuery as any)?._query?.path?.canonicalString?.() || 'unknown-query-path';
+
     const unsubscribe = onSnapshot(
       memoizedTargetRefOrQuery,
       (snapshot: QuerySnapshot<DocumentData>) => {
@@ -89,7 +93,7 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (error: FirestoreError) => {
-        console.error("Original FirestoreError in useCollection:", error);
+        console.error("Original FirestoreError in useCollection:", error, "for query path:", pathForLogging);
         const path: string =
           'path' in memoizedTargetRefOrQuery
             ? (memoizedTargetRefOrQuery as CollectionReference).path

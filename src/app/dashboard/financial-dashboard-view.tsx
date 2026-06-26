@@ -17,6 +17,7 @@ interface FinancialDashboardViewProps {
   students: any[];
   classes: any[];
   financialRecords: any[];
+  payments?: any[];
   accounts: any[];
   budgets: any[];
   budgetItems: any[];
@@ -29,6 +30,7 @@ export function FinancialDashboardView({
   students,
   classes,
   financialRecords,
+  payments = [],
   accounts,
   budgets,
   budgetItems,
@@ -81,32 +83,32 @@ export function FinancialDashboardView({
     let collectedThisTerm = 0;
     let collectedThisYear = 0;
 
-    if (financialRecords) {
-      financialRecords.forEach((r: any) => {
-        const studentObj = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
+    if (payments) {
+      payments.forEach((p: any) => {
+        const studentObj = students?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
         if (!studentObj) return;
         const isActive = studentObj.enrollmentStatus === 'Active' || !studentObj.enrollmentStatus;
         if (!isActive) return;
 
-        const paid = Number(r.amountPaid) || 0;
-        if (paid <= 0) return;
+        const amount = Number(p.amount) || 0;
+        if (amount <= 0) return;
 
-        const dateVal = r.createdAt || r.date;
+        const dateVal = p.paidAt || p.createdAt || p.date;
         if (!dateVal) return;
         const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
         if (isNaN(d.getTime())) return;
 
         if (d >= startOfToday) {
-          collectedToday += paid;
+          collectedToday += amount;
         }
         if (d >= startOfThisMonth) {
-          collectedThisMonth += paid;
+          collectedThisMonth += amount;
         }
         if (d >= termDates.start && d <= termDates.end) {
-          collectedThisTerm += paid;
+          collectedThisTerm += amount;
         }
         if (d >= startOfThisYear) {
-          collectedThisYear += paid;
+          collectedThisYear += amount;
         }
       });
     }
@@ -117,7 +119,7 @@ export function FinancialDashboardView({
       collectedThisTerm,
       collectedThisYear,
     };
-  }, [financialRecords, termDates, today, students]);
+  }, [payments, termDates, today, students]);
 
   // 3. Expenditure Category Breakdown
   const expensesByCategory = useMemo(() => {
@@ -240,43 +242,39 @@ export function FinancialDashboardView({
   const topDebtors = useMemo(() => {
     if (!financialRecords || !students) return [];
 
-    const studentBalances: Record<string, { outstanding: number; studentName: string; classId: string; status: string }> = {};
-
+    const recordsByStudent: Record<string, any[]> = {};
     financialRecords.forEach((r: any) => {
       if (r.status === 'Pending Reversal') return;
-      const studentObj = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
-      if (!studentObj) return;
-      const isActive = studentObj.enrollmentStatus === 'Active' || !studentObj.enrollmentStatus;
-      if (!isActive) return;
-
-      const billed = Number(r.billedAmount) || 0;
-      const paid = Number(r.amountPaid) || 0;
-      const waiver = Number(r.waiverAmount) || 0;
-      const outstanding = billed - paid - waiver;
-      if (outstanding <= 0) return;
-
-      if (!studentBalances[r.studentId]) {
-        studentBalances[r.studentId] = {
-          outstanding: 0,
-          studentName: r.studentName || "Unknown Student",
-          classId: r.classId || "",
-          status: r.status || "Unpaid"
-        };
+      const key = r.studentId;
+      if (!recordsByStudent[key]) {
+        recordsByStudent[key] = [];
       }
-      studentBalances[r.studentId].outstanding += outstanding;
+      recordsByStudent[key].push(r);
     });
 
-    return Object.entries(studentBalances).map(([studentId, data]) => {
-      const studentObj = students.find((s: any) => s.uid === studentId || s.id === studentId);
-      const classObj = classes?.find((c: any) => c.id === data.classId || c.id === studentObj?.classId);
-      return {
-        studentId,
-        name: studentObj ? `${studentObj.firstName || ""} ${studentObj.lastName || ""}`.trim() : data.studentName,
-        className: classObj?.name || "Unassigned",
-        outstanding: data.outstanding,
-        status: data.status
-      };
-    }).sort((a, b) => b.outstanding - a.outstanding).slice(0, 5);
+    return students
+      .filter((student: any) => student.enrollmentStatus === 'Active' || !student.enrollmentStatus)
+      .map((student: any) => {
+        const studentRecords = recordsByStudent[student.uid] || recordsByStudent[student.id] || [];
+        const totalBilled = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
+        const totalPaid = studentRecords.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
+        const outstanding = totalBilled - totalPaid;
+
+        const classObj = classes?.find((c: any) => c.id === student.classId);
+        const hasOverdue = studentRecords.some(r => r.status === 'Overdue');
+        const status = hasOverdue ? 'Overdue' : 'Unpaid';
+
+        return {
+          studentId: student.uid || student.id,
+          name: `${student.firstName || ""} ${student.lastName || ""}`.trim(),
+          className: classObj?.name || "Unassigned",
+          outstanding,
+          status
+        };
+      })
+      .filter((d: any) => d.outstanding > 0.01)
+      .sort((a: any, b: any) => b.outstanding - a.outstanding)
+      .slice(0, 5);
   }, [financialRecords, students, classes]);
 
   // 6. Debt Aging Analysis

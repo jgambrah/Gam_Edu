@@ -33,8 +33,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -42,6 +43,8 @@ import { StudentSearchInput } from '@/components/student-search';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent, formatStudentId, generateNextStudentId } from '@/lib/student-utils';
 import { sendSMSAction } from '@/app/actions/sms';
+import { TimelineService } from '@/lib/timeline-service';
+import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
 
 
 export default function StudentsV3Page() {
@@ -304,6 +307,25 @@ export default function StudentsV3Page() {
               allergies: (values.allergies as string) || null,
               healthNotes: (values.healthNotes as string) || null
           });
+
+          try {
+              await TimelineService.logEvent(firestore!, {
+                  studentId: result.uid,
+                  title: "Admitted & Enrolled",
+                  description: `Officially admitted to the school registry and placed in class ${classes.find(c => c.id === selectedClassId)?.name || 'Unassigned'}.`,
+                  category: 'admission',
+                  classId: selectedClassId || null,
+                  className: classes.find(c => c.id === selectedClassId)?.name || null,
+                  schoolId: adminSchoolId,
+                  recordedBy: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || 'System'),
+                  recordedById: user?.uid || 'system',
+                  academicYear: schoolSettings?.academicYear || '',
+                  term: schoolSettings?.term || '',
+                  date: new Date()
+              });
+          } catch (err) {
+              console.error("Failed to log timeline event for enrollment:", err);
+          }
 
           await logAuditEvent({
               firestore: firestore!,
@@ -793,186 +815,203 @@ export default function StudentsV3Page() {
 
       {/* EDIT/VIEW MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{canManage ? 'Edit Student Profile' : 'Student Profile'}</DialogTitle></DialogHeader>
             {editingStudent && (
-                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
-                    <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                        <div className="relative h-24 w-24 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center overflow-hidden shadow-inner">
-                            {photoPreviewUrl ? (
-                                <img src={photoPreviewUrl} alt="Preview" className="h-full w-full object-cover" />
-                            ) : editingStudent.photoURL ? (
-                                <img src={editingStudent.photoURL} alt="Current" className="h-full w-full object-cover" />
-                            ) : (
-                                <Camera className="h-8 w-8 text-slate-300" />
-                            )}
-                        </div>
-                        {!isSecretary && (
-                            <div className="flex flex-col items-center">
-                                <Label htmlFor="photo-upload-edit" className="cursor-pointer bg-white border px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 flex items-center gap-2 shadow-sm">
-                                    <Upload className="h-3 w-3"/> Change Profile Photo
-                                </Label>
-                                <input id="photo-upload-edit" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required disabled={isSecretary} /></div>
-                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required disabled={isSecretary} /></div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100 cursor-not-allowed" /></div>
-                        <div className="space-y-2">
-                            <Label>Enrollment Status</Label>
-                            <Select value={selectedStatus} onValueChange={setSelectedStatus} disabled={isSecretary}>
-                                <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Active">Active</SelectItem>
-                                    <SelectItem value="Inactive">Inactive</SelectItem>
-                                    <SelectItem value="Suspended">Suspended</SelectItem>
-                                    <SelectItem value="Withdrawn">Withdrawn</SelectItem>
-                                    <SelectItem value="Graduated">Graduated</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Class</Label>
-                        <Select value={selectedClassId} onValueChange={setSelectedClassId} disabled={isSecretary}>
-                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                            <SelectContent>{classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} disabled={isSecretary} /></div>
-                        <div className="space-y-2">
-                            <Label>Gender</Label>
-                            <Select value={selectedGender} onValueChange={setSelectedGender} disabled={isSecretary}>
-                                <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
-                                <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} disabled={isSecretary} /></div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Blood Group</Label>
-                            <Select name="bloodGroup" defaultValue={editingStudent.bloodGroup || editingStudent.medical?.bloodGroup || ''} disabled={isSecretary}>
-                                <SelectTrigger className="bg-white">
-                                    <SelectValue placeholder="Select blood group" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="A+">A+</SelectItem>
-                                    <SelectItem value="A-">A-</SelectItem>
-                                    <SelectItem value="B+">B+</SelectItem>
-                                    <SelectItem value="B-">B-</SelectItem>
-                                    <SelectItem value="AB+">AB+</SelectItem>
-                                    <SelectItem value="AB-">AB-</SelectItem>
-                                    <SelectItem value="O+">O+</SelectItem>
-                                    <SelectItem value="O-">O-</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Chronic Illnesses / Conditions</Label>
-                            <Input name="chronicIllnesses" placeholder="e.g. Asthma, Diabetes" defaultValue={editingStudent.chronicIllnesses || editingStudent.medical?.conditions || ''} disabled={isSecretary} />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Allergies</Label>
-                            <Input name="allergies" placeholder="e.g. Peanuts, Penicillin, Dust" defaultValue={editingStudent.allergies || editingStudent.medical?.allergies || ''} disabled={isSecretary} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Other Health Notes / Issues</Label>
-                            <Input name="healthNotes" placeholder="e.g. Wears glasses, ADHD" defaultValue={editingStudent.healthNotes || ''} disabled={isSecretary} />
-                        </div>
-                    </div>
-
-                    {/* Boarding & Housing Details (Read-only Profile section) */}
-                    {(() => {
-                        const alloc = hostelAllocations.find(a => a.studentId === editingStudent.id);
-                        if (alloc) {
-                            return (
-                                <div className="p-4 border rounded-2xl bg-indigo-50/30 border-indigo-100 space-y-2.5 shadow-sm">
-                                    <h4 className="font-bold text-xs uppercase tracking-wider text-indigo-800 flex items-center gap-1.5">
-                                        <Home className="h-4 w-4" /> Boarding & Housing Allocation
-                                    </h4>
-                                    <div className="grid grid-cols-2 gap-4 text-xs">
-                                        <div>
-                                            <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Hostel Block</span>
-                                            <span className="font-semibold text-slate-800 text-[13px]">{alloc.blockName}</span>
-                                        </div>
-                                        <div>
-                                            <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Room & Bed</span>
-                                            <span className="font-semibold text-slate-800 text-[13px]">Room {alloc.roomNumber} (Bed {alloc.bedIdentifier})</span>
-                                        </div>
-                                        <div className="col-span-2 border-t border-indigo-100/50 pt-2 mt-1">
-                                            <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Check-in Date</span>
-                                            <span className="font-semibold text-slate-800">
-                                                {alloc.checkInDate?.toDate ? alloc.checkInDate.toDate().toLocaleDateString() : new Date(alloc.checkInDate).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        }
-                        return null;
-                    })()}
+                <Tabs defaultValue="profile" className="w-full mt-4">
+                    <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-xl">
+                        <TabsTrigger value="profile" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                            <GraduationCap className="h-4 w-4 mr-2" /> Profile Details
+                        </TabsTrigger>
+                        <TabsTrigger value="timeline" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                            <Milestone className="h-4 w-4 mr-2" /> Journey Timeline
+                        </TabsTrigger>
+                    </TabsList>
                     
-                    {canEditBillingToggles ? (
-                        <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
-                            <h4 className="font-bold text-sm text-slate-700">Services & Subscriptions</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <TabsContent value="profile" className="mt-4">
+                        <form onSubmit={handleUpdateStudent} className="space-y-4">
+                            <div className="flex flex-col items-center gap-4 py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                                <div className="relative h-24 w-24 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center overflow-hidden shadow-inner">
+                                    {photoPreviewUrl ? (
+                                        <img src={photoPreviewUrl} alt="Preview" className="h-full w-full object-cover" />
+                                    ) : editingStudent.photoURL ? (
+                                        <img src={editingStudent.photoURL} alt="Current" className="h-full w-full object-cover" />
+                                    ) : (
+                                        <Camera className="h-8 w-8 text-slate-300" />
+                                    )}
+                                </div>
+                                {!isSecretary && (
+                                    <div className="flex flex-col items-center">
+                                        <Label htmlFor="photo-upload-edit" className="cursor-pointer bg-white border px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 flex items-center gap-2 shadow-sm">
+                                            <Upload className="h-3 w-3"/> Change Profile Photo
+                                        </Label>
+                                        <input id="photo-upload-edit" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedPhoto(e.target.files?.[0] || null)} />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required disabled={isSecretary} /></div>
+                                <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required disabled={isSecretary} /></div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100 cursor-not-allowed" /></div>
                                 <div className="space-y-2">
-                                    <Label className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen Mode</Label>
-                                    <Select value={canteenBillingMode} onValueChange={(val: any) => setCanteenBillingMode(val)}>
-                                        <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                    <Label>Enrollment Status</Label>
+                                    <Select value={selectedStatus} onValueChange={setSelectedStatus} disabled={isSecretary}>
+                                        <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Daily">Daily</SelectItem>
-                                            <SelectItem value="Termly">Termly</SelectItem>
-                                            <SelectItem value="None">None</SelectItem>
+                                            <SelectItem value="Active">Active</SelectItem>
+                                            <SelectItem value="Inactive">Inactive</SelectItem>
+                                            <SelectItem value="Suspended">Suspended</SelectItem>
+                                            <SelectItem value="Withdrawn">Withdrawn</SelectItem>
+                                            <SelectItem value="Graduated">Graduated</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Class</Label>
+                                <Select value={selectedClassId} onValueChange={setSelectedClassId} disabled={isSecretary}>
+                                    <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                                    <SelectContent>{classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} disabled={isSecretary} /></div>
+                                <div className="space-y-2">
+                                    <Label>Gender</Label>
+                                    <Select value={selectedGender} onValueChange={setSelectedGender} disabled={isSecretary}>
+                                        <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
+                                        <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} disabled={isSecretary} /></div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Blood Group</Label>
+                                    <Select name="bloodGroup" defaultValue={editingStudent.bloodGroup || editingStudent.medical?.bloodGroup || ''} disabled={isSecretary}>
+                                        <SelectTrigger className="bg-white">
+                                            <SelectValue placeholder="Select blood group" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="A+">A+</SelectItem>
+                                            <SelectItem value="A-">A-</SelectItem>
+                                            <SelectItem value="B+">B+</SelectItem>
+                                            <SelectItem value="B-">B-</SelectItem>
+                                            <SelectItem value="AB+">AB+</SelectItem>
+                                            <SelectItem value="AB-">AB-</SelectItem>
+                                            <SelectItem value="O+">O+</SelectItem>
+                                            <SelectItem value="O-">O-</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Bus Subscription</Label>
-                                    <div className="flex items-center space-x-2 h-10">
-                                        <Checkbox id="editUsesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
-                                        <Label htmlFor="editUsesBusService" className="cursor-pointer font-medium text-slate-600">Uses School Bus</Label>
-                                    </div>
+                                    <Label>Chronic Illnesses / Conditions</Label>
+                                    <Input name="chronicIllnesses" placeholder="e.g. Asthma, Diabetes" defaultValue={editingStudent.chronicIllnesses || editingStudent.medical?.conditions || ''} disabled={isSecretary} />
                                 </div>
                             </div>
-                            {usesBus && (
-                                <div className="space-y-2 animate-in fade-in border-t pt-4">
-                                    <Label>Bus Billing Model</Label>
-                                    <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
-                                        <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                                        <SelectContent><SelectItem value="Daily">Daily</SelectItem><SelectItem value="Termly">Termly</SelectItem></SelectContent>
-                                    </Select>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Allergies</Label>
+                                    <Input name="allergies" placeholder="e.g. Peanuts, Penicillin, Dust" defaultValue={editingStudent.allergies || editingStudent.medical?.allergies || ''} disabled={isSecretary} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Other Health Notes / Issues</Label>
+                                    <Input name="healthNotes" placeholder="e.g. Wears glasses, ADHD" defaultValue={editingStudent.healthNotes || ''} disabled={isSecretary} />
+                                </div>
+                            </div>
+
+                            {/* Boarding & Housing Details (Read-only Profile section) */}
+                            {(() => {
+                                const alloc = hostelAllocations.find(a => a.studentId === editingStudent.id);
+                                if (alloc) {
+                                    return (
+                                        <div className="p-4 border rounded-2xl bg-indigo-50/30 border-indigo-100 space-y-2.5 shadow-sm">
+                                            <h4 className="font-bold text-xs uppercase tracking-wider text-indigo-800 flex items-center gap-1.5">
+                                                <Home className="h-4 w-4" /> Boarding & Housing Allocation
+                                            </h4>
+                                            <div className="grid grid-cols-2 gap-4 text-xs">
+                                                <div>
+                                                    <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Hostel Block</span>
+                                                    <span className="font-semibold text-slate-800 text-[13px]">{alloc.blockName}</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Room & Bed</span>
+                                                    <span className="font-semibold text-slate-800 text-[13px]">Room {alloc.roomNumber} (Bed {alloc.bedIdentifier})</span>
+                                                </div>
+                                                <div className="col-span-2 border-t border-indigo-100/50 pt-2 mt-1">
+                                                    <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Check-in Date</span>
+                                                    <span className="font-semibold text-slate-800">
+                                                        {alloc.checkInDate?.toDate ? alloc.checkInDate.toDate().toLocaleDateString() : new Date(alloc.checkInDate).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            })()}
+                            
+                            {canEditBillingToggles ? (
+                                <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
+                                    <h4 className="font-bold text-sm text-slate-700">Services & Subscriptions</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label className="flex items-center gap-2"><Utensils className="h-4 w-4 text-orange-500"/> Canteen Mode</Label>
+                                            <Select value={canteenBillingMode} onValueChange={(val: any) => setCanteenBillingMode(val)}>
+                                                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="Daily">Daily</SelectItem>
+                                                    <SelectItem value="Termly">Termly</SelectItem>
+                                                    <SelectItem value="None">None</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="flex items-center gap-2"><Bus className="h-4 w-4 text-blue-500"/> Bus Subscription</Label>
+                                            <div className="flex items-center space-x-2 h-10">
+                                                <Checkbox id="editUsesBusService" checked={usesBus} onCheckedChange={(v) => setUsesBus(!!v)} />
+                                                <Label htmlFor="editUsesBusService" className="cursor-pointer font-medium text-slate-600">Uses School Bus</Label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {usesBus && (
+                                        <div className="space-y-2 animate-in fade-in border-t pt-4">
+                                            <Label>Bus Billing Model</Label>
+                                            <Select value={billingModel} onValueChange={(val: any) => setBillingModel(val)}>
+                                                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                                                <SelectContent><SelectItem value="Daily">Daily</SelectItem><SelectItem value="Termly">Termly</SelectItem></SelectContent>
+                                            </Select>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="p-4 bg-slate-50 border rounded-xl flex items-center gap-3 opacity-60">
+                                    <Lock className="h-4 w-4 text-slate-400" />
+                                    <p className="text-xs text-slate-500 font-medium italic">Service details are read-only.</p>
                                 </div>
                             )}
-                        </div>
-                    ) : (
-                        <div className="p-4 bg-slate-50 border rounded-xl flex items-center gap-3 opacity-60">
-                            <Lock className="h-4 w-4 text-slate-400" />
-                            <p className="text-xs text-slate-500 font-medium italic">Service details are read-only.</p>
-                        </div>
-                    )}
 
-                    <DialogFooter className="pt-4 border-t mt-6">
-                        {canManage ? (
-                            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
-                                {isSubmitting || isUploadingPhoto ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Save Changes"}
-                            </Button>
-                        ) : (
-                            <Button type="button" variant="outline" className="w-full h-12" onClick={() => setEditingStudent(null)}>Close Profile</Button>
-                        )}
-                    </DialogFooter>
-                </form>
+                            <DialogFooter className="pt-4 border-t mt-6">
+                                {canManage ? (
+                                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold" disabled={isSubmitting || isUploadingPhoto}>
+                                        {isSubmitting || isUploadingPhoto ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Save Changes"}
+                                    </Button>
+                                ) : (
+                                    <Button type="button" variant="outline" className="w-full h-12" onClick={() => setEditingStudent(null)}>Close Profile</Button>
+                                )}
+                            </DialogFooter>
+                        </form>
+                    </TabsContent>
+                    
+                    <TabsContent value="timeline" className="mt-4">
+                        <StudentJourneyTimeline studentId={editingStudent.id} />
+                    </TabsContent>
+                </Tabs>
             )}
         </DialogContent>
       </Dialog>

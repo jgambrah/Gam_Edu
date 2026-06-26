@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition, useCallback } from 'react';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc } from 'firebase/firestore';
+import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, 
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
@@ -57,6 +57,7 @@ import { DisciplineDashboardView } from './discipline-dashboard-view';
 import { SchoolHealthDashboardView } from './school-health-dashboard-view';
 import { FinancialDashboardView } from './financial-dashboard-view';
 import { ParentDashboard } from './parent-dashboard-view';
+import { ParentSatisfactionDashboardView } from './parent-satisfaction-dashboard-view';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600", subtitle }: any) {
   return (
@@ -172,6 +173,7 @@ function AdminDashboard({
   schoolData,
   hasFinanceAccess,
   financialRecords,
+  payments = [],
   attendance,
   schoolId,
   recentAssessments,
@@ -191,8 +193,10 @@ function AdminDashboard({
   budgetItems,
   accounts,
   journals,
+  parentSatisfactionRecords = [],
+  loadingSatisfaction = false,
 }: any) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'system' | 'canteen'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'system' | 'canteen' | 'satisfaction'>('overview');
   const [studentSubTab, setStudentSubTab] = useState<'registry' | 'discipline' | 'admissions' | 'health'>('registry');
   const [staffSubTab, setStaffSubTab] = useState<'directory' | 'performance'>('directory');
   const [isAuditorOpen, setIsAuditorOpen] = useState(false);
@@ -748,22 +752,22 @@ function AdminDashboard({
   }, [todayPresentCount, activeStudents]);
 
   const collectedToday = useMemo(() => {
-    if (!financialRecords) return 0;
+    if (!payments) return 0;
     const today = startOfDay(new Date());
     let total = 0;
-    financialRecords.forEach((r: any) => {
-      const paid = Number(r.amountPaid) || 0;
-      if (paid <= 0) return;
-      const dateVal = r.createdAt || r.date;
+    payments.forEach((p: any) => {
+      const amount = Number(p.amount) || 0;
+      if (amount <= 0) return;
+      const dateVal = p.paidAt || p.createdAt || p.date;
       if (!dateVal) return;
       const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
       if (isNaN(d.getTime())) return;
       if (startOfDay(d).getTime() === today.getTime()) {
-        total += paid;
+        total += amount;
       }
     });
     return total;
-  }, [financialRecords]);
+  }, [payments]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
@@ -838,11 +842,19 @@ function AdminDashboard({
         title: "Canteen Pantry & Approvals",
         description: "Approve cook requisitions, deduct stock, log manual restocking, and audit pantry supplies.",
         badge: "Canteen Operations",
-        badgeColor: "bg-amber-500/20 text-amber-300",
+        badgeColor: "bg-amber-50/20 text-amber-300",
         icon: ChefHat,
+      },
+      satisfaction: {
+        gradient: "from-rose-900 via-rose-950 to-slate-900 border-rose-500/20",
+        title: "Parent Satisfaction & Feedback Control",
+        description: "Review parent complaints, general feedback, teacher appraisals, and service ratings.",
+        badge: "Satisfaction Console",
+        badgeColor: "bg-rose-50/20 text-rose-300",
+        icon: Star,
       }
     };
-    return bannerMap[activeTab];
+    return (bannerMap as any)[activeTab];
   }, [activeTab, studentSubTab, staffSubTab]);
 
   const handleRunAudit = () => {
@@ -898,7 +910,7 @@ function AdminDashboard({
         <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
           {/* Custom Tab Bar */}
           <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-            {(['overview', 'academics', 'attendance', 'students', 'staff', 'financials', 'canteen', 'system'] as const).map((tab) => {
+            {(['overview', 'academics', 'attendance', 'students', 'staff', 'financials', 'canteen', 'satisfaction', 'system'] as const).map((tab) => {
               if (tab === 'financials' && !hasFinanceAccess) return null;
               return (
                 <button
@@ -1792,6 +1804,7 @@ function AdminDashboard({
             students={students || []}
             classes={classes || []}
             financialRecords={financialRecords || []}
+            payments={payments}
             accounts={accounts || []}
             budgets={budgets || []}
             budgetItems={budgetItems || []}
@@ -2157,6 +2170,14 @@ function AdminDashboard({
               </Card>
             </div>
           </div>
+        )}
+
+        {activeTab === 'satisfaction' && (
+          <ParentSatisfactionDashboardView 
+            records={parentSatisfactionRecords}
+            loading={loadingSatisfaction}
+            schoolId={schoolId}
+          />
         )}
 
 
@@ -3769,6 +3790,7 @@ function DirectorDashboard({
   schoolData,
   hasFinanceAccess,
   financialRecords,
+  payments = [],
   attendance,
   schoolId,
   recentAssessments,
@@ -3788,8 +3810,10 @@ function DirectorDashboard({
   budgetItems,
   accounts,
   journals,
+  parentSatisfactionRecords = [],
+  loadingSatisfaction = false,
 }: any) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'canteen' | 'general'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'canteen' | 'general' | 'satisfaction'>('overview');
   const [studentSubTab, setStudentSubTab] = useState<'registry' | 'discipline' | 'admissions' | 'health'>('registry');
   const [staffSubTab, setStaffSubTab] = useState<'directory' | 'performance'>('directory');
   const [isAuditorOpen, setIsAuditorOpen] = useState(false);
@@ -4249,7 +4273,7 @@ function DirectorDashboard({
         title: "Canteen Pantry & Approvals",
         description: "Approve cook requisitions, deduct stock, log manual restocking, and audit pantry supplies.",
         badge: "Canteen Operations",
-        badgeColor: "bg-amber-500/20 text-amber-300",
+        badgeColor: "bg-amber-50/20 text-amber-300",
         icon: ChefHat,
       },
       staff: {
@@ -4257,11 +4281,19 @@ function DirectorDashboard({
         title: staffSubTab === 'directory' ? "Staffing & Faculty Control" : "Staff Performance & Appraisals",
         description: staffSubTab === 'directory' ? "View teacher directory, roles allocations, and general stats." : "Track lesson notes, student homework results, attendance, and reviews.",
         badge: staffSubTab === 'directory' ? "Staff Intelligence" : "Performance Analytics",
-        badgeColor: "bg-blue-500/20 text-blue-300",
+        badgeColor: "bg-blue-50/20 text-blue-300",
         icon: staffSubTab === 'directory' ? Users : Award,
+      },
+      satisfaction: {
+        gradient: "from-rose-900 via-rose-950 to-slate-900 border-rose-500/20",
+        title: "Parent Satisfaction & Feedback Control",
+        description: "Review parent complaints, general feedback, teacher appraisals, and service ratings.",
+        badge: "Satisfaction Console",
+        badgeColor: "bg-rose-50/20 text-rose-300",
+        icon: Star,
       }
     };
-    return bannerMap[activeTab];
+    return (bannerMap as any)[activeTab];
   }, [activeTab, studentSubTab, staffSubTab]);
 
   const activeStudents = useMemo(() => {
@@ -4415,22 +4447,22 @@ function DirectorDashboard({
   }, [todayPresentCount, activeStudents]);
 
   const collectedToday = useMemo(() => {
-    if (!financialRecords) return 0;
+    if (!payments) return 0;
     const today = startOfDay(new Date());
     let total = 0;
-    financialRecords.forEach((r: any) => {
-      const paid = Number(r.amountPaid) || 0;
-      if (paid <= 0) return;
-      const dateVal = r.createdAt || r.date;
+    payments.forEach((p: any) => {
+      const amount = Number(p.amount) || 0;
+      if (amount <= 0) return;
+      const dateVal = p.paidAt || p.createdAt || p.date;
       if (!dateVal) return;
       const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
       if (isNaN(d.getTime())) return;
       if (startOfDay(d).getTime() === today.getTime()) {
-        total += paid;
+        total += amount;
       }
     });
     return total;
-  }, [financialRecords]);
+  }, [payments]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
@@ -4495,7 +4527,7 @@ function DirectorDashboard({
         <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
           {/* Custom Silicon Valley Tab Bar */}
           <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-            {(['overview', 'academics', 'attendance', 'students', 'staff', 'financials', 'canteen', 'general'] as const).map((tab) => (
+            {(['overview', 'academics', 'attendance', 'students', 'staff', 'financials', 'canteen', 'satisfaction', 'general'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -5143,6 +5175,7 @@ function DirectorDashboard({
             students={students || []}
             classes={classes || []}
             financialRecords={financialRecords || []}
+            payments={payments}
             accounts={accounts || []}
             budgets={budgets || []}
             budgetItems={budgetItems || []}
@@ -5508,6 +5541,14 @@ function DirectorDashboard({
               </Card>
             </div>
           </div>
+        )}
+
+        {activeTab === 'satisfaction' && (
+          <ParentSatisfactionDashboardView 
+            records={parentSatisfactionRecords}
+            loading={loadingSatisfaction}
+            schoolId={schoolId}
+          />
         )}
 
         {activeTab === 'students' && (
@@ -11610,8 +11651,11 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && isStaff && !isSupportStaff && !isSecretary && !isReceptionist) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin || isParent)) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, isParent]);
-  const { data: records, isLoading: loadingRecords } = useCollection(recordsQuery);
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin)) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin]);
+  const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
+
+  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin)) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin]);
+  const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
@@ -11630,6 +11674,20 @@ export default function DashboardClient() {
 
   const [selectedChildId, setSelectedChildId] = useState<string>('');
   const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
+
+  const parentRecordsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || !isParent || parentStudentIds.length === 0) return null;
+    return query(
+      collection(firestore, 'financialRecords'),
+      where('schoolId', '==', schoolId),
+      where('studentId', 'in', parentStudentIds)
+    );
+  }, [firestore, schoolId, isParent, parentStudentIds]);
+  const { data: parentRecords, isLoading: loadingParentRecords } = useCollection(parentRecordsQuery);
+
+  const records = isParent ? parentRecords : allRecords;
+  const loadingRecords = isParent ? loadingParentRecords : loadingAllRecords;
+
   const parentChildren = useMemo(() => students?.filter(s => parentStudentIds.includes(s.uid)) || [], [students, parentStudentIds]);
   const parentFinancials = useMemo(() => records?.filter(r => parentStudentIds.includes(r.studentId)) || [], [records, parentStudentIds]);
 
@@ -11733,6 +11791,9 @@ export default function DashboardClient() {
   const submissionsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'submissions'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: submissions } = useCollection<any>(submissionsQuery);
 
+  const parentSatisfactionQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'parent_satisfaction'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId, isAdmin]);
+  const { data: parentSatisfactionRecords, isLoading: loadingSatisfaction } = useCollection<any>(parentSatisfactionQuery);
+
   const roomsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: rooms, isLoading: loadingRooms } = useCollection<any>(roomsQuery);
 
@@ -11792,11 +11853,11 @@ export default function DashboardClient() {
   }
 
   if (role === 'Director') {
-    return <DirectorDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms || loadingMedical} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} schoolId={schoolId} recentAssessments={recentAssessments} parents={parents} admissions={admissions} behavioralRecords={behavioralRecords} staffAttendance={staffAttendance} performanceReviews={performanceReviews} subjects={subjects} schoolSettings={schoolSettings} rooms={rooms} lessonPlans={lessonPlans} assignments={assignments} submissions={submissions} medicalLogs={medicalLogs} budgets={budgets || []} budgetItems={budgetItems || []} accounts={accounts || []} journals={journals || []} />;
+    return <DirectorDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms || loadingMedical} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} payments={payments || []} attendance={attendance} schoolId={schoolId} recentAssessments={recentAssessments} parents={parents} admissions={admissions} behavioralRecords={behavioralRecords} staffAttendance={staffAttendance} performanceReviews={performanceReviews} subjects={subjects} schoolSettings={schoolSettings} rooms={rooms} lessonPlans={lessonPlans} assignments={assignments} submissions={submissions} medicalLogs={medicalLogs} budgets={budgets || []} budgetItems={budgetItems || []} accounts={accounts || []} journals={journals || []} parentSatisfactionRecords={parentSatisfactionRecords || []} loadingSatisfaction={loadingSatisfaction} />;
   }
 
   if (role === 'Administrator') {
-    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms || loadingMedical} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} attendance={attendance} schoolId={schoolId} recentAssessments={recentAssessments} parents={parents} admissions={admissions} behavioralRecords={behavioralRecords} staffAttendance={staffAttendance} performanceReviews={performanceReviews} subjects={subjects} schoolSettings={schoolSettings} rooms={rooms} lessonPlans={lessonPlans} assignments={assignments} submissions={submissions} medicalLogs={medicalLogs} budgets={budgets || []} budgetItems={budgetItems || []} accounts={accounts || []} journals={journals || []} />;
+    return <AdminDashboard profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms || loadingMedical} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} payments={payments || []} attendance={attendance} schoolId={schoolId} recentAssessments={recentAssessments} parents={parents} admissions={admissions} behavioralRecords={behavioralRecords} staffAttendance={staffAttendance} performanceReviews={performanceReviews} subjects={subjects} schoolSettings={schoolSettings} rooms={rooms} lessonPlans={lessonPlans} assignments={assignments} submissions={submissions} medicalLogs={medicalLogs} budgets={budgets || []} budgetItems={budgetItems || []} accounts={accounts || []} journals={journals || []} parentSatisfactionRecords={parentSatisfactionRecords || []} loadingSatisfaction={loadingSatisfaction} />;
   }
 
   if (role === 'Secretary') {

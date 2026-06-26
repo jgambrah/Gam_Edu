@@ -5,7 +5,7 @@ import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@
 import { collection, doc, query, where, orderBy, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2, Users, Calendar as CalendarIcon, Home, ClipboardCopy, Plus, AlertOctagon, HelpCircle, Wallet, Coins } from 'lucide-react';
+import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2, Users, Calendar as CalendarIcon, Home, ClipboardCopy, Plus, AlertOctagon, HelpCircle, Wallet, Coins, Milestone } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/role-context';
@@ -33,6 +33,7 @@ const toDateSafe = (d: any): Date => {
   return new Date(d);
 };
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
 
 function AttendanceHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
@@ -669,12 +670,15 @@ function StudentDetailView({ student }: { student: Student }) {
     return (
         <div className="space-y-6">
             <Tabs defaultValue="attendance" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 bg-slate-100 p-1 rounded-xl">
+                <TabsList className="grid w-full grid-cols-5 bg-slate-100 p-1 rounded-xl">
                     <TabsTrigger value="attendance" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
                         <CalendarCheck className="mr-2 h-4 w-4" /> Attendance Log
                     </TabsTrigger>
                     <TabsTrigger value="behavioral" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
                         <ShieldAlert className="mr-2 h-4 w-4" /> Behavioral Log
+                    </TabsTrigger>
+                    <TabsTrigger value="timeline" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <Milestone className="mr-2 h-4 w-4" /> Journey Timeline
                     </TabsTrigger>
                     <TabsTrigger value="boarding" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
                         <Home className="mr-2 h-4 w-4" /> Boarding Service
@@ -690,6 +694,10 @@ function StudentDetailView({ student }: { student: Student }) {
 
                 <TabsContent value="behavioral" className="mt-6">
                     <BehavioralHistory studentId={studentId} />
+                </TabsContent>
+
+                <TabsContent value="timeline" className="mt-6">
+                    <StudentJourneyTimeline studentId={studentId} />
                 </TabsContent>
 
                 <TabsContent value="boarding" className="mt-6">

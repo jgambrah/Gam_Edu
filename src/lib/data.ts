@@ -143,6 +143,12 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
+    path: '/dashboard/gallery',
+    title: 'School Gallery',
+    icon: Clapperboard,
+    roles: 'all',
+  },
+  {
     path: '/dashboard/people',
     title: 'People Management',
     icon: Users,

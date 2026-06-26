@@ -126,6 +126,46 @@ export async function POST(request: NextRequest) {
 
     await logRef.set(medicalLogData);
 
+    // Save to student timeline as health category milestone
+    try {
+      let academicYear = '';
+      let term = '';
+      const settingsDoc = await db.collection('schoolSettings').doc(schoolId).get();
+      if (settingsDoc.exists) {
+        const settingsData = settingsDoc.data();
+        academicYear = settingsData?.academicYear || '';
+        term = settingsData?.term || '';
+      }
+
+      const timelineRef = db.collection('students').doc(studentId).collection('timeline').doc();
+      await timelineRef.set({
+        id: timelineRef.id,
+        studentId,
+        title: `Infirmary Visit: ${isSevereTriage ? 'Severe Alert' : 'Log'}`,
+        description: `Seen at Sick Bay for reported symptoms: "${reportedSymptoms}". Treatment Administered: "${treatmentAdministered}". Disposition: ${disposition}.`,
+        category: 'health',
+        academicYear,
+        term,
+        classId: studentData.classId || null,
+        className: null,
+        recordedBy: userName,
+        recordedById: userId,
+        attachments: [],
+        metadata: {
+          reportedSymptoms,
+          treatmentAdministered,
+          disposition,
+          isSevereTriage: !!isSevereTriage,
+          treatingStaffName: userName
+        },
+        date: visitDate,
+        createdAt: visitDate,
+        schoolId
+      });
+    } catch (timelineErr) {
+      console.error('Failed to write medical timeline event:', timelineErr);
+    }
+
     // Trigger parent and staff/warden/admin notifications asynchronously
     try {
       await NotificationService.triggerMedicalVisitEvent(db, studentId, studentName, {

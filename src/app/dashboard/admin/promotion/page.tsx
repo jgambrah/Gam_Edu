@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, writeBatch, serverTimestamp, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+import { TimelineService } from '@/lib/timeline-service';
 
 /**
  * @fileOverview Class Promotion & Graduation Engine
@@ -100,8 +101,23 @@ export default function PromotionPage() {
     
     setIsProcessing(true);
     try {
+        let academicYear = '';
+        let term = '';
+        try {
+            const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId));
+            if (settingsSnap.exists()) {
+                academicYear = settingsSnap.data().academicYear || '';
+                term = settingsSnap.data().term || '';
+            }
+        } catch (e) {
+            console.error("Failed to fetch settings:", e);
+        }
+
         const batch = writeBatch(firestore);
         let count = 0;
+
+        const sourceClassName = classes?.find(c => c.id === sourceClassId)?.name || 'Class';
+        const destClassName = destinationClassId === 'GRADUATE' ? 'Graduated' : (classes?.find(c => c.id === destinationClassId)?.name || 'Class');
 
         studentsToMove.forEach(student => {
             const studentRef = doc(firestore, 'students', student.uid);
@@ -113,6 +129,22 @@ export default function PromotionPage() {
                     previousClassId: sourceClassId,
                     updatedAt: serverTimestamp()
                 });
+
+                // Add timeline event
+                TimelineService.logEventBatch(firestore, batch, {
+                    studentId: student.uid,
+                    title: "Graduation 🎓",
+                    description: `Graduated from school. Completed studies from Class ${sourceClassName}.`,
+                    category: 'graduation',
+                    classId: sourceClassId,
+                    className: sourceClassName,
+                    schoolId,
+                    recordedBy: 'Cohort Transition Engine',
+                    recordedById: 'system',
+                    academicYear,
+                    term,
+                    date: new Date()
+                });
             } else {
                 // Promotion Logic: Update class assignment
                 batch.update(studentRef, {
@@ -120,11 +152,50 @@ export default function PromotionPage() {
                     previousClassId: sourceClassId, 
                     updatedAt: serverTimestamp()
                 });
+
+                // Add timeline event
+                TimelineService.logEventBatch(firestore, batch, {
+                    studentId: student.uid,
+                    title: "Class Promotion",
+                    description: `Promoted from Class ${sourceClassName} to Class ${destClassName}.`,
+                    category: 'promotion',
+                    classId: destinationClassId,
+                    className: destClassName,
+                    schoolId,
+                    recordedBy: 'Cohort Transition Engine',
+                    recordedById: 'system',
+                    academicYear,
+                    term,
+                    date: new Date()
+                });
             }
             count++;
         });
 
         await batch.commit();
+
+        // Notify parents asynchronously
+        try {
+            const { notifyParents } = await import('@/app/actions/notifications');
+            const studentIds = studentsToMove.map(s => s.uid);
+            if (destinationClassId === 'GRADUATE') {
+                await notifyParents(
+                    studentIds,
+                    "Student Graduation 🎓",
+                    "Your child has officially graduated and transition milestones have been updated.",
+                    "/dashboard/my-children"
+                );
+            } else {
+                await notifyParents(
+                    studentIds,
+                    "Class Promotion 🎉",
+                    `Your child has been promoted to Class ${destClassName}.`,
+                    "/dashboard/my-children"
+                );
+            }
+        } catch (e) {
+            console.error("Failed to notify parents of promotion:", e);
+        }
         
         toast({ 
             title: "Batch Complete!", 

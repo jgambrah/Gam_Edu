@@ -109,6 +109,24 @@ service cloud.firestore {
     match /students/{studentId} {
       allow read, list: if isSignedIn();
       allow write: if isAdmin() || isOwner(studentId);
+
+      match /timeline/{eventId} {
+        allow read: if isSignedIn() && (
+          isAdmin() ||
+          (isTeacher() && !(resource.data.category in ['health', 'financial'])) ||
+          (isStudent() && studentId == request.auth.uid) ||
+          parentOwnsStudent(studentId) ||
+          (getUserRole() in ['Nurse', 'Doctor', 'Warden', 'Boarding Staff'] && resource.data.category == 'health')
+        );
+        
+        allow create, update: if isSignedIn() && (
+          isAdmin() ||
+          (isTeacher() && !(request.resource.data.category in ['health', 'financial'])) ||
+          (getUserRole() in ['Nurse', 'Doctor', 'Warden', 'Boarding Staff'] && request.resource.data.category == 'health')
+        );
+        
+        allow delete: if isSignedIn() && isAdmin();
+      }
     }
 
     match /parents/{parentId} {
@@ -320,6 +338,17 @@ service cloud.firestore {
            parentOwnsStudent(get(/databases/$(database)/documents/financialRecords/$(recordId)).data.studentId))
         );
       }
+    }
+
+    // Collection Group rule for payments
+    match /{path=**}/payments/{paymentId} {
+      allow read: if isSignedIn() && (
+        isFinanceStaff() || 
+        isAdmin() || 
+        isTeacher() || 
+        resource.data.studentId == request.auth.uid || 
+        parentOwnsStudent(resource.data.studentId)
+      );
     }
 
     match /paymentVouchers/{voucherId} {
@@ -914,6 +943,24 @@ service cloud.firestore {
       );
       allow list: if isSignedIn();
       allow write: if isAdmin();
+    }
+
+    // =========================================================
+    // 8.9. GALLERY SECURITY
+    // =========================================================
+    match /gallery/{postId} {
+      allow read, list: if isSignedIn();
+      allow create, delete: if isAdmin() || isTeacher();
+      allow update: if isSignedIn();
+    }
+
+    // =========================================================
+    // 8.10. PARENT SATISFACTION SECURITY
+    // =========================================================
+    match /parent_satisfaction/{id} {
+      allow create: if isSignedIn();
+      allow read, list: if isSignedIn() && (resource.data.parentId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
     }
 
     // =========================================================

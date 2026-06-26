@@ -60,6 +60,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     
     const [billingProgress, setBillingProgress] = useState<string | null>(null);
+    const [hasExistingRecords, setHasExistingRecords] = useState(false);
+
+    const canOverwrite = role === 'Director' || role === 'Administrator';
+    const isLocked = hasExistingRecords && !canOverwrite;
 
     const classesQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId) return null;
@@ -126,6 +130,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             );
             const attendanceSnapshot = await getDocs(attendanceQuery);
             const existingRecords = attendanceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as AttendanceRecord[];
+
+            setHasExistingRecords(existingRecords.length > 0);
 
             const formRecords = studentList.map(student => {
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
@@ -195,9 +201,18 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     updatedAt: serverTimestamp(),
                     updatedBy: user?.uid
                 }, { merge: true });
+
+                // Overwrite / Marking correction: delete canteen and transport bills if changed to Absent or Excused
+                if (record.status === 'Absent' || record.status === 'Excused') {
+                    const canteenBillId = `canteen-${record.studentId}-${dateStr}`;
+                    const transportBillId = `transport-${record.studentId}-${dateStr}`;
+                    batch.delete(doc(firestore, 'financialRecords', canteenBillId));
+                    batch.delete(doc(firestore, 'financialRecords', transportBillId));
+                }
             });
 
             await batch.commit();
+            setHasExistingRecords(true);
 
             // Notify parents via Push asynchronously
             const gradedStudentIds = data.records.map(r => r.studentId);
@@ -340,6 +355,30 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     </div>
                 </div>
 
+                {studentsLoaded && hasExistingRecords && (
+                    isLocked ? (
+                        <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-4">
+                            <AlertCircle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+                            <div>
+                                <h4 className="text-sm font-bold text-rose-800">Attendance Sheet Locked</h4>
+                                <p className="text-xs text-rose-650 mt-0.5">
+                                    Attendance has already been marked for this date. Standard teachers are locked from making modifications. Please contact the Administrator or the Director to request changes.
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-4">
+                            <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                            <div>
+                                <h4 className="text-sm font-bold text-amber-800">Overwrite Mode Enabled</h4>
+                                <p className="text-xs text-amber-650 mt-0.5">
+                                    Attendance has already been marked for this date. As an Administrator or Director, you are permitted to overwrite the existing entries.
+                                </p>
+                            </div>
+                        </div>
+                    )
+                )}
+
                 {studentsLoaded && (
                     <div className="relative w-full md:max-w-sm mb-6 flex-shrink-0">
                         <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
@@ -422,14 +461,16 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                                 defaultValue={formField.value} 
                                                                 value={formField.value}
                                                                 className="flex flex-wrap gap-2.5"
+                                                                disabled={isLocked}
                                                             >
                                                                 <div 
-                                                                    onClick={() => formField.onChange('Present')}
+                                                                    onClick={() => !isLocked && formField.onChange('Present')}
                                                                     className={cn(
-                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-200 select-none shadow-sm",
+                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full select-none shadow-sm transition-all duration-200",
+                                                                        isLocked ? "cursor-not-allowed opacity-65" : "cursor-pointer hover:border-slate-300 hover:bg-slate-50",
                                                                         formField.value === 'Present' 
                                                                             ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold ring-2 ring-emerald-500/20 shadow-emerald-100' 
-                                                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                                            : 'bg-white border-slate-200 text-slate-500'
                                                                     )}
                                                                 >
                                                                     <RadioGroupItem value="Present" id={`p-${index}`} className="sr-only" />
@@ -438,12 +479,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                                 </div>
                                                                 
                                                                 <div 
-                                                                    onClick={() => formField.onChange('Late')}
+                                                                    onClick={() => !isLocked && formField.onChange('Late')}
                                                                     className={cn(
-                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-200 select-none shadow-sm",
+                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full select-none shadow-sm transition-all duration-200",
+                                                                        isLocked ? "cursor-not-allowed opacity-65" : "cursor-pointer hover:border-slate-300 hover:bg-slate-50",
                                                                         formField.value === 'Late' 
                                                                             ? 'border-amber-500 bg-amber-50 text-amber-700 font-bold ring-2 ring-amber-500/20 shadow-amber-100' 
-                                                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                                            : 'bg-white border-slate-200 text-slate-500'
                                                                     )}
                                                                 >
                                                                     <RadioGroupItem value="Late" id={`l-${index}`} className="sr-only" />
@@ -452,12 +494,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                                 </div>
 
                                                                 <div 
-                                                                    onClick={() => formField.onChange('Absent')}
+                                                                    onClick={() => !isLocked && formField.onChange('Absent')}
                                                                     className={cn(
-                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-200 select-none shadow-sm",
+                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full select-none shadow-sm transition-all duration-200",
+                                                                        isLocked ? "cursor-not-allowed opacity-65" : "cursor-pointer hover:border-slate-300 hover:bg-slate-50",
                                                                         formField.value === 'Absent' 
                                                                             ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-500/20 shadow-rose-100' 
-                                                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                                            : 'bg-white border-slate-200 text-slate-500'
                                                                     )}
                                                                 >
                                                                     <RadioGroupItem value="Absent" id={`a-${index}`} className="sr-only" />
@@ -466,12 +509,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                                 </div>
 
                                                                 <div 
-                                                                    onClick={() => formField.onChange('Excused')}
+                                                                    onClick={() => !isLocked && formField.onChange('Excused')}
                                                                     className={cn(
-                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-200 select-none shadow-sm",
+                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full select-none shadow-sm transition-all duration-200",
+                                                                        isLocked ? "cursor-not-allowed opacity-65" : "cursor-pointer hover:border-slate-300 hover:bg-slate-50",
                                                                         formField.value === 'Excused' 
                                                                             ? 'border-slate-500 bg-slate-100 text-slate-700 font-bold ring-2 ring-slate-400/20 shadow-slate-100' 
-                                                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                                            : 'bg-white border-slate-200 text-slate-500'
                                                                     )}
                                                                 >
                                                                     <RadioGroupItem value="Excused" id={`e-${index}`} className="sr-only" />
@@ -496,6 +540,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                                 placeholder="Add optional notes..." 
                                                                 {...formField} 
                                                                 className="bg-white border-slate-200 rounded-xl h-10 shadow-inner focus-visible:ring-teal-500 text-xs" 
+                                                                disabled={isLocked}
                                                             />
                                                         </FormControl>
                                                     </FormItem>
@@ -547,7 +592,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                             <Button
                                 onClick={form.handleSubmit(onSubmit)}
                                 className="w-full md:w-auto h-11 px-6 font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-lg shadow-teal-950/20 transition-all duration-200 hover:shadow-teal-500/20 active:scale-[0.98]"
-                                disabled={isLoading}
+                                disabled={isLoading || isLocked}
                             >
                                 {isLoading ? (
                                     <>
