@@ -42,7 +42,9 @@ export function ParentDashboard({
   assignments = [],
   submissions = [],
   students = [],
-  classes = []
+  classes = [],
+  quizzes = [],
+  quizAttempts = []
 }: any) {
     const displayName = profile?.firstName || 'Parent';
     const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'attendance' | 'academics' | 'examination' | 'assignments' | 'financials' | 'notices' | 'canteen' | 'satisfaction'>('overview');
@@ -428,12 +430,19 @@ export function ParentDashboard({
 
     // Assignments due count calculation
     const assignmentsDueCount = useMemo(() => {
-        if (!assignments || !activeClassId) return 0;
-        const classAss = assignments.filter((a: any) => a.classId === activeClassId);
+        if (!activeClassId) return 0;
+        const classAss = assignments?.filter((a: any) => a.classId === activeClassId) || [];
         const childSubmissions = submissions?.filter((s: any) => s.studentId === activeChildId) || [];
         const submittedIds = new Set(childSubmissions.map((s: any) => s.assignmentId));
-        return classAss.filter((a: any) => !submittedIds.has(a.id || a.uid)).length;
-    }, [assignments, activeClassId, submissions, activeChildId]);
+        const pendingAssignments = classAss.filter((a: any) => !submittedIds.has(a.id || a.uid)).length;
+
+        const classQuizzes = quizzes?.filter((q: any) => q.classId === activeClassId) || [];
+        const childQuizAttempts = quizAttempts?.filter((qa: any) => qa.studentId === activeChildId) || [];
+        const attemptedIds = new Set(childQuizAttempts.map((qa: any) => qa.quizId));
+        const pendingQuizzes = classQuizzes.filter((q: any) => !attemptedIds.has(q.id || q.uid)).length;
+
+        return pendingAssignments + pendingQuizzes;
+    }, [assignments, activeClassId, submissions, activeChildId, quizzes, quizAttempts]);
 
     const activeChildAssignmentsList = useMemo(() => {
         if (!activeClassId) return [];
@@ -443,7 +452,7 @@ export function ParentDashboard({
         const childSubmissions = submissions?.filter((s: any) => s.studentId === activeChildId) || [];
         const submissionMap = new Map<string, any>(childSubmissions.map((s: any) => [s.assignmentId, s]));
 
-        const list = classAss.map((a: any) => {
+        const assignmentList = classAss.map((a: any) => {
             const submission = submissionMap.get(a.id || a.uid);
             const isSubmitted = !!submission;
             
@@ -472,15 +481,54 @@ export function ParentDashboard({
             };
         });
 
+        // Filter quizzes for this child's class
+        const classQuizzes = quizzes?.filter((q: any) => q.classId === activeClassId) || [];
+        const childQuizAttempts = quizAttempts?.filter((qa: any) => qa.studentId === activeChildId) || [];
+        const attemptMap = new Map<string, any>(childQuizAttempts.map((qa: any) => [qa.quizId, qa]));
+
+        const quizList = classQuizzes.map((q: any) => {
+            const attempt = attemptMap.get(q.id || q.uid);
+            const isSubmitted = !!attempt;
+
+            // Format due date
+            let displayDueDate = 'N/A';
+            let rawDueDate: Date | null = null;
+            const targetDueDate = q.dueDate || q.deadline;
+            if (targetDueDate) {
+                if (targetDueDate.toDate) {
+                    rawDueDate = targetDueDate.toDate();
+                } else {
+                    rawDueDate = new Date(targetDueDate);
+                }
+                displayDueDate = rawDueDate ? format(rawDueDate, 'dd MMMM') : 'N/A';
+            }
+
+            const isOverdue = !isSubmitted && rawDueDate && rawDueDate < new Date();
+
+            return {
+                id: q.id || q.uid,
+                title: q.title || q.name || 'Untitled Quiz',
+                dueDate: displayDueDate,
+                rawDueDate,
+                status: isSubmitted ? 'Submitted' : isOverdue ? 'Overdue' : 'Pending',
+                teacherComment: attempt?.feedback || (isSubmitted ? `Score: ${attempt?.score ?? 0}/${q.questions?.length ?? 10}` : null),
+                subject: q.subjectName || q.subject || 'General'
+            };
+        });
+
+        const combinedList = [...assignmentList, ...quizList];
+
         // Sort: Pending/Overdue first, then by due date
-        return list.sort((a: any, b: any) => {
+        return combinedList.sort((a: any, b: any) => {
             if (a.status === 'Pending' && b.status === 'Submitted') return -1;
             if (a.status === 'Submitted' && b.status === 'Pending') return 1;
             if (a.status === 'Overdue' && b.status !== 'Overdue') return -1;
             if (a.status !== 'Overdue' && b.status === 'Overdue') return 1;
-            return 0;
+            const dateA = a.rawDueDate ? a.rawDueDate.getTime() : 0;
+            const dateB = b.rawDueDate ? b.rawDueDate.getTime() : 0;
+            return dateA - dateB;
         });
-    }, [assignments, activeClassId, submissions, activeChildId]);
+    }, [assignments, activeClassId, submissions, activeChildId, quizzes, quizAttempts]);
 
     const displayAssignments = useMemo(() => {
         if (activeChildAssignmentsList.length > 0) {

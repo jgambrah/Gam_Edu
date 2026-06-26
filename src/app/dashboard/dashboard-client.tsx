@@ -11775,6 +11775,26 @@ export default function DashboardClient() {
   }, [firestore, schoolId, isParent, parentStudentIds]);
   const { data: parentSubmissions, isLoading: loadingParentSubmissions } = useCollection<any>(parentSubmissionsQuery);
 
+  const parentQuizzesQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || !isParent || parentClassIds.length === 0) return null;
+    return query(
+      collection(firestore, 'quizzes'),
+      where('schoolId', '==', schoolId),
+      where('classId', 'in', parentClassIds)
+    );
+  }, [firestore, schoolId, isParent, parentClassIds]);
+  const { data: parentQuizzes } = useCollection<any>(parentQuizzesQuery);
+
+  const parentQuizAttemptsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || !isParent || parentStudentIds.length === 0) return null;
+    return query(
+      collection(firestore, 'quizAttempts'),
+      where('schoolId', '==', schoolId),
+      where('studentId', 'in', parentStudentIds)
+    );
+  }, [firestore, schoolId, isParent, parentStudentIds]);
+  const { data: parentQuizAttempts } = useCollection<any>(parentQuizAttemptsQuery);
+
   const subjectsQuery = useMemoFirebase(() => 
     (firestore && schoolId && (isParent || role === 'Director' || role === 'Administrator' || role === 'Teacher')) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null,
   [firestore, schoolId, isParent, role]);
@@ -11929,6 +11949,8 @@ export default function DashboardClient() {
       submissions={parentSubmissions}
       students={students}
       classes={classes}
+      quizzes={parentQuizzes || []}
+      quizAttempts={parentQuizAttempts || []}
     />;
   }
 
