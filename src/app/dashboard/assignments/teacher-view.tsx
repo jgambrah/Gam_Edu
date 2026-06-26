@@ -8,7 +8,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, BookOpen, Layers, GraduationCap, CheckCircle, HelpCircle, Loader2, Sparkles, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { AssignmentCreationForm } from './assignment-creation-form';
 import { AssignmentSubmissionsList } from './assignment-submissions-list';
 import { QuizCreationForm } from './quiz-creation-form';
