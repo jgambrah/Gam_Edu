@@ -18,7 +18,7 @@ const JuniorStorySchema = z.object({
   })).length(3).describe("Exactly three simple questions to check understanding.")
 });
 
-export async function generateJuniorStory(input: { topic: string; wordCount?: number; schoolId: string; }) {
+export async function generateJuniorStory(input: { topic: string; context?: string; wordCount?: number; schoolId: string; }) {
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 3);
     if (!creditResult.success) {
@@ -27,6 +27,7 @@ export async function generateJuniorStory(input: { topic: string; wordCount?: nu
 
     const prompt = `
       You are a kindergarten teacher. Write an educational story for a 5-year-old about: ${input.topic}.
+      ${input.context ? `Additional user requirements/context to guide the story: ${input.context}` : ''}
       
       RULES:
       1. The story must be engaging and approximately ${input.wordCount || 100} words long.
@@ -92,6 +93,7 @@ export async function generateJuniorScience(input: { topic: string; schoolId: st
 const WordDetailSchema = z.object({
   word: z.string(),
   phonetic: z.string().describe("A simple phonetic spelling, e.g., /kat/"),
+  meaning: z.string().describe("A simple one-sentence explanation of what the word means, suitable for a 5-year-old."),
   sentence: z.string().describe("A very simple sentence using the word, for a 5-year-old."),
   emoji: z.string().emoji().describe("A single emoji for the word."),
 });
@@ -105,8 +107,9 @@ export async function generateWordDetails(input: { word: string; schoolId: strin
     const prompt = `
       For the word "${input.word}", provide:
       1. A simple phonetic spelling (e.g., /kat/).
-      2. A very simple sentence a 5-year-old would understand.
-      3. A single, relevant emoji.
+      2. A simple explanation of what the word means, suitable for a 5-year-old.
+      3. A very simple sentence a 5-year-old would understand.
+      4. A single, relevant emoji.
       Output strictly JSON.
     `;
     const { output } = await ai.generate({

@@ -45,11 +45,11 @@ export async function checkAndSpendCredits(schoolId: string, cost: number): Prom
     return { success: false, error: 'School ID is required.' };
   }
   
-  const adminApp = getAdminApp();
-  const db = getFirestore(adminApp);
-  const schoolRef = db.collection('schools').doc(schoolId);
-
   try {
+    const adminApp = getAdminApp();
+    const db = getFirestore(adminApp);
+    const schoolRef = db.collection('schools').doc(schoolId);
+
     const success = await db.runTransaction(async (t) => {
       const doc = await t.get(schoolRef);
       if (!doc.exists) {
