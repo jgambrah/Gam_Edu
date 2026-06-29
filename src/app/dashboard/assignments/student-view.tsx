@@ -222,6 +222,7 @@ export default function StudentAssignmentsView() {
           <div className="space-y-4">
             {combinedList.map((item) => {
               const isAssignment = item.type === 'assignment';
+              const isLocked = (item as any).startDate ? new Date() < new Date((item as any).startDate) : false;
               let submission, quizAttempt;
 
               if (isAssignment) {
@@ -245,6 +246,11 @@ export default function StudentAssignmentsView() {
                            <Badge variant={isAssignment ? 'secondary' : 'default'} className={cn("uppercase text-[9px] tracking-widest px-2.5 py-0.5 rounded-lg font-extrabold", isAssignment ? "bg-blue-50 text-blue-700 border border-blue-100" : "bg-purple-50 text-purple-700 border border-purple-100 hover:bg-purple-50")}>
                                {item.type}
                            </Badge>
+                           {isLocked && (
+                              <Badge className="bg-amber-50 border border-amber-250 text-amber-700 hover:bg-amber-100 uppercase text-[9px] font-bold rounded-lg px-2 py-0.5 flex items-center gap-1">
+                                  <Clock className="h-3 w-3" /> Scheduled
+                              </Badge>
+                           )}
                            {isAssignment && submission && (
                               <Badge variant="outline" className={cn("text-[9px] font-bold rounded-lg px-2 py-0.5", submission.status === 'Graded' ? 'border-emerald-250 text-emerald-700 bg-emerald-50' : 'border-blue-250 text-blue-700 bg-blue-50')}>
                                   {submission.status}
@@ -273,6 +279,47 @@ export default function StudentAssignmentsView() {
                           <p className="text-xs text-slate-500 line-clamp-3 bg-slate-50 border border-slate-100 rounded-xl p-3.5 italic">
                               "{item.description}"
                           </p>
+
+                          {(item as any).questionsFile && (
+                            <div className="p-3 bg-indigo-50/50 border border-indigo-100 rounded-2xl flex items-center justify-between gap-3 animate-in fade-in">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="p-2 bg-indigo-100 text-indigo-700 rounded-xl">
+                                  <FileUp className="h-4 w-4" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-xs font-bold text-slate-800 truncate">{(item as any).questionsFile.fileName}</p>
+                                  <p className="text-[10px] text-slate-400 font-bold font-mono">{(item as any).questionsFile.fileSize}</p>
+                                </div>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const file = (item as any).questionsFile;
+                                  if (file.fileData === 'simulated-storage-url-placeholder') {
+                                    toast({
+                                      title: 'Downloading File (Simulated)',
+                                      description: `Downloading ${file.fileName} from simulated cloud storage.`,
+                                    });
+                                    toast({
+                                      title: 'Download Successful',
+                                      description: `${file.fileName} has been downloaded.`,
+                                    });
+                                  } else {
+                                    const link = document.createElement('a');
+                                    link.href = file.fileData;
+                                    link.setAttribute('download', file.fileName);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                  }
+                                }}
+                                className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 font-bold text-xs h-9 px-3 rounded-xl transition shadow-sm"
+                              >
+                                Download Questions
+                              </Button>
+                            </div>
+                          )}
                           
                           {submission ? (
                               <div className="pt-1">
@@ -299,21 +346,30 @@ export default function StudentAssignmentsView() {
                               </div>
                           ) : (
                               <div className="flex flex-wrap gap-2.5 pt-1">
-                                  <Button 
-                                    size="sm" 
-                                    onClick={() => handleFileUpload(item as Assignment)} 
-                                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold h-10 px-4 text-xs transition shadow-md shadow-blue-500/10 active:scale-98"
-                                  >
-                                      <FileUp className="mr-2 h-4 w-4" /> Upload Work File
-                                  </Button>
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline" 
-                                    onClick={() => openTextSubmission(item as Assignment)}
-                                    className="border-slate-200 text-slate-650 hover:bg-slate-50 rounded-xl font-bold h-10 px-4 text-xs transition"
-                                  >
-                                      <Type className="mr-2 h-4 w-4" /> Write Response
-                                  </Button>
+                                  {isLocked ? (
+                                      <div className="p-3 bg-amber-50/50 border border-amber-100 rounded-2xl flex items-center gap-2 text-xs text-amber-700 font-semibold leading-relaxed shadow-sm w-full">
+                                          <Clock className="h-4 w-4 shrink-0 text-amber-600 animate-pulse" />
+                                          <span>Available starting: {format(new Date((item as any).startDate!), 'PPp')}</span>
+                                      </div>
+                                  ) : (
+                                      <>
+                                          <Button 
+                                            size="sm" 
+                                            onClick={() => handleFileUpload(item as Assignment)} 
+                                            className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold h-10 px-4 text-xs transition shadow-md shadow-blue-500/10 active:scale-98"
+                                          >
+                                              <FileUp className="mr-2 h-4 w-4" /> Upload Work File
+                                          </Button>
+                                          <Button 
+                                            size="sm" 
+                                            variant="outline" 
+                                            onClick={() => openTextSubmission(item as Assignment)}
+                                            className="border-slate-200 text-slate-650 hover:bg-slate-50 rounded-xl font-bold h-10 px-4 text-xs transition"
+                                          >
+                                              <Type className="mr-2 h-4 w-4" /> Write Response
+                                          </Button>
+                                      </>
+                                  )}
                               </div>
                           )}
                         </>
@@ -330,14 +386,23 @@ export default function StudentAssignmentsView() {
                                   </span>
                               </div>
                           ) : (
-                              <Button 
-                                asChild 
-                                className="w-full bg-purple-600 hover:bg-purple-700 text-white h-11 text-xs font-bold rounded-xl shadow-md transition active:scale-[0.98]"
-                              >
-                                  <Link href={`/dashboard/assignments/quiz/${item.id}`}>
-                                      Start Assessment Quiz <ArrowRight className="ml-2 h-4 w-4" />
-                                  </Link>
-                              </Button>
+                              isLocked ? (
+                                  <Button 
+                                    disabled 
+                                    className="w-full bg-slate-100 border border-slate-200 text-slate-400 h-11 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 cursor-not-allowed"
+                                  >
+                                      <Clock className="h-4 w-4 text-slate-350" /> Locked until {format(new Date((item as any).startDate!), 'PPp')}
+                                  </Button>
+                              ) : (
+                                  <Button 
+                                    asChild 
+                                    className="w-full bg-purple-600 hover:bg-purple-700 text-white h-11 text-xs font-bold rounded-xl shadow-md transition active:scale-[0.98]"
+                                  >
+                                      <Link href={`/dashboard/assignments/quiz/${item.id}`}>
+                                          Start Assessment Quiz <ArrowRight className="ml-2 h-4 w-4" />
+                                      </Link>
+                                  </Button>
+                              )
                           )}
                          </div>
                      )}

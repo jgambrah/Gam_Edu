@@ -14,6 +14,45 @@ import { QuizCreationForm } from './quiz-creation-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { BlockMath, InlineMath } from 'react-katex';
+
+function MathText({ text }: { text: string }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <span>{text}</span>;
+  }
+
+  if (!text) return null;
+
+  const parts = text.split(/(\$\$[\s\S]*?\Toggle[\s\S]*?\$\$|\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/g);
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith('$$') && part.endsWith('$$')) {
+          const formula = part.slice(2, -2).trim();
+          return (
+            <div key={index} className="my-2 overflow-x-auto text-center py-2 px-3 bg-slate-50 border border-slate-100 rounded-xl">
+              <BlockMath math={formula} />
+            </div>
+          );
+        } else if (part.startsWith('$') && part.endsWith('$')) {
+          const formula = part.slice(1, -1).trim();
+          return (
+            <span key={index} className="inline-block px-1">
+              <InlineMath math={formula} />
+            </span>
+          );
+        }
+        return <span key={index}>{part}</span>;
+      })}
+    </>
+  );
+}
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -38,6 +77,12 @@ function QuizItem({ quiz, getClassName }: { quiz: Quiz; getClassName: (id: strin
           <p className="text-xs text-slate-400 font-medium">
             Created on {quiz.createdAt?.toDate ? format(quiz.createdAt.toDate(), 'PPP') : 'Unknown'}
           </p>
+          {quiz.dueDate && (
+            <p className="text-[10px] text-rose-600 font-bold uppercase tracking-wider flex items-center gap-1 mt-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
+              Due: {quiz.dueDate.toDate ? format(quiz.dueDate.toDate(), 'PPP') : format(new Date(quiz.dueDate), 'PPP')}
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <div className="h-10 w-10 bg-purple-50 text-purple-600 border border-purple-100/50 rounded-xl flex items-center justify-center font-bold text-xs font-mono">
@@ -57,30 +102,39 @@ function QuizItem({ quiz, getClassName }: { quiz: Quiz; getClassName: (id: strin
               <div key={idx} className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2.5">
                 <div className="flex items-start gap-2">
                   <span className="text-xs font-black text-purple-600 mt-0.5">{idx + 1}.</span>
-                  <p className="text-xs font-bold text-slate-700 leading-normal">{q.questionText}</p>
+                  <p className="text-xs font-bold text-slate-700 leading-normal"><MathText text={q.questionText} /></p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-5">
-                  {q.options.map((opt, oIdx) => {
-                    const isCorrect = opt === q.correctAnswer;
-                    return (
-                      <div 
-                        key={oIdx} 
-                        className={cn(
-                          "p-2.5 rounded-lg text-[10px] font-semibold transition-all border",
-                          isCorrect 
-                            ? "bg-emerald-50 border-emerald-200 text-emerald-800 font-bold" 
-                            : "bg-white border-slate-150 text-slate-500"
-                        )}
-                      >
-                        <span className="mr-1 font-bold">{String.fromCharCode(65 + oIdx)}.</span> {opt}
-                        {isCorrect && <span className="ml-1.5 text-[8px] bg-emerald-600 text-white font-extrabold uppercase px-1 py-0.5 rounded">Correct</span>}
-                      </div>
-                    );
-                  })}
-                </div>
+                {q.type === 'written' ? (
+                  <div className="pl-5 space-y-2">
+                    <div className="p-3 rounded-xl border border-emerald-100 bg-emerald-50/20 text-emerald-850 text-[10px] font-semibold">
+                      <span className="font-extrabold uppercase text-[8px] text-emerald-600 block mb-0.5 tracking-wider">Reference Correct Answer:</span>
+                      <MathText text={q.correctAnswer} />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-5">
+                    {q.options?.map((opt, oIdx) => {
+                      const isCorrect = opt === q.correctAnswer;
+                      return (
+                        <div 
+                          key={oIdx} 
+                          className={cn(
+                            "p-2.5 rounded-lg text-[10px] font-semibold transition-all border",
+                            isCorrect 
+                              ? "bg-emerald-50 border-emerald-200 text-emerald-800 font-bold" 
+                              : "bg-white border-slate-150 text-slate-500"
+                          )}
+                        >
+                          <span className="mr-1 font-bold">{String.fromCharCode(65 + oIdx)}.</span> <MathText text={opt} />
+                          {isCorrect && <span className="ml-1.5 text-[8px] bg-emerald-600 text-white font-extrabold uppercase px-1 py-0.5 rounded">Correct</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
                 {q.explanation && (
                   <p className="text-[9px] text-slate-400 font-bold pl-5 leading-normal italic">
-                    Explanation: {q.explanation}
+                    Explanation: <MathText text={q.explanation} />
                   </p>
                 )}
               </div>

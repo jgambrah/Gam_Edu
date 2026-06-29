@@ -537,11 +537,22 @@ function AdminDashboard({
     const checkIns = todayRecs.filter((r: any) => r.type === 'In');
     const presentIds = new Set(checkIns.map((r: any) => r.staffId));
     const teachersList = staff.filter((s: any) => s.role?.toLowerCase() === 'teacher');
-    const absentTeachers = teachersList.filter((t: any) => !presentIds.has(t.uid || t.id)).map((t: any) => ({
-      id: t.uid || t.id,
-      name: `${t.firstName || ""} ${t.lastName || ""}`.trim(),
-      email: t.email || "No Email"
-    }));
+
+    const today = new Date();
+    const isWeekend = today.getDay() === 0 || today.getDay() === 6;
+    const isVacation = schoolData?.vacationMode === true;
+    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && checkIns.length === 0;
+
+    const shouldFlagAbsences = !isVacation && !isWeekendBypassed;
+
+    const absentTeachers = shouldFlagAbsences
+      ? teachersList.filter((t: any) => !presentIds.has(t.uid || t.id)).map((t: any) => ({
+          id: t.uid || t.id,
+          name: `${t.firstName || ""} ${t.lastName || ""}`.trim(),
+          email: t.email || "No Email"
+        }))
+      : [];
+
     const lates = checkIns.filter((r: any) => r.status === 'Late').map((r: any) => {
       const timeStr = r.timestamp?.toDate ? format(r.timestamp.toDate(), 'hh:mm a') : format(new Date(r.timestamp), 'hh:mm a');
       return {
@@ -551,7 +562,7 @@ function AdminDashboard({
       };
     });
     return { present: Array.from(presentIds), absent: absentTeachers, late: lates };
-  }, [staffAttendance, staff, startOfToday]);
+  }, [staffAttendance, staff, startOfToday, schoolData]);
 
   const academicTidbits = useMemo(() => {
     if (!recentAssessments || recentAssessments.length === 0) {
@@ -1560,6 +1571,7 @@ function AdminDashboard({
             classes={classes}
             attendance={attendance}
             staffAttendance={staffAttendance}
+            schoolData={schoolData}
           />
         )}
 
@@ -3456,6 +3468,7 @@ function AttendanceAnalyticsView({
   classes,
   attendance,
   staffAttendance,
+  schoolData,
 }: any) {
   const startOfToday = useMemo(() => startOfDay(new Date()), []);
 
@@ -3534,11 +3547,20 @@ function AttendanceAnalyticsView({
     });
 
     // 6. Absent Teachers
-    const absentTeachers = teachers.filter((t: any) => !presentTeacherIds.has(t.uid || t.id)).map((t: any) => ({
-      id: t.uid || t.id,
-      name: `${t.firstName || ""} ${t.lastName || ""}`.trim(),
-      email: t.email || "No Email Address"
-    }));
+    const today = new Date();
+    const isWeekend = today.getDay() === 0 || today.getDay() === 6;
+    const isVacation = schoolData?.vacationMode === true;
+    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && todayCheckIns.length === 0;
+
+    const shouldFlagAbsences = !isVacation && !isWeekendBypassed;
+
+    const absentTeachers = shouldFlagAbsences
+      ? teachers.filter((t: any) => !presentTeacherIds.has(t.uid || t.id)).map((t: any) => ({
+          id: t.uid || t.id,
+          name: `${t.firstName || ""} ${t.lastName || ""}`.trim(),
+          email: t.email || "No Email Address"
+        }))
+      : [];
 
     // 7. Weekly Student Attendance rates trend (last 7 active days)
     const dailyRates: Record<string, { present: number; total: number; rawDate: Date }> = {};
@@ -3584,7 +3606,7 @@ function AttendanceAnalyticsView({
       absentTeachers,
       weeklyTrend: finalTrend
     };
-  }, [students, staff, classes, attendance, staffAttendance, startOfToday]);
+  }, [students, staff, classes, attendance, staffAttendance, startOfToday, schoolData]);
 
   const metrics = [
     {
@@ -3893,11 +3915,22 @@ function DirectorDashboard({
     const checkIns = todayRecs.filter((r: any) => r.type === 'In');
     const presentIds = new Set(checkIns.map((r: any) => r.staffId));
     const teachersList = staff.filter((s: any) => s.role?.toLowerCase() === 'teacher');
-    const absentTeachers = teachersList.filter((t: any) => !presentIds.has(t.uid || t.id)).map((t: any) => ({
-      id: t.uid || t.id,
-      name: `${t.firstName || ""} ${t.lastName || ""}`.trim(),
-      email: t.email || "No Email"
-    }));
+
+    const today = new Date();
+    const isWeekend = today.getDay() === 0 || today.getDay() === 6;
+    const isVacation = schoolData?.vacationMode === true;
+    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && checkIns.length === 0;
+
+    const shouldFlagAbsences = !isVacation && !isWeekendBypassed;
+
+    const absentTeachers = shouldFlagAbsences
+      ? teachersList.filter((t: any) => !presentIds.has(t.uid || t.id)).map((t: any) => ({
+          id: t.uid || t.id,
+          name: `${t.firstName || ""} ${t.lastName || ""}`.trim(),
+          email: t.email || "No Email"
+        }))
+      : [];
+
     const lates = checkIns.filter((r: any) => r.status === 'Late').map((r: any) => {
       const timeStr = r.timestamp?.toDate ? format(r.timestamp.toDate(), 'hh:mm a') : format(new Date(r.timestamp), 'hh:mm a');
       return {
@@ -3907,7 +3940,7 @@ function DirectorDashboard({
       };
     });
     return { present: Array.from(presentIds), absent: absentTeachers, late: lates };
-  }, [staffAttendance, staff, startOfToday]);
+  }, [staffAttendance, staff, startOfToday, schoolData]);
 
   // Canteen Inventory & Requisitions
   const canteenInventoryQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'kitchen_inventory'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -5167,6 +5200,7 @@ function DirectorDashboard({
             classes={classes}
             attendance={attendance}
             staffAttendance={staffAttendance}
+            schoolData={schoolData}
           />
         )}
 

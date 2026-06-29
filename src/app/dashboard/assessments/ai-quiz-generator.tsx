@@ -92,25 +92,20 @@ export function AiQuizGenerator() {
       return;
     }
 
-    // --- CREDIT CHECK ---
-    const creditResult = await checkAndSpendCredits(schoolId, 10);
-    if (!creditResult.success) {
-      toast({ variant: 'destructive', title: 'Insufficient AI Credits', description: creditResult.error || 'Please upgrade your plan.' });
-      return;
-    }
-    // --- END CREDIT CHECK ---
-
     setIsGenerating(true);
     setGeneratedQuiz(null);
     toast({ title: 'Generating Quiz...', description: 'Please wait while the AI creates your quiz.' });
 
     try {
-      const result = await generateQuiz(values);
+      const result = await generateQuiz({
+        ...values,
+        schoolId,
+      });
       setGeneratedQuiz(result);
       toast({ title: 'Quiz Generated!', description: 'Review the questions below before assigning.' });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating quiz:', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'An AI error occurred while creating the quiz.' });
+      toast({ variant: 'destructive', title: 'Generation Failed', description: error.message || 'An AI error occurred while creating the quiz.' });
     } finally {
       setIsGenerating(false);
     }

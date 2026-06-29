@@ -105,6 +105,8 @@ export default function SchoolProfilePage() {
   // Time Tracking States
   const [schoolStartTime, setSchoolStartTime] = useState('07:30');
   const [schoolCloseTime, setSchoolCloseTime] = useState('15:00');
+  const [trackStaffOnWeekends, setTrackStaffOnWeekends] = useState(false);
+  const [vacationMode, setVacationMode] = useState(false);
 
   // WhatsApp Automation States
   const [waInstanceId, setWaInstanceId] = useState('');
@@ -190,6 +192,8 @@ export default function SchoolProfilePage() {
 
         setSchoolStartTime(profile.schoolStartTime || '07:30');
         setSchoolCloseTime(profile.schoolCloseTime || '15:00');
+        setTrackStaffOnWeekends(profile.trackStaffOnWeekends === true);
+        setVacationMode(profile.vacationMode === true);
 
         setWaInstanceId(profile.waInstanceId || '');
         setWaToken(profile.waToken || '');
@@ -304,6 +308,8 @@ export default function SchoolProfilePage() {
             allowedRadius: Number(allowedRadius),
             schoolStartTime,
             schoolCloseTime,
+            trackStaffOnWeekends,
+            vacationMode,
             waInstanceId,
             waToken,
             enableWhatsApp,
@@ -841,6 +847,34 @@ export default function SchoolProfilePage() {
                                 <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight mt-1">
                                     Configure whether student ranks/positions are printed on official report transcripts.
                                 </p>
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200/60 shadow-sm mt-4">
+                                <div className="space-y-0.5">
+                                    <Label className="text-xs font-black uppercase tracking-widest text-slate-700">Track Staff Attendance on Weekends</Label>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight">
+                                        If checked, staff absences are tracked on Saturdays and Sundays. If unchecked, weekends are ignored.
+                                    </p>
+                                </div>
+                                <Checkbox 
+                                    checked={trackStaffOnWeekends} 
+                                    onCheckedChange={(c) => setTrackStaffOnWeekends(!!c)} 
+                                    className="h-6 w-6 rounded-lg border-2 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200/60 shadow-sm mt-4">
+                                <div className="space-y-0.5">
+                                    <Label className="text-xs font-black uppercase tracking-widest text-slate-700">Vacation Mode / Academic Holiday</Label>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight">
+                                        Activate this to freeze all staff and student absence warnings during school holidays or vacations.
+                                    </p>
+                                </div>
+                                <Checkbox 
+                                    checked={vacationMode} 
+                                    onCheckedChange={(c) => setVacationMode(!!c)} 
+                                    className="h-6 w-6 rounded-lg border-2 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
+                                />
                             </div>
 
                             <div className="space-y-4 pt-2">

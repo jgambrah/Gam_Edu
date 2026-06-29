@@ -71,6 +71,23 @@ export const assignmentSchema = z.object({
     dueDate: z.date(),
     gradingType: z.enum(['points', 'letter', 'pass_fail', 'standards']),
     attachments: z.string().optional(),
+    questions: z.array(z.object({
+        questionText: z.string().min(1, 'Question text is required.'),
+        type: z.enum(['mcq', 'written']),
+        options: z.array(z.string()).optional(),
+        correctAnswer: z.string().optional(),
+    })).optional(),
+    timeLimit: z.coerce.number().optional(),
+    startDate: z.string().optional(),
+    questionsFile: z.object({
+        fileName: z.string(),
+        fileSize: z.string(),
+        fileData: z.string(),
+        fileType: z.string(),
+    }).optional(),
+    gradable: z.boolean().optional(),
+    subjectId: z.string().optional(),
+    assessmentType: z.string().optional(),
 });
 
 export type Assignment = z.infer<typeof assignmentSchema> & {
@@ -105,10 +122,20 @@ export const quizSchema = z.object({
     topic: z.string().min(3, "Topic must be at least 3 characters long."),
     numQuestions: z.coerce.number().min(1).max(10),
     classId: z.string().min(1, "Please select a class."),
+    questionType: z.enum(['mcq', 'written', 'mixed']).default('mcq'),
+    dueDate: z.string().min(1, "Please select a submission due date."),
+    context: z.string().optional(),
+    gradeLevel: z.string().min(1, "Please enter a target grade/class level."),
+    timeLimit: z.coerce.number().optional(),
+    startDate: z.string().optional(),
+    gradable: z.boolean().optional(),
+    subjectId: z.string().optional(),
+    assessmentType: z.string().optional(),
 });
 
 export type QuizQuestion = {
     questionText: string;
+    type?: 'mcq' | 'written';
     options: string[];
     correctAnswer: string;
     explanation?: string;
@@ -122,7 +149,14 @@ export type Quiz = {
     topic: string;
     questions: QuizQuestion[];
     createdAt: any;
+    dueDate?: any;
+    context?: string;
     forGradeLevel?: string;
+    timeLimit?: number;
+    startDate?: string;
+    gradable?: boolean;
+    subjectId?: string;
+    assessmentType?: string;
 }
 
 export type QuizAttempt = {
