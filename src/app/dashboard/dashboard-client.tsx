@@ -8,7 +8,7 @@ import {
   GraduationCap, Users, School, Banknote, Loader2, 
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
-  Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
+  Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wand2, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
   XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, ShieldAlert, Compass, Info,
   ArrowDownRight,
   Activity,
@@ -58,6 +58,7 @@ import { SchoolHealthDashboardView } from './school-health-dashboard-view';
 import { FinancialDashboardView } from './financial-dashboard-view';
 import { ParentDashboard } from './parent-dashboard-view';
 import { ParentSatisfactionDashboardView } from './parent-satisfaction-dashboard-view';
+import { TeacherDashboardView } from '@/components/dashboard/TeacherDashboardView';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600", subtitle }: any) {
   return (
@@ -1882,7 +1883,7 @@ function AdminDashboard({
                   <p className="text-[11px] text-slate-400 leading-relaxed font-medium mb-6">
                     Review administrative access rights and security tokens assigned to school staff.
                   </p>
-                  <Button asChild variant="outline" className="w-full border-white/10 hover:bg-white/10 text-white font-black text-xs uppercase rounded-xl h-11">
+                  <Button asChild variant="outline" className="w-full border-white/10 bg-transparent hover:bg-white/10 text-white hover:text-white font-black text-xs uppercase rounded-xl h-11">
                     <Link href="/dashboard/audit-log">View Security logs</Link>
                   </Button>
                 </Card>
@@ -3249,6 +3250,7 @@ function AcademicPerformanceDashboardView({
                   <th className="pb-3 font-semibold">Current Avg</th>
                   <th className="pb-3 font-semibold">Failing Subjects</th>
                   <th className="pb-3 font-semibold">Risk Alert</th>
+                  <th className="pb-3 font-semibold text-right">AI Assistant Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y text-xs">
@@ -3265,6 +3267,34 @@ function AcademicPerformanceDashboardView({
                         s.status === 'High Risk' ? "bg-amber-100 text-amber-700" :
                         "bg-blue-100 text-blue-700"
                       )}>{s.status}</span>
+                    </td>
+                    <td className="py-3 text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const prompt = `Draft a supportive and professional parent notification message for student ${s.name} (Class: ${s.class}), who is currently flagged under Academic Risk. Their average score is ${s.average} and they are struggling in these subjects: ${s.subjects}. The notification should communicate the situation constructively and propose a discussion to help the student improve.`;
+                            window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
+                          }}
+                          className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 transition-all flex items-center gap-1 shadow-sm"
+                        >
+                          <Sparkles className="w-3 h-3 text-purple-500 animate-pulse" />
+                          Draft AI parent notification text
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const prompt = `Recommend specific academic remediation tasks and interventions for student ${s.name} (Class: ${s.class}), who is currently flagged under Academic Risk. Their average score is ${s.average} and they are struggling in these subjects: ${s.subjects}. Please provide concrete, actionable study plans, topics to review, or exercises to practice.`;
+                            window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
+                          }}
+                          className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-all flex items-center gap-1 shadow-sm"
+                        >
+                          <Wand2 className="w-3 h-3 text-emerald-500 animate-pulse" />
+                          Recommend remediation tasks
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -3716,6 +3746,7 @@ function AttendanceAnalyticsView({
                     <th className="pb-3 font-semibold">Class</th>
                     <th className="pb-3 font-semibold">Rate</th>
                     <th className="pb-3 font-semibold">Absences</th>
+                    <th className="pb-3 font-semibold text-right">AI Assistant Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y text-xs">
@@ -3725,11 +3756,39 @@ function AttendanceAnalyticsView({
                       <td className="py-3 text-slate-500 uppercase font-bold">{s.className}</td>
                       <td className="py-3 font-black text-rose-600">{s.rate}%</td>
                       <td className="py-3 text-slate-400 font-bold">{s.absences} Days</td>
+                      <td className="py-3 text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const prompt = `Draft a supportive and clear parent notification message for student ${s.name} (Class: ${s.className}), who is currently flagged under Attendance Alert. Their attendance rate is ${s.rate}% with ${s.absences} absences. The message should explain the importance of consistent attendance and request a meeting or follow-up to address any underlying issues.`;
+                              window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
+                            }}
+                            className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 transition-all flex items-center gap-1 shadow-sm"
+                          >
+                            <Sparkles className="w-3 h-3 text-purple-500 animate-pulse" />
+                            Draft AI parent notification text
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const prompt = `Recommend support strategies or remediation tasks for student ${s.name} (Class: ${s.className}), who is currently flagged under Attendance Alert. Their attendance rate is ${s.rate}% and they have missed ${s.absences} of school. Please provide actionable suggestions to help the student catch up on missed coursework, stay engaged, and improve their attendance.`;
+                              window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
+                            }}
+                            className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-all flex items-center gap-1 shadow-sm"
+                          >
+                            <Wand2 className="w-3 h-3 text-emerald-500 animate-pulse" />
+                            Recommend remediation tasks
+                          </Button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                   {stats.chronicList.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                      <td colSpan={5} className="py-8 text-center text-slate-400 font-bold uppercase tracking-wider text-[10px]">
                         No chronically absent students found
                       </td>
                     </tr>
@@ -5275,7 +5334,7 @@ function DirectorDashboard({
                   <p className="text-[11px] text-slate-400 leading-relaxed font-medium mb-6">
                     Review administrative access rights and security tokens assigned to school staff.
                   </p>
-                  <Button asChild variant="outline" className="w-full border-white/10 hover:bg-white/10 text-white font-black text-xs uppercase rounded-xl h-11">
+                  <Button asChild variant="outline" className="w-full border-white/10 bg-transparent hover:bg-white/10 text-white hover:text-white font-black text-xs uppercase rounded-xl h-11">
                     <Link href="/dashboard/audit-log">View Security logs</Link>
                   </Button>
                 </Card>
@@ -9502,7 +9561,7 @@ function TeacherDashboard({ profile, classes, students, assessments, announcemen
                             <Button asChild className="bg-violet-600 hover:bg-violet-500 text-white font-black rounded-2xl text-xs uppercase h-11 px-6 shadow-lg shadow-violet-900/30">
                                 <Link href="/dashboard/attendance">Take Attendance</Link>
                             </Button>
-                            <Button asChild variant="outline" className="border-white/10 hover:bg-white/10 text-white font-black rounded-2xl text-xs uppercase h-11 px-5">
+                            <Button asChild variant="outline" className="border-white/10 bg-transparent hover:bg-white/10 text-white hover:text-white font-black rounded-2xl text-xs uppercase h-11 px-5">
                                 <Link href="/dashboard/academics/gradebook/manual-entry">Manual Grade Entry</Link>
                             </Button>
                         </div>
@@ -11869,10 +11928,10 @@ export default function DashboardClient() {
   const lessonPlansQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'lesson-plans'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: lessonPlans } = useCollection<any>(lessonPlansQuery);
 
-  const assignmentsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'assignments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
+  const assignmentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAdmin || role === 'Teacher')) ? query(collection(firestore, 'assignments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, role]);
   const { data: assignments } = useCollection<any>(assignmentsQuery);
 
-  const submissionsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'submissions'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
+  const submissionsQuery = useMemoFirebase(() => (firestore && schoolId && (isAdmin || role === 'Teacher')) ? query(collection(firestore, 'submissions'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, role]);
   const { data: submissions } = useCollection<any>(submissionsQuery);
 
   const parentSatisfactionQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'parent_satisfaction'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId, isAdmin]);
@@ -11961,7 +12020,20 @@ export default function DashboardClient() {
   }
 
   if (role === 'Teacher') {
-    return <TeacherDashboard profile={profile} classes={teacherClasses} students={teacherStudents} assessments={recentAssessments} announcements={announcements} isLoading={loadingClasses || loadingStudents || loadingAssessments || loadingTimetable} />;
+    return (
+      <TeacherDashboardView 
+        profile={profile} 
+        classes={teacherClasses} 
+        students={teacherStudents} 
+        assessments={recentAssessments} 
+        announcements={announcements} 
+        timetable={timetable}
+        assignments={assignments}
+        submissions={submissions}
+        subjects={subjects}
+        isLoading={loadingClasses || loadingStudents || loadingAssessments || loadingTimetable} 
+      />
+    );
   }
 
   if (role === 'Parent') {

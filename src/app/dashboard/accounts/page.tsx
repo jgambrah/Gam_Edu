@@ -27,7 +27,7 @@ import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSig
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -1599,12 +1599,12 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const { schoolId } = useCurrentSchool();
     const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
-    const form = useForm<z.infer<typeof recordPaymentSchema>>({ resolver: zodResolver(recordPaymentSchema), defaultValues: { method: 'Cash', amount: 0, notes: '' } });
+    const form = useForm<z.infer<typeof recordPaymentSchema>>({ resolver: zodResolver(recordPaymentSchema), defaultValues: { method: 'Cash', amount: 0, notes: '', customDescription: '' } });
     
     useEffect(() => {
         if (record && open) {
             const newBalance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
-            form.reset({ method: 'Cash', amount: newBalance > 0 ? parseFloat(newBalance.toFixed(2)) : 0, notes: '' });
+            form.reset({ method: 'Cash', amount: newBalance > 0 ? parseFloat(newBalance.toFixed(2)) : 0, notes: '', customDescription: '' });
         }
     }, [record, open, form]);
 
@@ -1615,6 +1615,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
             const batch = writeBatch(firestore);
             const receiptId = await generateNextReceiptId(firestore, schoolId);
             const paymentDocRef = doc(firestore, 'financialRecords', record.id, 'payments', receiptId);
+            const paymentDescription = values.customDescription?.trim() || record.description || 'School Fees Payment';
             
             const paymentData = { 
                 id: receiptId,
@@ -1625,7 +1626,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 processedById: user.uid, 
                 processedByName: user.displayName || user.email, 
                 studentId: record.studentId, 
-                description: record.description, 
+                description: paymentDescription, 
                 schoolId: schoolId 
             };
             const recordRef = doc(firestore, 'financialRecords', record.id);
@@ -1639,7 +1640,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 if (tillSnap.empty) throw new Error("You must have an OPEN TILL to accept cash.");
                 const activeTill = tillSnap.docs[0];
                 const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
-                batch.set(tillTransRef, { amount: values.amount, studentName: record.studentName, timestamp: serverTimestamp(), type: 'Payment', description: `Cash: ${record.description} (Receipt: ${receiptId})`, status: 'Completed', schoolId: schoolId });
+                batch.set(tillTransRef, { amount: values.amount, studentName: record.studentName, timestamp: serverTimestamp(), type: 'Payment', description: `Cash: ${paymentDescription} (Receipt: ${receiptId})`, status: 'Completed', schoolId: schoolId });
                 batch.update(doc(firestore, 'tills', activeTill.id), { currentBalance: increment(values.amount) });
             }
             batch.set(paymentDocRef, paymentData);
@@ -1653,7 +1654,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                     studentId: record.studentId,
                     studentName: record.studentName || 'Student',
                     paymentAmount: values.amount,
-                    feeType: record.description || 'School Fees',
+                    feeType: paymentDescription,
                     receiptId,
                     paymentMethod: values.method,
                     senderUid: user.uid,
@@ -1698,6 +1699,18 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                                         {['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
+                                <FormMessage />
+                            </FormItem>
+                          );
+                        }}/>
+                        <FormField control={form.control} name="customDescription" render={({ field }) => {
+                          return (
+                            <FormItem>
+                                <FormLabel>Custom Narration (Optional)</FormLabel>
+                                <FormControl><Input placeholder={`Default: ${record.description}`} {...field}/></FormControl>
+                                <FormDescription className="text-[10px] text-slate-500">
+                                    Leave blank to use the standard narration: "{record.description}".
+                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                           );

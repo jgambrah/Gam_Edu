@@ -55,6 +55,9 @@ export default function BulkDailyReceiptsPage() {
     const [paymentData, setPaymentData] = useState<Record<string, number>>({});
     const [searchTerm, setSearchTerm] = useState('');
     
+    const [batchNarration, setBatchNarration] = useState('');
+    const [rowNarrations, setRowNarrations] = useState<Record<string, string>>({});
+    
     const [isLoading, setIsLoading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [auditSummary, setAuditSummary] = useState<AuditSummary | null>(null);
@@ -84,6 +87,8 @@ export default function BulkDailyReceiptsPage() {
         setAuditSummary(null);
         setSearchTerm('');
         setShowMissingNames(false);
+        setBatchNarration('');
+        setRowNarrations({});
 
         try {
             const dayStart = startOfDay(date);
@@ -251,6 +256,8 @@ export default function BulkDailyReceiptsPage() {
                 const newAmountPaid = (bill.amountPaid || 0) + payAmount;
                 const isFullyPaid = (bill.billedAmount - newAmountPaid - (bill.waiverAmount || 0)) <= 0.01;
 
+                const finalDescription = rowNarrations[bill.id]?.trim() || batchNarration.trim() || bill.description;
+
                 batch.update(recordRef, {
                     amountPaid: newAmountPaid,
                     lastPaymentDate: serverTimestamp(),
@@ -266,7 +273,7 @@ export default function BulkDailyReceiptsPage() {
                     processedByName: user.displayName || user.email || 'Accountant',
                     schoolId: schoolId,
                     studentId: bill.studentId,
-                    description: bill.description,
+                    description: finalDescription,
                     notes: 'Bulk Daily Receipting'
                 });
 
@@ -275,7 +282,7 @@ export default function BulkDailyReceiptsPage() {
                     studentName: bill.studentName,
                     timestamp: serverTimestamp(),
                     type: 'Payment',
-                    description: `${serviceType} Payment - ${bill.description} (Receipt: ${receiptId})`,
+                    description: `Cash: ${finalDescription} (Receipt: ${receiptId})`,
                     status: 'Completed',
                     schoolId: schoolId
                 });
@@ -287,7 +294,7 @@ export default function BulkDailyReceiptsPage() {
                     studentId: bill.studentId,
                     studentName: bill.studentName,
                     payAmount,
-                    description: bill.description,
+                    description: finalDescription,
                     receiptId
                 });
             }
@@ -323,6 +330,8 @@ export default function BulkDailyReceiptsPage() {
             setPaymentData({});
             setAuditSummary(null);
             setSearchTerm('');
+            setBatchNarration('');
+            setRowNarrations({});
 
         } catch (error: any) {
             console.error("Process Error:", error);
@@ -488,11 +497,21 @@ export default function BulkDailyReceiptsPage() {
             {pendingBills.length > 0 && (
                 <Card className="border-t-4 border-t-indigo-600 shadow-xl rounded-[2rem] overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
                     <CardHeader className="bg-slate-50 border-b pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
+                        <div className="flex-1">
                             <CardTitle className="text-xl">2. Review & Process Payments</CardTitle>
                             <CardDescription>Verify cash received for the found invoices.</CardDescription>
+                            
+                            <div className="mt-3 max-w-md">
+                                <Label className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Batch-wide Narration Override (Optional)</Label>
+                                <Input 
+                                    placeholder="Type to apply same narration to all receipts..."
+                                    value={batchNarration}
+                                    onChange={e => setBatchNarration(e.target.value)}
+                                    className="h-9 mt-1 border-2 rounded-lg bg-white text-xs"
+                                />
+                            </div>
                         </div>
-                        <div className="relative w-full md:w-[250px]">
+                        <div className="relative w-full md:w-[250px] self-end md:self-center">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input 
                                 placeholder="Search by student name..." 
@@ -508,7 +527,7 @@ export default function BulkDailyReceiptsPage() {
                                 <TableHeader className="bg-white sticky top-0 shadow-sm z-10">
                                     <TableRow>
                                         <TableHead className="font-black text-[10px] uppercase tracking-widest">Student Name</TableHead>
-                                        <TableHead className="font-black text-[10px] uppercase tracking-widest">Description</TableHead>
+                                        <TableHead className="font-black text-[10px] uppercase tracking-widest w-[300px]">Description & Custom Narration</TableHead>
                                         <TableHead className="text-right font-black text-[10px] uppercase tracking-widest">{"Due (GH₵)"}</TableHead>
                                         <TableHead className="w-[180px] font-black text-[10px] uppercase tracking-widest">Cash Received</TableHead>
                                     </TableRow>
@@ -521,7 +540,18 @@ export default function BulkDailyReceiptsPage() {
                                         return (
                                             <TableRow key={bill.id} className={cn("transition-colors", currentPayment > balance ? "bg-purple-50/30" : currentPayment > 0 ? "bg-emerald-50/30" : "")}>
                                                 <TableCell className="font-bold text-slate-700">{bill.studentName}</TableCell>
-                                                <TableCell className="text-xs text-slate-500">{bill.description}</TableCell>
+                                                <TableCell className="text-xs text-slate-500">
+                                                    <span className="font-medium text-slate-750">{bill.description}</span>
+                                                    <Input 
+                                                        placeholder="Custom override narration..."
+                                                        value={rowNarrations[bill.id] ?? ''}
+                                                        onChange={e => setRowNarrations(prev => ({ 
+                                                            ...prev, 
+                                                            [bill.id]: e.target.value 
+                                                        }))}
+                                                        className="h-8 mt-1 text-xs border rounded-lg bg-white"
+                                                    />
+                                                </TableCell>
                                                 <TableCell className="font-mono text-red-600 font-bold text-right">GH₵{balance.toFixed(2)}</TableCell>
                                                 <TableCell>
                                                     <div className="relative group">
@@ -559,7 +589,7 @@ export default function BulkDailyReceiptsPage() {
                         </div>
                     </CardContent>
                     <CardFooter className="bg-slate-50 border-t p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <Button variant="ghost" className="font-bold text-slate-400" onClick={() => {setPendingBills([]); setPaymentData({}); setAuditSummary(null); setSearchTerm('');}}>Clear Batch</Button>
+                        <Button variant="ghost" className="font-bold text-slate-400" onClick={() => {setPendingBills([]); setPaymentData({}); setAuditSummary(null); setSearchTerm(''); setBatchNarration(''); setRowNarrations({});}}>Clear Batch</Button>
                         <Button onClick={handleProcessPayments} disabled={isProcessing} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 h-16 px-12 text-xl font-black rounded-2xl shadow-xl shadow-indigo-200 uppercase tracking-tighter text-white">
                             {isProcessing ? <Loader2 className="mr-2 h-6 w-6 animate-spin"/> : <CheckCircle2 className="mr-2 h-6 w-6"/>}
                             {"Receive GH₵" + pendingBills.reduce((sum, b) => sum + (Number(paymentData[b.id]) || 0), 0).toFixed(2)}

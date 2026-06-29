@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Receipt, Download, Loader2, Printer } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
 import { doc, query, collection, where } from 'firebase/firestore';
 import { FinancialRecord, Student, PaymentTransaction } from '@/lib/types';
@@ -46,6 +47,7 @@ interface GenerateReceiptProps {
 export function GenerateReceipt({ transaction, payment, variant = 'icon' }: GenerateReceiptProps) {
     const [loading, setLoading] = useState(false);
     const [logoBase64, setLogoBase64] = useState<string>('');
+    const [layoutStyle, setLayoutStyle] = useState<'standard' | 'plain' | 'thermal'>('standard');
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     const printRef = useRef<HTMLDivElement>(null);
@@ -101,16 +103,27 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                 scale: 2, 
                 useCORS: true,
                 logging: false,
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                height: element.scrollHeight,
+                windowHeight: element.scrollHeight
             });
             const imgData = canvas.toDataURL('image/png');
             
-            const pdf = new jsPDF('p', 'mm', 'a5'); // A5 is smaller, better for receipts
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            const isThermal = layoutStyle === 'thermal';
+            const width = isThermal ? 80 : 148;
             
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            const aspect = canvasHeight / canvasWidth;
+            const height = width * aspect;
+
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [width, height]
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
             pdf.save(`Receipt_${student.firstName}_${student.lastName}_${transaction.id.slice(0,6)}.pdf`);
         } catch (error) {
             console.error('PDF Generation Failed:', error);
@@ -138,15 +151,31 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                     <DialogTitle>Receipt Preview</DialogTitle>
                     <DialogDescription>Review the receipt below before downloading.</DialogDescription>
                 </DialogHeader>
+
+                <div className="mb-2">
+                    <Tabs value={layoutStyle} onValueChange={(val: any) => setLayoutStyle(val)} className="w-full">
+                        <TabsList className="grid w-full grid-cols-3 bg-slate-100 p-1 rounded-xl">
+                            <TabsTrigger value="standard" className="text-xs font-bold uppercase tracking-wider rounded-lg data-[state=active]:bg-white data-[state=active]:text-indigo-650 transition-all">
+                                Standard A5 (Color)
+                            </TabsTrigger>
+                            <TabsTrigger value="plain" className="text-xs font-bold uppercase tracking-wider rounded-lg data-[state=active]:bg-white data-[state=active]:text-indigo-650 transition-all">
+                                Minimalist A5 (B&W)
+                            </TabsTrigger>
+                            <TabsTrigger value="thermal" className="text-xs font-bold uppercase tracking-wider rounded-lg data-[state=active]:bg-white data-[state=active]:text-indigo-650 transition-all">
+                                Thermal Till (80mm)
+                            </TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </div>
                 
-                <div className="max-h-[70vh] overflow-y-auto bg-slate-100 p-4">
+                <div className="max-h-[75vh] overflow-y-auto bg-slate-100/80 p-6 rounded-2xl border border-slate-100">
                     {isLoadingData ? (
-                        <div className="space-y-4">
+                        <div className="space-y-4 w-full">
                             <Skeleton className="h-24 w-full" />
                             <Skeleton className="h-48 w-full" />
                         </div>
                     ) : (
-                         <div ref={printRef}>
+                         <div ref={printRef} className="shadow-lg bg-white rounded-xl overflow-hidden mx-auto w-fit">
                             {student && (
                                 <PaymentReceipt 
                                     transaction={transaction} 
@@ -154,6 +183,8 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                                     student={student} 
                                     schoolProfile={{...schoolProfile, logoBase64}}
                                     totalBalance={totalBalance}
+                                    isThermal={layoutStyle === 'thermal'}
+                                    isPlainA5={layoutStyle === 'plain'}
                                 />
                             )}
                         </div>

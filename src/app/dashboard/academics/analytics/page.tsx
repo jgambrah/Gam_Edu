@@ -7,7 +7,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ScatterChart, Scatter
 } from 'recharts';
 import { 
-  Loader2, BrainCircuit, TrendingUp, AlertTriangle, Users, BookOpen, CheckCircle, Search, Sparkles, Calendar, Award, ChevronRight, GraduationCap, RefreshCw
+  Loader2, BrainCircuit, TrendingUp, AlertTriangle, Users, BookOpen, CheckCircle, Search, Sparkles, Wand2, Calendar, Award, ChevronRight, GraduationCap, RefreshCw
 } from 'lucide-react';
 import { generateLearningInsights } from '@/ai/flows/learning-analytics';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -520,6 +520,33 @@ export default function LearningAnalyticsPage() {
                                                           <span className="font-extrabold text-slate-900 block mb-0.5">💡 Suggested Intervention:</span> 
                                                           {risk.intervention}
                                                       </p>
+                                                  </div>
+
+                                                  <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                                      <Button
+                                                          variant="outline"
+                                                          size="sm"
+                                                          onClick={() => {
+                                                              const prompt = `Draft a supportive and professional parent notification message for student ${risk.studentName}, who has been flagged with an Academic/Attendance Risk. Trigger Reason: ${risk.reason}. Suggested Intervention: ${risk.intervention}. The message should communicate the situation constructively and propose a discussion to help the student improve.`;
+                                                              window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
+                                                          }}
+                                                          className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 transition-all flex items-center gap-1 shadow-sm flex-1 justify-center whitespace-nowrap"
+                                                      >
+                                                          <Sparkles className="w-3 h-3 text-purple-500 animate-pulse" />
+                                                          Draft AI parent notification text
+                                                      </Button>
+                                                      <Button
+                                                          variant="outline"
+                                                          size="sm"
+                                                          onClick={() => {
+                                                              const prompt = `Recommend specific academic remediation tasks and support plans for student ${risk.studentName}. Trigger Reason: ${risk.reason}. Suggested Intervention: ${risk.intervention}. Please provide concrete, actionable study plans, topics to review, or exercises to practice.`;
+                                                              window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
+                                                          }}
+                                                          className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-all flex items-center gap-1 shadow-sm flex-1 justify-center whitespace-nowrap"
+                                                      >
+                                                          <Wand2 className="w-3 h-3 text-emerald-500 animate-pulse" />
+                                                          Recommend remediation tasks
+                                                      </Button>
                                                   </div>
                                               </div>
                                             );

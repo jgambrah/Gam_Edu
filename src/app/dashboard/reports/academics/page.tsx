@@ -18,7 +18,7 @@ import {
 } from 'recharts';
 import { 
     FileText, Printer, BarChart2, Users, Loader2, ShieldAlert, Award, TrendingUp, 
-    TrendingDown, AlertTriangle, BookOpen, Search, Sparkles, ChevronRight, 
+    TrendingDown, AlertTriangle, BookOpen, Search, Sparkles, Wand2, ChevronRight, 
     GraduationCap, Info, FileSpreadsheet, RefreshCw, BookOpenCheck, UserCheck 
 } from 'lucide-react';
 import { Class, Subject, Student, Assessment } from '@/lib/types';
@@ -810,15 +810,39 @@ export default function AcademicReportsPage() {
                                     });
 
                                     return (
-                                        <div key={student.studentId} className="p-4 hover:bg-slate-50 transition-colors flex justify-between items-center gap-3">
+                                        <div key={student.studentId} className="p-4 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                             <div className="space-y-1">
                                                 <p className="font-bold text-sm text-slate-800">{student.studentName}</p>
                                                 <p className="text-[10px] text-rose-500 font-semibold">
                                                     Weakest Subject: <strong className="font-extrabold">{lowestSubName}</strong> ({lowestScore}%)
                                                 </p>
                                             </div>
-                                            <div className="text-right">
-                                                <Badge variant="destructive" className="font-bold">{student.average}% Avg</Badge>
+                                            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:justify-end">
+                                                <Badge variant="destructive" className="font-bold shrink-0">{student.average}% Avg</Badge>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        const prompt = `Draft a supportive and professional parent notification message for student ${student.studentName}, who is currently flagged under Academic Risk. Their average score is ${student.average}% and their weakest subject is ${lowestSubName} (${lowestScore}%). The notification should communicate the situation constructively and propose a discussion to help the student improve.`;
+                                                        window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
+                                                    }}
+                                                    className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 transition-all flex items-center gap-1 shadow-sm shrink-0"
+                                                >
+                                                    <Sparkles className="w-3 h-3 text-purple-500 animate-pulse" />
+                                                    Draft AI parent notification text
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        const prompt = `Recommend specific academic remediation tasks and interventions for student ${student.studentName}. Their average score is ${student.average}% and their weakest subject is ${lowestSubName} (${lowestScore}%). Please provide concrete, actionable study plans, topics to review, or exercises to practice.`;
+                                                        window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
+                                                    }}
+                                                    className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-all flex items-center gap-1 shadow-sm shrink-0"
+                                                >
+                                                    <Wand2 className="w-3 h-3 text-emerald-500 animate-pulse" />
+                                                    Recommend remediation tasks
+                                                </Button>
                                             </div>
                                         </div>
                                     );

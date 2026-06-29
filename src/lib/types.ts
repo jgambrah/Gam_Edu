@@ -616,6 +616,7 @@ export const recordPaymentSchema = z.object({
     amount: z.coerce.number().min(0.01, "Payment amount must be positive."),
     method: z.enum(['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other']),
     notes: z.string().optional(),
+    customDescription: z.string().optional(),
 });
 
 export const applyWaiverSchema = z.object({
@@ -668,6 +669,8 @@ export type PaymentTransaction = {
     processedById: string;
     processedByName: string;
     schoolId?: string;
+    description?: string;
+    studentId?: string;
 };
 
 export type Staff = {

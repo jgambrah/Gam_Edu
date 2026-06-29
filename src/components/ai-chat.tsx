@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -35,47 +35,76 @@ export function AiChat() {
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const sendMessage = async (text: string) => {
+    if (!text.trim()) return;
 
     setIsLoading(true);
-    const userMessage: Message = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    const currentInput = input;
-    setInput('');
+    const userMessage: Message = { role: 'user', content: text };
     
-    try {
-        if (schoolId) {
+    setMessages((prev) => {
+      const updated = [...prev, userMessage];
+      
+      (async () => {
+        try {
+          if (schoolId) {
             const result = await checkAndSpendCredits(schoolId, 1);
             if (!result.success) {
-                setMessages(prev => [...prev, { 
-                    role: 'model', 
-                    content: "🚫 " + (result.error || "You are out of AI Credits. Please ask your administrator to upgrade the school's plan.") 
-                }]);
-                setIsLoading(false);
-                return;
+              setMessages((current) => [...current, { 
+                role: 'model', 
+                content: "🚫 " + (result.error || "You are out of AI Credits. Please ask your administrator to upgrade the school's plan.") 
+              }]);
+              setIsLoading(false);
+              return;
             }
-        }
+          }
 
-        const response = await campusAssistant({
-            prompt: currentInput,
+          const response = await campusAssistant({
+            prompt: text,
             role: role || 'user',
-            history: messages,
-        });
+            history: prev,
+          });
 
-        const modelMessage: Message = { role: 'model', content: response.response };
-        setMessages((prev) => [...prev, modelMessage]);
-    } catch (error) {
-      console.error('AI Assistant Error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Could not get a response from the AI assistant.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+          const modelMessage: Message = { role: 'model', content: response.response };
+          setMessages((current) => [...current, modelMessage]);
+        } catch (error) {
+          console.error('AI Assistant Error:', error);
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Could not get a response from the AI assistant.',
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+
+      return updated;
+    });
   };
+
+  const handleSend = async () => {
+    const text = input;
+    if (!text.trim()) return;
+    setInput('');
+    await sendMessage(text);
+  };
+
+  useEffect(() => {
+    const handleOpenChat = (event: Event) => {
+      const customEvent = event as CustomEvent<{ prompt: string; autoSend?: boolean }>;
+      if (customEvent.detail) {
+        const { prompt, autoSend } = customEvent.detail;
+        setIsOpen(true);
+        if (autoSend) {
+          sendMessage(prompt);
+        } else {
+          setInput(prompt);
+        }
+      }
+    };
+    window.addEventListener('open-ai-chat', handleOpenChat as EventListener);
+    return () => window.removeEventListener('open-ai-chat', handleOpenChat as EventListener);
+  }, [schoolId, role]);
 
   return (
     <>

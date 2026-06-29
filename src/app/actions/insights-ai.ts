@@ -284,5 +284,62 @@ export async function generateLessonEnhancementsAction(
   }
 }
 
+export async function generateStudentAlertSupportAction(
+  schoolId: string,
+  studentName: string,
+  alertType: 'academic_risk' | 'attendance_alert',
+  details: string,
+  actionType: 'notification' | 'remediation'
+) {
+  if (!schoolId) return { success: false, error: "School ID missing" };
+
+  const creditRes = await checkAndSpendCredits(schoolId, 1);
+  if (!creditRes.success) return { success: false, error: "Not enough AI credits." };
+
+  try {
+    let prompt = '';
+    if (actionType === 'notification') {
+      prompt = `
+        You are a supportive, professional school counselor and educator. Draft a short notification message (suitable for SMS or email, under 250 characters) to send to the parents of student "${studentName}".
+        
+        Context: The student has been flagged with an ${alertType === 'academic_risk' ? 'Academic Risk' : 'Attendance Alert'}.
+        Details: "${details}".
+        
+        Guidelines:
+        1. Keep the tone compassionate, non-blaming, and collaborative.
+        2. Propose touching base or working together to support the student's progress.
+        3. Do not include placeholders like "[Your Name]". Just write the message body directly.
+      `;
+    } else {
+      prompt = `
+        You are an expert pedagogical strategist and teacher mentor. Recommend 3 specific, highly-actionable classroom remediation tasks or strategic interventions for a teacher to help student "${studentName}".
+        
+        Context: The student has been flagged with an ${alertType === 'academic_risk' ? 'Academic Risk' : 'Attendance Alert'}.
+        Details: "${details}".
+        
+        Guidelines:
+        1. Provide concrete, creative, and practical steps the teacher can execute in the classroom (e.g. peer mentoring, targeted worksheets, seating changes, or mini-checklists).
+        2. Format as a clean bulleted list of 3 items.
+      `;
+    }
+
+    const response = await ai.generate({
+      model: 'googleai/gemini-3-flash-preview',
+      prompt: prompt,
+      config: { temperature: 0.6 }
+    });
+
+    const text = response.text;
+    if (!text) {
+      throw new Error("AI returned empty response.");
+    }
+
+    return { success: true, text: text.trim() };
+  } catch (e: any) {
+    console.error("AI Student Alert Action Error:", e);
+    return { success: false, error: e.message || "Failed to generate recommendation." };
+  }
+}
+
 
 

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, doc, setDoc, serverTimestamp, query, where } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, serverTimestamp, query, where, writeBatch } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Loader2, 
   Bell, FileText, CalendarCheck,
@@ -13,18 +13,23 @@ import {
   Search,
   AlertTriangle,
   Send,
-  CheckSquare
+  CheckSquare,
+  Check,
+  X,
+  Plus,
+  Info
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow, startOfDay } from 'date-fns';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
+import { billStudentForAttendance } from '@/lib/billing';
 
 export function TeacherDashboardView({ 
     profile, 
@@ -35,6 +40,7 @@ export function TeacherDashboardView({
     timetable, 
     assignments, 
     submissions, 
+    subjects,
     isLoading 
 }: any) {
     const { user } = useUser();
@@ -72,6 +78,7 @@ export function TeacherDashboardView({
     const [aiSubject, setAiSubject] = useState('');
     const [aiGrade, setAiGrade] = useState('');
     const [isDrafting, setIsDrafting] = useState(false);
+    const [togglingAttendanceId, setTogglingAttendanceId] = useState<string>('');
 
     // Lesson Status Map state
     const [lessonStatusMap, setLessonStatusMap] = useState<Record<string, 'Upcoming' | 'Ongoing' | 'Completed'>>({});
@@ -196,7 +203,8 @@ export function TeacherDashboardView({
         classAssessments.forEach((a: any) => {
             const score = Number(a.score) || 0;
             const max = Number(a.maxScore) || 100;
-            const subjName = a.subjectName || 'General';
+            const matchedSub = subjects?.find((s: any) => s.id === a.subjectId);
+            const subjName = a.subjectName || matchedSub?.name || a.subjectId || 'General';
             if (max > 0) {
                 if (!averages[subjName]) {
                     averages[subjName] = { totalPct: 0, count: 0 };
@@ -210,7 +218,7 @@ export function TeacherDashboardView({
             average: Math.round(data.totalPct / data.count),
             count: data.count
         }));
-    }, [classAssessments]);
+    }, [classAssessments, subjects]);
 
     const topPerformers = useMemo(() => {
         return [...studentPerformance]
@@ -372,6 +380,59 @@ export function TeacherDashboardView({
         }
     };
 
+    const handleToggleAttendance = async (student: any) => {
+        if (!firestore || !schoolId || !activeClassId) return;
+        const dateStr = format(new Date(), 'yyyy-MM-dd');
+        const deterministicId = `att-${schoolId}-${activeClassId}-${student.uid}-${dateStr}`;
+        setTogglingAttendanceId(student.uid);
+        try {
+            const docRef = doc(firestore, 'attendance', deterministicId);
+            
+            // Find existing record today
+            const existingLog = attendanceDocs?.find((a: any) => {
+                if (!a.date) return false;
+                let logDate = a.date.toDate ? a.date.toDate() : new Date(a.date);
+                return a.studentId === student.uid && format(logDate, 'yyyy-MM-dd') === dateStr;
+            });
+
+            const isPresent = existingLog && (existingLog.status === 'Present' || existingLog.status === 'Late');
+            const newStatus = isPresent ? 'Absent' : 'Present';
+            const studentName = `${student.firstName || ''} ${student.lastName || ''}`.trim();
+
+            await setDoc(docRef, {
+                studentId: student.uid,
+                studentName,
+                classId: activeClassId,
+                status: newStatus,
+                date: startOfDay(new Date()),
+                schoolId: schoolId,
+                updatedAt: serverTimestamp(),
+                updatedBy: user?.uid
+            }, { merge: true });
+
+            if (newStatus === 'Absent') {
+                const canteenBillId = `canteen-${student.uid}-${dateStr}`;
+                const transportBillId = `transport-${student.uid}-${dateStr}`;
+                const batch = writeBatch(firestore);
+                batch.delete(doc(firestore, 'financialRecords', canteenBillId));
+                batch.delete(doc(firestore, 'financialRecords', transportBillId));
+                await batch.commit();
+            } else {
+                await billStudentForAttendance(firestore, student, new Date(), schoolId);
+            }
+
+            toast({ 
+                title: `Attendance Updated`, 
+                description: `${studentName} marked as ${newStatus} for today.` 
+            });
+        } catch (err: any) {
+            console.error(err);
+            toast({ variant: 'destructive', title: 'Error', description: err.message || 'Failed to update attendance.' });
+        } finally {
+            setTogglingAttendanceId('');
+        }
+    };
+
     const exportClassPerformance = () => {
         if (studentPerformance.length === 0) return;
         const csvContent = "data:text/csv;charset=utf-8,Student Name,Graded Assessments,Average Score (%)\n"
@@ -415,7 +476,7 @@ export function TeacherDashboardView({
                             <Button asChild className="bg-violet-700 hover:bg-violet-650 text-white font-black rounded-2xl text-xs uppercase h-11 px-6 shadow-lg shadow-violet-900/30 border-none">
                                 <Link href="/dashboard/attendance">Take Attendance</Link>
                             </Button>
-                            <Button asChild variant="outline" className="border-white/10 hover:bg-white/10 text-white font-black rounded-2xl text-xs uppercase h-11 px-5">
+                            <Button asChild variant="outline" className="border-white/10 bg-transparent hover:bg-white/10 text-white hover:text-white font-black rounded-2xl text-xs uppercase h-11 px-5">
                                 <Link href="/dashboard/academics/gradebook/manual-entry">Manual Grade Entry</Link>
                             </Button>
                         </div>
@@ -704,6 +765,9 @@ export function TeacherDashboardView({
                                         Showing {classStudents.length} Students
                                     </span>
                                 </div>
+                                <p className="text-[10px] font-bold text-slate-450 uppercase tracking-wider pl-1 text-slate-400">
+                                    💡 Quick check: click the circle beside a student to mark Present/Absent for today.
+                                </p>
                                 
                                 {classStudents.length > 0 ? (
                                     <div className="space-y-3">
@@ -713,6 +777,76 @@ export function TeacherDashboardView({
                                             return (
                                                 <div key={s.uid} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 hover:scale-[1.01] hover:bg-white hover:border-indigo-100 transition-all duration-200">
                                                     <div className="flex items-center gap-3">
+                                                        {(() => {
+                                                            const todayStr = format(new Date(), 'yyyy-MM-dd');
+                                                            const todayLog = attendanceDocs?.find((a: any) => {
+                                                                if (!a.date) return false;
+                                                                let logDate = a.date.toDate ? a.date.toDate() : new Date(a.date);
+                                                                return a.studentId === s.uid && format(logDate, 'yyyy-MM-dd') === todayStr;
+                                                            });
+                                                            const status = todayLog?.status;
+                                                            const isToggling = togglingAttendanceId === s.uid;
+
+                                                            let btnStyles = "border-2 border-dashed border-slate-300 text-slate-350 hover:bg-emerald-50 hover:text-emerald-500 hover:border-emerald-500";
+                                                            let icon = <Plus className="h-3.5 w-3.5 text-slate-400 group-hover:text-emerald-600 transition-colors" />;
+                                                            let tooltip = "Mark Present";
+
+                                                            if (isToggling) {
+                                                                btnStyles = "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed";
+                                                                icon = <Loader2 className="h-3.5 w-3.5 animate-spin" />;
+                                                                tooltip = "Updating...";
+                                                            } else if (status === 'Present') {
+                                                                btnStyles = "bg-emerald-500 border-emerald-500 text-white hover:bg-rose-500 hover:border-rose-500";
+                                                                icon = (
+                                                                    <>
+                                                                        <Check className="h-3.5 w-3.5 group-hover:hidden" />
+                                                                        <X className="h-3.5 w-3.5 hidden group-hover:block" />
+                                                                    </>
+                                                                );
+                                                                tooltip = "Mark Absent";
+                                                            } else if (status === 'Absent') {
+                                                                btnStyles = "bg-rose-500 border-rose-500 text-white hover:bg-emerald-500 hover:border-emerald-500";
+                                                                icon = (
+                                                                    <>
+                                                                        <X className="h-3.5 w-3.5 group-hover:hidden" />
+                                                                        <Check className="h-3.5 w-3.5 hidden group-hover:block" />
+                                                                    </>
+                                                                );
+                                                                tooltip = "Mark Present";
+                                                            } else if (status === 'Late') {
+                                                                btnStyles = "bg-amber-500 border-amber-500 text-white hover:bg-rose-500 hover:border-rose-500";
+                                                                icon = (
+                                                                    <>
+                                                                        <Clock className="h-3.5 w-3.5 group-hover:hidden" />
+                                                                        <X className="h-3.5 w-3.5 hidden group-hover:block" />
+                                                                    </>
+                                                                );
+                                                                tooltip = "Mark Absent";
+                                                            } else if (status === 'Excused') {
+                                                                btnStyles = "bg-sky-500 border-sky-500 text-white hover:bg-rose-500 hover:border-rose-500";
+                                                                icon = (
+                                                                    <>
+                                                                        <Info className="h-3.5 w-3.5 group-hover:hidden" />
+                                                                        <X className="h-3.5 w-3.5 hidden group-hover:block" />
+                                                                    </>
+                                                                );
+                                                                tooltip = "Mark Present";
+                                                            }
+
+                                                            return (
+                                                                <button
+                                                                    onClick={() => !isToggling && handleToggleAttendance(s)}
+                                                                    disabled={isToggling}
+                                                                    title={tooltip}
+                                                                    className={cn(
+                                                                        "h-8 w-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shrink-0 group",
+                                                                        btnStyles
+                                                                    )}
+                                                                >
+                                                                    {icon}
+                                                                </button>
+                                                            );
+                                                        })()}
                                                         <div className="h-10 w-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-black text-xs border border-indigo-200 shrink-0">
                                                             {initials || 'ST'}
                                                         </div>
