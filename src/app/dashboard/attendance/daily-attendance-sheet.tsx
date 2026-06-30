@@ -27,6 +27,7 @@ import { billMultipleStudents } from '@/lib/billing';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { notifyParents } from '@/app/actions/notifications';
 import { sendSchoolWhatsApp } from '@/app/actions/whatsapp';
+import { logAuditEvent } from '@/lib/audit';
 
 const attendanceRecordSchema = z.object({
   id: z.string().optional(),
@@ -213,6 +214,25 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
             await batch.commit();
             setHasExistingRecords(true);
+
+            try {
+                const className = visibleClasses?.find((c: any) => c.id === selectedClassId)?.name || selectedClassId;
+                const pCount = data.records.filter(r => r.status === 'Present').length;
+                const aCount = data.records.filter(r => r.status === 'Absent').length;
+                const lCount = data.records.filter(r => r.status === 'Late').length;
+                const eCount = data.records.filter(r => r.status === 'Excused').length;
+                
+                await logAuditEvent({
+                    firestore,
+                    schoolId,
+                    userName: user?.displayName || user?.email || 'Staff Member',
+                    action: 'STUDENT_ATTENDANCE_TAKEN',
+                    details: `Class: ${className} | Date: ${dateStr} | Summary - Present: ${pCount}, Absent: ${aCount}, Late: ${lCount}, Excused: ${eCount}`,
+                    userId: user?.uid
+                });
+            } catch (auditErr) {
+                console.error("Failed to log attendance audit event:", auditErr);
+            }
 
             // Notify parents via Push asynchronously
             const gradedStudentIds = data.records.map(r => r.studentId);

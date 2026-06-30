@@ -6,6 +6,7 @@ interface LogAuditParams {
   userName: string;
   action: string;
   details: string;
+  userId?: string;
 }
 
 export async function logAuditEvent({
@@ -13,7 +14,8 @@ export async function logAuditEvent({
   schoolId,
   userName,
   action,
-  details
+  details,
+  userId
 }: LogAuditParams) {
   if (!firestore || !schoolId) {
     console.warn('logAuditEvent skipped: firestore or schoolId is missing', { hasFirestore: !!firestore, schoolId, action, details });
@@ -25,7 +27,8 @@ export async function logAuditEvent({
       userName: userName || 'System',
       action,
       details,
-      timestamp: serverTimestamp()
+      timestamp: serverTimestamp(),
+      userId: userId || null
     });
   } catch (err) {
     console.error('Failed to write audit log:', err);
