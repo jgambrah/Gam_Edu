@@ -47,7 +47,7 @@ export default function BulkDailyReceiptsPage() {
     const { toast } = useToast();
 
     const [date, setDate] = useState<Date>(new Date());
-    const [serviceType, setServiceType] = useState<'Canteen' | 'Transport'>('Canteen');
+    const [serviceType, setServiceType] = useState<'Canteen' | 'Transport' | 'Tuition'>('Canteen');
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
     
     const [classes, setClasses] = useState<any[]>([]);
@@ -94,25 +94,39 @@ export default function BulkDailyReceiptsPage() {
             const dayStart = startOfDay(date);
             const dayEnd = endOfDay(date);
             
-            // A. FETCH ATTENDANCE (To see who should have been billed)
-            const attQuery = query(
-                collection(firestore, 'attendance'),
-                where('schoolId', '==', schoolId),
-                where('date', '==', Timestamp.fromDate(dayStart)),
-                where('status', 'in', ['Present', 'Late'])
-            );
-            const attSnap = await getDocs(attQuery);
-            const studentsPresent = attSnap.docs
-                .map(d => d.data())
-                .filter(d => selectedClassId === 'all' || d.classId === selectedClassId);
+            let studentsPresent: any[] = [];
+            
+            // A. FETCH ATTENDANCE (Only for Canteen and Transport)
+            if (serviceType !== 'Tuition') {
+                const attQuery = query(
+                    collection(firestore, 'attendance'),
+                    where('schoolId', '==', schoolId),
+                    where('date', '==', Timestamp.fromDate(dayStart)),
+                    where('status', 'in', ['Present', 'Late'])
+                );
+                const attSnap = await getDocs(attQuery);
+                studentsPresent = attSnap.docs
+                    .map(d => d.data())
+                    .filter(d => selectedClassId === 'all' || d.classId === selectedClassId);
+            }
 
             // B. FETCH EXISTING BILLS
-            const billsQuery = query(
-                collection(firestore, 'financialRecords'),
-                where('schoolId', '==', schoolId),
-                where('dueDate', '>=', Timestamp.fromDate(dayStart)),
-                where('dueDate', '<=', Timestamp.fromDate(dayEnd))
-            );
+            let billsQuery;
+            if (serviceType === 'Tuition') {
+                // Fetch all unpaid records for the school to avoid missing composite index issues, then filter client-side
+                billsQuery = query(
+                    collection(firestore, 'financialRecords'),
+                    where('schoolId', '==', schoolId),
+                    where('status', '==', 'Unpaid')
+                );
+            } else {
+                billsQuery = query(
+                    collection(firestore, 'financialRecords'),
+                    where('schoolId', '==', schoolId),
+                    where('dueDate', '>=', Timestamp.fromDate(dayStart)),
+                    where('dueDate', '<=', Timestamp.fromDate(dayEnd))
+                );
+            }
             const billsSnap = await getDocs(billsQuery);
             
             const relevantBills: BillRecord[] = [];
@@ -124,7 +138,11 @@ export default function BulkDailyReceiptsPage() {
             billsSnap.docs.forEach(d => {
                 const data = d.data();
                 const type = (data.type || '').toLowerCase();
-                const isCorrectService = type.includes(serviceType.toLowerCase());
+                
+                // Allow any unpaid fee/receivable record EXCEPT canteen/transport if in Tuition/School Fees mode
+                const isCorrectService = serviceType === 'Tuition'
+                    ? (!type.includes('canteen') && !type.includes('transport'))
+                    : type.includes(serviceType.toLowerCase());
                 
                 if (isCorrectService) {
                     existingBillsMap.set(data.studentId, { id: d.id, ...data });
@@ -143,47 +161,59 @@ export default function BulkDailyReceiptsPage() {
                 }
             });
 
-            // C. CALCULATE AUDIT & COLLECT NAMES
-            let missingCount = 0;
-            let alreadyPaidCount = 0;
-            const missingList: { id: string, name: string }[] = [];
+            // C. CALCULATE AUDIT & COLLECT NAMES (Only for Canteen and Transport)
+            if (serviceType !== 'Tuition') {
+                let missingCount = 0;
+                let alreadyPaidCount = 0;
+                const missingList: { id: string, name: string }[] = [];
 
-            // Get student metadata to ensure we have the names if attendance record is incomplete
-            const stuSnap = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
-            const stuMetaMap = new Map(stuSnap.docs.map(d => [d.id, d.data()]));
+                // Get student metadata to ensure we have the names if attendance record is incomplete
+                const stuSnap = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
+                const stuMetaMap = new Map(stuSnap.docs.map(d => [d.id, d.data()]));
 
-            studentsPresent.forEach(att => {
-                const bill = existingBillsMap.get(att.studentId);
-                if (!bill) {
-                    if (att.canteenMode !== 'Termly' && att.transportMode !== 'Termly') {
-                        missingCount++;
-                        const meta: any = stuMetaMap.get(att.studentId);
-                        missingList.push({
-                            id: att.studentId,
-                            name: att.studentName || (meta ? `${meta.firstName} ${meta.lastName}` : 'Unknown')
-                        });
+                studentsPresent.forEach(att => {
+                    const bill = existingBillsMap.get(att.studentId);
+                    if (!bill) {
+                        if (att.canteenMode !== 'Termly' && att.transportMode !== 'Termly') {
+                            missingCount++;
+                            const meta: any = stuMetaMap.get(att.studentId);
+                            missingList.push({
+                                id: att.studentId,
+                                name: att.studentName || (meta ? `${meta.firstName} ${meta.lastName}` : 'Unknown')
+                            });
+                        }
+                    } else {
+                        const balance = bill.billedAmount - (bill.amountPaid || 0) - (bill.waiverAmount || 0);
+                        if (balance <= 0.01) alreadyPaidCount++;
                     }
-                } else {
-                    const balance = bill.billedAmount - (bill.amountPaid || 0) - (bill.waiverAmount || 0);
-                    if (balance <= 0.01) alreadyPaidCount++;
-                }
-            });
-
-            setAuditSummary({
-                totalPresent: studentsPresent.length,
-                billsFound: relevantBills.length,
-                missingInvoices: missingCount,
-                alreadyPaid: alreadyPaidCount,
-                missingStudents: missingList
-            });
-
-            if (relevantBills.length === 0 && missingCount === 0) {
-                toast({ 
-                    title: "No Action Needed", 
-                    description: "No pending bills found. Everyone present is either billed & paid or not required to pay today." 
                 });
+
+                setAuditSummary({
+                    totalPresent: studentsPresent.length,
+                    billsFound: relevantBills.length,
+                    missingInvoices: missingCount,
+                    alreadyPaid: alreadyPaidCount,
+                    missingStudents: missingList
+                });
+
+                if (relevantBills.length === 0 && missingCount === 0) {
+                    toast({ 
+                        title: "No Action Needed", 
+                        description: "No pending bills found. Everyone present is either billed & paid or not required to pay today." 
+                    });
+                } else {
+                    toast({ title: "Scanning Complete", description: `Located ${relevantBills.length} pending receipts.` });
+                }
             } else {
-                toast({ title: "Scanning Complete", description: `Located ${relevantBills.length} pending receipts.` });
+                setAuditSummary(null);
+                if (relevantBills.length === 0) {
+                    toast({ 
+                        title: "No Tuition Bills", 
+                        description: "No pending tuition fees found for the selected class." 
+                    });
+                } else {
+                    toast({ title: "Scanning Complete", description: `Located ${relevantBills.length} pending tuition records.` });
+                }
             }
 
             setPendingBills(relevantBills);
@@ -348,7 +378,7 @@ export default function BulkDailyReceiptsPage() {
                     <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2 italic uppercase">
                         <Coins className="h-8 w-8 text-green-600" /> Bulk Daily Receipts
                     </h1>
-                    <p className="text-muted-foreground font-medium italic">Quickly process cash payments for daily Canteen or Transport bills.</p>
+                    <p className="text-muted-foreground font-medium italic">Quickly process class-wide cash payments for daily services (Canteen/Transport) or Tuition fees.</p>
                 </div>
                 {pendingBills.length > 0 && (
                     <div className="bg-emerald-50 border-2 border-emerald-100 p-4 rounded-2xl shadow-sm text-center min-w-[200px] animate-in zoom-in">
@@ -363,14 +393,20 @@ export default function BulkDailyReceiptsPage() {
             <Card className="border-t-4 border-t-green-500 shadow-sm rounded-2xl">
                 <CardHeader>
                     <CardTitle className="text-lg">1. Load Records for Reconciliation</CardTitle>
-                    <CardDescription>Fetch attendance logs and unpaid bills to generate the receipting roster.</CardDescription>
+                    <CardDescription>Fetch active unpaid bills to generate the bulk receipting roster.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col md:flex-row gap-4 items-end">
                     <div className="flex-1 space-y-2 w-full">
-                        <Label className="text-xs font-bold uppercase text-slate-500">Service Date</Label>
+                        <Label className="text-xs font-bold uppercase text-slate-500">
+                            {serviceType === 'Tuition' ? "Service Date (Daily Fees only - N/A)" : "Service Date"}
+                        </Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal border-2 h-12 bg-white', !date && 'text-muted-foreground')}>
+                                <Button 
+                                    variant={'outline'} 
+                                    disabled={serviceType === 'Tuition'} 
+                                    className={cn('w-full justify-start text-left font-normal border-2 h-12 bg-white', !date && 'text-muted-foreground')}
+                                >
                                     <CalendarIcon className="mr-2 h-4 w-4 text-indigo-600" />
                                     {date ? format(date, 'PPP') : <span>Pick a date</span>}
                                 </Button>
@@ -380,12 +416,13 @@ export default function BulkDailyReceiptsPage() {
                     </div>
                     
                     <div className="flex-1 space-y-2 w-full">
-                        <Label className="text-xs font-bold uppercase text-slate-500">Service Type</Label>
+                        <Label className="text-xs font-bold uppercase text-slate-500">Fee / Service Type</Label>
                         <Select value={serviceType} onValueChange={(v: any) => setServiceType(v)}>
                             <SelectTrigger className="bg-white border-2 h-12 font-bold"><SelectValue /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Canteen" className="font-bold">Canteen Fees</SelectItem>
                                 <SelectItem value="Transport" className="font-bold">Transport Fees</SelectItem>
+                                <SelectItem value="Tuition" className="font-bold">Tuition Fees</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

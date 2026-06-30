@@ -142,9 +142,9 @@ export default function MigrationHubPage() {
                    "jane.smith@school.com,English Language,25,65,2024-2025,First Term\n";
       filename = "grade_import_template.csv";
     } else if (type === 'balances') {
-      csvContent = "Email,Balance\n" +
-                   "john.doe@school.com,500.00\n" +
-                   "jane.smith@school.com,250.50\n";
+      csvContent = "Email,Tuition,Canteen,Transport,Other\n" +
+                   "john.doe@school.com,300.00,100.00,50.00,50.00\n" +
+                   "jane.smith@school.com,200.00,0.00,0.00,50.50\n";
       filename = "arrears_import_template.csv";
     }
 
@@ -400,37 +400,66 @@ export default function MigrationHubPage() {
       for (let i = 0; i < balanceCsvData.length; i++) {
         const row = balanceCsvData[i];
         const email = getRowValue(row, ['Email', 'Student Email', 'Email Address', 'student_email']).toLowerCase().trim();
-        const balanceStr = getRowValue(row, ['Balance', 'Closing Balance', 'Amount', 'Arrears', 'outstanding', 'debt']);
+        
+        const tuitionStr = getRowValue(row, ['Tuition', 'Tuition Fee', 'tuition', 'tuition_fee']) || '';
+        const canteenStr = getRowValue(row, ['Canteen', 'Canteen Fee', 'canteen', 'canteen_fee']) || '';
+        const transportStr = getRowValue(row, ['Transport', 'Transport Fee', 'transport', 'transport_fee']) || '';
+        
+        const hasSpecificColumns = tuitionStr || canteenStr || transportStr;
+        
+        const otherKeys = hasSpecificColumns
+          ? ['Other', 'Other Fee', 'other', 'other_fee']
+          : ['Balance', 'Closing Balance', 'Amount', 'Arrears', 'outstanding', 'debt', 'Other', 'Other Fee', 'other'];
+        const otherStr = getRowValue(row, otherKeys) || '';
         
         const studentInfo = studentMap.get(email);
         
-        // Solid parsing: Handle commas, currency symbols and extra characters
-        const cleanAmountStr = balanceStr.replace(/[^0-9.-]+/g, "");
-        const amount = parseFloat(cleanAmountStr);
+        const parseAmount = (valStr: string) => {
+          if (!valStr) return 0;
+          const clean = valStr.replace(/[^0-9.-]+/g, "");
+          const val = parseFloat(clean);
+          return isNaN(val) ? 0 : val;
+        };
 
-        if (!studentInfo || isNaN(amount) || amount <= 0) {
+        const tuitionAmt = parseAmount(tuitionStr);
+        const canteenAmt = parseAmount(canteenStr);
+        const transportAmt = parseAmount(transportStr);
+        const otherAmt = parseAmount(otherStr);
+
+        if (!studentInfo || (tuitionAmt <= 0 && canteenAmt <= 0 && transportAmt <= 0 && otherAmt <= 0)) {
           failCount++;
           setBalanceImportProgress(i + 1);
           continue;
         }
 
-        const recordRef = doc(collection(firestore, 'financialRecords'));
-        batch.set(recordRef, {
-          studentId: studentInfo.uid,
-          studentName: `${studentInfo.firstName} ${studentInfo.lastName}`,
-          classId: studentInfo.classId || 'unassigned',
-          type: 'Other',
-          description: 'Opening Balance (System Migration)',
-          billedAmount: amount,
-          amountPaid: 0,
-          status: 'Unpaid',
-          dueDate: serverTimestamp(),
-          createdAt: serverTimestamp(),
-          schoolId: schoolId,
-        });
+        const feeItems = [
+          { amount: tuitionAmt, type: 'Tuition Fee', desc: 'Opening Balance - Tuition' },
+          { amount: canteenAmt, type: 'Canteen Fee', desc: 'Opening Balance - Canteen' },
+          { amount: transportAmt, type: 'Transport Fee', desc: 'Opening Balance - Transport' },
+          { amount: otherAmt, type: 'Other', desc: hasSpecificColumns ? 'Opening Balance - Other' : 'Opening Balance (System Migration)' }
+        ];
 
-        successCount++;
-        batchCount++;
+        for (const item of feeItems) {
+          if (item.amount > 0) {
+            const recordRef = doc(collection(firestore, 'financialRecords'));
+            batch.set(recordRef, {
+              studentId: studentInfo.uid,
+              studentName: `${studentInfo.firstName} ${studentInfo.lastName}`,
+              classId: studentInfo.classId || 'unassigned',
+              type: item.type,
+              description: item.desc,
+              billedAmount: item.amount,
+              amountPaid: 0,
+              status: 'Unpaid',
+              dueDate: serverTimestamp(),
+              createdAt: serverTimestamp(),
+              schoolId: schoolId,
+            });
+            successCount++;
+            batchCount++;
+          }
+        }
+
         setBalanceImportProgress(i + 1);
 
         if (batchCount >= 450) {
@@ -716,20 +745,53 @@ export default function MigrationHubPage() {
                       <TableHeader className="bg-slate-50">
                         <TableRow>
                           <TableHead className="text-[10px] font-black uppercase">Student Email</TableHead>
-                          <TableHead className="text-[10px] font-black uppercase text-right">Parsed Balance (GH₵)</TableHead>
+                          <TableHead className="text-[10px] font-black uppercase text-right">Tuition (GH₵)</TableHead>
+                          <TableHead className="text-[10px] font-black uppercase text-right">Canteen (GH₵)</TableHead>
+                          <TableHead className="text-[10px] font-black uppercase text-right">Transport (GH₵)</TableHead>
+                          <TableHead className="text-[10px] font-black uppercase text-right">Other/Total (GH₵)</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {balanceCsvData.slice(0, 10).map((row, i) => {
                           const email = getRowValue(row, ['Email', 'Student Email', 'Email Address', 'student_email']);
-                          const balStr = getRowValue(row, ['Balance', 'Arrears', 'Amount', 'Closing Balance', 'debt']);
-                          const cleanAmt = balStr.replace(/[^0-9.-]+/g, "");
+                          
+                          const tuitionStr = getRowValue(row, ['Tuition', 'Tuition Fee', 'tuition', 'tuition_fee']) || '';
+                          const canteenStr = getRowValue(row, ['Canteen', 'Canteen Fee', 'canteen', 'canteen_fee']) || '';
+                          const transportStr = getRowValue(row, ['Transport', 'Transport Fee', 'transport', 'transport_fee']) || '';
+                          
+                          const hasSpecificColumns = tuitionStr || canteenStr || transportStr;
+                          
+                          const otherKeys = hasSpecificColumns
+                            ? ['Other', 'Other Fee', 'other', 'other_fee']
+                            : ['Balance', 'Closing Balance', 'Amount', 'Arrears', 'outstanding', 'debt', 'Other', 'Other Fee', 'other'];
+                          const otherStr = getRowValue(row, otherKeys) || '';
+
+                          const parseAmount = (valStr: string) => {
+                            if (!valStr) return 0;
+                            const clean = valStr.replace(/[^0-9.-]+/g, "");
+                            const val = parseFloat(clean);
+                            return isNaN(val) ? 0 : val;
+                          };
+
+                          const tuitionAmt = parseAmount(tuitionStr);
+                          const canteenAmt = parseAmount(canteenStr);
+                          const transportAmt = parseAmount(transportStr);
+                          const otherAmt = parseAmount(otherStr);
                           
                           return (
                             <TableRow key={i}>
                               <TableCell className="text-xs font-medium">{email}</TableCell>
+                              <TableCell className="text-xs font-semibold text-right text-slate-800">
+                                  {tuitionAmt > 0 ? `GH₵${tuitionAmt.toFixed(2)}` : '—'}
+                              </TableCell>
+                              <TableCell className="text-xs font-semibold text-right text-slate-800">
+                                  {canteenAmt > 0 ? `GH₵${canteenAmt.toFixed(2)}` : '—'}
+                              </TableCell>
+                              <TableCell className="text-xs font-semibold text-right text-slate-800">
+                                  {transportAmt > 0 ? `GH₵${transportAmt.toFixed(2)}` : '—'}
+                              </TableCell>
                               <TableCell className="text-xs font-black text-right text-red-600">
-                                  {isNaN(parseFloat(cleanAmt)) ? 'Invalid' : `GH₵${parseFloat(cleanAmt).toFixed(2)}`}
+                                  {otherAmt > 0 ? `GH₵${otherAmt.toFixed(2)}` : '—'}
                               </TableCell>
                             </TableRow>
                           );
